@@ -3,10 +3,8 @@ title: Tabs
 description: Learn how to use the Tabs layout in Expo Router.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { CODE } from '~/ui/components/Text';
 
 Tabs are a common way to navigate between different sections of an app. Expo Router provides a tabs layout to help you create a tab bar at the bottom of your app. The fastest way to get started is to use a template. See the [quick start installation](/router/installation/#quick-start) to get started.
 
@@ -27,10 +25,10 @@ You can use file-based routing to create a tabs layout. Here's an example file s
 
 This file structure produces a layout with a tab bar at the bottom of the screen. The tab bar will have two tabs: **Home** and **Settings**:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="A screenshot of a tab bar with two tabs: Home and Settings."
   src="/static/images/expo-router/tabs.png"
-  style={{ maxWidth: 540 }}
+  className="max-w-[540px]"
 />
 
 You can use the **app/\_layout.tsx** file to define your app's root layout:

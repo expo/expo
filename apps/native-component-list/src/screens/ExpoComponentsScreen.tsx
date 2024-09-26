@@ -20,7 +20,6 @@ const screens = [
   'GestureHandlerList',
   'GestureHandlerPinch',
   'GestureHandlerSwipeable',
-  'Gif',
   'HTML',
   'Image',
   'LinearGradient',

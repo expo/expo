@@ -40,10 +40,11 @@ export type Prop = {
 };
 export type OutputModuleDefinition = {
     name: string;
-    view: OutputViewDefinition | null;
+    views: OutputNestedClassDefinition[];
+    classes: OutputNestedClassDefinition[];
     events: {
         name: string;
     }[];
 } & Record<'asyncFunctions' | 'functions' | 'properties', Closure[]> & Record<'props', Prop[]>;
-export type OutputViewDefinition = Omit<OutputModuleDefinition, 'view'>;
+export type OutputNestedClassDefinition = Omit<OutputModuleDefinition, 'views' | 'classes'>;
 //# sourceMappingURL=types.d.ts.map

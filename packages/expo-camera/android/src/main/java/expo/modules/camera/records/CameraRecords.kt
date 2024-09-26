@@ -1,10 +1,11 @@
 package expo.modules.camera.records
 
 import android.hardware.camera2.CameraMetadata
-import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.video.Quality
 import com.google.mlkit.vision.barcode.common.Barcode
+import expo.modules.camera.CameraExceptions
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -13,14 +14,21 @@ enum class CameraType(val value: String) : Enumerable {
   FRONT("front"),
   BACK("back");
 
-  fun mapToSelector() = when (this) {
-    FRONT -> CameraSelector.DEFAULT_FRONT_CAMERA
-    BACK -> CameraSelector.DEFAULT_BACK_CAMERA
-  }
-
   fun mapToCharacteristic() = when (this) {
     FRONT -> CameraMetadata.LENS_FACING_FRONT
     BACK -> CameraMetadata.LENS_FACING_BACK
+  }
+}
+
+enum class CameraRatio(val value: String) : Enumerable {
+  FOUR_THREE("4:3"),
+  SIXTEEN_NINE("16:9"),
+  ONE_ONE("1:1");
+
+  fun mapToStrategy() = when (this) {
+    FOUR_THREE -> AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY
+    SIXTEEN_NINE -> AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY
+    else -> throw CameraExceptions.UnsupportedAspectRatioException(this.value)
   }
 }
 
@@ -66,7 +74,7 @@ data class BarcodeSettings(
   @Field val barcodeTypes: List<BarcodeType>
 ) : Record
 
-enum class BarcodeType(val value: String) : Enumerable {
+enum class BarcodeType(private val value: String) : Enumerable {
   AZTEC("aztec"),
   EAN13("ean13"),
   EAN8("ean8"),
@@ -79,7 +87,8 @@ enum class BarcodeType(val value: String) : Enumerable {
   ITF14("itf14"),
   CODABAR("codabar"),
   CODE128("code128"),
-  UPCA("upc_a");
+  UPCA("upc_a"),
+  UNKNOWN("unknown");
 
   fun mapToBarcode() = when (this) {
     AZTEC -> Barcode.FORMAT_AZTEC
@@ -95,5 +104,29 @@ enum class BarcodeType(val value: String) : Enumerable {
     CODABAR -> Barcode.FORMAT_CODABAR
     CODE128 -> Barcode.FORMAT_CODE_128
     UPCA -> Barcode.FORMAT_UPC_A
+    UNKNOWN -> Barcode.FORMAT_UNKNOWN
+  }
+
+  companion object {
+    fun mapFormatToString(format: Int): String {
+      val result = when (format) {
+        Barcode.FORMAT_AZTEC -> AZTEC
+        Barcode.FORMAT_EAN_13 -> EAN13
+        Barcode.FORMAT_EAN_8 -> EAN8
+        Barcode.FORMAT_QR_CODE -> QR
+        Barcode.FORMAT_PDF417 -> PDF417
+        Barcode.FORMAT_UPC_E -> UPCE
+        Barcode.FORMAT_DATA_MATRIX -> DATAMATRIX
+        Barcode.FORMAT_CODE_39 -> CODE39
+        Barcode.FORMAT_CODE_93 -> CODE93
+        Barcode.FORMAT_ITF -> ITF14
+        Barcode.FORMAT_CODABAR -> CODABAR
+        Barcode.FORMAT_CODE_128 -> CODE128
+        Barcode.FORMAT_UPC_A -> UPCA
+        else -> UNKNOWN
+      }
+
+      return result.value
+    }
   }
 }

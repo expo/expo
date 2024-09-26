@@ -20,6 +20,9 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.StringBuilder
 
+const val PNG_PREFIX = "iVBORw0K"
+const val JPEG_PREFIX = "/9j/"
+
 // region Structs and interfaces
 data class ImageResult(
   val base64Image: String,
@@ -37,6 +40,23 @@ data class ImageResult(
 // endregion
 
 // region Module functions
+
+/**
+ * Gets the image format from the base64 encoded image string by checking the prefix of
+ * the base64
+ *
+ * @param base64Image base64 encoded image string
+ *
+ * @return ImageFormat
+ */
+internal fun getImageFormatFromBase64(base64Image: String): ImageFormat {
+  val prefix = base64Image.substring(0, 8)
+  return when {
+    prefix.startsWith(PNG_PREFIX) -> ImageFormat.PNG
+    prefix.startsWith(JPEG_PREFIX) -> ImageFormat.JPG
+    else -> ImageFormat.JPG
+  }
+}
 
 /**
  * Gets the [imageUri] and returns the [ImageResult] object containing base64 encoded image
@@ -97,19 +117,27 @@ internal suspend fun clipDataFromBase64Image(
   // 1. Get bitmap from base64 string
   val bitmap = bitmapFromBase64String(base64Image)
 
-  // 2. Create file in cache dir, it will be overwritten if already exists
-  val file = File(clipboardCacheDir, "copied_image.jpeg").also {
+  // 2. Determine image format
+  val format = getImageFormatFromBase64(base64Image)
+
+  val fileName = when (format) {
+    ImageFormat.PNG -> "copied_image.png"
+    ImageFormat.JPG -> "copied_image.jpeg"
+  }
+
+  // 3. Create file in cache dir, it will be overwritten if already exists
+  val file = File(clipboardCacheDir, fileName).also {
     it.ensureExists()
   }
 
-  // 3. Write bitmap to the file
+  // 4. Write bitmap to the file
   val fileStream = runInterruptible { FileOutputStream(file, false) }
   BufferedOutputStream(fileStream).use { outputStream ->
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+    bitmap.compress(format.compressFormat, 100, outputStream)
     runInterruptible { outputStream.flush() }
   }
 
-  // 4. Get content:// URI to the image file and put it to the clipboard data
+  // 5. Get content:// URI to the image file and put it to the clipboard data
   val imageUri = ClipboardFileProvider.getUriForFile(
     context,
     context.applicationInfo.packageName + ".ClipboardFileProvider",

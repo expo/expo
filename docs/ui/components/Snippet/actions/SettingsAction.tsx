@@ -1,5 +1,5 @@
 import { Themes } from '@expo/styleguide';
-import { DotsVerticalIcon } from '@expo/styleguide-icons';
+import { DotsVerticalIcon } from '@expo/styleguide-icons/outline/DotsVerticalIcon';
 
 import { Checkbox } from '../../Form/Checkbox';
 import { SnippetAction, SnippetActionProps } from '../SnippetAction';

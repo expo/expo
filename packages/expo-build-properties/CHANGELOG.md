@@ -4,11 +4,33 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Export missing types. ([#29401](https://github.com/expo/expo/pull/29401) by [@Simek](https://github.com/Simek))
+
+## 0.12.4 - 2024-07-30
+
+### 🎉 New features
+
+- Add `android.enablePngCrunchInReleaseBuilds` to enable toggling PNG crunching in release builds. ([#30699](https://github.com/expo/expo/pull/30699) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.12.3 - 2024-06-06
+
+### 🎉 New features
+
+- `ios.privacyManifestAggregationEnabled` is now enabled by default. ([#29439](https://github.com/expo/expo/pull/29439) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.12.2 - 2024-06-05
+
+### 🐛 Bug fixes
+
+- Improved android manifest queries, preventing overrides of <package> tags and splitting <provider> instead of merging them into one string ([#29418](https://github.com/expo/expo/pull/29418) by [@Titozzz](https://github.com/Titozzz))
 
 ## 0.12.1 — 2024-05-06
 

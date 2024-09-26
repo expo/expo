@@ -47,21 +47,21 @@ unsubscribe();
 
 To access the `ssid` property (available under `state.details.ssid`), there are a few additional configuration steps:
 
-#### Android and iOS
+### Android and iOS
 
 - Request location permissions with [`Location.requestForegroundPermissionsAsync()`](location.mdx#locationrequestforegroundpermissionsasync) or [`Location.requestBackgroundPermissionsAsync()`](location.mdx#locationrequestbackgroundpermissionsasync).
 
-#### iOS only
+### iOS only
 
 - Add the `com.apple.developer.networking.wifi-info` entitlement to your **app.json** under `ios.entitlements`:
 
-```json
-  "ios": {
-    "entitlements": {
-      "com.apple.developer.networking.wifi-info": true
+  ```json app.json
+    "ios": {
+      "entitlements": {
+        "com.apple.developer.networking.wifi-info": true
+      }
     }
-  }
-```
+  ```
 
 - Check the **Access Wi-Fi Information** box in your app's App Identifier, [which can be found here](https://developer.apple.com/account/resources/identifiers/list).
 - Rebuild your app with [`eas build --platform ios`](/build/setup/#4-run-a-build) or [`npx expo run:ios`](/more/expo-cli/#compiling).

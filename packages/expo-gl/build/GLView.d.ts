@@ -43,7 +43,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     static getWorkletContext: (contextId: number) => ExpoWebGLRenderingContext | undefined;
     nativeRef: ComponentOrHandle;
     exglCtxId?: number;
-    render(): JSX.Element;
+    render(): React.JSX.Element;
     _setNativeRef: (nativeRef: ComponentOrHandle) => void;
     _onSurfaceCreate: ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => void;
     componentWillUnmount(): void;

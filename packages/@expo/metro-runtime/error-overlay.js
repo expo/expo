@@ -1,1 +1,1 @@
-module.exports = require('./build/error-overlay');
+export * from './src/error-overlay';

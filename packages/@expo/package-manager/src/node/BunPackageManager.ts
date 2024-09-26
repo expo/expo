@@ -1,5 +1,5 @@
 import { BasePackageManager } from './BasePackageManager';
-import { findYarnOrNpmWorkspaceRoot, BUN_LOCK_FILE } from '../utils/nodeWorkspaces';
+import { resolveWorkspaceRoot, BUN_LOCK_FILE } from '../utils/nodeManagers';
 
 export class BunPackageManager extends BasePackageManager {
   readonly name = 'bun';
@@ -7,7 +7,7 @@ export class BunPackageManager extends BasePackageManager {
   readonly lockFile = BUN_LOCK_FILE;
 
   workspaceRoot() {
-    const root = findYarnOrNpmWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
+    const root = resolveWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
     if (root) {
       return new BunPackageManager({
         ...this.options,

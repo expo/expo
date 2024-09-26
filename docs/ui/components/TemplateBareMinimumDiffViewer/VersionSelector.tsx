@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, typography, shadows } from '@expo/styleguide';
 import { spacing, borderRadius } from '@expo/styleguide-base';
-import { ChevronDownIcon } from '@expo/styleguide-icons';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 
 const STYLES_SELECT = css({
   ...typography.fontSizes[14],

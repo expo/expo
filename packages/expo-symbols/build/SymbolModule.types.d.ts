@@ -1,4 +1,4 @@
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export type SymbolViewProps = {
     /**
@@ -6,7 +6,7 @@ export type SymbolViewProps = {
      */
     name: SFSymbol;
     /**
-     * Fallback to render on Android where `SF Symbols` are not available.
+     * Fallback to render on Android and Web where `SF Symbols` are not available.
      */
     fallback?: React.ReactNode;
     /**

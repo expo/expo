@@ -1,7 +1,8 @@
+import { EnvHttpProxyAgent } from 'undici';
+
 import { wrapFetchWithProxy } from '../wrapFetchWithProxy';
 
 const originalEnv = process.env;
-
 afterAll(() => {
   process.env = originalEnv;
 });
@@ -13,19 +14,19 @@ describe(wrapFetchWithProxy, () => {
     const input = jest.fn();
     const next = wrapFetchWithProxy(input);
     await next('https://example.com/', {});
-    expect(input).toBeCalledWith('https://example.com/', {});
+
+    expect(input).toHaveBeenCalledWith('https://example.com/', {});
   });
+
   it(`proxies requests`, async () => {
     process.env.HTTP_PROXY = 'http://localhost:8080';
+
     const input = jest.fn();
     const next = wrapFetchWithProxy(input);
     await next('https://example.com/', {});
-    expect(input).toBeCalledWith('https://example.com/', {
-      agent: expect.objectContaining({
-        proxy: expect.objectContaining({
-          host: 'localhost',
-        }),
-      }),
+
+    expect(input).toHaveBeenCalledWith('https://example.com/', {
+      dispatcher: expect.any(EnvHttpProxyAgent),
     });
   });
 });

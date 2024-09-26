@@ -32,11 +32,9 @@ internal class PermissionRequestResponse(
 }
 
 internal class PermissionDetailsLocationAndroid(
-  @Field var scope: String,
   @Field var accuracy: String
 ) : Record, Serializable {
   constructor(bundle: Bundle) : this(
-    scope = (bundle.getString("accuracy") ?: "none"),
     accuracy = (bundle.getString("accuracy") ?: "none")
   )
 }

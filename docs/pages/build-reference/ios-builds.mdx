@@ -7,7 +7,7 @@ This page describes the process of building iOS projects with EAS Build. You may
 
 ## Build process
 
-Let's take a closer look at the steps for building iOS projects with EAS Build. We'll first run some steps on your local machine to prepare the project and then we'll build the project on a remote service.
+Let's take a closer look at the steps for building iOS projects with EAS Build. We'll first run some steps on your local machine to prepare the project, and then we'll build the project on a remote service.
 
 ### Local steps
 
@@ -42,7 +42,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
    - Write the Provisioning Profile to the **~/Library/MobileDevice/Provisioning Profiles** directory.
    - Verify that the Distribution Certificate and Provisioning Profile match (every Provisioning Profile is assigned to a particular Distribution Certificate and cannot be used for building the iOS with any other certificate).
 
-1. Additional step for **managed** projects: Run `npx expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI for projects that use Expo SDK 46+.
+1. Additional step for **managed** projects: Run `npx expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI.
 1. Restore a previously saved cache identified by the `cache.key` value in the [build profile](/build/eas-json).
 1. Run `pod install` in the **ios** directory inside your project.
 1. Run the `eas-build-post-install` script from **package.json** if defined.

@@ -11,7 +11,7 @@ export interface ExpoConfig {
      */
     description?: string;
     /**
-     * The friendly URL name for publishing. For example, `myAppName` will refer to the `expo.dev/@project-owner/myAppName` project.
+     * A URL-friendly name for your project that is unique across your account.
      */
     slug: string;
     /**
@@ -27,15 +27,11 @@ export interface ExpoConfig {
      */
     originalFullName?: string;
     /**
-     * Defaults to `unlisted`. `unlisted` hides the project from search results. `hidden` restricts access to the project page to only the owner and other users that have been granted access. Valid values: `public`, `unlisted`, `hidden`.
-     */
-    privacy?: 'public' | 'unlisted' | 'hidden';
-    /**
      * The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
      */
     sdkVersion?: string;
     /**
-     * The runtime version associated with this manifest.
+     * Property indicating compatibility between a build's native code and an OTA update.
      */
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
@@ -167,19 +163,23 @@ export interface ExpoConfig {
         [k: string]: any;
     };
     /**
-     * Configuration for how and when the app should request OTA JavaScript updates
+     * Configuration for the expo-updates library
      */
     updates?: {
         /**
-         * If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through app store review. Defaults to true. (Note: This will not work out of the box with ExpoKit projects)
+         * Whether the updates system will run. Defaults to true. If set to false, builds will only use code and assets bundled at time of build.
          */
         enabled?: boolean;
         /**
-         * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+         * By default, expo-updates will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to disable automatic checking. Valid values: `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, `NEVER`
          */
         checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD' | 'WIFI_ONLY' | 'NEVER';
         /**
-         * How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app. Defaults to 0. Must be between 0 and 300000 (5 minutes).
+         * Whether to load the embedded update. Defaults to true. If set to false, an update will be fetched at launch. When set to false, ensure that `checkAutomatically` is set to `ON_LOAD` and `fallbackToCacheTimeout` is large enough for the initial remote update to download. This should not be used in production.
+         */
+        useEmbeddedUpdate?: boolean;
+        /**
+         * How long (in ms) to wait for the app to check for and fetch a new update upon launch before falling back to the most recent update already present on the device. Defaults to 0. Must be between 0 and 300000 (5 minutes). If the startup update check takes longer than this value, any update downloaded during the check will be applied upon the next app launch.
          */
         fallbackToCacheTimeout?: number;
         /**
@@ -187,7 +187,7 @@ export interface ExpoConfig {
          */
         url?: string;
         /**
-         * Local path of a PEM-formatted X.509 certificate used for requiring and verifying signed Expo updates
+         * Local path of a PEM-formatted X.509 certificate used for verifying codesigned updates. When provided, all updates downloaded by expo-updates must be signed.
          */
         codeSigningCertificate?: string;
         /**
@@ -195,7 +195,7 @@ export interface ExpoConfig {
          */
         codeSigningMetadata?: {
             /**
-             * Algorithm used to generate manifest code signing signature.
+             * Algorithm used to generate manifest code signing signature. Valid values: `rsa-v1_5-sha256`
              */
             alg?: 'rsa-v1_5-sha256';
             /**
@@ -204,11 +204,15 @@ export interface ExpoConfig {
             keyid?: string;
         };
         /**
-         * Extra HTTP headers to include in HTTP requests made by `expo-updates`. These may override preset headers.
+         * Extra HTTP headers to include in HTTP requests made by `expo-updates` when fetching manifests or assets. These may override preset headers.
          */
         requestHeaders?: {
             [k: string]: any;
         };
+        /**
+         * Array of glob patterns specifying which files should be included in updates. Glob patterns are relative to the project root. A value of `['**']` will match all asset files within the project root. When not supplied all asset files will be included. Example: Given a value of `['app/images/** /*.png', 'app/fonts/** /*.woff']` all `.png` files in all subdirectories of `app/images` and all `.woff` files in all subdirectories of `app/fonts` will be included in updates.
+         */
+        assetPatternsToBeBundled?: string[];
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -262,6 +266,14 @@ export interface ExpoConfig {
          * Experimentally use a vendored canary build of React for testing upcoming features.
          */
         reactCanary?: boolean;
+        /**
+         * Experimentally enable React Compiler.
+         */
+        reactCompiler?: boolean;
+        /**
+         * Experimentally enable React Server Components support in Expo CLI and Expo Router.
+         */
+        reactServerComponents?: boolean;
     };
     /**
      * Internal properties for developer tools
@@ -298,6 +310,10 @@ export interface Splash {
  * Configuration that is specific to the iOS platform.
  */
 export interface IOS {
+    /**
+     * The Apple development team ID to use for all native targets. You can find your team ID in [the Apple Developer Portal](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/).
+     */
+    appleTeamId?: string;
     /**
      * The manifest for the iOS version of your app will be written to this path during publish.
      */
@@ -494,7 +510,7 @@ export interface IOS {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
-     * The runtime version associated with this manifest for the iOS platform. If provided, this will override the top level runtimeVersion key.
+     * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
      */
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
@@ -721,7 +737,7 @@ export interface Android {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
-     * The runtime version associated with this manifest for the Android platform. If provided, this will override the top level runtimeVersion key.
+     * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
      */
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';

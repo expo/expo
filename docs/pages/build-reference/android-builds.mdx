@@ -34,7 +34,7 @@ Next, this is what happens when EAS Build picks up your request:
 1. Run the `eas-build-pre-install` script from **package.json** if defined.
 1. Run `npm install` in the project root (or `yarn install` if `yarn.lock` exists).
 1. Run `npx expo-doctor` to diagnose potential issues with your project configuration.
-1. Additional step for **managed** projects: Run `npx expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI for projects that use Expo SDK 46+.
+1. Additional step for **managed** projects: Run `npx expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI.
 1. Restore a previously saved cache identified by the `cache.key` value in the [build profile](/build/eas-json).
 1. Run the `eas-build-post-install` script from **package.json** if defined.
 1. Restore the keystore (if it was included in the build request).

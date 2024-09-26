@@ -14,5 +14,7 @@ export async function resolveFontPaths(fonts: string[], projectRoot: string) {
   });
   return (await Promise.all(promises))
     .flat()
-    .filter((p) => p.endsWith('.ttf') || p.endsWith('.otf'));
+    .filter(
+      (p) => p.endsWith('.ttf') || p.endsWith('.otf') || p.endsWith('.woff') || p.endsWith('.woff2')
+    );
 }

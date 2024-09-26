@@ -81,7 +81,7 @@ export class SQLiteDatabase {
    *   // The following UPDATE query out of transaction may be executed here and break the expectation.
    *   //
    *
-   *   const result = await db.getAsync<{ name: string }>('SELECT name FROM Users');
+   *   const result = await db.getFirstAsync<{ name: string }>('SELECT name FROM Users');
    *   expect(result?.name).toBe('aaa');
    * });
    * db.execAsync('UPDATE test SET name = "bbb"');

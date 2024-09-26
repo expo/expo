@@ -4,9 +4,11 @@ import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
+import android.net.Uri
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
@@ -48,6 +50,7 @@ class UpdatesDevLauncherController(
   private val updatesDirectoryException: Exception?
 ) : IUpdatesController, UpdatesInterface {
   override var appContext: WeakReference<AppContext>? = null
+  override var eventEmitter: EventEmitter? = null
   override var shouldEmitJsEvents = false
   override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
 
@@ -104,6 +107,14 @@ class UpdatesDevLauncherController(
 
   override fun reset() {
     launcher = null
+  }
+
+  override fun getRuntimeVersion(context: Context): String? {
+    return updatesConfiguration?.getRuntimeVersion()
+  }
+
+  override fun getUpdateUrl(context: Context): Uri? {
+    return updatesConfiguration?.updateUrl
   }
 
   /**

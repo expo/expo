@@ -66,39 +66,13 @@ You'll need to install the following dependencies:
 
 ### Setup entry point
 
-<Tabs>
+For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/\_layout.js**](/router/advanced/root-layout).
 
-<Tab label="SDK 49 and above">
-
-    For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/_layout.js**](/router/advanced/root-layout).
-
-    ```json package.json
-    {
-      "main": "expo-router/entry"
-    }
-    ```
-
-</Tab>
-
-<Tab label="SDK 48">
-
-    Either delete the entry point in your **package.json** or replace it with **index.js** to be explicit:
-
-    ```json package.json
-    {
-      "main": "index.js"
-    }
-    ```
-
-    Create a new file **index.js** in the root of your project. If it exists already, replace it with the following:
-
-    ```js index.js
-    import 'expo-router/entry';
-    ```
-
-</Tab>
-
-</Tabs>
+```json package.json
+{
+  "main": "expo-router/entry"
+}
+```
 
 </Step>
 
@@ -199,7 +173,7 @@ After updating the Babel config file, run the following command to clear the bun
 </Tab>
 
   <Tab label="SDK 49">
-    Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 / Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
+    Expo Router requires at least `react-refresh@0.14.0`. React Native hasn't upgraded as of SDK 49 and Expo Router v2, so you need to force upgrade your `react-refresh` version by setting a Yarn resolution or npm override.
 
     <Tabs>
       <Tab label="Yarn">

@@ -127,7 +127,7 @@ describe('useUpdates()', () => {
       expect(createdAtView).toHaveTextContent('2023-03-26T04:58:02.560Z');
       const channelView = await screen.findByTestId('currentlyRunning_channel');
       expect(channelView).toHaveTextContent('main');
-    });
+    }, 8000);
 
     it('Shows available update after receiving state change', async () => {
       render(<UseUpdatesTestApp />);

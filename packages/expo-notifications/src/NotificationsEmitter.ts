@@ -2,7 +2,7 @@ import { LegacyEventEmitter, type EventSubscription, UnavailabilityError } from 
 
 import { Notification, NotificationResponse } from './Notifications.types';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
-import { mapNotificationResponse } from './utils/mapNotificationResponse';
+import { mapNotification, mapNotificationResponse } from './utils/mapNotificationResponse';
 
 // Web uses SyntheticEventEmitter
 const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
@@ -10,6 +10,7 @@ const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
+const didClearNotificationResponseEventName = 'onDidClearNotificationResponse';
 
 // @docsMissing
 export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
@@ -41,7 +42,13 @@ export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEF
 export function addNotificationReceivedListener(
   listener: (event: Notification) => void
 ): EventSubscription {
-  return emitter.addListener<Notification>(didReceiveNotificationEventName, listener);
+  return emitter.addListener<Notification>(
+    didReceiveNotificationEventName,
+    (notification: Notification) => {
+      const mappedNotification = mapNotification(notification);
+      listener(mappedNotification);
+    }
+  );
 }
 
 /**
@@ -103,13 +110,44 @@ export function removeNotificationSubscription(subscription: EventSubscription) 
   subscription.remove();
 }
 
-// @docsMissing
 /**
- * @header listen
+ * Gets the notification response that was received most recently
+ * (a notification response designates an interaction with a notification, such as tapping on it).
+ *
+ * - `null` - if no notification response has been received yet
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  */
 export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
   if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
   }
-  return await NotificationsEmitterModule.getLastNotificationResponseAsync();
+  const response = await NotificationsEmitterModule.getLastNotificationResponseAsync();
+  const mappedResponse = response ? mapNotificationResponse(response) : response;
+  return mappedResponse;
+}
+
+/* Clears the notification response that was received most recently. May be used
+ * when an app selects a route based on the notification response, and it is undesirable
+ * to continue selecting the route after the response has already been handled.
+ * to continue to select the route after the response has already been handled.
+ *
+ * If a component is using the [`useLastNotificationResponse`](#useLastNotificationResponse) hook,
+ * this call will also clear the value returned by the hook.
+ *
+ * @return A promise that resolves if the native call was successful.
+ */
+export async function clearLastNotificationResponseAsync(): Promise<void> {
+  if (!NotificationsEmitterModule.clearLastNotificationResponseAsync) {
+    throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
+  }
+  emitter.emit(didClearNotificationResponseEventName, []);
+  return await NotificationsEmitterModule.clearLastNotificationResponseAsync();
+}
+
+/**
+ * @hidden
+ */
+export function addNotificationResponseClearedListener(listener: () => void): EventSubscription {
+  return emitter.addListener<void>(didClearNotificationResponseEventName, listener);
 }

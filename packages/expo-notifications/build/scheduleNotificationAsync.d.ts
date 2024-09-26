@@ -1,4 +1,4 @@
-import { NotificationTriggerInput as NativeNotificationTriggerInput } from './NotificationScheduler.types';
+import { NativeNotificationTriggerInput } from './NotificationScheduler.types';
 import { NotificationRequestInput, NotificationTriggerInput } from './Notifications.types';
 /**
  * Schedules a notification to be triggered in the future.

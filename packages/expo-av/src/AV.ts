@@ -266,7 +266,7 @@ export interface Playback extends AV {
    * Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based
    * on the `isPlaying` and `isBuffering` properties of the `AVPlaybackStatus`.
    * @param positionMillis The desired position of playback in milliseconds.
-   * @param tolerances The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would)).
+   * @param tolerances The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)).
    */
   playFromPositionAsync(
     positionMillis: number,
@@ -296,7 +296,7 @@ export interface Playback extends AV {
   /**
    * This is equivalent to `playbackObject.setStatusAsync({ positionMillis })`.
    * @param positionMillis The desired position of playback in milliseconds.
-   * @param tolerances The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would)).
+   * @param tolerances The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it-ios-only)).
    */
   setPositionAsync(
     positionMillis: number,

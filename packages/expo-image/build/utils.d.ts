@@ -1,4 +1,4 @@
-import { ImageContentFit, ImageContentPosition, ImageContentPositionObject, ImageProps, ImageTransition } from './Image.types';
+import { ImageContentFit, ImageContentPosition, ImageContentPositionObject, ImageProps, ImageRef, ImageTransition } from './Image.types';
 /**
  * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
  * that we support to provide compatibility with React Native Image.
@@ -14,4 +14,8 @@ export declare function resolveContentPosition(contentPosition?: ImageContentPos
  * When `fadeDuration` is used, it logs an appropriate deprecation warning.
  */
 export declare function resolveTransition(transition?: ImageProps['transition'], fadeDuration?: ImageProps['fadeDuration']): ImageTransition | null;
+/**
+ * Checks whether the given value is an instance of the ImageRef class.
+ */
+export declare function isImageRef(value: any): value is ImageRef;
 //# sourceMappingURL=utils.d.ts.map

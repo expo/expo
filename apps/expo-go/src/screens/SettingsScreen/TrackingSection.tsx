@@ -1,4 +1,4 @@
-import { Text, View } from 'expo-dev-client-components';
+import { Spacer, Text, View } from 'expo-dev-client-components';
 import * as Tracking from 'expo-tracking-transparency';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
@@ -8,6 +8,7 @@ import { SectionHeader } from '../../components/SectionHeader';
 
 export function TrackingSection() {
   const [showTrackingItem, setShowTrackingItem] = React.useState(false);
+
   React.useEffect(() => {
     (async () => {
       const { status } = await Tracking.getTrackingPermissionsAsync();
@@ -15,33 +16,41 @@ export function TrackingSection() {
     })();
   }, [showTrackingItem]);
 
-  return showTrackingItem ? (
-    <View>
-      <SectionHeader header="Tracking" />
+  if (!showTrackingItem) {
+    return null;
+  }
 
-      <View bg="default" overflow="hidden" rounded="large" border="default">
-        <TouchableOpacity
-          onPress={async () => {
-            const { status } = await Tracking.requestTrackingPermissionsAsync();
-            setShowTrackingItem(status === 'undetermined');
-          }}>
-          <View padding="medium" bg="default">
-            <Text size="medium" type="InterRegular">
-              Allow access to app-related data for tracking
+  return (
+    <>
+      <View>
+        <SectionHeader header="Tracking" />
+
+        <View bg="default" overflow="hidden" rounded="large" border="default">
+          <TouchableOpacity
+            onPress={async () => {
+              const { status } = await Tracking.requestTrackingPermissionsAsync();
+              setShowTrackingItem(status === 'undetermined');
+            }}>
+            <View padding="medium" bg="default">
+              <Text size="medium" type="InterRegular">
+                Allow access to app-related data for tracking
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={handleLearnMorePress}>
+          <View py="small" px="medium">
+            <Text size="small" color="link" type="InterRegular">
+              Learn more about what data Expo collects and why.
             </Text>
           </View>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={handleLearnMorePress}>
-        <View py="small" px="medium">
-          <Text size="small" color="link" type="InterRegular">
-            Learn more about what data Expo collects and why.
-          </Text>
-        </View>
-      </TouchableOpacity>
-    </View>
-  ) : null;
+      <Spacer.Vertical size="medium" />
+    </>
+  );
 }
 
 function handleLearnMorePress() {

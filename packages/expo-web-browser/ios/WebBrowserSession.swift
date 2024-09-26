@@ -37,9 +37,11 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
     }
   }
 
-  func dismiss() {
+  func dismiss(completion: ((String) -> Void)? = nil) {
     viewController.dismiss(animated: true) {
-      self.finish(type: "dismiss")
+      let type = "dismiss"
+      self.finish(type: type)
+      completion?(type)
     }
   }
 

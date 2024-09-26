@@ -4,7 +4,10 @@ description: Learn how to create screenshots and previews for your app's store p
 sidebar_title: App store assets
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { FigmaIcon } from '@expo/styleguide-icons/outline/FigmaIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Before submitting your app to the Google Play Store and Apple App Store, you need to provide some assets for your store listing page. The goal of these images and videos is to give your prospective users an idea of what your app experience is going to be like.
 
@@ -24,10 +27,11 @@ The most straightforward option &mdash; open up your app on a real device and ta
 
 **Cons**: Need to load the app on different devices for a full range of screenshots.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Screenshots of the Expo Go Apple App Store Listing Page"
+  caption="Screenshots of the Expo Go Apple App Store Listing Page."
   src="/static/images/guides/expo-go-screenshots.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 ### Option 2: screenshots within a design
@@ -38,10 +42,11 @@ The majority of apps use this approach. It involves taking screenshots of the ap
 
 **Cons:** The assets need to be created using a design program.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Screenshots of the Brex Apple App Store Listing Page"
+  caption="Screenshots of the Brex Apple App Store Listing Page."
   src="/static/images/guides/brex-screenshots.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 ### Option 3: make it fancy
@@ -52,17 +57,23 @@ In this option, on the app store pages, you can incorporate elements of your app
 
 **Cons:** Need an experienced designer to create and maintain the assets.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Screenshots of the MS Office Apple Store Listing Page"
+  caption="Screenshots of the MS Office Apple Store Listing Page."
   src="/static/images/guides/office-screenshots.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 ## Google Play Store Asset Requirements
 
 Google has specific requirements for the store asset format and dimensions, which are different from Apple's. For the most up-to-date specifications, see [official documentation](https://support.google.com/googleplay/android-developer/answer/9866151) for detailed requirements for your Google Play Store assets.
 
-See our [Figma Template](https://www.figma.com/community/file/1352686667495694112) for a summary of the minimum asset requirements.
+<BoxLink
+  Icon={FigmaIcon}
+  title="Store assets Figma template"
+  description="See our template for a summary of the minimum asset requirements."
+  href="https://www.figma.com/community/file/1352686667495694112"
+/>
 
 ### App icon
 
@@ -84,7 +95,12 @@ You can add one preview video to your Store Listing. The video needs to be uploa
 
 For the iOS App Store, you can upload screenshots (images) and previews (videos). For each, Apple requires specific widths and heights. Make sure to reference the [Screenshot specifications from Apple](https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/) for the exact sizing. Even a single pixel-off will mean you cannot submit the images.
 
-See our [Figma Template](https://www.figma.com/community/file/1352686667495694112) for a summary of the minimum asset requirements.
+<BoxLink
+  Icon={FigmaIcon}
+  title="Store aseets Figma template"
+  description="See our template for a summary of the minimum asset requirements."
+  href="https://www.figma.com/community/file/1352686667495694112"
+/>
 
 ### Screenshots
 

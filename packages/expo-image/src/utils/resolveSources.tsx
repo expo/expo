@@ -1,6 +1,9 @@
+import { Platform } from 'expo-modules-core';
+
 import resolveAssetSource from './resolveAssetSource';
 import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
 import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
+import { isImageRef } from '../utils';
 
 export function isBlurhashString(str: string): boolean {
   return /^(blurhash:\/)+[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
@@ -43,6 +46,10 @@ function resolveSource(source?: ImageSource | string | number | null): ImageSour
 export function resolveSources(sources?: ImageProps['source']): ImageNativeProps['source'] {
   if (Array.isArray(sources)) {
     return sources.map(resolveSource).filter(Boolean) as ImageSource[];
+  }
+  if (isImageRef(sources) && Platform.OS !== 'web') {
+    // @ts-expect-error
+    return sources.__expo_shared_object_id__;
   }
   return [resolveSource(sources)].filter(Boolean) as ImageSource[];
 }

@@ -23,7 +23,8 @@ public:
    * @param args
    * @return result of the Kotlin function
    */
-  jni::local_ref<jni::JObject> invoke(
+  static jni::local_ref<jni::JObject> invoke(
+    jobject self,
     jobjectArray args
   );
 };
@@ -42,7 +43,8 @@ public:
    * @param args
    * @param promise that will be resolve or rejected in the Kotlin's implementation
    */
-  void invoke(
+  static void invoke(
+    jobject self,
     jobjectArray args,
     jobject promise
   );

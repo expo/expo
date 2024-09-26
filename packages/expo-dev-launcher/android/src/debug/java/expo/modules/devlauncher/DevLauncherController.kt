@@ -10,10 +10,10 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.DevLauncherUrl
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
 import expo.modules.devlauncher.helpers.hasUrlQueryParam
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
@@ -56,8 +56,8 @@ import org.koin.dsl.module
 private val DEV_LAUNCHER_HOST: String? = null
 
 private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
-  Intent.FLAG_ACTIVITY_CLEAR_TASK or
-  Intent.FLAG_ACTIVITY_NO_ANIMATION
+    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+    Intent.FLAG_ACTIVITY_NO_ANIMATION
 
 class DevLauncherController private constructor() :
   DevLauncherKoinComponent, DevLauncherControllerInterface {
@@ -157,7 +157,7 @@ class DevLauncherController private constructor() :
       manifest = appLoaderFactory.getManifest()
       manifestURL = parsedUrl
 
-      setupDevMenu()
+      setupDevMenu(url.toString())
 
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
@@ -292,14 +292,16 @@ class DevLauncherController private constructor() :
     }
   }
 
-  private fun setupDevMenu() {
+  private fun setupDevMenu(launchUrl: String) {
     devMenuManager.currentManifest = manifest
     devMenuManager.currentManifestURL = manifestURL.toString()
+    devMenuManager.launchUrl = launchUrl
   }
 
   private fun invalidateDevMenu() {
     devMenuManager.currentManifest = null
     devMenuManager.currentManifestURL = null
+    devMenuManager.launchUrl = null
   }
 
   @UiThread

@@ -1,4 +1,4 @@
-import { type ModPlatform } from '@expo/config-plugins';
+import { type ModPlatform } from 'expo/config-plugins';
 export interface WorkingDirectories {
     /** Root directory for all the working directories */
     rootDir: string;

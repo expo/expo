@@ -14,8 +14,8 @@ Provides the same interface as the React Native [StatusBar API](https://reactnat
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/status-bar.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/status-bar/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/status-bar/)
 
 # Installation in managed Expo projects
 
@@ -29,13 +29,13 @@ Please refer to the [React Native StatusBar API documentation](https://reactnati
 npm install expo-status-bar
 ```
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
 ### Configure for Android
 
 No additional setup necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

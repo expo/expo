@@ -19,6 +19,7 @@ exports.getUpdatesEnabled = getUpdatesEnabled;
 exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
+exports.getUpdatesUseEmbeddedUpdate = getUpdatesUseEmbeddedUpdate;
 exports.resolveRuntimeVersionPolicyAsync = resolveRuntimeVersionPolicyAsync;
 function _sdkRuntimeVersions() {
   const data = require("@expo/sdk-runtime-versions");
@@ -156,6 +157,12 @@ function getUpdatesEnabled(config) {
     return config.updates.enabled;
   }
   return getUpdateUrl(config) !== null;
+}
+function getUpdatesUseEmbeddedUpdate(config) {
+  if (config.updates?.useEmbeddedUpdate !== undefined) {
+    return config.updates.useEmbeddedUpdate;
+  }
+  return true;
 }
 function getUpdatesTimeout(config) {
   return config.updates?.fallbackToCacheTimeout ?? 0;

@@ -86,7 +86,7 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   fun setSessionAsync(session: ReadableMap, promise: Promise) {
     try {
-      val sessionJsonObject = JSONObject(session.toHashMap())
+      val sessionJsonObject = JSONObject(session.toHashMap() as Map<*, *>?)
       exponentSharedPreferences.updateSession(sessionJsonObject)
       promise.resolve(null)
     } catch (e: Exception) {

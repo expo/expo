@@ -88,6 +88,15 @@ final class SharedObjectSpec: ExpoSpec {
         ])
         expect(releaseFunction.kind) == .function
       }
+
+      it("returns this") {
+        let isReturningItself = try runtime.eval([
+          "sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()",
+          "sharedObject === sharedObject.returnThis()"
+        ])
+        expect(isReturningItself.kind) == .bool
+        expect(try isReturningItself.asBool()) == true
+      }
     }
 
     describe("Native object") {
@@ -133,6 +142,9 @@ private class SharedObjectModule: Module {
     Class(SharedObjectExample.self) {
       Constructor {
         return SharedObjectExample()
+      }
+      Function("returnThis") { (this: SharedObjectExample) -> SharedObjectExample in
+        return this
       }
     }
   }

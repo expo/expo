@@ -28,7 +28,7 @@ func createRecurrenceRule(rule: RecurrenceRule) -> EKRecurrenceRule? {
   guard ["daily", "weekly", "monthly", "yearly"].contains(rule.frequency) else {
     return nil
   }
-  var endDate = parse(date: rule.endDate)
+  let endDate = parse(date: rule.endDate)
 
   let daysOfTheWeek = rule.daysOfTheWeek?.map { day in
     EKRecurrenceDayOfWeek(day.dayOfTheWeek.toEKType(), weekNumber: day.weekNumber)

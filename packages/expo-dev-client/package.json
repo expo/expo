@@ -30,7 +30,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.dev/clients/introduction/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
   "dependencies": {
     "expo-dev-launcher": "4.0.15",
     "expo-dev-menu": "5.0.14",

@@ -133,6 +133,7 @@ exceptions:
   - '.*Keychain.*'
   - '.*Kotlin.*'
   - '.*layout.*'
+  - '.*Legend-State.*'
   - '.*Library.*'
   - '.*Link.*'
   - '.*Linking.*'
@@ -156,6 +157,7 @@ exceptions:
   - '.*OTA.*'
   - '.*OTF.*'
   - '.*Organizations.*'
+  - '.*Optional.*'
   - '.*Package.*'
   - '.*Personal Accounts.*'
   - '.*Performance Monitor.*'
@@ -251,3 +253,4 @@ exceptions:
   - (experimental support)
   - How can I implement a custom
   - Drizzle ORM
+  - architecture?

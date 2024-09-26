@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
-import { shadows, theme, typography } from '@expo/styleguide';
+import { shadows, theme, typography, mergeClasses } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { slug } from 'github-slugger';
 import type { ComponentType } from 'react';
-import { Fragment } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
@@ -16,18 +16,19 @@ import { Code as PrismCodeBlock } from '~/components/base/code';
 import {
   CommentContentData,
   CommentData,
+  DefaultPropsDefinitionData,
   MethodDefinitionData,
   MethodParamData,
   MethodSignatureData,
   PropData,
   TypeDefinitionData,
+  TypeParameterData,
   TypePropertyDataFlags,
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { tableWrapperStyle } from '~/ui/components/Table/Table';
 import { Tag } from '~/ui/components/Tag';
 import {
   A,
@@ -43,6 +44,7 @@ import {
   DEMI,
   CALLOUT,
   createTextComponent,
+  SPAN,
 } from '~/ui/components/Text';
 import { TextElement } from '~/ui/components/Text/types';
 
@@ -58,6 +60,7 @@ export enum TypeDocKind {
   Property = 1024,
   Method = 2048,
   Parameter = 32768,
+  TypeParameter = 131072,
   Accessor = 262144,
   TypeAlias = 2097152,
   TypeAlias_Legacy = 4194304,
@@ -78,7 +81,8 @@ export const mdComponents: MDComponents = {
     ) : (
       <CODE css={css({ display: 'inline' })}>{children}</CODE>
     ),
-  h1: ({ children }) => <H4>{children}</H4>,
+  pre: ({ children }) => <>{children}</>,
+  h1: ({ children }) => <H4 hideInSidebar>{children}</H4>,
   ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
   ol: ({ children }) => <OL className={ELEMENT_SPACING}>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
@@ -130,7 +134,6 @@ const nonLinkableTypes = [
   'Parameters',
   'ParsedQs',
   'ServiceActionResult',
-  'SharedObject',
   'T',
   'TaskOptions',
   'TEventsMap',
@@ -187,7 +190,8 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
-  File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
+  // Conflicts with the File class from expo-file-system@next. TODO: Fix this.
+  // File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
   IterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
@@ -218,9 +222,40 @@ const hardcodedTypeLinks: Record<string, string> = {
   WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
 };
 
-const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string>> = {
+const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
   'v49.0.0': {
     Manifest: '/versions/v49.0.0/sdk/constants/#manifest',
+    SharedObject: null,
+  },
+  'v50.0.0': {
+    SharedObject: null,
+  },
+  '51.0.0': {
+    SharedObject: null,
+  },
+  'v52.0.0': {
+    EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
+    NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
+    SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
+    SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
+  },
+  'v53.0.0': {
+    EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
+    NativeModule: '/versions/v53.0.0/sdk/expo/#nativemodule',
+    SharedObject: '/versions/v53.0.0/sdk/expo/#sharedobject',
+    SharedRef: '/versions/v53.0.0/sdk/expo/#sharedref',
+  },
+  latest: {
+    EventEmitter: '/versions/latest/sdk/expo/#eventemitter',
+    NativeModule: '/versions/latest/sdk/expo/#nativemodule',
+    SharedObject: '/versions/latest/sdk/expo/#sharedobject',
+    SharedRef: '/versions/latest/sdk/expo/#sharedref',
+  },
+  unversioned: {
+    EventEmitter: '/versions/unversioned/sdk/expo/#eventemitter',
+    NativeModule: '/versions/unversioned/sdk/expo/#nativemodule',
+    SharedObject: '/versions/unversioned/sdk/expo/#sharedobject',
+    SharedRef: '/versions/unversioned/sdk/expo/#sharedref',
   },
 };
 
@@ -236,7 +271,7 @@ const renderWithLink = ({
 }: {
   name: string;
   type?: string;
-  typePackage: string | undefined;
+  typePackage?: string;
   sdkVersion: string;
 }) => {
   const replacedName = replaceableTypes[name] ?? name;
@@ -254,20 +289,19 @@ const renderWithLink = ({
     );
   }
 
-  return nonLinkableTypes.includes(replacedName) ? (
-    replacedName + (type === 'array' ? '[]' : '')
-  ) : (
-    <A
-      href={
-        sdkVersionHardcodedTypeLinks[sdkVersion]?.[replacedName] ??
-        hardcodedTypeLinks[replacedName] ??
-        `#${replacedName.toLowerCase()}`
-      }
-      key={`type-link-${replacedName}`}>
-      {replacedName}
-      {type === 'array' && '[]'}
-    </A>
-  );
+  const hardcodedHref =
+    sdkVersionHardcodedTypeLinks[sdkVersion]?.[replacedName] ?? hardcodedTypeLinks[replacedName];
+
+  if (hardcodedHref || !nonLinkableTypes.includes(replacedName)) {
+    return (
+      <A href={hardcodedHref ?? `#${replacedName.toLowerCase()}`} key={`type-link-${replacedName}`}>
+        {replacedName}
+        {type === 'array' && '[]'}
+      </A>
+    );
+  }
+
+  return replacedName + (type === 'array' ? '[]' : '');
 };
 
 const renderUnion = (types: TypeDefinitionData[], { sdkVersion }: { sdkVersion: string }) =>
@@ -301,6 +335,7 @@ export const resolveTypeName = (
     operator,
     objectType,
     indexType,
+    target,
   } = typeDefinition;
 
   try {
@@ -390,14 +425,14 @@ export const resolveTypeName = (
             ))}
             <span className="text-quaternary">)</span>{' '}
             <span className="text-quaternary">{'=>'}</span>{' '}
-            {resolveTypeName(baseSignature.type, sdkVersion)}
+            {baseSignature.type ? resolveTypeName(baseSignature.type, sdkVersion) : 'undefined'}
           </>
         );
       } else {
         return (
           <>
             <span className="text-quaternary">{'() =>'}</span>{' '}
-            {resolveTypeName(baseSignature.type, sdkVersion)}
+            {baseSignature.type ? resolveTypeName(baseSignature.type, sdkVersion) : 'undefined'}
           </>
         );
       }
@@ -451,9 +486,18 @@ export const resolveTypeName = (
       }
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
+      if (target && operator && ['readonly', 'keyof'].includes(operator)) {
+        return (
+          <>
+            {operator} {resolveTypeName(target, sdkVersion)}
+          </>
+        );
+      }
       return operator || 'undefined';
     } else if (type === 'intrinsic') {
       return name || 'undefined';
+    } else if (type === 'rest' && elementType) {
+      return `...${resolveTypeName(elementType, sdkVersion)}`;
     } else if (value === null) {
       return 'null';
     }
@@ -468,7 +512,8 @@ export const parseParamName = (name: string) => (name.startsWith('__') ? name.su
 
 export const renderParamRow = (
   { comment, name, type, flags, defaultValue }: MethodParamData,
-  sdkVersion: string
+  sdkVersion: string,
+  showDescription?: boolean
 ): JSX.Element => {
   const defaultData = getTagData('default', comment);
   const initValue = parseCommentContent(
@@ -486,23 +531,25 @@ export const renderParamRow = (
       <Cell>
         <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </Cell>
-      <Cell>
-        <CommentTextBlock
-          comment={comment}
-          afterContent={renderDefaultValue(initValue)}
-          emptyCommentFallback="-"
-        />
-      </Cell>
+      {showDescription && (
+        <Cell>
+          <CommentTextBlock
+            comment={comment}
+            afterContent={renderDefaultValue(initValue)}
+            emptyCommentFallback="-"
+          />
+        </Cell>
+      )}
     </Row>
   );
 };
 
-export const ParamsTableHeadRow = () => (
+export const ParamsTableHeadRow = ({ hasDescription = true }) => (
   <TableHead>
     <Row>
-      <HeaderCell>Name</HeaderCell>
-      <HeaderCell>Type</HeaderCell>
-      <HeaderCell>Description</HeaderCell>
+      <HeaderCell size="sm">Name</HeaderCell>
+      <HeaderCell size="sm">Type</HeaderCell>
+      {hasDescription && <HeaderCell size="sm">Description</HeaderCell>}
     </Row>
   </TableHead>
 );
@@ -519,33 +566,40 @@ function createInheritPermalink(baseNestingLevel: number) {
 
 export const BoxSectionHeader = ({
   text,
+  Icon,
   exposeInSidebar,
   className,
   baseNestingLevel = DEFAULT_BASE_NESTING_LEVEL,
 }: {
   text: string;
+  Icon?: ComponentType<any>;
   exposeInSidebar?: boolean;
   className?: string;
   baseNestingLevel?: number;
 }) => {
-  const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : Fragment;
+  const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : SPAN;
   return (
-    <CALLOUT
-      theme="secondary"
-      weight="medium"
-      css={STYLES_NESTED_SECTION_HEADER}
-      className={className}>
-      <TextWrapper>{text}</TextWrapper>
+    <CALLOUT css={STYLES_NESTED_SECTION_HEADER} className={className}>
+      <TextWrapper
+        theme="secondary"
+        weight="medium"
+        className="text-inherit flex flex-row gap-2 items-center">
+        {Icon && <Icon className="icon-sm text-icon-secondary" />}
+        {text}
+      </TextWrapper>
     </CALLOUT>
   );
 };
 
-export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => (
-  <Table>
-    <ParamsTableHeadRow />
-    <tbody>{parameters?.map(p => renderParamRow(p, sdkVersion))}</tbody>
-  </Table>
-);
+export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
+  const hasDescription = Boolean(parameters.find(param => param.comment));
+  return (
+    <Table>
+      <ParamsTableHeadRow hasDescription={hasDescription} />
+      <tbody>{parameters?.map(p => renderParamRow(p, sdkVersion, hasDescription))}</tbody>
+    </Table>
+  );
+};
 
 export const listParams = (parameters: MethodParamData[]) =>
   parameters
@@ -648,7 +702,22 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
   getAllTagData(tagName, comment)?.[0];
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
-  comment?.blockTags?.filter(tag => tag.tag.substring(1) === tagName);
+  [...(comment?.blockTags ?? []), ...(comment?.modifierTags ?? [])]
+    .map(tag => {
+      if (typeof tag === 'string') {
+        return {
+          tag,
+          content: [
+            {
+              text: tag.substring(1),
+              tag,
+            } as CommentContentData,
+          ],
+        };
+      }
+      return tag;
+    })
+    .filter(tag => tag.tag.substring(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
@@ -659,14 +728,26 @@ export const getTagNamesList = (comment?: CommentData) =>
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
 
+export function getTypeParametersNames(typeParameters?: TypeParameterData[]) {
+  if (typeParameters?.length) {
+    return `<${typeParameters.map(param => param.name).join(', ')}>`;
+  }
+  return '';
+}
+
 export const getMethodName = (
   method: MethodDefinitionData,
   apiName?: string,
   name?: string,
-  parameters?: MethodParamData[]
+  parameters?: MethodParamData[],
+  typeParameters?: TypeParameterData[]
 ) => {
   const isProperty = method.kind === TypeDocKind.Property && !parameters?.length;
-  const methodName = ((apiName && `${apiName}.`) ?? '') + (method.name || name);
+  const methodName =
+    ((apiName && `${apiName}.`) ?? '') +
+    (method.name || name) +
+    getTypeParametersNames(typeParameters);
+
   if (!isProperty) {
     return `${methodName}(${parameters ? listParams(parameters) : ''})`;
   }
@@ -720,23 +801,24 @@ export const CommentTextBlock = ({
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <Fragment key={'example-' + index}>
+    <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:mb-0')}>
       {inlineHeaders ? (
-        <DEMI theme="secondary" className="my-2">
+        <DEMI theme="secondary" className="flex flex-row gap-1.5 items-center mb-1.5">
+          <CodeSquare01Icon className="icon-sm" />
           Example
         </DEMI>
       ) : (
-        <BoxSectionHeader text="Example" />
+        <BoxSectionHeader text="Example" className="!mt-1" Icon={CodeSquare01Icon} />
       )}
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {getCommentContent(example.content)}
       </ReactMarkdown>
-    </Fragment>
+    </div>
   ));
 
   const see = getTagData('see', comment);
   const seeText = see && (
-    <Callout>
+    <Callout className={`!${ELEMENT_SPACING}`}>
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
         {`**See:** ` + getCommentContent(see.content)}
       </ReactMarkdown>
@@ -747,7 +829,12 @@ export const CommentTextBlock = ({
 
   return (
     <>
-      {includePlatforms && hasPlatforms && <APISectionPlatformTags comment={comment} />}
+      {includePlatforms && hasPlatforms && (
+        <APISectionPlatformTags
+          comment={comment}
+          prefix={emptyCommentFallback ? 'Only for:' : undefined}
+        />
+      )}
       {paramTags && (
         <>
           <DEMI theme="secondary">Only for:&ensp;</DEMI>
@@ -759,6 +846,7 @@ export const CommentTextBlock = ({
       {beforeContent}
       {parsedContent}
       {afterContent}
+      {afterContent && !exampleText && <br />}
       {seeText}
       {exampleText}
     </>
@@ -783,15 +871,32 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
   return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
+export function getPossibleComponentPropsNames(name?: string, children: PropData[] = []) {
+  const componentName = getComponentName(name, children);
+  return [`${componentName}Props`, `${componentName.replace('View', '')}Props`];
+}
+
+export function extractDefaultPropValue(
+  { comment, name }: PropData,
+  defaultProps?: DefaultPropsDefinitionData
+) {
+  const annotationDefault = getTagData('default', comment);
+  if (annotationDefault) {
+    return getCommentContent(annotationDefault.content);
+  }
+  return defaultProps?.type?.declaration?.children?.filter(
+    (defaultProp: PropData) => defaultProp.name === name
+  )[0]?.defaultValue;
+}
+
 export const STYLES_APIBOX = css({
-  borderRadius: borderRadius.md,
+  borderRadius: borderRadius.lg,
   borderWidth: 1,
   borderStyle: 'solid',
-  borderColor: theme.border.default,
+  borderColor: theme.border.secondary,
   padding: spacing[5],
   boxShadow: shadows.xs,
   marginBottom: spacing[6],
-  overflowX: 'hidden',
 
   h3: {
     marginBottom: spacing[2.5],
@@ -802,15 +907,15 @@ export const STYLES_APIBOX = css({
   },
 
   th: {
-    color: theme.text.secondary,
-    padding: `${spacing[3]}px ${spacing[4]}px`,
+    color: theme.text.tertiary,
+    padding: `${spacing[2.5]}px ${spacing[4]}px`,
   },
 
   li: {
     marginBottom: 0,
   },
 
-  [`.css-${tableWrapperStyle.name}`]: {
+  [`.table-wrapper`]: {
     boxShadow: 'none',
     marginBottom: 0,
   },
@@ -831,10 +936,10 @@ export const STYLES_APIBOX_NESTED = css({
 });
 
 export const STYLES_APIBOX_WRAPPER = css({
-  marginBottom: spacing[4],
+  marginBottom: spacing[3.5],
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
-  [`.css-${tableWrapperStyle.name}:last-child`]: {
+  [`.table-wrapper:last-child`]: {
     marginBottom: spacing[4],
   },
 });
@@ -853,6 +958,10 @@ export const STYLES_NESTED_SECTION_HEADER = css({
     marginBottom: 0,
     marginTop: 0,
     color: theme.text.secondary,
+  },
+
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    marginInline: -spacing[4],
   },
 });
 

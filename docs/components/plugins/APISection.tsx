@@ -13,7 +13,7 @@ import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import {
   getCommentContent,
-  getComponentName,
+  getPossibleComponentPropsNames,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -28,12 +28,6 @@ type Props = {
   forceVersion?: string;
   testRequire?: any;
   headersMapping?: Record<string, string>;
-
-  /**
-   * Whether to expose all classes props in the sidebar.
-   * @default true when the api has only one class, false otherwise.
-   */
-  exposeAllClassPropsInSidebar?: boolean;
 };
 
 const filterDataByKind = (
@@ -106,7 +100,6 @@ const renderAPI = (
     apiName,
     testRequire = undefined,
     headersMapping = {},
-    ...restProps
   }: Omit<Props, 'forceVersion'>
 ): JSX.Element => {
   try {
@@ -196,9 +189,10 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components.map(
-      ({ name, children }) => `${getComponentName(name, children)}Props`
-    );
+    const componentsPropNames = components
+      .map(({ name, children }) => getPossibleComponentPropsNames(name, children))
+      .flat();
+
     const componentsProps = filterDataByKind(
       props,
       [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
@@ -283,11 +277,7 @@ const renderAPI = (
         />
         <APISectionConstants data={constants} apiName={apiName} sdkVersion={sdkVersion} />
         <APISectionMethods data={hooks} header="Hooks" sdkVersion={sdkVersion} />
-        <APISectionClasses
-          data={classes}
-          sdkVersion={sdkVersion}
-          exposeAllClassPropsInSidebar={restProps.exposeAllClassPropsInSidebar}
-        />
+        <APISectionClasses data={classes} sdkVersion={sdkVersion} />
         {props && !componentsProps.length ? (
           <APISectionProps data={props} sdkVersion={sdkVersion} defaultProps={defaultProps} />
         ) : null}

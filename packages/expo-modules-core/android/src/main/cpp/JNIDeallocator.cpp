@@ -6,7 +6,7 @@ namespace expo {
 
 void JNIDeallocator::addReference(
   jni::local_ref<Destructible::javaobject> jniObject
-) {
+) noexcept {
   const static auto method = JNIDeallocator::javaClassLocal()
     ->getMethod<void(jni::local_ref<Destructible>)>(
       "addReference"

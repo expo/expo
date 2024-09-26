@@ -42,7 +42,7 @@ jobs:
           author_name: Check for Changes in Bare Diffs
       - name: 💾 Store artifacts of diff failures
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: template-bare-minimum-bare-diff-failure
           path: docs/public/static/diffs/template-bare-minimum/raw

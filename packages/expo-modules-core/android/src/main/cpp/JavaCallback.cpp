@@ -5,9 +5,13 @@
 #include "types/JNIToJSIConverter.h"
 #include "Exceptions.h"
 
+#include "JSIUtils.h"
+#include "JNIUtils.h"
+
 #include <fbjni/fbjni.h>
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
 
 #include <functional>
 
@@ -59,8 +63,12 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeString),
                    makeNativeMethod("invokeNative", JavaCallback::invokeArray),
                    makeNativeMethod("invokeNative", JavaCallback::invokeMap),
-                   makeNativeMethod("invokeNative", JavaCallback::invokeSharedRef),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeSharedObject),
                    makeNativeMethod("invokeNative", JavaCallback::invokeError),
+                   makeNativeMethod("invokeIntArray", JavaCallback::invokeIntArray),
+                   makeNativeMethod("invokeLongArray", JavaCallback::invokeLongArray),
+                   makeNativeMethod("invokeFloatArray", JavaCallback::invokeFloatArray),
+                   makeNativeMethod("invokeDoubleArray", JavaCallback::invokeDoubleArray),
                  });
 }
 
@@ -76,7 +84,7 @@ jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
 
 template<typename T>
 void JavaCallback::invokeJSFunction(
-  ArgsConverter<T> argsConverter,
+  ArgsConverter<typename std::remove_const<T>::type> argsConverter,
   T arg
 ) {
   const auto strongCallbackContext = this->callbackContext.lock();
@@ -125,9 +133,22 @@ void JavaCallback::invokeJSFunction(T arg) {
       jsi::Function &jsFunction,
       T arg
     ) {
-      jsFunction.call(rt, {jsi::Value(rt, arg)});
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::forward<T>(arg)));
     },
     arg
+  );
+}
+
+template<class T>
+void JavaCallback::invokeJSFunctionForArray(T &arg) {
+  size_t size = arg->size();
+  auto region = arg->getRegion((jsize)0, size);
+  RawArray<typename decltype(region)::element_type> rawArray;
+  rawArray.size = size;
+  rawArray.data = std::move(region);
+
+  invokeJSFunction<decltype(rawArray)>(
+    std::move(rawArray)
   );
 }
 
@@ -161,118 +182,35 @@ void JavaCallback::invokeFloat(float result) {
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  invokeJSFunction<std::string>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      std::string arg
-    ) {
-      std::optional<jsi::Value> extendedString = convertStringToFollyDynamicIfNeeded(
-        rt,
-        arg
-      );
-
-      if (extendedString.has_value()) {
-        const jsi::Value &jsValue = extendedString.value();
-        jsFunction.call(
-          rt,
-          (const jsi::Value *) &jsValue,
-          (size_t) 1
-        );
-        return;
-      }
-
-      jsFunction.call(rt, {jsi::String::createFromUtf8(rt, arg)});
-    },
-    result->toStdString()
-  );
+  invokeJSFunction(result->toStdString());
 }
 
 void JavaCallback::invokeArray(jni::alias_ref<react::WritableNativeArray::javaobject> result) {
-  invokeJSFunction<folly::dynamic>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      folly::dynamic arg
-    ) {
-      jsi::Value convertedArg = jsi::valueFromDynamic(rt, arg);
-      auto enhancedArg = decorateValueForDynamicExtension(rt, convertedArg);
-      if (enhancedArg) {
-        convertedArg = std::move(*enhancedArg);
-      }
-
-      jsFunction.call(
-        rt,
-        (const jsi::Value *) &convertedArg,
-        (size_t) 1
-      );
-    },
-    result->cthis()->consume()
-  );
+  invokeJSFunction(result->cthis()->consume());
 }
 
 void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result) {
-  invokeJSFunction<folly::dynamic>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      folly::dynamic arg
-    ) {
-      jsi::Value convertedArg = jsi::valueFromDynamic(rt, arg);
-      auto enhancedArg = decorateValueForDynamicExtension(rt, convertedArg);
-      if (enhancedArg) {
-        convertedArg = std::move(*enhancedArg);
-      }
-
-      jsFunction.call(
-        rt,
-        (const jsi::Value *) &convertedArg,
-        (size_t) 1
-      );
-    },
-    result->cthis()->consume()
-  );
+  invokeJSFunction(result->cthis()->consume());
 }
 
-void JavaCallback::invokeSharedRef(jni::alias_ref<SharedRef::javaobject> result) {
-  invokeJSFunction<jni::global_ref<SharedRef::javaobject>>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      jni::global_ref<SharedRef::javaobject> arg
-    ) {
-      const auto jsiContext = getJSIContext(rt);
-      auto native = jni::make_local(arg);
+void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result) {
+  invokeJSFunction(jni::make_global(result));
+}
 
-      auto jsClass = jsiContext->getJavascriptClass(native->getClass());
-      auto jsObject = jsClass
-        ->cthis()
-        ->get()
-        ->asFunction(rt)
-        .callAsConstructor(rt)
-        .asObject(rt);
+void JavaCallback::invokeIntArray(jni::alias_ref<jni::JArrayInt> result) {
+  invokeJSFunctionForArray(result);
+}
 
-      auto objSharedPtr = std::make_shared<jsi::Object>(std::move(jsObject));
-      auto jsObjectInstance = JavaScriptObject::newInstance(
-        jsiContext,
-        jsiContext->runtimeHolder,
-        objSharedPtr
-      );
-      jni::local_ref<JavaScriptObject::javaobject> jsRef = jni::make_local(
-        jsObjectInstance
-      );
-      jsiContext->registerSharedObject(native, jsRef);
+void JavaCallback::invokeLongArray(jni::alias_ref<jni::JArrayLong> result) {
+  invokeJSFunctionForArray(result);
+}
 
-      auto ret = jsi::Value(rt, *objSharedPtr);
+void JavaCallback::invokeDoubleArray(jni::alias_ref<jni::JArrayDouble> result) {
+  invokeJSFunctionForArray(result);
+}
 
-      jsFunction.call(
-        rt,
-        (const jsi::Value *) &ret,
-        (size_t) 1
-      );
-    },
-    jni::make_global(result)
-  );
+void JavaCallback::invokeFloatArray(jni::alias_ref<jni::JArrayFloat> result) {
+  invokeJSFunctionForArray(result);
 }
 
 void JavaCallback::invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage) {

@@ -3,13 +3,12 @@ title: Wrap third-party native libraries
 description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules.
 ---
 
-import { CODE } from '~/ui/components/Text';
 import { Collapsible } from '~/ui/components/Collapsible';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon, Grid01Icon } from '@expo/styleguide-icons';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
 
 Expo modules make it possible to easily use native, external libraries built for Android and iOS in React Native projects.
 This tutorial focuses on utilizing the Expo Modules API to create radial charts using two similar libraries accessible on both native platforms.
@@ -19,6 +18,10 @@ This tutorial focuses on utilizing the Expo Modules API to create radial charts 
 
 The iOS library is inspired by the Android library, so they both have a very similar API and functionality.
 This makes them a good example for this tutorial.
+
+## How to wrap native libraries video tutorial
+
+<ContentSpotlight url="https://www.youtube.com/embed/M8eNfH1o0eE" />
 
 <Step label="1">
 
@@ -92,7 +95,7 @@ dependencies {
     s.static_framework = true
 
     s.dependency 'ExpoModulesCore'
-+   s.dependency 'Charts', '~> 4.1.0'
++   s.dependency 'DGCharts', '~> 5.1.0'
 
     # Swift/Objective-C compatibility
 ```
@@ -112,7 +115,34 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 
 <Collapsible summary={<>Are you trying to use a <CODE>.aar</CODE> dependency?</>}>
 
-Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the folder as a repository:
+<Tabs>
+  <Tab label="SDK 52 and above">
+    Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the file as a Gradle project from autolinking:
+
+```diff expo-module.config.json
+    "android": {
++     "gradleAarProjects": [
++       {
++         "name": "test-aar",
++         "aarFilePath": "android/libs/test.aar"
++       }
++     ],
+    "modules": [
+```
+
+    Finally, add the dependency to the `dependencies` list in the **android/build.gradle** file, using the dependency's specified name with `${project.name}$` prefix:
+
+```diff android/build.gradle
+dependencies {
+  implementation project(':expo-modules-core')
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
++ implementation project(":${project.name}\$test-aar")
+}
+```
+
+  </Tab>
+  <Tab label="SDK 51 and below">
+    Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the folder as a repository:
 
 ```diff android/build.gradle
   repositories {
@@ -132,6 +162,9 @@ dependencies {
 + implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0@aar'
 }
 ```
+
+  </Tab>
+</Tabs>
 
 </Collapsible>
 
@@ -261,7 +294,7 @@ Now you can implement the native functionality by editing the placeholder files 
 
 ```swift ios/ExpoRadialChartView.swift
 import ExpoModulesCore
-import Charts
+import DGCharts
 
 struct Series: Record {
   @Field
@@ -365,7 +398,7 @@ const styles = StyleSheet.create({
 
 To make sure your app builds successfully on both platforms, rerun the build commands from step 2. After the app is successfully built on any of the platform you'll see a pie chart with three slices:
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/modules/third-party-library/result.webp"
   alt="A PieChart module on Android and iOS"
 />

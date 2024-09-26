@@ -1,4 +1,5 @@
-import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import type { AnchorHTMLAttributes, ComponentType, HTMLAttributes, ReactNode } from 'react';
 
 import { A, DEMI, CALLOUT } from '~/ui/components/Text';

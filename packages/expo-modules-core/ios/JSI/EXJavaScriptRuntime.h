@@ -23,9 +23,9 @@ typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
                                      RCTPromiseResolveBlock _Nonnull resolve,
                                      RCTPromiseRejectBlock _Nonnull reject);
 
-typedef id _Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
-                                            NSArray<EXJavaScriptValue *> * _Nonnull arguments,
-                                            NSError * _Nullable __autoreleasing * _Nullable error);
+typedef EXJavaScriptValue * _Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
+                                                             NSArray<EXJavaScriptValue *> * _Nonnull arguments,
+                                                             NSError * _Nullable __autoreleasing * _Nullable error);
 
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime,

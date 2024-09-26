@@ -121,9 +121,11 @@
   }
 
   NSString *description = [NSString stringWithFormat:@"Invalid URL provided, expected scheme to be either 'ph' or 'assets-library', was '%@'.", url.scheme];
-  *error = [[NSError alloc] initWithDomain:NSURLErrorDomain
-                                      code:NSURLErrorUnsupportedURL
-                                  userInfo:@{NSLocalizedDescriptionKey: description}];
+  if (error != NULL) {
+    *error = [[NSError alloc] initWithDomain:NSURLErrorDomain
+                                        code:NSURLErrorUnsupportedURL
+                                    userInfo:@{NSLocalizedDescriptionKey: description}];
+  }
   return nil;
 }
 

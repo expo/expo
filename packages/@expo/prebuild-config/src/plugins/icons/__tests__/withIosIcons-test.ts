@@ -9,6 +9,8 @@ import { getIcons, setIconsAsync } from '../withIosIcons';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 
+jest.setTimeout(30 * 1000);
+
 jest.mock('@expo/config-plugins', () => ({
   ...jest.requireActual<object>('@expo/config-plugins'),
   WarningAggregator: {

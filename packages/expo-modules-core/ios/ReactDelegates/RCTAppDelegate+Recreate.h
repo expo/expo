@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTAppDelegate (Recreate)
 
+#if !TARGET_OS_OSX
 /**
  Recreates a root view bound with customized bundleURL, moduleName, initialProps, and launchOptions.
  If any of these parameters is null, the method will use the original one from `RCTAppDelegate` or `RCTRootViewFactory`.
@@ -22,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
                                moduleName:(nullable NSString *)moduleName
                              initialProps:(nullable NSDictionary *)initialProps
                             launchOptions:(nullable NSDictionary *)launchOptions;
-
+#endif
 @end
 
 NS_ASSUME_NONNULL_END

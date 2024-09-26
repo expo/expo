@@ -10,6 +10,7 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const module_1 = require("module");
 const path_1 = __importDefault(require("path"));
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
+const utils_1 = require("./utils");
 const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
@@ -34,18 +35,8 @@ async function findModulesAsync(providedOptions) {
             const { name, version } = resolvePackageNameAndVersion(packagePath, {
                 fallbackToDirName: isNativeModulesDir,
             });
-            // Check if the project is using isolated modules, by checking
-            // if the parent dir of `packagePath` is a `node_modules` folder.
-            // Isolated modules installs dependencies in small groups such as:
-            //   - /.pnpm/expo@50.x.x(...)/node_modules/@expo/cli
-            //   - /.pnpm/expo@50.x.x(...)/node_modules/expo
-            //   - /.pnpm/expo@50.x.x(...)/node_modules/expo-application
-            // When isolated modules are detected, expand the `searchPaths`
-            // to include possible nested dependencies.
-            const maybeIsolatedModulesPath = path_1.default.join(packagePath, name.startsWith('@') && name.includes('/') ? '../..' : '..' // scoped packages are nested deeper
-            );
-            const isIsolatedModulesPath = path_1.default.basename(maybeIsolatedModulesPath) === 'node_modules';
-            if (isIsolatedModulesPath && !searchPaths.has(maybeIsolatedModulesPath)) {
+            const maybeIsolatedModulesPath = (0, utils_1.getIsolatedModulesPath)(packagePath, name);
+            if (maybeIsolatedModulesPath) {
                 searchPaths.add(maybeIsolatedModulesPath);
             }
             // we ignore the `exclude` option for custom native modules

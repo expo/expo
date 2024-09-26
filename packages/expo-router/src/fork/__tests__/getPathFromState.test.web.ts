@@ -66,3 +66,28 @@ describe('hash support', () => {
     expect(getPathFromState(state, config)).toBe('/hello-world?query=true#a');
   });
 });
+
+it(`handles url search params params`, () => {
+  const state = {
+    routes: [
+      {
+        name: 'index',
+        params: {
+          test: 'true',
+          hello: 'world',
+          array: ['1', '2'],
+        },
+        path: '/?test=true&hello=world&array=1&array=2',
+      },
+    ],
+  };
+
+  const config = {
+    screens: {
+      index: '',
+      _sitemap: '_sitemap',
+    },
+  };
+
+  expect(getPathFromState(state, config)).toBe('/?test=true&hello=world&array=1&array=2');
+});

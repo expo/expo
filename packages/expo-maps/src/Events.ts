@@ -11,14 +11,14 @@ import {
 } from './Common.types';
 import { NativeExpoAppleMapsModule, NativeExpoGoogleMapsModule } from './ExpoMaps';
 
-let module: ProxyNativeModule;
+let nativeModule: ProxyNativeModule;
 if (Platform.OS === 'ios') {
-  module = NativeExpoAppleMapsModule;
+  nativeModule = NativeExpoAppleMapsModule;
 } else {
-  module = NativeExpoGoogleMapsModule;
+  nativeModule = NativeExpoGoogleMapsModule;
 }
 
-const emitter = new LegacyEventEmitter(module);
+const emitter = new LegacyEventEmitter(nativeModule);
 
 const MapsEventsNames = {
   ON_MARKER_CLICK_EVENT: 'onMarkerClick',

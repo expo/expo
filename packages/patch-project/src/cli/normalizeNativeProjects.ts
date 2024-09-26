@@ -1,4 +1,4 @@
-import { IOSConfig, type ModPlatform, type XcodeProject } from '@expo/config-plugins';
+import { IOSConfig, type ModPlatform, type XcodeProject } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 

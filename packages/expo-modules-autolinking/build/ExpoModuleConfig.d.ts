@@ -1,4 +1,4 @@
-import { AndroidGradlePluginDescriptor, RawExpoModuleConfig, RawModuleConfigApple, SupportedPlatform } from './types';
+import { AndroidGradleAarProjectDescriptor, AndroidGradlePluginDescriptor, RawExpoModuleConfig, RawModuleConfigApple, SupportedPlatform } from './types';
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -49,6 +49,10 @@ export declare class ExpoModuleConfig {
      * Returns gradle plugins descriptors defined by the module author.
      */
     androidGradlePlugins(): AndroidGradlePluginDescriptor[];
+    /**
+     * Returns gradle projects containing AAR files defined by the module author.
+     */
+    androidGradleAarProjects(): AndroidGradleAarProjectDescriptor[];
     /**
      * Returns serializable raw config.
      */

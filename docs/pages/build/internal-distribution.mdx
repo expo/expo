@@ -9,13 +9,13 @@ import { Step } from '~/ui/components/Step';
 
 Uploading your app to TestFlight and Google Play beta can be time-consuming (for example, waiting for the build to run through static analysis before becoming available to testers) and limiting (for example, TestFlight can only have one active build at a time). Both Android and iOS provide alternative mechanisms to distribute apps directly to testers, so they can download and install them to physical devices directly from a web browser as soon as the builds are completed.
 
-EAS Build can help you with this by providing shareable URLs for your builds with instructions on how to get them running, so you can share a single URL with a teammate that'll include all of the information they need to test the app.
+EAS Build can help you with this by providing shareable URLs for your builds with instructions on how to get them running, so you can share a single URL with a teammate that'll include all the information they need to test the app.
 
 > Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to ad hoc and enterprise provisioning profiles. We'll talk more about this later in this doc.
 
 ## Setting up internal distribution
 
-The following steps will guide you through adding internal distribution to a project that is [already set up to build with EAS Build](setup.mdx). It will only take a few minutes in total to:
+The following steps will guide you through adding internal distribution to a project that is [already set up to build with EAS Build](/build/setup/). It will only take a few minutes in total to:
 
 - Configure the project
 - Add a couple of test iOS devices to a provisioning profile
@@ -105,7 +105,7 @@ The next step is to generate or update the provisioning profile. When you procee
 
 Apple Enterprise Program membership costs $299 USD per year and [not all organizations will be eligible](https://developer.apple.com/programs/enterprise/), so you will likely be using ad hoc provisioning, which works with any normal paid Apple Developer account.
 
-If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-registering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
+If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-registering their UDID. They just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
 
 If you distribute your app both through enterprise provisioning and the App Store, you will need to have a distinct bundle identifier for each context. We recommend either:
 
@@ -186,8 +186,9 @@ If a device is no longer in use, it can be removed from this list by running:
   ]}
   cmdCopy="eas device:delete"
 />
-This command will also prompt you to disable the device on the Apple Developer Portal. Disabled devices
-still count against [Apple's limit of 100 devices](https://developer.apple.com/support/account/#:~:text=Resetting%20your%20device%20list%20annually)
+This command will also prompt you to disable the device on the Apple Developer Portal. Disabled
+devices still count against [Apple's limit of 100
+devices](https://developer.apple.com/support/account/#:~:text=Resetting%20your%20device%20list%20annually)
 for ad hoc distribution per app.
 
 ### Rename devices

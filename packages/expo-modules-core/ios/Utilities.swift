@@ -60,11 +60,37 @@ internal func isFileUrlPath(_ path: String) -> Bool {
 }
 
 internal func convertToUrl(string value: String) -> URL? {
-  // URLComponents parses and constructs URLs according to RFC 3986.
-  // For some unusual urls URL(string:) will fail incorrectly
-  guard let url = URLComponents(string: value)?.url ?? URL(string: value) else {
+  let url: URL?
+  if #available(iOS 17, *) {
+    // URL(string:) supports RFC 3986 as URLComponents from iOS 17
+    url = URL(string: value)
+  } else if #available(iOS 16, *) {
+    // URLComponents parses and constructs URLs according to RFC 3986.
+    // For some unusual urls URL(string:) will fail incorrectly
+    url = URLComponents(string: value)?.url ?? URL(string: value)
+  } else {
+    // URLComponents on iOS 15 and lower does not well support RFC 3986.
+    // We have to fallback URL(fileURLWithPath:) first.
+    url = value.hasPrefix("/")
+      ? URL(fileURLWithPath: value)
+      : URLComponents(string: value)?.url ?? URL(string: value)
+  }
+
+  guard let url else {
     return nil
   }
   // If it has no scheme, we assume it was the file path which needs to be recreated to be recognized as the file url.
   return url.scheme != nil ? url : URL(fileURLWithPath: value)
+}
+
+/**
+ A collection of utility functions for various Expo Modules common tasks.
+ */
+public struct Utilities {
+  /**
+   Converts a `String` to a `URL`.
+   */
+  public static func urlFrom(string: String) -> URL? {
+    return convertToUrl(string: string)
+  }
 }

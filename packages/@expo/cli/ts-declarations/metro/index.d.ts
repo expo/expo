@@ -16,9 +16,106 @@ declare module 'metro/src/shared/output/bundle' {
   ): Promise<unknown>;
 }
 
+declare module 'metro/src/shared/types.flow' {
+  export type GraphOptions = {
+    lazy: boolean;
+    shallow: boolean;
+  };
+}
+declare module 'metro-runtime/src/modules/types.flow' {
+  export type HmrModule = {
+    module: [number, string];
+    sourceMappingURL: string;
+    sourceURL: string;
+  };
+
+  export type HmrUpdate = {
+    added: readonly HmrModule[];
+    deleted: readonly number[];
+    isInitialUpdate: boolean;
+    modified: readonly HmrModule[];
+    revisionId: string;
+  };
+
+  export type FormattedError = {
+    type: string;
+    message: string;
+    errors: { description: string }[];
+  };
+
+  export type HmrUpdateMessage = {
+    type: 'update';
+    body: HmrUpdate;
+  };
+
+  export type HmrErrorMessage = {
+    type: 'error';
+    body: FormattedError;
+  };
+}
+
 declare module 'metro/src/HmrServer' {
+  import type IncrementalBundler, { RevisionId } from 'metro/src/IncrementalBundler';
+  import type { ConfigT, RootPerfLogger } from 'metro-config';
+  import type { GraphOptions } from 'metro/src/shared/types.flow';
+  import type { UrlWithParsedQuery } from 'url';
+  import type { HmrErrorMessage, HmrUpdateMessage } from 'metro-runtime/src/modules/types.flow';
+
+  export type EntryPointURL = UrlWithParsedQuery;
+
+  export type Client = {
+    optedIntoHMR: boolean;
+    revisionIds: RevisionId[];
+    sendFn: (msg: string) => void;
+  };
+
+  type ClientGroup = {
+    clients: Set<Client>;
+    clientUrl: EntryPointURL;
+    revisionId: RevisionId;
+    unlisten: () => void;
+    graphOptions: GraphOptions;
+  };
+
   export class MetroHmrServer {
-    constructor(...args: any[]);
+    constructor(
+      bundler: IncrementalBundler,
+      createModuleId: (path: string) => number,
+      config: ConfigT
+    );
+
+    onClientConnect: (requestUrl: string, sendFn: (data: string) => void) => Promise<Client>;
+
+    onClientMessage: (
+      client: Client,
+      message: string | Buffer | ArrayBuffer | Buffer[],
+      sendFn: (data: string) => void
+    ) => Promise<void>;
+
+    onClientError: (client: Client, e: ErrorEvent) => void;
+    onClientDisconnect: (client: Client) => void;
+
+    async _registerEntryPoint(
+      client: Client,
+      requestUrl: string,
+      sendFn: (data: string) => void
+    ): Promise<void>;
+
+    async _handleFileChange(
+      group: ClientGroup,
+      options: { isInitialUpdate: boolean },
+      changeEvent?: {
+        logger?: RootPerfLogger;
+      }
+    ): Promise<void>;
+
+    async _prepareMessage(
+      group: ClientGroup,
+      options: { isInitialUpdate: boolean },
+      changeEvent?: {
+        logger?: RootPerfLogger;
+      }
+    ): Promise<HmrUpdateMessage | HmrErrorMessage>;
   }
 
   export default MetroHmrServer;
@@ -154,7 +251,7 @@ declare module 'metro/src/ModuleGraph/worker/JsFileWrapping' {
 }
 declare module 'metro/src/DeltaBundler' {
   import { SourceLocation } from '@babel/types';
-  export type AsyncDependencyType = 'async' | 'prefetch';
+  export type AsyncDependencyType = 'async' | 'maybeSync' | 'prefetch' | 'weak';
   export type TransformResultDependency = {
     /**
      * The literal name provided to a require or import call. For example 'foo' in
@@ -211,6 +308,11 @@ declare module 'metro/src/lib/createWebsocketServer' {
 declare module 'metro/src/DeltaBundler/Serializers/sourceMapGenerator' {
   import type { Module } from 'metro';
 
+  export function sourceMapGeneratorNonBlocking(
+    modules: readonly Module<any>[],
+    options: SourceMapGeneratorOptions
+  ): Promise<any>;
+
   export type SourceMapGeneratorOptions = {
     excludeSource: boolean;
     processModuleFilter: (module: Module) => boolean;
@@ -221,12 +323,25 @@ declare module 'metro/src/DeltaBundler/Serializers/sourceMapString' {
   import type { SourceMapGeneratorOptions } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
   import type { Module } from 'metro';
 
-  function sourceMapString(
-    modules: readonly Array<Module>,
+  declare function sourceMapString(
+    modules: readonly Array<Module<any>>,
     options: SourceMapGeneratorOptions
   ): string;
 
-  export default sourceMapString;
+  declare async function sourceMapStringNonBlocking(
+    modules: readonly Array<Module<any>>,
+    options: SourceMapGeneratorOptions
+  ): Promise<string>;
+
+  declare var _export:
+    | {
+        sourceMapString: typeof sourceMapString;
+        sourceMapStringNonBlocking: typeof sourceMapStringNonBlocking;
+      }
+    | typeof sourceMapString;
+
+  // NOTE(@kitten): The export changed to an object in metro@0.80.10
+  export = _export;
 }
 
 declare module 'metro/src/DeltaBundler/Serializers/getAssets' {
@@ -387,6 +502,20 @@ declare module 'metro/src/lib/getAppendScripts' {
 
 declare module 'metro/src/IncrementalBundler' {
   import type OriginalIncrementalBundler from 'metro/src/IncrementalBundler.d';
+  import { Graph } from 'metro/src/DeltaBundler';
+  import type { GraphId } from 'metro/src/lib/getGraphId';
+
+  export interface GraphRevision {
+    readonly id: RevisionId;
+    readonly date: Date;
+    readonly graphId: GraphId;
+    readonly graph: OutputGraph;
+    readonly prepend: readonly Module<void>[];
+  }
+
+  export type RevisionId = string;
+
+  export type OutputGraph = Graph<void>;
 
   // Overrides the `IncrementalBundler.getDependencies` returned type for inconsistent
   // ReadOnlyDependencies<void> <-> ReadOnlyDependencies<> type.

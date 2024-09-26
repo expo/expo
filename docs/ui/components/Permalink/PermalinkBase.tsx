@@ -2,7 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { cloneElement, PropsWithChildren } from 'react';
 
 type Props = PropsWithChildren<{
-  component: any;
+  component: JSX.Element;
   className?: string;
 }>;
 

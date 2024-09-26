@@ -51,7 +51,6 @@ enum AcceptedTypes: String, Enumerable {
   case html
   case image
 
-  @available(iOS 14.0, *)
   func typeIdentifier() -> String {
     switch self {
     case .plainText:

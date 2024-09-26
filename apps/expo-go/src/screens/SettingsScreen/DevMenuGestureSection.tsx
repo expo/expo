@@ -1,5 +1,5 @@
 import { iconSize } from '@expo/styleguide-native';
-import { Divider, Text, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 
 import { CheckListItem } from './CheckListItem';
@@ -38,30 +38,33 @@ export function DevMenuGestureSection() {
   }
 
   return (
-    <View>
-      <SectionHeader header="Developer Menu Gestures" />
-      <View bg="default" overflow="hidden" rounded="large" border="default">
-        <CheckListItem
-          icon={<ShakeDeviceIcon color={theme.icon.default} size={iconSize.regular} />}
-          title="Shake device"
-          checked={devMenuSettings.motionGestureEnabled}
-          onPress={onToggleMotionGesture}
-        />
-        <Divider style={{ height: 1 }} />
-        <CheckListItem
-          icon={<ThreeFingerPressIcon color={theme.icon.default} size={iconSize.regular} />}
-          title="Three-finger long press"
-          checked={devMenuSettings.touchGestureEnabled}
-          onPress={onToggleTouchGesture}
-        />
+    <>
+      <View>
+        <SectionHeader header="Developer Menu Gestures" />
+        <View bg="default" overflow="hidden" rounded="large" border="default">
+          <CheckListItem
+            icon={<ShakeDeviceIcon color={theme.icon.default} size={iconSize.regular} />}
+            title="Shake device"
+            checked={devMenuSettings.motionGestureEnabled}
+            onPress={onToggleMotionGesture}
+          />
+          <Divider style={{ height: 1 }} />
+          <CheckListItem
+            icon={<ThreeFingerPressIcon color={theme.icon.default} size={iconSize.regular} />}
+            title="Three-finger long press"
+            checked={devMenuSettings.touchGestureEnabled}
+            onPress={onToggleTouchGesture}
+          />
+        </View>
+        <View py="small" px="medium">
+          <Text size="small" color="secondary" type="InterRegular">
+            Selected gestures will toggle the developer menu while inside an experience. The menu
+            allows you to reload or return to home in a published experience, and exposes developer
+            tools in development mode.
+          </Text>
+        </View>
       </View>
-      <View py="small" px="medium">
-        <Text size="small" color="secondary" type="InterRegular">
-          Selected gestures will toggle the developer menu while inside an experience. The menu
-          allows you to reload or return to home in a published experience, and exposes developer
-          tools in development mode.
-        </Text>
-      </View>
-    </View>
+      <Spacer.Vertical size="medium" />
+    </>
   );
 }

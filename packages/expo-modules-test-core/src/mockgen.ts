@@ -6,7 +6,12 @@ import path from 'path';
 import * as prettier from 'prettier';
 import ts from 'typescript';
 
-import { Closure, ClosureTypes, OutputModuleDefinition, OutputViewDefinition } from './types';
+import {
+  Closure,
+  ClosureTypes,
+  OutputModuleDefinition,
+  OutputNestedClassDefinition,
+} from './types';
 
 const directoryPath = process.cwd();
 
@@ -48,6 +53,18 @@ function isSwiftDictionary(type: string) {
     type.endsWith(']') &&
     findRootColonInDictionary(type.substring(1, type.length - 1)) >= 0
   );
+}
+
+function isEither(type: string) {
+  return type.startsWith('Either<');
+}
+// "Either<TypeOne, TypeTwo>" -> ["TypeOne", "TypeTwo"]
+function maybeUnwrapEither(type: string): string[] {
+  if (!isEither(type)) {
+    return [type];
+  }
+  const innerType = type.substring(7, type.length - 1);
+  return innerType.split(',').map((t) => t.trim());
 }
 
 /*
@@ -119,6 +136,13 @@ function mapSwiftTypeToTsType(type: string): TSNode {
   if (isSwiftArray(type)) {
     return ts.factory.createArrayTypeNode(mapSwiftTypeToTsType(maybeUnwrapSwiftArray(type)));
   }
+  // Custom handling for the Either convertible
+  if (isEither(type)) {
+    return ts.factory.createUnionTypeNode(
+      maybeUnwrapEither(type).map((t) => mapSwiftTypeToTsType(t))
+    );
+  }
+
   switch (type) {
     // Our custom representation for types that we have no type hints for. Not necessairly Swift any.
     case 'unknown':
@@ -162,15 +186,6 @@ function getMockLiterals(tsReturnType: TSNode) {
     case ts.SyntaxKind.TypeLiteral:
       // handles a dictionary, could be improved by creating an object fitting the schema instead of an empty one
       return ts.factory.createObjectLiteralExpression([], false);
-    case ts.SyntaxKind.TypeReference:
-      // A fallback – we print a comment that these mocks are not fitting the custom type. Could be improved by expanding a set of default mocks.
-      return ts.addSyntheticTrailingComment(
-        ts.factory.createNull(),
-        ts.SyntaxKind.SingleLineCommentTrivia,
-        ` TODO: Replace with mock for value of type ${
-          ((tsReturnType as any)?.typeName as any)?.escapedText ?? ''
-        }.`
-      );
   }
   return undefined;
 }
@@ -183,36 +198,66 @@ function maybeWrapWithReturnStatement(tsType: TSNode) {
   if (tsType.kind === ts.SyntaxKind.AnyKeyword || tsType.kind === ts.SyntaxKind.VoidKeyword) {
     return [];
   }
+  if (tsType.kind === ts.SyntaxKind.TypeReference) {
+    // A fallback – we print a comment that these mocks are not fitting the custom type. Could be improved by expanding a set of default mocks.
+    return [
+      ts.addSyntheticTrailingComment(
+        ts.factory.createReturnStatement(ts.factory.createNull()),
+        ts.SyntaxKind.SingleLineCommentTrivia,
+        ` TODO: Replace with mock for value of type ${
+          ((tsType as any)?.typeName as any)?.escapedText ?? ''
+        }.`
+      ),
+    ];
+  }
   return [ts.factory.createReturnStatement(getMockLiterals(tsType))];
 }
 
 /*
 We iterate over a list of functions and we create TS AST for each of them.
 */
-function getMockedFunctions(functions: Closure[], async = false) {
+function getMockedFunctions(functions: Closure[], { async = false, classMethod = false } = {}) {
   return functions.map((fnStructure) => {
     const name = ts.factory.createIdentifier(fnStructure.name);
     const returnType = mapSwiftTypeToTsType(fnStructure.types?.returnType);
-    const func = ts.factory.createFunctionDeclaration(
-      [
-        ts.factory.createToken(ts.SyntaxKind.ExportKeyword),
-        async ? ts.factory.createToken(ts.SyntaxKind.AsyncKeyword) : undefined,
-      ].filter((f) => !!f) as ts.ModifierToken<any>[],
-      undefined,
-      name,
-      undefined,
+    const parameters =
       fnStructure?.types?.parameters.map((p) =>
         ts.factory.createParameterDeclaration(
           undefined,
           undefined,
-          p.name,
+          p.name ?? '_',
           undefined,
           mapSwiftTypeToTsType(p.typename),
           undefined
         )
-      ) ?? [],
+      ) ?? [];
+    const returnBlock = ts.factory.createBlock(maybeWrapWithReturnStatement(returnType), true);
+
+    if (classMethod) {
+      return ts.factory.createMethodDeclaration(
+        [async ? ts.factory.createToken(ts.SyntaxKind.AsyncKeyword) : undefined].flatMap((f) =>
+          f ? [f] : []
+        ),
+        undefined,
+        name,
+        undefined,
+        undefined,
+        parameters,
+        async ? wrapWithAsync(returnType) : returnType,
+        returnBlock
+      );
+    }
+    const func = ts.factory.createFunctionDeclaration(
+      [
+        ts.factory.createToken(ts.SyntaxKind.ExportKeyword),
+        async ? ts.factory.createToken(ts.SyntaxKind.AsyncKeyword) : undefined,
+      ].flatMap((f) => (f ? [f] : [])),
+      undefined,
+      name,
+      undefined,
+      parameters,
       async ? wrapWithAsync(returnType) : returnType,
-      ts.factory.createBlock(maybeWrapWithReturnStatement(returnType), true)
+      returnBlock
     );
     return func;
   });
@@ -232,7 +277,7 @@ function getAllTypeReferences(node: ts.Node, accumulator: string[]) {
 /**
  * Iterates over types to collect the aliases.
  */
-function getTypesToMock(module: OutputModuleDefinition | OutputViewDefinition) {
+function getTypesToMock(module: OutputModuleDefinition | OutputNestedClassDefinition) {
   const foundTypes: string[] = [];
 
   Object.values(module)
@@ -272,14 +317,8 @@ function getPrefix() {
   return [ts.factory.createJSDocComment(prefix)];
 }
 
-/*
-Generate a mock for view props and functions.
-*/
-function getMockedView(definition: OutputViewDefinition | null) {
-  if (!definition) {
-    return [];
-  }
-  const propsType = ts.factory.createTypeAliasDeclaration(
+function generatePropTypesForDefinition(definition: OutputNestedClassDefinition) {
+  return ts.factory.createTypeAliasDeclaration(
     [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
     'ViewProps',
     undefined,
@@ -306,24 +345,54 @@ function getMockedView(definition: OutputViewDefinition | null) {
       }),
     ])
   );
-  const props = ts.factory.createParameterDeclaration(
-    undefined,
-    undefined,
-    'props',
-    undefined,
-    ts.factory.createTypeReferenceNode('ViewProps', undefined),
-    undefined
-  );
-  const viewFunction = ts.factory.createFunctionDeclaration(
+}
+/*
+Generate a mock for view props and functions.
+*/
+function getMockedViews(viewDefinitions: OutputNestedClassDefinition[]) {
+  return viewDefinitions.flatMap((definition) => {
+    if (!definition) {
+      return [];
+    }
+    const propsType = generatePropTypesForDefinition(definition);
+    const props = ts.factory.createParameterDeclaration(
+      undefined,
+      undefined,
+      'props',
+      undefined,
+      ts.factory.createTypeReferenceNode('ViewProps', undefined),
+      undefined
+    );
+    const viewFunction = ts.factory.createFunctionDeclaration(
+      [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
+      undefined,
+      // TODO: Handle this better once requireNativeViewManager accepts view name or a different solution for multiple views is built.
+      viewDefinitions.length === 1 ? 'View' : definition.name,
+      undefined,
+      [props],
+      undefined,
+      ts.factory.createBlock([])
+    );
+    return [propsType, viewFunction];
+  });
+}
+
+function getMockedClass(def: OutputNestedClassDefinition) {
+  const classDecl = ts.factory.createClassDeclaration(
     [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
+    ts.factory.createIdentifier(def.name),
     undefined,
-    'View',
     undefined,
-    [props],
-    undefined,
-    ts.factory.createBlock([])
+    [
+      ...getMockedFunctions(def.functions, { classMethod: true }),
+      ...getMockedFunctions(def.asyncFunctions, { async: true, classMethod: true }),
+    ] as ts.MethodDeclaration[]
   );
-  return [propsType, viewFunction];
+  return classDecl;
+}
+
+function getMockedClasses(def: OutputNestedClassDefinition[]) {
+  return def.map((d) => getMockedClass(d));
 }
 
 const newlineIdentifier = ts.factory.createIdentifier('\n\n') as any;
@@ -331,19 +400,46 @@ function separateWithNewlines<T>(arr: T) {
   return [arr, newlineIdentifier];
 }
 
+function omitFromSet(set: Set<string>, toOmit: (string | undefined)[]) {
+  const newSet = new Set(set);
+  toOmit.forEach((item) => {
+    if (item) {
+      newSet.delete(item);
+    }
+  });
+  return newSet;
+}
+
 function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean) {
-  return ([] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc)[])
+  return (
+    [] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc | ts.ClassDeclaration)[]
+  )
     .concat(
       getPrefix(),
       newlineIdentifier,
-      includeTypes ? getMockedTypes(getTypesToMock(module)) : [],
+      includeTypes
+        ? getMockedTypes(
+            omitFromSet(
+              new Set([
+                ...getTypesToMock(module),
+                ...new Set(...module.views.map((v) => getTypesToMock(v))),
+                ...new Set(...module.classes.map((c) => getTypesToMock(c))),
+              ]),
+              // Ignore all types that are actually native classes
+              [
+                module.name,
+                ...module.views.map((c) => c.name),
+                ...module.classes.map((c) => c.name),
+              ]
+            )
+          )
+        : [],
       newlineIdentifier,
-      getMockedFunctions(module.functions).flatMap((mf) => [mf, newlineIdentifier]),
-      getMockedFunctions(module.asyncFunctions, true),
+      getMockedFunctions(module.functions) as ts.FunctionDeclaration[],
+      getMockedFunctions(module.asyncFunctions, { async: true }) as ts.FunctionDeclaration[],
       newlineIdentifier,
-      includeTypes && module.view ? getMockedTypes(getTypesToMock(module.view)) : [],
-      newlineIdentifier,
-      getMockedView(module.view)
+      getMockedViews(module.views),
+      getMockedClasses(module.classes)
     )
     .flatMap(separateWithNewlines);
 }

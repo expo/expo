@@ -1,4 +1,4 @@
-import { PathConfig, PathConfigMap, validatePathConfig } from '@react-navigation/core';
+import type { PathConfig, PathConfigMap } from '@react-navigation/core';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
 
 import {
@@ -118,6 +118,36 @@ export default function getPathFromState<ParamList extends object>(
   return getPathDataFromState(state, _options).path;
 }
 
+const formatToList = (items: string[]) => items.map((key) => `- ${key}`).join('\n');
+
+function validatePathConfig(config: any, root = true) {
+  const validKeys = ['initialRouteName', 'screens'];
+
+  if (!root) {
+    validKeys.push('path', 'exact', 'stringify', 'parse');
+  }
+
+  const invalidKeys = Object.keys(config).filter((key) => !validKeys.includes(key));
+
+  if (invalidKeys.length) {
+    throw new Error(
+      `Found invalid properties in the configuration:\n${formatToList(
+        invalidKeys
+      )}\n\nDid you forget to specify them under a 'screens' property?\n\nYou can only specify the following properties:\n${formatToList(
+        validKeys
+      )}\n\nSee https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration.`
+    );
+  }
+
+  if (config.screens) {
+    Object.entries(config.screens).forEach(([_, value]) => {
+      if (typeof value !== 'string') {
+        validatePathConfig(value, false);
+      }
+    });
+  }
+}
+
 export function getPathDataFromState<ParamList extends object>(
   state: State,
   _options: Options<ParamList> & {
@@ -150,16 +180,22 @@ function processParamsWithUserSettings(configItem: ConfigItem, params: Record<st
   const stringify = configItem?.stringify;
 
   return Object.fromEntries(
-    Object.entries(params).map(([key, value]) => [
-      key,
-      // TODO: Strip nullish values here.
-      stringify?.[key]
-        ? stringify[key](value)
-        : // Preserve rest params
-          Array.isArray(value)
-          ? value
-          : String(value),
-    ])
+    Object.entries(params).map(([key, value]) => {
+      if (key === 'params') {
+        return [key, value];
+      }
+
+      return [
+        key,
+        // TODO: Strip nullish values here.
+        stringify?.[key]
+          ? stringify[key](value)
+          : // Preserve rest params
+            Array.isArray(value)
+            ? value
+            : String(value),
+      ];
+    })
   );
 }
 
@@ -237,7 +273,7 @@ function walkConfigItems(
     pattern = inputPattern;
 
     if (route.params) {
-      if (route.params['#']) {
+      if (route.params['#'] !== undefined) {
         hash = route.params['#'];
         delete route.params['#'];
       }
@@ -409,7 +445,14 @@ function getPathFromResolvedState(
           }
         }
 
-        const query = new URLSearchParams(focusedParams).toString();
+        const params = new URLSearchParams(
+          Object.entries(focusedParams).flatMap(([key, values]) => {
+            return Array.isArray(values) ? values.map((value) => [key, value]) : [[key, values]];
+          })
+        );
+
+        const query = params.toString();
+
         if (query) {
           path += `?${query}`;
         }
@@ -428,12 +471,14 @@ function getPathFromResolvedState(
   return { path: appendBaseUrl(basicSanitizePath(path)), params };
 }
 
-function decodeParams(params: Record<string, string>) {
+export function decodeParams(params: Record<string, string>) {
   const parsed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(params)) {
     try {
-      if (Array.isArray(value)) {
+      if (key === 'params' && typeof value === 'object') {
+        parsed[key] = decodeParams(value);
+      } else if (Array.isArray(value)) {
         parsed[key] = value.map((v) => decodeURIComponent(v));
       } else {
         parsed[key] = decodeURIComponent(value);
@@ -556,7 +601,7 @@ function getParamsWithConventionsCollapsed({
     // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
     const name = testNotFound(routeName)
       ? 'not-found'
-      : matchDeepDynamicRouteName(routeName) ?? routeName;
+      : (matchDeepDynamicRouteName(routeName) ?? routeName);
     delete processedParams[name];
   }
 

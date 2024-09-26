@@ -26,7 +26,7 @@ describe('exports with react native canary', () => {
           env: {
             NODE_ENV: 'production',
             EXPO_USE_STATIC: 'static',
-            EXPO_E2E_RSC: '1',
+            E2E_CANARY_ENABLED: '1',
             E2E_ROUTER_JS_ENGINE: 'hermes',
             E2E_ROUTER_SRC: 'react-native-canary',
             E2E_ROUTER_ASYNC: 'development',
@@ -82,6 +82,6 @@ describe('exports with react native canary', () => {
     // Minified mark
     expect(bundle).not.toMatch('__d((function(g,r,');
     // Canary comment. This needs to be updated with each canary.
-    expect(bundle).toMatch('SignedSource<<73af5b3fe29d226634ed64bc861634df>>');
+    expect(bundle).toMatch('SignedSource<<69d0cc554d77cddb1c779dfbdf569505>>');
   });
 });

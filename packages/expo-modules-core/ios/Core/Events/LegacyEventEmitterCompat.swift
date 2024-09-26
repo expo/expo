@@ -11,7 +11,7 @@ public final class LegacyEventEmitterCompat: EXEventEmitterService {
   // swiftlint:disable:next implicitly_unwrapped_optional
   public func sendEvent(withName name: String!, body: Any!) {
     guard let appContext, let runtime = try? appContext.runtime else {
-      log.warn("Unable to send an event '\(name)' because the runtime is not available")
+      log.warn("Unable to send an event '\(String(describing: name))' because the runtime is not available")
       return
     }
 

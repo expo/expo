@@ -99,12 +99,8 @@ export class GLView extends React.Component<GLViewProps> {
   exglCtxId?: number;
 
   render() {
-    const {
-      onContextCreate, // eslint-disable-line no-unused-vars
-      msaaSamples,
-      enableExperimentalWorkletSupport,
-      ...viewProps
-    } = this.props;
+    const { onContextCreate, msaaSamples, enableExperimentalWorkletSupport, ...viewProps } =
+      this.props;
 
     return (
       <View {...viewProps}>

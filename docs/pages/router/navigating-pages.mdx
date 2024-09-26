@@ -7,12 +7,12 @@ import { FileTree } from '~/ui/components/FileTree';
 
 Expo Router uses "links" to move between pages in the app. This is conceptually similar to how the web works with `<a>` tags and the `href` attribute.
 
-<FileTree files={['app/index.js', 'app/about.js', 'app/user/[id].js']} />
+<FileTree files={['app/index.tsx', 'app/about.tsx', 'app/user/[id].tsx']} />
 
 In the following example, there are two `<Link />` components which navigate to different routes.
 
 {/* prettier-ignore */}
-```jsx app/index.js
+```tsx app/index.tsx
 import { View } from 'react-native';
 /* @info Import the <strong>Link</strong> React component from <strong>expo-router</strong> */
 import { Link } from 'expo-router';
@@ -38,9 +38,9 @@ export default function Page() {
 The Link component wraps the children in a `<Text>` component by default, this is useful for accessibility but not always desired. You can customize the component by passing the `asChild` prop, which will forward all props to the first child of the `Link` component. The child component must support the `onPress` and `onClick` props, `href` and `role` will also be passed down.
 
 {/* prettier-ignore */}
-```jsx
-import { Pressable, Text } from "react-native";
-import { Link } from "expo-router";
+```tsx
+import { Pressable, Text } from 'react-native';
+import { Link } from 'expo-router';
 
 export default function Page() {
   return (
@@ -57,7 +57,7 @@ export default function Page() {
 
 ## Understanding native navigation
 
-Expo Router uses a stack-based navigation approach. Each new route you navigate to gets added to a stack. If you navigate a route already in the stack, the stack unwinds back to that existing route.
+Expo Router uses a stack-based navigation approach. Each new route you navigate to gets added to a stack. If you navigate to a route already in the stack, the stack unwinds back to that existing route.
 
 For example, when you navigate from `/feed` to `/profile`, the stack contains `/feed` and `/profile`. If you then navigate to `/settings`, the stack contains `/feed`, `/profile`, and `/settings`. If you then navigate back to `/feed`, the stack unwinds back to `/feed`.
 
@@ -73,15 +73,43 @@ To navigate, you can provide a full path (`/profile/settings`), a relative path 
 | `push`     | Always pushes a new route, and never pops or replaces to existing routes. You can push the current route multiple times or with new parameters.                                                                                                                                                                                           |
 | `replace`  | Remove the current route from the history and replace it with the specified URL. This is useful for redirects.                                                                                                                                                                                                                            |
 
+## Relative navigation
+
+> **warning** `relativeToDirectory` will be released in the next version of `expo-router`.
+
+A relative URL is a URL prefix with `./`, such as `./article`, or `./article/`. Relative URLs are resolved relative to the current rendered screen.
+
+The URL of the current screen is a document URL (a URL without a trailing slash), so relative URLs will be resolved relative to the directory. This can be confusing when the current screen is rendered by an `index` file as the relative URL is resolved from the URL's directory, not the file system. By using the `relativeToDirectory` option, Expo Router will instead treat the current URL as a directory URL.
+
+| Href         | Current URL | `relativeToDirectory` | Result              |
+| ------------ | ----------- | --------------------- | ------------------- |
+| `./article`  | `/route/v1` |                       | `/route/article`    |
+| `./article`  | `/route/v1` | `true`                | `/route/v1/article` |
+| `../article` | `/route/v1` |                       | `/article`          |
+| `../article` | `/route/v1` | `true`                | `/route/article`    |
+
+```ts
+// Using `relativeToDirectory` with Link
+<Link href="./article" relativeToDirectory>Go to article</Link>
+
+// Using `relativeToDirectory` with the imperative API
+router.push("./article", { relativeToDirectory: true })
+router.navigate("./article", { relativeToDirectory: true })
+router.replace("./article", { relativeToDirectory: true })
+```
+
+> **info** Relative URLs without a `./` prefix, such as `article`, are not supported.
+
 ## Linking to dynamic routes
 
 Dynamic routes and query parameters can be provided statically or with the convenience **Href** object.
 
 {/* prettier-ignore */}
-```jsx app/index.js
+```tsx app/index.tsx
 /* @info Import the <strong>Link</strong> React component from <strong>expo-router</strong> */
 import { Link } from 'expo-router';
 /* @end */
+import { View } from 'react-native';
 
 export default function Page() {
   return (
@@ -89,7 +117,7 @@ export default function Page() {
       <Link
         href={{
           /* @info Navigate to <strong>/user/bacon</strong> */
-          pathname: "/user/[id]",
+          pathname: '/user/[id]',
           params: { id: 'bacon' }
           /* @end */
         }}>
@@ -105,7 +133,7 @@ export default function Page() {
 By default, links `navigate` to the nearest route in the navigation stack, either by pushing a new route or unwinding to an existing route. You can use the `push` prop to always push the route onto the stack.
 
 {/* prettier-ignore */}
-```jsx app/index.js
+```tsx app/index.tsx
 import { Link } from 'expo-router';
 
 export default function Page() {
@@ -124,7 +152,7 @@ export default function Page() {
 By default, links "push" routes onto the navigation stack. It follows the same rules as [`navigation.navigate()`](https://reactnavigation.org/docs/navigating/#navigate-to-a-route-multiple-times). This means that the previous screen will be available when the user navigates back. You can use the `replace` prop to replace the current screen instead of pushing a new one.
 
 {/* prettier-ignore */}
-```jsx app/index.js
+```tsx app/index.tsx
 import { Link } from 'expo-router';
 
 export default function Page() {
@@ -140,13 +168,13 @@ export default function Page() {
 
 Use `router.replace()` to replace the current screen imperatively.
 
-Native navigation does not always support `replace`. For example on Twitter, you wouldn't be able to "replace" directly from a profile to a tweet, this is because the UI requires a back button to return to the feed or other top-level tab screen. In this case, replace would switch to the feed tab, and push the tweet route on top of it, or if you were on a different tweet inside the feed tab, it would replace the current tweet with the new tweet. This exact behavior can be obtained in Expo Router by using [`unstable_settings`](/router/advanced/router-settings).
+Native navigation does not always support `replace`. For example on X, you wouldn't be able to "replace" directly from a profile to a tweet, this is because the UI requires a back button to return to the feed or other top-level tab screen. In this case, replace would switch to the feed tab, and push the tweet route on top of it, or if you were on a different tweet inside the feed tab, it would replace the current tweet with the new tweet. This exact behavior can be obtained in Expo Router by using [`unstable_settings`](/router/advanced/router-settings).
 
 ## Imperative navigation
 
-You can also navigate imperatively using the `router` object. This is useful when you need to perform a navigation action outside of a React component, such as in an event handler or a utility function.
+You can also navigate imperatively using the `router` object. This is useful when you need to perform a navigation action outside a React component, such as in an event handler or a utility function.
 
-```js
+```tsx
 import { router } from 'expo-router';
 
 export function logout() {

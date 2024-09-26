@@ -117,21 +117,27 @@ describe('managed project test', () => {
     expect(diff).toMatchInlineSnapshot(`
       [
         {
-          "filePath": "node_modules/@react-native-community/netinfo",
-          "hash": "7a41febc80b298412c7dd08b77e243c7aadd5c4e",
-          "reasons": [
-            "bareRncliAutolinking",
-          ],
-          "type": "dir",
+          "op": "added",
+          "source": {
+            "filePath": "node_modules/@react-native-community/netinfo",
+            "hash": "7a41febc80b298412c7dd08b77e243c7aadd5c4e",
+            "reasons": [
+              "bareRncliAutolinking",
+            ],
+            "type": "dir",
+          },
         },
         {
-          "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"ios":{"podspecPath":"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
-          "hash": "ac75722bd87eb0189440be83faa2249079da5839",
-          "id": "rncliAutolinkingConfig",
-          "reasons": [
-            "bareRncliAutolinking",
-          ],
-          "type": "contents",
+          "op": "changed",
+          "source": {
+            "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"ios":{"podspecPath":"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
+            "hash": "ac75722bd87eb0189440be83faa2249079da5839",
+            "id": "rncliAutolinkingConfig",
+            "reasons": [
+              "bareRncliAutolinking",
+            ],
+            "type": "contents",
+          },
         },
       ]
     `);

@@ -1,10 +1,10 @@
 ---
-title: EAS Update with a local build
-sidebar_title: Build locally
-description: Learn how to use EAS Update directly with a local build environment.
+title: Using EAS Update without EAS Build
+sidebar_title: Using without EAS Build
+description: Learn how to use EAS Update directly with a local build environment, without EAS Build.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -55,7 +55,7 @@ Inside the app config, make changes to use [`runtimeVersion`](/versions/latest/c
 {/* prettier-ignore */}
 ```json app.json
   "expo": {
-    /* @hide ... your existing configuration */ /* @end */
+    /* @hide ... */ /* @end */
     "updates": {
       /* @hide ... */ /* @end */
       "requestHeaders": {
@@ -68,7 +68,15 @@ Inside the app config, make changes to use [`runtimeVersion`](/versions/latest/c
   }
 ```
 
-> In the [introduction guide](/eas-update/getting-started), the channel name is set by EAS Build and is different for various build profiles. Since this is a local build, it is necessary to set this request header explicitly in the app config.
+> In the [Get started](/eas-update/getting-started) guide, the channel name is set by EAS Build and is different for various build profiles and automatically synchronized on the server. Since this is a local build, it is necessary to set the request header explicitly in the app config, as shown above, and then manually create channel on the server.
+
+<Terminal
+  cmd={[
+    '# Create the `main` channel on EAS (which points it to the main EAS Update branch by default)',
+    '$ eas channel:create main',
+  ]}
+  cmdCopy="eas channel:create main"
+/>
 
 </Step>
 
@@ -181,10 +189,11 @@ Then build and run the app again:
 
 The app should appear as in the screenshot below.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App running for the first time"
   src="/static/images/eas-update/getting-started-before-update.png"
-  style={{maxHeight: 600, width: 'auto'}}/>
+  className="max-w-[280px]"
+  />
 </Step>
 
 <Step label="7">
@@ -199,17 +208,17 @@ After optionally making additional changes to **App.js**, publish an update with
 
 Running the command will prompt the following:
 
-- For the branch to publish on. Select the default branch: `main`.
+- For the branch to publish on. Select the default branch: `main`. This is the branch that the `main` channel was linked to by default above.
 - For entering an update message. Select the default `Initial commit` message or type in a custom message.
 
 Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
 
 The app should now appear as shown in the screenshot below:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="App running update after being restarted twice"
   src="/static/images/eas-update/getting-started-after-update.png"
-  style={{ maxHeight: 600, width: 'auto' }}
+  className="max-w-[280px]"
 />
 
 </Step>

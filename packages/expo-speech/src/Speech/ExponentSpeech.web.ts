@@ -1,4 +1,4 @@
-import { CodedError, createWebModule } from 'expo-modules-core';
+import { CodedError, NativeModule, registerWebModule } from 'expo-modules-core';
 
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
@@ -23,7 +23,14 @@ async function getVoices(): Promise<SpeechSynthesisVoice[]> {
   });
 }
 
-export default createWebModule({
+type ExpoSpeechEvents = {
+  'Exponent.speakingStarted': (params: { id: string; nativeEvent: SpeechSynthesisEvent }) => void;
+  'Exponent.speakingDone': (params: { id: string; nativeEvent: SpeechSynthesisEvent }) => void;
+  'Exponent.speakingStopped': (params: { id: string; nativeEvent: SpeechSynthesisEvent }) => void;
+  'Exponent.speakingError': (params: { id: string; nativeEvent: SpeechSynthesisEvent }) => void;
+};
+
+class ExpoSpeech extends NativeModule<ExpoSpeechEvents> {
   async speak(id: string, text: string, options: SpeechOptions): Promise<SpeechSynthesisUtterance> {
     if (text.length > MAX_SPEECH_INPUT_LENGTH) {
       throw new CodedError(
@@ -71,16 +78,16 @@ export default createWebModule({
     }
 
     message.onstart = (nativeEvent: SpeechSynthesisEvent) => {
-      (this as any).emit('Exponent.speakingStarted', { id, nativeEvent });
+      this.emit('Exponent.speakingStarted', { id, nativeEvent });
     };
     message.onend = (nativeEvent: SpeechSynthesisEvent) => {
-      (this as any).emit('Exponent.speakingDone', { id, nativeEvent });
+      this.emit('Exponent.speakingDone', { id, nativeEvent });
     };
     message.onpause = (nativeEvent: SpeechSynthesisEvent) => {
-      (this as any).emit('Exponent.speakingStopped', { id, nativeEvent });
+      this.emit('Exponent.speakingStopped', { id, nativeEvent });
     };
     message.onerror = (nativeEvent: SpeechSynthesisErrorEvent) => {
-      (this as any).emit('Exponent.speakingError', { id, nativeEvent });
+      this.emit('Exponent.speakingError', { id, nativeEvent });
     };
 
     message.text = text;
@@ -88,7 +95,7 @@ export default createWebModule({
     window.speechSynthesis.speak(message);
 
     return message;
-  },
+  }
   async getVoices(): Promise<WebVoice[]> {
     const voices = await getVoices();
     return voices.map((voice) => ({
@@ -100,18 +107,20 @@ export default createWebModule({
       name: voice.name,
       voiceURI: voice.voiceURI,
     }));
-  },
+  }
   async isSpeaking(): Promise<boolean> {
     return window.speechSynthesis.speaking;
-  },
+  }
   async stop(): Promise<void> {
     return window.speechSynthesis.cancel();
-  },
+  }
   async pause(): Promise<void> {
     return window.speechSynthesis.pause();
-  },
+  }
   async resume(): Promise<void> {
     return window.speechSynthesis.resume();
-  },
-  maxSpeechInputLength: MAX_SPEECH_INPUT_LENGTH,
-});
+  }
+  maxSpeechInputLength = MAX_SPEECH_INPUT_LENGTH;
+}
+
+export default registerWebModule(ExpoSpeech);

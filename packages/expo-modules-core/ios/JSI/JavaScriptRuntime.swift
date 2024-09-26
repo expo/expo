@@ -4,7 +4,7 @@ public extension JavaScriptRuntime {
   /**
    A type of the closure that you pass to the `createSyncFunction` function.
    */
-  typealias SyncFunctionClosure = (_ this: JavaScriptValue, _ arguments: [JavaScriptValue]) throws -> Any
+  typealias SyncFunctionClosure = (_ this: JavaScriptValue, _ arguments: [JavaScriptValue]) throws -> JavaScriptValue
 
   /**
    Evaluates JavaScript code represented as a string.
@@ -64,7 +64,7 @@ public extension JavaScriptRuntime {
   /**
    Schedules a block to be executed with granted synchronized access to the JS runtime.
    */
-  public func schedule(priority: SchedulerPriority = .normal, _ closure: @escaping () -> Void) {
+  func schedule(priority: SchedulerPriority = .normal, _ closure: @escaping () -> Void) {
     __schedule(closure, priority: priority.rawValue)
   }
 }

@@ -5,7 +5,7 @@ import { render } from '@testing-library/react-native';
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 import { ExpoLinkingOptions } from '../getLinkingConfig';
 export * from '@testing-library/react-native';
-type RenderRouterOptions = Parameters<typeof render>[1] & {
+export type RenderRouterOptions = Parameters<typeof render>[1] & {
     initialUrl?: any;
     linking?: Partial<ExpoLinkingOptions>;
 };
@@ -41,7 +41,7 @@ export declare const testRouter: {
     /** If there's history that supports invoking the `back` function. */
     canGoBack(): boolean;
     /** Update the current route query params and assert the new pathname */
-    setParams(params?: Record<string, string>, path?: string): void;
+    setParams(params: Record<string, string>, path?: string): void;
     /** If there's history that supports invoking the `back` function. */
     dismissAll(): void;
 };

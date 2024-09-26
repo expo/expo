@@ -1,13 +1,15 @@
 import '@expo/server/install';
 
 import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
-import fs from 'fs';
-import path from 'path';
-import { URL } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { ExpoRouterServerManifestV1FunctionRoute } from './types';
 
-const debug = require('debug')('expo:server') as typeof console.log;
+const debug =
+  process.env.NODE_ENV === 'development'
+    ? (require('debug')('expo:server') as typeof console.log)
+    : () => {};
 
 function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
   // TODO: JSON Schema for validation
@@ -75,7 +77,7 @@ export function createRequestHandler(
         return null;
       }
 
-      if (/\.[cj]s$/.test(filePath)) {
+      if (/\.c?js$/.test(filePath)) {
         return require(filePath);
       }
       return import(filePath);
@@ -83,11 +85,20 @@ export function createRequestHandler(
     logApiRouteExecutionError = (error: Error) => {
       console.error(error);
     },
+    handleApiRouteError = async () => {
+      return new Response('Internal server error', {
+        status: 500,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+    },
   }: {
     getHtml?: (request: Request, route: RouteInfo<RegExp>) => Promise<string | Response | null>;
     getRoutesManifest?: (distFolder: string) => Promise<ExpoRoutesManifestV1<RegExp> | null>;
     getApiRoute?: (route: RouteInfo<RegExp>) => Promise<any>;
     logApiRouteExecutionError?: (error: Error) => void;
+    handleApiRouteError?: (error: Error) => Promise<Response>;
   } = {}
 ) {
   let routesManifest: ExpoRoutesManifestV1<RegExp> | undefined;
@@ -200,12 +211,7 @@ export function createRequestHandler(
           logApiRouteExecutionError(error);
         }
 
-        return new Response('Internal server error', {
-          status: 500,
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-        });
+        return handleApiRouteError(error as Error);
       }
     }
 

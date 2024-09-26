@@ -1,3 +1,5 @@
+'use client';
+
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
 import type { EventEmitter, EventSubscription } from './ts-declarations/EventEmitter';
 

@@ -46,12 +46,12 @@
     "find-up": "^5.0.0",
     "fs-extra": "^11.2.0",
     "getenv": "^1.0.0",
-    "github-username": "^6.0.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
     "validate-npm-package-name": "^5.0.1"
   },
   "devDependencies": {
+    "@octokit/types": "^13.5.0",
     "@types/ejs": "^3.1.5",
     "@types/find-up": "^4.0.0",
     "@types/prompts": "^2.4.9",

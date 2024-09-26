@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Replace deprecated `util.isArray` helper. ([#28927](https://github.com/expo/expo/pull/28927) by [@hirbod](https://github.com/hirbod))
-
 ### 💡 Others
+
+## 2.1.3 — 2024-05-02
+
+### 🐛 Bug fixes
+
+- Replace deprecated `util.isArray` helper. ([#28927](https://github.com/expo/expo/pull/28927) by [@hirbod](https://github.com/hirbod))
 
 ## 2.1.2 — 2024-04-23
 

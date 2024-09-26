@@ -5,11 +5,11 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-50/packages/expo-task-mana
 packageName: 'expo-task-manager'
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 `expo-task-manager` provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background. Some features of this library are used by other libraries under the hood. Here is a list of Expo SDK libraries that use `TaskManager`:
 

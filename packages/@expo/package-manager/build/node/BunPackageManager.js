@@ -2,13 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BunPackageManager = void 0;
 const BasePackageManager_1 = require("./BasePackageManager");
-const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
+const nodeManagers_1 = require("../utils/nodeManagers");
 class BunPackageManager extends BasePackageManager_1.BasePackageManager {
     name = 'bun';
     bin = 'bun';
-    lockFile = nodeWorkspaces_1.BUN_LOCK_FILE;
+    lockFile = nodeManagers_1.BUN_LOCK_FILE;
     workspaceRoot() {
-        const root = (0, nodeWorkspaces_1.findYarnOrNpmWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
+        const root = (0, nodeManagers_1.resolveWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
         if (root) {
             return new BunPackageManager({
                 ...this.options,

@@ -24,7 +24,7 @@ import {
 } from './resolvePackageManager';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
-import { newStep } from './utils';
+import { newStep } from './utils/ora';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');

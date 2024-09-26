@@ -24,8 +24,9 @@ export type JSModule = Module<{
 }> & {
     unstable_transformResultKey?: string;
 };
-export declare function filterJsModules(dependencies: ReadOnlyDependencies, type: 'js/script' | 'js/module' | 'js/module/asset', { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>): JSModule[];
-export declare function getCssSerialAssets<T extends any>(dependencies: ReadOnlyDependencies<T>, { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>): SerialAsset[];
+export declare function getCssSerialAssets<T extends any>(dependencies: ReadOnlyDependencies<T>, { projectRoot, entryFile }: Pick<Options, 'projectRoot'> & {
+    entryFile: string;
+}): SerialAsset[];
 export declare function fileNameFromContents({ filepath, src }: {
     filepath: string;
     src: string;

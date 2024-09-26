@@ -237,7 +237,7 @@ describe('e2e: write navigation color and style to files correctly', () => {
 
     const group = AndroidConfig.Styles.getStylesGroupAsObject(
       stylesJSON,
-      AndroidConfig.Styles.getAppThemeLightNoActionBarGroup()
+      AndroidConfig.Styles.getAppThemeGroup()
     );
     expect(group?.['android:navigationBarColor']).toBe('@color/navigationBarColor');
     expect(group?.['android:windowLightNavigationBar']).toBe('true');

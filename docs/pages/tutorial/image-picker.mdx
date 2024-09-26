@@ -3,12 +3,13 @@ title: Use an image picker
 description: In this tutorial, learn how to use Expo Image Picker.
 ---
 
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
-import Video from '~/components/plugins/Video';
-import { A } from '~/ui/components/Text';
-import { Step } from '~/ui/components/Step';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { A } from '~/ui/components/Text';
 
 React Native provides built-in components that are standard building blocks used by every application, such as `<View>`, `<Text>`, and `<Pressable>`.
 We want to build a feature that isn't possible with these core components and API: selecting an image from the device's media library. For that, we will need a library.
@@ -60,7 +61,7 @@ export default function App() {
       console.log(result);
       /* @end */
     } else {
-      /* @info If the user does not picks an image, show an alert. */
+      /* @info If the user does not pick an image, show an alert. */
       alert('You did not select any image.');
       /* @end */
     }
@@ -235,7 +236,7 @@ not a local asset like the placeholder image.
 
 Let's take a look at our app now:
 
-<Video file="tutorial/03-image-picker-demo.mp4" />
+<ContentSpotlight file="tutorial/03-image-picker-demo.mp4" />
 
 > The images used for the demo in this tutorial were picked from [Unsplash](https://unsplash.com).
 

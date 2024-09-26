@@ -4,11 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Add NULL check before releasing `textureRef` in `EXGLCameraObject`. ([#29092](https://github.com/expo/expo/pull/29092) by [@hakonk](https://github.com/hakonk))
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30468](https://github.com/expo/expo/pull/30468) by [@byCedric](https://github.com/byCedric))
+- Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Enabled support on web on iOS. ([#31479](https://github.com/expo/expo/pull/31479) by [@fobos531](https://github.com/fobos531))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 14.0.2 — 2024-04-24
 

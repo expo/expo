@@ -1,3 +1,4 @@
+'use client';
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -48,8 +49,8 @@ else {
 }
 let StackTrace;
 if (process.env.NODE_ENV === 'development') {
-    const { LogContext } = require('@expo/metro-runtime/build/error-overlay/Data/LogContext');
-    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/build/error-overlay/overlay/LogBoxInspectorStackFrames');
+    const { LogContext } = require('@expo/metro-runtime/src/error-overlay/Data/LogContext');
+    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/src/error-overlay/overlay/LogBoxInspectorStackFrames');
     StackTrace = function ({ logData }) {
         if (!logData?.symbolicated?.stack?.stack) {
             return null;

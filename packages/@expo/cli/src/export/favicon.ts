@@ -1,4 +1,4 @@
-import { getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 import { generateFaviconAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
 import path from 'path';
@@ -16,7 +16,12 @@ export function getUserDefinedFaviconFile(projectRoot: string): string | null {
 
 export async function getVirtualFaviconAssetsAsync(
   projectRoot: string,
-  { baseUrl, outputDir, files }: { outputDir: string; baseUrl: string; files?: ExportAssetMap }
+  {
+    baseUrl,
+    outputDir,
+    files,
+    exp,
+  }: { outputDir: string; baseUrl: string; files?: ExportAssetMap; exp?: ExpoConfig }
 ): Promise<((html: string) => string) | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
   if (existing) {
@@ -24,7 +29,9 @@ export async function getVirtualFaviconAssetsAsync(
     return null;
   }
 
-  const data = await getFaviconFromExpoConfigAsync(projectRoot);
+  const data = await getFaviconFromExpoConfigAsync(projectRoot, {
+    exp,
+  });
 
   if (!data) {
     return null;
@@ -61,10 +68,8 @@ export async function getVirtualFaviconAssetsAsync(
 
 export async function getFaviconFromExpoConfigAsync(
   projectRoot: string,
-  { force = false }: { force?: boolean } = {}
+  { force = false, exp = getConfig(projectRoot).exp }: { force?: boolean; exp?: ExpoConfig } = {}
 ) {
-  const { exp } = getConfig(projectRoot);
-
   const src = exp.web?.favicon ?? null;
   if (!src) {
     return null;

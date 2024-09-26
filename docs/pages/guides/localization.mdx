@@ -3,9 +3,8 @@ title: Localization
 description: Learn about getting started and configuring localization in an Expo project using expo-localization.
 ---
 
-import { SnackInline } from '~/ui/components/Snippet';
-import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
 
 If you want your app to be easy to use for users who speak different languages or come from different cultures, you should localize it. Localizing an app makes it adapt to the locale of the user's device. The app will show translations and currencies that the user knows and understands. Numbers, lists, and more will be formatted in a way that the user is used to.
 
@@ -72,7 +71,7 @@ On iOS, when a user changes the device's language, the app will reset. This mean
 
 ```tsx
 import { View, StyleSheet, Text } from 'react-native';
-import * as Localization from 'expo-localization';
+import { getLocales } from 'expo-localization';
 import { I18n } from 'i18n-js';
 
 // Set the key-value pairs for the different languages you want to support.
@@ -83,7 +82,7 @@ const translations = {
 const i18n = new I18n(translations);
 
 // Set the locale once at the beginning of your app.
-i18n.locale = Localization.locale;
+i18n.locale = getLocales()[0].languageCode ?? 'en';
 
 // When a value is missing from a language it'll fall back to another language with the key present.
 i18n.enableFallback = true;
@@ -97,7 +96,7 @@ export default function App() {
         {i18n.t('welcome')} {i18n.t('name')}
       </Text>
       <Text>Current locale: {i18n.locale}</Text>
-      <Text>Device locale: {Localization.getLocales()[0].languageCode}</Text>
+      <Text>Device locale: {getLocales()[0].languageCode}</Text>
     </View>
   );
 }
@@ -210,10 +209,9 @@ label="Overriding RTL settings"
 dependencies={['expo-updates', 'expo-constants']}
 >
 
-```jsx
+```tsx
 import { Text, View, StyleSheet, I18nManager, Platform } from 'react-native';
 import Constants from 'expo-constants';
-
 import * as Updates from 'expo-updates';
 
 export default function App() {

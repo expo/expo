@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.appendBaseUrl = exports.deepEqual = exports.getPathDataFromState = void 0;
-const core_1 = require("@react-navigation/core");
+exports.appendBaseUrl = exports.decodeParams = exports.deepEqual = exports.getPathDataFromState = void 0;
 const matchers_1 = require("../matchers");
 const DEFAULT_SCREENS = {};
 const getActiveRoute = (state) => {
@@ -75,12 +74,30 @@ function getPathFromState(state, _options) {
     return getPathDataFromState(state, _options).path;
 }
 exports.default = getPathFromState;
+const formatToList = (items) => items.map((key) => `- ${key}`).join('\n');
+function validatePathConfig(config, root = true) {
+    const validKeys = ['initialRouteName', 'screens'];
+    if (!root) {
+        validKeys.push('path', 'exact', 'stringify', 'parse');
+    }
+    const invalidKeys = Object.keys(config).filter((key) => !validKeys.includes(key));
+    if (invalidKeys.length) {
+        throw new Error(`Found invalid properties in the configuration:\n${formatToList(invalidKeys)}\n\nDid you forget to specify them under a 'screens' property?\n\nYou can only specify the following properties:\n${formatToList(validKeys)}\n\nSee https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration.`);
+    }
+    if (config.screens) {
+        Object.entries(config.screens).forEach(([_, value]) => {
+            if (typeof value !== 'string') {
+                validatePathConfig(value, false);
+            }
+        });
+    }
+}
 function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
     if (state == null) {
         throw Error("Got 'undefined' for the navigation state. You must pass a valid state object.");
     }
     const { preserveGroups, preserveDynamicRoutes, ...options } = _options;
-    (0, core_1.validatePathConfig)(options);
+    validatePathConfig(options);
     // Expo Router disallows usage without a linking config.
     if (Object.is(options.screens, DEFAULT_SCREENS)) {
         throw Error("You must pass a 'screens' object to 'getPathFromState' to generate a path.");
@@ -92,16 +109,21 @@ function getPathDataFromState(state, _options = { screens: DEFAULT_SCREENS }) {
 exports.getPathDataFromState = getPathDataFromState;
 function processParamsWithUserSettings(configItem, params) {
     const stringify = configItem?.stringify;
-    return Object.fromEntries(Object.entries(params).map(([key, value]) => [
-        key,
-        // TODO: Strip nullish values here.
-        stringify?.[key]
-            ? stringify[key](value)
-            : // Preserve rest params
-                Array.isArray(value)
-                    ? value
-                    : String(value),
-    ]));
+    return Object.fromEntries(Object.entries(params).map(([key, value]) => {
+        if (key === 'params') {
+            return [key, value];
+        }
+        return [
+            key,
+            // TODO: Strip nullish values here.
+            stringify?.[key]
+                ? stringify[key](value)
+                : // Preserve rest params
+                    Array.isArray(value)
+                        ? value
+                        : String(value),
+        ];
+    }));
 }
 function deepEqual(a, b) {
     if (a === b) {
@@ -152,7 +174,7 @@ function walkConfigItems(route, focusedRoute, configs, { preserveDynamicRoutes, 
         }
         pattern = inputPattern;
         if (route.params) {
-            if (route.params['#']) {
+            if (route.params['#'] !== undefined) {
                 hash = route.params['#'];
                 delete route.params['#'];
             }
@@ -287,7 +309,10 @@ function getPathFromResolvedState(state, configs, { preserveGroups, preserveDyna
                         delete focusedParams[param];
                     }
                 }
-                const query = new URLSearchParams(focusedParams).toString();
+                const params = new URLSearchParams(Object.entries(focusedParams).flatMap(([key, values]) => {
+                    return Array.isArray(values) ? values.map((value) => [key, value]) : [[key, values]];
+                }));
+                const query = params.toString();
                 if (query) {
                     path += `?${query}`;
                 }
@@ -306,7 +331,10 @@ function decodeParams(params) {
     const parsed = {};
     for (const [key, value] of Object.entries(params)) {
         try {
-            if (Array.isArray(value)) {
+            if (key === 'params' && typeof value === 'object') {
+                parsed[key] = decodeParams(value);
+            }
+            else if (Array.isArray(value)) {
                 parsed[key] = value.map((v) => decodeURIComponent(v));
             }
             else {
@@ -319,6 +347,7 @@ function decodeParams(params) {
     }
     return parsed;
 }
+exports.decodeParams = decodeParams;
 function getPathWithConventionsCollapsed({ pattern, routePath, params, preserveGroups, preserveDynamicRoutes, initialRouteName, }) {
     const segments = pattern.split('/');
     return segments
@@ -398,7 +427,7 @@ function getParamsWithConventionsCollapsed({ pattern, routeName, params, }) {
         // NOTE(EvanBacon): Drop the param name matching the wildcard route name -- this is specific to Expo Router.
         const name = (0, matchers_1.testNotFound)(routeName)
             ? 'not-found'
-            : (0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName;
+            : ((0, matchers_1.matchDeepDynamicRouteName)(routeName) ?? routeName);
         delete processedParams[name];
     }
     return processedParams;

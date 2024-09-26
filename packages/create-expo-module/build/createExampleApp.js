@@ -10,7 +10,7 @@ const getenv_1 = __importDefault(require("getenv"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const packageManager_1 = require("./packageManager");
-const utils_1 = require("./utils");
+const ora_1 = require("./utils/ora");
 const debug = require('debug')('create-expo-module:createExampleApp');
 // These dependencies will be removed from the example app (`expo init` adds them)
 const DEPENDENCIES_TO_REMOVE = ['expo-status-bar', 'expo-splash-screen'];
@@ -29,7 +29,7 @@ async function createExampleApp(data, targetDir, packageManager) {
         // The template doesn't include the example app, so just skip this phase
         return;
     }
-    await (0, utils_1.newStep)('Initializing the example app', async (step) => {
+    await (0, ora_1.newStep)('Initializing the example app', async (step) => {
         const templateVersion = EXPO_BETA ? 'next' : 'latest';
         const template = `expo-template-blank-typescript@${templateVersion}`;
         debug(`Using example template: ${template}`);
@@ -39,7 +39,7 @@ async function createExampleApp(data, targetDir, packageManager) {
         });
         step.succeed('Initialized the example app');
     });
-    await (0, utils_1.newStep)('Configuring the example app', async (step) => {
+    await (0, ora_1.newStep)('Configuring the example app', async (step) => {
         // "example" folder already exists and contains template files,
         // that should replace these created by `expo init`.
         await moveFiles(appTargetPath, appTmpPath);
@@ -55,7 +55,7 @@ async function createExampleApp(data, targetDir, packageManager) {
     });
     await prebuildExampleApp(appTargetPath);
     await modifyPackageJson(appTargetPath);
-    await (0, utils_1.newStep)('Installing dependencies in the example app', async (step) => {
+    await (0, ora_1.newStep)('Installing dependencies in the example app', async (step) => {
         await (0, packageManager_1.installDependencies)(packageManager, appTargetPath);
         if (os_1.default.platform() === 'darwin') {
             await podInstall(appTargetPath);
@@ -125,7 +125,7 @@ async function modifyPackageJson(appPath) {
  * Runs `npx expo prebuild` in the example app.
  */
 async function prebuildExampleApp(exampleAppPath) {
-    await (0, utils_1.newStep)('Prebuilding the example app', async (step) => {
+    await (0, ora_1.newStep)('Prebuilding the example app', async (step) => {
         await (0, spawn_async_1.default)('npx', ['expo', 'prebuild', '--no-install'], {
             cwd: exampleAppPath,
             stdio: ['ignore', 'ignore', 'pipe'],

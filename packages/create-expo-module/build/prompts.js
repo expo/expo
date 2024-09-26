@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLocalSubstitutionDataPrompts = exports.getSubstitutionDataPrompts = exports.getLocalFolderNamePrompt = exports.getSlugPrompt = void 0;
 const path_1 = __importDefault(require("path"));
 const validate_npm_package_name_1 = __importDefault(require("validate-npm-package-name"));
-const utils_1 = require("./utils");
+const git_1 = require("./utils/git");
+const github_1 = require("./utils/github");
 function getInitialName(customTargetPath) {
     const targetBasename = customTargetPath && path_1.default.basename(customTargetPath);
     return targetBasename && (0, validate_npm_package_name_1.default)(targetBasename).validForNewPackages
@@ -73,26 +74,26 @@ async function getSubstitutionDataPrompts(slug) {
             type: 'text',
             name: 'authorName',
             message: 'What is the name of the package author?',
-            initial: await (0, utils_1.findMyName)(),
+            initial: await (0, git_1.findMyName)(),
             validate: (input) => !!input || 'Cannot be empty',
         },
         {
             type: 'text',
             name: 'authorEmail',
             message: 'What is the email address of the author?',
-            initial: await (0, utils_1.findGitHubEmail)(),
+            initial: await (0, git_1.findGitHubEmail)(),
         },
         {
             type: 'text',
             name: 'authorUrl',
             message: "What is the URL to the author's GitHub profile?",
-            initial: async (_, answers) => await (0, utils_1.findGitHubProfileUrl)(answers.authorEmail),
+            initial: async (_, answers) => await (0, github_1.findGitHubUserFromEmail)(answers.authorEmail).then((actor) => actor || ''),
         },
         {
             type: 'text',
             name: 'repo',
             message: 'What is the URL for the repository?',
-            initial: async (_, answers) => await (0, utils_1.guessRepoUrl)(answers.authorUrl, slug),
+            initial: async (_, answers) => await (0, github_1.guessRepoUrl)(answers.authorUrl, slug),
             validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
         },
     ];

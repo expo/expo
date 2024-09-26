@@ -5,7 +5,7 @@ description: Learn about Expo Router which is a file-based routing system and ho
 
 import { FileTree } from '~/ui/components/FileTree';
 
-This guide provides basic conventions and guidance for Expo Router and navigation patterns (stack and tabs). To follow along, you can  [create a project by using the default template](/get-started/create-a-project/) or install [Expo Router library manually](/router/installation/#manual-installation) in your existing project.
+This guide provides basic conventions and guidance for Expo Router and navigation patterns (stack and tabs). To follow along, you can [create a project by using the default template](/get-started/create-a-project/) or install [Expo Router library manually](/router/installation/#manual-installation) in your existing project.
 
 ## What is Expo Router?
 
@@ -160,6 +160,7 @@ Expo Router uses a built-in component called `Link` to move between routes in an
 You can use it by importing it from Expo Router library and then passing the `href` prop with the route to navigate as the value of the prop. For example, to navigate from `/` to `/details`, add a `Link` component in the **index.tsx** file:
 
 ```tsx app/index.tsx|collapseHeight=300
+import { Link } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
@@ -239,7 +240,7 @@ export default function RootLayout() {
 }
 ```
 
-> **Note:** In the above example, the screen options are moved to **(home)/layout.tsx** file. This means if you add any route to the Stack navigator inside the Root layout, it will not use the same screen options as the routes inside the Home layout.
+> **Note:** In the above example, the screen options are moved to **(home)/\_layout.tsx** file. This means if you add any route to the Stack navigator inside the Root layout, it will not use the same screen options as the routes inside the Home layout.
 
 ## Tab navigator
 

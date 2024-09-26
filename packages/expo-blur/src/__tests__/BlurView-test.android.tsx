@@ -8,4 +8,4 @@ it(`renders a native blur view`, async () => {
   const view = await screen.findByTestId('blur');
   expect(view).toBeDefined();
   expect(screen.toJSON()).toMatchSnapshot();
-});
+}, 10000);

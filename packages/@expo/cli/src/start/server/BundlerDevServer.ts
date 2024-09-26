@@ -190,8 +190,9 @@ export abstract class BundlerDevServer {
     return {
       // Create a mock server
       server: {
-        close: () => {
+        close: (callback: () => void) => {
           this.instance = null;
+          callback?.();
         },
         addListener() {},
       },
@@ -226,9 +227,11 @@ export abstract class BundlerDevServer {
     ) {
       await this._startTunnelAsync();
     }
-    await this.startDevSessionAsync();
 
-    this.watchConfig();
+    if (!options.isExporting) {
+      await this.startDevSessionAsync();
+      this.watchConfig();
+    }
   }
 
   protected abstract getConfigModuleIds(): string[];
@@ -328,11 +331,16 @@ export abstract class BundlerDevServer {
           debug(`Stopping dev server (bundler: ${this.name})`);
 
           if (this.instance?.server) {
+            // Check if server is even running.
             this.instance.server.close((error) => {
               debug(`Stopped dev server (bundler: ${this.name})`);
               this.instance = null;
               if (error) {
-                reject(error);
+                if ('code' in error && error.code === 'ERR_SERVER_NOT_RUNNING') {
+                  resolve();
+                } else {
+                  reject(error);
+                }
               } else {
                 resolve();
               }
@@ -364,7 +372,7 @@ export abstract class BundlerDevServer {
 
   public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
     return this.isDevClient
-      ? this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl()
+      ? (this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl())
       : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
   }
 
@@ -379,6 +387,18 @@ export abstract class BundlerDevServer {
       return `${location.protocol}://localhost:${location.port}`;
     }
     return location.url ?? null;
+  }
+
+  public getDevServerUrlOrAssert(options: { hostType?: 'localhost' } = {}): string {
+    const instance = this.getDevServerUrl(options);
+    if (!instance) {
+      throw new CommandError(
+        'DEV_SERVER',
+        `Cannot get the dev server URL before the server has started - bundler[${this.name}]`
+      );
+    }
+
+    return instance;
   }
 
   /** Get the base URL for JS inspector */
@@ -405,7 +425,7 @@ export abstract class BundlerDevServer {
     if (launchTarget === 'desktop') {
       const serverUrl = this.getDevServerUrl({ hostType: 'localhost' });
       // Allow opening the tunnel URL when using Metro web.
-      const url = this.name === 'metro' ? this.getTunnelUrl() ?? serverUrl : serverUrl;
+      const url = this.name === 'metro' ? (this.getTunnelUrl() ?? serverUrl) : serverUrl;
       await openBrowserAsync(url!);
       return { url };
     }

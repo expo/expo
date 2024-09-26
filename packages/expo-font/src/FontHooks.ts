@@ -20,9 +20,23 @@ function useRuntimeFonts(map: string | Record<string, FontSource>): [boolean, Er
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     loadAsync(map)
-      .then(() => setLoaded(true))
-      .catch(setError);
+      .then(() => {
+        if (isMounted) {
+          setLoaded(true);
+        }
+      })
+      .catch((error) => {
+        if (isMounted) {
+          setError(error);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return [loaded, error];
@@ -35,9 +49,6 @@ function useStaticFonts(map: string | Record<string, FontSource>): [boolean, Err
 
 // @needsAudit
 /**
- * ```ts
- * const [loaded, error] = useFonts({ ... });
- * ```
  * Load a map of fonts with [`loadAsync`](#loadasyncfontfamilyorfontmap-source). This returns a `boolean` if the fonts are
  * loaded and ready to use. It also returns an error if something went wrong, to use in development.
  *
@@ -50,6 +61,11 @@ function useStaticFonts(map: string | Record<string, FontSource>): [boolean, Err
  * - __loaded__ (`boolean`) - A boolean to detect if the font for `fontFamily` has finished
  * loading.
  * - __error__ (`Error | null`) - An error encountered when loading the fonts.
+ *
+ * @example
+ * ```tsx
+ * const [loaded, error] = useFonts({ ... });
+ * ```
  */
 export const useFonts: (map: string | Record<string, FontSource>) => [boolean, Error | null] =
   typeof window === 'undefined' ? useStaticFonts : useRuntimeFonts;

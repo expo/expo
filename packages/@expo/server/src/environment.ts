@@ -1,6 +1,7 @@
 /* eslint-disable no-var */
-import { installGlobals as installRemixGlobals } from '@remix-run/node';
+import './assertion';
 
+import { installGlobals as installRemixGlobals } from '@remix-run/node';
 declare const Response: {
   prototype: Response;
   new (body?: BodyInit | null, init?: ResponseInit): Response;
@@ -25,7 +26,8 @@ export const ExpoRequest = Request;
 export const ExpoResponse = Response;
 
 export function installGlobals() {
-  installRemixGlobals();
+  // Use global polyfills from Undici
+  installRemixGlobals({ nativeFetch: true });
 
   global.ExpoRequest = Request;
   global.ExpoResponse = Response;

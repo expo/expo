@@ -8,8 +8,7 @@ import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError } from './hel
 
 export const name = 'Image';
 
-const REMOTE_SOURCE = { uri: 'https://source.unsplash.com/random' };
-const REMOTE_KNOWN_SOURCE = {
+const REMOTE_SOURCE = {
   uri: 'https://images.unsplash.com/photo-1701743805362-86796f50a0c2?w=1080',
   blurhash: 'LPC6uxxa9GWB01WBs:R*?uayV@WB',
 };
@@ -29,7 +28,40 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     t.expect(error).toBeTruthy();
   };
 
-  t.describe('Image', () => {
+  // TODO: Remove the condition once this is implemented on other platforms
+  if (Platform.OS === 'ios' || Platform.OS === 'android') {
+    t.describe('Image', () => {
+      t.it('loads an image', async () => {
+        const image = await Image.loadAsync(REMOTE_SOURCE);
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+        t.expect(image.scale).toBe(1);
+        t.expect(image.isAnimated).toBe(false);
+        if (Platform.OS === 'ios') {
+          t.expect(image.mediaType).toBe('image/jpeg');
+        }
+      });
+
+      t.it('loads an animated image', async () => {
+        const image = await Image.loadAsync(ANIMATED_IMAGE_SOURCE);
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+        t.expect(image.scale).toBe(1);
+        t.expect(image.isAnimated).toBe(true);
+        if (Platform.OS === 'ios') {
+          t.expect(image.mediaType).toBe('image/gif');
+        }
+      });
+    });
+  }
+
+  t.describe('ImageView', () => {
     t.afterEach(async () => {
       await cleanupPortal();
     });
@@ -176,11 +208,11 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     t.describe('prefetch', async () => {
       t.it('prefetches an image and resolves promise to true', async () => {
         await Image.clearDiskCache();
-        const result = await Image.prefetch(REMOTE_KNOWN_SOURCE.uri);
+        const result = await Image.prefetch(REMOTE_SOURCE.uri);
         t.expect(result).toBe(true);
 
         if (Platform.OS === 'android' || Platform.OS === 'ios') {
-          const path = await Image.getCachePathAsync(REMOTE_KNOWN_SOURCE.uri);
+          const path = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
           t.expect(typeof path).toBe('string');
         }
       });
@@ -198,7 +230,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
       t.it('prefetches an image with headers and resolves promise to true', async () => {
         await Image.clearDiskCache();
-        const result = await Image.prefetch(REMOTE_KNOWN_SOURCE.uri, {
+        const result = await Image.prefetch(REMOTE_SOURCE.uri, {
           headers: {
             Referer: 'https://expo.dev',
           },
@@ -206,7 +238,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(result).toBe(true);
 
         if (Platform.OS === 'android' || Platform.OS === 'ios') {
-          const path = await Image.getCachePathAsync(REMOTE_KNOWN_SOURCE.uri);
+          const path = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
           t.expect(typeof path).toBe('string');
         }
       });
@@ -215,8 +247,8 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     if (Platform.OS === 'ios') {
       t.describe('generateBlurhashAsync', async () => {
         t.it('returns a correct blurhash for url', async () => {
-          const result = await Image.generateBlurhashAsync(REMOTE_KNOWN_SOURCE.uri, [4, 3]);
-          t.expect(result).toBe(REMOTE_KNOWN_SOURCE.blurhash);
+          const result = await Image.generateBlurhashAsync(REMOTE_SOURCE.uri, [4, 3]);
+          t.expect(result).toBe(REMOTE_SOURCE.blurhash);
         });
         t.it('rejects on a missing url', async () => {
           await throws(Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));

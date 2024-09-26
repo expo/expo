@@ -27,10 +27,6 @@ If you are using expo-updates to test a server you're developing, you may want t
 
 You can do tell expo-updates to ignore the embedded bundle and force a remote update by setting `EXUpdatesHasEmbeddedUpdate` and `expo.modules.updates.HAS_EMBEDDED_UPDATE` to false.
 
-### New Manifest Format
-
-To test the new EAS update manifest format, set `EXUpdatesUsesLegacyManifest` and `expo.modules.updates.EXPO_LEGACY_MANIFEST` to false.
-
 ### Additional Headers
 
 If you want any additional headers to be sent in manifest requests, you can add these to a map under the key `EXUpdatesRequestHeaders` on iOS, or `requestHeaders` on Android (currently, this can't be configured in AndroidManifest.xml and you need to use the `UpdatesController.overrideConfiguration(Context context, Map<String, Object> configuration)` method in MainApplication.java).

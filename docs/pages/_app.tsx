@@ -35,16 +35,20 @@ Sentry.init({
   dsn: 'https://1a2f5c8cec574bcea3971b74f91504d6@o30871.ingest.sentry.io/1526800',
   beforeSend: preprocessSentryError,
   environment: isDev ? 'development' : 'production',
-  denyUrls: isDev
-    ? undefined
-    : [
-        /https:\/\/docs-expo-dev\.translate\.goog/,
-        /https:\/\/translated\.turbopages\.org/,
-        /https:\/\/docs\.expo\.dev\/index\.html/,
-        /https:\/\/expo\.nodejs\.cn/,
-      ],
-  integrations: [new Sentry.BrowserTracing()],
-  tracesSampleRate: 0.001,
+  denyUrls: [
+    /https:\/\/docs-expo-dev\.translate\.goog/,
+    /https:\/\/translated\.turbopages\.org/,
+    /https:\/\/docs\.expo\.dev\/index\.html/,
+    /https:\/\/expo\.nodejs\.cn/,
+  ],
+  integrations: [Sentry.browserTracingIntegration(), Sentry.extraErrorDataIntegration()],
+  tracesSampleRate: 0.002,
+  replaysSessionSampleRate: 0.0001,
+  replaysOnErrorSampleRate: 0.05,
+});
+
+import('@sentry/react').then(lazyLoadedSentry => {
+  Sentry.addIntegration(lazyLoadedSentry.replayIntegration());
 });
 
 const rootMarkdownComponents = {

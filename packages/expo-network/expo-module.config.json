@@ -1,6 +1,5 @@
 {
-  "name": "expo-network",
-  "platforms": ["ios", "android", "web", "tvos"],
+  "platforms": ["apple", "android", "web"],
   "ios": {
     "modules": ["NetworkModule"]
   },

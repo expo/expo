@@ -6,9 +6,33 @@
 
 ### 🎉 New features
 
+- Added `ios.developmentTeam` to change the Apple development team id. ([#30761](https://github.com/expo/expo/pull/30761) by [@byCedric](https://github.com/byCedric))
+
 ### 🐛 Bug fixes
 
+- Fix empty splash config resulting in build error. ([#29497](https://github.com/expo/expo/pull/29497) by [@aleqsio](https://github.com/aleqsio))
+- Fix incorrect dependency imports. ([#30553](https://github.com/expo/expo/pull/30553) by [@byCedric](https://github.com/byCedric))
+- Replaced the config-plugins deprecated `getAppThemeLightNoActionBarGroup` method with the new `getAppThemeGroup`. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
+
+## 7.0.8 - 2024-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.7 - 2024-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.6 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.5 - 2024-06-05
+
+### 💡 Others
+
+- Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
 
 ## 7.0.4 — 2024-05-16
 

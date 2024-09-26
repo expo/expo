@@ -1,9 +1,12 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import { useEffect, useState } from 'react';
 
 import ExpoNetwork from './ExpoNetwork';
-import { NetworkState, NetworkStateType } from './Network.types';
+import { NetworkState, NetworkStateEvent, NetworkStateType } from './Network.types';
 
-export { NetworkState, NetworkStateType };
+export { NetworkState, NetworkStateEvent, NetworkStateType };
+
+const onNetworkStateEventName = 'onNetworkStateChanged';
 
 // @needsAudit
 /**
@@ -71,4 +74,50 @@ export async function isAirplaneModeEnabledAsync(): Promise<boolean> {
     throw new UnavailabilityError('expo-network', 'isAirplaneModeEnabledAsync');
   }
   return await ExpoNetwork.isAirplaneModeEnabledAsync();
+}
+
+/**
+ * Adds a listener that will fire whenever the network state changes.
+ *
+ * @param listener Callback to execute when the network state changes. The callback is provided with
+ * a single argument that is an object containing information about the network state.
+ *
+ * @example
+ * ```ts
+ * const subscription = addNetworkStateListener(({ type, isConnected, isInternetReachable }) => {
+ *   console.log(`Network type: ${type}, Connected: ${isConnected}, Internet Reachable: ${isInternetReachable}`);
+ * });
+ * ```
+ *
+ * @returns A subscription object with a remove function to unregister the listener.
+ */
+export function addNetworkStateListener(
+  listener: (event: NetworkStateEvent) => void
+): EventSubscription {
+  return ExpoNetwork.addListener(onNetworkStateEventName, listener);
+}
+
+// @needsAudit
+/**
+ * Returns the current network state of the device. This method
+ * initiates a listener for network state changes and cleans up before unmounting.
+ *
+ * @example
+ * ```ts
+ * const networkState = useNetworkState();
+ * console.log(`Current network type: ${networkState.type}`);
+ * ```
+ *
+ * @return The current network state of the device, including connectivity and type.
+ */
+export function useNetworkState(): NetworkState {
+  const [networkState, setNetworkState] = useState<NetworkState>({});
+
+  useEffect(() => {
+    getNetworkStateAsync().then(setNetworkState);
+    const listener = addNetworkStateListener((networkState) => setNetworkState(networkState));
+    return () => listener.remove();
+  }, []);
+
+  return networkState;
 }

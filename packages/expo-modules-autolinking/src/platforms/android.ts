@@ -25,7 +25,7 @@ async function findGradleFilesAsync(revision: PackageRevision): Promise<string[]
     return configGradlePaths;
   }
 
-  const buildGradleFiles = await glob('*/build.gradle', {
+  const buildGradleFiles = await glob('*/build.gradle{,.kts}', {
     cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
@@ -50,17 +50,6 @@ export async function resolveModuleAsync(
     return null;
   }
 
-  const projects = buildGradleFiles.map((buildGradleFile) => {
-    const gradleFilePath = path.join(revision.path, buildGradleFile);
-    return {
-      name: convertPackageNameToProjectName(
-        packageName,
-        path.relative(revision.path, gradleFilePath)
-      ),
-      sourceDir: path.dirname(gradleFilePath),
-    };
-  });
-
   const plugins = (revision.config?.androidGradlePlugins() ?? []).map(
     ({ id, group, sourceDir }) => ({
       id,
@@ -69,11 +58,39 @@ export async function resolveModuleAsync(
     })
   );
 
+  const aarProjects = (revision.config?.androidGradleAarProjects() ?? []).map(
+    ({ name, aarFilePath }) => {
+      const mainProjectName = convertPackageToProjectName(packageName);
+      const projectName = `${mainProjectName}$${name}`;
+      const projectDir = path.join(revision.path, 'android', 'build', projectName);
+      return {
+        name: projectName,
+        aarFilePath: path.join(revision.path, aarFilePath),
+        projectDir,
+      };
+    }
+  );
+
+  const projects = buildGradleFiles
+    .map((buildGradleFile) => {
+      const gradleFilePath = path.join(revision.path, buildGradleFile);
+      return {
+        name: convertPackageWithGradleToProjectName(
+          packageName,
+          path.relative(revision.path, gradleFilePath)
+        ),
+        sourceDir: path.dirname(gradleFilePath),
+      };
+    })
+    // Filter out projects that are already linked by plugins
+    .filter(({ sourceDir }) => !plugins.some((plugin) => plugin.sourceDir === sourceDir));
+
   return {
     packageName,
     projects,
     ...(plugins.length > 0 ? { plugins } : {}),
     modules: revision.config?.androidModules() ?? [],
+    ...(aarProjects.length > 0 ? { aarProjects } : {}),
   };
 }
 
@@ -188,6 +205,16 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Pro
 }
 
 /**
+ * Converts the package name to Android's project name.
+ *   `/` path will transform as `-`
+ *
+ * Example: `@expo/example` + `android/build.gradle` → `expo-example`
+ */
+export function convertPackageToProjectName(packageName: string): string {
+  return packageName.replace(/^@/g, '').replace(/\W+/g, '-');
+}
+
+/**
  * Converts the package name and gradle file path to Android's project name.
  *   `$` to indicate subprojects
  *   `/` path will transform as `-`
@@ -198,11 +225,11 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Pro
  *   - `expo-test` + `android/build.gradle` → `react-native-third-party`
  *   - `expo-test` + `subproject/build.gradle` → `react-native-third-party$subproject`
  */
-export function convertPackageNameToProjectName(
+export function convertPackageWithGradleToProjectName(
   packageName: string,
   buildGradleFile: string
 ): string {
-  const name = packageName.replace(/^@/g, '').replace(/\W+/g, '-');
+  const name = convertPackageToProjectName(packageName);
   const baseDir = path.dirname(buildGradleFile).replace(/\//g, '-');
   return baseDir === 'android' ? name : `${name}$${baseDir}`;
 }

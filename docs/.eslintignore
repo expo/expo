@@ -1,8 +1,9 @@
+.cache
 .next
 .swc
-dangerfile.js
-/global-styles/nprogress.ts
+.vale
+
 out
 node_modules
 pages/versions/latest
-public/static
+public

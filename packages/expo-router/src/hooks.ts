@@ -1,11 +1,11 @@
-import { NavigationRouteContext } from '@react-navigation/native';
 import React from 'react';
 
+import { LocalRouteParamsContext } from './Route';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
-import { ExpoRouter } from '../types/expo-router';
+import { Router } from './imperative-api';
+import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
 
 type SearchParams = Record<string, string | string[]>;
-
 export function useRootNavigationState() {
   return useStoreRootState();
 }
@@ -24,7 +24,7 @@ export function useNavigationContainerRef() {
   return store.navigationRef;
 }
 
-export function useRouter(): ExpoRouter.Router {
+export function useRouter(): Router {
   return React.useMemo(
     () => ({
       push: store.push,
@@ -69,8 +69,12 @@ export function useUnstableGlobalHref(): string {
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export function useSegments<TSegments extends string[] = string[]>(): TSegments {
-  return useStoreRouteInfo().segments as TSegments;
+export function useSegments<
+  TSegments extends Routes | RouteSegments<Routes> = Routes,
+>(): TSegments extends string ? RouteSegments<TSegments> : TSegments {
+  return useStoreRouteInfo().segments as TSegments extends string
+    ? RouteSegments<TSegments>
+    : TSegments;
 }
 
 /** @returns global selected pathname without query parameters. */
@@ -88,21 +92,40 @@ export function usePathname(): string {
  * @see `useLocalSearchParams`
  */
 export function useGlobalSearchParams<
-  TParams extends SearchParams = SearchParams,
->(): Partial<TParams> {
-  return useStoreRouteInfo().params as Partial<TParams>;
+  TParams extends SearchParams = UnknownOutputParams,
+>(): RouteParams<TParams>;
+export function useGlobalSearchParams<
+  TRoute extends Routes,
+  TParams extends SearchParams = UnknownOutputParams,
+>(): RouteParams<TRoute, TParams>;
+export function useGlobalSearchParams<
+  TParams1 extends SearchParams | Routes = UnknownOutputParams,
+  TParams2 extends SearchParams = UnknownOutputParams,
+>(): RouteParams<TParams1, TParams2> {
+  return useStoreRouteInfo().params as RouteParams<TParams1, TParams2>;
 }
 
 /**
- * Returns the URL search parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
+ * Returns the URL parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
+ * For dynamic routes, both the route parameters and the search parameters are returned.
  *
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
+ *
+ * @see `useGlobalSearchParams`
  */
 export function useLocalSearchParams<
-  TParams extends SearchParams = SearchParams,
->(): Partial<TParams> {
-  const params = React.useContext(NavigationRouteContext)?.params ?? {};
+  TParams extends SearchParams = UnknownOutputParams,
+>(): RouteParams<TParams>;
+export function useLocalSearchParams<
+  TRoute extends Routes,
+  TParams extends SearchParams = UnknownOutputParams,
+>(): RouteParams<TRoute, TParams>;
+export function useLocalSearchParams<
+  TParams1 extends SearchParams | Routes = UnknownOutputParams,
+  TParams2 extends SearchParams = UnknownOutputParams,
+>(): RouteParams<TParams1, TParams2> {
+  const params = React.useContext(LocalRouteParamsContext) ?? {};
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
       if (Array.isArray(value)) {
@@ -124,5 +147,41 @@ export function useLocalSearchParams<
         }
       }
     })
-  ) as Partial<TParams>;
+  ) as RouteParams<TParams1, TParams2>;
+}
+
+export function useSearchParams({ global = false } = {}): URLSearchParams {
+  const globalRef = React.useRef(global);
+  if (process.env.NODE_ENV !== 'production') {
+    if (global !== globalRef.current) {
+      console.warn(
+        `Detected change in 'global' option of useSearchParams. This value cannot change between renders`
+      );
+    }
+  }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const params = global ? useGlobalSearchParams() : useLocalSearchParams();
+  const entries = Object.entries(params).flatMap(([key, value]) => {
+    if (global) {
+      if (key === 'params') return [];
+      if (key === 'screen') return [];
+    }
+
+    return Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]];
+  });
+
+  return new ReadOnlyURLSearchParams(entries);
+}
+
+class ReadOnlyURLSearchParams extends URLSearchParams {
+  set() {
+    throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+  }
+  append() {
+    throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+  }
+  delete() {
+    throw new Error('The URLSearchParams object return from useSearchParams is read-only');
+  }
 }

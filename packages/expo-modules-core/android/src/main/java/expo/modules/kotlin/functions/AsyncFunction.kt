@@ -11,8 +11,9 @@ import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
-import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.weak
 import kotlinx.coroutines.launch
 
 /**
@@ -53,12 +54,12 @@ abstract class AsyncFunction(
 
   internal abstract fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext)
 
-  override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
-    val appContextHolder = appContext.jsiInterop.appContextHolder
-    val moduleName = jsObject.name
+  override fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String) {
+    val appContextHolder = appContext.weak()
     jsObject.registerAsyncFunction(
       name,
       takesOwner,
+      isEnumerable,
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, promiseImpl ->
       if (BuildConfig.DEBUG) {

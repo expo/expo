@@ -71,6 +71,7 @@ const renderInterfaceComment = (
       <>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
+          inlineHeaders
           comment={comment}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
@@ -115,7 +116,7 @@ const renderInterface = (
 
   return (
     <div key={`interface-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
-      <APISectionDeprecationNote comment={comment} />
+      <APISectionDeprecationNote comment={comment} sticky />
       <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">
@@ -124,7 +125,7 @@ const renderInterface = (
       </H3Code>
       {extendedTypes?.length ? (
         <CALLOUT className={ELEMENT_SPACING}>
-          <CALLOUT tag="span" theme="secondary" weight="semiBold">
+          <CALLOUT tag="span" theme="secondary" weight="medium">
             Extends:{' '}
           </CALLOUT>
           {extendedTypes.map(extendedType => (

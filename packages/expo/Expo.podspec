@@ -17,9 +17,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms       = {
-    :ios => '13.4',
+    :ios => '15.1',
     :osx => '10.15',
-    :tvos => '13.4'
+    :tvos => '15.1'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -43,4 +43,7 @@ Pod::Spec.new do |s|
   end
 
   s.source_files = 'ios/**/*.{h,m,swift}'
+  s.user_target_xcconfig = {
+    'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/Expo/Swift Compatibility Header"',
+  }
 end

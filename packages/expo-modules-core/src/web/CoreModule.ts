@@ -5,9 +5,9 @@ import type {
 } from '../ts-declarations/EventEmitter';
 import type { NativeModule as NativeModuleType } from '../ts-declarations/NativeModule';
 import type { SharedObject as SharedObjectType } from '../ts-declarations/SharedObject';
-import uuid from '../uuid';
+import type { SharedRef as SharedRefType } from '../ts-declarations/SharedRef';
 
-class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
+export class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
   private listeners?: Map<keyof TEventsMap, Set<Function>>;
 
   addListener<EventName extends keyof TEventsMap>(
@@ -20,7 +20,14 @@ class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
     if (!this.listeners?.has(eventName)) {
       this.listeners?.set(eventName, new Set());
     }
+
+    const previousListenerCount = this.listenerCount(eventName);
+
     this.listeners?.get(eventName)?.add(listener);
+
+    if (previousListenerCount === 0 && this.listenerCount(eventName) === 1) {
+      this.startObserving(eventName);
+    }
 
     return {
       remove: () => {
@@ -33,23 +40,45 @@ class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterType {
     eventName: EventName,
     listener: TEventsMap[EventName]
   ): void {
-    this.listeners?.get(eventName)?.delete(listener);
+    const hasRemovedListener = this.listeners?.get(eventName)?.delete(listener);
+    if (this.listenerCount(eventName) === 0 && hasRemovedListener) {
+      this.stopObserving(eventName);
+    }
   }
 
   removeAllListeners<EventName extends keyof TEventsMap>(eventName: EventName): void {
+    const previousListenerCount = this.listenerCount(eventName);
     this.listeners?.get(eventName)?.clear();
+    if (previousListenerCount > 0) {
+      this.stopObserving(eventName);
+    }
   }
 
   emit<EventName extends keyof TEventsMap>(
     eventName: EventName,
     ...args: Parameters<TEventsMap[EventName]>
   ): void {
-    this.listeners?.get(eventName)?.forEach((listener) => listener(...args));
+    const listeners = new Set(this.listeners?.get(eventName));
+
+    listeners.forEach((listener) => {
+      // When the listener throws an error, don't stop the execution of subsequent listeners and
+      // don't propagate the error to the `emit` function. The motivation behind this is that
+      // errors thrown from a module or user's code shouldn't affect other modules' behavior.
+      try {
+        listener(...args);
+      } catch (error) {
+        console.error(error);
+      }
+    });
   }
 
   listenerCount<EventName extends keyof TEventsMap>(eventName: EventName): number {
     return this.listeners?.get(eventName)?.size ?? 0;
   }
+
+  startObserving<EventName extends keyof TEventsMap>(eventName: EventName): void {}
+
+  stopObserving<EventName extends keyof TEventsMap>(eventName: EventName): void {}
 }
 
 export class NativeModule<TEventsMap extends Record<never, never>>
@@ -61,26 +90,15 @@ export class NativeModule<TEventsMap extends Record<never, never>>
   __expo_module_name__?: string;
 }
 
-class SharedObject<TEventsMap extends Record<never, never>>
+export class SharedObject<TEventsMap extends Record<never, never>>
   extends EventEmitter<TEventsMap>
   implements SharedObjectType
 {
   release(): void {
-    throw new Error('Method not implemented.');
+    // no-op on Web, but subclasses can override it if needed.
   }
 }
 
-globalThis.expo = {
-  EventEmitter,
-  NativeModule,
-  SharedObject,
-  modules: {},
-  uuidv4: uuid.v4,
-  uuidv5: uuid.v5,
-  getViewConfig: () => {
-    throw new Error('Method not implemented.');
-  },
-  reloadAppAsync: async () => {
-    window.location.reload();
-  },
-};
+export class SharedRef<TEventsMap extends Record<never, never>>
+  extends SharedObject<TEventsMap>
+  implements SharedRefType {}

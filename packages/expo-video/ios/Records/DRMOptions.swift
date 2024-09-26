@@ -14,11 +14,11 @@ internal struct DRMOptions: Record {
   var headers: [String: Any]?
 
   @Field
-  var base64Certificate: Bool = false
-
-  @Field
   var contentId: String?
 
   @Field
   var certificateUrl: URL?
+
+  @Field
+  var base64CertificateData: String?
 }

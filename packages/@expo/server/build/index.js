@@ -5,13 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRequestHandler = exports.getRoutesManifest = void 0;
 require("@expo/server/install");
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const url_1 = require("url");
-const debug = require('debug')('expo:server');
+const node_fs_1 = __importDefault(require("node:fs"));
+const node_path_1 = __importDefault(require("node:path"));
+const debug = process.env.NODE_ENV === 'development'
+    ? require('debug')('expo:server')
+    : () => { };
 function getProcessedManifest(path) {
     // TODO: JSON Schema for validation
-    const routesManifest = JSON.parse(fs_1.default.readFileSync(path, 'utf-8'));
+    const routesManifest = JSON.parse(node_fs_1.default.readFileSync(path, 'utf-8'));
     const parsed = {
         ...routesManifest,
         notFoundRoutes: routesManifest.notFoundRoutes.map((value) => {
@@ -36,43 +37,50 @@ function getProcessedManifest(path) {
     return parsed;
 }
 function getRoutesManifest(distFolder) {
-    return getProcessedManifest(path_1.default.join(distFolder, '_expo/routes.json'));
+    return getProcessedManifest(node_path_1.default.join(distFolder, '_expo/routes.json'));
 }
 exports.getRoutesManifest = getRoutesManifest;
 // TODO: Reuse this for dev as well
 function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
     // Serve a static file by exact route name
-    const filePath = path_1.default.join(distFolder, route.page + '.html');
-    if (fs_1.default.existsSync(filePath)) {
-        return fs_1.default.readFileSync(filePath, 'utf-8');
+    const filePath = node_path_1.default.join(distFolder, route.page + '.html');
+    if (node_fs_1.default.existsSync(filePath)) {
+        return node_fs_1.default.readFileSync(filePath, 'utf-8');
     }
     // Serve a static file by route name with hoisted index
     // See: https://github.com/expo/expo/pull/27935
     const hoistedFilePath = route.page.match(/\/index$/)
-        ? path_1.default.join(distFolder, route.page.replace(/\/index$/, '') + '.html')
+        ? node_path_1.default.join(distFolder, route.page.replace(/\/index$/, '') + '.html')
         : null;
-    if (hoistedFilePath && fs_1.default.existsSync(hoistedFilePath)) {
-        return fs_1.default.readFileSync(hoistedFilePath, 'utf-8');
+    if (hoistedFilePath && node_fs_1.default.existsSync(hoistedFilePath)) {
+        return node_fs_1.default.readFileSync(hoistedFilePath, 'utf-8');
     }
     return null;
 }, getApiRoute = async (route) => {
-    const filePath = path_1.default.join(distFolder, route.file);
+    const filePath = node_path_1.default.join(distFolder, route.file);
     debug(`Handling API route: ${route.page}: ${filePath}`);
     // TODO: What's the standard behavior for malformed projects?
-    if (!fs_1.default.existsSync(filePath)) {
+    if (!node_fs_1.default.existsSync(filePath)) {
         return null;
     }
-    if (/\.[cj]s$/.test(filePath)) {
+    if (/\.c?js$/.test(filePath)) {
         return require(filePath);
     }
     return import(filePath);
 }, logApiRouteExecutionError = (error) => {
     console.error(error);
+}, handleApiRouteError = async () => {
+    return new Response('Internal server error', {
+        status: 500,
+        headers: {
+            'Content-Type': 'text/plain',
+        },
+    });
 }, } = {}) {
     let routesManifest;
     function updateRequestWithConfig(request, config) {
         const params = {};
-        const url = new url_1.URL(request.url);
+        const url = new URL(request.url);
         const match = config.namedRegex.exec(url.pathname);
         if (match?.groups) {
             for (const [key, value] of Object.entries(match.groups)) {
@@ -101,7 +109,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
         else if (!routesManifest) {
             routesManifest = getRoutesManifest(distFolder);
         }
-        const url = new url_1.URL(request.url, 'http://expo.dev');
+        const url = new URL(request.url, 'http://expo.dev');
         const sanitizedPathname = url.pathname;
         debug('Request', sanitizedPathname);
         if (request.method === 'GET' || request.method === 'HEAD') {
@@ -162,12 +170,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 if (error instanceof Error) {
                     logApiRouteExecutionError(error);
                 }
-                return new Response('Internal server error', {
-                    status: 500,
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
-                });
+                return handleApiRouteError(error);
             }
         }
         // Finally, test 404 routes

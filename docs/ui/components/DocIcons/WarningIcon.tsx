@@ -1,4 +1,4 @@
-import { AlertTriangleSolidIcon } from '@expo/styleguide-icons';
+import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
 
 import { IconBase, DocIconProps } from './IconBase';
 

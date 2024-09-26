@@ -52,7 +52,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     onCanPlay: (event: any) => void;
     onStalled: () => void;
     onRef: (ref: HTMLVideoElement | null) => void;
-    render(): JSX.Element;
+    render(): React.JSX.Element;
 }
 export {};
 //# sourceMappingURL=ExponentVideo.web.d.ts.map

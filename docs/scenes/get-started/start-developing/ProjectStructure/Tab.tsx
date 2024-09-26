@@ -1,5 +1,6 @@
 import { ButtonBase, mergeClasses } from '@expo/styleguide';
-import { FileCode01Icon, FolderIcon } from '@expo/styleguide-icons';
+import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
+import { FolderIcon } from '@expo/styleguide-icons/outline/FolderIcon';
 import React from 'react';
 
 import { CALLOUT } from '~/ui/components/Text';

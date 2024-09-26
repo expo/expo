@@ -1,6 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 
-export const ELEMENT_SPACING = mergeClasses('mb-4');
+export const ELEMENT_SPACING = mergeClasses('mb-3.5');
 
 export const STYLES_SECONDARY = mergeClasses('text-secondary font-medium text-[90%]');
 

@@ -24,6 +24,7 @@ const debug = require('debug')('expo:init:template') as typeof console.log;
 
 const isMacOS = process.platform === 'darwin';
 
+// keep this list in sync with the validation helper in WWW: src/utils/experienceParser.ts
 const FORBIDDEN_NAMES = [
   'react-native',
   'react',
@@ -332,6 +333,11 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
   delete packageJson.description;
   delete packageJson.tags;
   delete packageJson.repository;
+
+  // Only strip the license if it's 0BSD, used by our templates. Leave other licenses alone.
+  if (packageJson.license === '0BSD') {
+    delete packageJson.license;
+  }
 
   await packageFile.writeAsync(packageJson);
 }

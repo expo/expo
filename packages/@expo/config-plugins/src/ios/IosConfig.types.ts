@@ -39,6 +39,7 @@ export type InfoPlist = Record<string, JSONValue | undefined> & {
 export type ExpoPlist = {
   EXUpdatesCheckOnLaunch?: string;
   EXUpdatesEnabled?: boolean;
+  EXUpdatesHasEmbeddedUpdate?: boolean;
   EXUpdatesLaunchWaitMs?: number;
   EXUpdatesRuntimeVersion?: string;
   EXUpdatesRequestHeaders?: Record<string, string>;

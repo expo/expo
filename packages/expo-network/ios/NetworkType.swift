@@ -11,7 +11,7 @@ extension NWInterface.InterfaceType: CaseIterable {
 }
 
 enum NetworkType: CustomStringConvertible {
-  case unknown, wifi, none, cellular
+  case unknown, wifi, none, cellular, wiredEthernet
 
   var description: String {
     switch self {
@@ -19,6 +19,8 @@ enum NetworkType: CustomStringConvertible {
       return "WIFI"
     case .cellular:
       return "CELLULAR"
+    case .wiredEthernet:
+      return "ETHERNET"
     case .unknown:
       return "UNKNOWN"
     case .none:

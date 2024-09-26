@@ -4,8 +4,8 @@ sidebar_title: Environment variables
 description: Learn how to use environment variables in an Expo project.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Terminal } from '~/ui/components/Snippet';
 
 Environment variables are key-value pairs configured outside your source code that allow your app to behave differently depending on the environment. For example, you can enable or disable certain features when building a test version of your app, or switch to a different API endpoint when building for production.
 
@@ -48,12 +48,13 @@ Expo CLI loads **.env** files according to the [standard .env file resolution](h
 
 ### How to read from environment variables
 
-- <YesIcon small /> **Every environment variable must be statically referenced as a property of `process.env`
-  using JavaScript's dot notation for it to be inlined.** For example, the expression `process.env.EXPO_PUBLIC_KEY`
-  is valid and will be inlined.
+- <YesIcon small /> **Every environment variable must be statically referenced as a property of
+  `process.env` using JavaScript's dot notation for it to be inlined.** For example, the expression
+  `process.env.EXPO_PUBLIC_KEY` is valid and will be inlined.
 
-- <NoIcon small /> **Alternative versions of the expression are not supported**. For example, `process.env['EXPO_PUBLIC_KEY']`
-  or `const {EXPO_PUBLIC_X} = process.env` is invalid and will not be inlined.
+- <NoIcon small /> **Alternative versions of the expression are not supported**. For example,
+  `process.env['EXPO_PUBLIC_KEY']` or `const {EXPO_PUBLIC_X} = process.env` is invalid and will not
+  be inlined.
 
 ### Using multiple .env files to define separate environments
 
@@ -112,7 +113,7 @@ Then update your code to use `process.env.EXPO_PUBLIC_[VARNAME]`:
 
 ### From babel-plugin-transform-inline-environment-variables
 
-Using a Babel plugin to transform your environment variable references in your code is similar to how Expo environment variables work. Set your variables inside of an **.env** file and update your variable names to use the `EXPO_PUBLIC_` prefix:
+Using a Babel plugin to transform your environment variable references in your code is similar to how Expo environment variables work. Set your variables inside a **.env** file and update your variable names to use the `EXPO_PUBLIC_` prefix:
 
 ```diff
 - const apiUrl = process.env.API_URL;

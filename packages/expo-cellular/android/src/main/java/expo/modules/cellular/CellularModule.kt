@@ -118,6 +118,9 @@ class CellularModule : Module() {
       TelephonyManager.NETWORK_TYPE_LTE -> {
         CellularGeneration.CG_4G.value
       }
+      TelephonyManager.NETWORK_TYPE_NR -> {
+        CellularGeneration.CG_5G.value
+      }
       else -> {
         CellularGeneration.UNKNOWN.value
       }

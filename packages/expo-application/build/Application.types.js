@@ -1,4 +1,7 @@
 // @docsMissing
+/**
+ * @platform ios
+ */
 export var ApplicationReleaseType;
 (function (ApplicationReleaseType) {
     ApplicationReleaseType[ApplicationReleaseType["UNKNOWN"] = 0] = "UNKNOWN";

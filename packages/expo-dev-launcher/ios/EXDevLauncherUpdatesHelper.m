@@ -28,22 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
   };
 }
 
-+ (NSString *)getUpdatesConfigForKey:(NSString *)key
-{
-  NSString *value = @"";
-  NSString *path = [[NSBundle mainBundle] pathForResource:@"Expo" ofType:@"plist"];
-
-  if (path != nil) {
-    NSDictionary *expoConfig = [NSDictionary dictionaryWithContentsOfFile:path];
-
-    if (expoConfig != nil) {
-      value = [expoConfig objectForKey:key] ?: @"";
-    }
-  }
-
-  return value;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

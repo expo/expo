@@ -80,19 +80,13 @@ class SymbolView: ExpoView {
         config = config.applying(UIImage.SymbolConfiguration.preferringMonochrome())
       }
     case .hierarchical:
-      if #available(iOS 15, *) {
-        config = config.applying(UIImage.SymbolConfiguration(hierarchicalColor: tint ?? .systemBlue))
-      }
+      config = config.applying(UIImage.SymbolConfiguration(hierarchicalColor: tint ?? .systemBlue))
     case .palette:
-      if #available(iOS 15, *) {
-        if palette.count > 1 {
-          config = config.applying(UIImage.SymbolConfiguration(paletteColors: palette))
-        }
+      if palette.count > 1 {
+        config = config.applying(UIImage.SymbolConfiguration(paletteColors: palette))
       }
     case .multicolor:
-      if #available(iOS 15.0, *) {
-        config = config.applying(UIImage.SymbolConfiguration.preferringMulticolor())
-      }
+      config = config.applying(UIImage.SymbolConfiguration.preferringMulticolor())
     }
 
     return config

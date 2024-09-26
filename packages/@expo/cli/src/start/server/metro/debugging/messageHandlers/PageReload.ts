@@ -5,9 +5,12 @@ import { MessageHandler } from '../MessageHandler';
 import type { CdpMessage, Connection, DebuggerRequest } from '../types';
 
 export class PageReloadHandler extends MessageHandler {
-  private metroBundler: MetroBundlerDevServer;
+  private metroBundler: Pick<MetroBundlerDevServer, 'broadcastMessage'>;
 
-  constructor(connection: Connection, metroBundler: MetroBundlerDevServer) {
+  constructor(
+    connection: Connection,
+    metroBundler: Pick<MetroBundlerDevServer, 'broadcastMessage'>
+  ) {
     super(connection);
     this.metroBundler = metroBundler;
   }

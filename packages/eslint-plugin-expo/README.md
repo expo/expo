@@ -45,5 +45,5 @@ Then configure the rules you want to use under the rules section.
 
 | Name                                                               | Description                                          |
 | :----------------------------------------------------------------- | :--------------------------------------------------- |
-| [no-dynamic-env-var](docs/rules/noDynamicEnvVar.md)             | Prevents process.env from being accessed dynamically |
-| [no-env-var-destructuring](docs/rules/noEnvVarDestructuring.md) | Disallow desctructuring of environment variables     |
+| [no-dynamic-env-var](docs/rules/no-dynamic-env-var.md)             | Prevents process.env from being accessed dynamically |
+| [no-env-var-destructuring](docs/rules/no-env-var-destructuring.md) | Disallow desctructuring of environment variables     |

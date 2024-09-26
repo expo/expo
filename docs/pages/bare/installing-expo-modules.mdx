@@ -5,9 +5,9 @@ description: Learn how to prepare your existing React Native project to install 
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
-import { DiffBlock } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { DiffBlock } from '~/ui/components/Snippet';
 
 To use Expo modules in your app, you will need to install and configure the `expo` package.
 
@@ -28,17 +28,17 @@ To install and use Expo modules, the easiest way to get up and running is with t
   hideBareInstructions
 />
 
-- <YesIcon small /> **When the command succeeds**, you will be able to add any Expo module in your app!
-  Proceed to [Usage](#usage) for more information.
+- <YesIcon small /> **When the command succeeds**, you will be able to add any Expo module in your
+  app! Proceed to [Usage](#usage) for more information.
 
-- <NoIcon small /> **If the command fails**, please follow the manual installation instructions. Updating
-  code programmatically can be tricky, and if your project deviates significantly from a default React
-  Native project, then you need to perform manual installation and adapt the instructions here to your
-  codebase.
+- <NoIcon small /> **If the command fails**, please follow the manual installation instructions.
+  Updating code programmatically can be tricky, and if your project deviates significantly from a
+  default React Native project, then you need to perform manual installation and adapt the
+  instructions here to your codebase.
 
 ## Manual installation
 
-The following instructions apply to installing the latest version of Expo modules in React Native 0.73.
+The following instructions apply to installing the latest version of Expo modules in React Native 0.74.
 
 <InstallSection packageName="expo" cmd={['$ npm install expo']} hideBareInstructions />
 
@@ -68,9 +68,9 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
   hideBareInstructions
 />
 
-### Optional: use Expo CLI for bundling
+### Configure Expo CLI for bundling on Android and iOS
 
-We recommend using Expo CLI to bundle your app JavaScript code and assets. This adds support for using the `"main"` field in **package.json** supports [Expo Router](/router/introduction/). [Learn more about Expo CLI](/bare/using-expo-cli/).
+We recommend using Expo CLI to bundle your app JavaScript code and assets. This adds support for using the `"main"` field in **package.json** supports [Expo Router](/router/introduction/). Not using Expo CLI for bundling may result in unexpected behavior. [Learn more about Expo CLI](/bare/using-expo-cli/).
 
 <Collapsible summary="Extend expo/metro-config in your metro.config.js">
   <DiffBlock source="/static/diffs/metro-config.diff" />
@@ -126,7 +126,7 @@ And add support the `"main"` field in **package.json** by making the following c
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
- ```
+```
 
 </Collapsible>
 

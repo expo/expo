@@ -33,7 +33,7 @@ Let's consider the following **app** directory structure:
 ]}
 />
 
-In the above file structure, the `[id]` is used to display information for the route the **details/[id].tsx**. The same route will display unique information based on the value of the `id`:
+In the above file structure, the `[id]` is used to display information for the route **details/[id].tsx**. The same route will display unique information based on the value of the `id`:
 
 | Route                | Matched URL  |
 | -------------------- | ------------ |
@@ -49,6 +49,7 @@ Navigating from one route to a dynamic route is done by providing query paramete
 For example, the following code allows you to navigate to the dynamic route statically using query parameters:
 
 ```tsx app/(home)/index.tsx|collapseHeight=300
+import { Link } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
@@ -73,6 +74,7 @@ const styles = StyleSheet.create({
 You can also use the `href` object to provide a `pathname` which takes the value of the dynamic route and passes `params`:
 
 ```tsx app/(home)/index.tsx
+import { Link } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
@@ -81,7 +83,7 @@ export default function HomeScreen() {
       <Text>Home</Text>
       <Link
         href={{
-          pathname: '/user/[id]',
+          pathname: '/details/[id]',
           params: { id: 'bacon' },
         }}>
         View user details
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
 
 ## Access parameters from dynamic segments
 
-Dynamic segments of a URL are accessible with a [search parameter](/router/reference/search-parameters/) in the route component. For example, you can use the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook which returns the search parameters for the selected route.
+Dynamic segments of a URL are accessible with a [route parameter](/router/reference/url-parameters/) in the route component. For example, you can use the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook which returns the URL parameters for the selected route.
 
 ```tsx app/(home)/details/[id].tsx|collapseHeight=300
 import { useLocalSearchParams } from 'expo-router';

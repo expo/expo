@@ -126,15 +126,26 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
     }
   }
 
-  public void onNotificationResponseFromExtras(Bundle extras) {
-    if (mPendingNotificationResponsesFromExtras.isEmpty()) {
-      mPendingNotificationResponsesFromExtras.add(extras);
-    } else {
+ public void onNotificationResponseFromExtras(Bundle extras) {
+    // We're going to be passed in extras from either
+    // a killed state (ExpoNotificationLifecycleListener::onCreate)
+    // OR a background state (ExpoNotificationLifecycleListener::onNewIntent)
+
+    // If we've just come from a background state, we'll have listeners set up
+    // pass on the notification to them
+    if (!mListenerReferenceMap.isEmpty()) {
       for (WeakReference<NotificationListener> listenerReference : mListenerReferenceMap.values()) {
         NotificationListener listener = listenerReference.get();
         if (listener != null) {
           listener.onNotificationResponseIntentReceived(extras);
         }
+      }
+    } else {
+      // Otherwise, the app has been launched from a killed state, and our listeners
+      // haven't yet been setup. We'll add this to a list of pending notifications
+      // for them to process once they've been initialized.
+      if (mPendingNotificationResponsesFromExtras.isEmpty()) {
+        mPendingNotificationResponsesFromExtras.add(extras);
       }
     }
   }

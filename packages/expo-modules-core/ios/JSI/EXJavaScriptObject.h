@@ -92,4 +92,11 @@ NS_SWIFT_NAME(JavaScriptObject)
 
 - (void)setObjectDeallocator:(void (^ _Nonnull)(void))deallocatorBlock;
 
+#pragma mark - Memory pressure
+
+/**
+ Sets the memory pressure to inform the GC about how much external memory is associated with that specific JS object.
+ */
+- (void)setExternalMemoryPressure:(size_t)size;
+
 @end

@@ -17,7 +17,6 @@ const externalLinks = [
   '/versions/latest/workflow/configuration/#ios', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/detach/Detach.js
   '/versions/latest/sdk/overview/', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/project/Convert.js
   '/versions/latest/distribution/building-standalone-apps/#2-configure-appjson', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/ios/IOSBuilder.js
-  '/versions/latest/introduction/faq/#can-i-use-nodejs-packages-with-expo', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/logs/PackagerLogsStream.js
 ];
 
 (async () => {

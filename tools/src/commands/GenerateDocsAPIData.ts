@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
-import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
+import { Application, Configuration, TSConfigReader, TypeDocReader } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -53,12 +53,13 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-document-picker': ['index.ts'],
   'expo-face-detector': ['FaceDetector.ts'],
   'expo-file-system': ['index.ts'],
+  'expo-file-system-next': ['next/index.ts', 'expo-file-system'],
   'expo-font': ['index.ts'],
   'expo-gl': ['index.ts'],
   'expo-gyroscope': [['Gyroscope.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-haptics': ['Haptics.ts'],
   'expo-image': [['Image.tsx', 'Image.types.ts']],
-  'expo-image-manipulator': ['ImageManipulator.ts'],
+  'expo-image-manipulator': [['index.ts', 'ImageManipulator.types.ts']],
   'expo-image-picker': ['ImagePicker.ts'],
   'expo-intent-launcher': ['IntentLauncher.ts'],
   'expo-keep-awake': ['index.ts'],
@@ -67,7 +68,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-linear-gradient': ['LinearGradient.tsx'],
   'expo-local-authentication': ['LocalAuthentication.ts'],
   'expo-localization': ['Localization.ts'],
-  'expo-location': ['Location.ts'],
+  'expo-location': ['index.ts'],
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
@@ -85,8 +86,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-speech': ['Speech/Speech.ts'],
   'expo-splash-screen': ['index.ts'],
   'expo-sqlite-legacy': ['legacy/index.ts', 'expo-sqlite'],
-  'expo-sqlite': ['index.ts'],
-  'expo-status-bar': ['StatusBar.ts'],
+  'expo-sqlite': [['index.ts', 'Storage.ts'], 'expo-sqlite'],
+  'expo-status-bar': ['StatusBar.tsx'],
   'expo-store-review': ['StoreReview.ts'],
   'expo-symbols': ['index.ts'],
   'expo-system-ui': ['SystemUI.ts'],
@@ -139,10 +140,22 @@ const executeCommand = async (
       hideGenerator: true,
       excludePrivate: true,
       excludeProtected: true,
-      skipErrorChecking: true,
       excludeExternals: true,
-      jsDocCompatibility: false,
       pretty: !MINIFY_JSON,
+      commentStyle: 'All',
+      jsDocCompatibility: false,
+      preserveLinkText: true,
+      sourceLinkExternal: false,
+      markdownLinkExternal: false,
+      blockTags: [
+        ...Configuration.OptionDefaults.blockTags,
+        '@alias',
+        '@deprecated',
+        '@docsMissing',
+        '@header',
+        '@needsAudit',
+        '@platform',
+      ],
     },
     [new TSConfigReader(), new TypeDocReader()]
   );
@@ -166,12 +179,20 @@ const executeCommand = async (
     const { readme, symbolIdMap, ...trimmedOutput } = output;
 
     if (MINIFY_JSON) {
-      const minifiedJson = recursiveOmitBy(
-        trimmedOutput,
-        ({ key, node }) =>
-          ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
+      const minifiedJson = recursiveOmitBy(trimmedOutput, ({ key, node }) => {
+        return (
+          [
+            'id',
+            'groups',
+            'kindString',
+            'originalName',
+            'files',
+            'sourceFileName',
+            'target',
+          ].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
-      );
+        );
+      });
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
       await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));

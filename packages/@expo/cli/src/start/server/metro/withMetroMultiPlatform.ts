@@ -25,6 +25,7 @@ import {
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
@@ -49,28 +50,43 @@ function withWebPolyfills(
     : () => [];
 
   const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
+    const virtualEnvVarId = `\0polyfill:environment-variables`;
+
+    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+      virtualEnvVarId,
+      (() => {
+        return `//`;
+      })()
+    );
+
     const virtualModuleId = `\0polyfill:external-require`;
 
-    const contents = (() => {
-      if (ctx.platform === 'web') {
-        return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
-      } else {
-        // Wrap in try/catch to support Android.
-        return 'try { global.$$require_external = typeof expo === "undefined" ? eval("require") : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
-      }
-    })();
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
       virtualModuleId,
-      contents
+      (() => {
+        if (ctx.platform === 'web') {
+          return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
+        } else {
+          // Wrap in try/catch to support Android.
+          return 'try { global.$$require_external = typeof expo === "undefined" ? require : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
+        }
+      })()
     );
 
     if (ctx.platform === 'web') {
-      return [virtualModuleId];
+      return [
+        virtualModuleId,
+        virtualEnvVarId,
+        // Ensure that the error-guard polyfill is included in the web polyfills to
+        // make metro-runtime work correctly.
+        // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
+        require.resolve('@react-native/js-polyfills/error-guard'),
+      ];
     }
 
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
-    return [...polyfills, virtualModuleId];
+    return [...polyfills, virtualModuleId, virtualEnvVarId];
   };
 
   return {
@@ -127,18 +143,43 @@ export function withExtendedResolver(
   }
 ) {
   if (isFastResolverEnabled) {
-    Log.warn(`Experimental bundling features are enabled.`);
+    Log.warn(`Experimental module resolution is enabled.`);
   }
+
   if (isReactCanaryEnabled) {
     Log.warn(`Experimental React Canary version is enabled.`);
   }
 
-  // Get the `transformer.assetRegistryPath`
-  // this needs to be unified since you can't dynamically
-  // swap out the transformer based on platform.
-  const assetRegistryPath = fs.realpathSync(
-    path.resolve(resolveFrom(config.projectRoot, '@react-native/assets-registry/registry.js'))
-  );
+  let _assetRegistryPath: string | null = null;
+
+  // Fetch this lazily for testing purposes.
+  function getAssetRegistryPath() {
+    if (_assetRegistryPath) {
+      return _assetRegistryPath;
+    }
+
+    // Get the `transformer.assetRegistryPath`
+    // this needs to be unified since you can't dynamically
+    // swap out the transformer based on platform.
+    if (
+      config.transformer.assetRegistryPath &&
+      path.isAbsolute(config.transformer.assetRegistryPath)
+    ) {
+      _assetRegistryPath = fs.realpathSync(config.transformer.assetRegistryPath);
+      return _assetRegistryPath;
+    }
+
+    const assetRegistryPath = fs.realpathSync(
+      path.resolve(
+        resolveFrom(
+          config.projectRoot,
+          config.transformer.assetRegistryPath ?? '@react-native/assets-registry/registry.js'
+        )
+      )
+    );
+    _assetRegistryPath = assetRegistryPath;
+    return assetRegistryPath;
+  }
 
   const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
@@ -154,15 +195,25 @@ export function withExtendedResolver(
     web: {
       'react-native': 'react-native-web',
       'react-native/index': 'react-native-web',
+      'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
 
-  const universalAliases: [RegExp, string][] = [];
+  let _universalAliases: [RegExp, string][] | null;
 
-  // This package is currently always installed as it is included in the `expo` package.
-  if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
-    debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
-    universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
+  function getUniversalAliases() {
+    if (_universalAliases) {
+      return _universalAliases;
+    }
+
+    _universalAliases = [];
+
+    // This package is currently always installed as it is included in the `expo` package.
+    if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
+      debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
+      _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
+    }
+    return _universalAliases;
   }
 
   const preferredMainFields: { [key: string]: string[] } = {
@@ -246,6 +297,77 @@ export function withExtendedResolver(
     };
   }
 
+  // TODO: This is a hack to get resolveWeak working.
+  const idFactory =
+    config.serializer?.createModuleIdFactory?.() ?? ((id: number | string): number | string => id);
+
+  // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
+  // If module should be shimmed, remap to an empty module.
+  const externals: {
+    match: (context: ResolutionContext, moduleName: string, platform: string | null) => boolean;
+    replace: 'empty' | 'node' | 'weak';
+  }[] = [
+    {
+      match: (context: ResolutionContext, moduleName: string) => {
+        if (
+          // Disable internal externals when exporting for production.
+          context.customResolverOptions.exporting ||
+          // These externals are only for Node.js environments.
+          !isServerEnvironment(context.customResolverOptions?.environment)
+        ) {
+          return false;
+        }
+
+        if (context.customResolverOptions?.environment === 'react-server') {
+          // Ensure these non-react-server modules are excluded when bundling for React Server Components in development.
+          return /^(source-map-support(\/.*)?|@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
+            moduleName
+          );
+        }
+
+        // Extern these modules in standard Node.js environments in development to prevent API routes side-effects
+        // from leaking into the dev server process.
+        return /^(source-map-support(\/.*)?|react|react-native-helmet-async|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
+          moduleName
+        );
+      },
+      replace: 'node',
+    },
+    // Externals to speed up async split chunks by extern-ing common packages that appear in the root client chunk.
+    {
+      match: (context: ResolutionContext, moduleName: string, platform: string | null) => {
+        if (
+          // Disable internal externals when exporting for production.
+          context.customResolverOptions.exporting ||
+          // These externals are only for client environments.
+          isServerEnvironment(context.customResolverOptions?.environment) ||
+          // Only enable for client boundaries
+          !context.customResolverOptions.clientboundary
+        ) {
+          return false;
+        }
+
+        // We don't support this in the resolver at the moment.
+        if (moduleName.endsWith('/package.json')) {
+          return false;
+        }
+
+        const isExternal = // Extern these modules in standard Node.js environments.
+          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|@react-native\/assets-registry\/registry|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
+            moduleName
+          ) ||
+          /^react-native-web\/dist\/exports\/(Platform|NativeEventEmitter|StyleSheet|NativeModules|DeviceEventEmitter|Text|View)$/.test(
+            moduleName
+          ) ||
+          // TODO: Add more
+          /^@babel\/runtime\/helpers\/(wrapNativeSuper)$/.test(moduleName);
+
+        return isExternal;
+      },
+      replace: 'weak',
+    },
+  ];
+
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -295,11 +417,6 @@ export function withExtendedResolver(
         context.customResolverOptions?.environment === 'node' ||
         context.customResolverOptions?.environment === 'react-server';
 
-      if (platform !== 'web' && !isServer) {
-        // This is a web/server-only feature, we may extend the shimming to native platforms in the future.
-        return null;
-      }
-
       const moduleId = isNodeExternal(moduleName);
       if (!moduleId) {
         return null;
@@ -313,6 +430,12 @@ export function withExtendedResolver(
         // Perform optional resolve first. If the module doesn't exist (no module in the node_modules)
         // then we can mock the file to use an empty module.
         const result = getOptionalResolver(context, platform)(moduleName);
+
+        if (!result && platform !== 'web') {
+          // Preserve previous behavior where native throws an error on node.js internals.
+          return null;
+        }
+
         return (
           result ?? {
             // In this case, mock the file to use an empty module.
@@ -320,7 +443,6 @@ export function withExtendedResolver(
           }
         );
       }
-
       const contents = `module.exports=$$require_external('node:${moduleId}');`;
       debug(`Virtualizing Node.js "${moduleId}"`);
       const virtualModuleId = `\0node:${moduleId}`;
@@ -334,6 +456,66 @@ export function withExtendedResolver(
       };
     },
 
+    // Custom externals support
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      // We don't support this in the resolver at the moment.
+      if (moduleName.endsWith('/package.json')) {
+        return null;
+      }
+
+      const strictResolve = getStrictResolver(context, platform);
+
+      for (const external of externals) {
+        if (external.match(context, moduleName, platform)) {
+          if (external.replace === 'empty') {
+            debug(`Redirecting external "${moduleName}" to "${external.replace}"`);
+            return {
+              type: external.replace,
+            };
+          } else if (external.replace === 'weak') {
+            // TODO: Make this use require.resolveWeak again. Previously this was just resolving to the same path.
+            const realModule = strictResolve(moduleName);
+            const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
+            const opaqueId = idFactory(realPath);
+
+            const contents =
+              typeof opaqueId === 'number'
+                ? `module.exports=/*${moduleName}*/__r(${opaqueId})`
+                : `module.exports=/*${moduleName}*/__r(${JSON.stringify(opaqueId)})`;
+            // const contents = `module.exports=/*${moduleName}*/__r(require.resolveWeak('${moduleName}'))`;
+            // const generatedModuleId = fastHashMemoized(contents);
+            const virtualModuleId = `\0weak:${opaqueId}`;
+            debug('Virtualizing module:', moduleName, '->', virtualModuleId);
+            getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+              virtualModuleId,
+              contents
+            );
+            return {
+              type: 'sourceFile',
+              filePath: virtualModuleId,
+            };
+          } else if (external.replace === 'node') {
+            const contents = `module.exports=$$require_external('${moduleName}')`;
+            const virtualModuleId = `\0node:${moduleName}`;
+            debug('Virtualizing Node.js (custom):', moduleName, '->', virtualModuleId);
+            getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+              virtualModuleId,
+              contents
+            );
+            return {
+              type: 'sourceFile',
+              filePath: virtualModuleId,
+            };
+          } else {
+            throw new CommandError(
+              `Invalid external alias type: "${external.replace}" for module "${moduleName}" (platform: ${platform}, originModulePath: ${context.originModulePath})`
+            );
+          }
+        }
+      }
+      return null;
+    },
+
     // Basic moduleId aliases
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       // Conditionally remap `react-native` to `react-native-web` on web in
@@ -343,7 +525,7 @@ export function withExtendedResolver(
         return getStrictResolver(context, platform)(redirectedModuleName);
       }
 
-      for (const [matcher, alias] of universalAliases) {
+      for (const [matcher, alias] of getUniversalAliases()) {
         const match = moduleName.match(matcher);
         if (match) {
           const aliasedModule = alias.replace(
@@ -359,24 +541,21 @@ export function withExtendedResolver(
       return null;
     },
 
-    // HACK(EvanBacon):
-    // React Native uses `event-target-shim` incorrectly and this causes the native runtime
-    // to fail to load. This is a temporary workaround until we can fix this upstream.
-    // https://github.com/facebook/react-native/pull/38628
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      if (platform !== 'web' && moduleName === 'event-target-shim') {
-        debug('For event-target-shim to use js:', context.originModulePath);
-        const doResolve = getStrictResolver(context, platform);
-        return doResolve('event-target-shim/dist/event-target-shim.js');
-      }
-
-      return null;
-    },
-
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       const doResolve = getStrictResolver(context, platform);
+
+      if (
+        platform === 'web' &&
+        context.originModulePath.match(/node_modules[\\/]react-native-web[\\/]/) &&
+        moduleName.includes('/modules/AssetRegistry')
+      ) {
+        return {
+          type: 'sourceFile',
+          filePath: getAssetRegistryPath(),
+        };
+      }
 
       const result = doResolve(moduleName);
 
@@ -385,15 +564,7 @@ export function withExtendedResolver(
       }
 
       if (platform === 'web') {
-        // Replace the web resolver with the original one.
-        // This is basically an alias for web-only.
-        // TODO: Drop this in favor of the standalone asset registry module.
-        if (shouldAliasAssetRegistryForWeb(platform, result)) {
-          // @ts-expect-error: `readonly` for some reason.
-          result.filePath = assetRegistryPath;
-        }
-
-        if (platform === 'web' && result.filePath.includes('node_modules')) {
+        if (result.filePath.includes('node_modules')) {
           // Replace with static shims
 
           const normalName = normalizeSlashes(result.filePath)
@@ -416,6 +587,23 @@ export function withExtendedResolver(
           }
         }
       } else {
+        const isServer =
+          context.customResolverOptions?.environment === 'node' ||
+          context.customResolverOptions?.environment === 'react-server';
+
+        // react-native/Libraries/Core/InitializeCore
+        const normal = normalizeSlashes(result.filePath);
+
+        // Shim out React Native native runtime globals in server mode for native.
+        if (isServer) {
+          if (normal.endsWith('react-native/Libraries/Core/InitializeCore.js')) {
+            console.log('Shimming out InitializeCore for React Native in native SSR bundle');
+            return {
+              type: 'empty',
+            };
+          }
+        }
+
         // When server components are enabled, redirect React Native's renderer to the canary build
         // this will enable the use hook and other requisite features from React 19.
         if (isReactCanaryEnabled && result.filePath.includes('node_modules')) {
@@ -451,6 +639,17 @@ export function withExtendedResolver(
         preferNativePlatform: platform !== 'web',
       };
 
+      // TODO: Remove this when we have React 19 in the expo/expo monorepo.
+      if (
+        isReactCanaryEnabled &&
+        // Change the node modules path for react and react-dom to use the vendor in Expo CLI.
+        /^(react|react\/.*|react-dom|react-dom\/.*)$/.test(moduleName)
+      ) {
+        context.nodeModulesPaths = [
+          path.join(require.resolve('@expo/cli/package.json'), '../static/canary-full'),
+        ];
+      }
+
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
         if (nodejsSourceExtensions === null) {
@@ -460,9 +659,15 @@ export function withExtendedResolver(
 
         context.unstable_enablePackageExports = true;
         context.unstable_conditionsByPlatform = {};
-        // Node.js runtimes should only be importing main at the moment.
-        // This is a temporary fix until we can support the package.json exports.
-        context.mainFields = ['main', 'module'];
+
+        if (platform === 'web') {
+          // Node.js runtimes should only be importing main at the moment.
+          // This is a temporary fix until we can support the package.json exports.
+          context.mainFields = ['main', 'module'];
+        } else {
+          // In Node.js + native, use the standard main fields.
+          context.mainFields = ['react-native', 'main', 'module'];
+        }
 
         // Enable react-server import conditions.
         if (context.customResolverOptions?.environment === 'react-server') {
@@ -485,20 +690,6 @@ export function withExtendedResolver(
   return withMetroErrorReportingResolver(metroConfigWithCustomContext);
 }
 
-/** @returns `true` if the incoming resolution should be swapped on web. */
-export function shouldAliasAssetRegistryForWeb(
-  platform: string | null,
-  result: Resolution
-): boolean {
-  return (
-    platform === 'web' &&
-    result?.type === 'sourceFile' &&
-    typeof result?.filePath === 'string' &&
-    normalizeSlashes(result.filePath).endsWith(
-      'react-native-web/dist/modules/AssetRegistry/index.js'
-    )
-  );
-}
 /** @returns `true` if the incoming resolution should be swapped. */
 export function shouldAliasModule(
   input: {
@@ -527,6 +718,7 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    isNamedRequiresEnabled,
     getMetroBundler,
   }: {
     config: ConfigT;
@@ -537,9 +729,18 @@ export async function withMetroMultiPlatformAsync(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
+    isNamedRequiresEnabled: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
+  if (isNamedRequiresEnabled) {
+    debug('Using Expo metro require runtime.');
+    // Change the default metro-runtime to a custom one that supports bundle splitting.
+    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+      '@expo/cli/build/metro-require/require'
+    );
+  }
+
   if (!config.projectRoot) {
     // @ts-expect-error: read-only types
     config.projectRoot = projectRoot;
@@ -547,11 +748,6 @@ export async function withMetroMultiPlatformAsync(
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
-
-  if (['static', 'server'].includes(webOutput ?? '')) {
-    // Enable static rendering in runtime space.
-    process.env.EXPO_PUBLIC_USE_STATIC = '1';
-  }
 
   // This is used for running Expo CLI in development against projects outside the monorepo.
   if (!isDirectoryIn(__dirname, projectRoot)) {
@@ -561,10 +757,13 @@ export async function withMetroMultiPlatformAsync(
     }
     // @ts-expect-error: watchFolders is readonly
     config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    if (isReactCanaryEnabled) {
+      // @ts-expect-error: watchFolders is readonly
+      config.watchFolders.push(path.join(require.resolve('@expo/cli/package.json'), '..'));
+    }
   }
 
-  // @ts-expect-error
-  config.transformer._expoRouterWebRendering = webOutput;
+  // TODO: Remove this
   // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
   config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 

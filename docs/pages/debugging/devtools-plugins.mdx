@@ -3,8 +3,8 @@ title: Dev tools plugins
 description: Learn about using dev tools plugins to inspect and debug your Expo project.
 ---
 
-import { Tab, Tabs } from '~/ui/components/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 > **warning** Available from SDK 50 and above.
 
@@ -175,6 +175,30 @@ export default function App() {
 ```
 
 In the terminal, run `npx expo start`, press <kbd>shift</kbd> + <kbd>m</kbd> to open the list of dev tools, and then select the React Query plugin. This will open the plugin's web interface, displaying queries as they are used in your app.
+
+### Redux
+
+The `redux-devtools-expo-dev-plugin` is based on the [Redux DevTools](https://github.com/reduxjs/redux-devtools/) (from the Chrome extension). It provides a live list of actions and how they affect the state, and the ability to rewind, replay, and dispatch actions from the DevTools.
+
+To use the plugin, start by installing the package:
+
+<Terminal cmd={['$ npx expo install redux-devtools-expo-dev-plugin']} />
+
+If you're using `@reduxjs/toolkit`, modify the `configureStore` call to disable the built-in dev tools by passing in `devTools: false`. Then, add in the Expo DevTools plugin enhancer by concatenating the `devToolsEnhancer()`. The `configureStore` call is going to look like the following:
+
+```js store.js
+import devToolsEnhancer from 'redux-devtools-expo-dev-plugin';
+
+const store = configureStore({
+  reducer: rootReducer,
+  devTools: false,
+  enhancers: getDefaultEnhancers => getDefaultEnhancers().concat(devToolsEnhancer()),
+});
+```
+
+In the terminal, run `npx expo start`, press <kbd>shift</kbd> + <kbd>m</kbd> to open the list of dev tools, and then select `redux-devtools-expo-dev-plugin`. This will open the plugin's web interface, displaying the actions and contents of your store as actions are dispatched.
+
+For complete installation and usage instructions, including if you're using `redux` directly rather than `@reduxjs/toolkit`, [see the project's README](https://github.com/matt-oakes/redux-devtools-expo-dev-plugin).
 
 ### TinyBase
 

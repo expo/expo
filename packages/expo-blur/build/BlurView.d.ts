@@ -8,6 +8,6 @@ export default class BlurView extends React.Component<BlurViewProps> {
      * function to determine which component should be animated. We want to animate the NativeBlurView.
      */
     getAnimatableRef(): React.ComponentType<any> | null | undefined;
-    render(): JSX.Element;
+    render(): React.JSX.Element;
 }
 //# sourceMappingURL=BlurView.d.ts.map

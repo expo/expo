@@ -3,10 +3,12 @@ title: Get started
 description: Learn how to get started with the setup required to configure and use EAS Update in your project.
 ---
 
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { LayersTwo02Icon } from '@expo/styleguide-icons';
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. This guide will walk you through the process of setting up EAS Update in your project.
 
@@ -61,9 +63,7 @@ To configure your project, run the following commands in the order they are spec
   cmdCopy="expo install expo-updates && eas update:configure && eas build:configure"
 />
 
-After running these commands, **eas.json** file will be created in the root directory of your project.
-
-Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
+These configuration commands will create an **eas.json** file in your project's root directory and add a channel property for `preview` and `production` build profiles inside the file.
 
 ```json eas.json
 {
@@ -80,9 +80,9 @@ Inside the `preview` and `production` build profiles in **eas.json**, add a `cha
 }
 ```
 
-The `channel` allows you to point updates at builds of that profile. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update which will be available to builds with the channel "production".
+The channel allows you to point updates at builds of that profile. For example, if we set up a GitHub Action to publish changes on merge, we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update, which will be available to builds with the channel "production".
 
-> **Optional**: If your project is a bare React Native project, see [Updating bare app](/eas-update/updating-your-app/) for any additional configuration.
+> **Optional**: If your project is a bare React Native project, see the [bare React Native updates guide](/bare/installing-updates/) for any additional configuration needed.
 
 </Step>
 
@@ -106,11 +106,62 @@ Then, make any desired changes to your project's JavaScript, styling, or image a
 
 </Step>
 
-## Next step
+<Step label="7">
+## Publish an update
+
+Publishing an update allows:
+
+- Fixing bugs and quickly updating non-native parts of a project instead of creating a new build
+- [Sharing a preview version of an app](/review/overview/) using internal distribution
+
+To publish an update with changes from your project, use the `eas update` command, and specify a name for the channel and a `message` to describe the update:
+
+<Terminal cmd={['$ eas update --channel [channel-name] --message "[message]"']} />
+
+<Collapsible summary="How does publishing an update work?">
+
+When you publish an update with the `eas update` command, it generates a new update bundle and uploads it to the EAS servers. The channel name is used to locate the correct branch to publish a new update from other update branches. It is similar to how Git commit works, where every commit is on a Git branch.
+
+For example, when an app is set to pull updates from the `preview` channel, you can publish an update for that build with `eas update --channel preview`. This will create a branch (called `preview` by default) on the `preview` channel. Behind the scenes, this command runs `npx expo export` to generate a **dist** directory and create a local update bundle. This update bundle is uploaded to EAS Update servers.
 
 <BoxLink
-  title="Publish an update"
-  description="Learn how to publish an update to a specific branch with EAS Update."
-  href="/eas-update/publish/"
+  title="In-depth guide on how EAS Update works"
+  description="Dive deep and learn how EAS Update works."
+  href="/eas-update/how-it-works/"
+  Icon={LayersTwo02Icon}
+/>
+
+</Collapsible>
+
+</Step>
+
+<Step label="8">
+## Test the update
+
+After the update is uploaded to EAS Update, you can use one of the following methods to test the update:
+
+- Use the Extensions tab in a [development build](/eas-update/expo-dev-client/) to load the update.
+- Use [Expo Orbit](/review/with-orbit/) to install and launch the update in a development build.
+- Implement a custom strategy with [Updates API](/versions/latest/sdk/updates/) and [app config](/versions/latest/config/app/#updates) to load updates in the app programmatically.
+- Manually test the update by force closing and reopening a release build of your app up to two times to download and apply the update. Updates for non-development builds (preview or production) are automatically downloaded to the device in the background when the app starts up and makes a request for any new updates. The update will be applied after it is downloaded and the app is restarted.
+
+<Collapsible summary="Something not working?">
+If your app is not updating as expected, see the [debugging guide](/eas-update/debug/) for techniques to validate your configuration.
+</Collapsible>
+</Step>
+
+## Next steps
+
+<BoxLink
+  title="Previewing updates"
+  description="Learn how to iterate quickly by sharing updates for QA and testing."
+  href="/eas-update/develop-faster/"
+  Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="Deploying updates"
+  description="Learn about different deployment patterns for your project when using EAS Update."
+  href="/eas-update/deployment/"
   Icon={LayersTwo02Icon}
 />

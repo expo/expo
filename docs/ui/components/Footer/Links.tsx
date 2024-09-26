@@ -1,9 +1,7 @@
-import {
-  DiscordIcon,
-  Edit05Icon,
-  GithubIcon,
-  MessageTextSquare02Icon,
-} from '@expo/styleguide-icons';
+import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
+import { MessageTextSquare02Icon } from '@expo/styleguide-icons/outline/MessageTextSquare02Icon';
 import * as Dialog from '@radix-ui/react-dialog';
 
 import { FeedbackDialog } from './FeedbackDialog';

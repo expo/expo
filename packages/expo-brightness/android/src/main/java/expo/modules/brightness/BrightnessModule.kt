@@ -6,7 +6,6 @@ import android.view.WindowManager
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -16,7 +15,7 @@ const val brightnessChangeEvent = "Expo.brightnessDidChange"
 
 class BrightnessModule : Module() {
   private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
+    get() = appContext.throwingActivity
 
   override fun definition() = ModuleDefinition {
     Name("ExpoBrightness")

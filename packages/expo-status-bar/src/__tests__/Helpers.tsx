@@ -26,5 +26,5 @@ export function renderedPropValue(element: any, prop: string) {
   // @ts-ignore: brentvatne: I'm not sure how else to read the props off of a
   // component that renders null in testing-library, so I'm using this fairly
   // brittle internal API.
-  return result.container._fiber.return.child.child.pendingProps[prop];
+  return result.UNSAFE_root._fiber.return.child.child.pendingProps[prop];
 }

@@ -3,6 +3,7 @@ package expo.modules.updates
 import android.content.Context
 import com.facebook.react.ReactApplication
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
@@ -160,11 +161,12 @@ class UpdatesController {
       }
 
     /**
-     * Binds the [AppContext] instance from [UpdatesModule].
+     * Binds the [AppContext] and [EventEmitter] instance from [UpdatesModule].
      */
-    internal fun bindAppContext(appContext: WeakReference<AppContext>) {
+    internal fun bindAppContext(appContext: WeakReference<AppContext>, eventEmitter: EventEmitter?) {
       singletonInstance?.let {
         it.appContext = appContext
+        it.eventEmitter = eventEmitter
       }
     }
   }

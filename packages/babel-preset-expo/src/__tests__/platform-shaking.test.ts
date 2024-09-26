@@ -1,7 +1,7 @@
 import * as babel from '@babel/core';
 
-import { minifyLikeMetroAsync } from './minify-util';
 import preset from '..';
+import { minifyLikeMetroAsync } from './minify-util';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
@@ -440,7 +440,7 @@ it(`removes Platform module usage on native`, () => {
       `Platform.select({ ios: () => console.log('ios'), web: () => console.log('web'), android: () => console.log('android'), })`,
       options
     )!.code
-  ).toEqual(`(function(){return console.log('android');});`);
+  ).toEqual(`()=>console.log('android');`);
 
   const sourceCode = `
     import { Platform } from 'react-native';
@@ -457,7 +457,7 @@ it(`removes Platform module usage on native`, () => {
     `;
 
   expect(stripReactNativeImport(babel.transform(sourceCode, options)!.code!)).toEqual(
-    `(function(){return console.log('android');});`
+    `()=>console.log('android');`
   );
 });
 
@@ -592,6 +592,55 @@ describe('SSR window check', () => {
         );
       });
     });
+  });
+
+  it(`preserves process.env.EXPO_SERVER usage in server bundles`, async () => {
+    const options = {
+      babelrc: false,
+      presets: [preset],
+      filename: 'unknown',
+      // compact: true,
+      // Make the snapshot easier to read
+      retainLines: true,
+      compact: true,
+      caller: getCaller({ name: 'metro', platform: 'web', isDev: false, isServer: true }),
+    };
+
+    const src = `
+    if (process.env.EXPO_SERVER) {
+      console.log('ssr.1');
+    }
+    `;
+
+    const res = babel.transform(src, options);
+    expect(res?.code).toMatch('if(true){');
+
+    // Code is fully minified away
+    expect((await minifyLikeMetroAsync(res!)).code).toBe(`console.log('ssr.1');`);
+  });
+  it(`removes process.env.EXPO_SERVER usage in client bundles`, async () => {
+    const options = {
+      babelrc: false,
+      presets: [preset],
+      filename: 'unknown',
+      // compact: true,
+      // Make the snapshot easier to read
+      retainLines: true,
+      compact: true,
+      caller: getCaller({ name: 'metro', platform: 'web', isDev: false, isServer: false }),
+    };
+
+    const src = `
+    if (process.env.EXPO_SERVER) {
+      console.log('ssr.1');
+    }
+    `;
+
+    const res = babel.transform(src, options);
+    expect(res?.code).toMatch('if(false){');
+
+    // Code is fully minified away
+    expect((await minifyLikeMetroAsync(res!)).code).toBe(`0;`);
   });
 
   it(`preserves typeof window usage in client bundles`, async () => {

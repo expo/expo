@@ -1,3 +1,5 @@
+'use client';
+
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import React, { type PropsWithChildren } from 'react';
 import { ActivityIndicator, Animated, Image, Platform, StyleSheet, Text, View } from 'react-native';

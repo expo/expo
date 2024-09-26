@@ -4,12 +4,11 @@ sidebar_title: iOS development build for simulators
 description: Learn how to configure a development build for iOS Simulators using EAS Build.
 ---
 
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
-import { CODE } from '~/ui/components/Text';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 In this chapter, we'll create a development build that can run on an iOS Simulator with EAS Build.
 
@@ -69,10 +68,10 @@ This command prompts us with the following questions when we create the build fo
 
 After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="iOS Simulator build details page"
   src="/static/images/tutorial/eas/ios-sim-build.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
 />
 
 <Collapsible summary="What does a build details page contain?">
@@ -99,10 +98,10 @@ This notation is defined as `host.owner.app-name`. For example, our example app 
 
 In the terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an iOS Simulator. Press <kbd>Y</kbd>.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="EAS CLI automatically gives option to run a build on iOS Simulator"
   src="/static/images/tutorial/eas/ios-sim-cli.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 <Collapsible summary="Alternate: Use Expo Orbit">

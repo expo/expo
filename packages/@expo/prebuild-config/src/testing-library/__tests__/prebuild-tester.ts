@@ -4,12 +4,12 @@ import { withInternal } from '@expo/config/build/plugins/withInternal';
 import {
   AndroidConfig,
   compileModsAsync as compileInternalModsAsync,
-  ExportedConfig,
+  type ExportedConfig,
+  IOSConfig,
   withPlugins,
 } from '@expo/config-plugins';
 import { getInfoPlistPathFromPbxproj } from '@expo/config-plugins/build/ios/utils/getInfoPlistPath';
-import { ExpoConfig } from '@expo/config-types';
-import { IOSConfig } from 'expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 import * as fs from 'fs-extra';
 import { vol } from 'memfs';
 import * as path from 'path';

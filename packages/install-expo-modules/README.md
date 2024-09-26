@@ -26,5 +26,15 @@ expo install expo-device
 
 - Install [`expo`](https://www.npmjs.com/package/expo) package for necessary core and react-native autolinking.
 - Modify your project files to adopt expo-modules. If your project is managed by `git`, you can use `git diff` to review whatever `install-expo-modules` do for you.
-- Since expo-modules' minimal requirements for iOS is 12.0, if your ios deployment target is lower than that, this tool will upgrade your deployment target to 12.0.
+- Since expo-modules' minimal iOS version requirement may be higher than React Native core's, if your ios deployment target is lower, this tool will upgrade your deployment target.
 - `pod install` at last to update linked modules for iOS.
+
+# Contributing
+
+To contribute a change and test it with a RNC CLI app, follow these steps:
+
+1. `yarn watch` to start building the project in watch mode.
+2. make your changes.
+3. run `node path_to_expo/packages/install-expo-modules/build/index.js .` in your RNC CLI project.
+
+Don't forget to write unit tests for your changes.

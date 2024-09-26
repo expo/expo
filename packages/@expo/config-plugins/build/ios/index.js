@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Entitlements = exports.DeviceFamily = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
+exports.Entitlements = exports.DeviceFamily = exports.DevelopmentTeam = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
 Object.defineProperty(exports, "ExpoPlist", {
   enumerable: true,
   get: function () {
@@ -68,6 +68,19 @@ Object.defineProperty(exports, "BundleIdentifier", {
   enumerable: true,
   get: function () {
     return BundleIdentifier();
+  }
+});
+function DevelopmentTeam() {
+  const data = _interopRequireWildcard(require("./DevelopmentTeam"));
+  DevelopmentTeam = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "DevelopmentTeam", {
+  enumerable: true,
+  get: function () {
+    return DevelopmentTeam();
   }
 });
 function DeviceFamily() {

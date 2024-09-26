@@ -32,8 +32,10 @@ export type LinearGradientProps = ViewProps & {
   /**
    * A readonly array of colors that represent stops in the gradient. At least two colors are required
    * (for a single-color background, use the `style.backgroundColor` prop on a `View` component).
+   *
+   * For TypeScript to know the provided array has 2 or more values, it should be provided "inline" or typed `as const`.
    */
-  colors: readonly string[];
+  colors: readonly [string, string, ...string[]];
   /**
    * A readonly array that contains `number`s ranging from `0` to `1`, inclusive, and is the same length as the `colors` property.
    * Each number indicates a color-stop location where each respective color should be located.
@@ -47,7 +49,7 @@ export type LinearGradientProps = ViewProps & {
    * > The color-stop locations must be ascending from least to greatest.
    * @default []
    */
-  locations?: readonly number[] | null;
+  locations?: readonly [number, number, ...number[]] | null;
   /**
    * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will start `10%` from the left and `20%` from the top.
    *
@@ -78,7 +80,7 @@ export type LinearGradientProps = ViewProps & {
 export class LinearGradient extends React.Component<LinearGradientProps> {
   render() {
     const { colors, locations, start, end, dither, ...props } = this.props;
-    let resolvedLocations = locations;
+    let resolvedLocations: readonly number[] | null | undefined = locations;
     if (locations && colors.length !== locations.length) {
       console.warn('LinearGradient colors and locations props should be arrays of the same length');
       resolvedLocations = locations.slice(0, colors.length);

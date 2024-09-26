@@ -93,7 +93,10 @@ object MediaLibraryUtils {
               val columnId = filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID)
               val id = filesToDelete.getLong(columnId)
               val assetUri = ContentUris.withAppendedId(EXTERNAL_CONTENT_URI, id)
-              context.contentResolver.delete(assetUri, null)
+              val rowsDeleted = context.contentResolver.delete(assetUri, null)
+              if (rowsDeleted == 0) {
+                throw AssetFileException("Could not delete file.")
+              }
             } else {
               val dataColumnIndex = filesToDelete.getColumnIndex(MediaStore.MediaColumns.DATA)
               val filePath = filesToDelete.getString(dataColumnIndex)

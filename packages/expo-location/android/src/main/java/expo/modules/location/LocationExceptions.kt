@@ -47,9 +47,6 @@ internal class TaskManagerNotFoundException :
 internal class GeofencingException(message: String?, cause: Throwable? = null) :
   CodedException("A geofencing exception has occurred: ${message ?: ""} ${cause?.message ?: ""}")
 
-internal class MissingActivityManagerException :
-  CodedException("Activity manager is unavailable")
-
 internal class MissingUIManagerException :
   CodedException("UIManager is unavailable")
 

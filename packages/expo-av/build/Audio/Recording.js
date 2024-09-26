@@ -180,7 +180,11 @@ export class Recording {
             return { recording, status };
         }
         catch (err) {
-            recording.stopAndUnloadAsync();
+            recording.stopAndUnloadAsync().catch((_e) => {
+                // Since there was an issue with starting, when trying calling stopAndUnloadAsync
+                // the promise is rejected which is unhandled
+                // lets catch it since its expected
+            });
             throw err;
         }
     };

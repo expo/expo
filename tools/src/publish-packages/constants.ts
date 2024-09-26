@@ -31,11 +31,6 @@ export const BACKUPABLE_OPTIONS_FIELDS = [
 ] as const;
 
 /**
- * An array of directories treated as containing native code.
- */
-export const NATIVE_DIRECTORIES = ['ios', 'android', 'cpp'];
-
-/**
  * An array of release types in the order from patch to major.
  */
 export const RELEASE_TYPES_ASC_ORDER = [ReleaseType.PATCH, ReleaseType.MINOR, ReleaseType.MAJOR];

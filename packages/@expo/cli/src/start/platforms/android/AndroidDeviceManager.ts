@@ -160,6 +160,10 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     await activateWindowAsync(this.device);
   }
 
+  getExpoGoAppId(): string {
+    return EXPO_GO_APPLICATION_IDENTIFIER;
+  }
+
   async ensureExpoGoAsync(sdkVersion: string): Promise<boolean> {
     const installer = new ExpoGoInstaller('android', EXPO_GO_APPLICATION_IDENTIFIER, sdkVersion);
     return installer.ensureAsync(this);

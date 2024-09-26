@@ -4,8 +4,8 @@ import fs from 'fs';
 import { join, relative } from 'path';
 import { XcodeProject } from 'xcode';
 
-import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 import { ConfigPlugin } from '../Plugin.types';
+import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import { addWarningIOS } from '../utils/warnings';
 

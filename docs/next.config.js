@@ -51,12 +51,12 @@ export default {
   },
   output: 'export',
   poweredByHeader: false,
-  webpack: (config, options) => {
+  webpack: (config, { defaultLoaders }) => {
     // Add support for MDX with our custom loader
     config.module.rules.push({
       test: /.mdx?$/,
       use: [
-        options.defaultLoaders.babel,
+        defaultLoaders.babel,
         {
           loader: '@mdx-js/loader',
           /** @type {import('@mdx-js/loader').Options} */
@@ -81,6 +81,9 @@ export default {
 
     // Fix inline or browser MDX usage
     config.resolve.fallback = { fs: false, path: 'path-browserify' };
+
+    config.output.environment = { ...config.output.environment, asyncFunction: true };
+    config.experiments = { ...config.experiments, topLevelAwait: true };
 
     return config;
   },
@@ -127,9 +130,5 @@ export default {
     NextLog.info(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
 
     return pathMap;
-  },
-  async headers() {
-    const cacheHeaders = [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }];
-    return [{ source: '/_next/static/:static*', headers: cacheHeaders }];
   },
 };

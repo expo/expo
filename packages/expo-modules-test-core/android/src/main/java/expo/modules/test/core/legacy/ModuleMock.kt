@@ -3,7 +3,7 @@ package expo.modules.test.core.legacy
 import android.content.Context
 import android.os.Bundle
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.BridgeReactContext
 import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
@@ -119,7 +119,7 @@ data class ModuleMock<TestInterfaceType : Any, ModuleType : Module>(
 }
 
 private fun prepareMockAppContext(customAppContext: AppContext?): AppContext {
-  val reactContext = ReactApplicationContext(ApplicationProvider.getApplicationContext<Context>())
+  val reactContext = BridgeReactContext(ApplicationProvider.getApplicationContext<Context>())
   val appContext = customAppContext ?: AppContext(
     modulesProvider = mockk(relaxed = true),
     legacyModuleRegistry = mockk(relaxed = true),

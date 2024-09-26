@@ -4,15 +4,16 @@ sidebar_title: Introduction
 description: A better development environment for React Native apps.
 ---
 
-import Video from '~/components/plugins/Video';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { VideoRecorderIcon } from '@expo/styleguide-icons/outline/VideoRecorderIcon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { BookOpen02Icon, VideoRecorderIcon } from '@expo/styleguide-icons';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 A **development build** is a debug build of your app that contains the [`expo-dev-client`](/versions/latest/sdk/dev-client/) package. By using development builds instead of [Expo Go](/get-started/set-up-your-environment/), you gain full control over the native runtime, so you can [install any native libraries](/workflow/using-libraries/#determining-third-party-library-compatibility), [modify any project configuration](/config-plugins/introduction/), or [write your own native code](/modules/get-started/). With Expo development builds, you are building your own native app, while with Expo Go you are running your project in a sandboxed native app environment.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="expo-dev-client launcher and menu UIs on Android and iOS"
   src="/static/images/dev-client/preview.png"
   caption={`When you run a development build it will look like this, only with your app name and icon included rather than "Microfoam". The launcher UI is pictured in iOS on the left and Android on the right. In between, you can see an app running inside of the development build, with the customizable developer menu open.`}
@@ -44,9 +45,9 @@ The launcher UI makes it possible to switch between development servers without 
 />
 
 <BoxLink
-  title={`"What's an Expo Development Build?"`}
-  description="A YouTube video that explains what a development build is and how to use it."
-  href="https://www.youtube.com/watch?v=Iw8FAUftJFU"
+  title="Getting the most out of Expo Development Builds"
+  description="A YouTube video that explains what a development build is, why it is important, and how to use it."
+  href="https://www.youtube.com/watch?v=7J8LRpja9_o"
   Icon={VideoRecorderIcon}
 />
 

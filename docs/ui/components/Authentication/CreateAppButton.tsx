@@ -1,5 +1,5 @@
 import { Button } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 
 type CreateAppButtonProps = { href: string; name: string };
 

@@ -2,6 +2,7 @@ import * as Calendar from 'expo-calendar';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
+import { alertAndWaitForResponse } from './helpers';
 import * as TestUtils from '../TestUtils';
 
 export const name = 'Calendar';
@@ -36,18 +37,23 @@ async function pickCalendarSourceIdAsync() {
   }
 }
 
-async function createTestEventAsync(calendarId, customArgs = {}) {
-  return await Calendar.createEventAsync(calendarId, {
+function createEventData(customArgs = {}) {
+  return {
     title: 'App.js Conference',
-    startDate: new Date(2019, 3, 4).getTime(), // 4th April 2019, months are counted from 0
-    endDate: new Date(2019, 3, 5).getTime(), // 5th April 2019
+    startDate: new Date(2019, 3, 4), // 4th April 2019, months are counted from 0
+    endDate: new Date(2019, 3, 5), // 5th April 2019
     timeZone: 'Europe/Warsaw',
     allDay: true,
     location: 'Qubus Hotel, Nadwiślańska 6, 30-527 Kraków, Poland',
     notes: 'The very first Expo & React Native conference in Europe',
     availability: Calendar.Availability.BUSY,
     ...customArgs,
-  });
+  };
+}
+
+async function createTestEventAsync(calendarId, customArgs) {
+  const eventData = createEventData(customArgs);
+  return await Calendar.createEventAsync(calendarId, eventData);
 }
 
 async function createTestAttendeeAsync(eventId) {
@@ -227,6 +233,70 @@ export async function test(t) {
         });
       });
     }
+
+    t.describe('calendar UI', () => {
+      let originalTimeout;
+      const dontStartNewTask = {
+        startNewActivityTask: false,
+      };
+
+      t.beforeAll(async () => {
+        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
+      });
+      t.afterAll(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+      });
+
+      t.it('creates an event via UI', async () => {
+        const eventData = createEventData();
+        await alertAndWaitForResponse('Please confirm the event creation dialog.');
+        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
+        if (Platform.OS === 'ios') {
+          t.expect(result.action).toBe('saved');
+          t.expect(typeof result.id).toBe('string');
+          const storedEvent = await Calendar.getEventAsync(result.id);
+
+          t.expect(storedEvent).toEqual(
+            t.jasmine.objectContaining({
+              title: eventData.title,
+              allDay: eventData.allDay,
+              location: eventData.location,
+              notes: eventData.notes,
+            })
+          );
+        } else {
+          t.expect(result.action).toBe('done');
+          t.expect(result.id).toBe(null);
+        }
+      });
+
+      t.it('can preview an event', async () => {
+        const calendarId = await createTestCalendarAsync();
+        const eventId = await createTestEventAsync(calendarId);
+        await alertAndWaitForResponse(
+          'Please verify event details are shown and close the dialog.'
+        );
+        const result = await Calendar.openEventInCalendarAsync(
+          { id: eventId },
+          {
+            ...dontStartNewTask,
+            allowsEditing: true,
+            allowsCalendarPreview: true,
+          }
+        );
+        t.expect(result).toEqual({ action: 'done' });
+      });
+
+      t.it('can edit an event', async () => {
+        const calendarId = await createTestCalendarAsync();
+        const eventId = await createTestEventAsync(calendarId);
+        await alertAndWaitForResponse('Please verify you can see the event and close the dialog.');
+        const result = await Calendar.editEventInCalendarAsync({ id: eventId }, dontStartNewTask);
+        t.expect(typeof result.action).toBe('string'); // done or canceled
+        t.expect(result.id).toBe(null);
+      });
+    });
 
     t.describe('createCalendarAsync()', () => {
       let calendarId;

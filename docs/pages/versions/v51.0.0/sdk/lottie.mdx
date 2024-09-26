@@ -11,13 +11,13 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 > **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
 
-[Lottie](https://airbnb.design/lottie/) renders After Effects animations in real time, allowing apps to use animations as easily as they use static images.
+[Lottie](https://airbnb.io/lottie/) renders After Effects animations in real time, allowing apps to use animations as easily as they use static images.
 
 ## Installation
 
 <APIInstallSection
   packageName="lottie-react-native"
-  href="https://github.com/lottie-react-native/lottie-react-native"
+  href="https://github.com/lottie-react-native/lottie-react-native#installing"
 />
 
 ## Usage
@@ -29,13 +29,13 @@ import { SnackInline } from '~/ui/components/Snippet';
     'assets/gradientBall.json': 'assets/gradientBall.json'
   }}>
 
-```js
-import React, { useRef, useEffect } from 'react';
+```tsx
+import { useRef, useEffect } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 import LottieView from 'lottie-react-native';
 
 export default function App() {
-  const animation = useRef(null);
+  const animation = useRef<LottieView>(null);
   useEffect(() => {
     // You can control the ref programmatically, rather than using autoPlay
     // animation.current?.play();

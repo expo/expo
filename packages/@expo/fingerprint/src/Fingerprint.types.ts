@@ -1,3 +1,5 @@
+import type { IMinimatch } from 'minimatch';
+
 import type { SourceSkips } from './sourcer/SourceSkips';
 
 export type FingerprintSource = HashSource & {
@@ -23,6 +25,21 @@ export interface Fingerprint {
    * The final hash value of the whole fingerprint
    */
   hash: string;
+}
+
+export interface FingerprintDiffItem {
+  /**
+   * The operation type of the diff item.
+   */
+  op: 'added' | 'removed' | 'changed';
+
+  /**
+   * The source of the diff item.
+   *   - When type is 'added', the source is the new source.
+   *   - When type is 'removed', the source is the old source.
+   *   - When type is 'changed', the source is the new source.
+   */
+  source: FingerprintSource;
 }
 
 export type Platform = 'android' | 'ios';
@@ -68,9 +85,17 @@ export interface Options {
 
   /**
    * Skips some sources from fingerprint.
-   * @default SourceSkips.None
+   * @default DEFAULT_SOURCE_SKIPS
    */
   sourceSkips?: SourceSkips;
+
+  /**
+   * Enable ReactImportsPatcher to transform imports from React of the form `#import "RCTBridge.h"` to `#import <React/RCTBridge.h>`.
+   * This is useful when you want to have a stable fingerprint for Expo projects,
+   * since expo-modules-autolinking will change the import style on iOS.
+   * @default true
+   */
+  enableReactImportsPatcher?: boolean;
 
   /**
    * Whether running the functions should mute all console output. This is useful when fingerprinting is being done as
@@ -84,23 +109,34 @@ export interface Options {
   debug?: boolean;
 }
 
+type SourceSkipsKeys = keyof typeof SourceSkips;
+
 /**
  * Supported options from fingerprint.config.js
  */
 export type Config = Pick<
   Options,
-  'concurrentIoLimit' | 'hashAlgorithm' | 'extraSources' | 'sourceSkips' | 'debug'
->;
+  | 'concurrentIoLimit'
+  | 'hashAlgorithm'
+  | 'ignorePaths'
+  | 'extraSources'
+  | 'enableReactImportsPatcher'
+  | 'debug'
+> & {
+  sourceSkips?: SourceSkips | SourceSkipsKeys[];
+};
 
 //#region internal types
 
-export interface NormalizedOptions extends Options {
+export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
   platforms: NonNullable<Options['platforms']>;
   concurrentIoLimit: NonNullable<Options['concurrentIoLimit']>;
   hashAlgorithm: NonNullable<Options['hashAlgorithm']>;
-  ignorePaths: NonNullable<Options['ignorePaths']>;
   sourceSkips: NonNullable<Options['sourceSkips']>;
-}
+  enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
+
+  ignorePathMatchObjects: IMinimatch[];
+};
 
 export interface HashSourceFile {
   type: 'file';

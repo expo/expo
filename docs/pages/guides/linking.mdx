@@ -3,13 +3,13 @@ title: Linking
 description: Learn how to use Linking to handle a URL based on the URL scheme.
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
-import { SnackInline } from '~/ui/components/Snippet';
-import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { CALLOUT } from '~/ui/components/Text';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-URLs are the most powerful way to launch native applications. Native operating systems like macOS, iOS, Android, Windows, and so on, have built-in link handling which chooses an app to handle a URL based on the _URL scheme_. The most common _URL schemes_ are `https` and `http` which are delegated to web browsers like Chrome, or Safari. Native apps, like the ones built with React Native, can implement any _URL scheme_, and the JavaScript React layer can handle the URL used to launch the corresponding native app.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
+
+URLs are the most powerful way to launch native applications. Native operating systems like macOS, Android, iOS, Windows, and so on, have built-in link handling which chooses an app to handle a URL based on the _URL scheme_. The most common _URL schemes_ are `https` and `http` which are delegated to web browsers like Chrome, or Safari. Native apps, like the ones built with React Native, can implement any _URL scheme_, and the JavaScript React layer can handle the URL used to launch the corresponding native app.
 
 ## Linking from your app
 
@@ -80,13 +80,13 @@ You can then [import the custom config plugin](/config-plugins/plugins-and-mods/
 
 ### Custom URL schemes
 
-If you know the custom scheme for another app you can link to it. Some services provide documentation for deep linking, for example, the [Lyft deep linking documentation](https://developer.lyft.com/v1/docs/deeplinking) describes how to link directly to a specific pickup location and destination:
+If you know the custom scheme for another app you can link to it. Some services provide documentation for deep linking. For example, the [Uber deep linking documentation](https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/introduction#standard-deep-links) describes how to link directly to a specific pickup location and destination:
 
-```
-lyft://ridetype?id=lyft&pickup[latitude]=37.764728&pickup[longitude]=-122.422999&destination[latitude]=37.7763592&destination[longitude]=-122.4242038
+```shell
+uber://?client_id=<CLIENT_ID>&action=setPickup&pickup[latitude]=37.775818&pickup[longitude]=-122.418028&pickup[nickname]=UberHQ&pickup[formatted_address]=1455%20Market%20St%2C%20San%20Francisco%2C%20CA%2094103&dropoff[latitude]=37.802374&dropoff[longitude]=-122.405818&dropoff[nickname]=Coit%20Tower&dropoff[formatted_address]=1%20Telegraph%20Hill%20Blvd%2C%20San%20Francisco%2C%20CA%2094133&product_id=a1111c8c-c720-46c3-8534-2fcdd730040d&link_text=View%20team%20roster&partner_deeplink=partner%3A%2F%2Fteam%2F9383
 ```
 
-It's possible that the user doesn't have the Lyft app installed, in which case you may want to open the App / Play Store, or let them know that they need to install it first. We recommend using the library [`react-native-app-link`](https://github.com/fiber-god/react-native-app-link) for these cases.
+It's possible that the user doesn't have the Uber app installed, in which case you may want to open the App / Play Store, or let them know that they need to install it first. We recommend using the library [`react-native-app-link`](https://github.com/FiberJW/react-native-app-link) for these cases.
 
 On iOS, `Linking.canOpenURL` requires additional configuration to query other apps' linking schemes. You can use the `expo.ios.infoPlist` key in your app config (**app.json**, **app.config.js**) to specify a list of schemes your app needs to query. For example:
 
@@ -95,7 +95,7 @@ On iOS, `Linking.canOpenURL` requires additional configuration to query other ap
   "expo": {
     "ios": {
       "infoPlist": {
-        "LSApplicationQueriesSchemes": ["lyft"]
+        "LSApplicationQueriesSchemes": ["uber"]
       }
     }
   }
@@ -108,10 +108,10 @@ If you don't specify this list, `Linking.canOpenURL` may return `false` regardle
 
 To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding URLs, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a URL that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
-- **Production and development builds**: `myapp://` (see [#linking-to-your-app](#linking-to-your-app))
+- **Production and development builds**: `myapp://` (see [Linking to your app](#linking-to-your-app))
 - **Development in Expo Go**: `exp://127.0.0.1:8081`.
 
-When loading published updates in Expo Go, the URL that is created by `Linking.createURL()` depends on how the project was launched and shouldn't be relied upon to be consistent or stable. For applications that require a stable URL (authorization provider redirects, for example), you should use a development build with a custom scheme instead (see [#linking-to-your-app](#linking-to-your-app)).
+When loading published updates in Expo Go, the URL that is created by `Linking.createURL()` depends on how the project was launched and shouldn't be relied upon to be consistent or stable. For applications that require a stable URL (authorization provider redirects, for example), you should use a development build with a custom scheme instead (see [Linking to your app](#linking-to-your-app)).
 
 - **Project loaded via QR code or via menus in Expo Go**: `exp://u.expo.dev/[project-id]/group/[update-group-id]` or `exp://u.expo.dev/[project-id]/update/[update-id]`. The project ID is stable but the update group ID and update ID are not.
 
@@ -281,7 +281,7 @@ function App() {
 
 ## Testing URLs
 
-> Adding schemes will require rebuilding your custom app.
+> Adding schemes will require rebuilding your app.
 
 You can open a URL like:
 
@@ -303,18 +303,21 @@ You can _also_ open a URL by searching for it on the device's native browser. Fo
   title="Deep linking"
   description="Setup iOS universal links and Android deep links."
   href="/guides/deep-linking"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Authentication"
   description="Use linking to implement web-based authentication."
   href="/guides/authentication"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Routing"
   description="Setup React Navigation linking for in-app routing."
   href="https://reactnavigation.org/docs/configuring-links"
+  Icon={BookOpen02Icon}
 />
 
 [expo-go]: https://expo.dev/go

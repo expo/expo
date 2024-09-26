@@ -3,8 +3,8 @@ export declare function renderQueryProviders(data?: string | string[]): {
     $: {
         'android:authorities': string;
     };
-} | undefined;
-export declare function renderQueryPackages(data: string | string[]): {
+}[];
+export declare function renderQueryPackages(data?: string | string[]): {
     $: {
         'android:name': string;
     };

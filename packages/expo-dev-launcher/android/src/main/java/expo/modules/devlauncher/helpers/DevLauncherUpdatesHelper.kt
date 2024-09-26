@@ -63,7 +63,3 @@ fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, runtimeVersion:
     "runtimeVersion" to runtimeVersion
   )
 }
-
-fun getRuntimeVersion(context: Context): String {
-  return DevLauncherMetadataHelper.getMetadataValue(context, "expo.modules.updates.EXPO_RUNTIME_VERSION")
-}

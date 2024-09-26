@@ -257,7 +257,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: PlatformColor('labelColor'),
+    ...Platform.select({
+      ios: { color: PlatformColor('labelColor') },
+    }),
   },
   videoExample: {
     justifyContent: 'center',

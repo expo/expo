@@ -4,8 +4,10 @@ import {
   ImageContentPositionObject,
   ImageContentPositionString,
   ImageProps,
+  ImageRef,
   ImageTransition,
 } from './Image.types';
+import ImageModule from './ImageModule';
 
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
@@ -106,4 +108,11 @@ export function resolveTransition(
     return { duration: fadeDuration };
   }
   return transition ?? null;
+}
+
+/**
+ * Checks whether the given value is an instance of the ImageRef class.
+ */
+export function isImageRef(value: any): value is ImageRef {
+  return !!ImageModule.Image && value instanceof ImageModule.Image;
 }

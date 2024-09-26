@@ -175,6 +175,49 @@ func createCacheKeyFilter(_ cacheKey: String?) -> SDWebImageCacheKeyFilter? {
   }
 }
 
+/**
+ Creates a default image context based on the source and the cache policy.
+ */
+func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCachePolicy = .disk) -> SDWebImageContext {
+  var context = SDWebImageContext()
+
+  // Modify URL request to add headers.
+  if let headers = source.headers {
+    context[.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headers)
+  }
+
+  // Allow for custom cache key. If not specified in the source, its uri is used as the key.
+  context[.cacheKeyFilter] = createCacheKeyFilter(source.cacheKey)
+
+  // Tell SDWebImage to use our own class for animated formats,
+  // which has better compatibility with the UIImage and fixes issues with the image duration.
+  context[.animatedImageClass] = AnimatedImage.self
+
+  // Assets from the bundler have `scale` prop which needs to be passed to the context,
+  // otherwise they would be saved in cache with scale = 1.0 which may result in
+  // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
+  context[.imageScaleFactor] = source.scale
+
+  // Set which cache can be used to query and store the downloaded image.
+  // We want to store only original images (without transformations).
+  context[.queryCacheType] = SDImageCacheType.none.rawValue
+  context[.storeCacheType] = SDImageCacheType.none.rawValue
+
+  if source.isCachingAllowed {
+    let sdCacheType = cachePolicy.toSdCacheType().rawValue
+    context[.originalQueryCacheType] = sdCacheType
+    context[.originalStoreCacheType] = sdCacheType
+  } else {
+    context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
+    context[.originalStoreCacheType] = SDImageCacheType.none.rawValue
+  }
+
+  // Some loaders (e.g. blurhash) may need access to the source.
+  context[ImageView.contextSourceKey] = source
+
+  return context
+}
+
 extension CGSize {
   /**
    Multiplies a size with a scalar.

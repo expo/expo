@@ -22,6 +22,13 @@ function _debug() {
   };
   return data;
 }
+function _getAutolinkedPackages() {
+  const data = require("../getAutolinkedPackages");
+  _getAutolinkedPackages = function () {
+    return data;
+  };
+  return data;
+}
 function _withAndroidIcons() {
   const data = require("./icons/withAndroidIcons");
   _withAndroidIcons = function () {
@@ -106,13 +113,6 @@ function _reactNativeMaps() {
   };
   return data;
 }
-function _getAutolinkedPackages() {
-  const data = require("../getAutolinkedPackages");
-  _getAutolinkedPackages = function () {
-    return data;
-  };
-  return data;
-}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * These are the versioned first-party plugins with some of the future third-party plugins mixed in for legacy support.
@@ -136,7 +136,7 @@ const withIosExpoPlugins = (config, {
   // Entitlements
   _configPlugins().IOSConfig.Entitlements.withAssociatedDomains,
   // XcodeProject
-  _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales,
+  _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales, _configPlugins().IOSConfig.DevelopmentTeam.withDevelopmentTeam,
   // Dangerous
   _withIosIcons().withIosIcons, _configPlugins().IOSConfig.PrivacyInfo.withPrivacyInfo]);
 };

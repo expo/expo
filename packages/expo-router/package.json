@@ -7,9 +7,11 @@
   "main": "build/index",
   "types": "build/index.d.ts",
   "sideEffects": [
+    "entry-rsc.js",
     "entry.js"
   ],
   "files": [
+    "link",
     "assets",
     "build",
     "ios",
@@ -22,10 +24,12 @@
     "_ctx-shared.js",
     "_error.js",
     "app.plugin.js",
+    "virtual-client-boundaries.js",
     "babel.js",
     "drawer.js",
     "drawer.d.ts",
     "entry.js",
+    "entry-rsc.js",
     "expo-module.config.json",
     "head.js",
     "head.d.ts",
@@ -55,7 +59,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "test:rsc": "jest --config jest-rsc.config.js",
+    "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -68,7 +73,6 @@
     "expo": "*",
     "expo-constants": "*",
     "expo-linking": "*",
-    "expo-status-bar": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": "*",
     "react-native-screens": "*"
@@ -87,8 +91,10 @@
   "devDependencies": {
     "@react-navigation/drawer": "^6.5.0",
     "@testing-library/jest-native": "^5.4.2",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/react-native": "^12.0.1",
+    "@testing-library/react": "^15.0.7",
+    "@testing-library/react-native": "^12.5.1",
+    "immer": "^10.1.1",
+    "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610",
     "tsd": "^0.28.1"
   },
   "dependencies": {
@@ -98,8 +104,10 @@
     "@react-navigation/bottom-tabs": "~6.5.7",
     "@react-navigation/native": "~6.1.6",
     "@react-navigation/native-stack": "~6.9.12",
+    "client-only": "^0.0.1",
     "expo-splash-screen": "0.27.4",
     "react-native-helmet-async": "2.0.4",
-    "schema-utils": "^4.0.1"
+    "schema-utils": "^4.0.1",
+    "server-only": "^0.0.1"
   }
 }

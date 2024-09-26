@@ -233,7 +233,7 @@ it('deep linking nested groups', async () => {
   expect(screen.getByTestId('Home')).toBeOnTheScreen();
 
   expect(RootLayout).toHaveBeenCalledTimes(1);
-  expect(AppLayout).toHaveBeenCalledTimes(2);
+  expect(AppLayout).toHaveBeenCalledTimes(3);
   expect(TabsLayout).toHaveBeenCalledTimes(1);
   expect(HomeLayout).toHaveBeenCalledTimes(1);
   expect(OtherTabsLayout).toHaveBeenCalledTimes(1);

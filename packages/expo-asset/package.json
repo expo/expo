@@ -37,17 +37,18 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@react-native/assets-registry": "~0.74.83",
+    "@expo/image-utils": "^0.5.1",
     "expo-constants": "~16.0.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3"
   },
   "devDependencies": {
-    "@testing-library/react-hooks": "^7.0.1",
-    "@types/react-native__assets": "~1.0.0",
+    "@testing-library/react-native": "^12.5.2",
     "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

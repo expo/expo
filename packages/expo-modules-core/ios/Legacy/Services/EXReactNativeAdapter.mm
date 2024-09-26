@@ -10,7 +10,7 @@
 
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
 
-#if RN_FABRIC_ENABLED
+#if RCT_NEW_ARCH_ENABLED
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTMountingManager.h>
@@ -292,12 +292,7 @@ EX_REGISTER_MODULE();
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-#if RCT_NEW_ARCH_ENABLED
-      UIView<RCTComponentViewProtocol> *componentView = [uiManager viewForReactTag:(NSNumber *)viewId];
-      UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
-#else
       UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
-#endif
       block(view);
     }];
   });
@@ -309,12 +304,7 @@ EX_REGISTER_MODULE();
 
   dispatch_async(RCTGetUIManagerQueue(), ^{
     [uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-#if RCT_NEW_ARCH_ENABLED
-      UIView<RCTComponentViewProtocol> *componentView = [uiManager viewForReactTag:(NSNumber *)viewId];
-      UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
-#else
       UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
-#endif
       block(view);
     }];
     [uiManager setNeedsLayout];

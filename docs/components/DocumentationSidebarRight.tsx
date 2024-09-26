@@ -1,5 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { ArrowCircleUpIcon, LayoutAlt03Icon } from '@expo/styleguide-icons';
+import { ArrowCircleUpIcon } from '@expo/styleguide-icons/outline/ArrowCircleUpIcon';
+import { LayoutAlt03Icon } from '@expo/styleguide-icons/outline/LayoutAlt03Icon';
 import * as React from 'react';
 
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
@@ -13,7 +14,7 @@ import { CALLOUT } from '~/ui/components/Text';
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
 
-const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 10;
+const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
 
 const isDynamicScrollAvailable = () => {
   return !window.matchMedia('(prefers-reduced-motion)').matches;
@@ -84,7 +85,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
       <nav className="pt-14 pb-12 px-6 w-[280px]" data-sidebar>
         <CALLOUT
           weight="medium"
-          className="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none">
+          className="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10">
           <LayoutAlt03Icon className="icon-sm" /> On this page
           <Button
             theme="quaternary"
@@ -138,16 +139,18 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
 
   private handleLinkClick = (
     event: React.MouseEvent<HTMLAnchorElement>,
-    { slug, ref }: Heading
+    { slug, ref, type }: Heading
   ) => {
     event.preventDefault();
 
     // disable sidebar scrolling until we reach that slug
     this.slugScrollingTo = slug;
 
+    const scrollOffset = type === 'inlineCode' ? 50 : 26;
+
     this.props.contentRef?.current?.getScrollRef().current?.scrollTo({
       behavior: isDynamicScrollAvailable() ? 'smooth' : 'instant',
-      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR,
+      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR - scrollOffset,
     });
 
     if (history?.replaceState) {

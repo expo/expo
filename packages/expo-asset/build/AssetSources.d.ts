@@ -21,5 +21,4 @@ export declare function selectAssetSource(meta: AssetMetadata): AssetSource;
  * base URI.
  */
 export declare function resolveUri(uri: string): string;
-export declare function pathJoin(...paths: string[]): string;
 //# sourceMappingURL=AssetSources.d.ts.map

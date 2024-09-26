@@ -2,13 +2,13 @@
 title: Building Standalone Apps on Your CI
 ---
 
-> This doc was archived in August 2022 and will not receive any further updates. SDK 46 is the last SDK supported by Classic Builds and the Classic Build service will stop running for all SDK versions after January 4, 2023. Check out [Running builds on your own infrastructure](/build-reference/local-builds.mdx) and [Triggering builds from CI](/build/building-on-ci.mdx).
+> This doc was archived in August 2022 and will not receive any further updates. SDK 46 is the last SDK supported by Classic Builds and the Classic Build service will stop running for all SDK versions after January 4, 2023. Check out [Running builds on your own infrastructure](/build-reference/local-builds) and [Triggering builds from CI](/build/building-on-ci).
 
 > **Note:** macOS is required to build standalone iOS apps.
 
 This guide describes an advanced feature of Expo. In most cases you can build
 standalone Expo apps using Expo's build services as described in the guide
-on [Building Standalone Apps](building-standalone-apps.mdx).
+on [Building Standalone Apps](/archive/classic-builds/building-standalone-apps/).
 
 If you prefer to not rely on our builders stability and you don't like waiting
 in the queue to get your standalone app build then you can build your Expo
@@ -67,8 +67,8 @@ Turtle CLI makes use of exactly the same codebase which is running on our server
 This means you're required to publish your app to Expo's servers or host it on your own server **before building it with Turtle CLI**.
 Whether you want Expo to host your app, or you'd like to do it yourself, all you need to do is follow the appropriate guide:
 
-- [Publishing an app to Expo's servers](/archive/classic-updates/publishing.mdx)
-- [Hosting an app on your own server](/distribution/custom-updates-server.mdx)
+- [Publishing an app to Expo's servers](/archive/classic-updates/publishing)
+- [Hosting an app on your own server](/versions/latest/sdk/updates/#manual-installation-configuration-and-custom-remote-update)
 
 ## Start the build
 
@@ -91,7 +91,7 @@ Before starting the build, prepare the following things:
 - Keystore alias
 - Keystore password and key password
 
-To learn how to generate those, see the guide on [Building Standalone Apps](building-standalone-apps.mdx)
+To learn how to generate those, see the guide on [Building Standalone Apps](/archive/classic-builds/building-standalone-apps/)
 first.
 
 Set the `EXPO_ANDROID_KEYSTORE_PASSWORD` and `EXPO_ANDROID_KEY_PASSWORD`
@@ -121,7 +121,7 @@ Prepare the following unless you're building only for the iOS Simulator:
 - Provisioning Profile
 
 To learn how to generate those, see the guide
-on [Building Standalone Apps](building-standalone-apps.mdx) first.
+on [Building Standalone Apps](/archive/classic-builds/building-standalone-apps/) first.
 
 Set the `EXPO_IOS_DIST_P12_PASSWORD` environment variable with the value of
 the Distribution Certificate password.

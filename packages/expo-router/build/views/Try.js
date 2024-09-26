@@ -1,3 +1,4 @@
+'use client';
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -24,14 +25,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Try = void 0;
+const SplashScreen = __importStar(require("expo-splash-screen"));
 const react_1 = __importStar(require("react"));
-const Splash_1 = require("./Splash");
+const errors_1 = require("../rsc/router/errors");
 // No way to access `getDerivedStateFromError` from a function component afaict.
 class Try extends react_1.Component {
     state = { error: undefined };
     static getDerivedStateFromError(error) {
         // Force hide the splash screen if an error occurs.
-        Splash_1.SplashScreen.hideAsync();
+        SplashScreen.hideAsync();
+        if (__DEV__ && error instanceof errors_1.MetroServerError) {
+            // Throw up to the LogBox.
+            return null;
+        }
         return { error };
     }
     retry = () => {

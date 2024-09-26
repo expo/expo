@@ -9,7 +9,9 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
   <!-- Local storage (https://bumptech.github.io/glide/doc/download-setup.html#local-storage) -->
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <uses-permission
+    android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
 
   <!-- End Glide configuration -->
 </manifest>

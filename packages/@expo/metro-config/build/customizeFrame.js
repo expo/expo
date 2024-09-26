@@ -39,8 +39,11 @@ exports.INTERNAL_CALLSITES_REGEX = new RegExp([
     'node_modules/require-from-string/.+\\.js$',
     // Block expo's metro-runtime
     '@expo/metro-runtime/.+\\.ts',
+    '@expo/server/.+\\.ts',
     // Block upstream metro-runtime
     '/metro-runtime/.+\\.js$',
+    // Expo's metro-runtime require patch:
+    '@expo/metro-config/require/.+',
     // Block all whatwg polyfills
     'node_modules/whatwg-.+\\.js$',
     // Hide expo-router warnings which are often wrapping all routes and imports.
@@ -51,6 +54,10 @@ exports.INTERNAL_CALLSITES_REGEX = new RegExp([
     '.+?ctx=[a-zA-Z0-9]+$',
     // Hide react-native-web warning wrappers. These are most likely related to style deprecations.
     '/react-native-web/dist/.+\\.js$',
+    // React Server Components adapter (note we should probably use an Expo-Metro-specific version in the future).
+    'node_modules/react-server-dom-webpack/.+\\.js$',
+    // Block all node modules.
+    'node_modules/.+/',
 ].join('|'));
 function isUrl(value) {
     try {

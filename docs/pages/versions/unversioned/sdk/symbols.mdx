@@ -8,15 +8,15 @@ platforms: ['ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> **warning** This is library is currently in beta and subject to breaking changes.
+> **warning** This library is currently in beta and subject to breaking changes.
 
 `expo-symbols` provides access to the [SF Symbols](https://developer.apple.com/sf-symbols/) library on iOS.
 
-<ImageSpotlight
-  style={{ width: 200 }}
+<ContentSpotlight
+  className="max-w-[200px]"
   src="/static/images/symbols.png"
   alt="A collection of the Symbols from the Expo Symbols shown on an iOS device."
 />

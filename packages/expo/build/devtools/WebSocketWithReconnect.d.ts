@@ -1,3 +1,4 @@
+import type { DevToolsPluginClientOptions } from './devtools.types';
 export interface Options {
     /**
      * Reconnect interval in milliseconds.
@@ -23,6 +24,10 @@ export interface Options {
      * @default no-op
      */
     onReconnect?: (reason: string) => void;
+    /**
+     * The [`binaryType`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/binaryType).
+     */
+    binaryType?: DevToolsPluginClientOptions['websocketBinaryType'];
 }
 export declare class WebSocketWithReconnect implements WebSocket {
     readonly url: string;
@@ -39,6 +44,7 @@ export declare class WebSocketWithReconnect implements WebSocket {
     private lastCloseEvent;
     private readonly emitter;
     private readonly eventSubscriptions;
+    private readonly wsBinaryType?;
     constructor(url: string, options?: Options);
     close(code?: number, reason?: string): void;
     addEventListener(event: 'message', listener: (event: WebSocketMessageEvent) => void): void;

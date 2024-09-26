@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "files": [
     "build",
-    "lazy-imports-blacklist.js"
+    "lazy-imports-blacklist.js",
+    "react-compiler-runtime.js"
   ],
   "scripts": {
     "build": "expo-module build",
@@ -45,14 +46,23 @@
     "@babel/plugin-transform-export-namespace-from": "^7.22.11",
     "@babel/plugin-transform-object-rest-spread": "^7.12.13",
     "@babel/plugin-transform-parameters": "^7.22.15",
-    "@babel/preset-typescript": "^7.23.0",
     "@babel/preset-react": "^7.22.15",
-    "@react-native/babel-preset": "~0.74.83",
+    "@babel/preset-typescript": "^7.23.0",
+    "@react-native/babel-preset": "0.75.2",
     "babel-plugin-react-native-web": "~0.19.10",
     "react-refresh": "^0.14.2"
   },
+  "peerDependencies": {
+    "babel-plugin-react-compiler": "0.0.0-experimental-334f00b-20240725"
+  },
+  "peerDependenciesMeta": {
+    "babel-plugin-react-compiler": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "babel-plugin-react-compiler": "0.0.0-experimental-334f00b-20240725",
     "expo-module-scripts": "^3.3.0",
     "jest": "^29.2.1"
   }

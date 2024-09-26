@@ -4,11 +4,27 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Add support for React Server environments. ([#30586](https://github.com/expo/expo/pull/30586) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Add missing `react-native` peer dependencies for isolated modules. ([#30464](https://github.com/expo/expo/pull/30464) by [@byCedric](https://github.com/byCedric))
+- Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Deprecate `Constants.appOwnership`. ([#30021](https://github.com/expo/expo/pull/30021) by [@amandeepmittal](https://github.com/amandeepmittal))
+- Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+
+## 16.0.2 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- Source env when creating app config. ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
 
 ## 16.0.1 — 2024-04-23
 

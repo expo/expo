@@ -8,6 +8,16 @@ jest.mock('../../../../log');
 
 describe(getVersionedNativeModulesAsync, () => {
   const projectRoot = '/test-project';
+  const originalEnv = process.env;
+
+  beforeAll(() => {
+    // Disable fetch caching for now, as it conflicts with `memfs.vol.reset`
+    process.env.EXPO_NO_CACHE = 'true';
+  });
+
+  afterAll(() => {
+    process.env = originalEnv;
+  });
 
   beforeEach(() => {
     vol.reset();

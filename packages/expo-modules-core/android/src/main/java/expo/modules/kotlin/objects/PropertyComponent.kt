@@ -3,7 +3,7 @@ package expo.modules.kotlin.objects
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.jni.JNIFunctionBody
-import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.JSTypeConverter
 
 class PropertyComponent(
@@ -25,7 +25,7 @@ class PropertyComponent(
   /**
    * Attaches property to the provided js object.
    */
-  fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
+  fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject) {
     val jniGetter = if (getter != null) {
       JNIFunctionBody { args ->
         val result = getter.call(args, appContext)
@@ -46,10 +46,10 @@ class PropertyComponent(
 
     jsObject.registerProperty(
       name,
-      getter?.takesOwner ?: false,
+      getter?.takesOwner == true,
       getter?.getCppRequiredTypes()?.toTypedArray() ?: emptyArray(),
       jniGetter,
-      setter?.takesOwner ?: false,
+      setter?.takesOwner == true,
       setter?.getCppRequiredTypes()?.toTypedArray() ?: emptyArray(),
       jniSetter
     )

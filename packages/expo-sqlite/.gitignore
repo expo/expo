@@ -1,0 +1,3 @@
+# These sqlite3 source code are copied from vendor directory during `pod install`
+/ios/sqlite3.c
+/ios/sqlite3.h

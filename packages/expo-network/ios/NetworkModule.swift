@@ -1,6 +1,7 @@
 import ExpoModulesCore
-import SystemConfiguration
 import Network
+
+let onNetworkStateChanged = "onNetworkStateChanged"
 
 public final class NetworkModule: Module {
   private let monitor = NWPathMonitor()
@@ -9,8 +10,10 @@ public final class NetworkModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoNetwork")
 
-    OnCreate {
-      monitor.start(queue: monitorQueue)
+    Events(onNetworkStateChanged)
+
+    OnStartObserving(onNetworkStateChanged) {
+      setupNetworkMonitoring()
     }
 
     AsyncFunction("getIpAddressAsync") { () -> String? in
@@ -21,9 +24,28 @@ public final class NetworkModule: Module {
       return getNetworkStateAsync()
     }
 
+    OnStopObserving(onNetworkStateChanged) {
+      monitor.cancel()
+    }
+
     OnDestroy {
       monitor.cancel()
     }
+  }
+
+  private func setupNetworkMonitoring() {
+    monitor.pathUpdateHandler = { [weak self] path in
+      guard let self else {
+        return
+      }
+      self.emitNetworkStateChange(path: path)
+    }
+    monitor.start(queue: monitorQueue)
+  }
+
+  private func emitNetworkStateChange(path: NWPath) {
+    let networkState = getNetworkStateAsync(path: path)
+    sendEvent(onNetworkStateChanged, networkState)
   }
 
   private func getIPAddress() throws -> String {
@@ -46,7 +68,7 @@ public final class NetworkModule: Module {
 
       if family == UInt8(AF_INET) {
         let name = String(cString: temp.ifa_name)
-        if name == "en0" || name == "en1" {
+        if name.starts(with: "en") {
           var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
           getnameinfo(
             temp.ifa_addr,
@@ -65,10 +87,9 @@ public final class NetworkModule: Module {
     return address
   }
 
-  private func getNetworkStateAsync() -> [String: Any] {
-    let path = monitor.currentPath
-    let isConnected = path.status == .satisfied
-    var currentNetworkType = NetworkType.unknown
+  private func getNetworkStateAsync(path: NWPath? = nil) -> [String: Any] {
+    let currentPath = path ?? monitor.currentPath
+    let isConnected = currentPath.status == .satisfied
 
     if !isConnected {
       return [
@@ -81,14 +102,17 @@ public final class NetworkModule: Module {
     let connectionType = NWInterface
       .InterfaceType
       .allCases
-      .filter { path.usesInterfaceType($0) }
+      .filter { currentPath.usesInterfaceType($0) }
       .first
 
+    var currentNetworkType = NetworkType.unknown
     switch connectionType {
     case .wifi:
       currentNetworkType = .wifi
     case .cellular:
       currentNetworkType = .cellular
+    case .wiredEthernet:
+      currentNetworkType = .wiredEthernet
     default:
       currentNetworkType = .unknown
     }

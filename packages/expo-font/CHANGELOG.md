@@ -4,15 +4,50 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- More detailed error messages for `FontLoader` native module rejections ([#31104](https://github.com/expo/expo/pull/31104) by [@vonovak](https://github.com/vonovak))
+- Add `getLoadedFonts()` function ([#30431](https://github.com/expo/expo/pull/30431) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix font registration failing when font was in use. ([#28989](https://github.com/expo/expo/pull/28989) by [@aleqsio](https://github.com/aleqsio))
+- `useFonts` could previously attempt to set state on an unmounted component ([#31143](https://github.com/expo/expo/pull/31143) by [@vonovak](https://github.com/vonovak))
+- On iOS `loadAsync()` will reject if font loading fails. ([#31053](https://github.com/expo/expo/pull/31053) by [@vonovak](https://github.com/vonovak))
+- Add missing `react` peer dependencies for isolated modules. ([#30467](https://github.com/expo/expo/pull/30467) by [@byCedric](https://github.com/byCedric))
+- Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+- Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
 - Stopped scoping font family names in Expo Go on Android. ([#28797](https://github.com/expo/expo/pull/28797) by [@lukmccall](https://github.com/lukmccall))
+- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
+- Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+
+## 12.0.9 - 2024-07-16
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix issues where fonts were removed when the app is backgrounded. ([#30400](https://github.com/expo/expo/pull/30400) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.0.8 - 2024-07-11
+
+### 🎉 New features
+
+- Allow `woff` and `woff2` format on iOS with the config plugin. ([#30220](https://github.com/expo/expo/pull/30220) by [@titozzz](https://github/Titozzz))
+
+## 12.0.7 - 2024-06-06
+
+### 🐛 Bug fixes
+
+- On `iOS`, store the font `postscriptName` instead of `fullName` which is what `iOS` will use to register the font. ([#29502](https://github.com/expo/expo/pull/29502) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.0.6 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- [iOS] Fix font registration failing when font was in use. ([#28989](https://github.com/expo/expo/pull/28989) by [@aleqsio](https://github.com/aleqsio))
 
 ## 12.0.5 — 2024-05-10
 

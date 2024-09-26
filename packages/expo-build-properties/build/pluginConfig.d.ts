@@ -52,6 +52,13 @@ export interface PluginConfigTypeAndroid {
      */
     enableShrinkResourcesInReleaseBuilds?: boolean;
     /**
+     * Enable [`crunchPngs`](https://developer.android.com/topic/performance/reduce-apk-size#crunch) in release builds to optimize PNG files.
+     * This property is enabled by default, but "might inflate PNG files that are already compressed", so you may want to disable it if you do your own PNG optimization.
+     *
+     * @default true
+     */
+    enablePngCrunchInReleaseBuilds?: boolean;
+    /**
      * Append custom [Proguard rules](https://www.guardsquare.com/manual/configuration/usage) to **android/app/proguard-rules.pro**.
      */
     extraProguardRules?: string;
@@ -68,7 +75,6 @@ export interface PluginConfigTypeAndroid {
     /**
      * Add extra maven repositories to all gradle projects.
      *
-     *
      * Takes an array of objects or strings.
      * Strings are passed as the `url` property of the object with no credentials or authentication scheme.
      *
@@ -83,7 +89,6 @@ export interface PluginConfigTypeAndroid {
      * ```
      *
      * By using an `AndroidMavenRepository` object, you can specify credentials and an authentication scheme.
-     *
      * ```groovy
      * allprojects {
      *   repositories {
@@ -102,9 +107,6 @@ export interface PluginConfigTypeAndroid {
      * ```
      *
      * @see [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:case-for-maven)
-     *
-     * @hide For the implementation details,
-     * this property is actually handled by `expo-modules-autolinking` not the config-plugins inside `expo-build-properties`
      */
     extraMavenRepos?: (AndroidMavenRepository | string)[];
     /**
@@ -131,6 +133,9 @@ export interface PluginConfigTypeAndroid {
      */
     manifestQueries?: PluginConfigTypeAndroidQueries;
 }
+/**
+ * @platform android
+ */
 export interface AndroidMavenRepository {
     /**
      * The URL of the Maven repository.
@@ -148,20 +153,32 @@ export interface AndroidMavenRepository {
      */
     authentication?: 'basic' | 'digest' | 'header';
 }
-interface AndroidMavenRepositoryPasswordCredentials {
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryPasswordCredentials {
     username: string;
     password: string;
 }
-interface AndroidMavenRepositoryHttpHeaderCredentials {
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryHttpHeaderCredentials {
     name: string;
     value: string;
 }
-interface AndroidMavenRepositoryAWSCredentials {
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryAWSCredentials {
     accessKey: string;
     secretKey: string;
     sessionToken?: string;
 }
-type AndroidMavenRepositoryCredentials = AndroidMavenRepositoryPasswordCredentials | AndroidMavenRepositoryHttpHeaderCredentials | AndroidMavenRepositoryAWSCredentials;
+/**
+ * @platform android
+ */
+export type AndroidMavenRepositoryCredentials = AndroidMavenRepositoryPasswordCredentials | AndroidMavenRepositoryHttpHeaderCredentials | AndroidMavenRepositoryAWSCredentials;
 /**
  * Interface representing available configuration for iOS native build properties.
  * @platform ios
@@ -191,17 +208,22 @@ export interface PluginConfigTypeIos {
     /**
      * Add extra CocoaPods dependencies for all targets.
      *
-     * This acts like to add the following code to **ios/Podfile**:
+     * This configuration is responsible for adding the new Pod entries to **ios/Podfile**.
      *
+     * @example
+     * Creating entry in the configuration like below:
+     * ```json
+     * [
+     *   {
+     *     name: "Protobuf",
+     *     version: "~> 3.14.0",
+     *   }
+     * ]
+     * ```
+     * Will produce the following entry in the generated **ios/Podfile**:
      * ```ruby
-     * pod '[EXTRA_POD_NAME]', '~> [EXTRA_POD_VERSION]'
-     *
-     * # Example
      * pod 'Protobuf', '~> 3.14.0'
      * ```
-     *
-     * @hide For the implementation details,
-     * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside `expo-build-properties`.
      */
     extraPods?: ExtraIosPodDependency[];
     /**
@@ -288,12 +310,17 @@ export interface ExtraIosPodDependency {
      * Use the bleeding edge version of a Pod.
      *
      * @example
-     * ```
-     * { "name": "AFNetworking", "git": "https://github.com/gowalla/AFNetworking.git", "tag": "0.7.0" }
+     * ```json
+     * {
+     *   "name": "AFNetworking",
+     *   "git": "https://github.com/gowalla/AFNetworking.git",
+     *   "tag": "0.7.0"
+     * }
      * ```
      *
      * This acts like to add this pod dependency statement:
-     * ```
+     *
+     * ```rb
      * pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git', :tag => '0.7.0'
      * ```
      */
@@ -333,11 +360,14 @@ export interface PluginConfigTypeAndroidPackagingOptions {
      */
     doNotStrip?: string[];
 }
+/**
+ * @platform android
+ */
 export interface PluginConfigTypeAndroidQueries {
     /**
-     * Specifies a single app that your app intends to access. This other app might integrate with your app, or your app might use services that the other app provides.
+     * Specifies one or more apps that your app intends to access. These other apps might integrate with your app, or your app might use services that these other apps provide.
      */
-    package: string[];
+    package?: string[];
     /**
      * Specifies an intent filter signature. Your app can discover other apps that have matching `<intent-filter>` elements.
      * These intents have restrictions compared to typical intent filter signatures.
@@ -351,6 +381,9 @@ export interface PluginConfigTypeAndroidQueries {
      */
     provider?: string[];
 }
+/**
+ * @platform android
+ */
 export interface PluginConfigTypeAndroidQueriesIntent {
     /**
      * A string naming the action to perform. Usually one of the platform-defined values, such as `ACTION_SEND` or `ACTION_VIEW`.
@@ -366,6 +399,9 @@ export interface PluginConfigTypeAndroidQueriesIntent {
      */
     category?: string | string[];
 }
+/**
+ * @platform android
+ */
 export interface PluginConfigTypeAndroidQueriesData {
     /**
      * Specify a URI scheme that is handled
@@ -384,4 +420,3 @@ export interface PluginConfigTypeAndroidQueriesData {
  * @ignore
  */
 export declare function validateConfig(config: any): PluginConfigType;
-export {};

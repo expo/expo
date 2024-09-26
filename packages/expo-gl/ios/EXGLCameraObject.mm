@@ -93,7 +93,9 @@
   CVOpenGLESTextureCacheFlush(_cameraTextureCache, 0);
   CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
   CVPixelBufferRelease(pixelBuffer);
-  CFRelease(textureRef);
+  if (textureRef != NULL) {
+    CFRelease(textureRef);
+  }
 
   [EAGLContext setCurrentContext:nil];
 }

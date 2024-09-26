@@ -4,8 +4,8 @@ sidebar_title: Environment variables and secrets
 description: Learn how to use environment variables and secrets in an EAS Build.
 ---
 
-import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 [Environment variables in Expo](/guides/environment-variables) describes how to use **.env** files to set environment variables that can be inlined in your JavaScript code. The Expo CLI will substitute properly prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
 
@@ -174,7 +174,7 @@ If you're using a **.env** file for storing your secrets locally, you can use th
 <Terminal
   cmd={[
     '$ eas secret:push --scope project --env-file ./eas/.env',
-    '✔ Creating secrets on account johndoe…',
+    '✔ Creating secrets on account johndoe...',
     '✔ Created the following secrets on account johndoe:',
     '- ABC',
     '- DEF',

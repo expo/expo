@@ -1,5 +1,5 @@
-export async function createSquareAsync() {
-  return Buffer.from('');
+export async function createSquareAsync(...args) {
+  return jest.requireActual('@expo/image-utils').createSquareAsync(...args);
 }
 
 export async function generateImageAsync(input: any, { src }) {

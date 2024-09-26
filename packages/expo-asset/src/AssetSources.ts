@@ -31,10 +31,10 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
   // explicitly provided URIs
   const scale = AssetSourceResolver.pickScale(meta.scales, PixelRatio.get());
   const index = meta.scales.findIndex((s) => s === scale);
-  const hash = meta.fileHashes ? meta.fileHashes[index] ?? meta.fileHashes[0] : meta.hash;
+  const hash = meta.fileHashes ? (meta.fileHashes[index] ?? meta.fileHashes[0]) : meta.hash;
 
   // Allow asset processors to directly provide the URL to load
-  const uri = meta.fileUris ? meta.fileUris[index] ?? meta.fileUris[0] : meta.uri;
+  const uri = meta.fileUris ? (meta.fileUris[index] ?? meta.fileUris[0]) : meta.uri;
   if (uri) {
     return { uri: resolveUri(uri), hash };
   }
@@ -91,31 +91,4 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
 export function resolveUri(uri: string): string {
   // `manifestBaseUrl` is always an absolute URL or `null`.
   return manifestBaseUrl ? new URL(uri, manifestBaseUrl).href : uri;
-}
-
-// A very cheap path canonicalization like path.join but without depending on a `path` polyfill.
-export function pathJoin(...paths: string[]): string {
-  // Start by simply combining paths, without worrying about ".." or "."
-  const combined = paths
-    .map((part, index) => {
-      if (index === 0) {
-        return part.trim().replace(/\/*$/, '');
-      }
-      return part.trim().replace(/(^\/*|\/*$)/g, '');
-    })
-    .filter((part) => part.length > 0)
-    .join('/')
-    .split('/');
-
-  // Handle ".." and "." in paths
-  const resolved: string[] = [];
-  for (const part of combined) {
-    if (part === '..') {
-      resolved.pop(); // Remove the last element from the result
-    } else if (part !== '.') {
-      resolved.push(part);
-    }
-  }
-
-  return resolved.join('/');
 }

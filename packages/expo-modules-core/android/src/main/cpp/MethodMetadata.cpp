@@ -54,28 +54,28 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   size_t count
 ) {
   // This function takes the owner, so the args number is higher because we have access to the thisValue.
-  if (takesOwner) {
+  if (info.takesOwner) {
     count++;
   }
 
   // The `count < argTypes.size()` case is handled by the Kotlin part
-  if (count > argTypes.size()) {
+  if (count > info.argTypes.size()) {
     throwNewJavaException(
       InvalidArgsNumberException::create(
         count,
-        argTypes.size()
+        info.argTypes.size()
       ).get()
     );
   }
 
   auto argumentArray = env->NewObjectArray(
     count,
-    JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
+    JCacheHolder::get().jObject,
     nullptr
   );
 
 
-  const auto getCurrentArg = [&thisValue, args, takesOwner = takesOwner](
+  const auto getCurrentArg = [&thisValue, args, takesOwner = info.takesOwner](
     size_t index
   ) -> const jsi::Value & {
     if (!takesOwner) {
@@ -90,7 +90,7 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
 
   for (size_t argIndex = 0; argIndex < count; argIndex++) {
     const jsi::Value &arg = getCurrentArg(argIndex);
-    auto &type = argTypes[argIndex];
+    auto &type = info.argTypes[argIndex];
 
     if (type->converter->canConvert(rt, arg)) {
       auto converterValue = type->converter->convert(rt, env, arg);
@@ -104,7 +104,7 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
       auto stringRepresentation = arg.toString(rt).utf8(rt);
       throwNewJavaException(
         UnexpectedException::create(
-          "[" + this->name + "] Cannot convert '" + stringRepresentation +
+          "[" + this->info.name + "] Cannot convert '" + stringRepresentation +
           "' to a Kotlin type.").get()
       );
     }
@@ -114,35 +114,9 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
 }
 
 MethodMetadata::MethodMetadata(
-  std::string name,
-  bool takesOwner,
-  bool isAsync,
-  jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+  Info info,
   jni::global_ref<jobject> &&jBodyReference
-) : name(std::move(name)),
-    takesOwner(takesOwner),
-    isAsync(isAsync),
-    jBodyReference(std::move(jBodyReference)) {
-  size_t argsSize = expectedArgTypes->size();
-  argTypes.reserve(argsSize);
-  for (size_t i = 0; i < argsSize; i++) {
-    auto expectedType = expectedArgTypes->getElement(i);
-    argTypes.push_back(
-      std::make_unique<AnyType>(std::move(expectedType))
-    );
-  }
-}
-
-MethodMetadata::MethodMetadata(
-  std::string name,
-  bool takesOwner,
-  bool isAsync,
-  std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
-  jni::global_ref<jobject> &&jBodyReference
-) : name(std::move(name)),
-    takesOwner(takesOwner),
-    isAsync(isAsync),
-    argTypes(std::move(expectedArgTypes)),
+) : info(std::move(info)),
     jBodyReference(std::move(jBodyReference)) {
 }
 
@@ -150,7 +124,11 @@ std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
   jsi::Runtime &runtime
 ) {
   if (body == nullptr) {
-    if (isAsync) {
+    if (jBodyReference == nullptr) {
+      return nullptr;
+    }
+
+    if (info.isAsync) {
       body = std::make_shared<jsi::Function>(toAsyncFunction(runtime));
     } else {
       body = std::make_shared<jsi::Function>(toSyncFunction(runtime));
@@ -166,8 +144,8 @@ jsi::Function MethodMetadata::toSyncFunction(
   auto weakThis = weak_from_this();
   return jsi::Function::createFromHostFunction(
     runtime,
-    getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
-    argTypes.size(),
+    getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, info.name),
+    info.argTypes.size(),
     [weakThis = std::move(weakThis)](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,
@@ -204,13 +182,7 @@ jni::local_ref<jobject> MethodMetadata::callJNISync(
   }
 
   auto convertedArgs = convertJSIArgsToJNI(env, rt, thisValue, args, count);
-
-  // Cast in this place is safe, cause we know that this function is promise-less.
-  auto syncFunction = jni::static_ref_cast<JNIFunctionBody>(this->jBodyReference);
-  auto result = syncFunction->invoke(
-    convertedArgs
-  );
-
+  auto result = JNIFunctionBody::invoke(this->jBodyReference.get(), convertedArgs);
   env->DeleteLocalRef(convertedArgs);
   return result;
 }
@@ -230,7 +202,7 @@ jsi::Value MethodMetadata::callSync(
   jni::JniLocalScope scope(env, (int) count);
 
   auto result = this->callJNISync(env, rt, thisValue, args, count);
-  return convert(env, rt, std::move(result));
+  return convert(env, rt, result);
 }
 
 jsi::Function MethodMetadata::toAsyncFunction(
@@ -239,8 +211,8 @@ jsi::Function MethodMetadata::toAsyncFunction(
   auto weakThis = weak_from_this();
   return jsi::Function::createFromHostFunction(
     runtime,
-    getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, name),
-    argTypes.size(),
+    getJSIContext(runtime)->jsRegistry->getPropNameID(runtime, info.name),
+    info.argTypes.size(),
     [weakThis = std::move(weakThis)](
       jsi::Runtime &rt,
       const jsi::Value &thisValue,
@@ -352,26 +324,16 @@ jsi::Function MethodMetadata::createPromiseBody(
 
       JNIEnv *env = jni::Environment::current();
 
-      auto &jPromise = JavaReferencesCache::instance()->getJClass(
-        "expo/modules/kotlin/jni/PromiseImpl");
-      jmethodID jPromiseConstructor = jPromise.getMethod(
-        "<init>",
-        "(Lexpo/modules/kotlin/jni/JavaCallback;)V"
-      );
+      auto &jPromise = JCacheHolder::get().jPromise;
 
       // Creates a promise object
       jobject promise = env->NewObject(
         jPromise.clazz,
-        jPromiseConstructor,
+        jPromise.constructor,
         javaCallback
       );
 
-      // Cast in this place is safe, cause we know that this function expects promise.
-      auto asyncFunction = jni::static_ref_cast<JNIAsyncFunctionBody>(this->jBodyReference);
-      asyncFunction->invoke(
-        globalArgs,
-        promise
-      );
+      JNIAsyncFunctionBody::invoke(this->jBodyReference.get(), globalArgs, promise);
 
       // We have to remove the local reference to the promise object.
       // It doesn't mean that the promise will be deallocated, but rather that we move

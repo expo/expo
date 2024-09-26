@@ -199,11 +199,11 @@ export type FileInfo =
      * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
      */
     md5?: string;
-} | 
+}
 /**
  * Object returned when file do not exist.
  */
-{
+ | {
     exists: false;
     uri: string;
     isDirectory: false;
@@ -290,11 +290,11 @@ export type FileSystemRequestDirectoryPermissionsResult =
  */
 {
     granted: false;
-} | 
+}
 /**
  * If the permissions were granted.
  */
-{
+ | {
     granted: true;
     /**
      * The [SAF URI](#saf-uri) to the user's selected directory. Available only if permissions were granted.

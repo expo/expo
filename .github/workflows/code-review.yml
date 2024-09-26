@@ -36,7 +36,7 @@ jobs:
       #     swift build -c release
       #     cp .build/release/swiftlint /usr/local/bin/
       # - name: 📦 Make an artifact
-      #   uses: actions/upload-artifact@v3
+      #   uses: actions/upload-artifact@v4
       #   with:
       #     name: swiftlint
       #     path: SwiftLint/.build

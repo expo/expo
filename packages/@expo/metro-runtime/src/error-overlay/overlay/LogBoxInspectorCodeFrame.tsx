@@ -41,7 +41,11 @@ export function LogBoxInspectorCodeFrame({ codeFrame }: { codeFrame?: CodeFrame 
     <LogBoxInspectorSection heading="Source">
       <View style={styles.box}>
         <View style={styles.frame}>
-          <ScrollView horizontal>
+          <ScrollView
+            horizontal
+            contentContainerStyle={{
+              flexDirection: 'column',
+            }}>
             <Ansi style={styles.content} text={codeFrame.content} />
           </ScrollView>
         </View>
@@ -84,6 +88,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   content: {
+    flexDirection: 'column',
     color: LogBoxStyle.getTextColor(1),
     fontSize: 12,
     includeFontPadding: false,

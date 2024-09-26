@@ -26,6 +26,7 @@ import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.facedetector.FaceDetectorModule
 import expo.modules.facedetector.FaceDetectorPackage
+import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderModule
@@ -42,6 +43,8 @@ import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
+import expo.modules.linking.ExpoLinkingModule
+import expo.modules.linking.ExpoLinkingPackage
 import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationModule
@@ -93,6 +96,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ConstantsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
+    ExpoLinkingPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),
     NavigationBarPackage(),
@@ -155,6 +159,8 @@ object ExperiencePackagePicker : ModulesProvider {
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
+    ExpoFetchModule::class.java,
+    ExpoLinkingModule::class.java,
     FileSystemModule::class.java,
     FaceDetectorModule::class.java,
     FontLoaderModule::class.java,

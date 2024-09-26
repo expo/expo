@@ -7,9 +7,9 @@ iconUrl: '/static/images/packages/expo-splash-screen.png'
 platforms: ['android', 'ios', 'tvos']
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
 The `SplashScreen` module from the `expo-splash-screen` library is used to tell the splash screen to remain visible until it has been explicitly told to hide. This is useful to do tasks that will happen behind the scenes such as making API calls, pre-loading fonts, animating the splash screen and so on.
 
@@ -23,8 +23,8 @@ Also, see the guide on [creating a splash screen image](/develop/user-interface/
 
 This example shows how to keep the splash screen visible while loading app resources and then hide the splash screen when the app has rendered some initial content.
 
-```js
-import React, { useCallback, useEffect, useState } from 'react';
+```jsx App.js
+import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
