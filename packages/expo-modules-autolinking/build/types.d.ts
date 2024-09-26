@@ -40,10 +40,6 @@ export interface GenerateModulesProviderOptions extends ResolveOptions {
     entitlement?: string;
     packages: string[];
 }
-export interface PatchReactImportsOptions {
-    podsRoot: string;
-    dryRun: boolean;
-}
 export type PackageRevision = {
     path: string;
     version: string;
