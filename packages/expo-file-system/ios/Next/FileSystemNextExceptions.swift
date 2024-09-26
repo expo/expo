@@ -1,15 +1,9 @@
 import Foundation
 import ExpoModulesCore
 
-internal class CopyDirectoryToFileException: Exception {
+internal class CopyOrMoveDirectoryToFileException: Exception {
   override var reason: String {
-    "Unable to copy a directory to a file"
-  }
-}
-
-internal class MoveDirectoryToFileException: Exception {
-  override var reason: String {
-    "Unable to move a directory to a file"
+    "Unable to copy or move a directory to a file"
   }
 }
 
