@@ -25,6 +25,7 @@
 - Fix and update link for `expo-dev-client` in package's README. ([#30162](https://github.com/expo/expo/pull/30162) by [@amandeepmittal](https://github.com/amandeepmittal)).
 - Fixed broken unit test on iOS 17 where `URL()` without scheme returns nil. ([#30178](https://github.com/expo/expo/pull/30178) by [@kudo](https://github.com/kudo))
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
