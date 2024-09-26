@@ -54,6 +54,8 @@ import {
   persistMetroFilesAsync,
 } from '../saveAssets';
 import { CommandError } from '../../utils/errors';
+import chalk from 'chalk';
+import { disableNetwork } from '../../api/settings';
 
 const DEPLOYMENT_SUCCESS_FIXTURE = {
   pid: 84795,
@@ -86,6 +88,21 @@ const DEPLOYMENT_SUCCESS_FIXTURE = {
     '- Creating deployment\n' +
     '✔ Created deployment\n',
   status: 0,
+  signal: null,
+};
+
+const DEPLOYMENT_NO_WIFI_FIXTURE = {
+  pid: 88737,
+  output: [
+    '\n' +
+      'request to https://staging-api.expo.dev/graphql failed, reason: getaddrinfo ENOTFOUND staging-api.expo.dev\n',
+    '    Error: GraphQL request failed.\n',
+  ],
+  stdout:
+    '\n' +
+    'request to https://staging-api.expo.dev/graphql failed, reason: getaddrinfo ENOTFOUND staging-api.expo.dev\n',
+  stderr: '    Error: GraphQL request failed.\n',
+  status: 1,
   signal: null,
 };
 const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
@@ -261,6 +278,20 @@ async function runServerDeployCommandAsync(
     deployScript,
   }: { distDirectory: string; deployScript: { scriptName: string; script: string } | null }
 ): Promise<string | false> {
+  const logOfflineError = () => {
+    const manualScript = deployScript
+      ? `npm run ${deployScript.scriptName}`
+      : `npx eas deploy --export-dir ${distDirectory}`;
+
+    logMetroErrorInXcode(
+      projectRoot,
+      chalk.red`Running CLI in offline mode, skipping server deployment. Deploy manually with: ${manualScript}`
+    );
+  };
+  if (env.EXPO_OFFLINE) {
+    logOfflineError();
+    return false;
+  }
   // TODO: Test error cases thoroughly since they run at the end of a build:
   // - EAS not installed.
   // - EAS not configured.
@@ -308,7 +339,7 @@ async function runServerDeployCommandAsync(
         spawnOptions
       );
     } else {
-      logInXcode('Deploying server to EAS');
+      logInXcode('Deploying server to link with client');
 
       // results = DEPLOYMENT_SUCCESS_FIXTURE;
       results = await spawnAsync(
@@ -316,6 +347,13 @@ async function runServerDeployCommandAsync(
         [globalBin, 'deploy', '--non-interactive', '--json', `--export-dir=${exportDir}`],
         spawnOptions
       );
+
+      debug('Server deployment stdout:', results.stdout);
+
+      // Send stderr to stderr. stdout is parsed as JSON.
+      if (results.stderr) {
+        process.stderr.write(results.stderr);
+      }
     }
 
     const logPath = await dumpDeploymentLogs(projectRoot, results.output.join('\n'));
@@ -337,12 +375,24 @@ async function runServerDeployCommandAsync(
       return false;
     }
   } catch (error) {
-    // TODO: Account for offline errors.
-    // TODO: Account for EAS not being installed.
-
     if (isSpawnResultError(error)) {
       const output = error.output.join('\n').trim() || error.toString();
-      await dumpDeploymentLogs(projectRoot, output, 'deploy-error');
+      Log.log(
+        chalk.dim(
+          'An error occurred while deploying server. Logs stored at: ' +
+            (await dumpDeploymentLogs(projectRoot, output, 'deploy-error'))
+        )
+      );
+
+      // Likely a server offline or network error.
+      if (output.match(/ENOTFOUND/)) {
+        logOfflineError();
+        // Print the raw error message to help provide more context.
+        Log.log(chalk.dim(output));
+        // Prevent any other network requests (unlikely for this command).
+        disableNetwork();
+        return false;
+      }
 
       logInXcode(output);
       if (output.match(/spawn eas ENOENT/)) {
