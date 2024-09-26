@@ -110,6 +110,11 @@ typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, N
 - (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
                                             constructor:(nonnull ClassConstructorBlock)constructor;
 
+#pragma mark - Shared refs
+
+- (nonnull EXJavaScriptObject *)createSharedRefClass:(nonnull NSString *)name
+                                         constructor:(nonnull ClassConstructorBlock)constructor;
+
 #pragma mark - Script evaluation
 
 /**

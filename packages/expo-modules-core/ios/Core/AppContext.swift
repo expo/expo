@@ -418,6 +418,9 @@ public final class AppContext: NSObject {
     EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
       sharedObjectRegistry?.delete(objectId)
     }
+    
+    // Install `global.expo.SharedRef`.
+    EXJavaScriptRuntimeManager.installSharedRefClass(runtime)
 
     // Install `global.expo.NativeModule`.
     EXJavaScriptRuntimeManager.installNativeModuleClass(runtime)
