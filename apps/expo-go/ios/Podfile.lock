@@ -35,7 +35,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.28.17):
     - ExpoModulesCore
-  - Expo (51.0.33):
+  - Expo (51.0.34):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.4.2):
     - ExpoModulesCore
@@ -226,7 +226,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (4.0.2):
     - ExpoModulesCore
-  - ExpoVideo (1.2.6):
+  - ExpoVideo (1.2.7):
     - ExpoModulesCore
   - ExpoVideoThumbnails (8.0.0):
     - ExpoModulesCore
@@ -2353,7 +2353,7 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 866d0c365eb46835d48be2c7a0e00418312992b4
   EXNotifications: 1177f1f3acba90ac409ac70d011dc00c75049635
-  Expo: 0b623d99ade6b23201ad615e289d32b669035ea3
+  Expo: 963ef4ae102e4f4ac114a8510d70127c44adffbf
   ExpoAppleAuthentication: 265219fa0ba1110872079f55f56686b9737b0065
   ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
   ExpoAudio: 5e7d15c9b6901eb32913a220b0e99590739f4db3
@@ -2400,7 +2400,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: 98f7d7af2713a0fb327658d20376c04e5bb818bd
   ExpoSystemUI: d4f065a016cae6721b324eb659cdee4d4cf0cb26
   ExpoTrackingTransparency: 005340638bbd48449066a6c1a54ee44ae65ed7b4
-  ExpoVideo: 671f05cad34c01e3cb033319149e8bc40876c6cb
+  ExpoVideo: 9bf68ae981f3cb64b4fd2fc9f5a5337e55716b5b
   ExpoVideoThumbnails: 40c737b2507a7470b14e9452e286513beb9a7d77
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
   EXSplashScreen: 17a656c08a0095be15b620c52e61dfdb665863d2
@@ -2512,7 +2512,7 @@ SPEC CHECKSUMS:
   StripePaymentsUI: 1f0cbac9145149fbbb87e27660af0d3be91aae98
   StripeUICore: d6803286f1e2b80c62c320b304503c87bf65de3c
   UMAppLoader: f17a5ee8e85b536ace0fc254b447a37ed198d57e
-  Yoga: 2246eea72aaf1b816a68a35e6e4b74563653ae09
+  Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 08d42139077d6c9a60951d31532300d7f641d419
