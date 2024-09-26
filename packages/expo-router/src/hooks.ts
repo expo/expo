@@ -115,11 +115,16 @@ export function usePathname(): string {
 }
 
 /**
+ * @hidden
+ */
+export function useGlobalSearchParams<
+  TParams extends SearchParams = UnknownOutputParams,
+>(): RouteParams<TParams>;
+/**
  * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
  * Useful for analytics or other background operations that don't draw to the screen.
  *
- * When querying search params in a stack, opt-towards using [`useLocalSearchParams`](#uselocalsearchparams) as these will only
- * update when the route is focused.
+ * When querying search params in a stack, opt-towards using [`useLocalSearchParams`](#uselocalsearchparams) as these will only update when the route is focused.
  *
  * Route URL example: `acme://profile/baconbrix?extra=info`.
  *
@@ -142,9 +147,6 @@ export function usePathname(): string {
  *
  */
 export function useGlobalSearchParams<
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams>;
-export function useGlobalSearchParams<
   TRoute extends Routes,
   TParams extends SearchParams = UnknownOutputParams,
 >(): RouteParams<TRoute, TParams>;
@@ -156,17 +158,20 @@ export function useGlobalSearchParams<
 }
 
 /**
+ * @hidden
+ */
+export function useLocalSearchParams<
+  TParams extends SearchParams = UnknownOutputParams,
+>(): RouteParams<TParams>;
+/**
  * Returns the URL parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
  * For dynamic routes, both the route parameters and the search parameters are returned.
  *
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  *
- * @see `useGlobalSearchParams`
+ * @see [`useGlobalSearchParams`](#useglobalsearchparams)
  */
-export function useLocalSearchParams<
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams>;
 export function useLocalSearchParams<
   TRoute extends Routes,
   TParams extends SearchParams = UnknownOutputParams,

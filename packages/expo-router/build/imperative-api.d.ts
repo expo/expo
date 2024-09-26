@@ -20,5 +20,8 @@ export type Router = {
     /** Update the current route query params. */
     setParams: <T extends Routes>(params: Partial<RouteParamInput<T>>) => void;
 };
+/**
+ * @hidden
+ */
 export declare const router: Router;
 //# sourceMappingURL=imperative-api.d.ts.map

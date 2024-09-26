@@ -23,7 +23,11 @@ function NoSSR({ children }) {
     }
     return <>{children}</>;
 }
-/** Default screen for unmatched routes. */
+/**
+ * Default screen for unmatched routes.
+ *
+ * @hidden
+ */
 function Unmatched() {
     const router = (0, hooks_1.useRouter)();
     const navigation = (0, useNavigation_1.useNavigation)();

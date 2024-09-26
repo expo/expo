@@ -38,7 +38,11 @@ exports.NavigatorContext = React.createContext(null);
 if (process.env.NODE_ENV !== 'production') {
     exports.NavigatorContext.displayName = 'NavigatorContext';
 }
-/** An unstyled custom navigator. Good for basic web layouts */
+/**
+ * An unstyled custom navigator. Good for basic web layouts.
+ *
+ * @hidden
+ */
 function Navigator({ initialRouteName, screenOptions, children, router, routerOptions, }) {
     const contextKey = (0, Route_1.useContextKey)();
     // Allows adding Screen components as children to configure routes.
@@ -75,6 +79,9 @@ function QualifiedNavigator({ initialRouteName, screenOptions, children, screens
       <NavigationContent>{children}</NavigationContent>
     </exports.NavigatorContext.Provider>);
 }
+/**
+ * @hidden
+ */
 function useNavigatorContext() {
     const context = React.useContext(exports.NavigatorContext);
     if (!context) {

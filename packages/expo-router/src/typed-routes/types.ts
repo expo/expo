@@ -1,18 +1,18 @@
 /**
  * @hidden
- **/
+ */
 type HasTypedRoutes = ExpoRouter.__routes extends { StaticRoutes: string } ? true : false;
 
 /**
  * @hidden
- **/
+ */
 export type StaticRoutes = ExpoRouter.__routes extends { StaticRoutes: string }
   ? ExpoRouter.__routes['StaticRoutes']
   : string;
 
 /**
  * @hidden
- **/
+ */
 export type DynamicRoutes<T extends string> =
   ExpoRouter.__routes<T> extends {
     DynamicRoutes: any;
@@ -25,7 +25,7 @@ export type DynamicRoutes<T extends string> =
 
 /**
  * @hidden
- **/
+ */
 export type DynamicRouteTemplate = ExpoRouter.__routes extends { DynamicRouteTemplate: string }
   ? ExpoRouter.__routes['DynamicRouteTemplate']
   : string;
@@ -34,6 +34,7 @@ export type DynamicRouteTemplate = ExpoRouter.__routes extends { DynamicRouteTem
  * The main routing type for Expo Router.
  *
  * @internal
+ * @hidden
  */
 export namespace ExpoRouter {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -42,7 +43,7 @@ export namespace ExpoRouter {
 
 /**
  * @hidden
- **/
+ */
 export type Routes = DynamicRouteTemplate | AllUngroupedRoutes<StaticRoutes>;
 
 /**
@@ -90,6 +91,9 @@ type DynamicRouteString<
     ? DynamicRoutes<T>
     : never;
 
+/**
+ * @hidden
+ */
 export type DynamicTemplateToHrefString<Path> = Path extends `${infer PartA}/${infer PartB}`
   ? // If the current segment (PartA) is dynamic, allow any string. This loop again with the next segment (PartB)
     `${PartA extends `[${string}]` ? string : PartA}/${DynamicTemplateToHrefString<PartB>}`
@@ -126,8 +130,10 @@ type AllUngroupedRoutes<Path> = Path extends `(${infer PartA})/${infer PartB}`
   : Path;
 
 /**
- * Routes can have known inputs (e.g query params)
- * Unlike outputs, inputs can be undefined or null
+ * Routes can have known inputs (e.g query params).
+ * Unlike outputs, inputs can be `undefined` or `null`.
+ *
+ * @hidden
  */
 export type UnknownInputParams = Record<
   string,
@@ -135,8 +141,10 @@ export type UnknownInputParams = Record<
 >;
 
 /**
- * Routes can have unknown outputs (e.g query params)
- * Unlike inputs, outputs can't be undefined or null
+ * Routes can have unknown outputs (e.g query params).
+ * Unlike inputs, outputs can't be undefined or null.
+ *
+ * @hidden
  */
 export type UnknownOutputParams = Record<string, string | string[]>;
 
@@ -166,13 +174,15 @@ type ParameterNames<Path> = Path extends `${infer PartA}/${infer PartB}`
  * Return only the RoutePart of a string. If the string has multiple parts return never
  *
  * string   | type
- * ---------|------
- * 123      | 123
- * /123/abc | never
- * 123?abc  | never
- * ./123    | never
- * /123     | never
- * 123/../  | never
+ *| ---------|------|
+ *| 123      | 123 |
+ *| /123/abc | never |
+ *| 123?abc  | never |
+ *| ./123    | never |
+ *| /123     | never |
+ *| 123/../  | never |
+ *
+ * @hidden
  */
 export type SingleRoutePart<S extends string> = S extends `${string}/${string}`
   ? never
@@ -218,8 +228,14 @@ export type StrictRouteParamsOutput<Path> = {
     : Key]: Key extends `...${string}` ? string[] : string;
 };
 
+/**
+ * @hidden
+ */
 export type RouteParamInput<Path> = StrictRouteParamsInputs<Path> & UnknownInputParams;
 
+/**
+ * @hidden
+ */
 export type RouteParams<
   PathOrObject extends Routes | UnknownOutputParams,
   ExtraPathOrObject extends UnknownOutputParams = UnknownOutputParams,
@@ -229,9 +245,14 @@ export type RouteParams<
 
 /**
  * @deprecated Use RouteParams or StrictRouteParams instead
+ *
+ * @hidden
  */
 export type SearchParams<T extends string = never> = RouteParams<T>;
 
+/**
+ * @hidden
+ */
 export type RouteSegments<PathOrStringArray extends string | string[]> =
   PathOrStringArray extends string[]
     ? PathOrStringArray

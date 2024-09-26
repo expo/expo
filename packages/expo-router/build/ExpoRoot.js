@@ -43,6 +43,9 @@ const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
     }
     : undefined;
+/**
+ * @hidden
+ */
 function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper

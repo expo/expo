@@ -8,6 +8,9 @@ export { ExpoRoot } from './ExpoRoot';
 export { Unmatched } from './views/Unmatched';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
+/**
+ * @hidden
+ */
 export { SplashScreen } from './views/Splash';
 export { useNavigation } from './useNavigation';
 export { useFocusEffect } from './useFocusEffect';

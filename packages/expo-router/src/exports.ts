@@ -27,6 +27,9 @@ export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
 
 // Platform
+/**
+ * @hidden
+ */
 export { SplashScreen } from './views/Splash';
 
 // React Navigation
