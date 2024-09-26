@@ -18,6 +18,7 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix invalid `resolveAssetSource` for web. ([#31664](https://github.com/expo/expo/pull/31664) by [@behenate](https://github.com/behenate))
 - [Android] Fix support for local file playback. ([#30472](https://github.com/expo/expo/pull/30472) by [@behenate](https://github.com/behenate))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 - [Android] Fix wrong event being sent when the volume is changed. ([#30891](https://github.com/expo/expo/pull/30891) by [@behenate](https://github.com/behenate))

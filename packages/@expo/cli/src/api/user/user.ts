@@ -7,7 +7,6 @@ import { CurrentUserQuery } from '../../graphql/generated';
 import * as Log from '../../log';
 import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
 import { env } from '../../utils/env';
-import { getTelemetry } from '../../utils/telemetry';
 import { getExpoWebsiteBaseUrl } from '../endpoint';
 import { graphqlClient } from '../graphql/client';
 import { UserQuery } from '../graphql/queries/UserQuery';
@@ -42,7 +41,6 @@ export async function getUserAsync(): Promise<Actor | undefined> {
   if (!env.EXPO_OFFLINE && !currentUser && hasCredentials) {
     const user = await UserQuery.currentUserAsync();
     currentUser = user ?? undefined;
-    getTelemetry()?.identify(currentUser);
   }
   return currentUser;
 }

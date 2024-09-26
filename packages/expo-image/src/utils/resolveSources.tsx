@@ -15,7 +15,7 @@ export function isThumbhashString(str: string): boolean {
   return str.startsWith('thumbhash:/');
 }
 
-function resolveSource(source?: ImageSource | string | number | null): ImageSource | null {
+export function resolveSource(source?: ImageSource | string | number | null): ImageSource | null {
   if (typeof source === 'string') {
     if (isBlurhashString(source)) {
       return resolveBlurhashString(source);

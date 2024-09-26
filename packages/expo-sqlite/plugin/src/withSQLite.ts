@@ -32,9 +32,9 @@ const withSQLite: ConfigPlugin<Props> = (config, props) => {
 
 const withSQLiteAndroidProps: ConfigPlugin<Props> = (config, props) => {
   return withGradleProperties(config, (config) => {
-    const customBuildFlags = props.android?.customBuildFlags ?? props.customBuildFlags;
-    const enableFTS = props.android?.enableFTS ?? props.enableFTS;
-    const useSQLCipher = props.android?.useSQLCipher ?? props.useSQLCipher;
+    const customBuildFlags = props?.android?.customBuildFlags ?? props?.customBuildFlags;
+    const enableFTS = props?.android?.enableFTS ?? props?.enableFTS;
+    const useSQLCipher = props?.android?.useSQLCipher ?? props?.useSQLCipher;
 
     config.modResults = updateAndroidBuildPropertyIfNeeded(
       config.modResults,
@@ -57,9 +57,9 @@ const withSQLiteAndroidProps: ConfigPlugin<Props> = (config, props) => {
 
 const withSQLiteIOSProps: ConfigPlugin<Props> = (config, props) => {
   return withPodfileProperties(config, (config) => {
-    const customBuildFlags = props.ios?.customBuildFlags ?? props.customBuildFlags;
-    const enableFTS = props.ios?.enableFTS ?? props.enableFTS;
-    const useSQLCipher = props.ios?.useSQLCipher ?? props.useSQLCipher;
+    const customBuildFlags = props?.ios?.customBuildFlags ?? props?.customBuildFlags;
+    const enableFTS = props?.ios?.enableFTS ?? props?.enableFTS;
+    const useSQLCipher = props?.ios?.useSQLCipher ?? props?.useSQLCipher;
 
     config.modResults = updateIOSBuildPropertyIfNeeded(
       config.modResults,
