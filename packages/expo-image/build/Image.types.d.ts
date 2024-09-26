@@ -465,5 +465,14 @@ export declare class ImageNativeModule extends NativeModule {
     Image: typeof ImageRef;
     loadAsync(source: ImageSource): Promise<ImageRef>;
 }
+/**
+ * An object with options for the [`useImage`](#useimage) hook.
+ */
+export type UseImageHookOptions = {
+    /**
+     * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
+     */
+    onError?(error: object, retry: () => void): void;
+};
 export {};
 //# sourceMappingURL=Image.types.d.ts.map
