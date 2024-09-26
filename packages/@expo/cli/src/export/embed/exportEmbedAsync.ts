@@ -260,6 +260,7 @@ async function runServerDeployCommandAsync(
         spawnOptions
       );
 
+      // TODO: Print dashboard URL.
       debug('Server deployment stdout:', results.stdout);
 
       // Send stderr to stderr. stdout is parsed as JSON.
