@@ -306,7 +306,6 @@ export function createServerComponentsMiddleware(
     return renderRsc(
       {
         body,
-        searchParams,
         decodedBody,
         context: getRscRenderContext(platform),
         config: {},
