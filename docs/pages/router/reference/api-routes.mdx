@@ -135,7 +135,6 @@ export async function POST(request: Request) {
 Query parameters can be accessed by parsing the request URL:
 
 ```ts app/endpoint+api.ts
-
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const post = url.searchParams.get('post');
