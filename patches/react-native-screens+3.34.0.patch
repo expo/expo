@@ -1,0 +1,65 @@
+diff --git a/node_modules/react-native-screens/android/CMakeLists.txt b/node_modules/react-native-screens/android/CMakeLists.txt
+index 1745fb5..9e60891 100644
+--- a/node_modules/react-native-screens/android/CMakeLists.txt
++++ b/node_modules/react-native-screens/android/CMakeLists.txt
+@@ -41,31 +41,39 @@ find_package(ReactAndroid REQUIRED CONFIG)
+ if(${RNS_NEW_ARCH_ENABLED})
+     find_package(fbjni REQUIRED CONFIG)
+ 
++    # This if-then-else can be removed once this library does not support version below 0.76
++    if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
++        target_link_libraries(rnscreens ReactAndroid::reactnative)
++    else()
++        target_link_libraries(rnscreens
++                ReactAndroid::react_render_core
++                ReactAndroid::react_nativemodule_core
++                ReactAndroid::react_utils
++                ReactAndroid::reactnativejni
++                ReactAndroid::fabricjni
++                ReactAndroid::react_debug
++                ReactAndroid::runtimeexecutor
++                ReactAndroid::react_render_graphics
++                ReactAndroid::rrc_view
++                ReactAndroid::yoga
++                ReactAndroid::rrc_text
++                ReactAndroid::glog
++                ReactAndroid::react_render_componentregistry
++                ReactAndroid::react_render_consistency
++                ReactAndroid::react_performance_timeline
++                ReactAndroid::react_render_observers_events
++        )
++    endif()
++
+     target_link_libraries(
+         rnscreens
+-            ReactAndroid::jsi
+-            ReactAndroid::react_nativemodule_core
+-            ReactAndroid::react_utils
+-            ReactAndroid::reactnativejni
+-            ReactAndroid::fabricjni
+-            ReactAndroid::react_debug
+-            ReactAndroid::react_render_core
+-            ReactAndroid::runtimeexecutor
+-            ReactAndroid::react_render_graphics
+-            ReactAndroid::rrc_view
+-            ReactAndroid::yoga
+-            ReactAndroid::rrc_text
+-            ReactAndroid::glog
+-            ReactAndroid::react_render_componentregistry
+-            ReactAndroid::react_render_consistency
+-            ReactAndroid::react_performance_timeline
+-            ReactAndroid::react_render_observers_events
+-            fbjni::fbjni
+-            android
++        fbjni::fbjni
++        android
+     )
+ else()
+     target_link_libraries(rnscreens
+-        ReactAndroid::jsi
+         android
+     )
+ endif()
++
++target_link_libraries(rnscreens ReactAndroid::jsi)
+\ No newline at end of file

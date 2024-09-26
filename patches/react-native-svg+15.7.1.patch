@@ -11,3 +11,104 @@ index ad2a1ae..7846906 100644
      mPointerEvents = pointerEvents;
    }
  
+diff --git a/node_modules/react-native-svg/android/src/transformRn73/java/com/horcrux/svg/SvgViewManager.java b/node_modules/react-native-svg/android/src/transformRn73/java/com/horcrux/svg/SvgViewManager.java
+index 2f21dec..1bdabc7 100644
+--- a/node_modules/react-native-svg/android/src/transformRn73/java/com/horcrux/svg/SvgViewManager.java
++++ b/node_modules/react-native-svg/android/src/transformRn73/java/com/horcrux/svg/SvgViewManager.java
+@@ -12,6 +12,7 @@ import android.graphics.Rect;
+ import android.util.SparseArray;
+ import com.facebook.common.logging.FLog;
+ import com.facebook.react.bridge.Dynamic;
++import com.facebook.react.bridge.DynamicFromObject;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.common.ReactConstants;
+ import com.facebook.react.uimanager.PixelUtil;
+@@ -178,12 +179,12 @@ class SvgViewManager extends ReactViewManager
+ 
+   @Override
+   public void setBorderTopEndRadius(SvgView view, float value) {
+-    super.setBorderRadius(view, 6, value);
++    super.setBorderRadius(view, 6, new DynamicFromObject(value));
+   }
+ 
+   @Override
+   public void setBorderBottomStartRadius(SvgView view, float value) {
+-    super.setBorderRadius(view, 7, value);
++    super.setBorderRadius(view, 7, new DynamicFromObject(value));
+   }
+ 
+   @Override
+@@ -243,7 +244,7 @@ class SvgViewManager extends ReactViewManager
+ 
+   @Override
+   public void setBorderBottomEndRadius(SvgView view, float value) {
+-    super.setBorderRadius(view, 8, value);
++    super.setBorderRadius(view, 8, new DynamicFromObject(value));
+   }
+ 
+   @Override
+@@ -263,7 +264,7 @@ class SvgViewManager extends ReactViewManager
+ 
+   @Override
+   public void setBorderTopStartRadius(SvgView view, float value) {
+-    super.setBorderRadius(view, 5, value);
++    super.setBorderRadius(view, 5, new DynamicFromObject(value));
+   }
+ 
+   @Override
+@@ -348,46 +349,46 @@ class SvgViewManager extends ReactViewManager
+ 
+   @Override
+   public void setBorderRadius(SvgView view, double value) {
+-    super.setBorderRadius(view, 0, (float) value);
++    super.setBorderRadius(view, 0, new DynamicFromObject(value));
+   }
+ 
+   @Override
+   public void setBorderTopLeftRadius(SvgView view, double value) {
+-    super.setBorderRadius(view, 1, (float) value);
++    super.setBorderRadius(view, 1, new DynamicFromObject(value));
+   }
+ 
+   @Override
+   public void setBorderTopRightRadius(SvgView view, double value) {
+-    super.setBorderRadius(view, 2, (float) value);
++    super.setBorderRadius(view, 2, new DynamicFromObject(value));
+   }
+ 
+   @Override
+   public void setBorderBottomRightRadius(SvgView view, double value) {
+-    super.setBorderRadius(view, 3, (float) value);
++    super.setBorderRadius(view, 3, new DynamicFromObject(value));
+   }
+ 
+   @Override
+   public void setBorderBottomLeftRadius(SvgView view, double value) {
+-    super.setBorderRadius(view, 4, (float) value);
++    super.setBorderRadius(view, 4, new DynamicFromObject(value));
+   }
+ 
+   @Override
+   public void setBorderEndEndRadius(SvgView view, double value) {
+-    super.setBorderRadius(view, 9, (float) value);
++    super.setBorderRadius(view, 9, new DynamicFromObject(value));
+   }
+ 
+   @Override
+   public void setBorderEndStartRadius(SvgView view, double value) {
+-    super.setBorderRadius(view, 10, (float) value);
++    super.setBorderRadius(view, 10, new DynamicFromObject(value));
+   }
+ 
+   @Override
+   public void setBorderStartEndRadius(SvgView view, double value) {
+-    super.setBorderRadius(view, 11, (float) value);
++    super.setBorderRadius(view, 11, new DynamicFromObject(value));
+   }
+ 
+   @Override
+   public void setBorderStartStartRadius(SvgView view, double value) {
+-    super.setBorderRadius(view, 12, (float) value);
++    super.setBorderRadius(view, 12,  new DynamicFromObject(value));
+   }
+ }
