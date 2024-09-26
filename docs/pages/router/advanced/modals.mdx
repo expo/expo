@@ -196,9 +196,11 @@ Modify your project's root layout (**app/\_layout.tsx**) to add an `options` obj
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 
+/* @info <CODE>unstable_settings</CODE> can be set in any stack's <CODE>_layout.tsx</CODE> file. It is used to define the initial route name for the stack, which ensures that users have a consistent starting point, especially when deep linking. */
 export const unstable_settings = {
   initialRouteName: 'index',
 };
+/* @end */
 
 export default function Layout() {
   return (
@@ -223,7 +225,9 @@ export default function Layout() {
 }
 ```
 
-The above example sets the `index` screen as the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) using `unstable_settings`. This ensures that the transparent modal is always rendered on top of the current screen, even when users navigate to the modal screen via a direct link.
+> **info** `unstable_settings` currently works only with `Stack` navigators.
+
+The above example sets the `index` screen as the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) using [`unstable_settings`](/router/advanced/router-settings). This ensures that the transparent modal is always rendered on top of the current screen, even when users navigate to the modal screen via a direct link.
 
 Style the overlay and modal content in **modal.tsx** as shown below:
 
