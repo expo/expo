@@ -19,6 +19,7 @@ export const expoExport: Command = async (argv) => {
       '--platform': [String],
       '--no-minify': Boolean,
       '--no-bytecode': Boolean,
+      '--no-ssg': Boolean,
 
       // Hack: This is added because EAS CLI always includes the flag.
       // If supplied, we'll do nothing with the value, but at least the process won't crash.
@@ -52,6 +53,7 @@ export const expoExport: Command = async (argv) => {
         `--no-bytecode              Prevent generating Hermes bytecode`,
         `--max-workers <number>     Maximum number of tasks to allow the bundler to spawn`,
         `--dump-assetmap            Emit an asset map for further processing`,
+        `--no-ssg                   Skip exporting static HTML files for web routes`,
         chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
         `-s, --source-maps          Emit JavaScript source maps`,
         `-c, --clear                Clear the bundler cache`,

@@ -172,6 +172,23 @@ export async function test({ describe, expect, it, ...t }) {
         expect(dst.text()).toBe('Hello world');
         expect(src.exists).toBe(true);
       });
+
+      it('Can copy from cache to documents', () => {
+        const src = new File(Paths.cache, 'file.txt');
+        const dst = new File(Paths.document, 'file.txt');
+        // cleanup
+        try {
+          src.delete();
+        } catch {}
+        try {
+          dst.delete();
+        } catch {}
+        src.write('Hello world');
+        src.copy(dst);
+        expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
+        expect(dst.exists).toBe(true);
+        expect(dst.md5).toBe(src.md5);
+      });
     });
 
     describe('When copying a directory', () => {
@@ -382,6 +399,59 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(Paths.document, 'file.txt');
         expect(file.uri).toBe(FS.documentDirectory + 'file.txt');
       });
+    });
+  });
+
+  addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
+}
+
+function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
+  const firstContainer = Object.values(Paths.appleSharedContainers)?.[0];
+  const sharedContainerTestDir = firstContainer ? firstContainer.uri + 'test/' : null;
+  const scopedIt = sharedContainerTestDir ? it : t.xit;
+
+  describe('Apple App Group', () => {
+    t.beforeEach(async () => {
+      if (sharedContainerTestDir) {
+        await FS.makeDirectoryAsync(sharedContainerTestDir, { intermediates: true });
+      }
+    });
+
+    t.afterEach(async () => {
+      if (sharedContainerTestDir) {
+        await FS.deleteAsync(sharedContainerTestDir, { idempotent: true });
+      }
+    });
+
+    scopedIt('Writes a string to a file reference', () => {
+      const outputFile = new File(sharedContainerTestDir + 'file.txt');
+      expect(outputFile.exists).toBe(false);
+      outputFile.write('Hello world');
+      expect(outputFile.exists).toBe(true);
+    });
+
+    scopedIt('Deletes a file reference', () => {
+      const outputFile = new File(sharedContainerTestDir + 'file3.txt');
+      outputFile.write('Hello world');
+      expect(outputFile.exists).toBe(true);
+
+      outputFile.delete();
+      expect(outputFile.exists).toBe(false);
+    });
+
+    scopedIt('Creates a folder', () => {
+      const folder = new Directory(sharedContainerTestDir + 'newFolder');
+      folder.create();
+      expect(folder.exists).toBe(true);
+    });
+
+    scopedIt('Deletes a folder', () => {
+      const folder = new Directory(sharedContainerTestDir + 'newFolder');
+      folder.create();
+      expect(folder.exists).toBe(true);
+
+      folder.delete();
+      expect(folder.exists).toBe(false);
     });
   });
 }

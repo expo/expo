@@ -437,6 +437,7 @@ async function exportApiRoutesAsync({
     platform,
   });
 
+  // HACK: Clear out the HTML and 404 routes if we're only exporting API routes. This is used for native apps that are using API routes but haven't implemented web support yet.
   if (apiRoutesOnly) {
     manifest.htmlRoutes = [];
     manifest.notFoundRoutes = [];

@@ -256,9 +256,6 @@ export abstract class ManifestMiddleware<
     );
   }
 
-  /** Log telemetry. */
-  protected abstract trackManifest(version?: string): void;
-
   /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. Exposed for testing. */
   public abstract _getManifestResponseAsync(options: TManifestRequestInfo): Promise<{
     body: string;
@@ -393,13 +390,10 @@ export abstract class ManifestMiddleware<
 
     // Read from headers
     const options = this.getParsedHeaders(req);
-    const { body, version, headers } = await this._getManifestResponseAsync(options);
+    const { body, headers } = await this._getManifestResponseAsync(options);
     for (const [headerName, headerValue] of headers) {
       res.setHeader(headerName, headerValue);
     }
     res.end(body);
-
-    // Log analytics
-    this.trackManifest(version ?? null);
   }
 }

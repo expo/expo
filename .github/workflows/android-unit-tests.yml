@@ -65,6 +65,7 @@ jobs:
         working-directory: apps/expo-go/android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` from `apps/expo-go/android` to automatically fix formatting.' && exit 1; }
       - name: 🎸 Run native Android unit tests
+        if: always()
         timeout-minutes: 30
         run: expotools native-unit-tests --platform android
       - name: 💾 Save test results
