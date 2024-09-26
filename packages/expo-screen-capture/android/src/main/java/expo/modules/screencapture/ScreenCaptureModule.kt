@@ -93,10 +93,8 @@ class ScreenCaptureModule : Module() {
       return
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-      if (safeCurrentActivity != null) {
-        safeCurrentActivity!!.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!)
-        isRegistered = true
-      }
+      safeCurrentActivity?.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!) ?: return
+      isRegistered = true
     }
   }
 }
