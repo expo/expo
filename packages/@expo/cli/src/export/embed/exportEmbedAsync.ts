@@ -19,7 +19,7 @@ import { execSync } from 'node:child_process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { Options } from './resolveOptions';
+import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
 import {
   isExecutingFromXcodebuild,
   logInXcode,
@@ -39,7 +39,7 @@ import {
 } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
-import { removeAsync } from '../../utils/dir';
+import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { attemptModification } from '../../utils/modifyConfigAsync';
 import { setNodeEnv } from '../../utils/nodeEnv';
@@ -150,6 +150,44 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
+  // This is an optimized codepath that can occur during `npx expo run` and does not occur during builds from Xcode or Android Studio.
+  // Here we reconcile a bundle pass that was run before the native build process. This order can fail faster and is show better errors since the logs won't be obscured by Xcode and Android Studio.
+  // This path is also used for automatically deploying server bundles to a remote host.
+  const eagerBundleOptions = env.__EXPO_EAGER_BUNDLE_OPTIONS
+    ? deserializeEagerKey(env.__EXPO_EAGER_BUNDLE_OPTIONS)
+    : null;
+  if (eagerBundleOptions) {
+    // Get the cache key for the current process to compare against the eager key.
+    const inputKey = getExportEmbedOptionsKey(options);
+
+    // If the app was bundled previously in the same process, then we should reuse the Metro cache.
+    options.resetCache = false;
+
+    if (eagerBundleOptions.key === inputKey) {
+      // Copy the eager bundleOutput and assets to the new locations.
+      await removeAsync(options.bundleOutput);
+
+      copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
+
+      if (eagerBundleOptions.options.assetsDest && options.assetsDest) {
+        copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
+      }
+
+      console.log('info: Copied output to binary:', options.bundleOutput);
+      return;
+    }
+    // TODO: sourcemapOutput is set on Android but not during eager. This is tolerable since it doesn't invalidate the Metro cache.
+    console.log('  Eager key:', eagerBundleOptions.key);
+    console.log('Request key:', inputKey);
+
+    // TODO: We may want an analytic event here in the future to understand when this happens.
+    console.warn('warning: Eager bundle does not match new options, bundling again.');
+  }
+
+  return exportEmbedInternalAsync(projectRoot, options);
+}
+
+export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {
   // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
   await removeAsync(options.bundleOutput);
 

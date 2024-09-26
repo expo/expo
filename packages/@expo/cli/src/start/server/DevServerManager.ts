@@ -21,8 +21,6 @@ export type MultiBundlerStartOptions = {
   options?: BundlerStartOptions;
 }[];
 
-const devServers: BundlerDevServer[] = [];
-
 const BUNDLERS = {
   webpack: () =>
     require('./webpack/WebpackBundlerDevServer')
@@ -34,6 +32,8 @@ const BUNDLERS = {
 
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
+  private devServers: BundlerDevServer[] = [];
+
   static async startMetroAsync(projectRoot: string, startOptions: BundlerStartOptions) {
     const devServerManager = new DevServerManager(projectRoot, startOptions);
 
@@ -102,33 +102,33 @@ export class DevServerManager {
    * @param params extra event info to send over the socket.
    */
   broadcastMessage(method: 'reload' | 'devMenu' | 'sendDevCommand', params?: Record<string, any>) {
-    devServers.forEach((server) => {
+    this.devServers.forEach((server) => {
       server.broadcastMessage(method, params);
     });
   }
 
   /** Get the port for the dev server (either Webpack or Metro) that is hosting code for React Native runtimes. */
   getNativeDevServerPort() {
-    const server = devServers.find((server) => server.isTargetingNative());
+    const server = this.devServers.find((server) => server.isTargetingNative());
     return server?.getInstance()?.location.port ?? null;
   }
 
   /** Get the first server that targets web. */
   getWebDevServer() {
-    const server = devServers.find((server) => server.isTargetingWeb());
+    const server = this.devServers.find((server) => server.isTargetingWeb());
     return server ?? null;
   }
 
   getDefaultDevServer(): BundlerDevServer {
     // Return the first native dev server otherwise return the first dev server.
-    const server = devServers.find((server) => server.isTargetingNative());
-    const defaultServer = server ?? devServers[0];
+    const server = this.devServers.find((server) => server.isTargetingNative());
+    const defaultServer = server ?? this.devServers[0];
     assert(defaultServer, 'No dev servers are running');
     return defaultServer;
   }
 
   async ensureWebDevServerRunningAsync() {
-    const [server] = devServers.filter((server) => server.isTargetingWeb());
+    const [server] = this.devServers.filter((server) => server.isTargetingWeb());
     if (server) {
       return;
     }
@@ -158,7 +158,7 @@ export class DevServerManager {
 
     this.options.location.scheme = nextScheme;
     this.options.devClient = isUsingDevClient;
-    for (const devServer of devServers) {
+    for (const devServer of this.devServers) {
       devServer.isDevClient = isUsingDevClient;
       const urlCreator = devServer.getUrlCreator();
       urlCreator.defaults ??= {};
@@ -182,7 +182,7 @@ export class DevServerManager {
         isDevClient: !!options?.devClient,
       });
       await server.startAsync(options ?? this.options);
-      devServers.push(server);
+      this.devServers.push(server);
     }
 
     return exp;
@@ -199,7 +199,7 @@ export class DevServerManager {
 
     // Optionally, wait for the user to add TypeScript during the
     // development cycle.
-    const server = devServers.find((server) => server.name === 'metro');
+    const server = this.devServers.find((server) => server.name === 'metro');
     if (!server) {
       return;
     }
@@ -217,7 +217,7 @@ export class DevServerManager {
   }
 
   async watchEnvironmentVariables() {
-    await devServers.find((server) => server.name === 'metro')?.watchEnvironmentVariables();
+    await this.devServers.find((server) => server.name === 'metro')?.watchEnvironmentVariables();
   }
 
   /** Stop all servers including ADB. */
@@ -227,7 +227,7 @@ export class DevServerManager {
       // Stop ADB
       AndroidDebugBridge.getServer().stopAsync(),
       // Stop all dev servers
-      ...devServers.map((server) =>
+      ...this.devServers.map((server) =>
         server.stopAsync().catch((error) => {
           Log.error(`Failed to stop dev server (bundler: ${server.name})`);
           Log.exception(error);
