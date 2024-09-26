@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig, getConfig } from '@expo/config';
+import { ExpoConfig, getConfig, modifyConfigAsync } from '@expo/config';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
@@ -53,73 +53,74 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
+import { CommandError } from '../../utils/errors';
 
-// const DEPLOYMENT_SUCCESS_FIXTURE = {
-//   pid: 84795,
-//   output: [
-//     '{\n' +
-//       '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-//       '  "deployment": {\n' +
-//       '    "identifier": "dccw84urit",\n' +
-//       '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-//       '  }\n' +
-//       '}\n',
-//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-//       '> Project export: server\n' +
-//       '- Preparing project\n' +
-//       '- Creating deployment\n' +
-//       '✔ Created deployment\n',
-//   ],
-//   stdout:
-//     '{\n' +
-//     '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-//     '  "deployment": {\n' +
-//     '    "identifier": "dccw84urit",\n' +
-//     '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-//     '  }\n' +
-//     '}\n',
-//   stderr:
-//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-//     '> Project export: server\n' +
-//     '- Preparing project\n' +
-//     '- Creating deployment\n' +
-//     '✔ Created deployment\n',
-//   status: 0,
-//   signal: null,
-// };
-// const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
-//   pid: 84795,
-//   output: [
-//     '{\n' +
-//       '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-//       '  "deployment": {\n' +
-//       '    "identifier": "dccw84urit",\n' +
-//       '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-//       '  }\n' +
-//       '}\n',
-//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-//       '> Project export: server\n' +
-//       '- Preparing project\n' +
-//       '- Creating deployment\n' +
-//       '✔ Created deployment\n',
-//   ],
-//   stdout:
-//     '{\n' +
-//     '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-//     '  "deployment": {\n' +
-//     '    "identifier": "dccw84urit",\n' +
-//     '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-//     '  }\n' +
-//     '}\n',
-//   stderr:
-//     'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-//     '> Project export: server\n' +
-//     '- Preparing project\n' +
-//     '- Creating deployment\n' +
-//     '✔ Created deployment\n',
-//   status: 0,
-//   signal: null,
-// };
+const DEPLOYMENT_SUCCESS_FIXTURE = {
+  pid: 84795,
+  output: [
+    '{\n' +
+      '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+      '  "deployment": {\n' +
+      '    "identifier": "dccw84urit",\n' +
+      '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+      '  }\n' +
+      '}\n',
+    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+      '> Project export: server\n' +
+      '- Preparing project\n' +
+      '- Creating deployment\n' +
+      '✔ Created deployment\n',
+  ],
+  stdout:
+    '{\n' +
+    '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+    '  "deployment": {\n' +
+    '    "identifier": "dccw84urit",\n' +
+    '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+    '  }\n' +
+    '}\n',
+  stderr:
+    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+    '> Project export: server\n' +
+    '- Preparing project\n' +
+    '- Creating deployment\n' +
+    '✔ Created deployment\n',
+  status: 0,
+  signal: null,
+};
+const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
+  pid: 84795,
+  output: [
+    '{\n' +
+      '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+      '  "deployment": {\n' +
+      '    "identifier": "dccw84urit",\n' +
+      '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+      '  }\n' +
+      '}\n',
+    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+      '> Project export: server\n' +
+      '- Preparing project\n' +
+      '- Creating deployment\n' +
+      '✔ Created deployment\n',
+  ],
+  stdout:
+    '{\n' +
+    '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
+    '  "deployment": {\n' +
+    '    "identifier": "dccw84urit",\n' +
+    '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
+    '  }\n' +
+    '}\n',
+  stderr:
+    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
+    '> Project export: server\n' +
+    '- Preparing project\n' +
+    '- Creating deployment\n' +
+    '✔ Created deployment\n',
+  status: 0,
+  signal: null,
+};
 
 const debug = require('debug')('expo:export:embed');
 
@@ -253,27 +254,6 @@ function getCommandBin(command: string) {
   }
 }
 
-// Detect running in XCode
-// https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Access-script-related-files-from-environment-variables
-const isRunningFromXcodeBuildScript = !!(
-  process.env.BUILT_PRODUCTS_DIR &&
-  process.env.SCRIPT_INPUT_FILE_COUNT &&
-  process.env.SCRIPT_INPUT_FILE_LIST_COUNT &&
-  process.env.SCRIPT_OUTPUT_FILE_COUNT
-);
-
-function getNodeBinary() {
-  if (isRunningFromXcodeBuildScript) {
-    if (!process.env.NODE_BINARY) {
-      throw new Error(
-        'Environment variable NODE_BINARY is not defined. It must be set to the path of the Node.js binary when building from Xcode.'
-      );
-    }
-    return process.env.NODE_BINARY;
-  }
-  return 'node';
-}
-
 async function runServerDeployCommandAsync(
   projectRoot: string,
   {
@@ -281,8 +261,6 @@ async function runServerDeployCommandAsync(
     deployScript,
   }: { distDirectory: string; deployScript: { scriptName: string; script: string } | null }
 ): Promise<string | false> {
-  const nodeBin = getNodeBinary();
-
   // TODO: Test error cases thoroughly since they run at the end of a build:
   // - EAS not installed.
   // - EAS not configured.
@@ -302,6 +280,7 @@ async function runServerDeployCommandAsync(
     );
     return false;
   }
+  debug('Found eas-cli:', globalBin);
 
   let json: any;
   try {
@@ -333,7 +312,7 @@ async function runServerDeployCommandAsync(
 
       // results = DEPLOYMENT_SUCCESS_FIXTURE;
       results = await spawnAsync(
-        nodeBin,
+        'node',
         [globalBin, 'deploy', '--non-interactive', '--json', `--export-dir=${exportDir}`],
         spawnOptions
       );
@@ -358,7 +337,7 @@ async function runServerDeployCommandAsync(
       return false;
     }
   } catch (error) {
-    console.log(error);
+    // TODO: Account for offline errors.
     // TODO: Account for EAS not being installed.
 
     if (isSpawnResultError(error)) {
@@ -537,9 +516,15 @@ export async function exportEmbedBundleAndAssetsAsync(
       });
 
       // TODO: Deprecate this in favor of a built-in prop that users should avoid setting.
-      let serverUrl = exp?.extra?.router?.origin;
+      const userDefinedServerUrl = exp.extra?.router?.origin;
+      let serverUrl = userDefinedServerUrl;
 
       const shouldSkipServerDeployment = (() => {
+        if (!options.eager) {
+          logInXcode('Skipping server deployment because the script is not running in eager mode.');
+          return true;
+        }
+
         // Add an opaque flag to disable server deployment.
         if (env.EXPO_NO_DEPLOY) {
           warnInXcode(
@@ -549,7 +534,7 @@ export async function exportEmbedBundleAndAssetsAsync(
         }
 
         // Can't safely deploy from Xcode since the PATH isn't set up correctly. We could amend this in the future and allow users who customize the PATH to deploy from Xcode.
-        if (isRunningFromXcodeBuildScript) {
+        if (isExecutingFromXcodebuild()) {
           // TODO: Don't warn when the eager bundle has been run.
           warnInXcode(
             'Skipping server deployment because the build is running from an Xcode run script. Build with Expo CLI or EAS Build to deploy the server automatically.'
@@ -568,25 +553,24 @@ export async function exportEmbedBundleAndAssetsAsync(
             deployScript: getServerDeploymentScript(pkg.scripts, options.platform),
           });
 
-      if (serverUrl) {
-        logInXcode(`Using custom server URL: ${serverUrl}`);
-        if (deployedServerUrl) {
-          logInXcode(`Ignoring deployment URL: ${deployedServerUrl}`);
+      if (deployedServerUrl) {
+        if (serverUrl) {
+          logInXcode(
+            `Using custom server URL: ${serverUrl} (ignoring deployment URL: ${deployedServerUrl})`
+          );
         }
-      }
+        // If the user-defined server URL is not defined, use the deployed server URL.
+        // This allows for overwriting the server URL in the project's native files.
+        serverUrl ||= deployedServerUrl;
 
-      // If the user-defined server URL is not defined, use the deployed server URL.
-      // This allows for overwriting the server URL in the project's native files.
-      serverUrl ||= deployedServerUrl;
+        // If the user hasn't manually defined the server URL, write the deployed server URL to the app.json.
+        if (!userDefinedServerUrl) {
+          Log.log('Writing generated server URL to app.json');
 
-      // If the user hasn't manually defined the server URL, write the deployed server URL to the app.json.
-      if (!exp.extra?.router?.origin) {
-        try {
           // NOTE: Is is it possible to assert that the config needs to be modifiable before building the app?
-          await attemptModification(
+          const modification = await modifyConfigAsync(
             projectRoot,
             {
-              ...exp,
               extra: {
                 ...(exp.extra ?? {}),
                 router: {
@@ -595,35 +579,37 @@ export async function exportEmbedBundleAndAssetsAsync(
                 },
               },
             },
-
-            // TODO: This modification warning doesn't make any sense since the user shouldn't be adding the generated origin manually.
             {
-              extra: {
-                router: {
-                  generatedOrigin: serverUrl,
-                },
-              },
+              skipSDKVersionRequirement: true,
             }
           );
-        } catch (error) {
-          throw new Error(`Failed to write server origin to app.json: ${error.message}`);
-        }
-      }
 
-      // TODO: Write to app.json serverOrigin field. Skip when eager bundle was already made.
-      if (serverUrl) {
-        logInXcode(`Setting server origin: ${serverUrl}`);
-        // Write the server URL to the project's native files.
-        files.set(
-          // The filename will be read by expo/fetch and used to polyfill relative network requests in production.
-          options.platform === 'ios'
-            ? 'server-origin.txt'
-            : // TODO: Where does this go on Android?
-              '???',
-          {
-            contents: serverUrl,
+          if (modification.type !== 'success') {
+            throw new CommandError(
+              `Failed to write generated server origin to app.json because the file is dynamic and does not extend the static config. The client will not be able to make server requests to API routes or static files. You can disable server linking with EXPO_NO_DEPLOY=1 or by disabling server output in the app.json.`
+            );
           }
-        );
+        } else {
+          Log.log(
+            `Skipping writing generated server URL (${deployedServerUrl}) to app.json because a value is already defined.`
+          );
+        }
+
+        // TODO: Write to app.json serverOrigin field. Skip when eager bundle was already made.
+        // if (serverUrl) {
+        //   logInXcode(`Setting server origin: ${serverUrl}`);
+        //   // Write the server URL to the project's native files.
+        //   files.set(
+        //     // The filename will be read by expo/fetch and used to polyfill relative network requests in production.
+        //     options.platform === 'ios'
+        //       ? 'server-origin.txt'
+        //       : // TODO: Where does this go on Android?
+        //         '???',
+        //     {
+        //       contents: serverUrl,
+        //     }
+        //   );
+        // }
       }
     }
 
