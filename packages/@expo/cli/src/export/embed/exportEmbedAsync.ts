@@ -41,7 +41,6 @@ import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/mid
 import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
-import { attemptModification } from '../../utils/modifyConfigAsync';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
 import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
@@ -56,88 +55,6 @@ import {
 import { CommandError } from '../../utils/errors';
 import chalk from 'chalk';
 import { disableNetwork } from '../../api/settings';
-
-const DEPLOYMENT_SUCCESS_FIXTURE = {
-  pid: 84795,
-  output: [
-    '{\n' +
-      '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-      '  "deployment": {\n' +
-      '    "identifier": "dccw84urit",\n' +
-      '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-      '  }\n' +
-      '}\n',
-    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-      '> Project export: server\n' +
-      '- Preparing project\n' +
-      '- Creating deployment\n' +
-      '✔ Created deployment\n',
-  ],
-  stdout:
-    '{\n' +
-    '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-    '  "deployment": {\n' +
-    '    "identifier": "dccw84urit",\n' +
-    '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-    '  }\n' +
-    '}\n',
-  stderr:
-    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-    '> Project export: server\n' +
-    '- Preparing project\n' +
-    '- Creating deployment\n' +
-    '✔ Created deployment\n',
-  status: 0,
-  signal: null,
-};
-
-const DEPLOYMENT_NO_WIFI_FIXTURE = {
-  pid: 88737,
-  output: [
-    '\n' +
-      'request to https://staging-api.expo.dev/graphql failed, reason: getaddrinfo ENOTFOUND staging-api.expo.dev\n',
-    '    Error: GraphQL request failed.\n',
-  ],
-  stdout:
-    '\n' +
-    'request to https://staging-api.expo.dev/graphql failed, reason: getaddrinfo ENOTFOUND staging-api.expo.dev\n',
-  stderr: '    Error: GraphQL request failed.\n',
-  status: 1,
-  signal: null,
-};
-const DEPLOYMENT_SUCCESS_WITH_INVALID_STATIC_FIXTURE = {
-  pid: 84795,
-  output: [
-    '{\n' +
-      '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-      '  "deployment": {\n' +
-      '    "identifier": "dccw84urit",\n' +
-      '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-      '  }\n' +
-      '}\n',
-    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-      '> Project export: server\n' +
-      '- Preparing project\n' +
-      '- Creating deployment\n' +
-      '✔ Created deployment\n',
-  ],
-  stdout:
-    '{\n' +
-    '  "dashboardUrl": "https://staging.expo.dev/projects/80ca6300-4db2-459e-8fde-47bad9c532ff/hosting/deployments",\n' +
-    '  "deployment": {\n' +
-    '    "identifier": "dccw84urit",\n' +
-    '    "url": "https://sep23-issue--dccw84urit.staging.expo.app"\n' +
-    '  }\n' +
-    '}\n',
-  stderr:
-    'EAS Worker Deployments are in beta and subject to breaking changes.\n' +
-    '> Project export: server\n' +
-    '- Preparing project\n' +
-    '- Creating deployment\n' +
-    '✔ Created deployment\n',
-  status: 0,
-  signal: null,
-};
 
 const debug = require('debug')('expo:export:embed');
 
