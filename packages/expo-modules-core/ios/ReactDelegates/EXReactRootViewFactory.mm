@@ -3,7 +3,7 @@
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
 
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
-#import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
+#import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
 @interface RCTRootViewFactory ()
 

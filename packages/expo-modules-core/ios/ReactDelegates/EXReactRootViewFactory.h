@@ -4,7 +4,7 @@
 
 #import <ExpoModulesCore/Platform.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
-#import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
+#import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

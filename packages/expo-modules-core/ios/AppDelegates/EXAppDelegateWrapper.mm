@@ -4,8 +4,8 @@
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
 #import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
-#import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
 #import <ReactCommon/ReactCommon-umbrella.h>
 
 @interface RCTAppDelegate () <RCTTurboModuleManagerDelegate>
