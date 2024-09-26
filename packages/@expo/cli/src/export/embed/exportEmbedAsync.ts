@@ -8,6 +8,7 @@ import { ExpoConfig, getConfig, modifyConfigAsync, PackageJSONConfig } from '@ex
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
+import chalk from 'chalk';
 import crypto from 'crypto';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
@@ -26,6 +27,7 @@ import {
   logMetroErrorInXcode,
   warnInXcode,
 } from './xcodeCompilerLogger';
+import { disableNetwork } from '../../api/settings';
 import { Log } from '../../log';
 import { isSpawnResultError } from '../../start/platforms/ios/xcrun';
 import { DevServerManager } from '../../start/server/DevServerManager';
@@ -41,6 +43,7 @@ import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/mid
 import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
 import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
@@ -52,9 +55,6 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
-import { CommandError } from '../../utils/errors';
-import chalk from 'chalk';
-import { disableNetwork } from '../../api/settings';
 
 const debug = require('debug')('expo:export:embed');
 
