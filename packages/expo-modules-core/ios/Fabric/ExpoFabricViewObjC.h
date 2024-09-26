@@ -7,7 +7,7 @@
 
 #ifdef __cplusplus
 
-#import <RCTFabric/React-RCTFabric-umbrella.h>
+#import <React/RCTViewComponentView.h> // Allows non-umbrella since it's coming from React-RCTFabric
 
 @interface ExpoFabricViewObjC : RCTViewComponentView
 @end

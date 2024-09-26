@@ -3,7 +3,6 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 
 #import <React/React-Core-umbrella.h>
-#import <RCTFabric/React-RCTFabric-umbrella.h>
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 

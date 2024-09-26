@@ -3,7 +3,7 @@
 #import <objc/runtime.h>
 
 #import <React/React-Core-umbrella.h>
-#import <RCTFabric/React-RCTFabric-umbrella.h>
+#import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 
 #import <jsi/jsi.h>
 
