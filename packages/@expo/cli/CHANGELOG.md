@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Stop pinging dev session with updates. ([#31717](https://github.com/expo/expo/pull/31717) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.18.29 — 2024-08-14
 
 ### 💡 Others
@@ -63,7 +65,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Unify Android device prompts with iOS prompts for `npx expo run:android -d`. ([#28622](https://github.com/expo/expo/pull/28622) by [@byCedric](https://github.com/byCedric))
-||||||| parent of e8b83e2c53 ([cli] Add config-cmd option to export embed command (#30563))
+  ||||||| parent of e8b83e2c53 ([cli] Add config-cmd option to export embed command (#30563))
 - Improve logging. ([#30354](https://github.com/expo/expo/pull/30354) by [@EvanBacon](https://github.com/EvanBacon))
 - Decouple CLI from `@expo/metro-runtime`. ([#30300](https://github.com/expo/expo/pull/30300) by [@EvanBacon](https://github.com/EvanBacon))
 - Add robot export e2e test. ([#30049](https://github.com/expo/expo/pull/30049) by [@EvanBacon](https://github.com/EvanBacon))
