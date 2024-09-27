@@ -25,7 +25,7 @@ A cross-platform, performant image component for React Native and Expo.
 | :--------: | :-----: | :-: | :--------------------------------------------: |
 |    WebP    |   ✅    | ✅  |                       ✅                       |
 | PNG / APNG |   ✅    | ✅  |                       ✅                       |
-|    AVIF    |   ✅    | ✅  |  ⏳ [~87% adoption](https://caniuse.com/avif)  |
+|    AVIF    |   ✅    | ✅  |                       ✅                       |
 |    HEIC    |   ✅    | ✅  | ❌ [not adopted yet](https://caniuse.com/heif) |
 |    JPEG    |   ✅    | ✅  |                       ✅                       |
 |    GIF     |   ✅    | ✅  |                       ✅                       |
