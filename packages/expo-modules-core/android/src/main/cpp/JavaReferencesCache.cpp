@@ -56,10 +56,15 @@ JCache::JCache(JNIEnv *env) {
 #undef REGISTER_CLASS
 }
 
-std::shared_ptr <JCache> JCacheHolder::jCache = nullptr;
+std::shared_ptr<JCache> JCacheHolder::jCache = nullptr;
 
 void JCacheHolder::init(JNIEnv *env) {
   jCache = std::make_shared<JCache>(env);
+}
+
+void JCacheHolder::unLoad(JNIEnv *env) {
+  jCache->unLoad(env);
+  jCache.reset();
 }
 
 JCache &JCacheHolder::get() {
@@ -78,6 +83,27 @@ jclass JCache::getOrLoadJClass(
   }
 
   return result->second;
+}
+
+void JCache::unLoad(JNIEnv *env) {
+  env->DeleteGlobalRef(jDoubleArray);
+  env->DeleteGlobalRef(jBooleanArray);
+  env->DeleteGlobalRef(jIntegerArray);
+  env->DeleteGlobalRef(jLongArray);
+  env->DeleteGlobalRef(jFloatArray);
+  env->DeleteGlobalRef(jCollection);
+  env->DeleteGlobalRef(jMap);
+  env->DeleteGlobalRef(jObject);
+  env->DeleteGlobalRef(jString);
+  env->DeleteGlobalRef(jJavaScriptObject);
+  env->DeleteGlobalRef(jJavaScriptValue);
+  env->DeleteGlobalRef(jJavaScriptTypedArray);
+  env->DeleteGlobalRef(jReadableNativeArray);
+  env->DeleteGlobalRef(jReadableNativeMap);
+  env->DeleteGlobalRef(jWritableNativeArray);
+  env->DeleteGlobalRef(jWritableNativeMap);
+  env->DeleteGlobalRef(jSharedObject);
+  env->DeleteGlobalRef(jJavaScriptModuleObject);
 }
 
 } // namespace expo

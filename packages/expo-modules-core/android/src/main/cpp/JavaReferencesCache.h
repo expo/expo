@@ -57,6 +57,7 @@ public:
   jclass jSharedObject;
   jclass jJavaScriptModuleObject;
 
+  void unLoad(JNIEnv *env);
 private:
   std::unordered_map<std::string, jclass> jClassRegistry;
 };
@@ -65,6 +66,7 @@ class JCacheHolder {
 public:
   static void init(JNIEnv *env);
 
+  static void unLoad(JNIEnv *env);
   /**
    * Gets a singleton instance
    */
