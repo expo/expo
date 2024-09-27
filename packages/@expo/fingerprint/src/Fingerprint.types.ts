@@ -98,6 +98,12 @@ export interface Options {
   enableReactImportsPatcher?: boolean;
 
   /**
+   * Use the react-native core autolinking sources from expo-modules-autolinking rather than @react-native-community/cli.
+   * @default true for Expo SDK 52 and higher.
+   */
+  useRNCoreAutolinkingFromExpo?: boolean;
+
+  /**
    * Whether running the functions should mute all console output. This is useful when fingerprinting is being done as
    * part of a CLI that outputs a fingerprint and outputting anything else pollutes the results.
    */
@@ -121,6 +127,7 @@ export type Config = Pick<
   | 'ignorePaths'
   | 'extraSources'
   | 'enableReactImportsPatcher'
+  | 'useRNCoreAutolinkingFromExpo'
   | 'debug'
 > & {
   sourceSkips?: SourceSkips | SourceSkipsKeys[];
