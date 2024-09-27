@@ -2,7 +2,7 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
-import http, { ServerResponse } from 'http';
+import http from 'http';
 import type Metro from 'metro';
 import Bundler from 'metro/src/Bundler';
 import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
@@ -10,7 +10,6 @@ import MetroHmrServer from 'metro/src/HmrServer';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
-import { URL } from 'url';
 
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
@@ -27,7 +26,6 @@ import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
-import { ServerNext, ServerRequest } from '../middleware/server.types';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -251,19 +249,6 @@ export async function instantiateMetroAsync(
       fileBuffer
     );
   };
-
-  prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-    // If the URL is a Metro asset request, then we need to skip all other middleware to prevent
-    // the community CLI's serve-static from hosting `/assets/index.html` in place of all assets if it exists.
-    // /assets/?unstable_path=.
-    if (req.url) {
-      const url = new URL(req.url!, 'http://localhost:8000');
-      if (url.pathname.match(/^\/assets\/?/) && url.searchParams.get('unstable_path') != null) {
-        return metro.processRequest(req, res, next);
-      }
-    }
-    return next();
-  });
 
   setEventReporter(eventsSocket.reportMetroEvent);
 
