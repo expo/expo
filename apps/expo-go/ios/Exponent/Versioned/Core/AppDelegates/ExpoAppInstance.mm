@@ -24,7 +24,7 @@
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
-  return [_manager extraModulesForBridge:bridge];
+  return [_manager extraModules];
 }
 
 - (Class)getModuleClassFromName:(const char *)name {

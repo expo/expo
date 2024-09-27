@@ -38,7 +38,7 @@
 /**
  *  Provides the extra native modules required to set up a bridge with this version.
  */
-- (NSArray *)extraModulesForBridge:(id)bridge;
+- (NSArray *)extraModules;
 
 - (void *)versionedJsExecutorFactoryForBridge:(id)bridge;
 

@@ -14,7 +14,7 @@ import {
   Text,
   View,
 } from 'react-native';
-// import MapView, { Polyline } from 'react-native-maps';
+import MapView, { Polyline } from 'react-native-maps';
 
 import NavigationEvents from '../../components/NavigationEvents';
 import Button from '../../components/PrimaryButton';
@@ -51,7 +51,7 @@ type State = {
 type Props = unknown;
 
 export default class LocationDiagnosticsScreen extends React.Component<Props, State> {
-  // mapViewRef = React.createRef<MapView>();
+  mapViewRef = React.createRef<MapView>();
 
   eventSubscription?: EventSubscription;
   appStateSubscription?: NativeEventSubscription;
@@ -205,16 +205,16 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
 
   onCenterMap = async () => {
     const { coords } = await Location.getCurrentPositionAsync();
-    // const mapView = this.mapViewRef.current;
+    const mapView = this.mapViewRef.current;
 
-    // if (mapView) {
-    //   mapView.animateToRegion({
-    //     latitude: coords.latitude,
-    //     longitude: coords.longitude,
-    //     latitudeDelta: 0.004,
-    //     longitudeDelta: 0.002,
-    //   });
-    // }
+    if (mapView) {
+      mapView.animateToRegion({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.002,
+      });
+    }
   };
 
   renderPolyline() {
@@ -224,10 +224,9 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
       return null;
     }
 
-    return null;
-    // return (
-    //   <Polyline coordinates={savedLocations} strokeWidth={3} strokeColor={Colors.light.tintColor} />
-    // );
+    return (
+      <Polyline coordinates={savedLocations} strokeWidth={3} strokeColor={Colors.light.tintColor} />
+    );
   }
 
   render() {
@@ -241,13 +240,13 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
 
     return (
       <View style={styles.screen}>
-        {/* <MapView
+        <MapView
           ref={this.mapViewRef}
           style={styles.mapView}
           initialRegion={this.state.initialRegion}
           showsUserLocation>
           {this.renderPolyline()}
-        </MapView> */}
+        </MapView>
         <View style={styles.buttons} pointerEvents="box-none">
           <View style={styles.topButtons}>
             <View style={styles.buttonsColumn}>

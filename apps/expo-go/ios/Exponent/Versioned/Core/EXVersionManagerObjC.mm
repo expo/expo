@@ -325,7 +325,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   return [[host moduleRegistry] moduleForName:[name UTF8String]];
 }
 
-- (NSArray *)extraModulesForBridge:(id)bridge
+- (NSArray *)extraModules
 {
   NSDictionary *params = _params;
   NSDictionary *services = params[@"services"];

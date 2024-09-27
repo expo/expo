@@ -132,7 +132,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     }
 
     [self _startObservingBridgeNotificationsForHost];
-    [_reactRootView becomeFirstResponder];
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
     [_versionManager bridgeWillStartLoading:appDelegate];
