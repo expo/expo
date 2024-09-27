@@ -141,8 +141,9 @@ export async function clearLastNotificationResponseAsync(): Promise<void> {
   if (!NotificationsEmitterModule.clearLastNotificationResponseAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
   }
+  await NotificationsEmitterModule.clearLastNotificationResponseAsync();
+  // Emit event to clear any useLastNotificationResponse hooks, after native call succeeds
   emitter.emit(didClearNotificationResponseEventName, []);
-  return await NotificationsEmitterModule.clearLastNotificationResponseAsync();
 }
 
 /**

@@ -47,7 +47,7 @@ EX_EXPORT_METHOD_AS(clearLastNotificationResponseAsync,
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[onDidReceiveNotification, onDidReceiveNotificationResponse];
+  return @[onDidReceiveNotification, onDidReceiveNotificationResponse, onDidClearNotificationResponse];
 }
 
 - (void)startObserving
