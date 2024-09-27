@@ -13,6 +13,10 @@ type EventsSocketOptions = {
   broadcast: ReturnType<typeof createMessagesSocket>['broadcast'];
 };
 
+/**
+ * Metro events server that dispatches all Metro events to connected clients.
+ * This includes logs, errors, bundling progression, etc.
+ */
 export function createEventsSocket(options: EventsSocketOptions) {
   const clients = createSocketMap();
   const broadcast = createBroadcaster(clients.map);
