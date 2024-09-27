@@ -115,6 +115,7 @@ export declare class File {
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
     move(destination: Directory | File): any;
+    open(): FileHandle;
     /**
      * A static method that downloads a file from the network.
      * @param url - The URL of the file to download.
@@ -134,5 +135,12 @@ export declare class File {
      * An md5 hash of the file. Null if the file does not exist or it cannot be read.
      */
     md5: string | null;
+}
+export declare class FileHandle {
+    close(): void;
+    readBytes(length: number): Uint8Array;
+    writeBytes(bytes: Uint8Array): void;
+    offset: number;
+    size: number;
 }
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map
