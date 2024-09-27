@@ -1,10 +1,6 @@
 package expo.modules.kotlin.defaultmodules
 
 import com.facebook.react.ReactActivity
-import com.facebook.react.ReactDelegate
-import com.facebook.react.bridge.UiThreadUtil
-import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.devsupport.ReleaseDevSupportManager
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
