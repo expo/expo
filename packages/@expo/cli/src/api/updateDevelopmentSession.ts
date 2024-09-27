@@ -1,9 +1,13 @@
 import { ExpoConfig } from '@expo/config';
 import os from 'os';
 import { URLSearchParams } from 'url';
+import http from 'http';
 
+import { getExpoApiBaseUrl } from './endpoint';
 import { fetchAsync } from './rest/client';
 import { CommandError } from '../utils/errors';
+import { getAccessToken, getSession } from './user/UserSettings';
+import { once } from 'events';
 
 /** Create the expected session info. */
 export function createSessionInfo({
@@ -93,4 +97,57 @@ export async function closeDevelopmentSessionAsync({
       `Unexpected response when closing the development session on Expo servers: ${results.statusText}.`
     );
   }
+}
+
+export async function closeDevelopmentSessionWithoutResponseAsync({
+  deviceIds,
+  url: sessionUrl,
+}: {
+  deviceIds: string[];
+  url: string;
+}) {
+  const searchParams = new URLSearchParams();
+  const headers: Record<string, string> = {};
+
+  deviceIds.forEach((id) => {
+    searchParams.append('deviceId', id);
+  });
+
+  const token = getAccessToken();
+  if (token) {
+    headers.authorization = `Bearer ${token}`;
+  } else {
+    const sessionSecret = getSession()?.sessionSecret;
+    if (sessionSecret) {
+      headers['expo-session'] = sessionSecret;
+    }
+  }
+
+  // Not authenticated
+  if (Object.keys(headers).length === 0) {
+    return;
+  }
+
+  const url = new URL('/v2/development-sessions/notify-close', getExpoApiBaseUrl());
+
+  const options = {
+    method: 'POST',
+    hostname: url.hostname,
+    path: `${url.pathname}?${searchParams.toString()}`,
+    port: url.port || 80,
+    headers: {
+      ...headers,
+      'Content-Type': 'application/json',
+    },
+  };
+
+  const req = http.request(options);
+
+  await new Promise((resolve) => {
+    req.once('close', resolve);
+    req.once('error', resolve);
+
+    req.write(JSON.stringify({ session: { url: sessionUrl } }));
+    req.end();
+  });
 }

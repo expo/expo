@@ -2,10 +2,12 @@ import { ExpoConfig, getConfig } from '@expo/config';
 
 import {
   closeDevelopmentSessionAsync,
+  closeDevelopmentSessionWithoutResponseAsync,
   updateDevelopmentSessionAsync,
 } from '../../api/updateDevelopmentSession';
 import { getUserAsync } from '../../api/user/user';
 import { env } from '../../utils/env';
+import { profile } from '../../utils/profile';
 import * as ProjectDevices from '../project/devices';
 
 const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
@@ -93,7 +95,7 @@ export class DevelopmentSession {
       }
 
       if (this.url) {
-        await closeDevelopmentSessionAsync({
+        await profile(closeDevelopmentSessionWithoutResponseAsync)({
           url: this.url,
           deviceIds,
         });
