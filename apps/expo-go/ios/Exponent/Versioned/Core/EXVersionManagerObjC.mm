@@ -80,12 +80,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 @end
 
-@interface RCTBridgeHack <NSObject>
-
-- (void)reload;
-
-@end
-
 @interface EXVersionManagerObjC () <RCTTurboModuleManagerDelegate> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;

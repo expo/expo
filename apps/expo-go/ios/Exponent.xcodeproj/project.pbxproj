@@ -32,7 +32,7 @@
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
-		40F8428D2C9CBCE000E1AC82 /* EXExpoGoAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40F8428C2C9CBCE000E1AC82 /* EXExpoGoAppDelegate.mm */; };
+		40F8428D2C9CBCE000E1AC82 /* ExpoAppInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40F8428C2C9CBCE000E1AC82 /* ExpoAppInstance.mm */; };
 		40F867A72CA04F0B009A7E2C /* libskshaper.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F867A22CA04F0B009A7E2C /* libskshaper.xcframework */; };
 		40F867A82CA04F0B009A7E2C /* libskunicode.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F867A32CA04F0B009A7E2C /* libskunicode.xcframework */; };
 		40F867A92CA04F0B009A7E2C /* libsvg.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F867A42CA04F0B009A7E2C /* libsvg.xcframework */; };
@@ -248,8 +248,8 @@
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
-		40F842882C9CB62A00E1AC82 /* EXExpoGoAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXExpoGoAppDelegate.h; sourceTree = "<group>"; };
-		40F8428C2C9CBCE000E1AC82 /* EXExpoGoAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXExpoGoAppDelegate.mm; sourceTree = "<group>"; };
+		40F842882C9CB62A00E1AC82 /* ExpoAppInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoAppInstance.h; sourceTree = "<group>"; };
+		40F8428C2C9CBCE000E1AC82 /* ExpoAppInstance.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoAppInstance.mm; sourceTree = "<group>"; };
 		40F867A02CA04F0B009A7E2C /* JKBigInteger.podspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JKBigInteger.podspec.json; sourceTree = "<group>"; };
 		40F867A12CA04F0B009A7E2C /* libskparagraph.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libskparagraph.xcframework; sourceTree = "<group>"; };
 		40F867A22CA04F0B009A7E2C /* libskshaper.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libskshaper.xcframework; sourceTree = "<group>"; };
@@ -596,8 +596,8 @@
 		40F842852C9CB39F00E1AC82 /* AppDelegates */ = {
 			isa = PBXGroup;
 			children = (
-				40F842882C9CB62A00E1AC82 /* EXExpoGoAppDelegate.h */,
-				40F8428C2C9CBCE000E1AC82 /* EXExpoGoAppDelegate.mm */,
+				40F842882C9CB62A00E1AC82 /* ExpoAppInstance.h */,
+				40F8428C2C9CBCE000E1AC82 /* ExpoAppInstance.mm */,
 			);
 			path = AppDelegates;
 			sourceTree = "<group>";
@@ -1769,7 +1769,7 @@
 				B2641CB52AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m in Sources */,
 				B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */,
 				B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
-				40F8428D2C9CBCE000E1AC82 /* EXExpoGoAppDelegate.mm in Sources */,
+				40F8428D2C9CBCE000E1AC82 /* ExpoAppInstance.mm in Sources */,
 				BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */,
 				BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */,
 				B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.mm in Sources */,
@@ -2011,10 +2011,7 @@
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -2077,10 +2074,7 @@
 				LD = "";
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

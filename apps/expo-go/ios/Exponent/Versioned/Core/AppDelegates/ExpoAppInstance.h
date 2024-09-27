@@ -3,7 +3,7 @@
 #import "EXVersionManagerObjC.h"
 
 
-@interface EXExpoGoAppDelegate : RCTAppDelegate
+@interface ExpoAppInstance : RCTAppDelegate
 
 @property(nonatomic, strong) NSURL* sourceURL;
 @property(nonatomic, strong) EXVersionManagerObjC* manager;

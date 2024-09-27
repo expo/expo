@@ -123,7 +123,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
                                                    logFunction:[self logFunction]
                                                   logThreshold:[self logLevel]];
     
-    EXExpoGoAppDelegate* appDelegate = [self _setupAppDelegateWithManager:_versionManager];
+    ExpoAppInstance* appDelegate = [self _setupAppInstanceWithManager:_versionManager];
     
     if (!_isHeadless) {
       // We don't want to run the whole JS app if app launches in the background,
@@ -132,16 +132,15 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     }
 
     [self _startObservingBridgeNotificationsForHost];
-    
+    [_reactRootView becomeFirstResponder];
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
-    _isHostRunning = YES;
     [_versionManager bridgeWillStartLoading:appDelegate];
   }
 }
 
-- (EXExpoGoAppDelegate *)_setupAppDelegateWithManager:(EXVersionManager *)versionManager {
-  EXExpoGoAppDelegate *appDelegate = [[EXExpoGoAppDelegate alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager];
+- (ExpoAppInstance *)_setupAppInstanceWithManager:(EXVersionManager *)versionManager {
+  ExpoAppInstance *appDelegate = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager];
   
   appDelegate.rootViewFactory.reactHost = [appDelegate.rootViewFactory createReactHost:[self initialPropertiesForRootView]];
   appDelegate.rootViewFactory = [appDelegate createRCTRootViewFactory];

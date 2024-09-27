@@ -1,10 +1,10 @@
-#import "EXExpoGoAppDelegate.h"
+#import "ExpoAppInstance.h"
 #import "EXAppViewController.h"
 #import "ExpoModulesCore/EXReactRootViewFactory.h"
 #import "RCTAppSetupUtils.h"
 
 
-@implementation EXExpoGoAppDelegate
+@implementation ExpoAppInstance
 
 - (instancetype)initWithSourceURL:(NSURL *)sourceURL manager:(EXVersionManagerObjC *)manager {
   self = [super init];
