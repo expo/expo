@@ -58,26 +58,7 @@ class CoreModule : Module() {
 
     AsyncFunction("reloadAppAsync") { _: String ->
       val reactActivity = appContext.throwingActivity as? ReactActivity ?: return@AsyncFunction
-
-      // TODO(kudo): Use ReactActivity.getReactDelegate() after react-native 0.74.1
-      // reactActivity.getReactDelegate()
-      val reactActivityDelegateField = ReactActivity::class.java.getDeclaredField("mDelegate")
-        .apply { isAccessible = true }
-      val reactActivityDelegate = reactActivityDelegateField[reactActivity]
-      val getReactDelegateMethod = reactActivityDelegate.javaClass.getDeclaredMethod("getReactDelegate")
-        .apply { isAccessible = true }
-      val reactDelegate = getReactDelegateMethod.invoke(reactActivityDelegate) as? ReactDelegate
-        ?: return@AsyncFunction
-      if (!ReactFeatureFlags.enableBridgelessArchitecture) {
-        val reactInstanceManager = reactDelegate.reactInstanceManager
-        if (reactInstanceManager.devSupportManager is ReleaseDevSupportManager) {
-          UiThreadUtil.runOnUiThread {
-            reactInstanceManager.recreateReactContextInBackground()
-          }
-          return@AsyncFunction
-        }
-      }
-
+      val reactDelegate = reactActivity.reactDelegate ?: return@AsyncFunction
       reactDelegate.reload()
     }
   }
