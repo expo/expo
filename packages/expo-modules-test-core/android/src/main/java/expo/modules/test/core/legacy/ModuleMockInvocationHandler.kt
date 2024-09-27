@@ -1,9 +1,7 @@
 package expo.modules.test.core.legacy
 
-import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.types.JSTypeConverter
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
@@ -58,7 +56,7 @@ class ModuleMockInvocationHandler<T : Any>(
   private fun callExportedFunction(methodName: String, args: Array<Any?>?): Any? {
     if (holder.definition.syncFunctions.containsKey(methodName)) {
       // Call as a sync function
-      return holder.callSync(methodName, convertArgs(args?.asList() ?: emptyList()))
+      return holder.callSync(methodName, args ?: emptyArray())
     }
 
     if (holder.definition.asyncFunctions.containsKey(methodName)) {
@@ -112,13 +110,5 @@ class ModuleMockInvocationHandler<T : Any>(
 
   private fun promiseMappingCall(methodName: String, args: List<Any?>, promise: Promise) {
     holder.call(methodName, args.toTypedArray(), promise)
-  }
-
-  private fun syncCall(methodName: String, args: Iterable<Any?>): Any? {
-    return holder.callSync(methodName, convertArgs(args))
-  }
-
-  private fun convertArgs(args: Iterable<Any?>): ReadableArray {
-    return JSTypeConverter.convertToJSValue(args, TestJSContainerProvider) as ReadableArray
   }
 }
