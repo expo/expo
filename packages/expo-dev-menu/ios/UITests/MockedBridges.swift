@@ -1,5 +1,6 @@
 @testable import EXDevMenu
 @testable import EXDevMenuInterface
+import React
 
 class UIMockedNOOPBridge: RCTBridge {
   override func invalidate() {

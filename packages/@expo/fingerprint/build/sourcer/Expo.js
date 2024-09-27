@@ -173,7 +173,7 @@ async function getEasBuildSourcesAsync(projectRoot, options) {
     return results;
 }
 exports.getEasBuildSourcesAsync = getEasBuildSourcesAsync;
-async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options) {
+async function getExpoAutolinkingAndroidSourcesAsync(projectRoot, options, expoAutolinkingVersion) {
     if (!options.platforms.includes('android')) {
         return [];
     }
@@ -223,11 +223,12 @@ async function getExpoCNGPatchSourcesAsync(projectRoot, options) {
     return [];
 }
 exports.getExpoCNGPatchSourcesAsync = getExpoCNGPatchSourcesAsync;
-async function getExpoAutolinkingIosSourcesAsync(projectRoot, options) {
+async function getExpoAutolinkingIosSourcesAsync(projectRoot, options, expoAutolinkingVersion) {
     if (!options.platforms.includes('ios')) {
         return [];
     }
-    const platform = getIosAutolinkingPlatformParam(projectRoot);
+    // expo-modules-autolinking 1.10.0 added support for apple platform
+    const platform = semver_1.default.lt(expoAutolinkingVersion, '1.10.0') ? 'ios' : 'apple';
     try {
         const reasons = ['expoAutolinkingIos'];
         const results = [];
@@ -265,22 +266,4 @@ function sortExpoAutolinkingAndroidConfig(config) {
     return config;
 }
 exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
-/**
- * Get the platform parameter for expo-modules-autolinking.
- *
- * Older autolinking uses `ios` and newer autolinking uses `apple`.
- */
-function getIosAutolinkingPlatformParam(projectRoot) {
-    let platformParam = 'apple';
-    const expoPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo/package.json');
-    const autolinkingPackageJsonPath = resolve_from_1.default.silent(expoPackageRoot ?? projectRoot, 'expo-modules-autolinking/package.json');
-    if (autolinkingPackageJsonPath) {
-        const autolinkingPackageJson = require(autolinkingPackageJsonPath);
-        // expo-modules-autolinking 1.10.0 added support for apple platform
-        if (semver_1.default.lt(autolinkingPackageJson.version, '1.10.0')) {
-            platformParam = 'ios';
-        }
-    }
-    return platformParam;
-}
 //# sourceMappingURL=Expo.js.map

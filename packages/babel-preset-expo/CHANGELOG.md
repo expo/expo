@@ -15,7 +15,6 @@
 
 ### 🐛 Bug fixes
 
-- Fix JSC builds. ([#30763](https://github.com/expo/expo/pull/30763) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove `@babel/plugin-transform-parameters` plugin when bundling for server environments that target native. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed `ReferenceError: Property 'React' doesn't exist.` crash when a DOM component includes `import React from 'react';`. ([#31469](https://github.com/expo/expo/pull/31469) by [@kudo](https://github.com/kudo))
 
@@ -31,6 +30,12 @@
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 11.0.14 - 2024-08-14
+
+### 🐛 Bug fixes
+
+- Fix JSC builds. ([#30763](https://github.com/expo/expo/pull/30763) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.0.12 - 2024-07-03
 

@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = __importDefault(require("commander"));
 const path_1 = __importDefault(require("path"));
-const ReactImportsPatcher_1 = require("./ReactImportsPatcher");
 const autolinking_1 = require("./autolinking");
 const reactNativeConfig_1 = require("./reactNativeConfig");
 /**
@@ -37,14 +36,6 @@ function registerSearchCommand(commandName, fn) {
  */
 function registerResolveCommand(commandName, fn) {
     return registerSearchCommand(commandName, fn);
-}
-// Register for `patch-react-imports` command
-function registerPatchReactImportsCommand() {
-    return commander_1.default
-        .command('patch-react-imports [paths...]')
-        .requiredOption('--pods-root <podsRoot>', 'The path to `Pods` directory')
-        .option('--dry-run', 'Only list files without writing changes to the file system')
-        .action(ReactImportsPatcher_1.patchReactImportsAsync);
 }
 /**
  * Registry the `react-native-config` command.
@@ -122,7 +113,6 @@ module.exports = async function (args) {
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
         .option('--entitlement <path>', 'Path to the Apple code signing entitlements file.')
         .option('-p, --packages <packages...>', 'Names of the packages to include in the generated modules provider.');
-    registerPatchReactImportsCommand();
     registerReactNativeConfigCommand();
     await commander_1.default
         .version(require('expo-modules-autolinking/package.json').version)

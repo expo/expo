@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React/RCTBridge.h>
+#import <React/React-Core-umbrella.h>
 
 // Swift classes need forward-declaration in the headers.
 @class EXAppContext;
