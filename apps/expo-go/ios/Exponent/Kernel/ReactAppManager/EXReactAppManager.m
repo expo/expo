@@ -72,10 +72,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   return self;
 }
 
-- (id)reactBridge {
-  return _reactAppDelegate.rootViewFactory.bridge;
-}
-
 - (id)reactHost {
   return _reactAppDelegate.rootViewFactory.reactHost;
 }
@@ -492,7 +488,8 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   if ([self enablesDeveloperTools]) {
     // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
     // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
-    [self.reactHost callFunctionOnModule:@"RCTNativeAppEventEmitter" method:@"emit" arguments:@[@"RCTDevMenuShown"] callback:nil];
+    RCTEventDispatcher *dispatcher = [[self.reactHost moduleRegistry] moduleForName:"EventDispatcher"];
+    [dispatcher sendAppEventWithName:@"RCTDevMenuShown" body:nil];
   }
 }
 

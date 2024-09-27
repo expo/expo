@@ -45,7 +45,6 @@ typedef enum EXReactAppManagerStatus {
 @property (nonatomic, readonly) UIView *rootView;
 @property (nonatomic, readonly) NSString *scopedDocumentDirectory;
 @property (nonatomic, readonly) NSString *scopedCachesDirectory;
-@property (nonatomic, strong) id reactBridge;
 @property (nonatomic, strong) id reactHost;
 @property (nonatomic, strong) RCTAppDelegate *reactAppDelegate;
 @property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;

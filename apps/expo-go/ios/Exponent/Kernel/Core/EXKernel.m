@@ -142,9 +142,8 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   if (!appRecord.appManager.reactHost) {
     return NO;
   }
-  
-  [appRecord.appManager.reactBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                                             args:eventBody ? @[eventName, eventBody] : @[eventName]];
+  RCTEventDispatcher *dispatcher = [[appRecord.appManager.reactHost moduleRegistry] moduleForName:"EventDispatcher"];
+  [dispatcher sendAppEventWithName:eventName body:eventBody ? @[eventName, eventBody] : @[eventName]];
   return YES;
 }
 
