@@ -6,7 +6,7 @@ import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
 import { openInEditorAsync } from '../../../../utils/editor';
 
-export function createMetroDevMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
+export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
   const messages = createMessagesSocket({ logger: Log });
   const events = createEventsSocket(messages);
 

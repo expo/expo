@@ -17,7 +17,7 @@ import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
-import { createMetroDevMiddleware } from './dev-server/createMetroDevMiddleware';
+import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { Log } from '../../../log';
@@ -184,7 +184,7 @@ export async function instantiateMetroAsync(
 
   // Create the core middleware stack for Metro, including websocket listeners
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
-    createMetroDevMiddleware(metroConfig);
+    createMetroMiddleware(metroConfig);
 
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
@@ -195,16 +195,6 @@ export async function instantiateMetroAsync(
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());
-
-    // TODO: We can probably drop this now.
-    const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
-    // @ts-expect-error: can't mutate readonly config
-    metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
-      if (customEnhanceMiddleware) {
-        metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
-      }
-      return middleware.use(metroMiddleware);
-    };
   }
 
   // Attach Expo Atlas if enabled
