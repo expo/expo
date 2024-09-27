@@ -133,6 +133,8 @@ export declare class File {
    */
   move(destination: Directory | File);
 
+  open(): FileHandle;
+
   /**
    * A static method that downloads a file from the network.
    * @param url - The URL of the file to download.
@@ -154,4 +156,14 @@ export declare class File {
    * An md5 hash of the file. Null if the file does not exist or it cannot be read.
    */
   md5: string | null;
+}
+
+export declare class FileHandle {
+  close(): void;
+  /*
+   * Reads the specified amount of bytes from the file at the current offset.
+   */
+  readBytes(length: number): Uint8Array;
+  writeBytes(bytes: Uint8Array): void;
+  offset: number;
 }

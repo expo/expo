@@ -129,6 +129,33 @@ class FileSystemNextModule : Module() {
           null
         }
       }
+
+      Function("open") { file: FileSystemFile ->
+        FileSystemFileHandle(file)
+      }
+    }
+
+    Class(FileSystemFileHandle::class) {
+      Constructor { file: FileSystemFile ->
+        FileSystemFileHandle(file)
+      }
+      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
+        fileHandle.read(bytes)
+        }
+      Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
+        fileHandle.write(data)
+      }
+      Function("close") { fileHandle: FileSystemFileHandle ->
+        fileHandle.close()
+      }
+      Property("offset") { fileHandle: FileSystemFileHandle ->
+        fileHandle.offset
+      }.set { fileHandle: FileSystemFileHandle, offset: Long  ->
+        fileHandle.offset = offset
+      }
+      Property("size") { fileHandle: FileSystemFileHandle ->
+        fileHandle.size
+      }
     }
 
     Class(FileSystemDirectory::class) {

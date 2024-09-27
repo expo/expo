@@ -28,3 +28,8 @@ internal class InvalidPermissionException(permission: Permission) :
   CodedException(
     "Missing '${permission.name}' permission for accessing the file."
   )
+
+internal class UnableToReadHandleException(reason: String) :
+  CodedException(
+    "Unable to read from a file handle: '$reason'"
+  )

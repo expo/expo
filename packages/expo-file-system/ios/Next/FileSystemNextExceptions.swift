@@ -48,3 +48,9 @@ internal class UnableToCreateFileException: GenericException<String> {
     "Unable to create file: \(param)"
   }
 }
+
+internal class UnableToReadHandleException: GenericException<String> {
+  override var reason: String {
+    "Unable to read from a file handle: \(param)"
+  }
+}

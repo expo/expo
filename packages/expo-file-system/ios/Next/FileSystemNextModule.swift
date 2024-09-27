@@ -70,6 +70,11 @@ public final class FileSystemNextModule: Module {
         return try file.base64()
       }
 
+      Function("open") { file in
+        let fileHandle = try FileSystemFileHandle(file: file)
+        return fileHandle
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)
@@ -109,6 +114,26 @@ public final class FileSystemNextModule: Module {
 
       Property("uri") { file in
         return file.url.absoluteString
+      }
+    }
+
+    Class(FileSystemFileHandle.self) {
+      Function("readBytes") { (fileHandle, bytes: Int) in
+        try fileHandle.read(bytes)
+      }
+      Function("writeBytes") { (fileHandle, bytes: Data) in
+        fileHandle.write(bytes)
+      }
+      Function("close") { fileHandle in
+        try fileHandle.close()
+      }
+      Property("offset") { fileHandle in
+        fileHandle.offset
+      }.set { (fileHandle, volume: UInt64) in
+         fileHandle.offset = volume
+       }
+      Property("size") { fileHandle in
+        fileHandle.size
       }
     }
 

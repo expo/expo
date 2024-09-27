@@ -456,6 +456,91 @@ export async function test({ describe, expect, it, ...t }) {
       addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
     }
   });
+
+  describe('Exposes file handles', () => {
+    it('Allows opening files', () => {
+      const src = new File(testDirectory + 'file.txt');
+      src.write('Hello world');
+      const handle = src.open();
+      expect(handle.readBytes(4)).toEqual(new Uint8Array([72, 101, 108, 108])); // Hell
+      expect(handle.readBytes(4)).toEqual(new Uint8Array([111, 32, 119, 111])); // o wo
+      handle.offset = 2;
+      expect(handle.readBytes(2)).toEqual(new Uint8Array([108, 108])); // ll
+      expect(handle.offset).toBe(4);
+      handle.close();
+    });
+    it('Resets position on close', () => {
+      const src = new File(testDirectory + 'file.txt');
+      src.write('abcde');
+      let handle = src.open();
+      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      handle.close();
+      handle = src.open();
+      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      handle.close();
+    });
+
+    it('Throws on reading from closed handle', () => {
+      const src = new File(testDirectory + 'file.txt');
+      src.write('abcde');
+      const handle = src.open();
+      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      handle.close();
+      expect(() => handle.readBytes(1)).toThrow();
+    });
+
+    it('Returns smaller than expected array when reading end of file', () => {
+      const src = new File(testDirectory + 'file.txt');
+      src.create();
+      const handle = src.open();
+      expect(handle.readBytes(2)).toEqual(new Uint8Array([])); // a
+      handle.close();
+      src.write('abcde');
+      const handle2 = src.open();
+      expect(handle2.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      handle2.close();
+    });
+
+    it('Reads a file in chunks', () => {
+      const src = new File(testDirectory + 'abcs.txt');
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      src.write(alphabet.repeat(1000) + 'ending');
+      const handle = src.open();
+      for (let i = 0; i < 250; i++) {
+        const chunk = handle.readBytes(26 * 4);
+        expect(chunk.length).toBe(26 * 4);
+        expect(String.fromCharCode(...chunk)).toBe(alphabet.repeat(4));
+      }
+      const chunk = handle.readBytes(100);
+      expect(chunk.length).toBe(6);
+      expect(String.fromCharCode(...chunk)).toBe('ending');
+      handle.close();
+    });
+
+    it('Writes to a file handle', () => {
+      const src = new File(testDirectory + 'abcs.txt');
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      src.create();
+      const handle = src.open();
+      for (let i = 0; i < 10; i++) {
+        handle.writeBytes(
+          new Uint8Array(
+            alphabet
+              .repeat(4)
+              .split('')
+              .map((char) => char.charCodeAt(0))
+          )
+        );
+      }
+      expect(handle.readBytes(26 * 4).length).toBe(0);
+      handle.offset = 0;
+      expect(handle.readBytes(26 * 4).length).toBe(26 * 4);
+      handle.close();
+      expect(src.text()).toBe(alphabet.repeat(4 * 10));
+    });
+  });
+
+  addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
 }
 
 function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
