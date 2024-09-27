@@ -141,7 +141,7 @@ class FileSystemNextModule : Module() {
       }
       Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
         fileHandle.read(bytes)
-        }
+      }
       Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
         fileHandle.write(data)
       }
@@ -150,7 +150,7 @@ class FileSystemNextModule : Module() {
       }
       Property("offset") { fileHandle: FileSystemFileHandle ->
         fileHandle.offset
-      }.set { fileHandle: FileSystemFileHandle, offset: Long  ->
+      }.set { fileHandle: FileSystemFileHandle, offset: Long ->
         fileHandle.offset = offset
       }
       Property("size") { fileHandle: FileSystemFileHandle ->
