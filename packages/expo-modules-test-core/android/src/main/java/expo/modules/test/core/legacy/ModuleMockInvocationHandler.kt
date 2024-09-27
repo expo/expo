@@ -45,7 +45,7 @@ class ModuleMockInvocationHandler<T : Any>(
   private val moduleController: ModuleController,
   private val holder: ModuleHolder<*>
 ) : InvocationHandler {
-  override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
+  override fun invoke(proxy: Any, method: Method, args: Array<Any?>?): Any? {
     if (!holder.definition.asyncFunctions.containsKey(method.name) &&
       !holder.definition.syncFunctions.containsKey(method.name)
     ) {
@@ -55,10 +55,10 @@ class ModuleMockInvocationHandler<T : Any>(
     return callExportedFunction(method.name, args)
   }
 
-  private fun callExportedFunction(methodName: String, args: Array<out Any>?): Any? {
+  private fun callExportedFunction(methodName: String, args: Array<Any?>?): Any? {
     if (holder.definition.syncFunctions.containsKey(methodName)) {
       // Call as a sync function
-      return holder.callSync(methodName, convertArgs(args?.asList() ?: emptyList()))
+      return holder.callSync(methodName, convertArgs(args ?: emptyArray()))
     }
 
     if (holder.definition.asyncFunctions.containsKey(methodName)) {
@@ -75,9 +75,10 @@ class ModuleMockInvocationHandler<T : Any>(
     throw IllegalStateException("Module class method '$methodName' not found")
   }
 
-  private fun nonPromiseMappingCall(methodName: String, args: Array<out Any>?): Any? {
+  private fun nonPromiseMappingCall(methodName: String, args: Array<Any?>?): Any? {
     val mockedPromise = PromiseMock()
-    holder.call(methodName, convertArgs(args?.asList() ?: emptyList()), mockedPromise)
+
+    holder.call(methodName, convertArgs(args ?: emptyArray()), mockedPromise)
 
     when (mockedPromise.state) {
       PromiseState.RESOLVED -> {
@@ -109,15 +110,11 @@ class ModuleMockInvocationHandler<T : Any>(
     }
   }
 
-  private fun promiseMappingCall(methodName: String, args: List<Any>, promise: Promise) {
-    holder.call(methodName, convertArgs(args), promise)
+  private fun promiseMappingCall(methodName: String, args: List<Any?>, promise: Promise) {
+    holder.call(methodName, convertArgs(args.toTypedArray()), promise)
   }
 
-  private fun syncCall(methodName: String, args: Iterable<Any?>): Any? {
-    return holder.callSync(methodName, convertArgs(args))
-  }
-
-  private fun convertArgs(args: Iterable<Any?>): ReadableArray {
-    return JSTypeConverter.convertToJSValue(args, TestJSContainerProvider) as ReadableArray
+  private fun convertArgs(args: Array<Any?>): Array<Any?> {
+    return (JSTypeConverter.convertToJSValue(args, TestJSContainerProvider) as ReadableArray).toArrayList().toArray()
   }
 }

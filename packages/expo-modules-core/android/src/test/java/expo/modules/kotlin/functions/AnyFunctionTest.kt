@@ -1,7 +1,5 @@
 package expo.modules.kotlin.functions
 
-import com.facebook.react.bridge.JavaOnlyArray
-import com.facebook.react.bridge.ReadableArray
 import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
@@ -20,13 +18,9 @@ class AnyFunctionTest {
   class MockedAnyFunction(
     desiredArgsTypes: Array<AnyType>
   ) : AsyncFunction("my-method", desiredArgsTypes) {
-    override fun callUserImplementation(args: ReadableArray, promise: Promise) {
+    override fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext) {
       convertArgs(args)
       throw NullPointerException()
-    }
-
-    override fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext) {
-      error("Not implemented.")
     }
   }
 
@@ -36,13 +30,10 @@ class AnyFunctionTest {
     val promise = PromiseMock()
 
     assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected") {
-      method.call(
-        mockk(),
-        JavaOnlyArray().apply {
-          pushInt(1)
-          pushInt(2)
-        },
-        promise
+      method.callUserImplementation(
+        arrayOf(1, 2),
+        promise,
+        mockk()
       )
     }
 
@@ -55,12 +46,10 @@ class AnyFunctionTest {
     val promise = PromiseMock()
 
     assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected") {
-      method.call(
-        mockk(),
-        JavaOnlyArray().apply {
-          pushInt(1)
-        },
-        promise
+      method.callUserImplementation(
+        arrayOf(1),
+        promise,
+        mockk()
       )
     }
 
@@ -74,16 +63,14 @@ class AnyFunctionTest {
 
     assertThrows<ArgumentCastException>(
       """
-      The 1st argument cannot be cast to type kotlin.Int (received String)
-      → Caused by: java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
+      The 1st argument cannot be cast to type kotlin.Int (received class java.lang.String)
+      → Caused by: java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Integer (java.lang.String and java.lang.Integer are in module java.base of loader 'bootstrap')
       """.trimIndent()
     ) {
-      method.call(
-        mockk(),
-        JavaOnlyArray().apply {
-          pushString("STRING")
-        },
-        promise
+      method.callUserImplementation(
+        arrayOf("STRING"),
+        promise,
+        mockk()
       )
     }
 
@@ -96,10 +83,10 @@ class AnyFunctionTest {
     val promise = PromiseMock()
 
     assertThrows<NullPointerException> {
-      method.call(
-        mockk(),
-        JavaOnlyArray(),
-        promise
+      method.callUserImplementation(
+        emptyArray(),
+        promise,
+        mockk()
       )
     }
 
