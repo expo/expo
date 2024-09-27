@@ -66,6 +66,7 @@
     "cacache": "^18.0.2",
     "chalk": "^4.0.0",
     "ci-info": "^3.3.0",
+    "compression": "^1.7.4",
     "connect": "^3.7.0",
     "debug": "^4.3.4",
     "env-editor": "^0.4.1",
