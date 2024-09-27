@@ -2,7 +2,7 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
-import http from 'http';
+import http, { ServerResponse } from 'http';
 import type Metro from 'metro';
 import Bundler from 'metro/src/Bundler';
 import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
@@ -26,8 +26,8 @@ import { CommandError } from '../../../utils/errors';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { getPlatformBundlers } from '../platformBundlers';
+import { ServerNext, ServerRequest } from '../middleware/server.types';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -188,7 +188,7 @@ export async function instantiateMetroAsync(
 
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
-    middleware.use(createCorsMiddleware(exp));
+    prependMiddleware(middleware, createCorsMiddleware(exp));
 
     // Enable debug middleware for CDP-related debugging
     const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
