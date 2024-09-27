@@ -10,7 +10,7 @@ ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWO
 use_autolinking_method_symbol = ('use' + '_native' + '_modules!').to_sym
 origin_autolinking_method = self.method(use_autolinking_method_symbol)
 self.define_singleton_method(use_autolinking_method_symbol) do |*args|
-  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
+  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] != '0'
     Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
     config_command = [
       'node',
