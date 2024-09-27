@@ -51,7 +51,14 @@ export function createEventsSocket(options: EventsSocketOptions) {
   return {
     endpoint: '/events' as const,
     server: new WebSocketServer({ noServer: true }),
-    reportMetroEvent: (event: any) => broadcast(null, serializeMetroEvent(event)),
+    reportMetroEvent: (event: any) => {
+      // Avoid serializing data if there are no clients
+      if (!clients.map.size) {
+        return;
+      }
+
+      return broadcast(null, serializeMetroEvent(event));
+    },
   };
 }
 
