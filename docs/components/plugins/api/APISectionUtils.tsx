@@ -117,67 +117,52 @@ export const mdComponentsNoValidation: MDComponents = {
 };
 
 const nonLinkableTypes = [
-  'AllUngroupedRoutes',
   'B',
+  'CodedError',
   'ColorValue',
   'Component',
   'ComponentClass',
+  'ComponentProps',
   'ComponentType',
-  'DynamicRouteString',
-  'DynamicRouteTemplate',
-  'DynamicTemplateToHrefObject',
   'E',
-  'EffectCallback',
-  'EventMap',
   'EventName',
   'EventSubscription',
-  'ExternalPathString',
+  'ForwardRefExoticComponent',
+  'GeneratedHref',
   'GestureResponderEvent',
-  'HTMLAnchorElement',
+  'GetPermissionMethod',
+  'HTMLInputElement',
   'K',
   'Listener',
   'ModuleType',
   'NativeSyntheticEvent',
-  'NavigationContainerRef',
   'NavigationContainerRefWithCurrent',
+  'Options',
   'P',
   'Parameters',
+  'ParamListBase',
   'ParsedQs',
-  'PickPartial',
+  'PartialState',
+  'PermissionHookBehavior',
+  'PropsWithChildren',
+  'PropsWithoutRef',
   'PureComponent',
-  'RelativePathString',
-  'ResultState',
-  'RootParamList',
-  'RouteParams',
+  'React.FC',
+  'RequestPermissionMethod',
   'RouteParamInput',
-  'ScreenProps',
+  'RouteParams',
+  'ScreenListeners',
   'ServiceActionResult',
-  'State',
-  'StaticRoutes',
-  'StaticRouteToHrefObject',
-  'StaticRouteToHrefString',
+  'StyleProp',
   'T',
   'TaskOptions',
+  'TEventMap',
   'TEventsMap',
   'TOptions',
   'TParams',
   'TRoute',
+  'TState',
   'Uint8Array',
-  'WebAnchorProps',
-  // React & React Native
-  'React.FC',
-  'ForwardRefExoticComponent',
-  'StyleProp',
-  'HTMLInputElement',
-  'PropsWithoutRef',
-  'PropsWithChildren',
-  'ComponentProps',
-  // Cross-package types with no export entry
-  'CodedError',
-  'RequestPermissionMethod',
-  'GetPermissionMethod',
-  'Options',
-  'PermissionHookBehavior',
 ];
 
 /**
@@ -222,12 +207,16 @@ const hardcodedTypeLinks: Record<string, string> = {
   // Conflicts with the File class from expo-file-system@next. TODO: Fix this.
   // File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  HTMLAnchorElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement',
   IterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   MouseEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent',
+  NavigationContainerRef:
+    'https://reactnavigation.org/docs/typescript/#annotating-ref-on-navigationcontainer',
   NavigationOptions: 'https://reactnavigation.org/docs/screen-options/',
+  NavigationState: 'https://reactnavigation.org/docs/navigation-state',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   PackagerAsset: 'https://github.com/facebook/react-native/blob/main/packages/assets/registry.js',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
@@ -238,6 +227,9 @@ const hardcodedTypeLinks: Record<string, string> = {
   ReactNode: 'https://reactnative.dev/docs/react-node',
   Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
+  RouteProp: 'https://reactnavigation.org/docs/glossary-of-terms/#route-prop',
+  RootParamList:
+    'https://reactnavigation.org/docs/typescript/#specifying-default-types-for-usenavigation-link-ref-etc',
   SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
@@ -431,7 +423,13 @@ export const resolveTypeName = (
       if (type === 'array') {
         const { parameters, type: paramType } = elementType.declaration.indexSignature || {};
         if (parameters && paramType) {
-          return `{ [${listParams(parameters)}]: ${resolveTypeName(paramType, sdkVersion)} }`;
+          return (
+            <>
+              <span className="text-quaternary">{'{'}</span>
+              {` [${listParams(parameters)}]: ${resolveTypeName(paramType, sdkVersion)} `}
+              <span className="text-quaternary">{'}'}</span>
+            </>
+          );
         }
       }
       return elementType.name + type;
@@ -441,7 +439,10 @@ export const resolveTypeName = (
       const unionTypes = elementType?.types || [];
       return (
         <>
-          ({renderUnion(unionTypes, { sdkVersion })}){type === 'array' && '[]'}
+          <span className="text-quaternary">(</span>
+          {renderUnion(unionTypes, { sdkVersion })}
+          <span className="text-quaternary">)</span>
+          {type === 'array' && '[]'}
         </>
       );
     } else if (declaration?.signatures) {
@@ -687,6 +688,7 @@ export const renderTypeOrSignatureType = ({
     if (allowBlock) {
       return <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />;
     }
+
     return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type, sdkVersion)}</CODE>;
   }
   return undefined;

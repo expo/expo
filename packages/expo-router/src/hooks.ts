@@ -105,7 +105,6 @@ export function useSegments<
  *   const segments = useSegments();
  *
  *   return <Text>Hello</Text>;
- *
  * }
  * ```
  *
@@ -138,10 +137,9 @@ export function useGlobalSearchParams<
  * import { useGlobalSearchParams } from 'expo-router';
  *
  * export default function Route() {
- *
- *  // user=baconbrix & extra=info
- *  const { user, extra } = useGlobalSearchParams();
- *  return <Text>User: {user}</Text>;
+ *   // user=baconbrix & extra=info
+ *   const { user, extra } = useGlobalSearchParams();
+ *   return <Text>User: {user}</Text>;
  * }
  * ```
  *

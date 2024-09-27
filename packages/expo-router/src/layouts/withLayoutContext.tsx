@@ -76,17 +76,17 @@ export function useFilterScreenChildren(
 export function withLayoutContext<
   TOptions extends object,
   T extends ComponentType<any>,
-  State extends NavigationState,
-  EventMap extends EventMapBase,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
 >(
   Nav: T,
   processor?: (
-    options: ScreenProps<TOptions, State, EventMap>[]
-  ) => ScreenProps<TOptions, State, EventMap>[]
+    options: ScreenProps<TOptions, TState, TEventMap>[]
+  ) => ScreenProps<TOptions, TState, TEventMap>[]
 ): ForwardRefExoticComponent<
   PropsWithoutRef<PickPartial<ComponentProps<T>, 'children'>> & RefAttributes<unknown>
 > & {
-  Screen: (props: ScreenProps<TOptions, State, EventMap>) => null;
+  Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
 } {
   const Navigator = forwardRef(
     (

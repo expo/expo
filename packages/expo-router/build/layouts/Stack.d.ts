@@ -102,7 +102,7 @@ export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<
         navigation: any;
     }) => NativeStackNavigationOptions) | undefined;
 }, "children">> & import("react").RefAttributes<unknown>> & {
-    Screen: (props: import("../useScreens").ScreenProps<NativeStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
+    Screen: (props: import("..").ScreenProps<NativeStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>) => null;
 };
 export default Stack;
 //# sourceMappingURL=Stack.d.ts.map

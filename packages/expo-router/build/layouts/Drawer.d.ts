@@ -102,7 +102,7 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
         navigation: any;
     }) => DrawerNavigationOptions) | undefined;
 }, "children">> & import("react").RefAttributes<unknown>> & {
-    Screen: (props: import("../useScreens").ScreenProps<DrawerNavigationOptions, DrawerNavigationState<ParamListBase>, DrawerNavigationEventMap>) => null;
+    Screen: (props: import("..").ScreenProps<DrawerNavigationOptions, DrawerNavigationState<ParamListBase>, DrawerNavigationEventMap>) => null;
 };
 export default Drawer;
 //# sourceMappingURL=Drawer.d.ts.map

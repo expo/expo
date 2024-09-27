@@ -15,7 +15,7 @@ export {
 
 export { router, Router } from './imperative-api';
 
-export { Link, Redirect, LinkProps } from './link/Link';
+export { Link, Redirect, LinkProps, WebAnchorProps } from './link/Link';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
@@ -25,6 +25,7 @@ export { ExpoRoot } from './ExpoRoot';
 export { Unmatched } from './views/Unmatched';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
+export { ScreenProps } from './useScreens';
 
 // Platform
 /**
@@ -34,6 +35,7 @@ export { SplashScreen } from './views/Splash';
 
 // React Navigation
 export { useNavigation } from './useNavigation';
-export { useFocusEffect } from './useFocusEffect';
+export { useFocusEffect, EffectCallback } from './useFocusEffect';
+export { ResultState } from './fork/getStateFromPath';
 
 export type * from './types';

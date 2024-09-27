@@ -39,18 +39,19 @@ const useLoadedNavigation_1 = require("./link/useLoadedNavigation");
  * import { useCallback } from 'react';
  *
  * export default function Route() {
- *  useFocusEffect(
- *    // Callback should be wrapped in `React.useCallback` to avoid running the effect too often.
- *    useCallback(() => {
- *      // Invoked whenever the route is focused.
- *      console.log('Hello')
- *      }, []);
- *    );
- *  return </>;
+ *   useFocusEffect(
+ *     // Callback should be wrapped in `React.useCallback` to avoid running the effect too often.
+ *     useCallback(() => {
+ *       // Invoked whenever the route is focused.
+ *       console.log('Hello')
+ *       }, []);
+ *     );
+ *   return </>;
  * }
  *```
  *
- * @param callback Memoized callback containing the effect, should optionally return a cleanup function.
+ * @param effect Memoized callback containing the effect, should optionally return a cleanup function.
+ * @param do_not_pass_a_second_prop
  */
 function useFocusEffect(effect, do_not_pass_a_second_prop) {
     const navigation = (0, useLoadedNavigation_1.useOptionalNavigation)();

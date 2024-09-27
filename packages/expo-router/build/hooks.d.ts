@@ -1,7 +1,7 @@
 import { Router } from './imperative-api';
 import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
 type SearchParams = Record<string, string | string[]>;
-export declare function useRootNavigationState(): import("./fork/getStateFromPath").ResultState;
+export declare function useRootNavigationState(): import("./exports").ResultState;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
 /** @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead, which returns a React `ref`. */
 export declare function useRootNavigation(): import("@react-navigation/core").NavigationContainerRef<ReactNavigation.RootParamList> | null;
@@ -61,7 +61,6 @@ export declare function useSegments<TSegments extends Routes | RouteSegments<Rou
  *   const segments = useSegments();
  *
  *   return <Text>Hello</Text>;
- *
  * }
  * ```
  *
@@ -89,10 +88,9 @@ export declare function useGlobalSearchParams<TParams extends SearchParams = Unk
  * import { useGlobalSearchParams } from 'expo-router';
  *
  * export default function Route() {
- *
- *  // user=baconbrix & extra=info
- *  const { user, extra } = useGlobalSearchParams();
- *  return <Text>User: {user}</Text>;
+ *   // user=baconbrix & extra=info
+ *   const { user, extra } = useGlobalSearchParams();
+ *   return <Text>User: {user}</Text>;
  * }
  * ```
  *

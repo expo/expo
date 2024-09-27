@@ -107,7 +107,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
         navigation: any;
     }) => BottomTabNavigationOptions) | undefined;
 }, "children">> & React.RefAttributes<unknown>> & {
-    Screen: (props: import("../useScreens").ScreenProps<import("@react-navigation/elements").HeaderOptions & {
+    Screen: (props: import("..").ScreenProps<import("@react-navigation/elements").HeaderOptions & {
         title?: string | undefined;
         tabBarLabel?: string | ((props: {
             focused: boolean;

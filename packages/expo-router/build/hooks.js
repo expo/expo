@@ -99,7 +99,6 @@ exports.useSegments = useSegments;
  *   const segments = useSegments();
  *
  *   return <Text>Hello</Text>;
- *
  * }
  * ```
  *

@@ -7,19 +7,19 @@ import { NavigationProp } from '@react-navigation/native';
  * import { useNavigation } from 'expo-router';
  *
  * export default function Route() {
- *  // Access the current navigation object for the current route.
- *  const navigation = useNavigation();
+ *   // Access the current navigation object for the current route.
+ *   const navigation = useNavigation();
  *
- *  return (
- *   <View>
- *    <Text onPress={() => {
- *      // Open the drawer view.
- *      navigation.openDrawer();
- *    }}>
- *     Open Drawer
- *    </Text>
- *   </View>
- *  );
+ *   return (
+ *     <View>
+ *       <Text onPress={() => {
+ *         // Open the drawer view.
+ *         navigation.openDrawer();
+ *       }}>
+ *         Open Drawer
+ *       </Text>
+ *     </View>
+ *   );
  * }
  * ```
  *
@@ -30,13 +30,11 @@ import { NavigationProp } from '@react-navigation/native';
  * import { useNavigation } from 'expo-router';
  *
  * export default function MenuRoute() {
+ *   const rootLayout = useNavigation('/');
+ *   const ordersLayout = useNavigation('/orders');
  *
- *  const rootLayout = useNavigation('/');
- *  const ordersLayout = useNavigation('/orders');
- *
- *  // Same as the default results of `useNavigation()` when invoked in this route.
- *  const parentLayout = useNavigation('/orders/menu');
- *
+ *   // Same as the default results of `useNavigation()` when invoked in this route.
+ *   const parentLayout = useNavigation('/orders/menu');
  * }
  * ```
  *
