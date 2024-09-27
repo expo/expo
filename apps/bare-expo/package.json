@@ -26,7 +26,10 @@
         "expo-ads-admob",
         "expo-module-template",
         "expo-module-template-local",
-        "expo-face-detector"
+        "expo-face-detector",
+        "expo-dev-client",
+        "expo-dev-launcher",
+        "expo-dev-menu"
       ],
       "ios": {
         "flags": {
@@ -50,6 +53,7 @@
     "expo": "~51.0.0",
     "expo-build-properties": "~0.12.0",
     "expo-camera": "~15.0.0",
+    "expo-dev-client": "~4.0.0",
     "expo-face-detector": "~12.7.0",
     "expo-image": "~1.12.0",
     "expo-insights": "~0.7.0",
