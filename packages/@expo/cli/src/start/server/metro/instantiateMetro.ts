@@ -193,6 +193,18 @@ export async function instantiateMetroAsync(
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());
+
+    // TODO(cedric): `enhanceMiddleware` is deprecated, but is currently used to unify the middleware stacks
+    // See: https://github.com/facebook/metro/commit/22e85fde85ec454792a1b70eba4253747a2587a9
+    // See: https://github.com/facebook/metro/commit/d0d554381f119bb80ab09dbd6a1d310b54737e52
+    const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
+    // @ts-expect-error: can't mutate readonly config
+    metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
+      if (customEnhanceMiddleware) {
+        metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
+      }
+      return middleware.use(metroMiddleware);
+    };
   }
 
   // Attach Expo Atlas if enabled
