@@ -340,9 +340,9 @@ class Kernel : KernelInterface() {
       )
       return reactRootView
     }
-  private val kernelLaunchOptions = Bundle().apply {
-    putBundle("exp", Bundle())
-  }
+  private val kernelLaunchOptions = bundleOf(
+   "exp" to Bundle(),
+  )
   private val jsExecutorFactory: JavaScriptExecutorFactory
     get() {
       val manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
