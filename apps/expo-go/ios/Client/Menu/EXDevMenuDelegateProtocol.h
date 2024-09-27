@@ -10,20 +10,9 @@
 @required
 
 /**
- * Returns the bridge to which the dev menu is hooked.
- * TODO: (@tsapeta) It's gonna be removed once the dev menu moves to have its own bridge.
- */
-- (nonnull RCTBridge *)mainBridgeForDevMenuManager:(nonnull EXDevMenuManager *)manager;
-
-/**
  * Returns the host to which the dev menu is hooked.
  */
 - (nonnull RCTHost *)mainHostForDevMenuManager:(nonnull EXDevMenuManager *)manager;
-
-/**
- * Returns the bridge of the currently shown app. It is a context of what the dev menu displays.
- */
-- (nullable RCTBridge *)appBridgeForDevMenuManager:(nonnull EXDevMenuManager *)manager;
 
 /**
  * Returns the app delegate of the currently shown app. It is a context of what the dev menu displays.

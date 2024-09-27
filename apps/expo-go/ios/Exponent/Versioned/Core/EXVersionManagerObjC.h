@@ -24,10 +24,10 @@
  *  Dev tools (implementation varies by SDK)
  */
 - (void)showDevMenuForHost:(id)host;
-- (void)disableRemoteDebuggingForBridge:(id)bridge;
-- (void)toggleRemoteDebuggingForBridge:(id)bridge;
-- (void)togglePerformanceMonitorForBridge:(id)bridge;
-- (void)toggleElementInspectorForBridge:(id)bridge;
+- (void)disableRemoteDebuggingForHost:(id)host;
+- (void)toggleRemoteDebuggingForHost:(id)host;
+- (void)togglePerformanceMonitorForHost:(id)host;
+- (void)toggleElementInspectorForHost:(id)host;
 - (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
                          queue:(dispatch_queue_t)queue
                      forMethod:(NSString *)method;

@@ -135,7 +135,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
       _reactRootView = [appDelegate.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
     }
 
-    [self _startObservingBridgeNotificationsForBridge:self.reactBridge];
+    [self _startObservingBridgeNotificationsForHost];
     
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
@@ -257,7 +257,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forScopeKey:_appRecord.scopeKey];
   }
   [self _stopObservingBridgeNotifications];
-  [self _startObservingBridgeNotificationsForBridge:bridge];
 
   if ([self enablesDeveloperTools]) {
     if ([_appRecord.appLoader supportsBundleReload]) {
@@ -305,7 +304,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 #pragma mark - JavaScript loading
 
-- (void)_startObservingBridgeNotificationsForBridge:(RCTBridge *)bridge
+- (void)_startObservingBridgeNotificationsForHost
 {
 
   
@@ -316,33 +315,33 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptStartLoadingEvent:)
                                                name:RCTJavaScriptWillStartLoadingNotification
-                                             object:self.reactBridge];
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:RCTJavaScriptDidLoadNotification
-                                             object:self.reactBridge];
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:RCTJavaScriptDidFailToLoadNotification
-                                             object:self.reactBridge];
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleReactContentEvent:)
                                                name:RCTContentDidAppearNotification
-                                             object:self.reactBridge];
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleBridgeEvent:)
                                                name:RCTBridgeWillReloadNotification
-                                             object:self.reactBridge];
+                                             object:nil];
 }
 
 - (void)_stopObservingBridgeNotifications
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTInstanceDidLoadBundle object:self.reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptWillStartLoadingNotification object:self.reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:self.reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:self.reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:self.reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillReloadNotification object:self.reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTInstanceDidLoadBundle object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptWillStartLoadingNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillReloadNotification object:nil];
 }
 
 - (void)_handleJavaScriptStartLoadingEvent:(NSNotification *)notification
@@ -463,28 +462,28 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 - (void)disableRemoteDebugging
 {
   if ([self enablesDeveloperTools]) {
-    [self.versionManager disableRemoteDebuggingForBridge:self.reactBridge];
+    [self.versionManager disableRemoteDebuggingForHost:self.reactHost];
   }
 }
 
 - (void)toggleRemoteDebugging
 {
   if ([self enablesDeveloperTools]) {
-    [self.versionManager toggleRemoteDebuggingForBridge:self.reactBridge];
+    [self.versionManager toggleRemoteDebuggingForHost:self.reactHost];
   }
 }
 
 - (void)togglePerformanceMonitor
 {
   if ([self enablesDeveloperTools]) {
-    [self.versionManager togglePerformanceMonitorForBridge:self.reactBridge];
+    [self.versionManager togglePerformanceMonitorForHost:self.reactHost];
   }
 }
 
 - (void)toggleElementInspector
 {
   if ([self enablesDeveloperTools]) {
-    [self.versionManager toggleElementInspectorForBridge:self.reactBridge];
+    [self.versionManager toggleElementInspectorForHost:self.reactHost];
   }
 }
 
@@ -493,7 +492,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   if ([self enablesDeveloperTools]) {
     // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
     // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
-   [self.reactBridge enqueueJSCall:@"RCTNativeAppEventEmitter.emit" args:@[@"RCTDevMenuShown"]];
+    [self.reactHost callFunctionOnModule:@"RCTNativeAppEventEmitter" method:@"emit" arguments:@[@"RCTDevMenuShown"] callback:nil];
   }
 }
 

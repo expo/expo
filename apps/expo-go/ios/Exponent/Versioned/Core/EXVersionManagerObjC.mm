@@ -268,22 +268,22 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }
 }
 
-- (void)disableRemoteDebuggingForBridge:(id)bridge
+- (void)disableRemoteDebuggingForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
   devSettings.isDebuggingRemotely = NO;
 }
 
-- (void)toggleRemoteDebuggingForBridge:(id)bridge
+- (void)toggleRemoteDebuggingForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
   devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
 }
 
-- (void)togglePerformanceMonitorForBridge:(id)bridge
+- (void)togglePerformanceMonitorForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:bridge named:@"DevSettings"];
-  id perfMonitor = [self _moduleInstanceForHost:bridge named:@"PerfMonitor"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
+  id perfMonitor = [self _moduleInstanceForHost:host named:@"PerfMonitor"];
   if (perfMonitor) {
     if (devSettings.isPerfMonitorShown) {
       [perfMonitor hide];
@@ -295,9 +295,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }
 }
 
-- (void)toggleElementInspectorForBridge:(id)bridge
+- (void)toggleElementInspectorForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
   [devSettings toggleElementInspector];
 }
 

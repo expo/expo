@@ -59,11 +59,6 @@ static NSString *kEXDevMenuTouchGestureEnabled = @"EXDevMenuTouchGestureEnabled"
   [[NSUserDefaults standardUserDefaults] setBool:interceptTouchGesture forKey:kEXDevMenuTouchGestureEnabled];
 }
 
-- (RCTBridge *)mainBridge
-{
-  return [_delegate mainBridgeForDevMenuManager:self];
-}
-
 - (id)mainReactHost {
   return [_delegate mainHostForDevMenuManager:self];
 }
