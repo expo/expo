@@ -48,3 +48,13 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
 #endif
   });
 }
+
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *) {
+  JNIEnv *env = nullptr;
+  jint ret = vm->GetEnv((void**)env, JNI_VERSION_1_6);
+  if (ret != JNI_OK) {
+    return;
+  }
+
+  expo::JCacheHolder::unLoad(env);
+}
