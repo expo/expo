@@ -17,8 +17,8 @@ export { WebViewProps };
 
 export interface DOMProps extends Omit<WebViewProps, 'source'> {
   /**
-   * Whether to stretch the native WebView size based on the DOM content size.
+   * Whether to resize the native WebView size based on the DOM content size.
    * @default false
    */
-  stretchWebView?: boolean;
+  matchContents?: boolean;
 }

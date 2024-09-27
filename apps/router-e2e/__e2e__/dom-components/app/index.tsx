@@ -14,7 +14,7 @@ export default function Page() {
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, padding: 56 }}>
       <TestCase name="Actions">
         <Actions
-          dom={{ stretchWebView: true }}
+          dom={{ matchContents: true }}
           index={index}
           setIndexAsync={async (index) => setIndex(index)}
           showAlert={(time) => {
@@ -36,21 +36,21 @@ export default function Page() {
       <TestCase name="Local Asset">
         <Text style={styles.testcaseHint}>
           Large height div with a centered local asset image. Please test scrolling for
-          stretchWebView.
+          matchContents.
         </Text>
-        <LocalAsset dom={{ stretchWebView: true }} />
+        <LocalAsset dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Public Asset">
-        <PublicAsset dom={{ stretchWebView: true }} />
+        <PublicAsset dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Tailwind">
-        <Tailwind dom={{ stretchWebView: true }} />
+        <Tailwind dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Nested">
-        <NestedComponents dom={{ stretchWebView: true }} />
+        <NestedComponents dom={{ matchContents: true }} />
       </TestCase>
     </ScrollView>
   );

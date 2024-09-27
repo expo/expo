@@ -8,9 +8,9 @@ import {
   getInjectBodySizeObserverScript,
   getInjectEventScript,
   getInjectEnvsScript,
+  MATCH_CONTENTS_EVENT,
   NATIVE_ACTION,
   NATIVE_ACTION_RESULT,
-  STRETCH_WEBVIEW_EVENT,
 } from './injection';
 
 function mergeRefs(...props) {
@@ -100,7 +100,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
         getInjectEnvsScript(),
         // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
         `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
-        dom?.stretchWebView ? getInjectBodySizeObserverScript() : null,
+        dom?.matchContents ? getInjectBodySizeObserverScript() : null,
         dom?.injectedJavaScriptBeforeContentLoaded,
         'true;',
       ]
@@ -117,8 +117,8 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
       onMessage={(event) => {
         const { type, data } = JSON.parse(event.nativeEvent.data);
 
-        if (type === STRETCH_WEBVIEW_EVENT) {
-          if (dom?.stretchWebView) {
+        if (type === MATCH_CONTENTS_EVENT) {
+          if (dom?.matchContents) {
             setContainerStyle({
               width: data.width,
               height: data.height,
