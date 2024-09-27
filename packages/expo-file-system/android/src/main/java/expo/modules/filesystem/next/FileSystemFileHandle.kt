@@ -3,15 +3,17 @@ package expo.modules.filesystem.next
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
-class FileSystemFileHandle(file: FileSystemFile) : SharedObject() {
-  val fileChannel: FileChannel
+class FileSystemFileHandle(file: FileSystemFile) : SharedObject(), AutoCloseable {
+  val fileChannel: FileChannel = file.file.inputStream().channel
 
-  init {
-    fileChannel = file.file.inputStream().channel
+  override fun deallocate() {
+    close()
   }
-  fun close() {
+
+  override fun close() {
     fileChannel.close()
   }
+
   fun read(length: Int): ByteArray {
     if (!fileChannel.isOpen) {
       throw UnableToReadHandleException("file handle is closed")
@@ -24,17 +26,19 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedObject() {
       throw UnableToReadHandleException(e.message ?: "unknown error")
     }
   }
+
   fun write(data: ByteArray) {
     if (!fileChannel.isOpen) {
-      throw UnableToReadHandleException("file handle is closed")
+      throw UnableToWriteHandleException("file handle is closed")
     }
     try {
       val buffer = ByteBuffer.wrap(data)
       fileChannel.write(buffer)
     } catch (e: Exception) {
-      throw UnableToReadHandleException(e.message ?: "unknown error")
+      throw UnableToWriteHandleException(e.message ?: "unknown error")
     }
   }
+
   var offset: Long
     get() {
       return fileChannel.position()
@@ -42,6 +46,7 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedObject() {
     set(value) {
       fileChannel.position(value)
     }
+
   val size: Long
     get() {
       return fileChannel.size()
