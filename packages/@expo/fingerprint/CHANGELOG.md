@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Upgrade `glob@7` to `glob@10`. ([#29927](https://github.com/expo/expo/pull/29927) by [@byCedric](https://github.com/byCedric))
+- Set `enableReactImportsPatcher` as false by default from Expo SDK 52. ([#31728](https://github.com/expo/expo/pull/31728) by [@kudo](https://github.com/kudo))
 
 ## 0.10.3 - 2024-08-07
 
