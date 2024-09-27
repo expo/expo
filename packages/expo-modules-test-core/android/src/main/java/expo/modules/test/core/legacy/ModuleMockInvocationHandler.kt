@@ -1,7 +1,9 @@
 package expo.modules.test.core.legacy
 
+import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.types.JSTypeConverter
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
@@ -56,7 +58,7 @@ class ModuleMockInvocationHandler<T : Any>(
   private fun callExportedFunction(methodName: String, args: Array<Any?>?): Any? {
     if (holder.definition.syncFunctions.containsKey(methodName)) {
       // Call as a sync function
-      return holder.callSync(methodName, args ?: emptyArray())
+      return holder.callSync(methodName, convertArgs(args ?: emptyArray()))
     }
 
     if (holder.definition.asyncFunctions.containsKey(methodName)) {
@@ -76,7 +78,7 @@ class ModuleMockInvocationHandler<T : Any>(
   private fun nonPromiseMappingCall(methodName: String, args: Array<Any?>?): Any? {
     val mockedPromise = PromiseMock()
 
-    holder.call(methodName, args ?: emptyArray(), mockedPromise)
+    holder.call(methodName, convertArgs(args ?: emptyArray()), mockedPromise)
 
     when (mockedPromise.state) {
       PromiseState.RESOLVED -> {
@@ -109,6 +111,10 @@ class ModuleMockInvocationHandler<T : Any>(
   }
 
   private fun promiseMappingCall(methodName: String, args: List<Any?>, promise: Promise) {
-    holder.call(methodName, args.toTypedArray(), promise)
+    holder.call(methodName, convertArgs(args.toTypedArray()), promise)
+  }
+
+  private fun convertArgs(args: Array<Any?>): Array<Any?> {
+    return (JSTypeConverter.convertToJSValue(args, TestJSContainerProvider) as ReadableArray).toArrayList().toArray()
   }
 }
