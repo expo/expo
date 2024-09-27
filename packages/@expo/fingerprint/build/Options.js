@@ -8,6 +8,7 @@ const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const Config_1 = require("./Config");
+const ExpoVersions_1 = require("./ExpoVersions");
 const SourceSkips_1 = require("./sourcer/SourceSkips");
 const Path_1 = require("./utils/Path");
 exports.FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
@@ -83,12 +84,15 @@ async function normalizeOptionsAsync(projectRoot, options) {
         concurrentIoLimit: os_1.default.cpus().length,
         hashAlgorithm: 'sha1',
         sourceSkips: exports.DEFAULT_SOURCE_SKIPS,
-        enableReactImportsPatcher: true,
         // Options from config
         ...config,
         // Explicit options
         ...options,
         // These options are computed by both default and explicit options, so we put them last.
+        enableReactImportsPatcher: options?.enableReactImportsPatcher ??
+            config?.enableReactImportsPatcher ??
+            (0, ExpoVersions_1.satisfyExpoVersion)(projectRoot, '<52.0.0') ??
+            false,
         ignorePathMatchObjects: await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options),
     };
 }

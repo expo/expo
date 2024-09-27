@@ -93,7 +93,7 @@ export interface Options {
    * Enable ReactImportsPatcher to transform imports from React of the form `#import "RCTBridge.h"` to `#import <React/RCTBridge.h>`.
    * This is useful when you want to have a stable fingerprint for Expo projects,
    * since expo-modules-autolinking will change the import style on iOS.
-   * @default true
+   * @default true for Expo SDK 51 and lower.
    */
   enableReactImportsPatcher?: boolean;
 
