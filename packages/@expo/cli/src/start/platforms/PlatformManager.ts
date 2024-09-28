@@ -14,6 +14,7 @@ const debug = require('debug')('expo:start:platforms:platformManager') as typeof
 export interface BaseOpenInCustomProps {
   scheme?: string;
   applicationId?: string | null;
+  launchActivity?: string;
 }
 
 export interface BaseResolveDeviceProps<IDevice> {

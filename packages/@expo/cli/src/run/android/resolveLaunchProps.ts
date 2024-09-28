@@ -36,7 +36,16 @@ export async function resolveLaunchPropsAsync(
   const packageNameWithSuffix = options.appIdSuffix
     ? `${packageName}.${options.appIdSuffix}`
     : packageName;
-  const launchActivity = `${packageName}/${mainActivity}`;
+
+    const activityToLaunch =
+    mainActivity.startsWith(packageName) ||
+    (!mainActivity.startsWith('.') && mainActivity.includes('.'))
+      ? mainActivity
+      : mainActivity.startsWith('.')
+      ? [packageName, mainActivity].join('')
+      : [packageName, mainActivity].filter(Boolean).join('.');
+
+  const launchActivity = `${packageNameWithSuffix}/${activityToLaunch}`;
 
   return {
     mainActivity,

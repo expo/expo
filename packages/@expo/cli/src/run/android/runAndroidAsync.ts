@@ -69,6 +69,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     'emulator',
     {
       applicationId: props.packageName,
+      launchActivity: props.launchActivity,
     },
     { device: props.device.device }
   );

@@ -15,7 +15,7 @@ describe(resolveLaunchPropsAsync, () => {
   it(`resolves launch properties`, async () => {
     vol.fromJSON(rnFixture, '/');
     expect(await resolveLaunchPropsAsync('/', { appIdSuffix: 'demo' })).toEqual({
-      launchActivity: 'com.bacon.mydevicefamilyproject/.MainActivity',
+      launchActivity: 'com.bacon.mydevicefamilyproject.demo/com.bacon.mydevicefamilyproject.MainActivity',
       mainActivity: '.MainActivity',
       packageName: 'com.bacon.mydevicefamilyproject.demo',
     });
