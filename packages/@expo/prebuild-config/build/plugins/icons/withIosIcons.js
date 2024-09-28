@@ -168,9 +168,9 @@ async function generateUniversalIconAsync(projectRoot, {
       removeTransparency: appearance !== 'dark',
       // The icon should be square, but if it's not then it will be cropped.
       resizeMode: 'cover',
-      // Force the background color to solid white to prevent any transparency.
+      // Force the background color to solid white to prevent any transparency. (for "any" and "tinted" variants)
       // TODO: Maybe use a more adaptive option based on the icon color?
-      backgroundColor: '#ffffff'
+      backgroundColor: appearance !== 'dark' ? '#ffffff' : undefined
     })).source;
   } else {
     // Create a white square image if no icon exists to mitigate the chance of a submission failure to the app store.
