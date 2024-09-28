@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
@@ -65,6 +65,19 @@ export async function prebuildAsync(
   setNodeEnv('development');
   require('@expo/env').load(projectRoot);
 
+  const { platforms } = getConfig(projectRoot).exp;
+  if (platforms?.length) {
+    // Filter out platforms that aren't in the app.json.
+    const finalPlatforms = options.platforms.filter((platform) => platforms.includes(platform));
+    if (finalPlatforms.length > 0) {
+      options.platforms = finalPlatforms;
+    } else {
+      Log.warn(
+        chalk`⚠️ No platforms to prebuild, skipping. Provided platforms not present in app.json.`
+      );
+      return null;
+    }
+  }
   if (options.clean) {
     const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
     // Clean the project folders...
