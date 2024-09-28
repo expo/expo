@@ -164,7 +164,8 @@ async function generateUniversalIconAsync(projectRoot, {
       name: filename,
       width: size,
       height: size,
-      removeTransparency: true,
+      // Transparency needs to be preserved in dark variant, but can safely be removed in "any" and "tinted" variants.
+      removeTransparency: appearance !== 'dark',
       // The icon should be square, but if it's not then it will be cropped.
       resizeMode: 'cover',
       // Force the background color to solid white to prevent any transparency.
