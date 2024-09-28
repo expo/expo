@@ -32,6 +32,7 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
+import { createStickyResolver } from './createStickyResolver';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -540,6 +541,9 @@ export function withExtendedResolver(
 
       return null;
     },
+
+    // Sticky resolutions, to deduplicate modules that can only exist once in a bundle
+    createStickyResolver(getStrictResolver),
 
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
