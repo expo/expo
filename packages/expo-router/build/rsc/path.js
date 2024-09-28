@@ -9,7 +9,7 @@
  * https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/utils/path.ts#L1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPathMapping = exports.parsePathWithSlug = exports.extname = exports.joinPath = exports.fileURLToFilePath = exports.filePathToFileURL = exports.decodeFilePathFromAbsolute = exports.encodeFilePathToAbsolute = void 0;
+exports.path2regexp = exports.getPathMapping = exports.parsePathWithSlug = exports.extname = exports.joinPath = exports.fileURLToFilePath = exports.filePathToFileURL = exports.decodeFilePathFromAbsolute = exports.encodeFilePathToAbsolute = void 0;
 // Terminology:
 // - filePath: posix-like file path, e.g. `/foo/bar.js` or `c:/foo/bar.js`
 //   This is used by Vite.
@@ -146,4 +146,22 @@ const getPathMapping = (pathSpec, pathname) => {
     return mapping;
 };
 exports.getPathMapping = getPathMapping;
+/**
+ * Transform a path spec to a regular expression.
+ */
+const path2regexp = (path) => {
+    const parts = path.map(({ type, name }) => {
+        if (type === 'literal') {
+            return name;
+        }
+        else if (type === 'group') {
+            return `([^/]+)`;
+        }
+        else {
+            return `(.*)`;
+        }
+    });
+    return `^/${parts.join('/')}$`;
+};
+exports.path2regexp = path2regexp;
 //# sourceMappingURL=path.js.map

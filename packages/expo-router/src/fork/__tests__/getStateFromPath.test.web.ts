@@ -303,3 +303,16 @@ it(`handles query params`, () => {
     ],
   });
 });
+
+it(`prioritizes hoisted index routes over dynamic groups`, () => {
+  expect(
+    getStateFromPath('/(one)', getMockConfig(['(one,two)/index.tsx', '(one,two)/[slug].tsx']))
+  ).toEqual({
+    routes: [
+      {
+        name: '(one)/index',
+        path: '',
+      },
+    ],
+  });
+});

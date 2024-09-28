@@ -17,7 +17,6 @@ The component loads the `Ionicons` font and renders a checkmark icon in the foll
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
 
 ```jsx collapseHeight=350
-import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -57,7 +56,6 @@ The `createIconSet` method returns a custom font based on the `glyphMap` where t
 In the example below, the `glyphMap` object is defined and then passed as the first argument to the `createIconSet` method. The second argument `fontFamily` is the name of the font (not the filename). Optionally, you can pass the third argument for Android support, which is the custom font file name.
 
 ```jsx createIconSet example
-import * as React from 'react';
 import createIconSet from '@expo/vector-icons/createIconSet';
 
 const glyphMap = { 'icon-name': 1234, test: '∆' };

@@ -3,7 +3,7 @@
 /**
  * @hidden
  */
-export interface WebGLObject {}
+export type WebGLObject = object;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 declare let WebGLObject: {

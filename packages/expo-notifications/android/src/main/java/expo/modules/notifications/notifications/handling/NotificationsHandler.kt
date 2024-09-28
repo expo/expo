@@ -13,7 +13,6 @@ import expo.modules.notifications.notifications.interfaces.NotificationListener
 import expo.modules.notifications.notifications.interfaces.NotificationManager
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
-import expo.modules.notifications.toLegacyPromise
 
 class NotificationBehaviourRecord : Record {
   @Field
@@ -102,7 +101,7 @@ open class NotificationsHandler : Module(), NotificationListener {
     with(behavior) {
       task.handleResponse(
         NotificationBehavior(shouldShowAlert, shouldPlaySound, shouldSetBadge, priority),
-        promise.toLegacyPromise()
+        promise
       )
     }
   }

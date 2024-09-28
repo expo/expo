@@ -57,6 +57,13 @@ You can configure development client launcher using its built-in [config plugin]
       ].join('\n'),
       default: '"most-recent"',
     },
+    {
+      name: 'addGeneratedScheme',
+      description: [
+        'By default, `expo-dev-client` will register a custom URL scheme to open a project. Set this property to `false` to disable this scheme.',
+      ].join('\n'),
+      default: 'true',
+    },
   ]}
 />
 

@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 
 /**
  * A shared logic between ContentBuilders ({@link ArgumentsNotificationContentBuilder}
- * and {@link JSONNotificationContentBuilder}) for resolving sounds based on the "sound" property.
+ * and {@link RemoteNotificationContent}) for resolving sounds based on the "soundName" property.
  */
 public class SoundResolver {
   private Context mContext;

@@ -8,14 +8,14 @@ const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const require_from_string_1 = __importDefault(require("require-from-string"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
-const utils_1 = require("./utils");
+const fileUtils_1 = require("../fileUtils");
 let tsMain = undefined;
 /**
  * Load the `react-native.config.js` or `react-native.config.ts` from the package.
  */
 async function loadConfigAsync(packageRoot) {
     const configJsPath = path_1.default.join(packageRoot, 'react-native.config.js');
-    if (await (0, utils_1.fileExistsAsync)(configJsPath)) {
+    if (await (0, fileUtils_1.fileExistsAsync)(configJsPath)) {
         try {
             return require(configJsPath);
         }
@@ -24,7 +24,7 @@ async function loadConfigAsync(packageRoot) {
         }
     }
     const configTsPath = path_1.default.join(packageRoot, 'react-native.config.ts');
-    if (await (0, utils_1.fileExistsAsync)(configTsPath)) {
+    if (await (0, fileUtils_1.fileExistsAsync)(configTsPath)) {
         if (tsMain === undefined) {
             const tsPath = resolve_from_1.default.silent(packageRoot, 'typescript');
             if (tsPath) {

@@ -1,14 +1,17 @@
 // A webview without babel to test faster.
 import React from 'react';
+import { AppState } from 'react-native';
 import { WebView } from 'react-native-webview';
 
+import type { BridgeMessage, DOMProps, WebViewProps } from './dom.types';
 import {
+  getInjectBodySizeObserverScript,
   getInjectEventScript,
   getInjectEnvsScript,
+  MATCH_CONTENTS_EVENT,
   NATIVE_ACTION,
   NATIVE_ACTION_RESULT,
 } from './injection';
-import type { BridgeMessage } from './www-types';
 
 function mergeRefs(...props) {
   return function forwardRef(node) {
@@ -26,8 +29,14 @@ function mergeRefs(...props) {
   };
 }
 
-const RawWebView = React.forwardRef(({ dom, source, ...marshalProps }: any, ref) => {
+interface Props {
+  dom: DOMProps;
+  source: WebViewProps['source'];
+}
+
+const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalProps }, ref) => {
   const webviewRef = React.useRef<WebView>(null);
+  const [containerStyle, setContainerStyle] = React.useState<WebViewProps['containerStyle']>(null);
 
   const setRef = React.useMemo(() => mergeRefs(webviewRef, {}, ref), [webviewRef, ref]);
 
@@ -64,16 +73,34 @@ const RawWebView = React.forwardRef(({ dom, source, ...marshalProps }: any, ref)
   return (
     <WebView
       webviewDebuggingEnabled={__DEV__}
+      // Make iOS scrolling feel native.
+      decelerationRate="normal"
       originWhitelist={['*']}
       allowFileAccess
       allowFileAccessFromFileURLs
       allowsAirPlayForMediaPlayback
       allowsFullscreenVideo
+      onContentProcessDidTerminate={() => {
+        webviewRef.current?.reload();
+      }}
+      onRenderProcessGone={() => {
+        // Simulate iOS `onContentProcessDidTerminate` behavior to reload when the app is in foreground or back to foreground.
+        if (AppState.currentState === 'active') {
+          webviewRef.current?.reload();
+          return;
+        }
+        const subscription = AppState.addEventListener('focus', () => {
+          webviewRef.current?.reload();
+          subscription.remove();
+        });
+      }}
+      containerStyle={containerStyle}
       {...dom}
       injectedJavaScriptBeforeContentLoaded={[
         getInjectEnvsScript(),
         // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
         `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
+        dom?.matchContents ? getInjectBodySizeObserverScript() : null,
         dom?.injectedJavaScriptBeforeContentLoaded,
         'true;',
       ]
@@ -90,15 +117,24 @@ const RawWebView = React.forwardRef(({ dom, source, ...marshalProps }: any, ref)
       onMessage={(event) => {
         const { type, data } = JSON.parse(event.nativeEvent.data);
 
+        if (type === MATCH_CONTENTS_EVENT) {
+          if (dom?.matchContents) {
+            setContainerStyle({
+              width: data.width,
+              height: data.height,
+            });
+          }
+          return;
+        }
+
         if (type === NATIVE_ACTION) {
-          if (!marshalProps || !marshalProps[data.actionId]) {
+          const action = marshalProps[data.actionId];
+          if (action == null) {
             throw new Error(`Native action "${data.actionId}" is not defined.`);
           }
-          if (!(marshalProps[data.actionId] instanceof Function)) {
+          if (typeof action !== 'function' || !(action instanceof Function)) {
             throw new Error(`Native action "${data.actionId}" is not a function.`);
           }
-
-          const action = marshalProps[data.actionId];
 
           const emitError = (error) => {
             emit({

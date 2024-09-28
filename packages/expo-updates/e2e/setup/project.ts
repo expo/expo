@@ -17,12 +17,13 @@ function getExpoDependencyChunks({
   includeTV: boolean;
 }) {
   return [
-    ['@expo/config-types', '@expo/env'],
+    ['@expo/config-types', '@expo/env', '@expo/json-file'],
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['expo-modules-core'],
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
-    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants', 'expo-manifests'],
+    ['expo-manifests'],
+    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
     [
       'babel-preset-expo',
       'expo-application',
@@ -51,6 +52,7 @@ function getExpoDependencyChunks({
             'expo-localization',
             'expo-crypto',
             'expo-network',
+            'expo-secure-store',
             'expo-video',
           ],
         ]
@@ -355,7 +357,7 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.74.3-0',
+        'react-native': 'npm:react-native-tvos@~0.75.2-0',
         '@react-native-tvos/config-tv': '^0.0.10',
       },
       expo: {
@@ -472,11 +474,9 @@ function transformAppJsonForE2E(
       updates: {
         ...appJson.expo.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
+        assetPatternsToBeBundled: ['includedAssets/*'],
       },
       extra: {
-        updates: {
-          assetPatternsToBeBundled: ['includedAssets/*'],
-        },
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },

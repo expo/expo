@@ -80,7 +80,10 @@ describe('static-rendering with a custom base path', () => {
     async () => {
       const indexHtml = await getPageHtml(outputDir, 'index.html');
 
-      const jsFiles = indexHtml.querySelectorAll('script').map((script) => script.attributes.src);
+      const jsFiles = indexHtml
+        .querySelectorAll('script')
+        .filter((script) => !!script.attributes.src)
+        .map((script) => script.attributes.src);
       expect(jsFiles).toEqual([
         expect.stringMatching(/\/one\/two\/_expo\/static\/js\/web\/index-.*\.js/),
       ]);

@@ -66,11 +66,8 @@ function ensureContext(
     );
   }
 
-  // Apple disables WebGL 2.0 and doesn't provide any way to detect if it's disabled.
-  const isIOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
-
   const context =
-    (!isIOS && canvas.getContext('webgl2', contextAttributes)) ||
+    canvas.getContext('webgl2', contextAttributes) ||
     canvas.getContext('webgl', contextAttributes) ||
     canvas.getContext('webgl-experimental', contextAttributes) ||
     canvas.getContext('experimental-webgl', contextAttributes);

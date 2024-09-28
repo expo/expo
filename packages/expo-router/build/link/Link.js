@@ -29,9 +29,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Link = exports.Redirect = void 0;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-const react_slot_1 = require("@radix-ui/react-slot");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
+const LinkSlot_1 = require("./LinkSlot");
 const href_1 = require("./href");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const hooks_1 = require("../hooks");
@@ -128,7 +128,7 @@ relativeToDirectory, asChild, rel, target, download, ...rest }, ref) {
         }
         props.onPress(e);
     };
-    const Element = asChild ? react_slot_1.Slot : react_native_1.Text;
+    const Element = asChild ? LinkSlot_1.Slot : react_native_1.Text;
     // Avoid using createElement directly, favoring JSX, to allow tools like Nativewind to perform custom JSX handling on native.
     return (<Element ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
         web: {

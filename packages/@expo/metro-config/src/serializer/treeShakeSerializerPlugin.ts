@@ -444,6 +444,15 @@ export async function treeShakeSerializer(
       );
     }
 
+    //
+    if (graphEntryForTargetImport.path.match(/\.(s?css|sass)$/)) {
+      debug('Skip graph unlinking for CSS:');
+      debug('- Origin module:', graphModule.path);
+      debug('- Module ID:', importModuleId);
+      // Skip CSS imports.
+      return { path: importInstance.absolutePath, removed: false };
+    }
+
     const [authorMarkedSideEffect, trace] = hasSideEffectWithDebugTrace(
       options,
       graph,

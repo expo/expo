@@ -1,5 +1,5 @@
 import { PermissionStatus } from 'expo-modules-core';
-import { RecordingOptionsPresets } from './RecordingConstants';
+import { RecordingPresets } from './RecordingConstants';
 const nextId = (() => {
     let id = 0;
     return () => id++;
@@ -71,98 +71,98 @@ function getStatusFromMedia(media, id) {
 export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     constructor(source, interval) {
         super();
-        this._src = source;
-        this._interval = interval;
-        this._media = this._createMediaElement(source);
+        this.src = source;
+        this.interval = interval;
+        this.media = this._createMediaElement();
     }
     id = nextId();
-    _src = null;
-    _media;
-    _interval = 100;
-    _playing = false;
-    _paused = false;
-    _isLoaded = false;
     isAudioSamplingSupported = false;
     isBuffering = false;
     shouldCorrectPitch = false;
+    src = null;
+    media;
+    interval = 100;
+    isPlaying = false;
+    loaded = false;
     get playing() {
-        return this._playing;
+        return this.isPlaying;
     }
     get muted() {
-        return this._media.muted;
+        return this.media.muted;
     }
     set muted(value) {
-        this._media.muted = value;
+        this.media.muted = value;
     }
     get loop() {
-        return this._media.loop;
+        return this.media.loop;
     }
     set loop(value) {
-        this._media.loop = value;
+        this.media.loop = value;
     }
     get duration() {
-        return this._media.duration * 1000;
+        return this.media.duration * 1000;
     }
     get currentTime() {
-        return this._media.currentTime * 1000;
+        return this.media.currentTime * 1000;
     }
     get paused() {
-        return this._media.paused;
+        return this.media.paused;
     }
     get isLoaded() {
-        return this._isLoaded;
+        return this.loaded;
     }
     get playbackRate() {
-        return this._media.playbackRate;
+        return this.media.playbackRate;
     }
     set playbackRate(value) {
-        this._media.playbackRate = value;
+        this.media.playbackRate = value;
     }
     get volume() {
-        return this._media.volume;
+        return this.media.volume;
     }
     set volume(value) {
-        this._media.volume = value;
+        this.media.volume = value;
     }
     get currentStatus() {
-        return getStatusFromMedia(this._media, this.id);
+        return getStatusFromMedia(this.media, this.id);
     }
     play() {
-        this._media.play();
-        this._playing = true;
+        this.media.play();
+        this.isPlaying = true;
     }
     pause() {
-        this._media.pause();
-        this._playing = false;
+        this.media.pause();
+        this.isPlaying = false;
     }
     async seekTo(seconds) {
-        this._media.currentTime = seconds / 1000;
+        this.media.currentTime = seconds / 1000;
     }
+    // Not supported on web
     setAudioSamplingEnabled(enabled) {
         this.isAudioSamplingSupported = false;
     }
     setPlaybackRate(second, pitchCorrectionQuality) {
-        this._media.playbackRate = second;
+        this.media.playbackRate = second;
         this.shouldCorrectPitch = pitchCorrectionQuality === 'high';
-        this._media.preservesPitch = this.shouldCorrectPitch;
+        this.media.preservesPitch = this.shouldCorrectPitch;
     }
     remove() {
-        this._media.pause();
-        this._media.removeAttribute('src');
-        this._media.load();
-        getStatusFromMedia(this._media, this.id);
+        this.media.pause();
+        this.media.removeAttribute('src');
+        this.media.load();
+        getStatusFromMedia(this.media, this.id);
     }
-    _createMediaElement(source) {
-        const newSource = typeof source === 'string' ? source : source?.uri ?? '';
+    _createMediaElement() {
+        const newSource = typeof this.src === 'string' ? this.src : (this.src?.uri ?? '');
         const media = new Audio(newSource);
         media.ontimeupdate = () => {
             this.emit('onPlaybackStatusUpdate', getStatusFromMedia(media, this.id));
         };
         media.onloadeddata = () => {
-            this._isLoaded = true;
+            this.loaded = true;
             this.emit('onPlaybackStatusUpdate', {
                 ...getStatusFromMedia(media, this.id),
-                isLoaded: this._isLoaded,
+                isLoaded: this.loaded,
             });
         };
         return media;
@@ -171,30 +171,31 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
 export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     constructor(options) {
         super();
-        this._options = options;
-        this.setup();
+        this.options = options;
     }
     async setup() {
-        this._mediaRecorder = await this._createMediaRecorder(this._options);
+        this.mediaRecorder = await this.createMediaRecorder(this.options);
     }
     id = nextId();
-    _options;
-    _mediaRecorder;
-    _mediaRecorderUptimeOfLastStartResume = 0;
-    _mediaRecorderDurationAlreadyRecorded = 0;
-    _mediaRecorderIsRecording = false;
     currentTime = 0;
-    isRecording = false;
     uri = null;
+    options;
+    mediaRecorder = null;
+    mediaRecorderUptimeOfLastStartResume = 0;
+    mediaRecorderIsRecording = false;
+    timeoutIds = [];
+    get isRecording() {
+        return this.mediaRecorder?.state === 'recording';
+    }
     record() {
-        if (this._mediaRecorder === null) {
+        if (this.mediaRecorder === null) {
             throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
         }
-        if (this._mediaRecorder?.state === 'paused') {
-            this._mediaRecorder.resume();
+        if (this.mediaRecorder?.state === 'paused') {
+            this.mediaRecorder.resume();
         }
         else {
-            this._mediaRecorder?.start();
+            this.mediaRecorder?.start();
         }
     }
     getAvailableInputs() {
@@ -207,30 +208,43 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             uid: 'Default',
         };
     }
+    async prepareToRecordAsync() {
+        return this.setup();
+    }
     getStatus() {
         return {
-            canRecord: this._mediaRecorder?.state === 'recording' || this._mediaRecorder?.state === 'inactive',
-            isRecording: this._mediaRecorder?.state === 'recording',
-            durationMillis: this._getAudioRecorderDurationMillis(),
+            canRecord: this.mediaRecorder?.state === 'recording' || this.mediaRecorder?.state === 'inactive',
+            isRecording: this.mediaRecorder?.state === 'recording',
+            durationMillis: this.getAudioRecorderDurationMillis(),
             mediaServicesDidReset: false,
             url: this.uri,
         };
     }
     pause() {
-        if (this._mediaRecorder === null) {
+        if (this.mediaRecorder === null) {
             throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
         }
-        this._mediaRecorder?.pause();
+        this.mediaRecorder?.pause();
     }
-    recordForDuration(seconds) { }
+    recordForDuration(seconds) {
+        this.record();
+        this.timeoutIds.push(setTimeout(() => {
+            this.stop();
+        }, seconds * 1000));
+    }
     setInput(input) { }
-    startRecordingAtTime(seconds) { }
+    startRecordingAtTime(seconds) {
+        this.timeoutIds.push(setTimeout(() => {
+            this.record();
+        }, seconds * 1000));
+    }
     async stop() {
-        if (this._mediaRecorder === null) {
+        if (this.mediaRecorder === null) {
             throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
         }
-        const dataPromise = new Promise((resolve) => this._mediaRecorder?.addEventListener('dataavailable', (e) => resolve(e.data)));
-        this._mediaRecorder?.stop();
+        const dataPromise = new Promise((resolve) => this.mediaRecorder?.addEventListener('dataavailable', (e) => resolve(e.data)));
+        this.mediaRecorder?.stop();
+        this.mediaRecorder = null;
         const data = await dataPromise;
         const url = URL.createObjectURL(data);
         this.uri = url;
@@ -242,39 +256,42 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             url,
         });
     }
-    async _createMediaRecorder(options) {
+    clearTimeouts() {
+        this.timeoutIds.forEach((id) => clearTimeout(id));
+    }
+    async createMediaRecorder(options) {
         if (typeof navigator !== 'undefined' && !navigator.mediaDevices) {
             throw new Error('No media devices available');
         }
-        this._mediaRecorderUptimeOfLastStartResume = 0;
-        this._mediaRecorderDurationAlreadyRecorded = 0;
+        this.mediaRecorderUptimeOfLastStartResume = 0;
+        this.currentTime = 0;
         const stream = await getUserMedia({ audio: true });
-        const mediaRecorder = new window.MediaRecorder(stream, options?.web || RecordingOptionsPresets.HIGH_QUALITY.web);
+        const mediaRecorder = new window.MediaRecorder(stream, options?.web || RecordingPresets.HIGH_QUALITY.web);
         mediaRecorder.addEventListener('pause', () => {
-            this._mediaRecorderDurationAlreadyRecorded = this._getAudioRecorderDurationMillis();
-            this._mediaRecorderIsRecording = false;
+            this.currentTime = this.getAudioRecorderDurationMillis();
+            this.mediaRecorderIsRecording = false;
         });
         mediaRecorder.addEventListener('resume', () => {
-            this._mediaRecorderUptimeOfLastStartResume = Date.now();
-            this._mediaRecorderIsRecording = true;
+            this.mediaRecorderUptimeOfLastStartResume = Date.now();
+            this.mediaRecorderIsRecording = true;
         });
         mediaRecorder.addEventListener('start', () => {
-            this._mediaRecorderUptimeOfLastStartResume = Date.now();
-            this._mediaRecorderDurationAlreadyRecorded = 0;
-            this._mediaRecorderIsRecording = true;
+            this.mediaRecorderUptimeOfLastStartResume = Date.now();
+            this.currentTime = 0;
+            this.mediaRecorderIsRecording = true;
         });
         mediaRecorder?.addEventListener('stop', () => {
-            this._mediaRecorderDurationAlreadyRecorded = this._getAudioRecorderDurationMillis();
-            this._mediaRecorderIsRecording = false;
+            this.currentTime = 0;
+            this.mediaRecorderIsRecording = false;
             // Clears recording icon in Chrome tab
             stream.getTracks().forEach((track) => track.stop());
         });
         return mediaRecorder;
     }
-    _getAudioRecorderDurationMillis() {
-        let duration = this._mediaRecorderDurationAlreadyRecorded;
-        if (this._mediaRecorderIsRecording && this._mediaRecorderUptimeOfLastStartResume > 0) {
-            duration += Date.now() - this._mediaRecorderUptimeOfLastStartResume;
+    getAudioRecorderDurationMillis() {
+        let duration = this.currentTime;
+        if (this.mediaRecorderIsRecording && this.mediaRecorderUptimeOfLastStartResume > 0) {
+            duration += Date.now() - this.mediaRecorderUptimeOfLastStartResume;
         }
         return duration;
     }

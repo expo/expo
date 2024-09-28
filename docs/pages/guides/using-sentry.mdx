@@ -171,7 +171,7 @@ If your app uses [Expo Router](/router/introduction), then you can configure Sen
 
 ```tsx app/_layout.tsx
 import { Slot, useNavigationContainerRef } from 'expo-router';
-import React from 'react';
+import { useEffect } from 'react';
 import * as Sentry from '@sentry/react-native';
 import { isRunningInExpoGo } from 'expo';
 
@@ -195,7 +195,7 @@ function RootLayout() {
   // Capture the NavigationContainer ref and register it with the instrumentation.
   const ref = useNavigationContainerRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (ref) {
       routingInstrumentation.registerNavigationContainer(ref);
     }

@@ -175,6 +175,10 @@ export interface ExpoConfig {
          */
         checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD' | 'WIFI_ONLY' | 'NEVER';
         /**
+         * Whether to load the embedded update. Defaults to true. If set to false, an update will be fetched at launch. When set to false, ensure that `checkAutomatically` is set to `ON_LOAD` and `fallbackToCacheTimeout` is large enough for the initial remote update to download. This should not be used in production.
+         */
+        useEmbeddedUpdate?: boolean;
+        /**
          * How long (in ms) to wait for the app to check for and fetch a new update upon launch before falling back to the most recent update already present on the device. Defaults to 0. Must be between 0 and 300000 (5 minutes). If the startup update check takes longer than this value, any update downloaded during the check will be applied upon the next app launch.
          */
         fallbackToCacheTimeout?: number;
@@ -205,6 +209,10 @@ export interface ExpoConfig {
         requestHeaders?: {
             [k: string]: any;
         };
+        /**
+         * Array of glob patterns specifying which files should be included in updates. Glob patterns are relative to the project root. A value of `['**']` will match all asset files within the project root. When not supplied all asset files will be included. Example: Given a value of `['app/images/** /*.png', 'app/fonts/** /*.woff']` all `.png` files in all subdirectories of `app/images` and all `.woff` files in all subdirectories of `app/fonts` will be included in updates.
+         */
+        assetPatternsToBeBundled?: string[];
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -242,10 +250,6 @@ export interface ExpoConfig {
          * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
          */
         supportsTVOnly?: boolean;
-        /**
-         * If true, the window spans the entire display size by drawing behind transparent system bars.
-         */
-        edgeToEdge?: boolean;
         /**
          * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
          */
@@ -306,6 +310,10 @@ export interface Splash {
  * Configuration that is specific to the iOS platform.
  */
 export interface IOS {
+    /**
+     * The Apple development team ID to use for all native targets. You can find your team ID in [the Apple Developer Portal](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/).
+     */
+    appleTeamId?: string;
     /**
      * The manifest for the iOS version of your app will be written to this path during publish.
      */

@@ -11,9 +11,9 @@ import expo.modules.notifications.ResultReceiverBody
 import expo.modules.notifications.createDefaultResultReceiver
 import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder
 import expo.modules.notifications.notifications.NotificationSerializer
+import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.NotificationsService.Companion.dismiss
@@ -101,7 +101,7 @@ open class ExpoNotificationPresentationModule : Module() {
 
   protected open fun createNotificationRequest(
     identifier: String,
-    content: NotificationContent,
+    content: INotificationContent,
     trigger: NotificationTrigger?
   ): NotificationRequest {
     return NotificationRequest(identifier, content, null)

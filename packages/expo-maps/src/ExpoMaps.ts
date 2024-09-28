@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 
-export const NativeExpoAppleMapsModule = NativeModulesProxy.ExpoAppleMaps;
-export const NativeExpoGoogleMapsModule = NativeModulesProxy.ExpoGoogleMaps;
+export const NativeExpoAppleMapsModule = requireNativeModule('ExpoAppleMaps');
+export const NativeExpoGoogleMapsModule = requireNativeModule('ExpoGoogleMaps');

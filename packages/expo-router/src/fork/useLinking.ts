@@ -193,7 +193,7 @@ export default function useLinking(
 
       const { location } = window;
 
-      const path = location.pathname + location.search;
+      const path = location.pathname + location.search + location.hash;
       const index = history.index;
 
       const previousIndex = previousIndexRef.current ?? 0;

@@ -91,7 +91,8 @@ export function getRewriteRequestUrl(projectRoot: string) {
         if (isHermesEnabled) {
           debug('Enabling Hermes for managed project');
           ensured.searchParams.set('transform.engine', 'hermes');
-          ensured.searchParams.set('transform.bytecode', 'true');
+          ensured.searchParams.set('transform.bytecode', '1');
+          ensured.searchParams.set('unstable_transformProfile', 'hermes-stable');
         }
       }
 

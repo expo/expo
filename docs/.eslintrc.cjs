@@ -5,7 +5,7 @@ const TAILWIND_DEFAULTS = {
 
 module.exports = {
   root: true,
-  extends: ['universe/web', 'plugin:prettier/recommended'],
+  extends: ['universe/web', 'plugin:prettier/recommended', 'plugin:@next/next/recommended'],
   plugins: ['lodash'],
   rules: {
     'lodash/import-scope': [2, 'method'],

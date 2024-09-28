@@ -46,12 +46,8 @@ export interface GenerateOptions extends ResolveOptions {
 
 export interface GenerateModulesProviderOptions extends ResolveOptions {
   target: string;
+  entitlement?: string;
   packages: string[];
-}
-
-export interface PatchReactImportsOptions {
-  podsRoot: string;
-  dryRun: boolean;
 }
 
 export type PackageRevision = {
@@ -305,3 +301,13 @@ interface ApplePod {
 }
 
 export type ExtraDependencies = AndroidMavenRepository[] | ApplePod[];
+
+/**
+ * Represents code signing entitlements passed to the `ExpoModulesProvider` for Apple platforms.
+ */
+export interface AppleCodeSignEntitlements {
+  /**
+   * @see https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_security_application-groups
+   */
+  appGroups?: string[];
+}

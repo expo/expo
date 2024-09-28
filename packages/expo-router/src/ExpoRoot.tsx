@@ -49,9 +49,9 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
         <SafeAreaProvider
           // SSR support
           initialMetrics={INITIAL_METRICS}>
-          {children}
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
           {!hasViewControllerBasedStatusBarAppearance && <AutoStatusBar />}
+          {children}
         </SafeAreaProvider>
       </ParentWrapper>
     );

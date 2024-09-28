@@ -24,7 +24,7 @@ private inline fun withCryptoModuleMock(
 @RunWith(RobolectricTestRunner::class)
 class CryptoModuleTest {
   private val testValue = "Expo"
-  private val algorithms = DigestAlgorithm.values()
+  private val algorithms = DigestAlgorithm.entries
 
   @Test
   fun digestStringForBase64() = withCryptoModuleMock {

@@ -4,7 +4,7 @@ description: A library that provides a way to encrypt and securely store key-val
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-secure-store'
 packageName: 'expo-secure-store'
 iconUrl: '/static/images/packages/expo-secure-store.png'
-platforms: ['android', 'ios']
+platforms: ['android', 'ios', 'tvos']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -152,7 +152,7 @@ If you are using your own Auto Backup configuration, you should exclude the `Sec
 <SnackInline label='SecureStore' dependencies={['expo-secure-store']} platforms={['ios', 'android']}>
 
 ```jsx
-import * as React from 'react';
+import { useState } from 'react';
 import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
@@ -170,8 +170,8 @@ async function getValueFor(key) {
 }
 
 export default function App() {
-  const [key, onChangeKey] = React.useState('Your key here');
-  const [value, onChangeValue] = React.useState('Your value here');
+  const [key, onChangeKey] = useState('Your key here');
+  const [value, onChangeValue] = useState('Your value here');
 
   return (
     <View style={styles.container}>

@@ -14,6 +14,7 @@ import {
   getComponentIds,
   getInputString,
   parseInputString,
+  PARAM_KEY_SKIP,
   SHOULD_SKIP_ID,
   LOCATION_ID,
 } from './common';
@@ -47,6 +48,7 @@ const safeJsonParse = (str: unknown) => {
 export function unstable_defineRouter(
   getPathConfig: () => Promise<
     Iterable<{
+      pattern: string;
       path: PathSpec;
       isStatic?: boolean;
       noSsr?: boolean;
@@ -63,9 +65,10 @@ export function unstable_defineRouter(
   ) => Promise<FunctionComponent<RouteProps> | FunctionComponent<RoutePropsForLayout> | null>
 ): ReturnType<typeof defineEntries> {
   type MyPathConfig = {
+    pattern: string;
     pathname: PathSpec;
     isStatic?: boolean | undefined;
-    customData: { noSsr?: boolean; data: unknown };
+    customData: { noSsr?: boolean; is404: boolean; data: unknown };
   }[];
   let cachedPathConfig: MyPathConfig | undefined;
   const getMyPathConfig = async (buildConfig?: BuildConfig): Promise<MyPathConfig> => {
@@ -74,10 +77,15 @@ export function unstable_defineRouter(
     }
     if (!cachedPathConfig) {
       cachedPathConfig = Array.from(await getPathConfig()).map((item) => {
+        const is404 =
+          item.path.length === 1 &&
+          item.path[0]!.type === 'literal' &&
+          item.path[0]!.name === '404';
         return {
+          pattern: item.pattern,
           pathname: item.path,
           isStatic: item.isStatic,
-          customData: { noSsr: !!item.noSsr, data: item.data },
+          customData: { is404, noSsr: !!item.noSsr, data: item.data },
         };
       });
     }
@@ -86,12 +94,17 @@ export function unstable_defineRouter(
   const existsPath = async (
     pathname: string,
     buildConfig: BuildConfig | undefined
-  ): Promise<['FOUND', 'NO_SSR'?] | ['NOT_FOUND']> => {
+  ): Promise<['FOUND', 'NO_SSR'?] | ['NOT_FOUND', 'HAS_404'?]> => {
     const pathConfig = await getMyPathConfig(buildConfig);
     const found = pathConfig.find(({ pathname: pathSpec }) => getPathMapping(pathSpec, pathname));
-    return found ? (found.customData.noSsr ? ['FOUND', 'NO_SSR'] : ['FOUND']) : ['NOT_FOUND'];
+    return found
+      ? found.customData.noSsr
+        ? ['FOUND', 'NO_SSR']
+        : ['FOUND']
+      : pathConfig.some(({ customData: { is404 } }) => is404) // FIXMEs should avoid re-computation
+        ? ['NOT_FOUND', 'HAS_404']
+        : ['NOT_FOUND'];
   };
-
   const renderEntries: RenderEntries = async (input, { params, buildConfig }) => {
     const pathname = parseInputString(input);
     if ((await existsPath(pathname, buildConfig))[0] === 'NOT_FOUND') {
@@ -104,7 +117,7 @@ export function unstable_defineRouter(
     const parsedParams = safeJsonParse(params);
 
     const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
-    const skip = Array.isArray(parsedParams?.skip) ? (parsedParams!.skip as unknown[]) : [];
+    const skip = Array.isArray(parsedParams?.skip) ? (parsedParams?.skip as unknown[]) : [];
     const componentIds = getComponentIds(pathname);
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(
@@ -112,7 +125,7 @@ export function unstable_defineRouter(
           if (skip?.includes(id)) {
             return [];
           }
-          const setShoudSkip = (val?: ShouldSkipValue) => {
+          const setShouldSkip = (val?: ShouldSkipValue) => {
             if (val) {
               shouldSkipObj[id] = val;
             } else {
@@ -120,13 +133,12 @@ export function unstable_defineRouter(
             }
           };
           const component = await getComponent(id, {
-            unstable_setShouldSkip: setShoudSkip,
+            unstable_setShouldSkip: setShouldSkip,
             unstable_buildConfig: buildConfig,
           });
           if (!component) {
             return [];
           }
-
           const element = createElement(
             component as FunctionComponent<{
               path: string;
@@ -147,10 +159,12 @@ export function unstable_defineRouter(
   const getBuildConfig: GetBuildConfig = async (unstable_collectClientModules) => {
     const pathConfig = await getMyPathConfig();
     const path2moduleIds: Record<string, string[]> = {};
+
     for (const { pathname: pathSpec } of pathConfig) {
       if (pathSpec.some(({ type }) => type !== 'literal')) {
         continue;
       }
+
       const pathname = '/' + pathSpec.map(({ name }) => name).join('/');
       const input = getInputString(pathname);
       const moduleIds = await unstable_collectClientModules(input);
@@ -188,7 +202,11 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
       return null;
     }
     if (pathStatus[0] === 'NOT_FOUND') {
-      return null;
+      if (pathStatus[1] === 'HAS_404') {
+        pathname = '/404';
+      } else {
+        return null;
+      }
     }
     const componentIds = getComponentIds(pathname);
     const input = getInputString(pathname);
@@ -200,13 +218,27 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
         null
       )
     );
-    return { input, params: JSON.stringify({ query: searchParams.toString() }), html };
+    return {
+      input,
+      params: JSON.stringify({ query: searchParams.toString() }),
+      html,
+    };
   };
 
   return { renderEntries, getBuildConfig, getSsrConfig };
 }
 
-export function unstable_redirect(pathname: string, query?: string, skip?: string[]) {
+export function unstable_redirect(
+  pathname: string,
+  searchParams?: URLSearchParams,
+  skip?: string[]
+) {
+  if (skip) {
+    searchParams = new URLSearchParams(searchParams);
+    for (const id of skip) {
+      searchParams.append(PARAM_KEY_SKIP, id);
+    }
+  }
   const input = getInputString(pathname);
-  rerender(input, { query, skip });
+  rerender(input, searchParams);
 }

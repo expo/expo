@@ -1,0 +1,127 @@
+appId: host.exp.Exponent
+name: Stack navigation
+---
+# Can navigate between routes
+- stopApp: host.exp.Exponent
+- openLink:
+    link: ${MAESTRO_APP_URL}/(stack)
+# Navigating
+- tapOn:
+    id: e2e-navigate-apple
+- tapOn:
+    id: e2e-navigate-banana
+- assertVisible:
+    id: e2e-pathname
+    text: '/banana'
+- tapOn:
+    id: e2e-navigate-banana
+- tapOn:
+    id: e2e-back
+- assertVisible:
+    id: e2e-pathname
+    text: '/apple'
+- tapOn:
+    id: e2e-back
+- assertVisible:
+    id: e2e-pathname
+    text: '/'
+# Pushing
+- tapOn:
+    id: e2e-push-apple
+- assertVisible:
+    id: e2e-pathname
+    text: '/apple'
+- assertVisible:
+    id: e2e-segments
+    text: '/(stack)/[fruit]'
+- assertVisible:
+    id: e2e-global-params
+    text: '{"fruit":"apple"}'
+- tapOn:
+    id: e2e-push-banana
+- assertVisible:
+    id: e2e-pathname
+    text: '/banana'
+- assertVisible:
+    id: e2e-segments
+    text: '/(stack)/[fruit]'
+- tapOn:
+    id: e2e-push-banana
+- assertVisible:
+    id: e2e-pathname
+    text: '/banana'
+- assertVisible: # Can push same route multiple times
+    id: e2e-segments
+    text: '/(stack)/[fruit]'
+- tapOn:
+    id: e2e-back
+- tapOn:
+    id: e2e-back
+- assertVisible:
+    id: e2e-pathname
+    text: '/apple'
+- tapOn:
+    id: e2e-goto-stack-index
+# Push the index multiple times
+- tapOn:
+    id: e2e-push-index
+- tapOn:
+    id: e2e-push-index
+- tapOn: 'index'
+- tapOn: 'index'
+# Replacing
+- tapOn:
+    id: e2e-push-apple
+- tapOn:
+    id: e2e-replace-banana
+- assertVisible:
+    id: e2e-pathname
+    text: '/banana'
+- tapOn:
+    id: e2e-replace-banana
+- tapOn:
+    id: e2e-back
+- assertVisible:
+    id: e2e-pathname
+    text: '/'
+# Dismiss
+- tapOn:
+    id: e2e-goto-modal
+- assertVisible:
+    id: e2e-screen
+    text: 'Modal'
+- tapOn:
+    id: e2e-push-one
+- assertVisible:
+    id: e2e-screen
+    text: 'Modal value {"value":"one"}'
+- tapOn:
+    id: e2e-push-two
+- assertVisible:
+    id: e2e-screen
+    text: 'Modal value {"value":"two"}'
+- tapOn:
+    id: e2e-dismiss
+- assertVisible:
+    id: e2e-screen
+    text: 'Modal value {"value":"one"}'
+- tapOn:
+    id: e2e-dismiss
+- assertVisible:
+    id: e2e-screen
+    text: 'Modal'
+- tapOn:
+    id: e2e-dismiss
+- assertVisible:
+    id: e2e-screen
+    text: 'Stack index'
+# dismissAll
+- tapOn:
+    id: e2e-goto-modal
+- tapOn:
+    id: e2e-goto-modal2
+- assertVisible:
+    id: e2e-screen
+    text: 'Modal2'
+- tapOn:
+    id: e2e-dismiss-all

@@ -20,8 +20,6 @@ private const val ATTR_DATA = "data"
 class IntentLauncherModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private var pendingPromise: Promise? = null
 
   override fun definition() = ModuleDefinition {
@@ -65,7 +63,7 @@ class IntentLauncherModule : Module() {
       params.category?.let { intent.addCategory(it) }
 
       try {
-        currentActivity.startActivityForResult(intent, REQUEST_CODE)
+        appContext.throwingActivity.startActivityForResult(intent, REQUEST_CODE)
         pendingPromise = promise
       } catch (e: Throwable) {
         promise.reject(e.toCodedException())

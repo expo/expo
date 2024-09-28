@@ -4,6 +4,7 @@ import path from 'path';
 
 import { resolveInstallApkNameAsync } from './resolveInstallApkName';
 import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions';
+import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { CommandError } from '../../utils/errors';
@@ -18,7 +19,8 @@ const debug = require('debug')('expo:run:android');
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
   // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.
-  setNodeEnv(options.variant === 'release' ? 'production' : 'development');
+  const isProduction = options.variant?.toLowerCase() === 'release';
+  setNodeEnv(isProduction ? 'production' : 'development');
   require('@expo/env').load(projectRoot);
 
   await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
@@ -31,12 +33,24 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   const androidProjectRoot = path.join(projectRoot, 'android');
 
   if (!options.binary) {
+    let eagerBundleOptions: string | undefined;
+
+    if (isProduction) {
+      eagerBundleOptions = JSON.stringify(
+        await exportEagerAsync(projectRoot, {
+          dev: false,
+          platform: 'android',
+        })
+      );
+    }
+
     await assembleAsync(androidProjectRoot, {
       variant: props.variant,
       port: props.port,
       appName: props.appName,
       buildCache: props.buildCache,
       architectures: props.architectures,
+      eagerBundleOptions,
     });
 
     // Ensure the port hasn't become busy during the build.

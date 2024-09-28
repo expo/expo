@@ -2,10 +2,8 @@ require_relative 'constants'
 require_relative 'package'
 
 # Require extensions to CocoaPods' classes
-require_relative 'cocoapods/pod_target'
 require_relative 'cocoapods/sandbox'
 require_relative 'cocoapods/target_definition'
-require_relative 'cocoapods/umbrella_header_generator'
 require_relative 'cocoapods/user_project_integrator'
 
 module Expo

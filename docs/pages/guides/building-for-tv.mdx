@@ -89,13 +89,13 @@ At this time, TV applications work with the following packages and APIs listed i
 - [SplashScreen](/versions/latest/sdk/splash-screen/)
 - [Svg](/versions/latest/sdk/svg/)
 - [Updates](/versions/latest/sdk/updates/)
+- [Video](/versions/latest/sdk/video/)
 
 TV also works with [react-navigation](https://reactnavigation.org/), [react-native-video](https://github.com/react-native-video/react-native-video), and many other commonly used third-party React Native libraries.
 
 ## Limitations
 
 - The [Expo DevClient](/versions/latest/sdk/dev-client/) package is not supported at this time.
-- The [Expo Video](/versions/latest/sdk/video) package is not supported at this time. TV developers should continue to use the [Expo AV](/versions/latest/sdk/av/) package for video.
 - The [Expo Router](/router/introduction/) package is only supported in SDK 51 and later.
 
 ## Integration with an existing Expo project
@@ -135,7 +135,7 @@ In **package.json**, modify the `react-native` dependency to use the TV repo, an
 
 ### Add the TV config plugin
 
-<Terminal cmd={['$ npx expo install --dev @react-native-tvos/config-tv']} />
+<Terminal cmd={['$ npx expo install @react-native-tvos/config-tv -- --dev']} />
 
 When installed, the plugin will modify the project for TV when either:
 
@@ -208,7 +208,7 @@ You can revert the changes for TV and go back to phone development by unsetting 
 
 ### Create EAS Build profiles for both TV and phone
 
-Since the TV build is driven by the value of an environment variable, it is easy to set up EAS Build profiles that build from the same source but target TV instead of phone.
+Since the TV build can be driven by the value of an environment variable, it is easy to set up EAS Build profiles that build from the same source but target TV instead of phone.
 
 The following example **eas.json** shows how to extend existing profiles (`development` and `preview`) to create TV profiles (`development_tv` and `preview_tv`).
 

@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Added warning when using background location in Expo Go. ([#31461](https://github.com/expo/expo/pull/31461) by [@chrfalch](https://github.com/chrfalch))
 - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
 - Rework package exports. ([#29953](https://github.com/expo/expo/pull/29953) by [@Simek](https://github.com/Simek))
 - Updated documentation for default LocationAccuracy ([#31066](https://github.com/expo/expo/pull/31066) by [@johnculviner](https://github.com/johnculviner))

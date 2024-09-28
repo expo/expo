@@ -1,11 +1,9 @@
-import crypto from 'crypto';
-import fs from 'fs';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
 import { Log } from '../../../log';
-import { fileExistsAsync } from '../../../utils/dir';
 import { memoize } from '../../../utils/fn';
 import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 
@@ -17,38 +15,17 @@ const warnUnstable = memoize(() =>
   Log.warn('Using experimental DOM Components API. Production exports may not work as expected.')
 );
 
+type CreateDomComponentsMiddlewareOptions = {
+  /** The absolute metro or server root, used to calculate the relative dom entry path */
+  metroRoot: string;
+  /** The absolute project root, used to resolve the `expo/dom/entry.js` path */
+  projectRoot: string;
+};
+
 export function createDomComponentsMiddleware(
-  {
-    projectRoot,
-    metroRoot,
-    getDevServerUrl,
-  }: { projectRoot: string; metroRoot: string; getDevServerUrl: () => string },
+  { metroRoot, projectRoot }: CreateDomComponentsMiddlewareOptions,
   instanceMetroOptions: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'platform' | 'bytecode'>
 ) {
-  async function getDomComponentVirtualEntryModuleAsync(file: string) {
-    const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-
-    const hash = crypto.createHash('sha1').update(filePath).digest('hex');
-
-    const generatedEntry = path.join(projectRoot, '.expo/@dom', hash + '.js');
-
-    const entryFile = getDomComponentVirtualProxy(generatedEntry, filePath);
-
-    fs.mkdirSync(path.dirname(entryFile.filePath), { recursive: true });
-
-    const exists = await fileExistsAsync(entryFile.filePath);
-    // TODO: Assert no default export at runtime.
-    await fs.promises.writeFile(entryFile.filePath, entryFile.contents);
-
-    if (!exists) {
-      // Give time for watchman to compute the file...
-      // TODO: Virtual modules which can have dependencies.
-      await new Promise((res) => setTimeout(res, 1000));
-    }
-
-    return generatedEntry;
-  }
-
   return async (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
     if (!req.url) return next();
 
@@ -71,15 +48,16 @@ export function createDomComponentsMiddleware(
     warnUnstable();
 
     // Generate a unique entry file for the webview.
-    const generatedEntry = await getDomComponentVirtualEntryModuleAsync(file);
-
+    const generatedEntry = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+    const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
+    const relativeImport = './' + path.relative(path.dirname(virtualEntry), generatedEntry);
     // Create the script URL
     const requestUrlBase = `http://${req.headers.host}`;
     const metroUrl = new URL(
       createBundleUrlPath({
         ...instanceMetroOptions,
-        isDOM: true,
-        mainModuleName: path.relative(metroRoot, generatedEntry),
+        domRoot: encodeURI(relativeImport),
+        mainModuleName: path.relative(metroRoot, virtualEntry),
         bytecode: false,
         platform: 'web',
         isExporting: false,
@@ -107,29 +85,6 @@ function coerceUrl(url: string) {
   } catch {
     return new URL(url, 'https://localhost:0');
   }
-}
-
-export function getDomComponentVirtualProxy(generatedEntry: string, filePath: string) {
-  // filePath relative to the generated entry
-  let relativeFilePath = path.relative(path.dirname(generatedEntry), filePath);
-
-  if (!relativeFilePath.startsWith('.')) {
-    relativeFilePath = './' + relativeFilePath;
-  }
-
-  const stringifiedFilePath = JSON.stringify(relativeFilePath);
-  // NOTE: This might need to be in the Metro transform cache if we ever change it.
-  const contents = `
-// Entry file for the web-side of a DOM Component.
-import { registerDOMComponent } from 'expo/dom/internal';
-
-registerDOMComponent(() => import(${stringifiedFilePath}), ${stringifiedFilePath});
-`;
-
-  return {
-    filePath: generatedEntry,
-    contents,
-  };
 }
 
 export function getDomComponentHtml(src?: string, { title }: { title?: string } = {}) {

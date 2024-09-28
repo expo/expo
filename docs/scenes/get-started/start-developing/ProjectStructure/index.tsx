@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { useState } from 'react';
 
 import { Tab } from './Tab';
@@ -22,8 +23,12 @@ export function ProjectStructure() {
       <div className="bg-subtle p-3 flex pl-4 border-b border-default">
         <HEADLINE>Files</HEADLINE>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-[250px_minmax(0,_1fr)]">
-        <div className="p-3 flex flex-col gap-1 md:border-r md:border-b-0 border-default border-b">
+      <div className="grid grid-cols-[250px_minmax(0,_1fr)] max-md-gutters:grid-cols-1">
+        <div
+          className={mergeClasses(
+            'p-3 flex flex-col gap-1 border-r border-default',
+            'max-md-gutters:border-r-0 max-md-gutters:border-b'
+          )}>
           <Tab
             title="app"
             onClick={() => setSelected('app')}

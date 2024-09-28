@@ -18,6 +18,8 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectTypeConverter
+import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.sharedobjects.SharedRefTypeConverter
 import expo.modules.kotlin.typedarray.BigInt64Array
 import expo.modules.kotlin.typedarray.BigUint64Array
 import expo.modules.kotlin.typedarray.Float32Array
@@ -129,6 +131,10 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
     if (View::class.java.isAssignableFrom(jClass)) {
       return ViewTypeConverter<View>(type)
+    }
+
+    if (SharedRef::class.java.isAssignableFrom(jClass)) {
+      return SharedRefTypeConverter<SharedRef<*>>(type)
     }
 
     if (SharedObject::class.java.isAssignableFrom(jClass)) {

@@ -4,15 +4,14 @@ import com.google.common.truth.Truth
 import org.junit.Test
 
 class ExperimentalConverterTest {
-
   @Test
   fun list_should_be_convertible() = withSingleModule({
-    Function("simpleList") { listOf(1, 2, 3, 4, 5, 6) }
-      .UseExperimentalConverter()
-    Function("listWithMixedData") { listOf(1, 2, 3, "string", "expo" to "modules") }
-      .UseExperimentalConverter()
-    Function("complexList") { listOf(listOf(1, 2, "string"), listOf("expo", "modules"), listOf(listOf(1, 2, 3))) }
-      .UseExperimentalConverter()
+    Function<_>("simpleList") { listOf(1, 2, 3, 4, 5, 6) }
+      .useExperimentalConverter()
+    Function<_>("listWithMixedData") { listOf(1, 2, 3, "string", "expo" to "modules") }
+      .useExperimentalConverter()
+    Function<_>("complexList") { listOf(listOf(1, 2, "string"), listOf("expo", "modules"), listOf(listOf(1, 2, 3))) }
+      .useExperimentalConverter()
   }) {
     val simpleList = call("simpleList").getArray().map { it.getInt() }
     val listWithMixedData = call("listWithMixedData").getArray()
@@ -44,12 +43,12 @@ class ExperimentalConverterTest {
 
   @Test
   fun maps_should_be_convertible() = withSingleModule({
-    Function("simpleMap") { mapOf("expo" to "modules", "foo" to "bar") }
-      .UseExperimentalConverter()
-    Function("nestedMap") { mapOf("inner" to mapOf("foo" to "bar"), "expo" to "modules") }
-      .UseExperimentalConverter()
-    Function("mapWithList") { mapOf("list" to listOf(1, 2, 3)) }
-      .UseExperimentalConverter()
+    Function<_>("simpleMap") { mapOf("expo" to "modules", "foo" to "bar") }
+      .useExperimentalConverter()
+    Function<_>("nestedMap") { mapOf("inner" to mapOf("foo" to "bar"), "expo" to "modules") }
+      .useExperimentalConverter()
+    Function<_>("mapWithList") { mapOf("list" to listOf(1, 2, 3)) }
+      .useExperimentalConverter()
   }) {
     val simpleMap = call("simpleMap").getObject()
     val nestedMap = call("nestedMap").getObject()

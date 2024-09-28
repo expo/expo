@@ -25,7 +25,11 @@ internal func queryCustomNativeFonts() -> [String] {
   // [2] Retrieve font names by family names
   return fontFamilies.flatMap { fontFamilyNames in
     return fontFamilyNames.flatMap { fontFamilyName in
+    #if os(iOS) || os(tvOS)
       return UIFont.fontNames(forFamilyName: fontFamilyName)
+    #elseif os(macOS)
+      return NSFontManager.shared.availableMembers(ofFontFamily: fontFamilyName)?.compactMap { $0[0] as? String } ?? []
+    #endif
     }
   }
 }

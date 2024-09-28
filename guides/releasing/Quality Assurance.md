@@ -19,17 +19,10 @@ Unversioned QA: Test in native-component-list.
   - Disable Fast Refresh, make and save a change, it shouldn't show up
   - Reload manually, your change should appear
   - Make and save another change, reenable Fast Refresh, your change should show up automatically
-- Debug JS in-place (Hermes)
-  - Add `jsEngine` as `hermes` in _apps/native-component-list/app.json_
-  - Open JS debugger either pressing `j` by `expo-cli` terminal UI hotkey or from the dev-menu in Expo Go
+- Debug JS in-place
+  - Open JS debugger either pressing `j` or from the dev menu in Expo Go
   - Add a breakpoint (maybe add a button to your app), ensure the breakpoint works
   - Click Reload on the webpage, make sure it reloads the app
-- Debug Remote JS (JSC)
-  - Add `jsEngine` as `jsc` in _apps/native-component-list/app.json_
-  - Start Remote JS debugging
-  - Add a breakpoint (maybe add a button to your app), ensure the breakpoint works
-  - Click Reload on the webpage, make sure it reloads the app
-  - Turn off Remote JS debugging, app should load as expected
 - Other dev tools
   - Turn on the Performance Monitor, tap a few things
   - Same with the Element Inspector
@@ -37,19 +30,19 @@ Unversioned QA: Test in native-component-list.
   - Make and save a change; reload manually and ensure it shows up
   - Make and save a change to the splash screen color in the app config; reload manually and ensure it shows up right away
   - Enable production mode, reload the app. Disable production mode, reload the app again.
-- Use the `expo-cli` terminal UI hotkeys to reload, open inspector, etc.
+- Use the Expo CLI terminal UI hotkeys to reload, open inspector, etc.
 
 ### 3. Running test-suite tests
 
 - Go to `apps/test-suite`.
 - Update its `sdkVersion` in `app.json`. Use `UNVERSIONED` for unversioned QA and the new SDK version for versioned QA.
-- Run `expo start` and test each module.
+- Run `npx expo start` and test each module.
 
 ### 4. Inspecting native-component-list examples
 
 - Go to `apps/native-component-list`.
 - Update its `sdkVersion` in `app.json`. Use `UNVERSIONED` for unversioned QA and the new SDK version for versioned QA.
-- Run `expo start` and check every example, including React Native components.
+- Run `npx expo start` and check every example, including React Native components.
 
 ### 5. Smoke test Expo Home
 
@@ -59,12 +52,9 @@ Unversioned QA: Test in native-component-list.
 - Open random links and do weird stuff and make sure the error messages make sense. Be creative.
 - Check the logged in "settings" screen.
 
-### 6. Smoke test Expo Go against all supported SDK versions
+### 6. Test in a standalone release build
 
-> Make sure to use the "Expo Go (versioned)" target on iOS.
-
-- Run `expo init -t blank@sdk-x` for each supported SDK version.
-- Run `expo start` and ensure the project loads without crashing.
+- Compile native-component-list in release mode, visit each screen to do a smoke test.
 
 ## Development builds
 

@@ -309,16 +309,4 @@ internal struct ImageUtils {
     }
     return destinationData as Data
   }
-
-  static func loadImageDataRepresentation(provider: NSItemProvider) async throws -> Data {
-    return try await withCheckedThrowingContinuation { continuation in
-      provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, error in
-        if let data {
-          continuation.resume(returning: data)
-        } else {
-          continuation.resume(throwing: FailedToReadImageException().causedBy(error))
-        }
-      }
-    }
-  }
 }

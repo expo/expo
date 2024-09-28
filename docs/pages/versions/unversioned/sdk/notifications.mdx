@@ -19,6 +19,8 @@ import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
+> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` is unavailable in Expo Go from SDK 52. A [development build](/develop/development-builds/introduction/) is required to use push notifications. Scheduled notifications (local notifications) remain available in Expo Go.
+
 ## Features
 
 - Schedule a one-off notification for a specific date or some time from now
@@ -387,12 +389,12 @@ Here is an example of using the config plugin in the app config file:
       [
         "expo-notifications",
         {
-          "icon": "./local/assets/notification-icon.png",
+          "icon": "./local/assets/notification_icon.png",
           "color": "#ffffff",
           "defaultChannel": "default",
           "sounds": [
-            "./local/assets/notification-sound.wav",
-            "./local/assets/notification-sound-other.wav"
+            "./local/assets/notification_sound.wav",
+            "./local/assets/notification_sound_other.wav"
           ]
         }
       ]
@@ -498,9 +500,10 @@ To add custom push notification sounds to your app, add the `expo-notifications`
 After building your app, the array of files will be available for use in both [`NotificationContentInput`](#notificationcontentinput) and [`NotificationChannelInput`](#notificationchannelinput).
 You only need to provide the base filename. Here's an example using the config above:
 
-```js
-await Notifications.setNotificationChannelAsync('new-emails', {
+```ts
+await Notifications.setNotificationChannelAsync('new_emails', {
   name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
   sound: 'mySoundFile.wav', // Provide ONLY the base filename
 });
 
@@ -511,7 +514,7 @@ await Notifications.scheduleNotificationAsync({
   },
   trigger: {
     seconds: 2,
-    channelId: 'new-emails',
+    channelId: 'new_emails',
   },
 });
 ```
@@ -523,14 +526,14 @@ You can also manually add notification files to your Android and iOS projects if
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`.
 You will also need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
 
-For the example below to work, you would place your **email-sound.wav** file in **android/app/src/main/res/raw/**.
+For the example below to work, you would place your **email_sound.wav** file in **android/app/src/main/res/raw/**.
 
 ```ts
 // Prepare the notification channel
-await Notifications.setNotificationChannelAsync('new-emails', {
+await Notifications.setNotificationChannelAsync('new_emails', {
   name: 'E-mail notifications',
   importance: Notifications.AndroidImportance.HIGH,
-  sound: 'email-sound.wav', // <- for Android 8.0+, see channelId property below
+  sound: 'email_sound.wav', // <- for Android 8.0+, see channelId property below
 });
 
 // Eg. schedule the notification
@@ -538,11 +541,11 @@ await Notifications.scheduleNotificationAsync({
   content: {
     title: "You've got mail! 📬",
     body: 'Open the notification to read them all',
-    sound: 'email-sound.wav', // <- for Android below 8.0
+    sound: 'email_sound.wav', // <- for Android below 8.0
   },
   trigger: {
     seconds: 2,
-    channelId: 'new-emails', // <- for Android 8.0+, see definition above
+    channelId: 'new_emails', // <- for Android 8.0+, see definition above
   },
 });
 ```
@@ -569,7 +572,7 @@ await Notifications.scheduleNotificationAsync({
 
 <ContentSpotlight
   alt="notification.wav inside of app resources in Xcode project organizer"
-  src="/static/images/notification-sound-ios.jpeg"
+  src="/static/images/notification_sound_ios.jpeg"
   className="max-w-[305px]"
 />
 

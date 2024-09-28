@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import { isFileIgnoredAsync } from '../utils/isFileIgnoredAsync';
+import { isFileIgnoredAsync } from '../utils/files';
 
 export class ProjectSetupCheck implements DoctorCheck {
   description = 'Check for common project setup issues';
@@ -66,7 +66,8 @@ async function areAnyMatchingPathsIgnoredAsync(filePath: string): Promise<boolea
   if (!matchingNativeFiles.length) return false;
   // multiple matches may occur if there are multiple modules
   return (
-    (await Promise.all(matchingNativeFiles.map(isFileIgnoredAsync))).find((result) => result) ||
-    false
+    (
+      await Promise.all(matchingNativeFiles.map((filePath) => isFileIgnoredAsync(filePath, true)))
+    ).find((result) => result) || false
   );
 }

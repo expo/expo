@@ -1,9 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
-#import <ReactCommon/RCTRuntimeExecutor.h>
-#endif // React Native >=0.74
-
+#import <ReactCommon/ReactCommon-umbrella.h>
+#import <React_NativeModulesApple/React-NativeModulesApple-umbrella.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>

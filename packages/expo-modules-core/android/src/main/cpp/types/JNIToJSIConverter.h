@@ -97,12 +97,27 @@ struct deref<jni::local_ref<T>> {
 };
 
 template<typename T>
+struct deref<jni::local_ref<T>&> {
+  typedef T type;
+};
+
+template<typename T>
 struct deref<jni::global_ref<T>> {
   typedef T type;
 };
 
 template<typename T>
+struct deref<jni::global_ref<T>&> {
+  typedef T type;
+};
+
+template<typename T>
 struct deref<jni::alias_ref<T>> {
+  typedef T type;
+};
+
+template<typename T>
+struct deref<jni::alias_ref<T>&> {
   typedef T type;
 };
 

@@ -2,7 +2,7 @@ import { PermissionResponse, SharedObject } from 'expo-modules-core';
 import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStatus } from './Audio.types';
 export interface AudioModule {
     setIsAudioActiveAsync(active: boolean): Promise<void>;
-    setAudioModeAsync(category: AudioMode): Promise<void>;
+    setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
     requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
     getRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
     readonly AudioPlayer: typeof AudioPlayer;
@@ -140,7 +140,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     /**
      * Stop the recording.
      */
-    stop(): void;
+    stop(): Promise<void>;
     /**
      * Pause the recording.
      */
@@ -170,6 +170,10 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
      * @param seconds The time in seconds to start recording at.
      */
     startRecordingAtTime(seconds: number): void;
+    /**
+     * Prepares the recording for recording.
+     */
+    prepareToRecordAsync(options?: RecordingOptions): Promise<void>;
     /**
      * Stops the recording once the specified time has elapsed.
      * @param seconds The time in seconds to stop recording at.

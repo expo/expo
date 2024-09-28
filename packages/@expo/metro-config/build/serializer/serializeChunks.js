@@ -35,8 +35,8 @@ const sourceMapString = typeof sourceMapString_1.default !== 'function'
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
+        entryFile,
         projectRoot: options.projectRoot,
-        processModuleFilter: options.processModuleFilter,
     });
     // Create chunks for splitting.
     const chunks = new Set();
@@ -404,6 +404,16 @@ class Chunk {
                 // @ts-expect-error: TODO
                 jsAsset.source = hermesBundleOutput.hbc;
                 jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
+                // Replace mappings with hbc
+                if (jsAsset.metadata.paths) {
+                    jsAsset.metadata.paths = Object.fromEntries(Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
+                        key,
+                        Object.fromEntries(Object.entries(value).map(([key, value]) => [
+                            key,
+                            value ? value.replace(/\.js$/, '.hbc') : value,
+                        ])),
+                    ]));
+                }
             }
             if (assets[1] && hermesBundleOutput.sourcemap) {
                 assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);

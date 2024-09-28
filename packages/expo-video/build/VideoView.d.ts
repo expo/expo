@@ -21,7 +21,7 @@ export declare class VideoView extends PureComponent<VideoViewProps> {
      * Enters Picture in Picture (PiP) mode. Throws an exception if the device does not support PiP.
      * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
      *
-     * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+     * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-app-config)
      * > has to be configured for the PiP to work.
      * @platform android
      * @platform ios

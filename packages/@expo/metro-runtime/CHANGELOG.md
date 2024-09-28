@@ -26,7 +26,12 @@
 
 ### 💡 Others
 
+- Improve API route errors ([#31485](https://github.com/expo/expo/pull/31485) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove downloading indicator for split bundles. ([#30146](https://github.com/expo/expo/pull/30146) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.2.3 - 2024-08-14
+
+_This version does not introduce any user-facing changes._
 
 ## 3.2.1 — 2024-04-23
 

@@ -20,9 +20,23 @@ function useRuntimeFonts(map: string | Record<string, FontSource>): [boolean, Er
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     loadAsync(map)
-      .then(() => setLoaded(true))
-      .catch(setError);
+      .then(() => {
+        if (isMounted) {
+          setLoaded(true);
+        }
+      })
+      .catch((error) => {
+        if (isMounted) {
+          setError(error);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return [loaded, error];

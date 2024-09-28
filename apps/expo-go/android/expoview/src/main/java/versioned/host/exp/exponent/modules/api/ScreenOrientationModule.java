@@ -53,8 +53,8 @@ public class ScreenOrientationModule extends ReactContextBaseJavaModule implemen
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
 
     Activity activity = getCurrentActivity();
     if (activity != null && mInitialOrientation != null) {

@@ -25,15 +25,25 @@ if (process.env.NODE_ENV !== 'production') {
   NavigatorContext.displayName = 'NavigatorContext';
 }
 
-export type NavigatorProps = {
-  initialRouteName?: Parameters<typeof useNavigationBuilder>[1]['initialRouteName'];
-  screenOptions?: Parameters<typeof useNavigationBuilder>[1]['screenOptions'];
-  children?: Parameters<typeof useNavigationBuilder>[1]['children'];
-  router?: Parameters<typeof useNavigationBuilder>[0];
+type UseNavigationBuilderRouter = Parameters<typeof useNavigationBuilder>[0];
+type UseNavigationBuilderOptions = Parameters<typeof useNavigationBuilder>[1];
+
+export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
+  initialRouteName?: UseNavigationBuilderOptions['initialRouteName'];
+  screenOptions?: UseNavigationBuilderOptions['screenOptions'];
+  children?: UseNavigationBuilderOptions['children'];
+  router?: T;
+  routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
 };
 
 /** An unstyled custom navigator. Good for basic web layouts */
-export function Navigator({ initialRouteName, screenOptions, children, router }: NavigatorProps) {
+export function Navigator<T extends UseNavigationBuilderRouter>({
+  initialRouteName,
+  screenOptions,
+  children,
+  router,
+  routerOptions,
+}: NavigatorProps<T>) {
   const contextKey = useContextKey();
 
   // Allows adding Screen components as children to configure routes.
@@ -55,22 +65,25 @@ export function Navigator({ initialRouteName, screenOptions, children, router }:
       screenOptions={screenOptions}
       screens={sorted}
       contextKey={contextKey}
-      router={router}>
+      router={router}
+      routerOptions={routerOptions}>
       {otherSlot}
     </QualifiedNavigator>
   );
 }
 
-function QualifiedNavigator({
+function QualifiedNavigator<T extends UseNavigationBuilderRouter>({
   initialRouteName,
   screenOptions,
   children,
   screens,
   contextKey,
-  router = StackRouter,
-}: NavigatorProps & { contextKey: string; screens: React.ReactNode[] }) {
+  router = StackRouter as T,
+  routerOptions,
+}: NavigatorProps<T> & { contextKey: string; screens: React.ReactNode[] }) {
   const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(router, {
     // Used for getting the parent with navigation.getParent('/normalized/path')
+    ...routerOptions,
     id: contextKey,
     children: screens,
     screenOptions,
@@ -116,7 +129,7 @@ export function useSlot() {
 }
 
 /** Renders the currently selected content. */
-export function Slot(props: Omit<NavigatorProps, 'children'>) {
+export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
   const contextKey = useContextKey();
   const context = React.useContext(NavigatorContext);
   // Ensure the context is for the current contextKey

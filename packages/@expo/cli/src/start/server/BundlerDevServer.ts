@@ -255,7 +255,6 @@ export abstract class BundlerDevServer {
   protected async startDevSessionAsync() {
     // This is used to make Expo Go open the project in either Expo Go, or the web browser.
     // Must come after ngrok (`startTunnelAsync`) setup.
-    this.devSession?.stopNotifying?.();
     this.devSession = new DevelopmentSession(
       this.projectRoot,
       // This URL will be used on external devices so the computer IP won't be relevant.
@@ -372,7 +371,7 @@ export abstract class BundlerDevServer {
 
   public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
     return this.isDevClient
-      ? this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl()
+      ? (this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl())
       : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
   }
 
@@ -425,7 +424,7 @@ export abstract class BundlerDevServer {
     if (launchTarget === 'desktop') {
       const serverUrl = this.getDevServerUrl({ hostType: 'localhost' });
       // Allow opening the tunnel URL when using Metro web.
-      const url = this.name === 'metro' ? this.getTunnelUrl() ?? serverUrl : serverUrl;
+      const url = this.name === 'metro' ? (this.getTunnelUrl() ?? serverUrl) : serverUrl;
       await openBrowserAsync(url!);
       return { url };
     }

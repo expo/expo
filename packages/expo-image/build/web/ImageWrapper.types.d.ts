@@ -7,11 +7,13 @@ export type OnErrorEvent = (({ source }: {
 export type OnLoadEvent = ((event: SyntheticEvent<HTMLImageElement, Event>) => void) | undefined | null;
 export type OnTransitionEndEvent = (() => void) | undefined | null;
 export type OnMountEvent = (() => void) | undefined | null;
+export type OnDisplayEvent = (() => void) | undefined | null;
 export type ImageWrapperEvents = {
     onLoad?: OnLoadEvent[];
     onError?: OnErrorEvent[];
     onTransitionEnd?: OnTransitionEndEvent[];
     onMount?: OnMountEvent[];
+    onDisplay?: OnDisplayEvent[];
 };
 export type ImageWrapperProps = {
     source?: ImageSource | SrcSetSource | null;

@@ -12,7 +12,7 @@ export type VideoContentFit = 'contain' | 'cover' | 'fill';
 
 export interface VideoViewProps extends ViewProps {
   /**
-   * A player instance – use `useVideoPlayer()` to create one.
+   * A video player instance. Use [`useVideoPlayer()`](#usevideoplayersource-setup) hook to create one.
    */
   player: VideoPlayer;
 
@@ -24,7 +24,7 @@ export interface VideoViewProps extends ViewProps {
 
   /**
    * Describes how the video should be scaled to fit in the container.
-   * Options are 'contain', 'cover', and 'fill'.
+   * Options are `'contain'`, `'cover'`, and `'fill'`.
    * @default 'contain'
    */
   contentFit?: VideoContentFit;
@@ -73,7 +73,7 @@ export interface VideoViewProps extends ViewProps {
 
   /**
    * Determines whether the player allows Picture in Picture (PiP) mode.
-   * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+   * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-app-config)
    * > has to be configured for the PiP to work.
    *
    * @default false
@@ -85,7 +85,7 @@ export interface VideoViewProps extends ViewProps {
    * Determines whether the player should start Picture in Picture (PiP) automatically when the app is in the background.
    * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.
    *
-   * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-appjsonappconfigjs)
+   * > **Note:** The `supportsPictureInPicture` property of the [config plugin](#configuration-in-app-config)
    * > has to be configured for the PiP to work.
    *
    * @default false
@@ -95,7 +95,8 @@ export interface VideoViewProps extends ViewProps {
   startsPictureInPictureAutomatically?: boolean;
 
   /**
-   * Specifies whether to perform video frame analysis (Live Text in videos). Check official [Apple documentation](https://developer.apple.com/documentation/avkit/avplayerviewcontroller/allowsvideoframeanalysis) for more details.
+   * Specifies whether to perform video frame analysis (Live Text in videos).
+   * Check official [Apple documentation](https://developer.apple.com/documentation/avkit/avplayerviewcontroller/allowsvideoframeanalysis) for more details.
    * @default true
    * @platform ios 16.0+
    */

@@ -26,13 +26,16 @@ internal struct MediaHandler {
     return try await concurrentMap(selection) { selectedItem in
       let itemProvider = selectedItem.itemProvider
 
+      if itemProvider.canLoadObject(ofClass: PHLivePhoto.self) && options.mediaTypes.contains(.livePhotos) {
+        return try await handleLivePhoto(from: selectedItem)
+      }
       if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
         return try await handleImage(from: selectedItem)
-      } else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-        return try await handleVideo(from: selectedItem)
-      } else {
-        throw InvalidMediaTypeException(itemProvider.registeredTypeIdentifiers.first)
       }
+      if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+        return try await handleVideo(from: selectedItem)
+      }
+      throw InvalidMediaTypeException(itemProvider.registeredTypeIdentifiers.first)
     }
   }
 
@@ -54,7 +57,7 @@ internal struct MediaHandler {
       let mimeType = getMimeType(from: targetUrl.pathExtension)
 
       // no modification requested
-      let imageModified = options.allowsEditing || options.quality != nil
+      let imageModified = options.allowsEditing || options.quality < 1
       let fileWasCopied = !imageModified && ImageUtils.tryCopyingOriginalImageFrom(mediaInfo: mediaInfo, to: targetUrl)
       if !fileWasCopied {
         try ImageUtils.write(imageData: imageData, to: targetUrl)
@@ -94,7 +97,7 @@ internal struct MediaHandler {
 
   private func handleImage(from selectedImage: PHPickerResult) async throws -> AssetInfo {
     let itemProvider = selectedImage.itemProvider
-    let rawData = try await ImageUtils.loadImageDataRepresentation(provider: itemProvider)
+    let rawData = try await itemProvider.loadImageDataRepresentation()
 
     guard let image = UIImage(data: rawData) else {
       throw Exception(name: "FailedCreatingUIImage", description: "")
@@ -127,6 +130,78 @@ internal struct MediaHandler {
       mimeType: mimeType,
       base64: base64,
       exif: exif
+    )
+  }
+
+  // Unlike the case of regular images, we have to operate on original data of the image in order to preserve the exif data,
+  // otherwise it won't be possible to connect the image and video into a `PHLivePhoto` after reading it from the cache directory later.
+  // As a result a live photo photo cannot be compressed or edited.
+  private func handleLivePhoto(from selectedImage: PHPickerResult) async throws -> AssetInfo {
+    let itemProvider = selectedImage.itemProvider
+    let livePhotoObject = try await itemProvider.loadObject(ofClass: PHLivePhoto.self)
+    guard let livePhoto = livePhotoObject as? PHLivePhoto else {
+      throw FailedToPickLivePhotoException()
+    }
+    let assetResources = PHAssetResource.assetResources(for: livePhoto)
+    guard
+      let photoResource = assetResources.first(where: { $0.type == .photo }),
+      let videoResource = assetResources.first(where: { $0.type == .pairedVideo })
+    else {
+      throw FailedToPickLivePhotoException()
+    }
+
+    let fileName = photoResource.originalFilename
+    let pairedVideoFileName = videoResource.originalFilename
+    let photoFileExtension = getFileExtension(from: fileName)
+    let pairedVideoFileExtension = getFileExtension(from: pairedVideoFileName)
+    let (photoUrl, pairedVideoUrl) = try generatePairedUrls(photoFileExtension: photoFileExtension, videoFileExtension: pairedVideoFileExtension)
+
+    let imageData = try await PHAssetResourceManager.default().requestData(for: photoResource, options: nil)
+
+    try await PHAssetResourceManager.default().writeData(for: photoResource, toFile: photoUrl, options: nil)
+    try await PHAssetResourceManager.default().writeData(for: videoResource, toFile: pairedVideoUrl, options: nil)
+
+    let fileSize = getFileSize(from: photoUrl)
+    let mimeType = getMimeType(from: photoUrl.pathExtension)
+    let base64 = options.base64 ? imageData.base64EncodedString() : nil
+    let exif = options.exif ? ImageUtils.readExifFrom(data: imageData) : nil
+
+    let pairedVideoAssetInfo = try getPairedAssetInfo(from: videoResource, fileUrl: pairedVideoUrl, assetId: selectedImage.assetIdentifier)
+
+    return AssetInfo(
+      assetId: selectedImage.assetIdentifier,
+      type: "livePhoto",
+      uri: photoUrl.absoluteString,
+      width: livePhoto.size.width,
+      height: livePhoto.size.height,
+      fileName: fileName,
+      fileSize: fileSize,
+      mimeType: mimeType,
+      base64: base64,
+      exif: exif,
+      pairedVideoAsset: pairedVideoAssetInfo
+    )
+  }
+
+  private func getPairedAssetInfo(from videoResource: PHAssetResource, fileUrl: URL, assetId: String?) throws -> AssetInfo {
+    let fileName = videoResource.originalFilename
+    guard let dimensions = VideoUtils.readSizeFrom(url: fileUrl) else {
+      throw FailedToReadVideoSizeException()
+    }
+    let duration = VideoUtils.readDurationFrom(url: fileUrl)
+    let mimeType = getMimeType(from: fileUrl.pathExtension)
+    let fileSize = getFileSize(from: fileUrl)
+
+    return AssetInfo(
+      assetId: assetId,
+      type: "pairedVideo",
+      uri: fileUrl.absoluteString,
+      width: dimensions.width,
+      height: dimensions.height,
+      fileName: fileName,
+      fileSize: fileSize,
+      mimeType: mimeType,
+      duration: duration
     )
   }
 
@@ -222,12 +297,20 @@ internal struct MediaHandler {
     guard let fileSystem = self.fileSystem else {
       throw FileSystemModuleNotFoundException()
     }
-    let directory =  fileSystem.cachesDirectory.appending(
+    let directory = fileSystem.cachesDirectory.appending(
       fileSystem.cachesDirectory.hasSuffix("/") ? "" : "/" + "ImagePicker"
     )
     let path = fileSystem.generatePath(inDirectory: directory, withExtension: withFileExtension)
-    let url = URL(fileURLWithPath: path)
-    return url
+    return URL(fileURLWithPath: path)
+  }
+
+  private func generatePairedUrls(photoFileExtension: String, videoFileExtension: String) throws -> (URL, URL) {
+    let parsedVideoFileExtension = videoFileExtension.starts(with: ".") ? String(videoFileExtension.dropFirst()) : videoFileExtension
+    let photoUrl = try generateUrl(withFileExtension: photoFileExtension)
+    let baseUrl = photoUrl.deletingLastPathComponent()
+    let filename = photoUrl.deletingPathExtension().lastPathComponent
+    let videoUrl = baseUrl.appendingPathComponent(filename).appendingPathExtension(parsedVideoFileExtension)
+    return (photoUrl, videoUrl)
   }
 
   private func buildVideoResult(for videoUrl: URL, withName fileName: String?, mimeType: String?, assetId: String?) throws -> AssetInfo {
@@ -257,6 +340,30 @@ internal struct MediaHandler {
     } catch {
       log.error("Failed to get file size for \(fileUrl.absoluteString)")
       return nil
+    }
+  }
+
+  private func getFileExtension(from fileName: String) -> String {
+    return ".\(URL(fileURLWithPath: fileName).pathExtension)"
+  }
+}
+
+fileprivate extension PHAssetResourceManager {
+  func requestData(for assetResource: PHAssetResource, options: PHAssetResourceRequestOptions?) async throws -> Data {
+    return try await withCheckedThrowingContinuation { continuation in
+      var data = Data()
+      let dataHandler = { (dataBatch: Data) in
+        data.append(dataBatch)
+      }
+      let completionHandler = {(error: Error?) in
+        if let error {
+          continuation.resume(throwing: error)
+          return
+        }
+        continuation.resume(returning: data)
+      }
+
+      self.requestData(for: assetResource, options: options, dataReceivedHandler: dataHandler, completionHandler: completionHandler)
     }
   }
 }

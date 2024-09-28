@@ -1,33 +1,27 @@
 package expo.modules.kotlin.functions
 
-import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JNIFunctionBody
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.ReturnType
 
 class SyncFunctionComponent(
   name: String,
-  desiredArgsTypes: Array<AnyType>,
+  argTypes: Array<AnyType>,
+  private val returnType: ReturnType,
   private val body: (args: Array<out Any?>) -> Any?
-) : AnyFunction(name, desiredArgsTypes) {
+) : AnyFunction(name, argTypes) {
   private var shouldUseExperimentalConverter = false
 
-  @Suppress("FunctionName")
-  fun UseExperimentalConverter(shouldUse: Boolean = true) = apply {
+  fun useExperimentalConverter(shouldUse: Boolean = true) = apply {
     shouldUseExperimentalConverter = shouldUse
   }
 
-  @Throws(CodedException::class)
-  fun call(args: ReadableArray): Any? {
-    return body(convertArgs(args))
-  }
-
-  fun call(args: Array<Any?>, appContext: AppContext? = null): Any? {
+  fun callUserImplementation(args: Array<Any?>, appContext: AppContext? = null): Any? {
     return body(convertArgs(args, appContext))
   }
 
@@ -36,8 +30,12 @@ class SyncFunctionComponent(
       return@JNIFunctionBody exceptionDecorator({
         FunctionCallException(name, moduleName, it)
       }) {
-        val result = call(args, appContext)
-        return@exceptionDecorator JSTypeConverter.convertToJSValue(result, useExperimentalConverter = shouldUseExperimentalConverter)
+        val result = callUserImplementation(args, appContext)
+        if (shouldUseExperimentalConverter) {
+          return@exceptionDecorator returnType.convertToJS(result)
+        } else {
+          return@exceptionDecorator JSTypeConverter.convertToJSValue(result)
+        }
       }
     }
   }
@@ -46,6 +44,7 @@ class SyncFunctionComponent(
     jsObject.registerSyncFunction(
       name,
       takesOwner,
+      isEnumerable,
       getCppRequiredTypes().toTypedArray(),
       getJNIFunctionBody(moduleName, appContext)
     )

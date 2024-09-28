@@ -4,15 +4,9 @@
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 #import <ExpoModulesCore/EXReactRootViewFactory.h>
 #import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
-#if __has_include(<React-RCTAppDelegate/RCTRootViewFactory.h>)
-#import <React-RCTAppDelegate/RCTRootViewFactory.h>
-#elif __has_include(<React_RCTAppDelegate/RCTRootViewFactory.h>)
-// for importing the header from framework, the dash will be transformed to underscore
-#import <React_RCTAppDelegate/RCTRootViewFactory.h>
-#endif
-
-#import <ReactCommon/RCTTurboModuleManager.h>
+#import <ReactCommon/ReactCommon-umbrella.h>
 
 @interface RCTAppDelegate () <RCTTurboModuleManagerDelegate>
 @end
@@ -111,8 +105,10 @@
   return [[EXReactRootViewFactory alloc] initWithReactDelegate:self.reactDelegate configuration:configuration turboModuleManagerDelegate:self];
 }
 
+#if !TARGET_OS_OSX
 - (void)customizeRootView:(UIView *)rootView {
   [_expoAppDelegate customizeRootView:rootView];
 }
+#endif // !TARGET_OS_OSX
 
 @end

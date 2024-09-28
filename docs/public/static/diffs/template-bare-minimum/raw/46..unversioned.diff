@@ -2357,7 +2357,7 @@ index a6e13e11ab..b27f83286d 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -124,43 +59,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
+@@ -124,43 +59,4 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
@@ -2520,10 +2520,10 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 91612acca9..a06fd2b70e 100644
+index 91612acca9..a50623eb05 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -1,41 +1,56 @@
+@@ -1,41 +1,62 @@
  require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 -require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
@@ -2535,17 +2535,9 @@ index 91612acca9..a06fd2b70e 100644
 +ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
 +ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 +
-+platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
- install! 'cocoapods',
-   :deterministic_uuids => false
- 
-+prepare_react_native_project!
-+
- target 'HelloWorld' do
-   use_expo_modules!
--  config = use_native_modules!
- 
--  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
++use_autolinking_method_symbol = ('use' + '_native' + '_modules!').to_sym
++origin_autolinking_method = self.method(use_autolinking_method_symbol)
++self.define_singleton_method(use_autolinking_method_symbol) do |*args|
 +  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
 +    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
 +    config_command = [
@@ -2558,14 +2550,27 @@ index 91612acca9..a06fd2b70e 100644
 +      '--platform',
 +      'ios'
 +    ]
-+    config = use_native_modules!(config_command)
++    origin_autolinking_method.call(config_command)
 +  else
-+    config = use_native_modules!
++    origin_autolinking_method.call()
 +  end
++end
++
++platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+ install! 'cocoapods',
+   :deterministic_uuids => false
  
++prepare_react_native_project!
++
+ target 'HelloWorld' do
+   use_expo_modules!
++
+   config = use_native_modules!
+ 
+   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+-
 -  # Flags change depending on the env values.
 -  flags = get_default_flags()
-+  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
 +  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
  
    use_react_native!(
@@ -2622,7 +2627,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index d5ca09a584..89498f9ff3 100644
+index d5ca09a584..8ca20518e9 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -2649,7 +2654,7 @@ index d5ca09a584..89498f9ff3 100644
 +    "expo": "~51.0.8",
 +    "expo-status-bar": "~1.12.1",
 +    "react": "18.3.1",
-+    "react-native": "0.75.0-rc.7"
++    "react-native": "0.75.2"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"

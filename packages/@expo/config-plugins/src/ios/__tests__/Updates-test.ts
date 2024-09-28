@@ -38,6 +38,7 @@ describe('iOS Updates config', () => {
           enabled: false,
           fallbackToCacheTimeout: 2000,
           checkAutomatically: 'ON_ERROR_RECOVERY',
+          useEmbeddedUpdate: false,
           codeSigningCertificate: 'hello',
           codeSigningMetadata: {
             alg: 'rsa-v1_5-sha256',
@@ -58,6 +59,7 @@ describe('iOS Updates config', () => {
       EXUpdatesCheckOnLaunch: 'ERROR_RECOVERY_ONLY',
       EXUpdatesLaunchWaitMs: 2000,
       EXUpdatesRuntimeVersion: 'exposdk:37.0.0',
+      EXUpdatesHasEmbeddedUpdate: false,
       EXUpdatesCodeSigningCertificate: fsReal.readFileSync(
         sampleCodeSigningCertificatePath,
         'utf-8'

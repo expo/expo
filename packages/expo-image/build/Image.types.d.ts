@@ -1,4 +1,4 @@
-import type { SharedRef } from 'expo';
+import type { NativeModule, SharedRef } from 'expo';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
@@ -79,7 +79,7 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export interface ImageProps extends ViewProps {
+export interface ImageProps extends Omit<ViewProps, 'style'> {
     /** @hidden */
     style?: StyleProp<RNImageStyle>;
     /**
@@ -218,6 +218,10 @@ export interface ImageProps extends ViewProps {
      */
     onLoadEnd?: () => void;
     /**
+     * Called when the image view successfully rendered the source image.
+     */
+    onDisplay?: () => void;
+    /**
      * @deprecated Provides compatibility for [`defaultSource` from React Native Image](https://reactnative.dev/docs/image#defaultsource).
      * Use [`placeholder`](#placeholder) prop instead.
      */
@@ -334,25 +338,25 @@ export type ImageContentPosition =
 {
     top?: ImageContentPositionValue;
     right?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the top-left corner.
  */
-{
+ | {
     top?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the bottom-right corner.
  */
-{
+ | {
     bottom?: ImageContentPositionValue;
     right?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the bottom-left corner.
  */
-{
+ | {
     bottom?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
 } | ImageContentPositionString;
@@ -425,7 +429,10 @@ export type ImagePrefetchOptions = {
     headers?: Record<string, string>;
 };
 /**
- * An object that is a reference to a native image instance.
+ * An object that is a reference to a native image instance – [Drawable](https://developer.android.com/reference/android/graphics/drawable/Drawable)
+ * on Android and [UIImage](https://developer.apple.com/documentation/uikit/uiimage) on iOS.
+ * Instances of this class can be passed as a source to the [Image](#image) component in which case the image is rendered immediately
+ * since its native representation is already available in the memory.
  */
 export declare class ImageRef extends SharedRef {
     /**
@@ -454,5 +461,21 @@ export declare class ImageRef extends SharedRef {
      */
     readonly isAnimated?: boolean;
 }
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule {
+    Image: typeof ImageRef;
+    loadAsync(source: ImageSource): Promise<ImageRef>;
+}
+/**
+ * An object with options for the [`useImage`](#useimage) hook.
+ */
+export type UseImageHookOptions = {
+    /**
+     * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
+     */
+    onError?(error: Error, retry: () => void): void;
+};
 export {};
 //# sourceMappingURL=Image.types.d.ts.map

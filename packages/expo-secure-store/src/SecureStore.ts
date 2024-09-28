@@ -211,7 +211,9 @@ export function getItem(key: string, options: SecureStoreOptions = {}): string |
 
 /**
  * Checks if the value can be saved with `requireAuthentication` option enabled.
- * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`.
+ * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`. Always returns false on tvOS.
+ * @platform android
+ * @platform ios
  */
 export function canUseBiometricAuthentication(): boolean {
   return ExpoSecureStore.canUseBiometricAuthentication();

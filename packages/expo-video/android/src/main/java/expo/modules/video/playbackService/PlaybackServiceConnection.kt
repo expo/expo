@@ -4,14 +4,14 @@ import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import androidx.media3.exoplayer.ExoPlayer
+import expo.modules.video.VideoPlayer
 import java.lang.ref.WeakReference
 
-class PlaybackServiceConnection(val player: WeakReference<ExoPlayer>) : ServiceConnection {
+class PlaybackServiceConnection(val player: WeakReference<VideoPlayer>) : ServiceConnection {
   var playbackServiceBinder: PlaybackServiceBinder? = null
 
   override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
-    val player: ExoPlayer = player.get() ?: return
+    val player = player.get() ?: return
     playbackServiceBinder = binder as? PlaybackServiceBinder
     playbackServiceBinder?.service?.registerPlayer(player) ?: run {
       Log.w(
