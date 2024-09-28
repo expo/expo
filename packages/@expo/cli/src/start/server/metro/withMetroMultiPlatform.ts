@@ -151,37 +151,6 @@ export function withExtendedResolver(
     Log.warn(`Experimental React Canary version is enabled.`);
   }
 
-  let _assetRegistryPath: string | null = null;
-
-  // Fetch this lazily for testing purposes.
-  function getAssetRegistryPath() {
-    if (_assetRegistryPath) {
-      return _assetRegistryPath;
-    }
-
-    // Get the `transformer.assetRegistryPath`
-    // this needs to be unified since you can't dynamically
-    // swap out the transformer based on platform.
-    if (
-      config.transformer.assetRegistryPath &&
-      path.isAbsolute(config.transformer.assetRegistryPath)
-    ) {
-      _assetRegistryPath = fs.realpathSync(config.transformer.assetRegistryPath);
-      return _assetRegistryPath;
-    }
-
-    const assetRegistryPath = fs.realpathSync(
-      path.resolve(
-        resolveFrom(
-          config.projectRoot,
-          config.transformer.assetRegistryPath ?? '@react-native/assets-registry/registry.js'
-        )
-      )
-    );
-    _assetRegistryPath = assetRegistryPath;
-    return assetRegistryPath;
-  }
-
   const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
     ? createFastResolver({
@@ -548,21 +517,7 @@ export function withExtendedResolver(
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      const doResolve = getStrictResolver(context, platform);
-
-      if (
-        platform === 'web' &&
-        context.originModulePath.match(/node_modules[\\/]react-native-web[\\/]/) &&
-        moduleName.includes('/modules/AssetRegistry')
-      ) {
-        return {
-          type: 'sourceFile',
-          filePath: getAssetRegistryPath(),
-        };
-      }
-
-      const result = doResolve(moduleName);
-
+      const result = getStrictResolver(context, platform)(moduleName);
       if (result.type !== 'sourceFile') {
         return result;
       }
