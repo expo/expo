@@ -1036,6 +1036,55 @@ describe(withExtendedResolver, () => {
       expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     });
 
+    it('resolves `react-native-web..modules/AssetsRegistry` as `@react-native/assets-registry` sticky module', () => {
+      const modified = getModifiedConfig();
+
+      // Ensure the sticky module can be resolved, asset registry relies on react native
+      getResolveFunc()
+        .mockImplementationOnce((_context, moduleImport, _platform) => {
+          expect(moduleImport).toBe('react-native/package.json');
+          return { type: 'sourceFile', filePath: '/node_modules/react-native/package.json' };
+        })
+        .mockImplementationOnce((_context, moduleImport, _platform) => {
+          expect(moduleImport).toBe('@react-native/assets-registry/package.json');
+          return {
+            type: 'sourceFile',
+            filePath:
+              '/node_modules/react-native/node_modules/@react-native/assets-registry/package.json',
+          };
+        });
+
+      // Resolve the sticky module
+      modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        'react-native-web/dist/cjs/modules/AssetRegistry',
+        'web'
+      );
+      // Resolution 1 - resolve sticky path of `react-native`, which is used for `@react-native/assets-registry`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.any(Object),
+        'react-native/package.json',
+        'web'
+      );
+      // Resolution 2 - resolve sticky path of `@react-native/assets-registry/registry`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ originModulePath: '/node_modules/react-native/package.json' }),
+        '@react-native/assets-registry/package.json',
+        'web'
+      );
+      // Resolution 3 - resolve with the sticky path
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        3,
+        expect.any(Object),
+        '/node_modules/react-native/node_modules/@react-native/assets-registry/registry',
+        'web'
+      );
+      // Ensure no other calls were made
+      expect(getResolveFunc()).toHaveBeenCalledTimes(3);
+    });
+
     it('does not reuse failed sticky resolutions', () => {
       const modified = getModifiedConfig();
 

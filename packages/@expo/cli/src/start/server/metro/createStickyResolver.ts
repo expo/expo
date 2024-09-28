@@ -12,18 +12,23 @@ type StrictResolverFactory = (
 ) => StrictResolver;
 
 /**
- * Get the module name that should be handled as sticky import.
+ * Check if and get the sticky module information from the user-provided module import path.
+ * The returned `name` is the module name where the root path is resolved,
+ * and the `path` is the relative module import path.
  */
-function getStickyModuleName(moduleImport: string, platform: string | null) {
+function getStickyModule(moduleImport: string, platform: string | null) {
   if (moduleImport === 'react-native' || moduleImport.startsWith('react-native/')) {
-    return 'react-native';
+    return { name: 'react-native', path: moduleImport.replace('react-native', '') };
   }
 
   if (
     moduleImport === '@react-native/assets-registry' ||
     moduleImport.startsWith('@react-native/assets-registry/')
   ) {
-    return '@react-native/assets-registry';
+    return {
+      name: '@react-native/assets-registry',
+      path: moduleImport.replace('@react-native/assets-registry', ''),
+    };
   }
 
   if (
@@ -31,7 +36,10 @@ function getStickyModuleName(moduleImport: string, platform: string | null) {
     moduleImport.startsWith('react-native-web') &&
     moduleImport.endsWith('/modules/AssetRegistry')
   ) {
-    return '@react-native/assets-registry';
+    return {
+      name: '@react-native/assets-registry',
+      path: '/registry',
+    };
   }
 
   return null;
@@ -77,45 +85,49 @@ export function createStickyResolver(
   };
 
   return (context, moduleImport, platform) => {
+    if (!platform) {
+      return null;
+    }
+
     // Check if the module import refers to a module that should be handled as sticky, and return the name
-    const moduleName = getStickyModuleName(moduleImport, platform);
+    const stickyModule = getStickyModule(moduleImport, platform);
     // Abort if the module is not a sticky module, or no platform was defined
-    if (!platform || !moduleName) {
+    if (!stickyModule) {
       return null;
     }
 
     // Resolve from the sticky modules cache directly
-    if (moduleRoot[moduleName]) {
+    if (moduleRoot[stickyModule.name]) {
       return getStrictResolver(
         context,
         platform
-      )(moduleImport.replace(moduleName, moduleRoot[moduleName]));
+      )(moduleRoot[stickyModule.name] + stickyModule.path);
     }
 
     // Create the resolver, used to finalize the resolution
     const resolve = getStrictResolver(context, platform);
 
     // Resolve `@react-native/assets-registry` from `react-native`
-    if (moduleName === '@react-native/assets-registry') {
+    if (stickyModule.name === '@react-native/assets-registry') {
       const reactNativeRoot = resolveStickyRoot(resolve, 'react-native', platform);
       // Attempt to seed the sticky module root for `@react-native/assets-registry`, from `react-native`
       if (reactNativeRoot) {
         resolveStickyRoot(
           getStrictResolver(createRelativeContext(context, reactNativeRoot), platform),
-          moduleName,
+          stickyModule.name,
           platform
         );
       }
     }
 
     // Try to resolve the sticky module root
-    const stickyModulePath = resolveStickyRoot(resolve, moduleName, platform);
+    const stickyModulePath = resolveStickyRoot(resolve, stickyModule.name, platform);
     if (!stickyModulePath) {
       return null;
     }
 
     // Return the finalized sticky resolution
-    return resolve(moduleImport.replace(moduleName, stickyModulePath));
+    return getStrictResolver(context, platform)(moduleRoot[stickyModule.name] + stickyModule.path);
   };
 }
 
