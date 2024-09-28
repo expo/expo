@@ -14,6 +14,7 @@ import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactInstanceManager
@@ -341,7 +342,7 @@ class Kernel : KernelInterface() {
       return reactRootView
     }
   private val kernelLaunchOptions = bundleOf(
-   "exp" to Bundle(),
+    "exp" to Bundle()
   )
   private val jsExecutorFactory: JavaScriptExecutorFactory
     get() {

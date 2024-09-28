@@ -29,7 +29,7 @@ open class ScopedExpoNotificationBuilder(
   var manifest: Manifest? = null
   var experienceKey: ExperienceKey? = null
 
-  override fun setNotification(notification: Notification): NotificationBuilder {
+  override fun setNotification(notification: Notification?): NotificationBuilder {
     super.setNotification(notification)
 
     // We parse manifest here to have easy access to it from other methods.
@@ -63,17 +63,17 @@ open class ScopedExpoNotificationBuilder(
     }
   }
 
-  override fun getIcon(): Int {
+  override val icon: Int get() {
     return R.drawable.notification_icon
   }
 
-  override fun getColor(): Number? {
+  override val color: Number? get() {
     // Try to use color defined in notification content
     if (notificationContent.color != null) {
       return notificationContent.color
     }
     return if (manifest == null) {
-      super.getColor()
+      super.color
     } else {
       NotificationHelper.getColor(null, manifest!!, exponentManifest)
     }
