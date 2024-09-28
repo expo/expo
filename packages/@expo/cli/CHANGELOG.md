@@ -26,6 +26,7 @@
 - Unify Android device prompts with iOS prompts for `npx expo run:android -d`. ([#28622](https://github.com/expo/expo/pull/28622) by [@byCedric](https://github.com/byCedric))
 - Enable `EXPO_USE_METRO_WORKSPACE_ROOT` by default and replace with `EXPO_NO_METRO_WORKSPACE_ROOT`. ([#30621](https://github.com/expo/expo/pull/30621) by [@byCedric](https://github.com/byCedric))
 - Remove `node-fetch` in favor of `undici` for improved Node 22+ support. ([#29511](https://github.com/expo/expo/pull/29511) by [@byCedric](https://github.com/byCedric))
+- Add `appIdSuffix` flag to `run:android` command and better handling of variant flag ([#31186](https://github.com/expo/expo/pull/31186) by [@prathameshmm02](https://github.com/prathameshmm02))
 
 ### 🐛 Bug fixes
 
