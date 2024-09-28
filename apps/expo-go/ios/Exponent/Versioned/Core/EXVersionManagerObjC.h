@@ -16,7 +16,7 @@
                            logFunction:(nonnull RCTLogFunction)logFunction
                           logThreshold:(RCTLogLevel)logThreshold;
 
-- (void)bridgeWillStartLoading:(id)bridge;
+- (void)hostDidStart:(id)instance;
 - (void)hostFinishedLoading:(id)host;
 - (void)invalidate;
 

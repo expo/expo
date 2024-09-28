@@ -136,11 +136,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
 }
 
-- (void)bridgeWillStartLoading:(id)bridge
+- (void)hostDidStart:(id)instance
 {
-  if ([self _isDevModeEnabledForBridge:bridge]) {
+  if ([self _isDevModeEnabledForHost:instance]) {
     // Set the bundle url for the packager connection manually
-    NSURL *bundleURL = [bridge bundleURL];
+    NSURL *bundleURL = [instance bundleURL];
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
     [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
@@ -304,9 +304,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 #pragma mark - internal
 
-- (BOOL)_isDevModeEnabledForBridge:(id)bridge
+- (BOOL)_isDevModeEnabledForHost:(id)instance
 {
-  return ([RCTGetURLQueryParam([bridge bundleURL], @"dev") boolValue]);
+  return ([RCTGetURLQueryParam([instance bundleURL], @"dev") boolValue]);
 }
 
 - (void)_openJsInspector:(NSURL *)bundleURL
@@ -455,7 +455,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     if (exceptionsManagerDelegate) {
       return [[moduleClass alloc] initWithDelegate:exceptionsManagerDelegate];
     } else {
-      RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
+      RCTLogWarn(@"No exceptions manager provided when building extra modules.");
     }
   } else if (moduleClass == RNCAsyncStorage.class) {
     NSString *documentDirectory;

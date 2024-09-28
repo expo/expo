@@ -197,7 +197,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     if (CACurrentMediaTime() - lastCommand > 0.5) {
       NSString *input = event._modifiedInput;
       if ([input isEqualToString: @"r"]) {
-        [[EXKernel sharedInstance] reloadVisibleApp];
+        RCTTriggerReloadCommandListeners(@"Dev menu - reload");
       }
       
       lastCommand = CACurrentMediaTime();
@@ -258,7 +258,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   //  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
 
   // This reloads manifest and JS
-  [[EXKernel sharedInstance] reloadVisibleApp];
+  RCTTriggerReloadCommandListeners(@"Dev menu - reload");
 }
 
 - (void)_handleDisableDebuggingCommand

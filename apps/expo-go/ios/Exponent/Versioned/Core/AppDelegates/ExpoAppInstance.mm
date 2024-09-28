@@ -19,10 +19,6 @@
   return _sourceURL;
 }
 
-- (UIViewController *)createRootViewController {
-  return [EXAppViewController new];
-}
-
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
   return [_manager extraModules];
 }
@@ -33,6 +29,11 @@
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass {
   return [_manager getModuleInstanceFromClass:moduleClass];
+}
+
+- (void)hostDidStart:(RCTHost *)host
+{
+  [_manager hostDidStart:self];
 }
 
 @end

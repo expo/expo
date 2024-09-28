@@ -315,7 +315,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 }
 
 - (nullable RCTAppDelegate *)appDelegateForDevMenuManager:(EXDevMenuManager *)manager {
-  return _appRegistry.homeAppRecord.appManager.reactAppDelegate;
+  return _appRegistry.homeAppRecord.appManager.reactAppInstance;
 }
 
 - (BOOL)devMenuManager:(EXDevMenuManager *)manager canChangeVisibility:(BOOL)visibility

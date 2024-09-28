@@ -68,12 +68,13 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _initialProps = initialProps;
     _isHeadless = NO;
     _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
+    RCTRegisterReloadCommandListener(self);
   }
   return self;
 }
 
 - (id)reactHost {
-  return _reactAppDelegate.rootViewFactory.reactHost;
+  return _reactAppInstance.rootViewFactory.reactHost;
 }
 
 - (void)setAppRecord:(EXKernelAppRecord *)appRecord
@@ -87,10 +88,10 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   if (!_appRecord) {
     return kEXReactAppManagerStatusError;
   }
-  if (_loadCallback) {
-    // we have a RCTBridge load callback so we're ready to receive load events
-    return kEXReactAppManagerStatusBridgeLoading;
-  }
+//  if (_loadCallback) {
+//    // we have a RCTBridge load callback so we're ready to receive load events
+//    return kEXReactAppManagerStatusBridgeLoading;
+//  }
   if (_isHostRunning) {
     return kEXReactAppManagerStatusRunning;
   }
@@ -123,30 +124,29 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
                                                    logFunction:[self logFunction]
                                                   logThreshold:[self logLevel]];
     
-    ExpoAppInstance* appDelegate = [self _setupAppInstanceWithManager:_versionManager];
+    ExpoAppInstance* appInstance = [self _setupAppInstanceWithManager:_versionManager];
     
     if (!_isHeadless) {
       // We don't want to run the whole JS app if app launches in the background,
       // so we're omitting creation of RCTRootView that triggers runApplication and sets up React view hierarchy.
-      _reactRootView = [appDelegate.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
+      _reactRootView = [appInstance.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
     }
 
     [self _startObservingBridgeNotificationsForHost];
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
-    [_versionManager bridgeWillStartLoading:appDelegate];
   }
 }
 
 - (ExpoAppInstance *)_setupAppInstanceWithManager:(EXVersionManager *)versionManager {
-  ExpoAppInstance *appDelegate = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager];
+  ExpoAppInstance *appInstance = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager];
   
-  appDelegate.rootViewFactory.reactHost = [appDelegate.rootViewFactory createReactHost:[self initialPropertiesForRootView]];
-  appDelegate.rootViewFactory = [appDelegate createRCTRootViewFactory];
+  appInstance.rootViewFactory.reactHost = [appInstance.rootViewFactory createReactHost:[self initialPropertiesForRootView]];
+  appInstance.rootViewFactory = [appInstance createRCTRootViewFactory];
   
-  _reactAppDelegate = appDelegate;
+  _reactAppInstance = appInstance;
   
-  return appDelegate;
+  return appInstance;
 }
 
 - (NSDictionary *)extraParams
@@ -200,8 +200,8 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     [_reactRootView removeFromSuperview];
     _reactRootView = nil;
   }
-  if (_reactAppDelegate) {
-    _reactAppDelegate = nil;
+  if (_reactAppInstance) {
+    _reactAppInstance = nil;
     if (_delegate) {
       [_delegate reactAppManagerDidInvalidate:self];
       if (clearDelegate) {
@@ -307,10 +307,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
                                                name:RCTInstanceDidLoadBundle
                                              object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleJavaScriptStartLoadingEvent:)
-                                               name:RCTJavaScriptWillStartLoadingNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:RCTJavaScriptDidLoadNotification
                                              object:nil];
@@ -331,7 +327,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 - (void)_stopObservingBridgeNotifications
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTInstanceDidLoadBundle object:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptWillStartLoadingNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
@@ -408,6 +403,14 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
       [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithScopeKey:self.appRecord.scopeKey];
     }
     [self.delegate reactAppManagerFinishedLoadingJavaScript:self];
+  });
+}
+
+- (void)didReceiveReloadCommand {
+  EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    EX_ENSURE_STRONGIFY(self);
+    [self.delegate reactAppManagerAppContentWillReload:self];
   });
 }
 
@@ -654,11 +657,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   NSString *mainCachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
   NSString *exponentCachesDirectory = [mainCachesDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
   return [[exponentCachesDirectory stringByAppendingPathComponent:scopeKey] stringByStandardizingPath];
-}
-
-- (void *)jsExecutorFactoryForBridge:(id)bridge
-{
-  return [_versionManager versionedJsExecutorFactoryForBridge:bridge];
 }
 
 @end

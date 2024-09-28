@@ -2,6 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <React/RCTBridgeDelegate.h>
 #import <React-RCTAppDelegate/RCTAppDelegate.h>
+#import <React/RCTReloadCommand.h>
 
 #import "EXAppFetcher.h"
 #import "EXKernelAppRecord.h"
@@ -46,7 +47,7 @@ typedef enum EXReactAppManagerStatus {
 @property (nonatomic, readonly) NSString *scopedDocumentDirectory;
 @property (nonatomic, readonly) NSString *scopedCachesDirectory;
 @property (nonatomic, strong) id reactHost;
-@property (nonatomic, strong) RCTAppDelegate *reactAppDelegate;
+@property (nonatomic, strong) RCTAppDelegate *reactAppInstance;
 @property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 
@@ -75,6 +76,9 @@ typedef enum EXReactAppManagerStatus {
 - (NSDictionary<NSString *, NSString *> *)devMenuItems;
 - (void)selectDevMenuItemWithKey:(NSString *)key;
 
+@end
+
+@interface EXReactAppManager () <RCTReloadListener>
 @end
 
 #ifdef __cplusplus
