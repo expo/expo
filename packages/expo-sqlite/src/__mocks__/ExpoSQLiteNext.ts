@@ -14,7 +14,7 @@ import {
 export default {
   deleteDatebaseAsync: jest.fn(),
 
-  defaultDatabaseDirectory: 'testDir/SQLite',
+  defaultDatabaseDirectory: '.',
 
   ensureDatabasePathExistsAsync: jest.fn().mockImplementation(async (databasePath: string) => {}),
   ensureDatabasePathExistsSync: jest.fn().mockImplementation((databasePath: string) => {}),
