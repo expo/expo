@@ -381,9 +381,12 @@ Configure the App Group in app config:
   }
 }
 ```
+
 </Step>
+
 <Step label="2">
-Use [`Paths.appleSharedContainers`](filesystem-next/#applesharedcontainers) from the [`expo-file-system`](filesystem-next/) module to retrieve the path to the shared container:
+
+Use [`Paths.appleSharedContainers`](filesystem-next/#applesharedcontainers) from the [`expo-file-system`](filesystem-next/) library to retrieve the path to the shared container:
 
 ```tsx Using Shared Container for SQLite Database on iOS
 import { SQLiteProvider, defaultDatabaseDirectory } from 'expo-sqlite';
