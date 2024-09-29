@@ -48,12 +48,10 @@
 - [Android] Provide value in `getName` of `ModuleRegistryReadyNotifier.java` ([#30358](https://github.com/expo/expo/pull/30358) by [@WoLewicki](https://github.com/WoLewicki))
 - [Android] When a `SharedObject` that was passed as an argument is returned, it no longer creates a new object. ([#30231](https://github.com/expo/expo/pull/30231) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed some types weren't correctly converted when using coroutines. ([#30227](https://github.com/expo/expo/pull/30227) by [@lukmccall](https://github.com/lukmccall))
-- [iOS] Fix getExternalPathPermissions returns no read/write permissions. ([#30540](https://github.com/expo/expo/pull/30540) by [@dispelpowerone](https://github.com/dispelpowerone))
 - [Android] Fixed not throwing when setting read-only properties. ([#30428](https://github.com/expo/expo/pull/30428) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed `expo.modules.kotlin.jni.tests.RuntimeHolder` class not found crash when R8 is enabled. ([#30572](https://github.com/expo/expo/pull/30572) by [@kudo](https://github.com/kudo))
 - [Android] Fixed `Class declares 0 type parameters, but X were provided` on Android when R8 is enabled. ([#30659](https://github.com/expo/expo/pull/30659) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed SharedObject class names are obfuscated when R8 is enabled. ([#30948](https://github.com/expo/expo/pull/30948) by [@lukmccall](https://github.com/lukmccall))
-- Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Fixed `CodedException.getCode()` crash when R8 is enabled. ([#31392](https://github.com/expo/expo/pull/31392) by [@kudo](https://github.com/kudo))
 - [Android] Fixed getter for the third parameter of `Either`. ([#31443](https://github.com/expo/expo/pull/31443) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed R8 build error `Missing class expo.modules.kotlin.types.ExperimentalJSTypeConverter$URIConverter`. on macOS host. ([#31452](https://github.com/expo/expo/pull/31452) by [@kudo](https://github.com/kudo))
@@ -91,10 +89,32 @@
 - [iOS] Make `func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?)` `open`. ([#31398](https://github.com/expo/expo/pull/31398) by [@abulenok](https://github.com/abulenok))
 - [Android] Expose `RuntimeContext.eval()` as `JavaScriptRuntime.eval()` on iOS. ([#31445](https://github.com/expo/expo/pull/31445) by [@kudo](https://github.com/kudo))
 - Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+- Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
+- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 1.12.24 - 2024-09-03
+
+### 🐛 Bug fixes
+
+- Fix support for macOS. ([#31307](https://github.com/expo/expo/pull/31307) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 1.12.23 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.22 - 2024-08-20
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.21 - 2024-08-14
+
+### 🐛 Bug fixes
+
+- [iOS] Fix getExternalPathPermissions returns no read/write permissions. ([#30540](https://github.com/expo/expo/pull/30540) by [@dispelpowerone](https://github.com/dispelpowerone))
 
 ## 1.12.19 - 2024-07-11
 

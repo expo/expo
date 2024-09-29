@@ -60,8 +60,7 @@ export function useHeaders(
           }
           return URL.createObjectURL(blob);
         });
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error) {
+      } catch {
         onError?.forEach((e) => e?.({ source }));
       }
     })();

@@ -14,7 +14,7 @@ export default function Page() {
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, padding: 56 }}>
       <TestCase name="Actions">
         <Actions
-          dom={{ autoSize: true }}
+          dom={{ matchContents: true }}
           index={index}
           setIndexAsync={async (index) => setIndex(index)}
           showAlert={(time) => {
@@ -35,21 +35,22 @@ export default function Page() {
 
       <TestCase name="Local Asset">
         <Text style={styles.testcaseHint}>
-          Large height div with a centered local asset image. Please test scrolling for autoSize.
+          Large height div with a centered local asset image. Please test scrolling for
+          matchContents.
         </Text>
-        <LocalAsset dom={{ autoSize: true }} />
+        <LocalAsset dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Public Asset">
-        <PublicAsset dom={{ autoSize: true }} />
+        <PublicAsset dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Tailwind">
-        <Tailwind dom={{ autoSize: true }} />
+        <Tailwind dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Nested">
-        <NestedComponents dom={{ autoSize: true }} />
+        <NestedComponents dom={{ matchContents: true }} />
       </TestCase>
     </ScrollView>
   );

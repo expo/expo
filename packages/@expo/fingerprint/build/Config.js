@@ -41,6 +41,7 @@ async function loadConfigAsync(projectRoot, silent = false) {
         'extraSources',
         'sourceSkips',
         'enableReactImportsPatcher',
+        'useRNCoreAutolinkingFromExpo',
         'debug',
     ];
     const config = {};

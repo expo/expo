@@ -79,13 +79,13 @@ See the [Argument types](#argument-types) section for more details on what types
 <CodeBlocksTable>
 
 ```swift
-Function("syncFunction") { (message: String) in
+Function("mySyncFunction") { (message: String) in
   return message
 }
 ```
 
 ```kotlin
-Function("syncFunction") { message: String ->
+Function("mySyncFunction") { message: String ->
   return@Function message
 }
 ```
@@ -99,7 +99,7 @@ import { requireNativeModule } from 'expo-modules-core';
 const MyModule = requireNativeModule('MyModule');
 
 function getMessage() {
-  return MyModule.syncFunction('bar');
+  return MyModule.mySyncFunction('bar');
 }
 ```
 
@@ -127,27 +127,27 @@ It is recommended to use `AsyncFunction` over `Function` when it:
 <CodeBlocksTable>
 
 ```swift
-AsyncFunction("asyncFunction") { (message: String) in
+AsyncFunction("myAsyncFunction") { (message: String) in
   return message
 }
 
 // or
 
-AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
+AsyncFunction("myAsyncFunction") { (message: String, promise: Promise) in
   promise.resolve(message)
 }
 
 ```
 
 ```kotlin
-AsyncFunction("asyncFunction") { message: String ->
+AsyncFunction("myAsyncFunction") { message: String ->
   return@AsyncFunction message
 }
 
 // or
 
 // Make sure to import `Promise` class from `expo.modules.kotlin` instead of `expo.modules.core`.
-AsyncFunction("asyncFunction") { message: String, promise: Promise ->
+AsyncFunction("myAsyncFunction") { message: String, promise: Promise ->
   promise.resolve(message)
 }
 
@@ -162,7 +162,7 @@ import { requireNativeModule } from 'expo-modules-core';
 const MyModule = requireNativeModule('MyModule');
 
 async function getMessageAsync() {
-  return await MyModule.asyncFunction('bar');
+  return await MyModule.myAsyncFunction('bar');
 }
 ```
 
@@ -171,13 +171,13 @@ It is possible to change the native queue of `AsyncFunction` by calling the `.ru
 <CodeBlocksTable>
 
 ```swift
-AsyncFunction("asyncFunction") { (message: String) in
+AsyncFunction("myAsyncFunction") { (message: String) in
   return message
 }.runOnQueue(.main)
 ```
 
 ```kotlin
-AsyncFunction("asyncFunction") { message: String ->
+AsyncFunction("myAsyncFunction") { message: String ->
   return@AsyncFunction message
 }.runOnQueue(Queues.MAIN)
 ```

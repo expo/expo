@@ -366,8 +366,6 @@ export interface ImageNativeProps extends ImageProps {
  */
 export type ImageContentPositionValue = number | string | `${number}%` | `${number}` | 'center';
 
-// eslint-disable
-// prettier-ignore
 /**
  * Specifies the position of the image inside its container. One value controls the x-axis and the second value controls the y-axis.
  *
@@ -381,33 +379,32 @@ export type ImageContentPosition =
   /**
    * An object that positions the image relatively to the top-right corner.
    */
-  {
-    top?: ImageContentPositionValue;
-    right?: ImageContentPositionValue;
-  } |
+  | {
+      top?: ImageContentPositionValue;
+      right?: ImageContentPositionValue;
+    }
   /**
    * An object that positions the image relatively to the top-left corner.
    */
-  {
-    top?: ImageContentPositionValue;
-    left?: ImageContentPositionValue;
-  } |
+  | {
+      top?: ImageContentPositionValue;
+      left?: ImageContentPositionValue;
+    }
   /**
    * An object that positions the image relatively to the bottom-right corner.
    */
-  {
-    bottom?: ImageContentPositionValue;
-    right?: ImageContentPositionValue;
-  } |
+  | {
+      bottom?: ImageContentPositionValue;
+      right?: ImageContentPositionValue;
+    }
   /**
    * An object that positions the image relatively to the bottom-left corner.
    */
-  {
-    bottom?: ImageContentPositionValue;
-    left?: ImageContentPositionValue;
-  }
+  | {
+      bottom?: ImageContentPositionValue;
+      left?: ImageContentPositionValue;
+    }
   | ImageContentPositionString;
-// eslint-enable
 
 export interface ImageBackgroundProps extends Omit<ImageProps, 'style'> {
   /** The style of the image container */
@@ -515,7 +512,10 @@ export type ImagePrefetchOptions = {
 };
 
 /**
- * An object that is a reference to a native image instance.
+ * An object that is a reference to a native image instance – [Drawable](https://developer.android.com/reference/android/graphics/drawable/Drawable)
+ * on Android and [UIImage](https://developer.apple.com/documentation/uikit/uiimage) on iOS.
+ * Instances of this class can be passed as a source to the [Image](#image) component in which case the image is rendered immediately
+ * since its native representation is already available in the memory.
  */
 export declare class ImageRef extends SharedRef {
   /**
@@ -554,3 +554,13 @@ export declare class ImageNativeModule extends NativeModule {
 
   loadAsync(source: ImageSource): Promise<ImageRef>;
 }
+
+/**
+ * An object with options for the [`useImage`](#useimage) hook.
+ */
+export type UseImageHookOptions = {
+  /**
+   * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
+   */
+  onError?(error: Error, retry: () => void): void;
+};

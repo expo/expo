@@ -14,99 +14,99 @@ export declare class SQLiteStorage {
     /**
      * Retrieves the value associated with the given key asynchronously.
      */
-    getItemAsync: (key: string) => Promise<string | null>;
+    getItemAsync(key: string): Promise<string | null>;
     /**
      * Sets the value for the given key asynchronously.
      * If a function is provided, it computes the new value based on the previous value.
      */
-    setItemAsync: (key: string, value: string | SQLiteStorageSetItemUpdateFunction) => Promise<void>;
+    setItemAsync(key: string, value: string | SQLiteStorageSetItemUpdateFunction): Promise<void>;
     /**
      * Removes the value associated with the given key asynchronously.
      */
-    removeItemAsync: (key: string) => Promise<boolean>;
+    removeItemAsync(key: string): Promise<boolean>;
     /**
      * Retrieves all keys stored in the storage asynchronously.
      */
-    getAllKeysAsync: () => Promise<string[]>;
+    getAllKeysAsync(): Promise<string[]>;
     /**
      * Clears all key-value pairs from the storage asynchronously.
      */
-    clearAsync: () => Promise<boolean>;
+    clearAsync(): Promise<boolean>;
     /**
      * Closes the database connection asynchronously.
      */
-    closeAsync: () => Promise<void>;
+    closeAsync(): Promise<void>;
     /**
      * Retrieves the value associated with the given key synchronously.
      */
-    getItemSync: (key: string) => string | null;
+    getItemSync(key: string): string | null;
     /**
      * Sets the value for the given key synchronously.
      * If a function is provided, it computes the new value based on the previous value.
      */
-    setItemSync: (key: string, value: string | SQLiteStorageSetItemUpdateFunction) => void;
+    setItemSync(key: string, value: string | SQLiteStorageSetItemUpdateFunction): void;
     /**
      * Removes the value associated with the given key synchronously.
      */
-    removeItemSync: (key: string) => boolean;
+    removeItemSync(key: string): boolean;
     /**
      * Retrieves all keys stored in the storage synchronously.
      */
-    getAllKeysSync: () => string[];
+    getAllKeysSync(): string[];
     /**
      * Clears all key-value pairs from the storage synchronously.
      */
-    clearSync: () => boolean;
+    clearSync(): boolean;
     /**
      * Closes the database connection synchronously.
      */
-    closeSync: () => void;
+    closeSync(): void;
     /**
      * Alias for [`getItemAsync()`](#getitemasynckey) method.
      */
-    getItem: (key: string) => Promise<string | null>;
+    getItem(key: string): Promise<string | null>;
     /**
      * Alias for [`setItemAsync()`](#setitemasynckey-value).
      */
-    setItem: (key: string, value: string | SQLiteStorageSetItemUpdateFunction) => Promise<void>;
+    setItem(key: string, value: string | SQLiteStorageSetItemUpdateFunction): Promise<void>;
     /**
      * Alias for [`removeItemAsync()`](#removeitemasynckey) method.
      */
-    removeItem: (key: string) => Promise<void>;
+    removeItem(key: string): Promise<void>;
     /**
      * Alias for [`getAllKeysAsync()`](#getallkeysasync) method.
      */
-    getAllKeys: () => Promise<string[]>;
+    getAllKeys(): Promise<string[]>;
     /**
      * Alias for [`clearAsync()`](#clearasync) method.
      */
-    clear: () => Promise<void>;
+    clear(): Promise<void>;
     /**
      * Merges the given value with the existing value for the given key asynchronously.
      * If the existing value is a JSON object, performs a deep merge.
      */
-    mergeItem: (key: string, value: string) => Promise<void>;
+    mergeItem(key: string, value: string): Promise<void>;
     /**
      * Retrieves the values associated with the given keys asynchronously.
      */
-    multiGet: (keys: string[]) => Promise<[string, string | null][]>;
+    multiGet(keys: string[]): Promise<[string, string | null][]>;
     /**
      * Sets multiple key-value pairs asynchronously.
      */
-    multiSet: (keyValuePairs: [string, string][]) => Promise<void>;
+    multiSet(keyValuePairs: [string, string][]): Promise<void>;
     /**
      * Removes the values associated with the given keys asynchronously.
      */
-    multiRemove: (keys: string[]) => Promise<void>;
+    multiRemove(keys: string[]): Promise<void>;
     /**
      * Merges multiple key-value pairs asynchronously.
      * If existing values are JSON objects, performs a deep merge.
      */
-    multiMerge: (keyValuePairs: [string, string][]) => Promise<void>;
+    multiMerge(keyValuePairs: [string, string][]): Promise<void>;
     /**
      * Alias for [`closeAsync()`](#closeasync-1) method.
      */
-    close: () => Promise<void>;
+    close(): Promise<void>;
     private getDbAsync;
     private getDbSync;
     private maybeMigrateDbAsync;

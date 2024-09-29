@@ -172,6 +172,23 @@ export async function test({ describe, expect, it, ...t }) {
         expect(dst.text()).toBe('Hello world');
         expect(src.exists).toBe(true);
       });
+
+      it('Can copy from cache to documents', () => {
+        const src = new File(Paths.cache, 'file.txt');
+        const dst = new File(Paths.document, 'file.txt');
+        // cleanup
+        try {
+          src.delete();
+        } catch {}
+        try {
+          dst.delete();
+        } catch {}
+        src.write('Hello world');
+        src.copy(dst);
+        expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
+        expect(dst.exists).toBe(true);
+        expect(dst.md5).toBe(src.md5);
+      });
     });
 
     describe('When copying a directory', () => {
@@ -188,15 +205,26 @@ export async function test({ describe, expect, it, ...t }) {
       it('Throws an error when copying to a nonexistant folder without options', () => {
         const file = new Directory(testDirectory + 'directory/');
         file.create();
-        const folder = new Directory(testDirectory + 'destination/');
+        const folder = new Directory(testDirectory + 'some/nonexistent/directory/');
         expect(() => file.copy(folder)).toThrow();
       });
 
+      it('Creates a copy of the directory if only the bottom level destination directory does not exist', () => {
+        const file = new Directory(testDirectory + 'source/');
+        file.create();
+        const destination = new Directory(testDirectory + 'newDestination/');
+        file.copy(destination);
+        expect(destination.uri).toBe(testDirectory + 'newDestination/');
+        expect(file.uri).toBe(testDirectory + 'source/');
+      });
+
+      // this should not be allowed by TS, but we can handle it anyways
       it('throws an error when copying it to a file', () => {
         const src = new Directory(testDirectory + 'directory/');
         src.create();
         const dst = new File(testDirectory + 'file2.txt');
         dst.create();
+        // @ts-expect-error
         expect(() => src.copy(dst)).toThrow();
       });
     });
@@ -243,29 +271,39 @@ export async function test({ describe, expect, it, ...t }) {
 
     describe('When moving a directory', () => {
       it('moves it to a folder', () => {
-        const src = new Directory(testDirectory + 'directory');
+        const src = new Directory(testDirectory + 'directory/');
         src.create();
-        const dstFolder = new Directory(testDirectory + 'destination');
+        const dstFolder = new Directory(testDirectory + 'destination/');
         dstFolder.create();
         src.move(dstFolder);
         expect(src.exists).toBe(true);
-        const dst = new Directory(testDirectory + 'destination/directory');
+        const dst = new Directory(testDirectory + 'destination/directory/');
         expect(src.uri).toBe(dst.uri);
         expect(dst.exists).toBe(true);
       });
 
       it('Throws an error when moving to a nonexistant folder without options', () => {
-        const file = new Directory(testDirectory + 'directory/');
-        file.create();
-        const folder = new Directory(testDirectory + 'destination/');
+        const file = new File(testDirectory + 'file.txt');
+        file.write('Hello world');
+        const folder = new Directory(testDirectory + 'some/nonexistent/directory/');
         expect(() => file.move(folder)).toThrow();
       });
 
+      it('Renames the directory if only the bottom level destination directory does not exist', () => {
+        const file = new Directory(testDirectory + 'source/');
+        file.create();
+        const folder = new Directory(testDirectory + 'newDestination/');
+        file.move(folder);
+        expect(file.uri).toBe(testDirectory + 'newDestination/');
+      });
+
+      // this should not be allowed by TS, but we can handle it anyways
       it('throws an error when moving it to a file', () => {
         const src = new Directory(testDirectory + 'directory/');
         src.create();
         const dst = new File(testDirectory + 'file2.txt');
         dst.create();
+        // @ts-expect-error
         expect(() => src.move(dst)).toThrow();
       });
     });

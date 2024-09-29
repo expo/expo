@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
-import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
+import { Application, Configuration, TSConfigReader, TypeDocReader } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -58,7 +58,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-gl': ['index.ts'],
   'expo-gyroscope': [['Gyroscope.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-haptics': ['Haptics.ts'],
-  'expo-image': [['Image.tsx', 'Image.types.ts']],
+  'expo-image': ['index.ts'],
   'expo-image-manipulator': [['index.ts', 'ImageManipulator.types.ts']],
   'expo-image-picker': ['ImagePicker.ts'],
   'expo-intent-launcher': ['IntentLauncher.ts'],
@@ -87,7 +87,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-splash-screen': ['index.ts'],
   'expo-sqlite-legacy': ['legacy/index.ts', 'expo-sqlite'],
   'expo-sqlite': [['index.ts', 'Storage.ts'], 'expo-sqlite'],
-  'expo-status-bar': ['StatusBar.ts'],
+  'expo-status-bar': ['StatusBar.tsx'],
   'expo-store-review': ['StoreReview.ts'],
   'expo-symbols': ['index.ts'],
   'expo-system-ui': ['SystemUI.ts'],
@@ -140,10 +140,22 @@ const executeCommand = async (
       hideGenerator: true,
       excludePrivate: true,
       excludeProtected: true,
-      skipErrorChecking: true,
       excludeExternals: true,
-      jsDocCompatibility: false,
       pretty: !MINIFY_JSON,
+      commentStyle: 'All',
+      jsDocCompatibility: false,
+      preserveLinkText: true,
+      sourceLinkExternal: false,
+      markdownLinkExternal: false,
+      blockTags: [
+        ...Configuration.OptionDefaults.blockTags,
+        '@alias',
+        '@deprecated',
+        '@docsMissing',
+        '@header',
+        '@needsAudit',
+        '@platform',
+      ],
     },
     [new TSConfigReader(), new TypeDocReader()]
   );
@@ -169,7 +181,15 @@ const executeCommand = async (
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(trimmedOutput, ({ key, node }) => {
         return (
-          ['id', 'groups', 'kindString', 'originalName'].includes(key) ||
+          [
+            'id',
+            'groups',
+            'kindString',
+            'originalName',
+            'files',
+            'sourceFileName',
+            'target',
+          ].includes(key) ||
           (key === 'flags' && !Object.keys(node).length)
         );
       });

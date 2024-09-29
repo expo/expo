@@ -74,14 +74,6 @@ abstract_target 'BareExpoMain' do
     end
   end
 
-  post_integrate do |installer|
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
-    end
-  end
-
   target 'BareExpo' do
     use_react_native!(
       :path => config[:reactNativePath],

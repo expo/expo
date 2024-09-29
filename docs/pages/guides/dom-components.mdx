@@ -194,17 +194,17 @@ export default function App() {
 
 ## Measuring DOM components
 
-You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a `autoSize` prop or a manual native action:
+You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a `matchContents` prop or a manual native action:
 
-### Automatically with `autoSize` prop
+### Automatically with `matchContents` prop
 
-You need to use the `dom={{ autoSize: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
+You need to use the `dom={{ matchContents: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
 
 export default function Route() {
-  return <DOMComponent dom={{ autoSize: true }} />;
+  return <DOMComponent dom={{ matchContents: true }} />;
 }
 ```
 

@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [expo-file-system][next] Adjust copy/move functions to allow renaming folders. ([#31636](https://github.com/expo/expo/pull/31636) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Add name property to files and directories. ([#31545](https://github.com/expo/expo/pull/31545) by [@aleqsio](https://github.com/aleqsio))
 - Add path joining in `File` and `Directory` constructors. ([#31467](https://github.com/expo/expo/pull/31467) by [@aleqsio](https://github.com/aleqsio))
 - [expo-file-system][next] Make move operation change file url. ([#31544](https://github.com/expo/expo/pull/31544) by [@aleqsio](https://github.com/aleqsio))
 - Change `exists()` function to a property. ([#31522](https://github.com/expo/expo/pull/31522) by [@aleqsio](https://github.com/aleqsio))
