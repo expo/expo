@@ -222,7 +222,7 @@ export declare class SQLiteDatabase {
 /**
  * The default directory for SQLite databases.
  */
-export declare const defaultDatabaseDirectory: string | null;
+export declare const defaultDatabaseDirectory: any;
 /**
  * Open a database.
  *
