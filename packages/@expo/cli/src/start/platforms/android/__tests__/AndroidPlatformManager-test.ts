@@ -1,4 +1,5 @@
 import * as Log from '../../../../log';
+import { AndroidAppIdResolver } from '../AndroidAppIdResolver';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import { AndroidPlatformManager } from '../AndroidPlatformManager';
 import { startAdbReverseAsync } from '../adbReverse';
@@ -28,39 +29,74 @@ describe('openAsync', () => {
   });
 
   it(`opens a project in a custom development client using intent string`, async () => {
-    const manager = new AndroidPlatformManager('/', 8081, {
+    const platform = new AndroidPlatformManager('/', 8081, {
       getCustomRuntimeUrl: () => null,
       getDevServerUrl: () => null,
-      getExpoGoUrl: () => null,
+      getExpoGoUrl: () => '',
+      getRedirectUrl: () => null,
     });
 
-    // @ts-expect-error
-    manager._getAppIdResolver = jest.fn(() => ({
-      getAppIdAsync: () => 'dev.bacon.app',
-    }));
+    jest.spyOn(platform, '_getAppIdResolver').mockReturnValue({
+      getAppIdAsync: async () => 'dev.bacon.app',
+    } as AndroidAppIdResolver);
 
-    expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
+    expect(await platform.openAsync({ runtime: 'custom' })).toStrictEqual({
       url: 'dev.bacon.app/.MainActivity',
     });
     expect(startAdbReverseAsync).toHaveBeenCalledTimes(1);
-    // Logging
     expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*Pixel 5/));
   });
 
   it(`allows overriding the intent string`, async () => {
-    const manager = new AndroidPlatformManager('/', 8081, {
+    const platform = new AndroidPlatformManager('/', 8081, {
       getCustomRuntimeUrl: () => null,
       getDevServerUrl: () => null,
-      getExpoGoUrl: () => null,
+      getExpoGoUrl: () => '',
+      getRedirectUrl: () => null,
     });
-    // @ts-expect-error
-    manager._getAppIdResolver = jest.fn(() => ({
-      getAppIdAsync: () => 'dev.bacon.app',
-    }));
+
+    jest.spyOn(platform, '_getAppIdResolver').mockReturnValue({
+      getAppIdAsync: async () => 'dev.bacon.app',
+    } as AndroidAppIdResolver);
+
     expect(
-      await manager.openAsync({ runtime: 'custom', props: { launchActivity: 'foobar' } })
+      await platform.openAsync({ runtime: 'custom', props: { launchActivity: 'foobar' } })
     ).toStrictEqual({
       url: 'foobar',
     });
+  });
+
+  it('allows overriding the app id', async () => {
+    const device = new AndroidDeviceManager({ udid: '123', name: 'Pixel 5' } as any);
+    const platform = new AndroidPlatformManager('/', 8081, {
+      getCustomRuntimeUrl: () => null,
+      getDevServerUrl: () => null,
+      getExpoGoUrl: () => '',
+      getRedirectUrl: () => null,
+    });
+
+    jest.spyOn(AndroidDeviceManager, 'resolveAsync').mockResolvedValue(device);
+    jest
+      .spyOn(device, 'isAppInstalledAndIfSoReturnContainerPathForIOSAsync')
+      .mockResolvedValue(true);
+    jest.spyOn(platform, '_getAppIdResolver').mockReturnValue({
+      getAppIdAsync: async () => 'dev.bacon.app',
+    } as AndroidAppIdResolver);
+
+    expect(
+      await platform.openAsync({
+        runtime: 'custom',
+        props: {
+          launchActivity: 'dev.bacon.app.free/dev.bacon.app.MainActivity',
+          customAppId: 'dev.bacon.app.free',
+        },
+      })
+    ).toStrictEqual({
+      url: 'dev.bacon.app.free/dev.bacon.app.MainActivity',
+    });
+
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenCalledWith(
+      'dev.bacon.app.free'
+    );
   });
 });

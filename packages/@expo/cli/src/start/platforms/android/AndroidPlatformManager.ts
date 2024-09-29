@@ -5,8 +5,17 @@ import { startAdbReverseAsync } from './adbReverse';
 import { AppIdResolver } from '../AppIdResolver';
 import { BaseOpenInCustomProps, BaseResolveDeviceProps, PlatformManager } from '../PlatformManager';
 
-interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
+export interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
+  /**
+   * The Android app intent to launch through `adb shell am start -n <launchActivity>`.
+   */
   launchActivity?: string;
+  /**
+   * The custom app id to launch, provided through `--app-id`.
+   * By default, the app id is identical to the package name.
+   * When using product flavors, the app id might be customized.
+   */
+  customAppId?: string;
 }
 
 export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenInCustomProps> {
@@ -38,6 +47,14 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     resolveSettings?: Partial<BaseResolveDeviceProps<Device>>
   ): Promise<{ url: string }> {
     await startAdbReverseAsync([this.port]);
+
+    // Android's adb list packages returns the app id, not the package name.
+    // By default, this app id is identical to the package name.
+    // When using product flavors, the installed app should be refered by the custom app id.
+    if (options.runtime === 'custom' && options.props?.customAppId) {
+      options.props.applicationId = options.props.customAppId;
+    }
+
     return super.openAsync(options, resolveSettings);
   }
 
