@@ -50,7 +50,7 @@ export const expoRunAndroid: Command = async (argv) => {
     --no-install           Skip installing dependencies
     --no-bundler           Skip starting the bundler
     --app-id <appId>       Custom Android application ID to launch.
-    --variant <name>       Build variant or product flavor and variant. {dim Default: debug}
+    --variant <name>       Build variant or product flavor and build variant. {dim Default: debug}
     --binary <path>        Path to existing .apk or .aab to install.
     -d, --device [device]  Device name to run the app on
     -p, --port <port>      Port to start the dev server on. {dim Default: 8081}
