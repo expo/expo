@@ -37,6 +37,7 @@
 - Remove `node-fetch` in favor of `undici` for improved Node 22+ support. ([#29511](https://github.com/expo/expo/pull/29511) by [@byCedric](https://github.com/byCedric))
 - Added support to download template from npm when running prebuild. ([#31195](https://github.com/expo/expo/pull/31195) by [@kudo](https://github.com/kudo))
 - Add an optional New Architecture compatibility check for dependencies added via `install` command. ([#31222](https://github.com/expo/expo/pull/31222) by [@Simek](https://github.com/Simek))
+- Add support in `expo run android` for product flavors with custom app ids. ([#31756](https://github.com/expo/expo/pull/31756) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
