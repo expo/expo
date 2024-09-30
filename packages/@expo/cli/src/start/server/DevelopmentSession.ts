@@ -10,22 +10,19 @@ import * as ProjectDevices from '../project/devices';
 
 const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
 
-const UPDATE_FREQUENCY = 20 * 1000; // 20 seconds
-
 async function isAuthenticatedAsync(): Promise<boolean> {
   return !!(await getUserAsync().catch(() => null));
 }
 
 export class DevelopmentSession {
-  protected timeout: NodeJS.Timeout | null = null;
+  /** If the `startAsync` was successfully called */
+  private hasActiveSession = false;
 
   constructor(
     /** Project root directory. */
     private projectRoot: string,
     /** Development Server URL. */
-    public url: string | null,
-    /** Catch any errors that may occur during the `startAsync` method. */
-    private onError: (error: Error) => void
+    public url: string | null
   ) {}
 
   /**
@@ -50,7 +47,6 @@ export class DevelopmentSession {
         debug(
           'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
         );
-        this.stopNotifying();
         return;
       }
 
@@ -60,7 +56,6 @@ export class DevelopmentSession {
         debug(
           'Development session will not ping because the user is not authenticated and there are no devices.'
         );
-        this.stopNotifying();
         return;
       }
 
@@ -73,15 +68,10 @@ export class DevelopmentSession {
           exp,
           deviceIds,
         });
+        this.hasActiveSession = true;
       }
-
-      this.stopNotifying();
-
-      this.timeout = setTimeout(() => this.startAsync({ exp, runtime }), UPDATE_FREQUENCY);
     } catch (error: any) {
       debug(`Error updating development session API: ${error}`);
-      this.stopNotifying();
-      this.onError(error);
     }
   }
 
@@ -91,28 +81,34 @@ export class DevelopmentSession {
     return devices.map(({ installationId }) => installationId);
   }
 
-  /** Stop notifying the Expo servers that the development session is running. */
-  public stopNotifying() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-    this.timeout = null;
-  }
-
-  public async closeAsync(): Promise<void> {
-    this.stopNotifying();
-
-    const deviceIds = await this.getDeviceInstallationIdsAsync();
-
-    if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
-      return;
+  /** Try to close any pending development sessions, but always resolve */
+  public async closeAsync(): Promise<boolean> {
+    if (env.CI || env.EXPO_OFFLINE || !this.hasActiveSession) {
+      return false;
     }
 
-    if (this.url) {
-      await closeDevelopmentSessionAsync({
-        url: this.url,
-        deviceIds,
-      });
+    // Clear out the development session, even if the call fails.
+    // This blocks subsequent calls to `stopAsync`
+    this.hasActiveSession = false;
+
+    try {
+      const deviceIds = await this.getDeviceInstallationIdsAsync();
+
+      if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+        return false;
+      }
+
+      if (this.url) {
+        await closeDevelopmentSessionAsync({
+          url: this.url,
+          deviceIds,
+        });
+      }
+
+      return true;
+    } catch (error: any) {
+      debug(`Error closing development session API: ${error}`);
+      return false;
     }
   }
 }
