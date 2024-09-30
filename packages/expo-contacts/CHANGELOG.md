@@ -2,6 +2,7 @@
 
 ## Unpublished
 
+- Fixed an issue on iOS with presentFormAsync where dates were not displayed. ([#31780](https://github.com/expo/expo/pull/31780) by [@mlecoq](https://github.com/mlecoq))
 - Fixed an issue on android where phone number and email labels were ignored on contact creation. ([#31309](https://github.com/expo/expo/pull/31309) by [@mlecoq](https://github.com/mlecoq))
 - Fixed an issue where the `requestPermissionsAsync` promise throws when denying access to contacts on iOS. ([#29529](https://github.com/expo/expo/pull/29529) by [@jp1987](https://github.com/jp1987))
 - Fixed an issue where the `presentFormAsync` promise doesn't resolve when the form is closed on Android. ([#29201](https://github.com/expo/expo/pull/29201) by [@jp1987](https://github.com/jp1987))
