@@ -128,13 +128,13 @@ const executeCommand = async (
   const tsConfigPath = path.join(basePath, 'tsconfig.json');
   const jsonOutputPath = path.join(dataPath, `${jsonFileName}.json`);
 
-  const entryPoints = Array.isArray(entryPoint)
+  const absoluteEntryPoints = Array.isArray(entryPoint)
     ? entryPoint.map((entry) => path.join(entriesPath, entry))
     : [path.join(entriesPath, entryPoint)];
 
   const app = await Application.bootstrapWithPlugins(
     {
-      entryPoints,
+      entryPoints: absoluteEntryPoints,
       tsconfig: tsConfigPath,
       disableSources: true,
       hideGenerator: true,
@@ -168,11 +168,15 @@ const executeCommand = async (
     output.name = jsonFileName;
 
     if (Array.isArray(entryPoint)) {
-      const filterEntries = entryPoint.map((entry) => entry.substring(0, entry.lastIndexOf('.')));
       output.children = output.children
-        .filter((entry) => filterEntries.includes(entry.name))
-        .map((entry) => entry.children)
-        .flat()
+        .flatMap((child) => {
+          // sourceFileName is relative to the directory this command was executed in
+          const absoluteSourceFileName = path.resolve(
+            process.cwd(),
+            output.symbolIdMap[child.id].sourceFileName
+          );
+          return absoluteEntryPoints.includes(absoluteSourceFileName) ? child.children : [];
+        })
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
