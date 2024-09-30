@@ -8,7 +8,7 @@ import {
   SQLiteDatabase,
 } from '../SQLiteDatabase';
 
-jest.mock('../ExpoSQLiteNext', () => require('../__mocks__/ExpoSQLiteNext'));
+jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 interface TestEntity {
   value: string;
