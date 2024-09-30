@@ -74,6 +74,8 @@ export interface SQLTransaction {
    * of the query.
    * @param errorCallback Called if an error occurred executing this particular query in the
    * transaction. Takes two parameters: the transaction itself, and the error object.
+   * Return boolean. If you return true, ends and rollback transaction. If you return false,
+   * continues executing the transaction.
    */
   executeSql(
     sqlStatement: string,
