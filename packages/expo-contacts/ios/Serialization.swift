@@ -103,8 +103,6 @@ func decodeBirthday(_ input: ContactDate?, contact: CNContact) -> DateComponents
   if let day = input.day {
     components.day = day
   }
-  if let format = input.format {
-  }
 
   return components
 }

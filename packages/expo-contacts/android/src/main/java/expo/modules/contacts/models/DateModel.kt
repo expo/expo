@@ -7,34 +7,20 @@ import android.provider.ContactsContract.CommonDataKinds
 import expo.modules.contacts.Columns
 import java.util.Locale
 
-class DateModel : BaseModel() {
+const val BIRTHDAY = "birthday"
+private const val ANNIVERSARY = "anniversary"
+private const val OTHER = "other"
+
+open class DateModel : BaseModel() {
   override val contentType: String = CommonDataKinds.Event.CONTENT_ITEM_TYPE
   override val dataAlias: String = "date"
 
   override fun mapStringToType(label: String?): Int {
     return when (label) {
-      "anniversary" -> CommonDataKinds.Event.TYPE_ANNIVERSARY
-      "birthday" -> CommonDataKinds.Event.TYPE_BIRTHDAY
-      "other" -> CommonDataKinds.Event.TYPE_OTHER
+      ANNIVERSARY -> CommonDataKinds.Event.TYPE_ANNIVERSARY
+      BIRTHDAY -> CommonDataKinds.Event.TYPE_BIRTHDAY
+      OTHER -> CommonDataKinds.Event.TYPE_OTHER
       else -> Columns.TYPE_CUSTOM
-    }
-  }
-
-  override fun fromMap(readableMap: Map<String, Any?>) {
-    super.fromMap(readableMap)
-
-    val year = (readableMap["year"] as? Double)?.toInt()
-    val month = (readableMap["month"] as? Double)?.toInt()
-    val day = (readableMap["day"] as? Double)?.toInt()
-
-    if (year != null) {
-      map.putInt("year", year)
-    }
-    if (month != null) {
-      map.putInt("month", month + 1)
-    }
-    if (day != null) {
-      map.putInt("day", day)
     }
   }
 
@@ -42,9 +28,9 @@ class DateModel : BaseModel() {
     val label = super.getLabelFromCursor(cursor)
     return label
       ?: when (cursor.getInt(cursor.getColumnIndexOrThrow(Columns.TYPE))) {
-        CommonDataKinds.Event.TYPE_ANNIVERSARY -> "anniversary"
-        CommonDataKinds.Event.TYPE_BIRTHDAY -> "birthday"
-        CommonDataKinds.Event.TYPE_OTHER -> "other"
+        CommonDataKinds.Event.TYPE_ANNIVERSARY -> ANNIVERSARY
+        CommonDataKinds.Event.TYPE_BIRTHDAY -> BIRTHDAY
+        CommonDataKinds.Event.TYPE_OTHER -> OTHER
         else -> "unknown"
       }
   }
@@ -58,23 +44,23 @@ class DateModel : BaseModel() {
     }
 
     return op.withValue(Columns.MIMETYPE, contentType)
-      .withValue(ContactsContract.CommonDataKinds.Event.TYPE, mapStringToType(label))
-      .withValue(ContactsContract.CommonDataKinds.Event.START_DATE, formatDateString())
-      .withValue(ContactsContract.CommonDataKinds.Event.LABEL, label)
+      .withValue(CommonDataKinds.Event.TYPE, mapStringToType(label))
+      .withValue(CommonDataKinds.Event.START_DATE, formatDateString())
+      .withValue(CommonDataKinds.Event.LABEL, label)
       .build()
   }
 
   private fun formatDateString(): String? {
-    val year = map.getInt("year", -1).takeIf { it > 0 }
-    val month = map.getInt("month", -1).takeIf { it > 0 }
-    val day = map.getInt("day", -1).takeIf { it > 0 }
+    val year = map.getDouble("year", -1.0).toInt().takeIf { it > 0 }
+    val month = map.getDouble("month", -1.0).toInt().takeIf { it >= 0 }?.plus(1)
+    val day = map.getDouble("day", -1.0).toInt().takeIf { it > 0 }
 
     return when {
       year != null && month != null && day != null ->
-        String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month, day)
+        String.format(Locale.US, "%04d-%02d-%02d", year, month, day)
 
       month != null && day != null ->
-        String.format(Locale.getDefault(), "--%02d-%02d", month, day)
+        String.format(Locale.US, "--%02d-%02d", month, day)
 
       else -> null
     }
