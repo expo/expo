@@ -322,7 +322,7 @@ async function runServerDeployCommandAsync(
   assertDeploymentJsonOutput(json);
 
   // Warn about the URL not being valid. This should never happen, but might be possible with third-parties.
-  if (!URL.canParse(json.url)) {
+  if (!canParseURL(json.url)) {
     warnInXcode(`The server deployment URL is not a valid URL: ${json.url}`);
   }
 
@@ -333,6 +333,16 @@ async function runServerDeployCommandAsync(
   logInXcode(`Server deployed to: ${json.url}`);
 
   return json.url;
+}
+
+function canParseURL(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function assertDeploymentJsonOutput(json: any): asserts json is ServerDeploymentResults {
