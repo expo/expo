@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)initRootViewFactory;
 
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
+
 @end
 
 NS_ASSUME_NONNULL_END
