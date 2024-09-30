@@ -10,14 +10,56 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-To submit your app to the app stores, you'll need to create a production build. This build is optimized for performance and size, and it includes all the necessary assets and configurations for the app stores.
+To submit your app to the app stores, you'll need to create a production build of your Expo or React Native project. A production build is optimized for performance and size, and it includes all the necessary assets and configurations for the app stores.
+
+## Quick start
+
+To get started quickly, run the following [EAS CLI](#) command:
+
+<Terminal cmd={['$ eas build --profile production']} />
+
+This will create a production build of your project that is ready for the app stores. If you prefer to build locally with Android Studio and Xcode, see [our guide](#).
+
+## Guides
+
+You can do a lot more with EAS Build. See the following guides to learn more:
+
+<BoxLink
+  title="Configure eas.json"
+  description="Control how EAS builds your project."
+  Icon={BookOpen02Icon}
+  href="/guides/eas-build"
+/>
+
+<BoxLink
+  title="Automate app store submissions"
+  description="Automate the submission of your builds to the app stores."
+  Icon={BookOpen02Icon}
+  href="/guides/eas-build"
+/>
+
+<BoxLink
+  title="Build automatically on Git push"
+  description="Set up continuous integration to build your project automatically on Git push."
+  Icon={BookOpen02Icon}
+  href="/guides/eas-build"
+/>
+
+There's a lot more you can do with EAS Build. See all of the [build guides](#) for more information.
 
 ## Prerequisites
 
 Paid developer accounts are required to submit builds to the app stores. You will need the following:
 
+Required:
+
 - A [Google Play Developer](https://play.google.com/apps/publish/signup/) membership ($25 one-time fee)
 - An [Apple Developer Program](https://developer.apple.com/programs) membership ($99 per year)
+
+Optional:
+
+- Install EAS CLI and log in...TODO
+- Configure over-the-air updates...TODO
 
 <Collapsible summary="Optional: Configure over-the-air updates">
 Over-the-air updates allow you to send critical bug fixes and improvements to your users. To set it up, run the following [EAS CLI](/develop/tools/#eas-cli) command:
