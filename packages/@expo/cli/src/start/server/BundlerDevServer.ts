@@ -260,20 +260,7 @@ export abstract class BundlerDevServer {
       // This URL will be used on external devices so the computer IP won't be relevant.
       this.isTargetingNative()
         ? this.getNativeRuntimeUrl()
-        : this.getDevServerUrl({ hostType: 'localhost' }),
-      () => {
-        // TODO: This appears to be happening consistently after an hour.
-        // We should investigate why this is happening and fix it on our servers.
-        // Log.error(
-        //   chalk.red(
-        //     '\nAn unexpected error occurred while updating the Dev Session API. This project will not appear in the "Development servers" section of the Expo Go app until this process has been restarted.'
-        //   )
-        // );
-        // Log.exception(error);
-        this.devSession?.closeAsync().catch((error) => {
-          debug('[dev-session] error closing: ' + error.message);
-        });
-      }
+        : this.getDevServerUrl({ hostType: 'localhost' })
     );
 
     await this.devSession.startAsync({
