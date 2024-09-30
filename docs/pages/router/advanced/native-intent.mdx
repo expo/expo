@@ -150,3 +150,9 @@ This approach is effective for directing users to external websites or Universal
 ```ts
 <Link href="https://my-website.com/router/introduction" />
 ```
+
+## `unstable_subscribe`
+
+> `unstable_subscribe` is experimentally available in SDK 52.
+
+If you are using tooling from a 3rd party provider that not does yet support Expo Router, but does support React Navigation via the `Linking.subscribe` function, you can use `unstable_subscribe` as a substitute API. Expo does not recommend using this API for new projects/integrations.
