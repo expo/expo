@@ -38,7 +38,7 @@ func decodeSocialProfiles(_ input: [SocialProfile]?) -> [CNLabeledValue<CNSocial
     let username = item.username
     let userId = item.userId
     let service = item.service
-    let profile = CNSocialProfile(urlString: urlString?.path, username: username, userIdentifier: userId, service: service)
+    let profile = CNSocialProfile(urlString: urlString?.absoluteString, username: username, userIdentifier: userId, service: service)
     output.append(CNLabeledValue(label: label, value: profile))
   }
   return output
