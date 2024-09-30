@@ -13,6 +13,8 @@ public class CachingPlayerItem: AVPlayerItem {
   private var customFileExtension: String?
   private let useCaching: Bool
 
+  var cachingError: Exception?
+
   internal var urlRequestHeaders: [String: String]?
 
   public convenience init(url: URL) {
@@ -23,7 +25,7 @@ public class CachingPlayerItem: AVPlayerItem {
     self.useCaching = useCaching
     let cachedMimeType = MediaInfo(forResourceUrl: url)?.mimeType
     let cachedExtension = mimeTypeToExtension(mimeType: cachedMimeType) ?? ""
-    let fileExtension = url.pathExtension != "" ? url.pathExtension : cachedExtension
+    let fileExtension = url.pathExtension.isEmpty ? cachedExtension : url.pathExtension
     self.saveFilePath = Self.pathForUrl(url: url, fileExtension: fileExtension)
 
     self.url = url
@@ -64,20 +66,19 @@ public class CachingPlayerItem: AVPlayerItem {
       VideoCacheManager.shared.unregisterOpenFile(at: cachedFileUrl)
     }
     VideoCacheManager.shared.ensureCacheSize()
-    resourceLoaderDelegate?.invalidateAndCancelSession()
   }
-
 
   static func pathForUrl(url: URL, fileExtension: String) -> String? {
     let hashedData = SHA256.hash(data: Data(url.absoluteString.utf8))
     let hashString = hashedData.compactMap { String(format: "%02x", $0) }.joined()
-    let parsedExtension = fileExtension.starts(with: ".") || fileExtension == "" ? fileExtension : ("." + fileExtension)
+    let parsedExtension = fileExtension.starts(with: ".") || fileExtension.isEmpty ? fileExtension : ("." + fileExtension)
     let hashFilename = hashString + parsedExtension
 
-    guard var cachesDirectory = try? FileManager.default.url(for: .cachesDirectory,
-                                                             in: .userDomainMask,
-                                                             appropriateFor: nil,
-                                                             create: true)
+    guard var cachesDirectory = try? FileManager.default.url(
+      for: .cachesDirectory,
+      in: .userDomainMask,
+      appropriateFor: nil,
+      create: true)
     else {
       return nil
       log.warn("CachingPlayerItem error: Can't access default cache directory")
@@ -90,10 +91,11 @@ public class CachingPlayerItem: AVPlayerItem {
   }
 
   private func createCacheDirectoryIfNeeded() {
-    guard var cachesDirectory = try? FileManager.default.url(for: .cachesDirectory,
-                                                             in: .userDomainMask,
-                                                             appropriateFor: nil,
-                                                             create: true) 
+    guard var cachesDirectory = try? FileManager.default.url(
+      for: .cachesDirectory,
+      in: .userDomainMask,
+      appropriateFor: nil,
+      create: true)
     else {
       return
     }

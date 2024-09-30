@@ -4,41 +4,36 @@ import UIKit
 import CoreServices
 import ExpoModulesCore
 
-
 /**
- * Class responsible for loading any data requested by the AVAsset. There are two types of requests/responses that the media type will be receiving
- * - Initial request/response - this response contains most of the information about the data source such as support for content ranges, total size etc.
- *   We do cache this information, but it is read from cache only when there is no network available, as it should be really small and fast.
- * - Data request/response - For each range request from the player the delegate will receive multiple chunks of data. We have to return correct subrange of data and cache it.
- *   If a chunk of data is already available we will always return it from cache.
+ * Class responsible for fulfiling data requests created  by the AVAsset. There are two types of requests/:
+ * - Initial request  - The response contains most of the information about the data source such as support for content ranges, total size etc.
+ *   this information is cached for offline playback support.
+ * - Data request - For each range request from the player the delegate will request and receive multiple chunks of data. We have to return a correct subrange
+ *   of data and cache it. If a chunk of data is already available we will return it from cache.
  */
 final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URLSessionDelegate, URLSessionDataDelegate, URLSessionTaskDelegate {
   private weak var owner: CachingPlayerItem?
-  private lazy var session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
-
   private let url: URL
   private let saveFilePath: String
   private let fileExtension: String
-  private var totalDataReceived: Int64 = 0
-
-  private var cachableRequests: NSHashTable<CachableRequest> = NSHashTable()
   private let cachedResource: CachedResource
 
+  private var cachableRequests: NSHashTable<CachableRequest> = NSHashTable()
+  private var session: URLSession?
+
   /**
-   The default requestTimeoutInterval is 60, this means that AVPlayer will take up to 60 seconds to create a new data request after failing. This makes the UI unresponsive for that time. Shorter time interval means that the request will often be already failed when the buffer runs out, which means that various operations  won't be delayed by multiple seconds or will be a lot less delayed.
+   * The default requestTimeoutInterval is 60, which is  too long (UI should respond relatively quickly to network errors)
    */
   private static let requestTimeoutInterval: Double = 5
 
   // When playing from an url without an extension appends an extension to the path based on the response from the server
   private var pathWithExtension: String {
     let ext = mimeTypeToExtension(mimeType: cachedResource.mediaInfo?.mimeType)
-    if let ext, self.fileExtension == "" {
+    if let ext, self.fileExtension.isEmpty {
       return self.saveFilePath + ".\(ext)"
     }
     return self.saveFilePath
   }
-
-  // MARK: - Init
 
   init(url: URL, saveFilePath: String, fileExtension: String, owner: CachingPlayerItem?) {
     self.url = url
@@ -47,12 +42,12 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     self.fileExtension = fileExtension
     cachedResource = CachedResource(dataFileUrl: saveFilePath, resourceUrl: url, dataPath: saveFilePath)
     super.init()
-
-    NotificationCenter.default.addObserver(self, selector: #selector(handleAppWillTerminate), name: UIApplication.willTerminateNotification, object: nil)
+    self.session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
   }
 
   deinit {
-    invalidateAndCancelSession()
+    session?.invalidateAndCancel()
+    session = nil
   }
 
   // MARK: - AVAssetResourceLoaderDelegate
@@ -70,8 +65,8 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
   func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
     guard let currentRequest = dataTask.currentRequest,
-          let response = dataTask.response as? HTTPURLResponse,
-          let cachableRequest = cachableRequest(by: dataTask) else {
+      let response = dataTask.response as? HTTPURLResponse,
+      let cachableRequest = cachableRequest(by: dataTask) else {
       return
     }
 
@@ -84,7 +79,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     let subdata = data.subdata(request: currentRequest, response: response) ?? data
 
     // Append modified or original data
-    cachableRequest.receivedData.append(subdata)
+    cachableRequest.onReceivedData(data: subdata)
 
     if dataRequest.requestsAllDataToEndOfResource {
       let currentDataResponseOffset = Int(currentOffset - requestedOffset)
@@ -99,27 +94,26 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     }
   }
 
-  func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-
+  func urlSession(
+    _ session: URLSession,
+    dataTask: URLSessionDataTask,
+    didReceive response: URLResponse,
+    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+  ) {
     if let cachedDataRequest = cachableRequest(by: dataTask) {
       cachedDataRequest.response = response
-      if (cachedDataRequest.loadingRequest.contentInformationRequest != nil) {
+      if cachedDataRequest.loadingRequest.contentInformationRequest != nil {
         fillInContentInformationRequest(forDataRequest: cachedDataRequest)
         cachedDataRequest.loadingRequest.response = response
         cachedDataRequest.loadingRequest.finishLoading()
         cachedDataRequest.dataTask.cancel()
         cachableRequests.remove(cachedDataRequest)
       }
-
     }
     completionHandler(.allow)
   }
 
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-    if let error = error as? URLError, 
-        error.code == URLError.networkConnectionLost || error.code == URLError.notConnectedToInternet {
-    }
-
     guard let cachedDataRequest = cachableRequest(by: task) else {
       return
     }
@@ -136,11 +130,9 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     cachableRequests.remove(cachedDataRequest)
   }
 
-  // MARK: - Internal methods
-
-  func processLoadingRequest(loadingRequest: AVAssetResourceLoadingRequest) {
+  private func processLoadingRequest(loadingRequest: AVAssetResourceLoadingRequest) {
     let (remainingRequest, dataReceived) = attemptToRespondFromCache(forRequest: loadingRequest)
-    
+
     // Cache fulfilled the entire request
     if dataReceived != nil && remainingRequest == nil {
       return
@@ -148,9 +140,13 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
     var request = remainingRequest ?? createUrlRequest()
 
-    // remainingRequest already has correct range header fields
+    // remainingRequest will have correct range header fields
     if remainingRequest == nil {
       addRangeHeaderFields(loadingRequest: loadingRequest, urlRequest: &request)
+    }
+
+    guard let session else {
+      return
     }
 
     let dataTask = session.dataTask(with: request)
@@ -169,10 +165,6 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     dataTask.resume()
   }
 
-  func invalidateAndCancelSession() {
-    session.invalidateAndCancel()
-  }
-
   private func fillInContentInformationRequest(forDataRequest request: CachableRequest?) {
     guard let response = request?.response as? HTTPURLResponse else {
       return
@@ -181,19 +173,15 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     request?.loadingRequest.contentInformationRequest?.contentLength = response.expectedContentLength
     request?.loadingRequest.contentInformationRequest?.isByteRangeAccessSupported = true
 
-    if let mimeType = response.mimeType {
+    if let mimeType = response.mimeType, isSupported(mimeType: mimeType) {
       let rawUti = UTType(mimeType: mimeType)?.identifier
       request?.loadingRequest.contentInformationRequest?.contentType = rawUti ?? response.mimeType
       cachedResource.onResponseReceived(response: response)
+    } else {
+      // We can't control the AVPlayer.error property that will be set after the player fails to load the resource
+      // We have an additional field that can be used to return a more specific error
+      owner?.cachingError = VideoCacheUnsupportedFormatException(response.mimeType ?? "")
     }
-  }
-
-  @objc private func handleAppWillTerminate() {
-    // We need to only remove the file if it hasn't been fully downloaded
-    cachableRequests.allObjects.forEach { cachedDataRequest in
-      cachedDataRequest.dataTask.cancel()
-    }
-    invalidateAndCancelSession()
   }
 
   /// Attempts to load the request from cache, if just the beginning of the requested data  is available, returns a URL request to fetch the rest of the data
@@ -215,7 +203,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       return (nil, cachedData)
     }
 
-    // Try to return the beginning of the data, and create a request for the rest
+    // Try to return the beginning of the data, and create a request for the remainder
     if let partialData = cachedResource.requestBeginningOfData(from: from, to: to) {
       if loadingRequest.contentInformationRequest != nil {
         cachedResource.fill(forLoadingRequest: loadingRequest)
@@ -257,6 +245,10 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     let requestedOffset = dataRequest.requestedOffset
     let requestedLength = Int64(dataRequest.requestedLength)
     urlRequest.setValue("bytes=\(requestedOffset)-\(requestedOffset + requestedLength - 1)", forHTTPHeaderField: "Range")
+  }
+
+  private func isSupported(mimeType: String?) -> Bool {
+    return mimeType?.starts(with: "video/") ?? false
   }
 
   private func createUrlRequest() -> URLRequest {

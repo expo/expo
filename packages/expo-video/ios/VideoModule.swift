@@ -11,7 +11,7 @@ public final class VideoModule: Module {
     }
 
     Function("getCurrentVideoCacheSize") {
-      try VideoCacheManager.shared.getCacheDirectorySize()
+      VideoCacheManager.shared.getCacheDirectorySize()
     }
 
     AsyncFunction("setVideoCacheSizeAsync") { size in

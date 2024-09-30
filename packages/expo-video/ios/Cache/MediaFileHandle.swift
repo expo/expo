@@ -1,15 +1,32 @@
+// Copyright 2024-present 650 Industries. All rights reserved.
+
 import Foundation
 import ExpoModulesCore
 
 final class MediaFileHandle {
   private let filePath: String
-  private var fileUrl: URL? {
-    URL(string: filePath)
-  }
   private lazy var readHandle = FileHandle(forReadingAtPath: filePath)
   private lazy var writeHandle = FileHandle(forWritingAtPath: filePath)
 
   private let lock = NSLock()
+  private let queue = VideoCacheManager.shared.mediaFileDispatchQueue
+
+  var attributes: [FileAttributeKey: Any]? {
+    do {
+      return try FileManager.default.attributesOfItem(atPath: filePath)
+    } catch let error as NSError {
+      log.warn("An error occured while reading the file attributes at \(filePath) error: \(error)")
+    }
+    return nil
+  }
+
+  var fileSize: Int {
+    return attributes?[.size] as? Int ?? 0
+  }
+
+  private var fileUrl: URL? {
+    URL(string: filePath)
+  }
 
   init(filePath: String) {
     self.filePath = filePath
@@ -33,57 +50,43 @@ final class MediaFileHandle {
 
     close()
   }
-}
-
-extension MediaFileHandle {
-  var attributes: [FileAttributeKey : Any]? {
-    do {
-      return try FileManager.default.attributesOfItem(atPath: filePath)
-    } catch let error as NSError {
-      log.warn("An error occured while reading the file attributes at \(filePath) error: \(error)")
-    }
-    return nil
-  }
-
-  var fileSize: Int {
-    return attributes?[.size] as? Int ?? 0
-  }
 
   func readData(withOffset offset: Int, forLength length: Int) -> Data? {
-    lock.lock()
-    defer { lock.unlock() }
-
-    readHandle?.seek(toFileOffset: UInt64(offset))
-    return readHandle?.readData(ofLength: length)
+    queue.sync {
+      readHandle?.seek(toFileOffset: UInt64(offset))
+      return readHandle?.readData(ofLength: length)
+    }
   }
 
-  func write(data: Data, atOffset offset: Int) throws {
-    lock.lock()
-    defer { lock.unlock() }
-    guard let writeHandle = writeHandle else { return }
-    try writeHandle.seek(toOffset: UInt64(offset))
-    writeHandle.write(data)
-    writeHandle.synchronizeFile()
-  }
+  func write(data: Data, atOffset offset: Int) async throws {
+    guard let writeHandle = writeHandle else {
+      return
+    }
 
+    return try await withCheckedThrowingContinuation { continuation in
+      queue.async { [writeHandle] in
+        do {
+          try writeHandle.seek(toOffset: UInt64(offset))
+        } catch {
+          continuation.resume(throwing: error)
+        }
+        writeHandle.write(data)
+        writeHandle.synchronizeFile()
+        continuation.resume()
+      }
+    }
+  }
 
   func append(data: Data) {
-    lock.lock()
-    defer { lock.unlock() }
+    queue.async { [writeHandle] in
+      guard let writeHandle = writeHandle else {
+        return
+      }
 
-    guard let writeHandle = writeHandle else { return }
-
-    writeHandle.seekToEndOfFile()
-    writeHandle.write(data)
-  }
-
-  func synchronize() {
-    lock.lock()
-    defer { lock.unlock() }
-
-    guard let writeHandle = writeHandle else { return }
-
-    writeHandle.synchronizeFile()
+      writeHandle.seekToEndOfFile()
+      writeHandle.write(data)
+      writeHandle.synchronizeFile()
+    }
   }
 
   func close() {

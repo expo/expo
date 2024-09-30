@@ -14,7 +14,7 @@ class VideoManager {
   private var videoPlayers = NSHashTable<VideoPlayer>.weakObjects()
 
   var hasRegisteredPlayers: Bool {
-    return videoPlayers.allObjects.count > 0
+    return !videoPlayers.allObjects.isEmpty
   }
 
   func register(videoPlayer: VideoPlayer) {

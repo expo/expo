@@ -141,7 +141,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   // MARK: - VideoPlayerObserverDelegate
 
   func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?) {
-    let errorRecord = error != nil ? PlaybackError(message: error?.localizedDescription) : nil
+    let errorRecord = error != nil ? PlaybackError(message: error?.description) : nil
     safeEmit(event: "statusChange", arguments: newStatus.rawValue, oldStatus?.rawValue, errorRecord)
     status = newStatus
   }

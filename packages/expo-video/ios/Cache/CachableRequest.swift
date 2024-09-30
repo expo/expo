@@ -1,3 +1,5 @@
+// Copyright 2024-present 650 Industries. All rights reserved.
+
 import Foundation
 import AVFoundation
 import UIKit
@@ -5,17 +7,15 @@ import CoreServices
 import ExpoModulesCore
 
 /**
- * Class used for easier management of loadingRequests. While loading stores the chunk of data that was requested.
- * After the request is fulfilled or cancelled the data chunk should be appended to the a
+ * Class used for easier management of loadingRequests and associating them with data tasks.
+ * After the request is fulfilled or cancelled the dataChunk should be saved to file holding the cache
  */
 class CachableRequest: Equatable {
   let loadingRequest: AVAssetResourceLoadingRequest
-  var dataRequest: AVAssetResourceLoadingDataRequest
   let dataTask: URLSessionDataTask
-
-  var isFulfilled = false
+  var dataRequest: AVAssetResourceLoadingDataRequest
   var response: URLResponse?
-  var receivedData = Data()
+  private(set) var receivedData = Data()
   private let dataOffset: Int64
 
   init(loadingRequest: AVAssetResourceLoadingRequest, dataTask: URLSessionDataTask, dataRequest: AVAssetResourceLoadingDataRequest) {
@@ -25,17 +25,15 @@ class CachableRequest: Equatable {
     self.dataOffset = dataRequest.requestedOffset
   }
 
-  func onFulfilled(urlResponse: URLResponse) {
-    isFulfilled = true
-  }
-
-
-  func onReceivedData(data: Data){
+  func onReceivedData(data: Data) {
     receivedData.append(data)
   }
 
   func saveData(to cachedResource: CachedResource) {
-    cachedResource.writeData(data: receivedData, offset: dataOffset)
+    // Capture the request in case the reference count drops to 0 while writing
+    Task { [self] in
+      await cachedResource.writeData(data: receivedData, offset: dataOffset)
+    }
   }
 
   static func == (lhs: CachableRequest, rhs: CachableRequest) -> Bool {
