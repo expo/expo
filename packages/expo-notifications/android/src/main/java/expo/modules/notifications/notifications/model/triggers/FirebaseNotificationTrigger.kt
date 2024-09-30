@@ -20,7 +20,7 @@ class FirebaseNotificationTrigger(val remoteMessage: RemoteMessage) : Notificati
       ?: throw IllegalArgumentException("RemoteMessage from readParcelable must not be null")
   )
 
-//  fun getRemoteMessage(): RemoteMessage = remoteMessage
+  fun getRemoteMessage(): RemoteMessage = remoteMessage
 
   @RequiresApi(api = Build.VERSION_CODES.O)
   override fun getNotificationChannel(): String? {
