@@ -186,16 +186,16 @@ const upload = multer({ dest: 'uploads/' });
 // This method will save the binary content of the request as a file.
 app.patch('/binary-upload', (req, res) => {
   const fileName = './uploads/image' + Date.now() + '.png';
-  const piped = req.pipe(fs.createWriteStream(fileName));
+  const stream = req.pipe(fs.createWriteStream(fileName));
 
-  piped.on('finish', () => {
+  stream.on('finish', () => {
     console.log('File saved to', fileName);
-    res.status(201).end('OK');
+    res.status(201).end();
   });
 
-  piped.on('error', (err) => {
+  stream.on('error', err => {
     console.error(err);
-    res.status(500).end('ERROR');
+    res.status(500).end();
   });
 });
 
