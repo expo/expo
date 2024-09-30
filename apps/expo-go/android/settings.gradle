@@ -35,10 +35,6 @@ project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new Fi
 include ':expo-modules-test-core'
 project(':expo-modules-test-core').projectDir = new File(rootDir, '../../../packages/expo-modules-test-core/android')
 
-// Include Expo modules that are not unimodules
-include(":expo-random")
-project(":expo-random").projectDir = new File("../../../packages/expo-random/android")
-
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
 ].forEach({ abiVariant ->
