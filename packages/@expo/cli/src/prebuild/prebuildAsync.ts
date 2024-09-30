@@ -73,7 +73,7 @@ export async function prebuildAsync(
       options.platforms = finalPlatforms;
     } else {
       Log.warn(
-        chalk`⚠️ No platforms to prebuild, skipping. Provided platforms not present in app.json.`
+        chalk`⚠️ No platforms to prebuild, skipping. ${options.platforms.join(', ')} not present in app config.`
       );
       return null;
     }
