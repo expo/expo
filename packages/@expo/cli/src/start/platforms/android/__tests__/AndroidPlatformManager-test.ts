@@ -99,4 +99,35 @@ describe('openAsync', () => {
       'dev.bacon.app.free'
     );
   });
+
+  it('re-opens with custom runtime props if set', async () => {
+    const platform = new AndroidPlatformManager('/', 8081, {
+      getCustomRuntimeUrl: () => null,
+      getDevServerUrl: () => null,
+      getExpoGoUrl: () => '',
+      getRedirectUrl: () => null,
+    });
+
+    jest.spyOn(platform, '_getAppIdResolver').mockReturnValue({
+      getAppIdAsync: async () => 'dev.bacon.app',
+    } as AndroidAppIdResolver);
+
+    // Open once with custom launch properties
+    expect(
+      await platform.openAsync({
+        runtime: 'custom',
+        props: {
+          launchActivity: 'dev.bacon.app.free/dev.bacon.app.MainActivity',
+          customAppId: 'dev.bacon.app.free',
+        },
+      })
+    ).toStrictEqual({
+      url: 'dev.bacon.app.free/dev.bacon.app.MainActivity',
+    });
+
+    // Ensure these custom launch props are reused when opening again
+    expect(await platform.openAsync({ runtime: 'custom' })).toStrictEqual({
+      url: 'dev.bacon.app.free/dev.bacon.app.MainActivity',
+    });
+  });
 });

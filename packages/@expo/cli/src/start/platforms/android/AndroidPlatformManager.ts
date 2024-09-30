@@ -19,6 +19,9 @@ export interface AndroidOpenInCustomProps extends BaseOpenInCustomProps {
 }
 
 export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenInCustomProps> {
+  /** The last used custom launch props, should be reused whenever launching custom runtime without launch props */
+  private lastCustomRuntimeLaunchProps?: AndroidOpenInCustomProps;
+
   constructor(
     protected projectRoot: string,
     protected port: number,
@@ -48,11 +51,27 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
   ): Promise<{ url: string }> {
     await startAdbReverseAsync([this.port]);
 
-    // Android's adb list packages returns the app id, not the package name.
-    // By default, this app id is identical to the package name.
-    // When using product flavors, the installed app should be refered by the custom app id.
-    if (options.runtime === 'custom' && options.props?.customAppId) {
-      options.props.applicationId = options.props.customAppId;
+    if (options.runtime === 'custom') {
+      // Store the resolved launch properties for future "openAsync" request.
+      // This reuses the same launch properties when opening through the CLI interface (pressing `a`).
+      if (options.props) {
+        this.lastCustomRuntimeLaunchProps = options.props;
+      } else if (!options.props && this.lastCustomRuntimeLaunchProps) {
+        options.props = this.lastCustomRuntimeLaunchProps;
+      }
+
+      // Android's adb list packages returns the app id, not the package name.
+      // By default, this app id is identical to the package name.
+      // When using product flavors, the installed app should be refered by the custom app id.
+      if (options.props?.customAppId) {
+        return super.openAsync(
+          {
+            runtime: 'custom',
+            props: { ...options.props, applicationId: options.props.customAppId },
+          },
+          resolveSettings
+        );
+      }
     }
 
     return super.openAsync(options, resolveSettings);
