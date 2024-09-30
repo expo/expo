@@ -15,7 +15,7 @@ export {
   resolveModulesAsync,
   resolveSearchPathsAsync,
 };
-export { generatePackageListAsync } from './generatePackageList';
+export { generateModulesProviderAsync, generatePackageListAsync } from './generatePackageList';
 export { verifySearchResults } from './verifySearchResults';
 export * from '../types';
 

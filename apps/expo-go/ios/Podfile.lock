@@ -2176,42 +2176,42 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.0)
-  - Stripe (23.26.0):
-    - StripeApplePay (= 23.26.0)
-    - StripeCore (= 23.26.0)
-    - StripePayments (= 23.26.0)
-    - StripePaymentsUI (= 23.26.0)
-    - StripeUICore (= 23.26.0)
-  - stripe-react-native (0.37.2):
+  - Stripe (23.28.3):
+    - StripeApplePay (= 23.28.3)
+    - StripeCore (= 23.28.3)
+    - StripePayments (= 23.28.3)
+    - StripePaymentsUI (= 23.28.3)
+    - StripeUICore (= 23.28.3)
+  - stripe-react-native (0.38.6):
     - React-Core
-    - Stripe (~> 23.26.0)
-    - StripeApplePay (~> 23.26.0)
-    - StripeFinancialConnections (~> 23.26.0)
-    - StripePayments (~> 23.26.0)
-    - StripePaymentSheet (~> 23.26.0)
-    - StripePaymentsUI (~> 23.26.0)
-  - StripeApplePay (23.26.0):
-    - StripeCore (= 23.26.0)
-  - StripeCore (23.26.0)
-  - StripeFinancialConnections (23.26.0):
-    - StripeCore (= 23.26.0)
-    - StripeUICore (= 23.26.0)
-  - StripePayments (23.26.0):
-    - StripeCore (= 23.26.0)
-    - StripePayments/Stripe3DS2 (= 23.26.0)
-  - StripePayments/Stripe3DS2 (23.26.0):
-    - StripeCore (= 23.26.0)
-  - StripePaymentSheet (23.26.0):
-    - StripeApplePay (= 23.26.0)
-    - StripeCore (= 23.26.0)
-    - StripePayments (= 23.26.0)
-    - StripePaymentsUI (= 23.26.0)
-  - StripePaymentsUI (23.26.0):
-    - StripeCore (= 23.26.0)
-    - StripePayments (= 23.26.0)
-    - StripeUICore (= 23.26.0)
-  - StripeUICore (23.26.0):
-    - StripeCore (= 23.26.0)
+    - Stripe (~> 23.28.0)
+    - StripeApplePay (~> 23.28.0)
+    - StripeFinancialConnections (~> 23.28.0)
+    - StripePayments (~> 23.28.0)
+    - StripePaymentSheet (~> 23.28.0)
+    - StripePaymentsUI (~> 23.28.0)
+  - StripeApplePay (23.28.3):
+    - StripeCore (= 23.28.3)
+  - StripeCore (23.28.3)
+  - StripeFinancialConnections (23.28.3):
+    - StripeCore (= 23.28.3)
+    - StripeUICore (= 23.28.3)
+  - StripePayments (23.28.3):
+    - StripeCore (= 23.28.3)
+    - StripePayments/Stripe3DS2 (= 23.28.3)
+  - StripePayments/Stripe3DS2 (23.28.3):
+    - StripeCore (= 23.28.3)
+  - StripePaymentSheet (23.28.3):
+    - StripeApplePay (= 23.28.3)
+    - StripeCore (= 23.28.3)
+    - StripePayments (= 23.28.3)
+    - StripePaymentsUI (= 23.28.3)
+  - StripePaymentsUI (23.28.3):
+    - StripeCore (= 23.28.3)
+    - StripePayments (= 23.28.3)
+    - StripeUICore (= 23.28.3)
+  - StripeUICore (23.28.3):
+    - StripeCore (= 23.28.3)
   - UMAppLoader (4.6.0)
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
@@ -2908,17 +2908,17 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Stripe: e6f816be5a573f7ef45b82d9d843130154fd0269
-  stripe-react-native: f1af0235d838495e0c209da6da321eb6f74b70b8
-  StripeApplePay: d6ef43f2bf834463e1dcaaf4a61c681aec04990e
-  StripeCore: c38075c1b083ee36d6f867d4133f78ecf623d6dc
-  StripeFinancialConnections: 346c6200ffac9bd3fe80bfe7e17795125f9b7379
-  StripePayments: ade58825c7d75d78a212c5db37e23b05387fb6ba
-  StripePaymentSheet: b7cab74c10a5a4b225f948e225dda427a6899e08
-  StripePaymentsUI: 1f0cbac9145149fbbb87e27660af0d3be91aae98
-  StripeUICore: d6803286f1e2b80c62c320b304503c87bf65de3c
+  Stripe: cdf416cf2efe286f532a6306de0fcaa0ecc8c71a
+  stripe-react-native: 55fbdae947bc2698d55193947fd17872d0eab786
+  StripeApplePay: efb62ffc08e6cd4f161d77ddb45de2451075c54e
+  StripeCore: 9731f05e327c3dcaf7d7abd116840ceaa9482bbe
+  StripeFinancialConnections: 46c0049aaab3a179193502bce4a8096eb7b73f55
+  StripePayments: dd1867a620b0b8b5e294e9ff2f1f7b7770765f47
+  StripePaymentSheet: d155dfde74e90784d054deffb4f561a1f6dd638f
+  StripePaymentsUI: c24f990b03a68a7f6fe704b15dd487e7bb6b603e
+  StripeUICore: f2d514e900c37436dc5427fdf2c29d68ab1c2935
   UMAppLoader: c34fd315863887c7961e059efd9475e056bdd72d
-  Yoga: 2a45d7e59592db061217551fd3bbe2dd993817ae
+  Yoga: a1d7895431387402a674fd0d1c04ec85e87909b8
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 6ec27595fc1a1dcf906e759b1bff76ab5de670f7

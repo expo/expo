@@ -2,6 +2,7 @@
 import chalk from 'chalk';
 
 import { Log } from '../../log';
+import { fetch } from '../../utils/fetch';
 import { learnMore } from '../../utils/link';
 
 export type ReactNativeDirectoryCheckResult = {

@@ -35,6 +35,8 @@ class ScreenCaptureModule : Module() {
         screenCaptureCallback = Activity.ScreenCaptureCallback {
           sendEvent(eventName)
         }
+        // Let's try to register the callback
+        registerCallback()
       } else {
         screenshotEventEmitter = ScreenshotEventEmitter(context) {
           sendEvent(eventName)
@@ -59,16 +61,16 @@ class ScreenCaptureModule : Module() {
     }
 
     AsyncFunction<Unit>("preventScreenCapture") {
-      registerCallback()
       currentActivity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction<Unit>("allowScreenCapture") {
-      registerCallback()
       currentActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }.runOnQueue(Queues.MAIN)
 
     OnActivityEntersForeground {
+      // Call registerCallback once more as a fallback if activity wasn't available in onCreate
+      registerCallback()
       screenshotEventEmitter?.onHostResume()
     }
 
@@ -91,7 +93,7 @@ class ScreenCaptureModule : Module() {
       return
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-      currentActivity.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!)
+      safeCurrentActivity?.registerScreenCaptureCallback(currentActivity.mainExecutor, screenCaptureCallback!!) ?: return
       isRegistered = true
     }
   }

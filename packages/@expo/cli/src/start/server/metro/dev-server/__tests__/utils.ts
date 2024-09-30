@@ -4,17 +4,17 @@ import { parse } from 'node:url';
 import { promisify } from 'node:util';
 import { ClientOptions, WebSocket } from 'ws';
 
-import { createMetroDevMiddleware } from '../createMetroDevMiddleware';
+import { createMetroMiddleware } from '../createMetroMiddleware';
 
 export function withMetroServer(projectRoot = '/project'): {
   projectRoot: string;
-  metro: ReturnType<typeof createMetroDevMiddleware>;
+  metro: ReturnType<typeof createMetroMiddleware>;
   server: ReturnType<typeof createServer> & {
     fetch: (url: string, init?: RequestInit) => Promise<Response>;
     connect: (url: string) => WebSocket;
   };
 } {
-  const metro = createMetroDevMiddleware({ projectRoot });
+  const metro = createMetroMiddleware({ projectRoot });
   const server = createServer(metro.middleware);
 
   const closeServer = promisify(server.close.bind(server));

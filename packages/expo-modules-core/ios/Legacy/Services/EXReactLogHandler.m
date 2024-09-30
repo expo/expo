@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React/RCTLog.h>
+#import <React/React-Core-umbrella.h>
 
 #import <ExpoModulesCore/EXReactLogHandler.h>
 #import <ExpoModulesCore/EXDefines.h>

@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ReactCommon/TurboModuleUtils.h>
+#import <ReactCommon/ReactCommon-umbrella.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
 #import <ExpoModulesCore/EXJavaScriptWeakObject.h>

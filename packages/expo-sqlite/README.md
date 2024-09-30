@@ -7,7 +7,7 @@
   </a>
 </p>
 
-Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.
+Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.
 
 # API documentation
 

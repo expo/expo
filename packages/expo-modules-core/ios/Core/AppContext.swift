@@ -34,7 +34,15 @@ public final class AppContext: NSObject {
    The legacy module registry with modules written in the old-fashioned way.
    */
   @objc
-  public weak var legacyModuleRegistry: EXModuleRegistry?
+  public weak var legacyModuleRegistry: EXModuleRegistry? {
+    didSet {
+      if let registry = legacyModuleRegistry,
+        let legacyModule = registry.getModuleImplementingProtocol(EXFileSystemInterface.self) as? EXFileSystemInterface,
+        let fileSystemLegacyModule = legacyModule as? FileSystemLegacyUtilities {
+        fileSystemLegacyModule.maybeInitAppGroupSharedDirectories(self.config.appGroupSharedDirectories)
+      }
+    }
+  }
 
   @objc
   public weak var legacyModulesProxy: LegacyNativeModulesProxy?
@@ -78,6 +86,11 @@ public final class AppContext: NSObject {
   }
 
   /**
+   Code signing entitlements for code signing
+   */
+  public let appCodeSignEntitlements = AppContext.modulesProvider().getAppCodeSignEntitlements()
+
+  /**
    The core module that defines the `expo` object in the global scope of Expo runtime.
    */
   internal private(set) lazy var coreModule = CoreModule(appContext: self)
@@ -92,14 +105,14 @@ public final class AppContext: NSObject {
   /**
    Designated initializer without modules provider.
    */
-  public init(config: AppContextConfig = .default) {
-    self.config = config
+  public init(config: AppContextConfig? = nil) {
+    self.config = config ?? AppContextConfig(documentDirectory: nil, cacheDirectory: nil, appGroups: appCodeSignEntitlements.appGroups)
 
     super.init()
     listenToClientAppNotifications()
   }
 
-  public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig = .default) {
+  public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig? = nil) {
     self.init(config: config)
     self.legacyModulesProxy = legacyModulesProxy as? LegacyNativeModulesProxy
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
@@ -107,7 +120,7 @@ public final class AppContext: NSObject {
 
   @objc
   public convenience override init() {
-    self.init(config: .default)
+    self.init(config: nil)
   }
 
   @objc
@@ -405,6 +418,9 @@ public final class AppContext: NSObject {
     EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
       sharedObjectRegistry?.delete(objectId)
     }
+    
+    // Install `global.expo.SharedRef`.
+    EXJavaScriptRuntimeManager.installSharedRefClass(runtime)
 
     // Install `global.expo.NativeModule`.
     EXJavaScriptRuntimeManager.installNativeModuleClass(runtime)

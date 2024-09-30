@@ -173,7 +173,7 @@ if (!isSubcommand) {
   if (subcommand in migrationMap) {
     const replacement = migrationMap[subcommand];
     console.log();
-    const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use'
+    const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use';
     console.log(
       chalk.yellow`  {gray $} {bold expo ${subcommand}} is not supported in the local CLI, please ${instruction} {bold ${replacement}} instead`
     );
@@ -204,12 +204,12 @@ process.on('SIGTERM', () => process.exit(0));
 commands[command]().then((exec) => {
   exec(commandArgs);
 
+  // NOTE(EvanBacon): Track some basic telemetry events indicating the command
+  // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
+  // We do this to determine how well deprecations are going before removing a command.
   if (!boolish('EXPO_NO_TELEMETRY', false)) {
-    // NOTE(EvanBacon): Track some basic telemetry events indicating the command
-    // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
-    // We do this to determine how well deprecations are going before removing a command.
-    const { logEventAsync } =
+    const { recordCommand } =
       require('../src/utils/telemetry') as typeof import('../src/utils/telemetry');
-    logEventAsync('action', { action: `expo ${command}` });
+    recordCommand(command);
   }
 });

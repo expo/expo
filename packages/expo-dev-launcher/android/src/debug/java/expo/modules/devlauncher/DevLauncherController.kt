@@ -56,8 +56,8 @@ import org.koin.dsl.module
 private val DEV_LAUNCHER_HOST: String? = null
 
 private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
-    Intent.FLAG_ACTIVITY_CLEAR_TASK or
-    Intent.FLAG_ACTIVITY_NO_ANIMATION
+  Intent.FLAG_ACTIVITY_CLEAR_TASK or
+  Intent.FLAG_ACTIVITY_NO_ANIMATION
 
 class DevLauncherController private constructor() :
   DevLauncherKoinComponent, DevLauncherControllerInterface {

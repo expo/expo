@@ -45,13 +45,13 @@ export function DiscoverMore() {
           <OfficeHoursImage />
           <RawH3 className="!text-palette-yellow11 !font-bold">Join us for Office Hours</RawH3>
           <P className="!text-palette-yellow11 !text-xs max-w-[28ch]">
-            Ask the Expo Team questions on our Discord stage.
+            Check our Discord events for the next live Q&A session.
           </P>
           <HomeButton
             className="bg-palette-yellow11 border-palette-yellow11 text-palette-yellow2 hocus:bg-palette-yellow11"
             href="https://chat.expo.dev"
             rightSlot={<ArrowUpRightIcon className="text-palette-yellow2 icon-md" />}>
-            Check Discord for Upcoming Events
+            Go to Discord
           </HomeButton>
         </GridCell>
         <GridCell className="bg-palette-blue3 border-palette-blue6 selection:bg-palette-blue5">

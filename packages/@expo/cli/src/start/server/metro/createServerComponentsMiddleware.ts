@@ -278,6 +278,7 @@ export function createServerComponentsMiddleware(
       engine,
       contentType,
       ssrManifest,
+      decodedBody,
     }: {
       input: string;
       searchParams: URLSearchParams;
@@ -287,6 +288,7 @@ export function createServerComponentsMiddleware(
       engine?: 'hermes' | null;
       contentType?: string;
       ssrManifest?: Map<string, string>;
+      decodedBody?: unknown;
     },
     isExporting: boolean | undefined = instanceMetroOptions.isExporting
   ) {
@@ -304,7 +306,7 @@ export function createServerComponentsMiddleware(
     return renderRsc(
       {
         body,
-        searchParams,
+        decodedBody,
         context: getRscRenderContext(platform),
         config: {},
         input,

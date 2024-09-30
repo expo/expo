@@ -20,9 +20,7 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, (_data) => {
 
 const remotePushSupported = Device.isDevice;
 export default class NotificationScreen extends React.Component<
-  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  {},
+  object,
   {
     lastNotifications?: Notifications.Notification;
   }
@@ -34,9 +32,7 @@ export default class NotificationScreen extends React.Component<
   private _onReceivedListener: EventSubscription | undefined;
   private _onResponseReceivedListener: EventSubscription | undefined;
 
-  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  constructor(props: {}) {
+  constructor(props: object) {
     super(props);
     this.state = {};
   }
@@ -152,18 +148,19 @@ export default class NotificationScreen extends React.Component<
         <HeadingText>Notification triggers debugging</HeadingText>
         <ListButton
           onPress={() =>
-            Notifications.getNextTriggerDateAsync({ seconds: 10 }).then((timestamp) =>
-              alert(new Date(timestamp!))
-            )
+            Notifications.getNextTriggerDateAsync({
+              type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+              seconds: 10,
+            }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for time interval + 10 seconds"
         />
         <ListButton
           onPress={() =>
             Notifications.getNextTriggerDateAsync({
+              type: Notifications.SchedulableTriggerInputTypes.DAILY,
               hour: 9,
               minute: 0,
-              repeats: true,
             }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for 9 AM"
@@ -171,10 +168,10 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={() =>
             Notifications.getNextTriggerDateAsync({
+              type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
               hour: 9,
               minute: 0,
               weekday: 1,
-              repeats: true,
             }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for Sunday, 9 AM"
@@ -262,6 +259,7 @@ export default class NotificationScreen extends React.Component<
         sound: true,
       },
       trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: 10,
       },
     });
@@ -286,6 +284,7 @@ export default class NotificationScreen extends React.Component<
         sound: 'cat.wav',
       },
       trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         channelId: 'custom-sound',
         seconds: 1,
       },
@@ -301,6 +300,7 @@ export default class NotificationScreen extends React.Component<
         sound: true,
       },
       trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: 10,
       },
     });

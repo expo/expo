@@ -7,13 +7,13 @@ import xcode, { XCBuildConfiguration } from 'xcode';
 import { InfoPlist } from './IosConfig.types';
 import { getAllInfoPlistPaths, getAllPBXProjectPaths, getPBXProjectPath } from './Paths';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
+import { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import {
   ConfigurationSectionEntry,
   getBuildConfigurationsForListId,
   resolveXcodeBuildSetting,
 } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
-import { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
 
 export const withBundleIdentifier: ConfigPlugin<{ bundleIdentifier?: string }> = (
