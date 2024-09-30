@@ -32,7 +32,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.28.17):
     - ExpoModulesCore
-  - Expo (51.0.34):
+  - Expo (51.0.35):
     - ExpoModulesCore
   - expo-dev-client (4.0.27):
     - EXManifests
@@ -2522,7 +2522,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
-  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EASClient: 1509a9a6b48b932ec61667644634daf2562983b8
   EXApplication: c08200c34daca7af7fd76ac4b9d606077410e8ad
   EXAV: afa491e598334bbbb92a92a2f4dd33d7149ad37f
@@ -2533,7 +2533,7 @@ SPEC CHECKSUMS:
   EXLocation: 43e9b582ca63a23c6f0a18d8cbe2145b3a388b55
   EXManifests: 866d0c365eb46835d48be2c7a0e00418312992b4
   EXNotifications: 1177f1f3acba90ac409ac70d011dc00c75049635
-  Expo: 963ef4ae102e4f4ac114a8510d70127c44adffbf
+  Expo: 76d7e2a8badda285c79ae69d01b6a40b3ec75e5c
   expo-dev-client: 85deba11af998ea86e62093b17fce56aa2c6f26b
   expo-dev-launcher: c8e85bf244a2492448c88adbc3585ca13572f7b9
   expo-dev-menu: 0db38ce92be7228dadb588f7069e037fd9d165d8
@@ -2595,7 +2595,7 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: ac12dc084d1c8ec4cc4d7b3cf1b0ebda6dab85af
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
@@ -2676,7 +2676,7 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   sqlite3: 02d1f07eaaa01f80a1c16b4b31dfcbb3345ee01a
   UMAppLoader: f17a5ee8e85b536ace0fc254b447a37ed198d57e
-  Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
+  Yoga: 2246eea72aaf1b816a68a35e6e4b74563653ae09
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: 825d3dcef2f2677b963280e6274dda810a993363

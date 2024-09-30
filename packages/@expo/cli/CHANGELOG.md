@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.18.30 — 2024-09-30
+
+### 💡 Others
+
 - Stop pinging dev session with updates. ([#31717](https://github.com/expo/expo/pull/31717) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.18.29 — 2024-08-14
