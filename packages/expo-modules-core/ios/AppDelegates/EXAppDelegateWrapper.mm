@@ -102,10 +102,8 @@
     [weakSelf customizeRootView:(RCTRootView *)rootView];
   };
 
-  configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
-  {
-    return [weakSelf sourceURLForBridge:bridge];
-  };
+  // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
+  configuration.sourceURLForBridge = nil;
 
   configuration.hostDidStartBlock = ^(RCTHost *_Nonnull host) {
     [weakSelf hostDidStart:host];
