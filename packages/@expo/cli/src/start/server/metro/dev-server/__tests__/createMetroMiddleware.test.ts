@@ -1,10 +1,10 @@
 import { withMetroServer } from './utils';
 import { openInEditorAsync } from '../../../../../utils/editor';
-import { createMetroDevMiddleware } from '../createMetroDevMiddleware';
+import { createMetroMiddleware } from '../createMetroMiddleware';
 
 jest.mock('../../../../../utils/editor');
 
-describe(createMetroDevMiddleware, () => {
+describe(createMetroMiddleware, () => {
   const { metro, server, projectRoot } = withMetroServer();
 
   it('disables cache on all requests', async () => {
