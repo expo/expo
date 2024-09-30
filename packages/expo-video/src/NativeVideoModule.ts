@@ -8,6 +8,9 @@ type ExpoVideoModule = {
   VideoThumbnail: typeof VideoThumbnail;
 
   isPictureInPictureSupported(): boolean;
+  setVideoCacheSizeAsync(sizeBytes: number): Promise<void>;
+  cleanVideoCacheAsync(): Promise<void>;
+  getCurrentVideoCacheSize(): number;
 };
 
 export default requireNativeModule<ExpoVideoModule>('ExpoVideo');
