@@ -19,6 +19,7 @@
 ### 💡 Others
 
 - Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
+- Removed deprecated code for SDK 49. ([#31740](https://github.com/expo/expo/pull/31740) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
