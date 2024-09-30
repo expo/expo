@@ -31,7 +31,7 @@ describe(resolveLaunchPropsAsync, () => {
       launchActivity: 'com.bacon.mydevicefamilyproject/.MainActivity',
       mainActivity: '.MainActivity',
       packageName: 'com.bacon.mydevicefamilyproject',
-      customAppId: undefined,
+      customAppId: 'com.bacon.mydevicefamilyproject',
     });
   });
 
