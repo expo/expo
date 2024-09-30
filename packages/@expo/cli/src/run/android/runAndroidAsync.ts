@@ -85,6 +85,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     {
       applicationId: props.packageName,
       customAppId: props.customAppId,
+      launchActivity: props.launchActivity,
     },
     { device: props.device.device }
   );
