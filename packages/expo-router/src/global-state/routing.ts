@@ -88,12 +88,17 @@ export type LinkToOptions = {
    * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
    */
   relativeToDirectory?: boolean;
+
+  /**
+   *
+   */
+  initial?: boolean;
 };
 
 export function linkTo(
   this: RouterStore,
   href: string,
-  { event, relativeToDirectory }: LinkToOptions = {}
+  { event, relativeToDirectory, initial }: LinkToOptions = {}
 ) {
   if (shouldLinkExternally(href)) {
     Linking.openURL(href);
@@ -129,13 +134,14 @@ export function linkTo(
     return;
   }
 
-  return navigationRef.dispatch(getNavigateAction(state, rootState, event));
+  return navigationRef.dispatch(getNavigateAction(state, rootState, event, initial));
 }
 
 function getNavigateAction(
   actionState: ResultState,
   navigationState: NavigationState,
-  type = 'NAVIGATE'
+  type = 'NAVIGATE',
+  initial?: boolean
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -234,6 +240,15 @@ function getNavigateAction(
 
   if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
     type = 'JUMP_TO';
+  }
+
+  if (initial !== undefined) {
+    if (rootPayload.params.initial) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
+      }
+    }
+    rootPayload.params.initial = initial;
   }
 
   return {

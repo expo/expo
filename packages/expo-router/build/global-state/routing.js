@@ -91,7 +91,7 @@ function setParams(params = {}) {
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;
-function linkTo(href, { event, relativeToDirectory } = {}) {
+function linkTo(href, { event, relativeToDirectory, initial } = {}) {
     if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
         return;
@@ -115,10 +115,10 @@ function linkTo(href, { event, relativeToDirectory } = {}) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    return navigationRef.dispatch(getNavigateAction(state, rootState, event));
+    return navigationRef.dispatch(getNavigateAction(state, rootState, event, initial));
 }
 exports.linkTo = linkTo;
-function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
+function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', initial) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -200,6 +200,14 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
     }
     if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
         type = 'JUMP_TO';
+    }
+    if (initial !== undefined) {
+        if (rootPayload.params.initial) {
+            if (process.env.NODE_ENV !== 'production') {
+                console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
+            }
+        }
+        rootPayload.params.initial = initial;
     }
     return {
         type,

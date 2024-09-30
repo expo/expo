@@ -17,6 +17,10 @@ export type LinkToOptions = {
      * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
      */
     relativeToDirectory?: boolean;
+    /**
+     *
+     */
+    initial?: boolean;
 };
-export declare function linkTo(this: RouterStore, href: string, { event, relativeToDirectory }?: LinkToOptions): void;
+export declare function linkTo(this: RouterStore, href: string, { event, relativeToDirectory, initial }?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map
