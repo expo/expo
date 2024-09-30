@@ -2,6 +2,7 @@
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
+#import "EXAppRootViewFactory.h"
 #import "EXKernel.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
@@ -17,6 +18,7 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.
@@ -50,7 +52,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 @end
 
-@interface EXReactAppManager ()
+@interface EXReactAppManager () <RCTTurboModuleManagerDelegate>
 
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
@@ -88,10 +90,9 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   if (!_appRecord) {
     return kEXReactAppManagerStatusError;
   }
-//  if (_loadCallback) {
-//    // we have a RCTBridge load callback so we're ready to receive load events
-//    return kEXReactAppManagerStatusBridgeLoading;
-//  }
+  if (_loadCallback) {
+    return kEXReactAppManagerStatusBridgeLoading;
+  }
   if (_isHostRunning) {
     return kEXReactAppManagerStatusRunning;
   }
@@ -124,12 +125,12 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
                                                    logFunction:[self logFunction]
                                                   logThreshold:[self logLevel]];
     
-    ExpoAppInstance* appInstance = [self _setupAppInstanceWithManager:_versionManager];
+    [self _createAppInstance];
     
     if (!_isHeadless) {
       // We don't want to run the whole JS app if app launches in the background,
       // so we're omitting creation of RCTRootView that triggers runApplication and sets up React view hierarchy.
-      _reactRootView = [appInstance.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
+      _reactRootView = [self.reactAppInstance.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
     }
 
     [self _startObservingBridgeNotificationsForHost];
@@ -138,15 +139,37 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   }
 }
 
-- (ExpoAppInstance *)_setupAppInstanceWithManager:(EXVersionManager *)versionManager {
-  ExpoAppInstance *appInstance = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager];
+- (void)_createAppInstance
+{
+  ExpoAppInstance *appInstance = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl]];
   
-  appInstance.rootViewFactory.reactHost = [appInstance.rootViewFactory createReactHost:[self initialPropertiesForRootView]];
-  appInstance.rootViewFactory = [appInstance createRCTRootViewFactory];
+  __weak __typeof(self) weakSelf = self;
+  RCTBundleURLBlock bundleUrlBlock = ^{
+    EXReactAppManager *strongSelf = weakSelf;
+    return [strongSelf bundleUrl];
+  };
   
+  RCTRootViewFactoryConfiguration *configuration =
+  [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
+                                                   newArchEnabled:appInstance.fabricEnabled
+                                               turboModuleEnabled:appInstance.turboModuleEnabled
+                                                bridgelessEnabled:appInstance.bridgelessEnabled];
+  
+  configuration.loadSourceForHost = ^(RCTHost * _Nonnull host, RCTSourceLoadBlock  _Nonnull loadCallback) {
+    [self loadSourceForHost:host onComplete:loadCallback];
+  };
+  
+  configuration.hostDidStartBlock = ^(RCTHost * _Nonnull host) {
+    [self hostDidStart:host];
+  };
+  
+  EXAppRootViewFactory *factory = [[EXAppRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
+  appInstance.rootViewFactory = factory;
   _reactAppInstance = appInstance;
-  
-  return appInstance;
+}
+
+- (void)hostDidStart:(RCTHost *)host {
+  [_versionManager hostDidStart:self.reactAppInstance];
 }
 
 - (NSDictionary *)extraParams
@@ -244,14 +267,24 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   return [self bundleUrl];
 }
 
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
-{
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
+  return [_versionManager extraModules];
+}
+
+- (Class)getModuleClassFromName:(const char *)name {
+  return [_versionManager getModuleClassFromName:name];
+}
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass {
+  return [_versionManager getModuleInstanceFromClass:moduleClass];
+}
+
+- (void)loadSourceForHost:(RCTHost *)host onComplete:(RCTSourceLoadBlock)loadCallback {
   // clear any potentially old loading state
   if (_appRecord.scopeKey) {
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forScopeKey:_appRecord.scopeKey];
   }
-  [self _stopObservingBridgeNotifications];
-
+  
   if ([self enablesDeveloperTools]) {
     if ([_appRecord.appLoader supportsBundleReload]) {
       [_appRecord.appLoader forceBundleReload];
@@ -260,7 +293,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
       [[EXKernel sharedInstance] reloadAppWithScopeKey:_appRecord.scopeKey];
     }
   }
-
+  
   _loadCallback = loadCallback;
   if (_appRecord.appLoader.status == kEXAppLoaderStatusHasManifestAndBundle) {
     // finish loading immediately (app loader won't call this since it's already done)
@@ -318,10 +351,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
                                            selector:@selector(_handleReactContentEvent:)
                                                name:RCTContentDidAppearNotification
                                              object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleBridgeEvent:)
-                                               name:RCTBridgeWillReloadNotification
-                                             object:nil];
 }
 
 - (void)_stopObservingBridgeNotifications
@@ -330,7 +359,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillReloadNotification object:nil];
 }
 
 - (void)_handleJavaScriptStartLoadingEvent:(NSNotification *)notification
@@ -379,17 +407,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
       EX_ENSURE_STRONGIFY(self);
       [self.delegate reactAppManagerAppContentDidAppear:self];
       [self _appLoadingFinished];
-    });
-  }
-}
-
-- (void)_handleBridgeEvent:(NSNotification *)notification
-{
-  if ([notification.name isEqualToString:RCTBridgeWillReloadNotification]) {
-    EX_WEAKIFY(self);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      EX_ENSURE_STRONGIFY(self);
-      [self.delegate reactAppManagerAppContentWillReload:self];
     });
   }
 }
@@ -489,8 +506,10 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   if ([self enablesDeveloperTools]) {
     // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
     // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
-    RCTEventDispatcher *dispatcher = [[self.reactHost moduleRegistry] moduleForName:"EventDispatcher"];
-    [dispatcher sendAppEventWithName:@"RCTDevMenuShown" body:nil];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[[self.reactHost moduleRegistry] moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"RCTDevMenuShown" body:nil];
+#pragma clang diagnostic pop
   }
 }
 

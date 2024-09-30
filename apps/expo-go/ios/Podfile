@@ -162,14 +162,6 @@ target 'Expo Go' do
     end
   end
 
-  post_integrate do |installer|
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
-    end
-  end
-
   # Test targets
   target 'ExponentIntegrationTests' do
     inherit! :search_paths

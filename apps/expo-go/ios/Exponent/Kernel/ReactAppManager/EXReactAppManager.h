@@ -7,10 +7,6 @@
 #import "EXAppFetcher.h"
 #import "EXKernelAppRecord.h"
 
-#ifdef __cplusplus
-#import <React/RCTCxxBridgeDelegate.h>
-#endif // __cplusplus
-
 typedef enum EXReactAppManagerStatus {
   kEXReactAppManagerStatusNew,
   kEXReactAppManagerStatusBridgeLoading,
@@ -29,8 +25,8 @@ typedef enum EXReactAppManagerStatus {
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager;
 
 @end
-
-@interface EXReactAppManager : NSObject <RCTBridgeDelegate, EXAppFetcherDataSource>
+ 
+@interface EXReactAppManager : NSObject <EXAppFetcherDataSource>
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record initialProps:(NSDictionary *)initialProps;
 - (void)rebuildHost;
@@ -80,8 +76,3 @@ typedef enum EXReactAppManagerStatus {
 
 @interface EXReactAppManager () <RCTReloadListener>
 @end
-
-#ifdef __cplusplus
-@interface EXReactAppManager (RCTCxxBridgeDelegate) <RCTCxxBridgeDelegate>
-@end
-#endif // __cplusplus

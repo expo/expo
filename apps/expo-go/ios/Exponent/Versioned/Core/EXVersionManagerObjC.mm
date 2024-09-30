@@ -32,6 +32,7 @@
 #import <React/RCTImageLoader.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/CoreModulesPlugins.h>
+#import <React/RCTReloadCommand.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
@@ -46,9 +47,6 @@
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <reacthermes/HermesExecutorFactory.h>
 
-#import <React/RCTJSIExecutorRuntimeInstaller.h>
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.
@@ -80,10 +78,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 @end
 
-@interface EXVersionManagerObjC () <RCTTurboModuleManagerDelegate> {
-  std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
-  facebook::react::ContextContainer::Shared _contextContainer;
-}
+@interface EXVersionManagerObjC ()
 
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
@@ -136,11 +131,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
 }
 
-- (void)hostDidStart:(id)instance
+- (void)hostDidStart:(id)appInstance
 {
-  if ([self _isDevModeEnabledForHost:instance]) {
+  if ([self _isDevModeEnabledForHost:appInstance]) {
     // Set the bundle url for the packager connection manually
-    NSURL *bundleURL = [instance bundleURL];
+    NSURL *bundleURL = [appInstance bundleURL];
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
     [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
@@ -167,11 +162,15 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   self.networkInterceptor = nil;
 }
 
+- (RCTDevSettings *) devSettings:(id)host {
+  return (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
+}
+
 #pragma mark - Dev menu
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[[host moduleRegistry] moduleForName:"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   BOOL isDevModeEnabled = YES;
   NSMutableDictionary *items = [NSMutableDictionary new];
 
@@ -224,11 +223,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 - (void)selectDevMenuItemWithKey:(NSString *)key host:(id)host bundleURL:(NSURL *)bundleURL
 {
   RCTAssertMainQueue();
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   if ([key isEqualToString:@"dev-reload"]) {
     // bridge could be an RCTBridge of any version and we need to cast it since ARC needs to know
     // the return type
-//    RCTTriggerReloadCommandListeners("Dev menu - reload");
+    RCTTriggerReloadCommandListeners(@"Dev menu - reload");
   } else if ([key isEqualToString:@"dev-remote-debug"]) {
     [self _openJsInspector:bundleURL];
   } else if ([key isEqualToString:@"dev-profiler"]) {
@@ -264,19 +263,19 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (void)disableRemoteDebuggingForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   devSettings.isDebuggingRemotely = NO;
 }
 
 - (void)toggleRemoteDebuggingForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
 }
 
 - (void)togglePerformanceMonitorForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   id perfMonitor = [self _moduleInstanceForHost:host named:@"PerfMonitor"];
   if (perfMonitor) {
     if (devSettings.isPerfMonitorShown) {
@@ -291,7 +290,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (void)toggleElementInspectorForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   [devSettings toggleElementInspector];
 }
 
@@ -475,11 +474,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 - (BOOL)_isOpeningHomeInProductionMode
 {
   return _params[@"browserModuleClass"] && !self.manifest.developer;
-}
-
-- (void *)versionedJsExecutorFactoryForBridge:(nonnull RCTBridge *)bridge
-{
-  return [EXVersionUtils versionedJsExecutorFactoryForBridge:bridge engine:_manifest.jsEngine];
 }
 
 @end

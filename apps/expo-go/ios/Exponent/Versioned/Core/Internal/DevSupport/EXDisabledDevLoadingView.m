@@ -60,7 +60,6 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
 
 - (void)updateProgress:(RCTLoadingProgress *)progress
 {
-  NSLog(@"Update Progress");
 }
 
 @end

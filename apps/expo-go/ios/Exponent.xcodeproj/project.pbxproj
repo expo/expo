@@ -32,7 +32,8 @@
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
-		40F8428D2C9CBCE000E1AC82 /* ExpoAppInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 40F8428C2C9CBCE000E1AC82 /* ExpoAppInstance.mm */; };
+		407F43BC2CA991C5005E5E96 /* EXAppRootViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 407F43BB2CA991C5005E5E96 /* EXAppRootViewFactory.mm */; };
+		408933562CAAA2000095810E /* ExpoAppInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 408933552CAAA2000095810E /* ExpoAppInstance.swift */; };
 		40F867A72CA04F0B009A7E2C /* libskshaper.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F867A22CA04F0B009A7E2C /* libskshaper.xcframework */; };
 		40F867A82CA04F0B009A7E2C /* libskunicode.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F867A32CA04F0B009A7E2C /* libskunicode.xcframework */; };
 		40F867A92CA04F0B009A7E2C /* libsvg.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F867A42CA04F0B009A7E2C /* libsvg.xcframework */; };
@@ -103,7 +104,7 @@
 		B5D0D65F204F4BF500DDFC99 /* EXLog.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D65D204F4BF400DDFC99 /* EXLog.m */; };
 		B5D0D673204F4C0400DDFC99 /* EXApiUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D661204F4C0400DDFC99 /* EXApiUtil.m */; };
 		B5D0D677204F4C0400DDFC99 /* EXFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66B204F4C0400DDFC99 /* EXFileDownloader.m */; };
-		B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.m */; };
+		B5D0D679204F4C0400DDFC99 /* EXReactAppManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.mm */; };
 		B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */; };
 		B5E49B571D1346FA00AA6436 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
 		B5E49B751D134F0700AA6436 /* kernel.ios.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B741D134F0700AA6436 /* kernel.ios.bundle */; };
@@ -248,8 +249,9 @@
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
-		40F842882C9CB62A00E1AC82 /* ExpoAppInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoAppInstance.h; sourceTree = "<group>"; };
-		40F8428C2C9CBCE000E1AC82 /* ExpoAppInstance.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoAppInstance.mm; sourceTree = "<group>"; };
+		407F43BB2CA991C5005E5E96 /* EXAppRootViewFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXAppRootViewFactory.mm; sourceTree = "<group>"; };
+		407F43BD2CA991DE005E5E96 /* EXAppRootViewFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppRootViewFactory.h; sourceTree = "<group>"; };
+		408933552CAAA2000095810E /* ExpoAppInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpoAppInstance.swift; sourceTree = "<group>"; };
 		40F867A02CA04F0B009A7E2C /* JKBigInteger.podspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JKBigInteger.podspec.json; sourceTree = "<group>"; };
 		40F867A12CA04F0B009A7E2C /* libskparagraph.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libskparagraph.xcframework; sourceTree = "<group>"; };
 		40F867A22CA04F0B009A7E2C /* libskshaper.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libskshaper.xcframework; sourceTree = "<group>"; };
@@ -385,7 +387,7 @@
 		B5D0D667204F4C0400DDFC99 /* EXApiUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXApiUtil.h; sourceTree = "<group>"; };
 		B5D0D66B204F4C0400DDFC99 /* EXFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXFileDownloader.m; sourceTree = "<group>"; };
 		B5D0D66E204F4C0400DDFC99 /* EXReactAppExceptionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppExceptionHandler.h; sourceTree = "<group>"; };
-		B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppManager.m; sourceTree = "<group>"; };
+		B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXReactAppManager.mm; sourceTree = "<group>"; };
 		B5D0D670204F4C0400DDFC99 /* EXReactAppManager+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXReactAppManager+Private.h"; sourceTree = "<group>"; };
 		B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXReactAppExceptionHandler.m; sourceTree = "<group>"; };
 		B5D0D672204F4C0400DDFC99 /* EXReactAppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXReactAppManager.h; sourceTree = "<group>"; };
@@ -596,8 +598,9 @@
 		40F842852C9CB39F00E1AC82 /* AppDelegates */ = {
 			isa = PBXGroup;
 			children = (
-				40F842882C9CB62A00E1AC82 /* ExpoAppInstance.h */,
-				40F8428C2C9CBCE000E1AC82 /* ExpoAppInstance.mm */,
+				407F43BB2CA991C5005E5E96 /* EXAppRootViewFactory.mm */,
+				407F43BD2CA991DE005E5E96 /* EXAppRootViewFactory.h */,
+				408933552CAAA2000095810E /* ExpoAppInstance.swift */,
 			);
 			path = AppDelegates;
 			sourceTree = "<group>";
@@ -1045,7 +1048,7 @@
 				B5D0D66E204F4C0400DDFC99 /* EXReactAppExceptionHandler.h */,
 				B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */,
 				B5D0D672204F4C0400DDFC99 /* EXReactAppManager.h */,
-				B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.m */,
+				B5D0D66F204F4C0400DDFC99 /* EXReactAppManager.mm */,
 				B5D0D670204F4C0400DDFC99 /* EXReactAppManager+Private.h */,
 			);
 			path = ReactAppManager;
@@ -1769,7 +1772,6 @@
 				B2641CB52AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m in Sources */,
 				B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */,
 				B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
-				40F8428D2C9CBCE000E1AC82 /* ExpoAppInstance.mm in Sources */,
 				BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */,
 				BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */,
 				B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.mm in Sources */,
@@ -1779,7 +1781,7 @@
 				B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
 				0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */,
-				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */,
+				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.mm in Sources */,
 				B5A473DA204A66F70035C61C /* EXAppViewController.mm in Sources */,
 				B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */,
 				07C6733524D2310C003F3F5C /* EXAppLoaderExpoUpdates.m in Sources */,
@@ -1791,6 +1793,7 @@
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
 				B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAbstractLoader.m in Sources */,
+				408933562CAAA2000095810E /* ExpoAppInstance.swift in Sources */,
 				F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */,
 				B56C65C6204768F3002B2424 /* EXRootViewController.m in Sources */,
 				31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */,
@@ -1866,6 +1869,7 @@
 				B5D0D673204F4C0400DDFC99 /* EXApiUtil.m in Sources */,
 				8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */,
 				B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
+				407F43BC2CA991C5005E5E96 /* EXAppRootViewFactory.mm in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */,
@@ -2011,10 +2015,7 @@
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -2077,10 +2078,7 @@
 				LD = "";
 				LDPLUSPLUS = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

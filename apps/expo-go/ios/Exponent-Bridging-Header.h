@@ -19,6 +19,5 @@
 #import "EXAppState.h"
 #import "EXDisabledDevLoadingView.h"
 #import "EXStatusBarManager.h"
-#import "ExpoAppInstance.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXClientReleaseType.h"
