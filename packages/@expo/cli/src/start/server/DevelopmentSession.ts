@@ -19,9 +19,7 @@ export class DevelopmentSession {
     /** Project root directory. */
     private projectRoot: string,
     /** Development Server URL. */
-    public url: string | null,
-    /** Catch any errors that may occur during the `startAsync` method. */
-    private onError: (error: Error) => void
+    public url: string | null
   ) {}
 
   /**
@@ -69,7 +67,6 @@ export class DevelopmentSession {
       }
     } catch (error: any) {
       debug(`Error updating development session API: ${error}`);
-      this.onError(error);
     }
   }
 
@@ -102,7 +99,6 @@ export class DevelopmentSession {
       return true;
     } catch (error: any) {
       debug(`Error closing development session API: ${error}`);
-      this.onError(error);
       return false;
     }
   }
