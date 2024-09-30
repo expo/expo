@@ -32,6 +32,7 @@
 - [Android] Added `onStartListeningToEvent` and `onStopListeningToEvent` to the `SharedObject`. ([#31385](https://github.com/expo/expo/pull/31385) by [@lukmccall](https://github.com/lukmccall))
 - Added Apple shared app groups support. ([#31519](https://github.com/expo/expo/pull/31519) by [@kudo](https://github.com/kudo))
 - [Android] Added a way to provide shared objects memory pressure to improve garbage collection of native objects retaining some heavy data. ([#31784](https://github.com/expo/expo/pull/31784) by [@lukmccall](https://github.com/lukmccall))
+- Added `nativeRefType` to `SharedRef`.
 
 ### 🐛 Bug fixes
 

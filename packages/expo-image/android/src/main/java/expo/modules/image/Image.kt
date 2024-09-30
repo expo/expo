@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable
 import expo.modules.kotlin.sharedobjects.SharedRef
 
 class Image(ref: Drawable) : SharedRef<Drawable>(ref) {
+  override val nativeRefType: String = "image"
+
   override fun getAdditionalMemoryPressure(): Int {
     val ref = ref
     if (ref is BitmapDrawable) {

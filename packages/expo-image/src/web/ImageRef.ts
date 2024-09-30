@@ -2,7 +2,9 @@ import { SharedRef } from 'expo';
 
 import { ImageRef } from '../Image.types';
 
-export default class ImageRefWeb extends SharedRef implements ImageRef {
+export default class ImageRefWeb extends SharedRef<'image'> implements ImageRef {
+  override nativeRefType = 'image';
+
   uri: string | null = null;
   width: number = 0;
   height: number = 0;

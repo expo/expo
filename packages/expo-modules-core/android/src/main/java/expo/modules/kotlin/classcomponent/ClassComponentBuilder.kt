@@ -26,7 +26,11 @@ class ClassComponentBuilder<SharedObjectType : Any>(
   var constructor: SyncFunctionComponent? = null
 
   fun buildClass(): ClassDefinitionData {
-    if (eventsDefinition != null && ownerClass.isSubclassOf(SharedObject::class)) {
+    val hasOwnerType = ownerClass != Unit::class
+    val isSharedObject = hasOwnerType && ownerClass.isSubclassOf(SharedObject::class)
+    val isSharedRef = hasOwnerType && ownerClass.isSubclassOf(SharedRef::class)
+
+    if (eventsDefinition != null && isSharedObject) {
       listOf("__expo_onStartListeningToEvent" to SharedObject::onStartListeningToEvent, "__expo_onStopListeningToEvent" to SharedObject::onStopListeningToEvent)
         .forEach { (name, function) ->
           SyncFunctionComponent(name, arrayOf(ownerType, toAnyType<String>()), toReturnType<Unit>()) { (self, eventName) ->
@@ -39,20 +43,35 @@ class ClassComponentBuilder<SharedObjectType : Any>(
         }
     }
 
+    if (isSharedRef) {
+      if (properties.contains("nativeRefType")) {
+        throw IllegalArgumentException("'nativeRefType' is a reserved property name for SharedRef")
+      }
+
+      properties["nativeRefType"] = PropertyComponentBuilderWithThis<SharedRef<*>>(ownerType.kType, "nativeRefType")
+        .also {
+          it.get { owner ->
+            owner.nativeRefType
+          }
+        }
+    }
+
     val objectData = buildObject()
     objectData.functions.forEach {
       it.ownerType = ownerType.kType
       it.canTakeOwner = true
     }
 
-    val hasSharedObject = ownerClass !== Unit::class // TODO: Add an empty constructor that throws when called from JS
-    val isSharedRef = ownerClass.isSubclassOf(SharedRef::class)
-    if (hasSharedObject && constructor == null && !isSharedRef) {
+    // TODO: Add an empty constructor that throws when called from JS
+    if (hasOwnerType && constructor == null && !isSharedRef) {
       throw IllegalArgumentException("constructor cannot be null")
     }
 
-    val constructor = constructor
-      ?: SyncFunctionComponent("constructor", emptyArray(), toReturnType<Unit>()) {}
+    val constructor = constructor ?: SyncFunctionComponent(
+      "constructor",
+      emptyArray(),
+      toReturnType<Unit>()
+    ) {}
     constructor.canTakeOwner = true
     constructor.ownerType = ownerType.kType
 
