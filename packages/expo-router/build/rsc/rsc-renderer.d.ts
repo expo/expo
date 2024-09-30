@@ -16,7 +16,6 @@ type ResolvedConfig = any;
 export type RenderRscArgs = {
     config: ResolvedConfig;
     input: string;
-    searchParams: URLSearchParams;
     context: Record<string, unknown> | undefined;
     body?: ReadableStream | undefined;
     contentType?: string | undefined;
