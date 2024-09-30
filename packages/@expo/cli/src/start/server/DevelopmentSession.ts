@@ -15,6 +15,9 @@ async function isAuthenticatedAsync(): Promise<boolean> {
 }
 
 export class DevelopmentSession {
+  /** If the `startAsync` was successfully called */
+  private hasActiveSession = false;
+
   constructor(
     /** Project root directory. */
     private projectRoot: string,
@@ -64,6 +67,7 @@ export class DevelopmentSession {
           exp,
           deviceIds,
         });
+        this.hasActiveSession = true;
       }
     } catch (error: any) {
       debug(`Error updating development session API: ${error}`);
@@ -78,9 +82,13 @@ export class DevelopmentSession {
 
   /** Try to close any pending development sessions, but always resolve */
   public async closeAsync(): Promise<boolean> {
-    if (env.CI || env.EXPO_OFFLINE) {
+    if (env.CI || env.EXPO_OFFLINE || !this.hasActiveSession) {
       return false;
     }
+
+    // Clear out the development session, even if the call fails.
+    // This blocks subsequent calls to `stopAsync`
+    this.hasActiveSession = false;
 
     try {
       const deviceIds = await this.getDeviceInstallationIdsAsync();
