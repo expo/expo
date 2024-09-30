@@ -40,6 +40,7 @@
 
 ### 🐛 Bug fixes
 
+- Run prebuild only for the platforms specified in app config. ([#31752](https://github.com/expo/expo/pull/31752) by [@prathameshmm02](https://github.com/prathameshmm02))
 - Fix cache sharing across Expo Go and dev client. ([#31566](https://github.com/expo/expo/pull/31566) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix exporting index files for server hosting in Expo Router. ([#31543](https://github.com/expo/expo/pull/31543) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix API route bundling in development. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
