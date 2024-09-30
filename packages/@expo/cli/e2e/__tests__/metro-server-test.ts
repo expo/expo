@@ -5,7 +5,7 @@ import path from 'node:path';
 
 import { bin, ensurePortFreeAsync, setupTestProjectWithOptionsAsync } from './utils';
 
-describe('bunding code', () => {
+describe('bundling code', () => {
   const metro = withMetroServer('metro-server-bundle-code', 'with-blank');
 
   it('bundles the app entry point', async () => {
