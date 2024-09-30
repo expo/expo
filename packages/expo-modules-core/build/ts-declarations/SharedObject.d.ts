@@ -9,10 +9,10 @@ export declare class SharedObject<TEventsMap extends EventsMap = Record<never, n
      * before the JS object gets deallocated by the JS garbage collector. Any subsequent calls to native
      * functions of the object will throw an error as it is no longer associated with its native counterpart.
      *
-     * In most cases you should never need to use this function, except some specific performance-critical cases when
+     * In most cases, you should never need to use this function, except some specific performance-critical cases when
      * manual memory management makes sense and the native object is known to exclusively retain some native memory
      * (such as binary data or image bitmap). Before calling this function, you should ensure that nothing else will use
-     * this object. Shared objects created by React hooks are usually automatically released in effect's cleanup phase,
+     * this object later on. Shared objects created by React hooks are usually automatically released in the effect's cleanup phase,
      * for example `useVideoPlayer` from `expo-video` and `useImage` from `expo-image`.
      */
     release(): void;
