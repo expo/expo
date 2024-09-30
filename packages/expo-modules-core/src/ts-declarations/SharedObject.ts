@@ -17,7 +17,7 @@ export declare class SharedObject<TEventsMap extends EventsMap = Record<never, n
    * manual memory management makes sense and the native object is known to exclusively retain some native memory
    * (such as binary data or image bitmap). Before calling this function, you should ensure that nothing else will use
    * this object later on. Shared objects created by React hooks are usually automatically released in the effect's cleanup phase,
-   * for example `useVideoPlayer` from `expo-video` and `useImage` from `expo-image`.
+   * for example: `useVideoPlayer()` from `expo-video` and `useImage()` from `expo-image`.
    */
   release(): void;
 }
