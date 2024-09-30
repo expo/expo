@@ -39,6 +39,11 @@ extern NSString * _Nonnull const EXGlobalCoreObjectPropertyName;
 + (void)installSharedObjectClass:(nonnull EXRuntime *)runtime releaser:(void(^)(long))releaser;
 
 /**
+ Installs the base class for shared refs, i.e. `global.expo.SharedRef`.
+ */
++ (void)installSharedRefClass:(nonnull EXRuntime *)runtime;
+
+/**
  Installs the EventEmitter class in the given runtime as `global.expo.EventEmitter`.
  */
 + (void)installEventEmitterClass:(nonnull EXRuntime *)runtime;

@@ -27,7 +27,7 @@
 - [Android] The single parameter now can be auto-cast to the list. ([#31290](https://github.com/expo/expo/pull/31290) by [@lukmccall](https://github.com/lukmccall))
 - [Android] `SharedRef` converter now checks the inner ref type. ([#31441](https://github.com/expo/expo/pull/31441) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Added support for changing if functions are enumerable. ([#31495](https://github.com/expo/expo/pull/31495) by [@lukmccall](https://github.com/lukmccall))
-- [Android] Introduced a base class for all shared refs (`expo.SharedRef`). ([#31513](https://github.com/expo/expo/pull/31513) by [@lukmccall](https://github.com/lukmccall))
+- Introduced a base class for all shared refs (`expo.SharedRef`). ([#31513](https://github.com/expo/expo/pull/31513) & [#31706](https://github.com/expo/expo/pull/31706) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Add support for react-native 0.76 ([#31580](https://github.com/expo/expo/pull/31580) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Added `onStartListeningToEvent` and `onStopListeningToEvent` to the `SharedObject`. ([#31385](https://github.com/expo/expo/pull/31385) by [@lukmccall](https://github.com/lukmccall))
 - Added Apple shared app groups support. ([#31519](https://github.com/expo/expo/pull/31519) by [@kudo](https://github.com/kudo))

@@ -8,6 +8,7 @@
 #import <ExpoModulesCore/BridgelessJSCallInvoker.h>
 #import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/SharedObject.h>
+#import <ExpoModulesCore/SharedRef.h>
 #import <ExpoModulesCore/EventEmitter.h>
 #import <ExpoModulesCore/NativeModule.h>
 #import <ExpoModulesCore/Swift.h>
@@ -94,6 +95,11 @@ static NSString *modulesHostObjectPropertyName = @"modules";
   expo::SharedObject::installBaseClass(*[runtime get], [releaser](expo::SharedObject::ObjectId objectId) {
     releaser(objectId);
   });
+}
+
++ (void)installSharedRefClass:(nonnull EXRuntime *)runtime
+{
+  expo::SharedRef::installBaseClass(*[runtime get]);
 }
 
 + (void)installEventEmitterClass:(nonnull EXRuntime *)runtime
