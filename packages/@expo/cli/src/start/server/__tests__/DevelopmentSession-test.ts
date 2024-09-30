@@ -136,7 +136,7 @@ describe(`closeAsync`, () => {
     expect(closeScope.isDone()).toBe(true);
   });
 
-  it('skips next close call when server is down', async () => { 
+  it('skips next close call when server is down', async () => {
     const session = new DevelopmentSession('/', 'http://localhost:19001/');
 
     jest.mocked(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
