@@ -72,7 +72,6 @@ export function getTestModules() {
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
     require('./tests/Fetch'),
-    optionalRequire(() => require('./tests/SQLiteLegacy'))
   );
 
   if (['android', 'ios'].includes(Platform.OS)) {

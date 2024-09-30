@@ -60,7 +60,6 @@ async function replaceIosSymbolsAsync(apiSet: Set<string>): Promise<void> {
   const files = [
     path.join(iosSrcRoot, 'CRSQLiteLoader.m'),
     path.join(iosSrcRoot, 'SQLiteModule.swift'),
-    path.join(iosSrcRoot, 'SQLiteModuleNext.swift'),
   ];
   await Promise.all(files.map((file) => replaceSqlite3SymbolsAsync(apiSet, file)));
 }
