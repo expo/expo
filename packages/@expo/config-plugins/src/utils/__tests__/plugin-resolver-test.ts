@@ -1,6 +1,10 @@
 import * as path from 'path';
 
-import { moduleNameIsDirectFileReference, resolvePluginForModule } from '../plugin-resolver';
+import {
+  moduleNameIsDirectFileReference,
+  moduleNameIsPackageReference,
+  resolvePluginForModule,
+} from '../plugin-resolver';
 jest.unmock('resolve-from');
 
 describe('plugin resolver', () => {
@@ -25,13 +29,32 @@ describe('plugin resolver', () => {
     });
   });
 
+  it('moduleNameIsPackageReference', () => {
+    expect(moduleNameIsPackageReference('app')).toBe(true);
+    expect(moduleNameIsPackageReference('@expo/app')).toBe(true);
+    expect(moduleNameIsPackageReference(`@expo\app`)).toBe(false);
+    expect(moduleNameIsPackageReference(`@expo/app/path.js`)).toBe(false);
+  });
+
   describe(resolvePluginForModule, () => {
     const projectRoot = path.resolve(__dirname, 'fixtures');
 
-    it('throws an error for non-existent plugin', () => {
-      expect(() => resolvePluginForModule(projectRoot, './testPlugin__wrong_path.js')).toThrow(
-        `Failed to resolve plugin for module "./testPlugin__wrong_path.js" relative to`
-      );
+    describe('throws when given', () => {
+      it('a non-existent plugin', () => {
+        expect(() => resolvePluginForModule(projectRoot, './testPlugin__wrong_path.js')).toThrow(
+          `Failed to resolve plugin for module "./testPlugin__wrong_path.js" relative to`
+        );
+      });
+
+      it('a path to plugin library which does not contain app.plugin.js file', () => {
+        /**
+         * Packages must export a plugin via app.plugin.js, this rule was added to prevent popular packages like lodash from being mistaken for a config plugin and breaking the prebuild.
+         * https://docs.expo.dev/config-plugins/development-and-debugging/#expo-install
+         * */
+        expect(() => resolvePluginForModule(projectRoot, 'test-plugin')).toThrow(
+          `Failed to resolve plugin for module "test-plugin" relative to`
+        );
+      });
     });
 
     it.each([
@@ -45,13 +68,6 @@ describe('plugin resolver', () => {
       },
       {
         pluginReference: './node_modules/test-plugin/lib/commonjs/index.js',
-        expected: {
-          filePath: 'node_modules/test-plugin/lib/commonjs/index.js',
-          isPluginFile: false,
-        },
-      },
-      {
-        pluginReference: 'test-plugin',
         expected: {
           filePath: 'node_modules/test-plugin/lib/commonjs/index.js',
           isPluginFile: false,

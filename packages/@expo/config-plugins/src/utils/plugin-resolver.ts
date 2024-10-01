@@ -3,9 +3,8 @@ import * as path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { PluginError } from './errors';
-import { fileExists } from './modules';
 import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
-
+import { fileExists } from './modules';
 // Default plugin entry file name.
 export const pluginFileName = 'app.plugin.js';
 
@@ -14,36 +13,27 @@ export function resolvePluginForModule(
   projectRoot: string,
   pluginReference: string
 ): { filePath: string; isPluginFile: boolean } {
-  const resolvedPackageJson = resolveFrom.silent(projectRoot, `${pluginReference}/package.json`);
-  const resolvedPluginScriptFile = resolveFrom.silent(projectRoot, pluginReference);
-  const hasResolved = !!(resolvedPackageJson || resolvedPluginScriptFile);
-
-  function throwPluginNotFound(): never {
-    throw new PluginError(
-      `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`,
-      'PLUGIN_NOT_FOUND'
-    );
-  }
-  if (!hasResolved) {
-    throwPluginNotFound();
-  }
-  // If the pluginReference is something like `@bacon/package/index.js` or `expo-foo/build/app`
-  // then skip resolving the module `app.plugin.js`
-  if (moduleNameIsDirectFileReference(pluginReference) && resolvedPluginScriptFile) {
-    return { isPluginFile: false, filePath: resolvedPluginScriptFile };
-  }
-  if (!resolvedPackageJson) {
-    throwPluginNotFound();
-  }
-  const maybePluginFilePath = findUpPlugin(resolvedPackageJson);
-  if (maybePluginFilePath) {
-    return { isPluginFile: true, filePath: maybePluginFilePath };
-  } else {
-    if (!resolvedPluginScriptFile) {
-      throwPluginNotFound();
+  if (moduleNameIsDirectFileReference(pluginReference)) {
+    // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
+    const pluginScriptFile = resolveFrom.silent(projectRoot, pluginReference);
+    if (pluginScriptFile) {
+      return { isPluginFile: false, filePath: pluginScriptFile };
     }
-    return { isPluginFile: false, filePath: resolvedPluginScriptFile };
+  } else if (moduleNameIsPackageReference(pluginReference)) {
+    // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
+    const pluginPackageFile = resolveFrom.silent(
+      projectRoot,
+      `${pluginReference}/${pluginFileName}`
+    );
+    if (pluginPackageFile && fileExists(pluginPackageFile)) {
+      return { isPluginFile: true, filePath: pluginPackageFile };
+    }
   }
+
+  throw new PluginError(
+    `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`,
+    'PLUGIN_NOT_FOUND'
+  );
 }
 
 // TODO: Test windows
@@ -67,26 +57,9 @@ export function moduleNameIsDirectFileReference(name: string): boolean {
   return slashCount > 1;
 }
 
-function resolveExpoPluginFile(root: string): string | null {
-  // Find the expo plugin root file
-  const pluginModuleFile = resolveFrom.silent(
-    root,
-    // use ./ so it isn't resolved as a node module
-    `./${pluginFileName}`
-  );
-
-  // If the default expo plugin file exists use it.
-  if (pluginModuleFile && fileExists(pluginModuleFile)) {
-    return pluginModuleFile;
-  }
-  return null;
-}
-
-function findUpPlugin(rootPackageJsonPath: string): string | null {
-  // resolve the rootPackageJsonPath folder for the node module
-  const moduleRoot = path.dirname(rootPackageJsonPath);
-  // use whatever the initial resolved file was ex: `node_modules/my-package/index.js` or `./something.js`
-  return resolveExpoPluginFile(moduleRoot);
+export function moduleNameIsPackageReference(name: string): boolean {
+  const slashCount = name.split('/')?.length;
+  return name.startsWith('@') ? slashCount === 2 : slashCount === 1;
 }
 
 export function normalizeStaticPlugin(plugin: StaticPlugin | ConfigPlugin | string): StaticPlugin {

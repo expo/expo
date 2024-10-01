@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.assertInternalProjectRoot = assertInternalProjectRoot;
 exports.moduleNameIsDirectFileReference = moduleNameIsDirectFileReference;
+exports.moduleNameIsPackageReference = moduleNameIsPackageReference;
 exports.normalizeStaticPlugin = normalizeStaticPlugin;
 exports.pluginFileName = void 0;
 exports.resolveConfigPluginExport = resolveConfigPluginExport;
@@ -54,41 +55,26 @@ const pluginFileName = exports.pluginFileName = 'app.plugin.js';
 
 // pluginReference is a node module or a file path, as user entered it in app.config.js
 function resolvePluginForModule(projectRoot, pluginReference) {
-  const resolvedPackageJson = _resolveFrom().default.silent(projectRoot, `${pluginReference}/package.json`);
-  const resolvedPluginScriptFile = _resolveFrom().default.silent(projectRoot, pluginReference);
-  const hasResolved = !!(resolvedPackageJson || resolvedPluginScriptFile);
-  function throwPluginNotFound() {
-    throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`, 'PLUGIN_NOT_FOUND');
-  }
-  if (!hasResolved) {
-    throwPluginNotFound();
-  }
-  // If the pluginReference is something like `@bacon/package/index.js` or `expo-foo/build/app`
-  // then skip resolving the module `app.plugin.js`
-  if (moduleNameIsDirectFileReference(pluginReference) && resolvedPluginScriptFile) {
-    return {
-      isPluginFile: false,
-      filePath: resolvedPluginScriptFile
-    };
-  }
-  if (!resolvedPackageJson) {
-    throwPluginNotFound();
-  }
-  const maybePluginFilePath = findUpPlugin(resolvedPackageJson);
-  if (maybePluginFilePath) {
-    return {
-      isPluginFile: true,
-      filePath: maybePluginFilePath
-    };
-  } else {
-    if (!resolvedPluginScriptFile) {
-      throwPluginNotFound();
+  if (moduleNameIsDirectFileReference(pluginReference)) {
+    // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
+    const pluginScriptFile = _resolveFrom().default.silent(projectRoot, pluginReference);
+    if (pluginScriptFile) {
+      return {
+        isPluginFile: false,
+        filePath: pluginScriptFile
+      };
     }
-    return {
-      isPluginFile: false,
-      filePath: resolvedPluginScriptFile
-    };
+  } else if (moduleNameIsPackageReference(pluginReference)) {
+    // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
+    const pluginPackageFile = _resolveFrom().default.silent(projectRoot, `${pluginReference}/${pluginFileName}`);
+    if (pluginPackageFile && (0, _modules().fileExists)(pluginPackageFile)) {
+      return {
+        isPluginFile: true,
+        filePath: pluginPackageFile
+      };
+    }
   }
+  throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`, 'PLUGIN_NOT_FOUND');
 }
 
 // TODO: Test windows
@@ -109,23 +95,9 @@ function moduleNameIsDirectFileReference(name) {
   // Regular packages should be considered direct reference if they have more than one slash.
   return slashCount > 1;
 }
-function resolveExpoPluginFile(root) {
-  // Find the expo plugin root file
-  const pluginModuleFile = _resolveFrom().default.silent(root,
-  // use ./ so it isn't resolved as a node module
-  `./${pluginFileName}`);
-
-  // If the default expo plugin file exists use it.
-  if (pluginModuleFile && (0, _modules().fileExists)(pluginModuleFile)) {
-    return pluginModuleFile;
-  }
-  return null;
-}
-function findUpPlugin(rootPackageJsonPath) {
-  // resolve the rootPackageJsonPath folder for the node module
-  const moduleRoot = path().dirname(rootPackageJsonPath);
-  // use whatever the initial resolved file was ex: `node_modules/my-package/index.js` or `./something.js`
-  return resolveExpoPluginFile(moduleRoot);
+function moduleNameIsPackageReference(name) {
+  const slashCount = name.split('/')?.length;
+  return name.startsWith('@') ? slashCount === 2 : slashCount === 1;
 }
 function normalizeStaticPlugin(plugin) {
   if (Array.isArray(plugin)) {

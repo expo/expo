@@ -5,6 +5,7 @@ export declare function resolvePluginForModule(projectRoot: string, pluginRefere
     isPluginFile: boolean;
 };
 export declare function moduleNameIsDirectFileReference(name: string): boolean;
+export declare function moduleNameIsPackageReference(name: string): boolean;
 export declare function normalizeStaticPlugin(plugin: StaticPlugin | ConfigPlugin | string): StaticPlugin;
 export declare function assertInternalProjectRoot(projectRoot?: string): asserts projectRoot;
 export declare function resolveConfigPluginFunction(projectRoot: string, pluginReference: string): ConfigPlugin<unknown>;
