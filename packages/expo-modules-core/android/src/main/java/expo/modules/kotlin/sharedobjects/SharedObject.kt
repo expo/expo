@@ -64,4 +64,14 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
    * Called when the shared object being deallocated.
    */
   open fun deallocate() {}
+
+  /**
+   * Override this function to inform the JavaScript runtime that there is additional
+   * memory associated with a given JavaScript object that is not visible to the GC.
+   * This can be used if an object is known to exclusively retain some native memory,
+   * and may be used to guide decisions about when to run garbage collection.
+   */
+  open fun getAdditionalMemoryPressure(): Int {
+    return 0
+  }
 }
