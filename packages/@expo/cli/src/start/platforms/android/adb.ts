@@ -103,29 +103,35 @@ export async function isPackageInstalledAsync(
 /**
  * @param device.pid Process ID of the Android device to launch.
  * @param props.launchActivity Activity to launch `[application identifier]/.[main activity name]`, ex: `com.bacon.app/.MainActivity`
+ * @param props.url Optional (dev client) URL to launch
  */
 export async function launchActivityAsync(
   device: DeviceContext,
   {
     launchActivity,
+    url,
   }: {
     launchActivity: string;
+    url?: string;
   }
 ) {
-  return openAsync(
-    adbArgs(
-      device.pid,
-      'shell',
-      'am',
-      'start',
-      // FLAG_ACTIVITY_SINGLE_TOP -- If set, the activity will not be launched if it is already running at the top of the history stack.
-      '-f',
-      '0x20000000',
-      // Activity to open first: com.bacon.app/.MainActivity
-      '-n',
-      launchActivity
-    )
-  );
+  const args: string[] = [
+    'shell',
+    'am',
+    'start',
+    // FLAG_ACTIVITY_SINGLE_TOP -- If set, the activity will not be launched if it is already running at the top of the history stack.
+    '-f',
+    '0x20000000',
+    // Activity to open first: com.bacon.app/.MainActivity
+    '-n',
+    launchActivity,
+  ];
+
+  if (url) {
+    args.push('-d', url);
+  }
+
+  return openAsync(adbArgs(device.pid, ...args));
 }
 
 /**

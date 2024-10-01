@@ -422,9 +422,9 @@ export abstract class BundlerDevServer {
   }
 
   /** Open the dev server in a runtime. */
-  public async openCustomRuntimeAsync(
+  public async openCustomRuntimeAsync<T extends BaseOpenInCustomProps = BaseOpenInCustomProps>(
     launchTarget: keyof typeof PLATFORM_MANAGERS,
-    launchProps: Partial<BaseOpenInCustomProps> = {},
+    launchProps: Partial<T> = {},
     resolver: BaseResolveDeviceProps<any> = {}
   ) {
     const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
