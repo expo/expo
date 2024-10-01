@@ -34,6 +34,8 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 import javax.inject.Inject
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
 private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
@@ -80,6 +82,16 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   var shouldShowAppLoaderStatus = true
     private set
   private var isStarted = false
+  private var startupStartTimeMillis: Long? = null
+  private var startupEndTimeMillis: Long? = null
+  val launchDuration
+    get() = startupStartTimeMillis?.let { start ->
+      startupEndTimeMillis?.let { end ->
+        (end - start).toDuration(
+          DurationUnit.MILLISECONDS
+        )
+      }
+    }
 
   interface AppLoaderCallback {
     fun onOptimisticManifest(optimisticManifest: Manifest)
@@ -99,6 +111,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   fun start(context: Context) {
     check(!isStarted) { "AppLoader for $manifestUrl was started twice. AppLoader.start() may only be called once per instance." }
     isStarted = true
+    startupStartTimeMillis = System.currentTimeMillis()
     status = AppLoaderStatus.CHECKING_FOR_UPDATE
     kernel.addAppLoaderForManifestUrl(manifestUrl, this)
 
@@ -169,6 +182,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           if (didAbort) {
             return
           }
+          this@ExpoUpdatesAppLoader.startupEndTimeMillis = System.currentTimeMillis()
           var exception = e
           try {
             val errorJson = JSONObject(e.message!!)
@@ -222,6 +236,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           if (didAbort) {
             return
           }
+          this@ExpoUpdatesAppLoader.startupEndTimeMillis = System.currentTimeMillis()
           this@ExpoUpdatesAppLoader.launcher = launcher
           this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
           try {

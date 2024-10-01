@@ -22,6 +22,8 @@ import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * Updates controller for applications that either disable updates explicitly or have an error
@@ -51,6 +53,18 @@ class DisabledUpdatesController(
   private val stateMachine = UpdatesStateMachine(context, this, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
 
   private var isStarted = false
+  private var startupStartTimeMillis: Long? = null
+  private var startupEndTimeMillis: Long? = null
+
+  private val launchDuration
+    get() = startupStartTimeMillis?.let { start ->
+      startupEndTimeMillis?.let { end ->
+        (end - start).toDuration(
+          DurationUnit.MILLISECONDS
+        )
+      }
+    }
+
   private var launcher: Launcher? = null
   private var isLoaderTaskFinished = false
   override var updatesDirectory: File? = null
@@ -87,10 +101,12 @@ class DisabledUpdatesController(
       return
     }
     isStarted = true
+    startupStartTimeMillis = System.currentTimeMillis()
 
     launcher = NoDatabaseLauncher(context, fatalException)
+
+    startupEndTimeMillis = System.currentTimeMillis()
     notifyController()
-    return
   }
 
   class UpdatesDisabledException(message: String) : CodedException(message)
@@ -98,6 +114,7 @@ class DisabledUpdatesController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launcher?.launchedUpdate,
+      launchDuration = launchDuration,
       embeddedUpdate = null,
       emergencyLaunchException = fatalException,
       isEnabled = false,

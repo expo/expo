@@ -34,6 +34,7 @@
 - [Android] Added a way to provide shared objects memory pressure to improve garbage collection of native objects retaining some heavy data. ([#31784](https://github.com/expo/expo/pull/31784) by [@lukmccall](https://github.com/lukmccall))
 - Added `nativeRefType` to `SharedRef`. ([#31776](https://github.com/expo/expo/pull/31776) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Added `kotlin.time.Duration` support. ([#31858](https://github.com/expo/expo/pull/31858) by [@lukmccall](https://github.com/lukmccall))
+- Return duration from logger timer block methods. ([#31805](https://github.com/expo/expo/pull/31805) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

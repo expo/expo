@@ -33,6 +33,8 @@ import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
@@ -64,8 +66,9 @@ class EnabledUpdatesController(
   }
 
   private var isStarted = false
-
   private var isStartupFinished = false
+  private var startupStartTimeMillis: Long? = null
+  private var startupEndTimeMillis: Long? = null
 
   override var shouldEmitJsEvents = false
     set(value) {
@@ -76,6 +79,7 @@ class EnabledUpdatesController(
   @Synchronized
   private fun onStartupProcedureFinished() {
     isStartupFinished = true
+    startupEndTimeMillis = System.currentTimeMillis()
     (this@EnabledUpdatesController as java.lang.Object).notify()
     UpdatesUtils.sendQueuedEventsToAppContext(shouldEmitJsEvents, appContext, logger)
   }
@@ -101,6 +105,8 @@ class EnabledUpdatesController(
 
   private val launchedUpdate
     get() = startupProcedure.launchedUpdate
+  private val launchDuration
+    get() = startupStartTimeMillis?.let { start -> startupEndTimeMillis?.let { end -> (end - start).toDuration(DurationUnit.MILLISECONDS) } }
   private val isUsingEmbeddedAssets
     get() = startupProcedure.isUsingEmbeddedAssets
   private val localAssetFiles
@@ -141,6 +147,7 @@ class EnabledUpdatesController(
       return
     }
     isStarted = true
+    startupStartTimeMillis = System.currentTimeMillis()
 
     purgeUpdatesLogsOlderThanOneDay()
 
@@ -178,6 +185,7 @@ class EnabledUpdatesController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
+      launchDuration = launchDuration,
       embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity,
       emergencyLaunchException = startupProcedure.emergencyLaunchException,
       isEnabled = true,

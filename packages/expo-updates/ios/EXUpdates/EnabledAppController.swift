@@ -21,7 +21,17 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
   public let isActiveController = true
-  public private(set) var isStarted = false
+  private var isStarted = false
+  private var startupStartTime: DispatchTime?
+  private var startupEndTime: DispatchTime?
+
+  private var launchDuration: Double? {
+    return startupStartTime.let({ start in
+      startupEndTime.let { end in
+        Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
+      }
+    })
+  }
 
   public var shouldEmitJsEvents = false {
     didSet {
@@ -64,6 +74,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
     precondition(!isStarted, "AppController:start should only be called once per instance")
 
     isStarted = true
+    startupStartTime = DispatchTime.now()
 
     purgeUpdatesLogsOlderThanOneDay()
 
@@ -123,6 +134,8 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   // MARK: - StartupProcedureDelegate
 
   func startupProcedureDidLaunch(_ startupProcedure: StartupProcedure) {
+    startupEndTime = DispatchTime.now()
+
     delegate.let { _ in
       DispatchQueue.main.async { [weak self] in
         if let strongSelf = self {
@@ -239,6 +252,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   public func getConstantsForModule() -> UpdatesModuleConstants {
     return UpdatesModuleConstants(
       launchedUpdate: startupProcedure.launchedUpdate(),
+      launchDuration: launchDuration,
       embeddedUpdate: getEmbeddedUpdate(),
       emergencyLaunchException: startupProcedure.emergencyLaunchException,
       isEnabled: true,

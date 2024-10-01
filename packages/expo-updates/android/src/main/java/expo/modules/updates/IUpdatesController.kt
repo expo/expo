@@ -14,6 +14,8 @@ import expo.modules.updates.statemachine.UpdatesStateContext
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.Date
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 interface IUpdatesController {
   /**
@@ -78,6 +80,7 @@ interface IUpdatesController {
 
   data class UpdatesModuleConstants(
     val launchedUpdate: UpdateEntity?,
+    val launchDuration: Duration?,
     val embeddedUpdate: UpdateEntity?,
     val emergencyLaunchException: Exception?,
     val isEnabled: Boolean,
@@ -102,7 +105,36 @@ interface IUpdatesController {
      * calls to go through.
      */
     val shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Boolean
-  )
+  ) {
+    fun toModuleConstantsMap(): Map<String, Any?> = mutableMapOf<String, Any?>().apply {
+      this["isEmergencyLaunch"] = emergencyLaunchException != null
+      this["emergencyLaunchReason"] = emergencyLaunchException?.message
+      this["isEmbeddedLaunch"] = embeddedUpdate !== null && launchedUpdate?.id?.equals(embeddedUpdate.id) ?: false
+      this["isEnabled"] = isEnabled
+      this["launchDuration"] = launchDuration?.toLong(DurationUnit.MILLISECONDS)
+      this["isUsingEmbeddedAssets"] = isUsingEmbeddedAssets
+      this["runtimeVersion"] = runtimeVersion ?: ""
+      this["checkAutomatically"] = checkOnLaunch.toJSString()
+      this["channel"] = requestHeaders["expo-channel-name"] ?: ""
+      this["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
+
+      if (launchedUpdate != null) {
+        this["updateId"] = launchedUpdate.id.toString()
+        this["commitTime"] = launchedUpdate.commitTime.time
+        this["manifestString"] = launchedUpdate.manifest.toString()
+      }
+      val localAssetFiles = localAssetFiles
+      if (localAssetFiles != null) {
+        val localAssets = mutableMapOf<String, String>()
+        for (asset in localAssetFiles.keys) {
+          if (asset.key != null) {
+            localAssets[asset.key!!] = localAssetFiles[asset]!!
+          }
+        }
+        this["localAssets"] = localAssets
+      }
+    }
+  }
   fun getConstantsForModule(): UpdatesModuleConstants
 
   fun relaunchReactApplicationForModule(callback: ModuleCallback<Unit>)

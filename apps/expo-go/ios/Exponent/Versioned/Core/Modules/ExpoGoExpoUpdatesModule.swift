@@ -35,43 +35,19 @@ final class ExpoGoExpoUpdatesModule: Module {
 
     Constants {
       let config = updatesKernelService.configForScopeKey(scopeKey)
-
-      let channel = config?.requestHeaders["expo-channel-name"] ?? ""
-      let runtimeVersion = config?.runtimeVersion ?? ""
-      let checkAutomatically = config?.checkOnLaunch.asString ?? CheckAutomaticallyConfig.Always.asString
-
-      guard updatesKernelService.isStartedForScopeKey(scopeKey),
-        let launchedUpdate = updatesKernelService.launchedUpdateForScopeKey(scopeKey) else {
-        return [
-          "isEnabled": false,
-          "isEmbeddedLaunch": false,
-          "isEmergencyLaunch": false,
-          "emergencyLaunchReason": nil,
-          "runtimeVersion": runtimeVersion,
-          "checkAutomatically": checkAutomatically,
-          "channel": channel,
-          "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment": true,
-          "nativeDebug": false
-        ]
-      }
-
-      let commitTime = UInt64(floor(launchedUpdate.commitTime.timeIntervalSince1970 * 1000))
-      return [
-        "isEnabled": true,
-        "isEmbeddedLaunch": false,
-        "isUsingEmbeddedAssets": updatesKernelService.isUsingEmbeddedAssetsForScopeKey(scopeKey),
-        "updateId": launchedUpdate.updateId.uuidString,
-        "manifest": launchedUpdate.manifest.rawManifestJSON(),
-        "localAssets": updatesKernelService.assetFilesMapForScopeKey(scopeKey) ?? [:],
-        "isEmergencyLaunch": false,
-        "emergencyLaunchReason": nil,
-        "runtimeVersion": runtimeVersion,
-        "checkAutomatically": checkAutomatically,
-        "channel": channel,
-        "commitTime": commitTime,
-        "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment": true,
-        "nativeDebug": false
-      ]
+      return UpdatesModuleConstants(
+        launchedUpdate: updatesKernelService.launchedUpdateForScopeKey(scopeKey),
+        launchDuration: updatesKernelService.launchDurationForScopeKey(scopeKey)?.doubleValue,
+        embeddedUpdate: nil,
+        emergencyLaunchException: nil,
+        isEnabled: true,
+        isUsingEmbeddedAssets: false,
+        runtimeVersion: config?.runtimeVersion ?? "",
+        checkOnLaunch: config?.checkOnLaunch ?? CheckAutomaticallyConfig.Always,
+        requestHeaders: config?.requestHeaders ?? [:],
+        assetFilesMap: updatesKernelService.assetFilesMapForScopeKey(scopeKey),
+        shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: true
+      ).toModuleConstantsMap()
     }
 
     AsyncFunction("reload") { (promise: Promise) in
