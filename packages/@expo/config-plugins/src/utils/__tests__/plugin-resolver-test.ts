@@ -32,6 +32,7 @@ describe('plugin resolver', () => {
   it('moduleNameIsPackageReference', () => {
     expect(moduleNameIsPackageReference('app')).toBe(true);
     expect(moduleNameIsPackageReference('@expo/app')).toBe(true);
+    // eslint-disable-next-line no-useless-escape -- package references don't have backslashes - even on Windows
     expect(moduleNameIsPackageReference(`@expo\app`)).toBe(false);
     expect(moduleNameIsPackageReference(`@expo/app/path.js`)).toBe(false);
   });
