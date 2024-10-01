@@ -75,7 +75,7 @@ To create a development build, you can use [local app compilation](#local-app-co
 
 > **warning** This feature is only available for SDK 52 and above.
 
-If you have a custom Android project with multiple product flavors with different application ids, you can configure `npx expo run:android` to use the correct flavor and build type. Expo supports both `--variant` and `--app-id` to customize the build and launch behavior when building for Android.
+If you have a custom Android project with multiple product flavors using different application ids, you can configure `npx expo run:android` to use the correct flavor and build type. Expo supports both `--variant` and `--app-id` to customize the build and launch behavior when building for Android.
 
 The `--variant` flag can be used to switch the Android build type from **debug** to **release**. This flag can also be used to configure a product flavor and build typ, formatted in camelCase. For example, if you have both a **free** and **paid** product flavor, as documented on [Android developers](https://developer.android.com/build/build-variants#change-app-id), you can build a development version of your app with:
 
