@@ -17,7 +17,10 @@ export function resolvePluginForModule(
     // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
     const pluginScriptFile = resolveFrom.silent(projectRoot, pluginReference);
     if (pluginScriptFile) {
-      return { isPluginFile: false, filePath: pluginScriptFile };
+      const lastPathComponent = pluginScriptFile.substring(
+        pluginScriptFile.lastIndexOf(path.sep) + 1
+      );
+      return { isPluginFile: lastPathComponent === pluginFileName, filePath: pluginScriptFile };
     }
   } else if (moduleNameIsPackageReference(pluginReference)) {
     // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
