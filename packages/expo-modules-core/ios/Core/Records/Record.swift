@@ -31,6 +31,11 @@ public extension Record {
     if let value = value as? Dict {
       return try Self(from: value, appContext: appContext)
     }
+    // It's possible that the current implementation tries to convert a value that is already of the desired type.
+    // Handle that gracefully instead of throwing an exception.
+    if let record = value as? Self {
+      return record
+    }
     throw Conversions.ConvertingException<Self>(value)
   }
 

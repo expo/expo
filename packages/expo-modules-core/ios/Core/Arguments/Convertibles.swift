@@ -13,6 +13,9 @@ import CoreGraphics
 extension URL: Convertible {
   public static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     guard let value = value as? String else {
+      if let url = value as? URL {
+        return url
+      }
       throw Conversions.ConvertingException<URL>(value)
     }
 
@@ -66,6 +69,9 @@ extension CGSize: Convertible {
       let args = try Conversions.pickValues(from: value, byKeys: ["width", "height"], as: Double.self)
       return CGSize(width: args[0], height: args[1])
     }
+    if let size = value as? CGSize {
+      return size
+    }
     throw Conversions.ConvertingException<CGSize>(value)
   }
 }
@@ -79,6 +85,9 @@ extension CGVector: Convertible {
       let args = try Conversions.pickValues(from: value, byKeys: ["dx", "dy"], as: Double.self)
       return CGVector(dx: args[0], dy: args[1])
     }
+    if let vector = value as? CGVector {
+      return vector
+    }
     throw Conversions.ConvertingException<CGVector>(value)
   }
 }
@@ -91,6 +100,9 @@ extension CGRect: Convertible {
     if let value = value as? [String: Any] {
       let args = try Conversions.pickValues(from: value, byKeys: ["x", "y", "width", "height"], as: Double.self)
       return CGRect(x: args[0], y: args[1], width: args[2], height: args[3])
+    }
+    if let rect = value as? CGRect {
+      return rect
     }
     throw Conversions.ConvertingException<CGRect>(value)
   }
@@ -109,6 +121,9 @@ extension Date: Convertible {
     // For converting the value from `Date.now()`
     if let value = value as? Int {
       return Date(timeIntervalSince1970: Double(value) / 1000.0)
+    }
+    if let date = value as? Date {
+      return date
     }
     throw Conversions.ConvertingException<Date>(value)
   }
