@@ -20,7 +20,7 @@ export interface LivePhotoViewProps extends ViewProps {
     contentFit?: ContentFit;
     /**
      * Determines whether the default iOS gesture recognizer should be used.
-     * When true the playback will start if the user presses and holds on the LivePhotoView.
+     * When `true` the playback will start if the user presses and holds on the `LivePhotoView`.
      *
      * @default true
      */
@@ -34,7 +34,7 @@ export interface LivePhotoViewProps extends ViewProps {
      */
     onPlaybackStop?: () => void;
     /**
-     * Called when the live photo starts being loaded.
+     * Called when the live photo starts loading.
      */
     onLoadStart?: () => void;
     /**
@@ -71,8 +71,8 @@ export interface LivePhotoViewStatics {
 /**
  * A live photo asset.
  *
- * > **Note:** Due to native limitations the photo and video parts of the live photo must come from a valid live photo file and be unaltered.
- * > The photo is paired with the video via metadata when taken, if the pairing is broken it's not possible to join them into a live photo again.
+ * > **Note:** Due to native limitations, the photo and video parts of the live photo must come from a valid live photo file and be unaltered.
+ * > When taken, the photo is paired with the video via metadata. If the pairing is broken, joining them into a live photo is impossible.
  */
 export type LivePhotoAsset = {
     /**
@@ -93,8 +93,8 @@ export type LivePhotoLoadError = {
 /**
  * Determines how the image should be scaled to fit the container.
  *
- * - `'contain'` - Scales the image so that its larger dimension fits the target size
- * - `'cover'` - Scales the image so that it completely fills the target size
+ * - `'contain'` - Scales the image so that its larger dimension fits the target size.
+ * - `'cover'` - Scales the image so that it completely fills the target size.
  */
 export type ContentFit = 'contain' | 'cover';
 /**

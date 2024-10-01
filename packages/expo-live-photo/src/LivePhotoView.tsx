@@ -1,5 +1,5 @@
 import { Platform, requireNativeViewManager, UnavailabilityError } from 'expo-modules-core';
-import * as React from 'react';
+import { MutableRefObject, forwardRef, useRef, useImperativeHandle } from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 
 import {
@@ -11,7 +11,7 @@ import {
 } from './LivePhoto.types';
 
 type NativeLivePhotoViewProps = LivePhotoViewProps & {
-  ref: React.MutableRefObject<LivePhotoViewType | null>;
+  ref: MutableRefObject<LivePhotoViewType | null>;
   onLoadError: (event: NativeSyntheticEvent<LivePhotoLoadError>) => void;
 };
 
@@ -23,10 +23,10 @@ function isAvailable() {
   return Platform.OS === 'ios';
 }
 
-const LivePhotoView = React.forwardRef((props: LivePhotoViewProps, ref) => {
-  const nativeRef = React.useRef<LivePhotoViewType | null>(null);
+const LivePhotoView = forwardRef((props: LivePhotoViewProps, ref) => {
+  const nativeRef = useRef<LivePhotoViewType | null>(null);
 
-  React.useImperativeHandle(ref, () => ({
+  useImperativeHandle(ref, () => ({
     startPlayback: (playbackStyle?: PlaybackStyle) => {
       if (!isAvailable()) {
         throw new UnavailabilityError('expo-live-photo', 'startPlayback');
