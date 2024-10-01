@@ -5,7 +5,6 @@
     "privacy": "public",
     "sdkVersion": "UNVERSIONED",
     "scheme": "sandbox",
-
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,20 +19,35 @@
     "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bacon.sandbox"
     },
     "plugins": [
       [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": true,
+            "ccacheEnabled": true
+          },
+          "android": {
+            "newArchEnabled": true
+          }
+        }
+      ],
+      [
         "expo-router",
         {
-          "origin": "https://naviloop.netlify.app/",
-          "asyncRoutes": true
+          "origin": ""
         }
       ]
     ],
     "web": {
       "bundler": "metro",
       "output": "server"
+    },
+    "experiments": {
+      "reactServerComponents": true
     }
   }
 }
