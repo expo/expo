@@ -1,6 +1,6 @@
 # Expo Go
 
-For external contributors: If you want to contribute to the Expo SDK, use the Bare Expo app for developing and testing your changes (unless your changes are specific to the Expo Go app).
+For external contributors: If you want to contribute to the Expo SDK, use the [Bare Expo app](https://github.com/expo/expo/tree/main/apps/bare-expo) for developing and testing your changes (unless your changes are specific to the Expo Go app).
 
 ## Building Expo Go
 
@@ -8,7 +8,7 @@ For external contributors: If you want to contribute to the Expo SDK, use the Ba
 
 You can build the React Native Android dep using `./gradlew :packages:react-native:ReactAndroid:buildCMakeDebug` in `react-native-lab/react-native` directory. This is optional because React Native will be built anyway when you build Expo Go, but can help to narrow down a potential issue surface area. 
 
-2. Start packager in `apps/expo-go` directory
+2. Start metro in `apps/expo-go` directory
 
 Packager needs to run prior running the build. If that's not the case you might get an error `A valid Firebase Project ID is required to communicate with Firebase server APIs.`. This is because `et android-generate-dynamic-macros` is run during the build and it needs the packager to be running.
 
