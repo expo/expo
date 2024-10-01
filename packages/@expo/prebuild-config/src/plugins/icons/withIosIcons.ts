@@ -120,10 +120,10 @@ function getAppleIconName(size: number, scale: number, appearance?: 'dark' | 'ti
   let name = 'App-Icon';
 
   if (appearance) {
-    name += `-${appearance}`;
+    name = `${name}-${appearance}`;
   }
 
-  name += `-${size}x${size}@${scale}x.png`;
+  name = `${name}-${size}x${size}@${scale}x.png`;
 
   return name;
 }
