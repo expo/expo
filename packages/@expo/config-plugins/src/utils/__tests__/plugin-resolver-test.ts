@@ -57,30 +57,35 @@ describe('plugin resolver', () => {
       });
     });
 
-    it.each([
-      {
-        pluginReference: './testPlugin.js',
-        expected: { filePath: 'testPlugin.js', isPluginFile: false },
-      },
-      {
-        pluginReference: './testPlugin',
-        expected: { filePath: 'testPlugin.js', isPluginFile: false },
-      },
-      {
-        pluginReference: './node_modules/test-plugin/lib/commonjs/index.js',
-        expected: {
-          filePath: 'node_modules/test-plugin/lib/commonjs/index.js',
+    describe('resolves plugin path for', () => {
+      it('./testPlugin.js module path with extension', () => {
+        expect(resolvePluginForModule(projectRoot, './testPlugin.js')).toStrictEqual({
+          filePath: `${projectRoot}/testPlugin.js`,
           isPluginFile: false,
-        },
-      },
-      {
-        pluginReference: 'test-lib',
-        expected: { filePath: 'node_modules/test-lib/app.plugin.js', isPluginFile: true },
-      },
-    ])('resolves plugin for $pluginReference', ({ pluginReference, expected }) => {
-      expect(resolvePluginForModule(projectRoot, pluginReference)).toStrictEqual({
-        filePath: `${projectRoot}/${expected.filePath}`,
-        isPluginFile: expected.isPluginFile,
+        });
+      });
+
+      it('./testPlugin module path', () => {
+        expect(resolvePluginForModule(projectRoot, './testPlugin')).toStrictEqual({
+          filePath: `${projectRoot}/testPlugin.js`,
+          isPluginFile: false,
+        });
+      });
+
+      it('./node_modules/test-plugin/lib/commonjs/index.js direct file path', () => {
+        expect(
+          resolvePluginForModule(projectRoot, './node_modules/test-plugin/lib/commonjs/index.js')
+        ).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-plugin/lib/commonjs/index.js`,
+          isPluginFile: false,
+        });
+      });
+
+      it('test-lib library name', () => {
+        expect(resolvePluginForModule(projectRoot, 'test-lib')).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-lib/app.plugin.js`,
+          isPluginFile: true,
+        });
       });
     });
   });
