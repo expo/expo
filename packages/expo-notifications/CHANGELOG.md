@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] fix notifications actions not being presented ([#31795](https://github.com/expo/expo/pull/31795) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 0.28.17 — 2024-09-17
