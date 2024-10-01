@@ -79,7 +79,9 @@ If you have a custom Android project with multiple product flavors with differen
 
 The `--variant` flag can be used to switch the Android build type from **debug** to **release**. This flag can also be used to configure a product flavor and build typ, formatted in camelCase. For example, if you have both a **free** and **paid** product flavor, as documented on [Android developers](https://developer.android.com/build/build-variants#change-app-id), you can build a development version of your app with:
 
-<Terminal cmd={['$ npx expo run:android --variant freeDebug', '$ npx expo run:android --variant paidDebug']} />
+<Terminal
+  cmd={['$ npx expo run:android --variant freeDebug', '$ npx expo run:android --variant paidDebug']}
+/>
 
 The `--app-id` flag can be used to launch the app after building using a customized application id. For example, if your product flavor **free** is using `applicationIdSuffix ".free"` or `applicationId "dev.expo.myapp.free"` you can run build and launch the app with:
 
