@@ -24,7 +24,7 @@ import kotlin.math.min
  */
 open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotificationBuilder(context) {
   override suspend fun build(): Notification {
-    val builder = super.createBuilder()
+    val builder = createBuilder()
     builder.setSmallIcon(icon)
     builder.setPriority(priority)
 
