@@ -22,6 +22,7 @@
 
 ### 💡 Others
 
+- Removed android permissions to comply with Google's guidelines ([#31801](https://github.com/expo/expo/pull/31801) by [@JulianDueck](https://github.com/JulianDueck))
 - Refactored the code on iOS and made promise resolution faster. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))
 
 ## 15.0.7 - 2024-07-03
