@@ -65,7 +65,7 @@ export interface ExpoConfig {
      */
     primaryColor?: string;
     /**
-     * Local path or remote URL to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo app.
+     * Local path or remote URL to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo Go app.
      */
     icon?: string;
     /**
@@ -335,9 +335,9 @@ export interface IOS {
      */
     backgroundColor?: string;
     /**
-     * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., light, dark, tinted) can be provided. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
+     * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., dark, tinted) can be provided. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
      *
-     * Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
+     * Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo Go app.
      */
     icon?: string | IOSIcons;
     /**
@@ -562,7 +562,7 @@ export interface Android {
      */
     userInterfaceStyle?: 'light' | 'dark' | 'automatic';
     /**
-     * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
+     * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo Go app.
      */
     icon?: string;
     /**
