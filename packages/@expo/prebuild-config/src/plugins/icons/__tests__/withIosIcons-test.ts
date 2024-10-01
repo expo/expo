@@ -41,12 +41,32 @@ describe('iOS Icons', () => {
     ).toMatch('iosIcon');
   });
 
+  it(`uses more specific icon - appearance aware`, () => {
+    expect(
+      getIcons({
+        icon: 'icon',
+      })
+    ).toMatch('icon');
+    expect(
+      getIcons({
+        icon: 'icon',
+        ios: {
+          icon: {
+            dark: 'iosIcon',
+          },
+        },
+      })
+    ).toMatchObject({ dark: 'iosIcon' });
+  });
+
   it(`does not support empty string icons`, () => {
     expect(
       getIcons({
         icon: '',
         ios: {
-          icon: '',
+          icon: {
+            any: '',
+          },
         },
       })
     ).toBe(null);
@@ -55,7 +75,9 @@ describe('iOS Icons', () => {
       getIcons({
         icon: 'icon',
         ios: {
-          icon: '',
+          icon: {
+            any: '',
+          },
         },
       })
     ).toMatch('icon');

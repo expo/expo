@@ -310,6 +310,25 @@ export interface Splash {
   image?: string;
   [k: string]: any;
 }
+
+/**
+ * Configuration that is specific to the iOS platform icons.
+ */
+export interface IOSIcons {
+  /**
+   * The icon that will appear for the app regardless of the user's current system appearance.
+   */
+  any?: string;
+  /**
+   * The icon that will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+   */
+  dark?: string;
+  /**
+   * The icon that will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+   */
+  tinted?: string;
+}
+
 /**
  * Configuration that is specific to the iOS platform.
  */
@@ -343,7 +362,7 @@ export interface IOS {
    *
    *  Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
    */
-  icon?: string;
+  icon?: IOSIcons | string;
   /**
    * URL to your app on the Apple App Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
    */
