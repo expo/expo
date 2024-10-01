@@ -16,6 +16,7 @@
 #import "EXVersionManagerObjC.h"
 #import "EXScopedModuleRegistryDelegate.h"
 #import "EXScopedModuleRegistryAdapter.h"
+#import "ExpoAppInstance.h"
 #import "EXAppState.h"
 #import "EXDisabledDevLoadingView.h"
 #import "EXStatusBarManager.h"

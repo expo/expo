@@ -2,7 +2,6 @@
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
-#import "EXAppRootViewFactory.h"
 #import "EXKernel.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
@@ -52,7 +51,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 @end
 
-@interface EXReactAppManager () <RCTTurboModuleManagerDelegate>
+@interface EXReactAppManager ()
 
 @property (nonatomic, strong) UIView * __nullable reactRootView;
 @property (nonatomic, copy) RCTSourceLoadBlock loadCallback;
@@ -141,30 +140,13 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (void)_createAppInstance
 {
-  ExpoAppInstance *appInstance = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl]];
-  
   __weak __typeof(self) weakSelf = self;
-  RCTBundleURLBlock bundleUrlBlock = ^{
+  ExpoAppInstance *appInstance = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager onLoad:^(RCTHost *host, RCTSourceLoadBlock loadCallback) {
     EXReactAppManager *strongSelf = weakSelf;
-    return [strongSelf bundleUrl];
-  };
+    [strongSelf loadSourceForHost:host onComplete:loadCallback];
+  }];
   
-  RCTRootViewFactoryConfiguration *configuration =
-  [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
-                                                   newArchEnabled:appInstance.fabricEnabled
-                                               turboModuleEnabled:appInstance.turboModuleEnabled
-                                                bridgelessEnabled:appInstance.bridgelessEnabled];
-  
-  configuration.loadSourceForHost = ^(RCTHost * _Nonnull host, RCTSourceLoadBlock  _Nonnull loadCallback) {
-    [self loadSourceForHost:host onComplete:loadCallback];
-  };
-  
-  configuration.hostDidStartBlock = ^(RCTHost * _Nonnull host) {
-    [self hostDidStart:host];
-  };
-  
-  EXAppRootViewFactory *factory = [[EXAppRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
-  appInstance.rootViewFactory = factory;
+  appInstance.rootViewFactory = [appInstance createRCTRootViewFactory];
   _reactAppInstance = appInstance;
 }
 
@@ -265,18 +247,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
   return [self bundleUrl];
-}
-
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
-  return [_versionManager extraModules];
-}
-
-- (Class)getModuleClassFromName:(const char *)name {
-  return [_versionManager getModuleClassFromName:name];
-}
-
-- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass {
-  return [_versionManager getModuleInstanceFromClass:moduleClass];
 }
 
 - (void)loadSourceForHost:(RCTHost *)host onComplete:(RCTSourceLoadBlock)loadCallback {

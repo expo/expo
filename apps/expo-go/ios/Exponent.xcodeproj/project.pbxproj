@@ -32,8 +32,7 @@
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
-		407F43BC2CA991C5005E5E96 /* EXAppRootViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 407F43BB2CA991C5005E5E96 /* EXAppRootViewFactory.mm */; };
-		408933562CAAA2000095810E /* ExpoAppInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 408933552CAAA2000095810E /* ExpoAppInstance.swift */; };
+		4089335A2CAAF7A20095810E /* ExpoAppInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 408933592CAAF7A20095810E /* ExpoAppInstance.mm */; };
 		40F867A72CA04F0B009A7E2C /* libskshaper.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F867A22CA04F0B009A7E2C /* libskshaper.xcframework */; };
 		40F867A82CA04F0B009A7E2C /* libskunicode.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F867A32CA04F0B009A7E2C /* libskunicode.xcframework */; };
 		40F867A92CA04F0B009A7E2C /* libsvg.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40F867A42CA04F0B009A7E2C /* libsvg.xcframework */; };
@@ -249,9 +248,8 @@
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
-		407F43BB2CA991C5005E5E96 /* EXAppRootViewFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXAppRootViewFactory.mm; sourceTree = "<group>"; };
-		407F43BD2CA991DE005E5E96 /* EXAppRootViewFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppRootViewFactory.h; sourceTree = "<group>"; };
-		408933552CAAA2000095810E /* ExpoAppInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpoAppInstance.swift; sourceTree = "<group>"; };
+		408933582CAAF7870095810E /* ExpoAppInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoAppInstance.h; sourceTree = "<group>"; };
+		408933592CAAF7A20095810E /* ExpoAppInstance.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoAppInstance.mm; sourceTree = "<group>"; };
 		40F867A02CA04F0B009A7E2C /* JKBigInteger.podspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JKBigInteger.podspec.json; sourceTree = "<group>"; };
 		40F867A12CA04F0B009A7E2C /* libskparagraph.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libskparagraph.xcframework; sourceTree = "<group>"; };
 		40F867A22CA04F0B009A7E2C /* libskshaper.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libskshaper.xcframework; sourceTree = "<group>"; };
@@ -595,14 +593,13 @@
 			path = ViewShot;
 			sourceTree = "<group>";
 		};
-		40F842852C9CB39F00E1AC82 /* AppDelegates */ = {
+		40F842852C9CB39F00E1AC82 /* AppInstance */ = {
 			isa = PBXGroup;
 			children = (
-				407F43BB2CA991C5005E5E96 /* EXAppRootViewFactory.mm */,
-				407F43BD2CA991DE005E5E96 /* EXAppRootViewFactory.h */,
-				408933552CAAA2000095810E /* ExpoAppInstance.swift */,
+				408933582CAAF7870095810E /* ExpoAppInstance.h */,
+				408933592CAAF7A20095810E /* ExpoAppInstance.mm */,
 			);
-			path = AppDelegates;
+			path = AppInstance;
 			sourceTree = "<group>";
 		};
 		40F867A52CA04F0B009A7E2C /* common */ = {
@@ -1073,7 +1070,7 @@
 		B5FB72701FF6DADB001C764B /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				40F842852C9CB39F00E1AC82 /* AppDelegates */,
+				40F842852C9CB39F00E1AC82 /* AppInstance */,
 				F138E0D42A5F2071002E15BC /* Modules */,
 				B5FB72711FF6DADB001C764B /* Api */,
 				B5FB73FD1FF6DADB001C764B /* Internal */,
@@ -1788,12 +1785,12 @@
 				319AC474255E87FB0035332A /* EXKernel+DeviceInstallationUUID.m in Sources */,
 				B26DF25628048DB80071B0CD /* EXAppLoaderHelpers.swift in Sources */,
 				B5A72C2220A0D13E00974CCE /* EXJavaScriptResource.m in Sources */,
+				4089335A2CAAF7A20095810E /* ExpoAppInstance.mm in Sources */,
 				31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */,
 				19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */,
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
 				B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAbstractLoader.m in Sources */,
-				408933562CAAA2000095810E /* ExpoAppInstance.swift in Sources */,
 				F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */,
 				B56C65C6204768F3002B2424 /* EXRootViewController.m in Sources */,
 				31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */,
@@ -1869,7 +1866,6 @@
 				B5D0D673204F4C0400DDFC99 /* EXApiUtil.m in Sources */,
 				8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */,
 				B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
-				407F43BC2CA991C5005E5E96 /* EXAppRootViewFactory.mm in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */,

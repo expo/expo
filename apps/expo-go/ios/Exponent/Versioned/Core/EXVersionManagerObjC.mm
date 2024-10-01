@@ -131,11 +131,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
 }
 
-- (void)hostDidStart:(id)appInstance
+- (void)hostDidStart:(NSURL *)bundleURL
 {
-  if ([self _isDevModeEnabledForHost:appInstance]) {
+  if ([self _isDevModeEnabledForHost:bundleURL]) {
     // Set the bundle url for the packager connection manually
-    NSURL *bundleURL = [appInstance bundleURL];
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
     [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
@@ -303,9 +302,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 #pragma mark - internal
 
-- (BOOL)_isDevModeEnabledForHost:(id)instance
+- (BOOL)_isDevModeEnabledForHost:(NSURL *)bundleURL
 {
-  return ([RCTGetURLQueryParam([instance bundleURL], @"dev") boolValue]);
+  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue]);
 }
 
 - (void)_openJsInspector:(NSURL *)bundleURL
