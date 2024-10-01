@@ -102,6 +102,7 @@ function readFile(targetFile, options) {
                 resolve({
                     ...data,
                     ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
+                    file: targetFile,
                 });
             };
             if (typeof uri === 'string') {

@@ -136,6 +136,7 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
         resolve({
           ...data,
           ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
+          file: targetFile,
         });
       };
 

@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- [web] Include `file` object from input for server uploads.
 - [iOS] Add support for picking live photos from the library. ([#30957](https://github.com/expo/expo/pull/30957) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
