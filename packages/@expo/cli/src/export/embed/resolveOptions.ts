@@ -28,6 +28,7 @@ export interface Options {
   sourcemapUseAbsolutePath: boolean;
   verbose: boolean;
   unstableTransformProfile?: string;
+  eager?: boolean;
 }
 
 function assertIsBoolean(val: any): asserts val is boolean {
@@ -71,9 +72,10 @@ export function resolveOptions(
     config: args['--config'] ? path.resolve(args['--config']) : undefined,
     dev,
     minify: parsed.args['--minify'] as boolean | undefined,
+    eager: !!parsed.args['--eager'],
   };
 
-  if (parsed.args['--eager']) {
+  if (commonOptions.eager) {
     return resolveEagerOptionsAsync(projectRoot, commonOptions);
   }
 
@@ -130,6 +132,7 @@ export function resolveEagerOptionsAsync(
 
   return {
     ...options,
+    eager: options.eager ?? true,
     bundleOutput,
     assetsDest,
     entryFile: options.entryFile ?? resolveEntryPoint(projectRoot, { platform }),

@@ -35,7 +35,6 @@ import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
-import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync } from '../publicFolder';
 import {
@@ -44,6 +43,7 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
+import { exportStandaloneServerAsync } from './exportServer';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -182,7 +182,7 @@ export async function exportEmbedBundleAndAssetsAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
+  const { exp, pkg } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const isHermes = isEnableHermesManaged(exp, options.platform);
 
   let sourceMapUrl = options.sourcemapOutput;
@@ -216,23 +216,14 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
-    if (devServer.isReactServerComponentsEnabled) {
-      // Export the API routes for server rendering the React Server Components.
-      await exportApiRoutesStandaloneAsync(devServer, {
+    const apiRoutesEnabled = exp.web?.output === 'server';
+
+    if (devServer.isReactServerComponentsEnabled || apiRoutesEnabled) {
+      await exportStandaloneServerAsync(projectRoot, devServer, {
+        exp,
+        pkg,
         files,
-        platform: 'web',
-      });
-
-      // Store the server output in the project's .expo directory.
-      const serverOutput = path.join(projectRoot, '.expo/server', options.platform);
-      await removeAsync(serverOutput);
-      await persistMetroFilesAsync(files, serverOutput);
-
-      [...files.entries()].forEach(([key, value]) => {
-        if (value.targetDomain === 'server') {
-          // Delete server resources to prevent them from being exposed in the binary.
-          files.delete(key);
-        }
+        options,
       });
     }
 
