@@ -1,11 +1,11 @@
 import { ViewProps } from 'react-native';
 export interface LivePhotoViewProps extends ViewProps {
     /**
-     * The LivePhoto asset to display.
+     * The live photo asset to display.
      */
     source?: LivePhotoAsset | null;
     /**
-     * Determines whether the LivePhoto should also play audio.
+     * Determines whether the live photo should also play audio.
      *
      * @default true
      */
@@ -64,15 +64,15 @@ export type LivePhotoViewType = {
 };
 export interface LivePhotoViewStatics {
     /**
-     * Determines whether expo-live-photo is available on the current device.
+     * Determines whether the current device is capable of displaying live photos.
      */
     isAvailable(): boolean;
 }
 /**
  * A live photo asset.
  *
- * > **Note:** Due to native limitations the photo and video parts of the Live Photo must come from a valid Live Photo file and be unaltered.
- * > The photo is paired with the video by via metadata when taken, if the pairing is broken it's not possible to join them into a live photo again.
+ * > **Note:** Due to native limitations the photo and video parts of the live photo must come from a valid live photo file and be unaltered.
+ * > The photo is paired with the video via metadata when taken, if the pairing is broken it's not possible to join them into a live photo again.
  */
 export type LivePhotoAsset = {
     /**

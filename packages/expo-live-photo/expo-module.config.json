@@ -1,5 +1,5 @@
 {
-  "platforms": ["ios"],
+  "platforms": ["apple"],
   "ios": {
     "modules": ["LivePhotoModule"]
   }
