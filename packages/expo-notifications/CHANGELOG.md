@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.28.18 — 2024-10-01
+
+### 🎉 New features
+
 - Add clearLastNotificationResponseAsync to API. ([#31607](https://github.com/expo/expo/pull/31607) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - [android] fix notifications actions not being presented ([#31795](https://github.com/expo/expo/pull/31795) by [@vonovak](https://github.com/vonovak))
-
-### 💡 Others
 
 ## 0.28.17 — 2024-09-17
 
