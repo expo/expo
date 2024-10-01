@@ -86,13 +86,15 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     sLastToken = token
   }
 
-  fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
+  private fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
+    // the entry point for notifications. For its behavior, see table at https://firebase.google.com/docs/cloud-messaging/android/receive
     DebugLogging.logRemoteMessage("FirebaseMessagingDelegate.onMessageReceived: message", remoteMessage)
     val notification = createNotification(remoteMessage)
     DebugLogging.logNotification("FirebaseMessagingDelegate.onMessageReceived: notification", notification)
     NotificationsService.receive(context, notification)
+    // background tasks are separate from the main notification handling flow; they are executed through task-manager
     getBackgroundTasks().forEach {
       it.scheduleJob(RemoteMessageSerializer.toBundle(remoteMessage))
     }
