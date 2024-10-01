@@ -15,6 +15,6 @@ interface VideoPlayerListener {
   fun onVolumeChanged(player: VideoPlayer, newValue: VolumeEvent, oldVolume: VolumeEvent?) {}
   fun onSourceChanged(player: VideoPlayer, source: VideoSource?, oldSource: VideoSource?) {}
   fun onPlaybackRateChanged(player: VideoPlayer, rate: Float, oldRate: Float?) {}
-  fun onTimeUpdate(player: VideoPlayer, progressUpdate: TimeUpdate) {}
+  fun onTimeUpdate(player: VideoPlayer, timeUpdate: TimeUpdate) {}
   fun onPlayedToEnd(player: VideoPlayer) {}
 }

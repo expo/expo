@@ -49,7 +49,7 @@ const eventsToListen: (keyof VideoPlayerEvents)[] = [
   'volumeChange',
   'playToEnd',
   'sourceChange',
-  'progressUpdate',
+  'timeUpdate',
 ];
 if (Platform.OS === 'android') {
   videoLabels.push('Tears of Steel (DRM protected)');
@@ -81,7 +81,7 @@ export default function VideoScreen() {
     player.staysActiveInBackground = staysActiveInBackground;
     player.showNowPlayingNotification = true;
     player.allowsExternalPlayback = true;
-    player.progressUpdateInterval = 0.25;
+    player.timeUpdateEventInterval = 0.25;
     player.play();
   });
 

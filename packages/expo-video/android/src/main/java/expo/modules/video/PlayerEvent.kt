@@ -38,9 +38,9 @@ sealed class PlayerEvent {
     override val arguments = arrayOf(rate, oldRate)
   }
 
-  data class TimeUpdated(val progressUpdate: TimeUpdate) : PlayerEvent() {
+  data class TimeUpdated(val timeUpdate: TimeUpdate) : PlayerEvent() {
     override val name = "timeUpdate"
-    override val arguments = arrayOf(progressUpdate)
+    override val arguments = arrayOf(timeUpdate)
   }
 
   class PlayedToEnd : PlayerEvent() {
@@ -54,7 +54,7 @@ sealed class PlayerEvent {
       is VolumeChanged -> listeners.forEach { it.onVolumeChanged(player, newValue, oldValue) }
       is SourceChanged -> listeners.forEach { it.onSourceChanged(player, source, oldSource) }
       is PlaybackRateChanged -> listeners.forEach { it.onPlaybackRateChanged(player, rate, oldRate) }
-      is TimeUpdated -> listeners.forEach { it.onTimeUpdate(player, progressUpdate) }
+      is TimeUpdated -> listeners.forEach { it.onTimeUpdate(player, timeUpdate) }
       is PlayedToEnd -> listeners.forEach { it.onPlayedToEnd(player) }
     }
   }
