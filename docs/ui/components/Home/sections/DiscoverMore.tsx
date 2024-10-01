@@ -60,7 +60,7 @@ export function DiscoverMore() {
           </div>
           <RawH3 className="!text-palette-blue11 !font-bold">Chat with the community</RawH3>
           <P className="!text-palette-blue11 !text-xs max-w-[32ch]">
-            Join over 20,000 other developers
+            Join over 40,000 other developers
             <br />
             on the Expo Community Discord.
           </P>
