@@ -411,8 +411,6 @@ class Contact(var contactId: String) {
       val datesArray = ArrayList<Bundle?>()
       for (item in dates) {
         val calendar = Calendar.getInstance()
-        val datePattern = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val noYearPattern = SimpleDateFormat("--MM-dd", Locale.getDefault())
         val details = Bundle()
         val dateString = item.data
         val label = item.label
@@ -424,8 +422,10 @@ class Contact(var contactId: String) {
         try {
           hasYear = !dateString!!.startsWith("--")
           if (hasYear) {
+            val datePattern = SimpleDateFormat("yyyy-MM-dd", Locale.US)
             calendar.time = datePattern.parse(dateString)!!
           } else {
+            val noYearPattern = SimpleDateFormat("--MM-dd", Locale.US)
             calendar.time = noYearPattern.parse(dateString)!!
           }
           if (hasYear) {

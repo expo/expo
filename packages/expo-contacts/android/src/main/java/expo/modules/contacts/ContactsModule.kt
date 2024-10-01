@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import expo.modules.contacts.models.BaseModel
+import expo.modules.contacts.models.BirthdayModel
 import expo.modules.contacts.models.DateModel
 import expo.modules.contacts.models.EmailModel
 import expo.modules.contacts.models.ExtraNameModel
@@ -397,6 +398,14 @@ class ContactsModule : Module() {
       contact.dates = it
     }
 
+    data["birthday"]?.takeIf { it is Map<*, *> }?.let {
+      contact.dates.add(
+        BirthdayModel().apply {
+          fromMap(it as Map<String, Any>)
+        }
+      )
+    }
+
     BaseModel.decodeList(
       data.safeGet("relationships"),
       RelationshipModel::class.java
@@ -434,10 +443,7 @@ class ContactsModule : Module() {
       null
     )?.use { cursor ->
       val contacts = loadContactsFrom(cursor)
-      val contactList = ArrayList(contacts.values)
-      if (contactList.size > 0) {
-        return contactList[0]
-      }
+      return contacts.values.firstOrNull()
     }
     return null
   }
@@ -647,11 +653,8 @@ class ContactsModule : Module() {
       val contactId = cursor.getString(columnIndex)
 
       // add or update existing contact for iterating data based on contact id
-      if (!map.containsKey(contactId)) {
-        map[contactId] = Contact(contactId)
-      }
-      val contact = map[contactId]
-      contact!!.fromCursor(cursor)
+      val contact = map.getOrPut(contactId) { Contact(contactId) }
+      contact.fromCursor(cursor)
     }
     return map
   }
