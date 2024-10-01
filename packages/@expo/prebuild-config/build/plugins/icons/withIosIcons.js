@@ -138,9 +138,9 @@ function getIosNamedProjectPath(projectRoot) {
 function getAppleIconName(size, scale, appearance) {
   let name = 'App-Icon';
   if (appearance) {
-    name += `-${appearance}`;
+    name = `${name}-${appearance}`;
   }
-  name += `-${size}x${size}@${scale}x.png`;
+  name = `${name}-${size}x${size}@${scale}x.png`;
   return name;
 }
 async function generateUniversalIconAsync(projectRoot, {
