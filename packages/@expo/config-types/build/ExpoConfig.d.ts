@@ -307,23 +307,6 @@ export interface Splash {
     [k: string]: any;
 }
 /**
- * Configuration that is specific to the iOS platform icons.
- */
-export interface IOSIcons {
-    /**
-     * The icon that will appear for the app regardless of the user's current system appearance.
-     */
-    any?: string;
-    /**
-     * The icon that will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
-     */
-    dark?: string;
-    /**
-     * The icon that will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
-     */
-    tinted?: string;
-}
-/**
  * Configuration that is specific to the iOS platform.
  */
 export interface IOS {
@@ -352,11 +335,11 @@ export interface IOS {
      */
     backgroundColor?: string;
     /**
-     * Local path or remote URL to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
+     * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., light, dark, tinted) can be provided. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
      *
-     *  Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
+     * Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
      */
-    icon?: IOSIcons | string;
+    icon?: string | IOSIcons;
     /**
      * URL to your app on the Apple App Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
      */
@@ -532,6 +515,23 @@ export interface IOS {
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
+}
+/**
+ * Configuration that is specific to the iOS platform icons.
+ */
+export interface IOSIcons {
+    /**
+     * The icon that will appear for the app regardless of the user's current system appearance.
+     */
+    any?: string;
+    /**
+     * The icon that will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     */
+    dark?: string;
+    /**
+     * The icon that will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     */
+    tinted?: string;
 }
 /**
  * Configuration that is specific to the Android platform.
