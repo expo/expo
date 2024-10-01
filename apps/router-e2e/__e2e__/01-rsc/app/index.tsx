@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router/build/rsc/exports';
 
 import { Counter } from '../components/counter';
@@ -26,6 +27,7 @@ export default function IndexRoute({ path, query }) {
         style={{ width: 100, height: 100 }}
       />
 
+      <Ionicons name="airplane" />
       <Counter />
 
       <Pokemon id={45} />
