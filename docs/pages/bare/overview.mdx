@@ -28,7 +28,9 @@ There's so much more to explore, and the links below will help you to explore th
 
 ## Incremental adoption steps
 
-There are four steps of incremental adoption to help you get started.
+Below are four suggested phases of incremental adoption. These phases generally progress from quick changes to improve developer experience, to more significant workflow and codebase optimizations.
+
+Only the first phase &mdhash; prerequisites &mdhash; is required by other phases. After following its instructions, you can skip to the tools and services that are most relevant to your goals in adopting Expo.
 
 ### Prerequisites
 
@@ -39,8 +41,8 @@ These first steps are required to later adopt Expo tools and services:
   Icon={Rocket02Icon}
   description={
     <>
-      To unlock Expo capabilities, you need to install the <CODE>expo</CODE> package in your project in
-      your existing React Native project. This guide provides both automated and manual installation
+      To unlock Expo capabilities, you need to install the <CODE>expo</CODE> package in your
+      existing React Native project. This guide provides both automated and manual installation
       steps.
     </>
   }
@@ -52,9 +54,10 @@ These first steps are required to later adopt Expo tools and services:
   Icon={BookOpen02Icon}
   description={
     <>
-      Migration to Expo CLI provides many benefits over <CODE>@react-native-community/cli</CODE>.
-      This guide explains these benefits and provides compilation commands to start your development
-      server after installing <CODE>expo</CODE> package.
+      Migration to Expo CLI is a drop-in replacement for <CODE>@react-native-community/cli</CODE>.
+      It provides full compatibility with all Expo tools and services. This guide explains the
+      benefits and provides compilation commands to start your development server after installing
+      <CODE>expo</CODE> package.
     </>
   }
   href="/bare/using-expo-cli/"
@@ -197,7 +200,7 @@ Although we recommend using EAS for a smooth collaboration with your teammates a
 
 <Collapsible summary="Can I install third-party native libraries in my code?">
 
-Yes, you can install and use third-party libraries that require native projects (**android** and **ios**) configuration with [development builds](/workflow/overview/#development-builds). See [Using Third-Party libraries](/workflow/using-libraries/#third-party-libraries) for more information.
+Yes, you can install and use third-party libraries that require native projects (**android** and **ios**) configuration or provides a [config plugin](/config-plugins/introduction/) with [development builds](/workflow/overview/#development-builds). See [Using Third-Party libraries](/workflow/using-libraries/#third-party-libraries) for more information.
 
 </Collapsible>
 
