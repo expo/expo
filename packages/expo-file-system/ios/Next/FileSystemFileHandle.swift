@@ -24,8 +24,8 @@ internal final class FileSystemFileHandle: SharedObject {
     return data
   }
 
-  func write(_ bytes: Data) {
-    handle.write(bytes)
+  func write(_ bytes: Data) throws {
+    try handle.write(contentsOf: bytes)
   }
 
   func close() throws {

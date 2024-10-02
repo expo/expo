@@ -1,5 +1,6 @@
 import ExpoFileSystem from './ExpoFileSystem';
 import { PathUtilities } from './pathUtilities';
+import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
 export class Paths extends PathUtilities {
   /**
@@ -59,6 +60,14 @@ export class File extends ExpoFileSystem.FileSystemFile {
    */
   get name() {
     return Paths.basename(this.uri);
+  }
+
+  readableStream() {
+    return new ReadableStream(new FileSystemReadableStreamSource(super.open()));
+  }
+
+  writableStream() {
+    return new WritableStream(new FileSystemWritableSink(super.open()));
   }
 }
 

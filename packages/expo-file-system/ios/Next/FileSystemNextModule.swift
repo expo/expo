@@ -121,9 +121,11 @@ public final class FileSystemNextModule: Module {
       Function("readBytes") { (fileHandle, bytes: Int) in
         try fileHandle.read(bytes)
       }
+
       Function("writeBytes") { (fileHandle, bytes: Data) in
-        fileHandle.write(bytes)
+        try fileHandle.write(bytes)
       }
+      
       Function("close") { fileHandle in
         try fileHandle.close()
       }

@@ -4,7 +4,6 @@ import * as FS from 'expo-file-system';
 import { File, Directory } from 'expo-file-system/next';
 import { Paths } from 'expo-file-system/src/next';
 import { Platform } from 'react-native';
-
 export const name = 'FileSystem@next';
 
 export async function test({ describe, expect, it, ...t }) {
@@ -537,6 +536,47 @@ export async function test({ describe, expect, it, ...t }) {
       expect(handle.readBytes(26 * 4).length).toBe(26 * 4);
       handle.close();
       expect(src.text()).toBe(alphabet.repeat(4 * 10));
+    });
+
+    it('Provides a ReadableStream', async () => {
+      const src = new File(testDirectory + 'abcs.txt');
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      src.write(alphabet);
+      const stream = src.readableStream();
+
+      for await (const chunk of stream) {
+        expect(chunk[0]).toBe(alphabet.charCodeAt(0));
+      }
+    });
+
+    it('Provides a ReadableStream with byob support', async () => {
+      const src = new File(testDirectory + 'abcs.txt');
+      const alphabet = 'abcdefghij'.repeat(1000);
+      src.write(alphabet);
+      const stream = src.readableStream();
+      const array1 = new Uint8Array(5000);
+      const array2 = new Uint8Array(5000);
+      const array3 = new Uint8Array(50);
+      const reader = stream.getReader({ mode: 'byob' });
+      expect((await reader.read(array1)).done).toBe(false);
+      const result = await reader.read(array2);
+      expect(result.done).toBe(false);
+      expect(result.value[4999]).toBe(alphabet.charCodeAt(9999));
+
+      const result2 = await reader.read(array3);
+      expect(result2.done).toBe(true);
+      expect(result2.value.length).toBe(0);
+    });
+
+    it('Provides a WriteableStream', async () => {
+      const src = new File(testDirectory + 'abcs.txt');
+      src.create();
+      const writable = src.writableStream();
+      const alphabet = 'abcdefghij'.repeat(10);
+      const writer = writable.getWriter();
+      await writer.write(new Uint8Array(alphabet.split('').map((char) => char.charCodeAt(0))));
+      writer.close();
+      expect(src.text()).toBe(alphabet);
     });
   });
 

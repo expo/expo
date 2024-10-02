@@ -1,10 +1,11 @@
 package expo.modules.filesystem.next
 
 import expo.modules.kotlin.sharedobjects.SharedObject
+import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 class FileSystemFileHandle(file: FileSystemFile) : SharedObject(), AutoCloseable {
-  val fileChannel: FileChannel = file.file.inputStream().channel
+  val fileChannel: FileChannel = RandomAccessFile(file.file, "rw").channel
 
   override fun deallocate() {
     close()
