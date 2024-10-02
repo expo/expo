@@ -78,10 +78,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 
   /**
    * Boolean value indicating if the player should correct audio pitch when the playback speed changes.
-   * > On web, changing this property is not supported, the player will always correct the pitch.
    * @default true
-   * @platform android
-   * @platform ios
    */
   preservesPitch: boolean;
 
