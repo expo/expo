@@ -4,7 +4,7 @@ pluginManagement {
 plugins { id("com.facebook.react.settings") }
 
 extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
-  if (System.getenv('EXPO_UNSTABLE_CORE_AUTOLINKING') == '1') {
+  if (System.getenv('EXPO_UNSTABLE_CORE_AUTOLINKING') != '0') {
     println('\u001B[32mUsing expo-modules-autolinking as core autolinking source\u001B[0m')
     def command = [
       'node',
