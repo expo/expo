@@ -203,6 +203,12 @@ You can debug the native Android project using native debugging tools by opening
 
 <Terminal cmd={['$ open -a /Applications/Android Studio.app android']} />
 
+If you have a customized Android project using different product flavors, you can configure both the flavor and application ID using the `--variant` and `--app-id` flags:
+
+<Terminal cmd={['$ npx expo run:android --variant freeDebug --app-id dev.expo.myapp.free']} />
+
+For more information, see the [Local builds using Android product flavors](/guides/local-app-development/#local-builds-using-android-product-flavors) guide.
+
 #### Compiling iOS
 
 An iOS app can have multiple **schemes** for representing different sub-apps like App Clips, watchOS apps, Safari Extensions, and so on. By default, `npx expo run:ios` will choose the scheme for your iOS app. You can pick a custom scheme with the `--scheme <my-scheme>` argument. If you pass in the `--scheme` argument alone, then Expo CLI will prompt you to choose a scheme from the list of available options in your Xcode project.
