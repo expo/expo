@@ -358,7 +358,7 @@ NS_ASSUME_NONNULL_BEGIN
     EXUpdatesConfig.EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
     EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever,
     EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders],
-    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: [NSString stringWithFormat:@"exposdk:%@", [EXVersions sharedInstance].temporarySdkVersion],
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: [NSString stringWithFormat:@"exposdk:%@", [EXVersions sharedInstance].sdkVersion],
   }];
 
   // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates
@@ -404,16 +404,12 @@ NS_ASSUME_NONNULL_BEGIN
 
   EXUpdatesDatabaseManager *updatesDatabaseManager = [EXKernel sharedInstance].serviceRegistry.updatesDatabaseManager;
 
-  NSMutableArray *sdkVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion] mutableCopy];
-  [sdkVersions addObject:@"UNVERSIONED"];
-
-  NSMutableArray *sdkVersionRuntimeVersions = [[NSMutableArray alloc] initWithCapacity:sdkVersions.count];
-  for (NSString *sdkVersion in sdkVersions) {
-    [sdkVersionRuntimeVersions addObject:[NSString stringWithFormat:@"exposdk:%@", sdkVersion]];
-  }
-  [sdkVersionRuntimeVersions addObject:@"exposdk:UNVERSIONED"];
-  [sdkVersions addObjectsFromArray:sdkVersionRuntimeVersions];
-
+  NSArray *sdkVersions = @[
+    [EXVersions sharedInstance].sdkVersion,
+    [NSString stringWithFormat:@"exposdk:%@", [EXVersions sharedInstance].sdkVersion],
+    @"UNVERSIONED",
+    @"exposdk:UNVERSIONED"
+  ];
   _selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
                       initWithLauncherSelectionPolicy:[[EXExpoGoLauncherSelectionPolicyFilterAware alloc] initWithSdkVersions:sdkVersions]
                       loaderSelectionPolicy:[EXUpdatesLoaderSelectionPolicyFilterAware new]
@@ -593,12 +589,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)_sdkVersions
 {
-  NSArray *versionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
-  if (versionsAvailable) {
-    return [versionsAvailable componentsJoinedByString:@","];
-  } else {
-    return [EXVersions sharedInstance].temporarySdkVersion;
-  }
+  return [EXVersions sharedInstance].sdkVersion;
 }
 
 @end

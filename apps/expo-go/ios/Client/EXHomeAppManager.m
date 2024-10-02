@@ -42,7 +42,7 @@ NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
         @"manifest": self.appRecord.appLoader.manifest.rawManifestJSON,
         @"executionEnvironment": EXConstantsExecutionEnvironmentStoreClient,
         @"appOwnership": @"expo",
-        @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
+        @"supportedExpoSdks": @[[EXVersions sharedInstance].sdkVersion],
     },
     @"exceptionsManagerDelegate": self.exceptionHandler,
     @"isDeveloper": @([EXBuildConstants sharedInstance].isDevKernel),
