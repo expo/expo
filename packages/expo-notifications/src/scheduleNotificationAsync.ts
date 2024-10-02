@@ -8,6 +8,7 @@ import {
   NativeNotificationTriggerInput,
   NativeTimeIntervalTriggerInput,
   NativeWeeklyTriggerInput,
+  NativeMonthlyTriggerInput,
   NativeYearlyTriggerInput,
 } from './NotificationScheduler.types';
 import {
@@ -115,6 +116,10 @@ export function parseTrigger(
   const weeklyTrigger = parseWeeklyTrigger(userFacingTrigger);
   if (weeklyTrigger) {
     return weeklyTrigger;
+  }
+  const monthlyTrigger = parseMonthlyTrigger(userFacingTrigger);
+  if (monthlyTrigger) {
+    return monthlyTrigger;
   }
   const yearlyTrigger = parseYearlyTrigger(userFacingTrigger);
   if (yearlyTrigger) {
@@ -229,6 +234,30 @@ function parseWeeklyTrigger(
   return undefined;
 }
 
+function parseMonthlyTrigger(
+  trigger: NotificationTriggerInput
+): NativeMonthlyTriggerInput | undefined {
+  if (
+    trigger !== null &&
+    typeof trigger === 'object' &&
+    'type' in trigger &&
+    trigger.type === SchedulableTriggerInputTypes.MONTHLY
+  ) {
+    validateDateComponentsInTrigger(trigger, ['day', 'hour', 'minute']);
+    const result: NativeMonthlyTriggerInput = {
+      type: 'monthly',
+      day: trigger.day ?? placeholderDateComponentValue,
+      hour: trigger.hour ?? placeholderDateComponentValue,
+      minute: trigger.minute ?? placeholderDateComponentValue,
+    };
+    if (trigger.channelId) {
+      result.channelId = trigger.channelId;
+    }
+    return result;
+  }
+  return undefined;
+}
+
 function parseYearlyTrigger(
   trigger: NotificationTriggerInput
 ): NativeYearlyTriggerInput | undefined {
@@ -302,7 +331,9 @@ function validateDateComponentsInTrigger(
         break;
       }
       case 'day': {
-        const { day, month } = anyTriggerType;
+        const day = anyTriggerType.day;
+        const month =
+          anyTriggerType.month !== undefined ? anyTriggerType.month : new Date().getMonth();
         const daysInGivenMonth = daysInMonth(month);
         if (day < 1 || day > daysInGivenMonth) {
           throw new RangeError(
