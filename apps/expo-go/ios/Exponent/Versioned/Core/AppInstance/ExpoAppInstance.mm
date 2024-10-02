@@ -1,9 +1,9 @@
 #import "ExpoAppInstance.h"
 #import <ReactCommon/RCTTurboModuleManager.h>
+#import <ReactCommon/RCTHost.h>
 
-
-@interface ExpoAppInstance () <RCTTurboModuleManagerDelegate>
-@end
+//@interface ExpoAppInstance () <RCTTurboModuleManagerDelegate, RCTHostDelegate>
+//@end
 
 @implementation ExpoAppInstance
 
@@ -18,26 +18,6 @@
 
 - (NSURL *)bundleURL {
   return _sourceURL;
-}
-
-- (RCTRootViewFactory *)createRCTRootViewFactory {
-  __weak __typeof(self) weakSelf = self;
-  RCTBundleURLBlock bundleUrlBlock = ^{
-    ExpoAppInstance *strongSelf = weakSelf;
-    return strongSelf.bundleURL;
-  };
-  
-  RCTRootViewFactoryConfiguration *configuration =
-  [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
-                                                   newArchEnabled:self.fabricEnabled
-                                               turboModuleEnabled:self.turboModuleEnabled
-                                                bridgelessEnabled:self.bridgelessEnabled];
-  
-  configuration.loadSourceForHost = ^(RCTHost * _Nonnull host, RCTSourceLoadBlock _Nonnull loadCallback) {
-    weakSelf.onLoad(host, loadCallback);
-  };
-
-  return [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
@@ -55,6 +35,15 @@
 - (void)hostDidStart:(RCTHost *)host
 {
   [_manager hostDidStart:[self bundleURL]];
+}
+
+- (void)loadBundleAtURL:(NSURL *)sourceURL
+             onProgress:(RCTSourceLoadProgressBlock)onProgress
+             onComplete:(RCTSourceLoadBlock)loadCallback {
+  self.onLoad(sourceURL, loadCallback);
+}
+
+- (void)host:(nonnull RCTHost *)host didReceiveJSErrorStack:(nonnull NSArray<NSDictionary<NSString *,id> *> *)stack message:(nonnull NSString *)message exceptionId:(NSUInteger)exceptionId isFatal:(BOOL)isFatal {
 }
 
 @end

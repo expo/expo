@@ -141,9 +141,9 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 - (void)_createAppInstance
 {
   __weak __typeof(self) weakSelf = self;
-  ExpoAppInstance *appInstance = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager onLoad:^(RCTHost *host, RCTSourceLoadBlock loadCallback) {
+  ExpoAppInstance *appInstance = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager onLoad:^(NSURL *sourceURL, RCTSourceLoadBlock loadCallback) {
     EXReactAppManager *strongSelf = weakSelf;
-    [strongSelf loadSourceForHost:host onComplete:loadCallback];
+    [strongSelf loadSourceForHost:sourceURL onComplete:loadCallback];
   }];
   
   appInstance.rootViewFactory = [appInstance createRCTRootViewFactory];
@@ -249,7 +249,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   return [self bundleUrl];
 }
 
-- (void)loadSourceForHost:(RCTHost *)host onComplete:(RCTSourceLoadBlock)loadCallback {
+- (void)loadSourceForHost:(NSURL *)sourceURL onComplete:(RCTSourceLoadBlock)loadCallback {
   // clear any potentially old loading state
   if (_appRecord.scopeKey) {
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forScopeKey:_appRecord.scopeKey];

@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^OnLoad)(RCTHost *host, RCTSourceLoadBlock loadCallback);
+typedef void (^OnLoad)(NSURL *sourceURL, RCTSourceLoadBlock loadCallback);
 
 @interface ExpoAppInstance : RCTAppDelegate
 
