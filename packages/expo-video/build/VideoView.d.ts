@@ -16,11 +16,11 @@ export declare class VideoView extends PureComponent<VideoViewProps> {
     /**
      * Enters fullscreen mode.
      */
-    enterFullscreen(): Promise<any>;
+    enterFullscreen(): Promise<void>;
     /**
      * Exits fullscreen mode.
      */
-    exitFullscreen(): Promise<any>;
+    exitFullscreen(): Promise<void>;
     /**
      * Enters Picture in Picture (PiP) mode. Throws an exception if the device does not support PiP.
      * > **Note:** Only one player can be in Picture in Picture (PiP) mode at a time.

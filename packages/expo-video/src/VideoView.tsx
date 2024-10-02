@@ -25,14 +25,14 @@ export class VideoView extends PureComponent<VideoViewProps> {
   /**
    * Enters fullscreen mode.
    */
-  async enterFullscreen() {
+  async enterFullscreen(): Promise<void> {
     return await this.nativeRef.current?.enterFullscreen();
   }
 
   /**
    * Exits fullscreen mode.
    */
-  async exitFullscreen() {
+  async exitFullscreen(): Promise<void> {
     return await this.nativeRef.current?.exitFullscreen();
   }
 

@@ -25,10 +25,7 @@ function mapStyles(style: VideoViewProps['style']): React.CSSProperties {
 }
 
 export function isPictureInPictureSupported(): boolean {
-  const userAgent = window.navigator.userAgent;
-  // Chromium and WebKit based browsers are supported
-  // https://developer.mozilla.org/en-US/docs/Web/API/Picture-in-Picture_API#browser_compatibility
-  return !!userAgent && (userAgent.includes('Chrome') || userAgent.includes('Safari'));
+  return typeof document === 'object' && typeof document.exitPictureInPicture === 'function';
 }
 
 export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoViewProps, ref) => {
