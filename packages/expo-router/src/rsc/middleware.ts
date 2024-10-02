@@ -28,40 +28,46 @@ function getRscRenderContext(platform: string) {
   return context;
 }
 
-function getServerActionManifest(
+async function getServerActionManifest(
   distFolder: string,
   platform: string
-): Record<
-  // Input ID
-  string,
-  [
-    // Metro ID
+): Promise<
+  Record<
+    // Input ID
     string,
-    // Chunk location.
-    string,
-  ]
+    [
+      // Metro ID
+      string,
+      // Chunk location.
+      string,
+    ]
+  >
 > {
   const filePath = path.join(distFolder, `_expo/rsc/${platform}/action-manifest.json`);
-  // @ts-expect-error: Special syntax for expo/metro to access `require`
+  // @ts-expect-error
   return $$require_external(filePath);
+  // return await import(/* @metro-ignore */ filePath);
 }
 
-function getSSRManifest(
+async function getSSRManifest(
   distFolder: string,
   platform: string
-): Record<
-  // Input ID
-  string,
-  [
-    // Metro ID
+): Promise<
+  Record<
+    // Input ID
     string,
-    // Chunk location.
-    string,
-  ]
+    [
+      // Metro ID
+      string,
+      // Chunk location.
+      string,
+    ]
+  >
 > {
   const filePath = path.join(distFolder, `_expo/rsc/${platform}/ssr-manifest.json`);
-  // @ts-expect-error: Special syntax for expo/metro to access `require`
+  // @ts-expect-error
   return $$require_external(filePath);
+  // return import(/* @metro-ignore */ filePath);
 }
 
 // The import map allows us to use external modules from different bundling contexts.
@@ -82,8 +88,8 @@ export async function renderRscWithImportsAsync(
 
   const entries = await imports.router();
 
-  const ssrManifest = getSSRManifest(distFolder, platform);
-  const actionManifest = getServerActionManifest(distFolder, platform);
+  const ssrManifest = await getSSRManifest(distFolder, platform);
+  const actionManifest = await getServerActionManifest(distFolder, platform);
   return renderRsc(
     {
       body: body ?? undefined,
@@ -124,8 +130,10 @@ export async function renderRscWithImportsAsync(
       },
       async loadServerModuleRsc(file) {
         debug('loadServerModuleRsc', file);
+        const filePath = path.join(distFolder, file);
         // @ts-expect-error
-        return $$require_external(path.join(__dirname, '../../..', file));
+        return $$require_external(filePath);
+        // return import(/* @metro-ignore */ filePath);
       },
 
       entries: entries!,
@@ -145,6 +153,7 @@ export async function renderRscAsync(
         const filePath = path.join(distFolder, `_expo/rsc/${platform}/router.js`);
         // @ts-expect-error: Special syntax for expo/metro to access `require`
         return $$require_external(filePath);
+        // return import(/* @metro-ignore */ filePath);
       },
     },
     args
