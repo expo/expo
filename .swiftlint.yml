@@ -31,7 +31,6 @@ excluded:
 
 # Enable rules that are turned off by default. Run `swiftlint rules` to see what's available to opt-in.
 opt_in_rules:
-  - anyobject_protocol
   - array_init
   - closure_body_length
   - closure_end_indentation
@@ -51,6 +50,7 @@ opt_in_rules:
   - identical_operands
   - implicitly_unwrapped_optional
   - indentation_width
+  - legacy_objc_type
   - literal_expression_end_indentation
   - local_doc_comment
   - lower_acl_than_parent
@@ -88,9 +88,6 @@ analyzer_rules:
   - capture_variable
   - unused_declaration
   - unused_import
-
-# Prefer using AnyObject over class for class-only protocols.
-anyobject_protocol: warning
 
 # Prefer using `Array(seq)` over `seq.map { $0 }` to convert a sequence into an Array.
 array_init: warning
