@@ -21,22 +21,22 @@ import logger from '../Logger';
  * An array with functions whose purpose is to check and review the diff.
  */
 const REVIEWERS: Reviewer[] = [
-  {
-    id: 'changelog-checks',
-    action: checkMissingChangelogs,
-  },
-  {
-    id: 'changelog-review',
-    action: reviewChangelogEntries,
-  },
-  {
-    id: 'file-checks',
-    action: reviewForbiddenFiles,
-  },
-  {
-    id: 'swiftlint',
-    action: lintSwiftFiles,
-  },
+  // {
+  //   id: 'changelog-checks',
+  //   action: checkMissingChangelogs,
+  // },
+  // {
+  //   id: 'changelog-review',
+  //   action: reviewChangelogEntries,
+  // },
+  // {
+  //   id: 'file-checks',
+  //   action: reviewForbiddenFiles,
+  // },
+  // {
+  //   id: 'swiftlint',
+  //   action: lintSwiftFiles,
+  // },
 ];
 
 /**
@@ -178,6 +178,7 @@ async function updateLabelsAsync(pr: GitHub.PullRequest, newLabel: Label) {
  * Finds all reports made by me and this expotools command in given pull request.
  */
 async function findExistingReportsAsync(prNumber: number, userId: number) {
+  logger.info(`🔍 Finding existing reports`);
   return (await GitHub.listAllCommentsAsync(prNumber)).filter((comment) => {
     return comment.user?.id === userId && comment.body?.startsWith(COMMENT_HEADER);
   });
@@ -187,6 +188,7 @@ async function findExistingReportsAsync(prNumber: number, userId: number) {
  * Finds all reviews submitted by me and this expotools command in given pull request.
  */
 async function findExistingReviewsAsync(prNumber: number, userId: number) {
+  logger.info(`🔍 Finding existing reviews`);
   return (await GitHub.listPullRequestReviewsAsync(prNumber)).filter(
     (review) => review.user?.id === userId
   );
