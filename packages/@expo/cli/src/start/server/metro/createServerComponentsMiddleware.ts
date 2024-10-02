@@ -92,10 +92,53 @@ export function createServerComponentsMiddleware(
     rscPathPrefix += '/';
   }
 
+  async function exportServerActionsAsync(
+    { platform, entryPoints }: { platform: string; entryPoints: string[] },
+    files: ExportAssetMap
+  ): Promise<{
+    manifest: Record<string, [string, string]>;
+  }> {
+    const uniqueEntryPoints = [...new Set(entryPoints)];
+    // TODO: Support multiple entry points in a single split server bundle...
+    const serverRoot = getMetroServerRootMemo(projectRoot);
+
+    const manifest: Record<string, [string, string]> = {};
+    for (const entryPoint of uniqueEntryPoints) {
+      const contents = await ssrLoadModuleArtifacts(entryPoint, {
+        environment: 'react-server',
+        platform,
+      });
+      const relativeName = path.relative(serverRoot, entryPoint);
+      const safeName = relativeName.replace(/\//g, '_');
+
+      const outputName = `_expo/rsc/${platform}/actions/${safeName}.js`;
+      // While we're here, export the router for the server to dynamically render RSC.
+      files.set(outputName, {
+        targetDomain: 'server',
+        contents: wrapBundle(contents.src),
+      });
+
+      // Import relative to `dist/server/_expo/rsc/web/router.js`
+      manifest[entryPoint] = [relativeName, outputName];
+    }
+
+    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+    files.set(`_expo/rsc/${platform}/action-manifest.json`, {
+      targetDomain: 'server',
+      contents: JSON.stringify(manifest),
+    });
+
+    return { manifest };
+  }
+
   async function getExpoRouterClientReferencesAsync(
     { platform }: { platform: string },
     files: ExportAssetMap
-  ): Promise<{ reactClientReferences: string[]; cssModules: SerialAsset[] }> {
+  ): Promise<{
+    reactClientReferences: string[];
+    reactServerReferences: string[];
+    cssModules: SerialAsset[];
+  }> {
     const contents = await ssrLoadModuleArtifacts(
       'expo-router/build/rsc/router/expo-definedRouter',
       {
@@ -107,6 +150,17 @@ export function createServerComponentsMiddleware(
     // Extract the global CSS modules that are imported from the router.
     // These will be injected in the head of the HTML document for the website.
     const cssModules = contents.artifacts.filter((a) => a.type === 'css');
+
+    const reactServerReferences = contents.artifacts
+      .filter((a) => a.type === 'js')[0]
+      .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+
+    if (!reactServerReferences) {
+      throw new Error(
+        'Static server action references were not returned from the Metro SSR bundle for definedRouter'
+      );
+    }
+    debug('React client boundaries:', reactServerReferences);
 
     const reactClientReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
@@ -125,7 +179,7 @@ export function createServerComponentsMiddleware(
       contents: wrapBundle(contents.src),
     });
 
-    return { reactClientReferences, cssModules };
+    return { reactClientReferences, reactServerReferences, cssModules };
   }
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
@@ -355,6 +409,7 @@ export function createServerComponentsMiddleware(
   return {
     // Get the static client boundaries (no dead code elimination allowed) for the production export.
     getExpoRouterClientReferencesAsync,
+    exportServerActionsAsync,
 
     async exportRoutesAsync(
       {

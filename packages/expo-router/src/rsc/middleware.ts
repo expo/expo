@@ -9,6 +9,8 @@
 import type { RenderRscArgs } from '@expo/server/build/middleware/rsc';
 import path from 'node:path';
 
+const debug = require('debug')('expo:server:rsc-renderer');
+
 import { renderRsc } from './rsc-renderer';
 
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
@@ -24,6 +26,24 @@ function getRscRenderContext(platform: string) {
 
   rscRenderContext.set(platform, context);
   return context;
+}
+
+function getServerActionManifest(
+  distFolder: string,
+  platform: string
+): Record<
+  // Input ID
+  string,
+  [
+    // Metro ID
+    string,
+    // Chunk location.
+    string,
+  ]
+> {
+  const filePath = path.join(distFolder, `_expo/rsc/${platform}/action-manifest.json`);
+  // @ts-expect-error: Special syntax for expo/metro to access `require`
+  return $$require_external(filePath);
 }
 
 function getSSRManifest(
@@ -63,7 +83,7 @@ export async function renderRscWithImportsAsync(
   const entries = await imports.router();
 
   const ssrManifest = getSSRManifest(distFolder, platform);
-
+  const actionManifest = getServerActionManifest(distFolder, platform);
   return renderRsc(
     {
       body: body ?? undefined,
@@ -75,7 +95,27 @@ export async function renderRscWithImportsAsync(
     },
     {
       isExporting: true,
-      resolveClientEntry(file: string) {
+
+      resolveClientEntry(file: string, isServer: boolean) {
+        debug('resolveClientEntry', file, { isServer });
+
+        if (isServer) {
+          if (!(file in actionManifest)) {
+            throw new Error(`Could not find file in server action manifest: ${file}`);
+          }
+
+          const [id, chunk] = actionManifest[file];
+          return {
+            // TODO
+            id: id,
+            chunks: chunk ? [chunk] : [],
+          };
+        }
+
+        if (!(file in ssrManifest)) {
+          throw new Error(`Could not find file in SSR manifest: ${file}`);
+        }
+
         const [id, chunk] = ssrManifest[file];
         return {
           id,
@@ -83,8 +123,9 @@ export async function renderRscWithImportsAsync(
         };
       },
       async loadServerModuleRsc(file) {
+        debug('loadServerModuleRsc', file);
         // @ts-expect-error
-        return $$require_external(file);
+        return $$require_external(path.join(__dirname, '../../..', file));
       },
 
       entries: entries!,

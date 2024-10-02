@@ -130,7 +130,7 @@ async function renderRsc(args, opts) {
     const actionId = (0, utils_1.decodeActionId)(input);
     if (actionId) {
         // @ts-expect-error
-        if (!process.env.EXPO_UNSTABLE_SERVER_ACTIONS) {
+        if (!opts.isExporting && !process.env.EXPO_UNSTABLE_SERVER_ACTIONS) {
             throw new Error('Experimental support for React Server Actions is not enabled');
         }
         const args = Array.isArray(decodedBody) ? decodedBody : [];

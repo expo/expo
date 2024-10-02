@@ -197,7 +197,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   const actionId = decodeActionId(input);
   if (actionId) {
     // @ts-expect-error
-    if (!process.env.EXPO_UNSTABLE_SERVER_ACTIONS) {
+    if (!opts.isExporting && !process.env.EXPO_UNSTABLE_SERVER_ACTIONS) {
       throw new Error('Experimental support for React Server Actions is not enabled');
     }
 

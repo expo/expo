@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRscAsync = exports.renderRscWithImportsAsync = void 0;
 const node_path_1 = __importDefault(require("node:path"));
+const debug = require('debug')('expo:server:rsc-renderer');
 const rsc_renderer_1 = require("./rsc-renderer");
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map();
@@ -16,6 +17,11 @@ function getRscRenderContext(platform) {
     const context = {};
     rscRenderContext.set(platform, context);
     return context;
+}
+function getServerActionManifest(distFolder, platform) {
+    const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/action-manifest.json`);
+    // @ts-expect-error: Special syntax for expo/metro to access `require`
+    return $$require_external(filePath);
 }
 function getSSRManifest(distFolder, platform) {
     const filePath = node_path_1.default.join(distFolder, `_expo/rsc/${platform}/ssr-manifest.json`);
@@ -29,6 +35,7 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
     const context = getRscRenderContext(platform);
     const entries = await imports.router();
     const ssrManifest = getSSRManifest(distFolder, platform);
+    const actionManifest = getServerActionManifest(distFolder, platform);
     return (0, rsc_renderer_1.renderRsc)({
         body: body ?? undefined,
         searchParams,
@@ -38,7 +45,22 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         contentType,
     }, {
         isExporting: true,
-        resolveClientEntry(file) {
+        resolveClientEntry(file, isServer) {
+            debug('resolveClientEntry', file, { isServer });
+            if (isServer) {
+                if (!(file in actionManifest)) {
+                    throw new Error(`Could not find file in server action manifest: ${file}`);
+                }
+                const [id, chunk] = actionManifest[file];
+                return {
+                    // TODO
+                    id: id,
+                    chunks: chunk ? [chunk] : [],
+                };
+            }
+            if (!(file in ssrManifest)) {
+                throw new Error(`Could not find file in SSR manifest: ${file}`);
+            }
             const [id, chunk] = ssrManifest[file];
             return {
                 id,
@@ -46,8 +68,9 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
             };
         },
         async loadServerModuleRsc(file) {
+            debug('loadServerModuleRsc', file);
             // @ts-expect-error
-            return $$require_external(file);
+            return $$require_external(node_path_1.default.join(__dirname, '../../..', file));
         },
         entries: entries,
     });

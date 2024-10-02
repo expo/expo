@@ -16,6 +16,8 @@ import {
   type PluginObj,
   type PluginPass,
 } from '@babel/core';
+import url from 'url';
+
 // @ts-expect-error: missing types
 import { addNamed as addNamedImport } from '@babel/helper-module-imports';
 import type { Scope as BabelScope } from '@babel/traverse';
@@ -548,7 +550,17 @@ export function reactServerActionsPlugin(
       // Add comment for debugging the bundle, we use the babel metadata for accessing the data.
       file.path.addComment('leading', stashedData);
 
+      const filePath = file.opts.filename;
+
+      if (!filePath) {
+        // This can happen in tests or systems that use Babel standalone.
+        throw new Error('[Babel] Expected a filename to be set in the state');
+      }
+
+      const outputKey = url.pathToFileURL(filePath).href;
+
       file.metadata.reactServerActions = payload;
+      file.metadata.reactServerReference = outputKey;
     },
   };
 }
@@ -685,6 +697,7 @@ const once = <T>(fn: () => T) => {
 
 function assertExpoMetadata(metadata: any): asserts metadata is {
   reactServerActions?: { id: string; names: string[] };
+  reactServerReference?: string;
   extractedActions: ExtractedActionInfo[];
   isModuleMarkedWithUseServerDirective?: boolean;
 } {

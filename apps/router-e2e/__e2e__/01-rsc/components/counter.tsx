@@ -11,7 +11,7 @@ export const Counter = ({ onPress }) => {
   return (
     <Text
       onPress={async () => {
-        greet('1').then((value) => setCount(value.join(', ')));
+        onPress().then((value) => setCount(value.join(', ')));
       }}
       testID="client-button">
       Count: {count}

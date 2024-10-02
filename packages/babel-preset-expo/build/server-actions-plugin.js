@@ -31,9 +31,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactServerActionsPlugin = void 0;
 const core_1 = require("@babel/core");
+const url_1 = __importDefault(require("url"));
 // @ts-expect-error: missing types
 const helper_module_imports_1 = require("@babel/helper-module-imports");
 const t = __importStar(require("@babel/types"));
@@ -424,7 +428,14 @@ function reactServerActionsPlugin(api) {
             const stashedData = 'rsc/actions: ' + JSON.stringify(payload);
             // Add comment for debugging the bundle, we use the babel metadata for accessing the data.
             file.path.addComment('leading', stashedData);
+            const filePath = file.opts.filename;
+            if (!filePath) {
+                // This can happen in tests or systems that use Babel standalone.
+                throw new Error('[Babel] Expected a filename to be set in the state');
+            }
+            const outputKey = url_1.default.pathToFileURL(filePath).href;
             file.metadata.reactServerActions = payload;
+            file.metadata.reactServerReference = outputKey;
         },
     };
 }
