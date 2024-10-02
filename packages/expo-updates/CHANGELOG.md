@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.25.26 — 2024-10-02
+
+### 🐛 Bug fixes
+
+- Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
 
 ## 0.25.25 — 2024-09-20
 
