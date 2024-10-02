@@ -3,11 +3,9 @@
 package expo.modules.video
 
 import android.net.Uri
-import androidx.media3.common.C
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
-import androidx.media3.common.Timeline
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
@@ -199,29 +197,15 @@ class VideoModule : Module() {
 
       Property("currentLiveTimestamp")
         .get { ref: VideoPlayer ->
-          // TODO: same as `currentTime`
           runBlocking(appContext.mainQueue.coroutineContext) {
-            val window = Timeline.Window()
-            if (!ref.player.currentTimeline.isEmpty) {
-              ref.player.currentTimeline.getWindow(ref.player.currentMediaItemIndex, window)
-            }
-            if (window.windowStartTimeMs == C.TIME_UNSET) {
-              null
-            } else {
-              window.windowStartTimeMs + ref.player.currentPosition
-            }
+            ref.currentLiveTimestamp
           }
         }
 
       Property("currentOffsetFromLive")
         .get { ref: VideoPlayer ->
-          // TODO: same as `currentTime`
           runBlocking(appContext.mainQueue.coroutineContext) {
-            if (ref.player.currentLiveOffset == C.TIME_UNSET) {
-              null
-            } else {
-              ref.player.currentLiveOffset / 1000f
-            }
+            ref.currentOffsetFromLive
           }
         }
 
@@ -304,6 +288,14 @@ class VideoModule : Module() {
           ref.player.pause()
         }
       }
+
+      Property("timeUpdateEventInterval")
+        .get { ref: VideoPlayer ->
+          ref.intervalUpdateClock.interval / 1000.0
+        }
+        .set { ref: VideoPlayer, intervalSeconds: Float ->
+          ref.intervalUpdateClock.interval = (intervalSeconds * 1000).toLong()
+        }
 
       Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->
         val videoSource = source?.let {
