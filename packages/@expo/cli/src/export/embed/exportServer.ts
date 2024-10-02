@@ -116,9 +116,6 @@ export async function exportStandaloneServerAsync(
       });
 
   if (!deployedServerUrl) {
-    Log.log(
-      `Skipping writing generated server URL (${deployedServerUrl}) to app.json because a value is already defined.`
-    );
     return;
   }
 
