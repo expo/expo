@@ -72,7 +72,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     preservesPitch: boolean;
     /**
      * Float value indicating the interval in seconds at which the player will emit the [`timeUpdate`](#videoplayerevents) event.
-     * When the value is equal to 0, the event will not be emitted.
+     * When the value is equal to `0`, the event will not be emitted.
      *
      * @default 0
      */
