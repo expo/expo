@@ -45,6 +45,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     currentLiveTimestamp = null; // Not supported on web. Dummy to match the interface.
     currentOffsetFromLive = null; // Not supported on web. Dummy to match the interface.
     targetOffsetFromLive = 0; // Not supported on web. Dummy to match the interface.
+    bufferedPosition = -1; // Not supported on web. Dummy to match the interface
+    bufferOptions = {}; // Not supported on web. Dummy to match the interface.
     set muted(value) {
         this._mountedVideos.forEach((video) => {
             video.muted = value;

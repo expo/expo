@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import type {
+  BufferOptions,
   PlayerError,
   VideoPlayer,
   VideoPlayerEvents,
@@ -65,6 +66,8 @@ export default class VideoPlayerWeb
   currentLiveTimestamp: number | null = null; // Not supported on web. Dummy to match the interface.
   currentOffsetFromLive: number | null = null; // Not supported on web. Dummy to match the interface.
   targetOffsetFromLive: number = 0; // Not supported on web. Dummy to match the interface.
+  bufferedPosition: number = -1; // Not supported on web. Dummy to match the interface
+  bufferOptions: BufferOptions = {} as BufferOptions; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {

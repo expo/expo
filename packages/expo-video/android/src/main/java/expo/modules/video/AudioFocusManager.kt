@@ -7,6 +7,8 @@ import android.media.AudioManager
 import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
+import expo.modules.video.player.VideoPlayer
+import expo.modules.video.player.VideoPlayerListener
 import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference

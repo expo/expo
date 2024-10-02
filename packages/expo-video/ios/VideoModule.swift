@@ -224,6 +224,17 @@ public final class VideoModule: Module {
         player.volume = volume
       }
 
+      Property("bufferedPosition") { player -> Double in
+        return player.bufferedPosition
+      }
+
+      Property("bufferOptions") { player -> [String: Any] in
+        return player.bufferOptions.toDictionary()
+      }
+      .set { (player, bufferOptions: BufferOptions) in
+        player.bufferOptions = bufferOptions
+      }
+
       Function("play") { player in
         player.pointer.play()
       }

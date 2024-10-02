@@ -1,4 +1,4 @@
-import type { PlayerError, VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
+import type { BufferOptions, PlayerError, VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 export declare function getSourceUri(source: VideoSource): string | null;
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
@@ -23,6 +23,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     currentLiveTimestamp: number | null;
     currentOffsetFromLive: number | null;
     targetOffsetFromLive: number;
+    bufferedPosition: number;
+    bufferOptions: BufferOptions;
     set muted(value: boolean);
     get muted(): boolean;
     set playbackRate(value: number);
