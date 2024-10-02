@@ -16,7 +16,7 @@ To configure Android App Links for your app, you need to:
 
 Configure your app config by adding the `android.intentFilters` property and setting the `autoVerify` attribute to `true`. Specifying `autoVerify` is required for Android App Links to work correctly.
 
-The following example shows a basic configuration that enables your app to appear in the standard Android dialog as an option for handling any links to the `webapp.io` domain. It also uses regular `https` scheme since [Android App Links](/linking/overview/#android-app-links) are different from [standard deep links](/linking/into-other-apps/).
+The following example shows a basic configuration that enables your app to appear in the standard Android dialog as an option for handling any links to the `webapp.io` domain. It also uses the regular `https` scheme since [Android App Links](/linking/overview/#android-app-links) are different from [standard deep links](/linking/into-other-apps/).
 
 ```json app.json|collapseHeight=454
 {
@@ -45,7 +45,7 @@ The following example shows a basic configuration that enables your app to appea
 
 ## Set up two-way association
 
-To setup **two-way association** between the website and app for Android, you need to perform the following steps:
+To setup **two-way association** between the website and Android app, you will need the following:
 
 - **Website verification:** This requires creating a **assetlinks.json** file inside the **/.well-known** directory and hosting it on the target website. This file is used to verify that the app opened from a given link is the correct app.
 - **Native app verification:** This requires some form of code signing that references the target website domain (URL).
@@ -119,13 +119,13 @@ Host the **assetlinks.json** file using a web server with your domain. This file
 
 ### Native app verification
 
-Install the app on an Android device to trigger the [Android app verification](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) process. This process takes at least 20 seconds.
+Install the app on an Android device to trigger the [Android app verification](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) process.
 
 Once you have your app opened, see [Handle links into your app](/linking/into-your-app/#handle-urls) for more information on how to handle inbound links and show the user the content they requested.
 
 ## Debugging
 
-Expo CLI enables you to test Android App Links without deploying a website. Utilizing the [`--tunnel`](/more/expo-cli/#tunneling) functionality, you can forward your dev server to a publicly available HTTPS URL.
+The Expo CLI enables you to test Android App Links without deploying a website. Utilizing the [`--tunnel`](/more/expo-cli/#tunneling) functionality, you can forward your dev server to a publicly available HTTPS URL.
 
 <Step label="1">
 
@@ -157,7 +157,7 @@ Compile the development build on your device:
 
 <Step label="5">
 
-You can use the following `adb` command to start the intent activity and open the link on your app or type the custom domain link in your device's web browser.
+Use the following `adb` command to start the intent activity and open the link on your app or type the custom domain link in your device's web browser.
 
 <Terminal
   cmd={[
@@ -171,7 +171,7 @@ You can use the following `adb` command to start the intent activity and open th
 
 Here are some common tips to help you troubleshoot when implementing Android App Links:
 
-- Ensure your website is served over HTTPS and with content-type `application/json`
+- Ensure your website is served over HTTPS and with the content-type `application/json`
 - [Verify Android app links](https://developer.android.com/training/app-links/verify-android-applinks)
-- Android verification may take at least 20 seconds to take effect
+- Android verification may take 20 seconds or longer to take effect, so be sure to wait until it is completed.
 - If you update your web files, rebuild the native app to trigger a server update on the vendor side (Google)
