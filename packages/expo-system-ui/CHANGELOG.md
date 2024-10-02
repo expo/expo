@@ -16,6 +16,10 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 3.0.7 - 2024-07-03
 
 _This version does not introduce any user-facing changes._

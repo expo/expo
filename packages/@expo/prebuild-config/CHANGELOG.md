@@ -15,6 +15,10 @@
 - Fix incorrect dependency imports. ([#30553](https://github.com/expo/expo/pull/30553) by [@byCedric](https://github.com/byCedric))
 - Replaced the config-plugins deprecated `getAppThemeLightNoActionBarGroup` method with the new `getAppThemeGroup`. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
 
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 7.0.8 - 2024-07-11
