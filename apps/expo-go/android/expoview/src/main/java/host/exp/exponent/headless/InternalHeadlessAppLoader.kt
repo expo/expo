@@ -89,7 +89,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
         }
 
         override fun emitEvent(params: JSONObject) {}
-        override fun updateStatus(status: AppLoaderStatus) {}
+        override fun updateStatus(status: AppLoaderStatus?) {}
         override fun onError(e: Exception) {
           Exponent.instance.runOnUiThread { this@InternalHeadlessAppLoader.callback!!.onComplete(false, Exception(e.message)) }
         }

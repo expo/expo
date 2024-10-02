@@ -72,7 +72,11 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   var isUpToDate = true
     private set
   var status: AppLoaderStatus? = null
-    private set
+    private set(value) {
+      field = value
+      callback.updateStatus(value)
+    }
+
   var shouldShowAppLoaderStatus = true
     private set
   private var isStarted = false
@@ -82,7 +86,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     fun onManifestCompleted(manifest: Manifest)
     fun onBundleCompleted(localBundlePath: String)
     fun emitEvent(params: JSONObject)
-    fun updateStatus(status: AppLoaderStatus)
+    fun updateStatus(status: AppLoaderStatus?)
     fun onError(e: Exception)
   }
 
@@ -91,11 +95,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 
   lateinit var launcher: Launcher
     private set
-
-  private fun updateStatus(status: AppLoaderStatus) {
-    this.status = status
-    callback.updateStatus(status)
-  }
 
   fun start(context: Context) {
     check(!isStarted) { "AppLoader for $manifestUrl was started twice. AppLoader.start() may only be called once per instance." }
@@ -216,7 +215,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           }
           setShouldShowAppLoaderStatus(update.manifest)
           callback.onOptimisticManifest(update.manifest)
-          updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE)
+          status = AppLoaderStatus.DOWNLOADING_NEW_UPDATE
         }
 
         override fun onSuccess(launcher: Launcher, isUpToDate: Boolean) {

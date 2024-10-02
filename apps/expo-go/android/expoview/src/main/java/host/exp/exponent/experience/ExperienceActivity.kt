@@ -197,7 +197,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
             emitUpdatesEvent(params)
           }
 
-          override fun updateStatus(status: AppLoaderStatus) {
+          override fun updateStatus(status: AppLoaderStatus?) {
             setLoadingProgressStatusIfEnabled(status)
           }
 
