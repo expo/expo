@@ -1,5 +1,6 @@
 package expo.modules.video
 
+import android.content.Context
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
@@ -16,9 +17,15 @@ object VideoManager {
   private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
 
   private lateinit var audioFocusManager: AudioFocusManager
+  lateinit var cache: VideoCache
 
-  fun onModuleCreated(appContext: AppContext) {
-    audioFocusManager = AudioFocusManager(appContext)
+  fun onModuleCreated(appContext: AppContext, context: Context) {
+    if (!this::audioFocusManager.isInitialized) {
+      audioFocusManager = AudioFocusManager(appContext)
+    }
+    if (!this::cache.isInitialized) {
+      cache = VideoCache(context)
+    }
   }
 
   fun registerVideoView(videoView: VideoView) {
@@ -67,6 +74,10 @@ object VideoManager {
 
   fun isVideoPlayerAttachedToView(videoPlayer: VideoPlayer): Boolean {
     return videoPlayersToVideoViews[videoPlayer]?.isNotEmpty() ?: false
+  }
+
+  fun hasRegisteredPlayers(): Boolean {
+    return videoPlayersToVideoViews.isNotEmpty()
   }
 
   fun onAppForegrounded() = Unit

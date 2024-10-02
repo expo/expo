@@ -13,6 +13,10 @@ class VideoManager {
   private var videoViews = NSHashTable<VideoView>.weakObjects()
   private var videoPlayers = NSHashTable<VideoPlayer>.weakObjects()
 
+  var hasRegisteredPlayers: Bool {
+    return !videoPlayers.allObjects.isEmpty
+  }
+
   func register(videoPlayer: VideoPlayer) {
     videoPlayers.add(videoPlayer)
   }
