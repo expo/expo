@@ -33,7 +33,7 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(
-      "sdkVersions" to Constants.SDK_VERSIONS
+      "sdkVersions" to listOf(Constants.SDK_VERSION)
     )
   }
 
