@@ -19,8 +19,7 @@
     "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.bacon.sandbox"
+      "supportsTablet": true
     },
     "plugins": [
       [
@@ -47,7 +46,7 @@
       "output": "server"
     },
     "experiments": {
-      "reactServerComponents": true
+      "reactServerComponents": false
     }
   }
 }

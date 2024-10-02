@@ -1,7 +1,6 @@
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
-// const { boolish } = require('getenv');
 
 const config = getDefaultConfig(__dirname);
 
@@ -23,16 +22,5 @@ config.resolver.blockList = [
 // Copied from expo-yarn-workspaces
 config.resolver.assetExts.push('db');
 config.transformer.enableBabelRCLookup = false;
-
-// const isRSC = boolish('E2E_RSC_ENABLED', false);
-
-config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName === 'expo-router/entry') {
-    // Prevent loading the routes in client-first mode with the standard require.context module.
-    moduleName = 'expo-router/entry-rsc';
-  }
-
-  return context.resolveRequest(context, moduleName, platform);
-};
 
 module.exports = config;
