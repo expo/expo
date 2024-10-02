@@ -23,7 +23,6 @@ Here's a simple example of `expo-live-photo` usage combined with `expo-image-pic
 ```tsx
 import * as ImagePicker from 'expo-image-picker';
 import { LivePhotoAsset, LivePhotoView, LivePhotoViewType } from 'expo-live-photo';
-import { Platform } from 'expo-modules-core';
 import { useRef, useState } from 'react';
 import { View, StyleSheet, Text, Button } from 'react-native';
 
@@ -50,7 +49,7 @@ export default function LivePhotoScreen() {
   if (!LivePhotoView.isAvailable()) {
     return (
       <View style={styles.container}>
-        <Text>expo-live-photo is not available on {Platform.OS} 😕</Text>
+        <Text>expo-live-photo is not available on this platform 😕</Text>
       </View>
     );
   }
