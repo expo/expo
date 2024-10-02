@@ -6,8 +6,6 @@ import android.net.Uri
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
-import androidx.media3.common.Player.STATE_BUFFERING
-import androidx.media3.common.Timeline
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
@@ -285,13 +283,7 @@ class VideoModule : Module() {
         .get { ref: VideoPlayer ->
           // Same as currentTime
           runBlocking(appContext.mainQueue.coroutineContext) {
-            if (ref.player.currentMediaItem == null) {
-              return@runBlocking -1
-            }
-            if (ref.player.playbackState == STATE_BUFFERING) {
-              return@runBlocking 0
-            }
-            ref.player.bufferedPosition / 1000f
+            ref.bufferedPosition
           }
         }
 

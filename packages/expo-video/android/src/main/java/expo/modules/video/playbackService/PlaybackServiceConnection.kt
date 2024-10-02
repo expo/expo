@@ -4,9 +4,12 @@ import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import expo.modules.video.VideoPlayer
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import expo.modules.video.player.VideoPlayer
 import java.lang.ref.WeakReference
 
+@OptIn(UnstableApi::class)
 class PlaybackServiceConnection(val player: WeakReference<VideoPlayer>) : ServiceConnection {
   var playbackServiceBinder: PlaybackServiceBinder? = null
 

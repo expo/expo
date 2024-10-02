@@ -187,24 +187,6 @@ private constructor(
     }
   }
 
-  private val allocator: DefaultAllocator
-
-  var targetBufferMs: Long = DEFAULT_MAX_BUFFER_MS.toLong()
-    set(value) {
-      minBufferUs = Util.msToUs(value)
-      maxBufferUs = Util.msToUs(value)
-      targetBufferBytes = Int.MAX_VALUE
-    }
-
-  var bufferForPlaybackMs: Long = DEFAULT_BUFFER_FOR_PLAYBACK_MS.toLong()
-    set(value) {
-      bufferForPlaybackUs = Util.msToUs(value)
-    }
-
-  var bufferForPlaybackAfterRebufferMs: Long = DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS.toLong()
-    set(value) {
-      bufferForPlaybackAfterRebufferUs = Util.msToUs(value)
-    }
   private var minBufferUs: Long
   private var maxBufferUs: Long
   private var bufferForPlaybackUs: Long
@@ -216,6 +198,27 @@ private constructor(
 
   private var targetBufferBytes: Int
   private var isLoading = false
+
+  private var renderers: Array<Renderer>? = null
+  private var trackSelections: Array<ExoTrackSelection>? = null
+
+  private val allocator: DefaultAllocator
+
+  var targetBufferMs: Long = DEFAULT_MAX_BUFFER_MS.toLong()
+    set(value) {
+      minBufferUs = Util.msToUs(value)
+      maxBufferUs = Util.msToUs(value)
+    }
+
+  var bufferForPlaybackMs: Long = DEFAULT_BUFFER_FOR_PLAYBACK_MS.toLong()
+    set(value) {
+      bufferForPlaybackUs = Util.msToUs(value)
+    }
+
+  var bufferForPlaybackAfterRebufferMs: Long = DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS.toLong()
+    set(value) {
+      bufferForPlaybackAfterRebufferUs = Util.msToUs(value)
+    }
 
   /** Constructs a new instance, using the `DEFAULT_*` constants defined in this class.  */
   constructor() : this(
@@ -279,6 +282,12 @@ private constructor(
       bufferOptions.maxBufferBytes.toInt()
     }
 
+    if (targetBufferBytesOverwrite != C.LENGTH_UNSET) {
+      targetBufferBytes = targetBufferBytesOverwrite
+    }
+
+    applyBufferBytes()
+
     prioritizeTimeOverSizeThresholds = bufferOptions.prioritizeTimeOverSizeThreshold
 
     val optionsBufferForPlaybackMs = bufferOptions.minBufferForPlayback * 1000
@@ -289,6 +298,21 @@ private constructor(
     }
     bufferForPlaybackMs = safeBufferForPlayback.toLong()
     bufferForPlaybackAfterRebufferMs = safeBufferForPlayback.toLong()
+  }
+
+  private fun applyBufferBytes() {
+    val calculatedBufferBytes = this.renderers?.let { renderers ->
+      this.trackSelections?.let { trackSelections ->
+        calculateTargetBufferBytes(renderers, trackSelections)
+      }
+    }
+
+    if (targetBufferBytesOverwrite == C.LENGTH_UNSET && calculatedBufferBytes != null) {
+      allocator.setTargetBufferSize(calculatedBufferBytes)
+      targetBufferBytes = calculatedBufferBytes
+    } else {
+      allocator.setTargetBufferSize(targetBufferBytesOverwrite)
+    }
   }
 
   override fun onPrepared() {
@@ -302,14 +326,9 @@ private constructor(
     trackGroups: TrackGroupArray,
     trackSelections: Array<ExoTrackSelection>
   ) {
-    targetBufferBytes =
-      if (targetBufferBytesOverwrite == C.LENGTH_UNSET
-      ) {
-        calculateTargetBufferBytes(renderers, trackSelections)
-      } else {
-        targetBufferBytesOverwrite
-      }
-    allocator.setTargetBufferSize(targetBufferBytes)
+    this.renderers = renderers
+    this.trackSelections = trackSelections
+    applyBufferBytes()
   }
 
   override fun onStopped() {

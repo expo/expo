@@ -202,7 +202,8 @@ class VideoPlayerObserver {
       let update = TimeUpdate(
         currentTime: player.currentTime().seconds,
         currentLiveTimestamp: owner.currentLiveTimestamp,
-        currentOffsetFromLive: owner.currentOffsetFromLive
+        currentOffsetFromLive: owner.currentOffsetFromLive,
+        bufferedPosition: owner.bufferedPosition
       )
 
       delegates.forEach { delegate in

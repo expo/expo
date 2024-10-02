@@ -7,6 +7,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.Player.STATE_BUFFERING
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
@@ -14,6 +15,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.video.IntervalUpdateClock
+import expo.modules.video.IntervalUpdateEmitter
 import expo.modules.video.VideoManager
 import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.PlayerStatus
@@ -121,6 +124,17 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     set(value) {
       field = value
       loadControl.applyBufferOptions(value)
+    }
+
+  val bufferedPosition: Double
+    get() {
+      if (player.currentMediaItem == null) {
+        return -1.0
+      }
+      if (player.playbackState == STATE_BUFFERING) {
+        return 0.0
+      }
+      return player.bufferedPosition / 1000.0
     }
 
   private val playerListener = object : Player.Listener {
@@ -278,7 +292,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   override fun emitTimeUpdate() {
     appContext?.mainQueue?.launch {
-      val updatePayload = TimeUpdate(player.currentPosition / 1000.0, currentOffsetFromLive, currentLiveTimestamp)
+      val updatePayload = TimeUpdate(player.currentPosition / 1000.0, currentOffsetFromLive, currentLiveTimestamp, bufferedPosition)
       sendEvent(PlayerEvent.TimeUpdated(updatePayload))
     }
   }

@@ -20,7 +20,7 @@ import androidx.media3.session.SessionCommand
 import com.google.common.collect.ImmutableList
 import expo.modules.kotlin.AppContext
 import expo.modules.video.R
-import expo.modules.video.VideoPlayer
+import expo.modules.video.player.VideoPlayer
 
 class PlaybackServiceBinder(val service: ExpoVideoPlaybackService) : Binder()
 
