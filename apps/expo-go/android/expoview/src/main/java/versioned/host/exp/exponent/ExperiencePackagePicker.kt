@@ -78,7 +78,6 @@ import expo.modules.speech.SpeechModule
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.sqlite.SQLiteModule
-import expo.modules.sqlite.SQLiteModuleNext
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
@@ -191,7 +190,6 @@ object ExperiencePackagePicker : ModulesProvider {
     SplashScreenModule::class.java,
     StoreReviewModule::class.java,
     SQLiteModule::class.java,
-    SQLiteModuleNext::class.java,
     SystemUIModule::class.java,
     TaskManagerModule::class.java,
     TrackingTransparencyModule::class.java,

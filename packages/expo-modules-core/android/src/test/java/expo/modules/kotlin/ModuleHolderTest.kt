@@ -1,6 +1,5 @@
 package expo.modules.kotlin
 
-import com.facebook.react.bridge.JavaOnlyArray
 import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
@@ -37,7 +36,7 @@ class ModuleHolderTest {
       → Caused by: Method does not exist.
       """.trimIndent()
     ) {
-      holder.call("not_existing_method", JavaOnlyArray(), promise)
+      holder.call("not_existing_method", emptyArray(), promise)
     }
 
     Truth.assertThat(promise.state).isEqualTo(PromiseState.NONE)

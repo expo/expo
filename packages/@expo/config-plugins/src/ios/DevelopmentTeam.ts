@@ -4,9 +4,9 @@ import xcode, { type XCBuildConfiguration } from 'xcode';
 
 import { getAllPBXProjectPaths } from './Paths';
 import { getNativeTargets } from './Target';
+import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import { getBuildConfigurationsForListId } from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
-import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
 
 /**

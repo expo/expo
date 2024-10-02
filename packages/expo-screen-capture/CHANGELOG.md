@@ -12,6 +12,7 @@
 
 - [Android] Fix `ScreenCaptureModule` was crashing in the dev-client when going back to the home screen. ([#29694](https://github.com/expo/expo/pull/29694) by [@lukmccall](https://github.com/lukmccall))
 - Add missing `react` peer dependencies for isolated modules. ([#30480](https://github.com/expo/expo/pull/30480) by [@byCedric](https://github.com/byCedric))
+- [Android] Fix Screen capture callback was not called on Android 14 when API methods was not being called. ([#31702](https://github.com/expo/expo/pull/31702) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 

@@ -52,9 +52,7 @@ interface State {
   voice?: string;
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class TextToSpeechScreen extends React.Component<{}, State> {
+export default class TextToSpeechScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Speech',
   };

@@ -79,6 +79,13 @@ const InnerRouter = ({ routerData }) => {
         });
     }, []);
     const componentIds = (0, common_js_1.getComponentIds)(route.path);
+    //  const refetchRoute = () => {
+    //   const loc = parseRoute(new URL(getHref()));
+    //   const input = getInputString(loc.path);
+    //   refetch(input, loc.query);
+    //   refetch(input, JSON.stringify({ query: route.query }));
+    // };
+    // globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__ = refetchRoute;
     const [cached, setCached] = (0, react_1.useState)(() => {
         return Object.fromEntries(componentIds.map((id) => [id, route]));
     });

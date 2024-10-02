@@ -14,6 +14,6 @@ export declare function findGradleAndManifestAsync({ androidDir, isLibrary, }: {
     androidDir: string;
     isLibrary: boolean;
 }): Promise<{
-    gradle: string;
-    manifest: string;
+    gradle: string | null;
+    manifest: string | null;
 }>;

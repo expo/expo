@@ -27,9 +27,12 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Supports different slash combinations', async () => {
       expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
-      // FirstDirectory is a host when url parsing.
-      expect(new File('file://firstDirectory/to/file').uri).toBe('file:///to/file');
-      expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
+      // This URL is confusing, as path is actually a hostname.
+      // We throw a descriptive error in this case.
+      expect(() => new File('file://path/to/file').uri).toThrow();
+
+      expect(new File('file://localhost/path/to/file').uri).toBe('file:///path/to/file');
+      expect(new File('file:///path/to/file').uri).toBe('file:///path/to/file');
     });
 
     it('Accepts and correctly handles uris to files', () => {
@@ -73,8 +76,8 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory + 'test');
         file.create();
         const directory = new Directory(testDirectory + 'test');
-        expect(file.exists()).toBe(true);
-        expect(directory.exists()).toBe(false);
+        expect(file.exists).toBe(true);
+        expect(directory.exists).toBe(false);
       });
     });
 
@@ -82,15 +85,15 @@ export async function test({ describe, expect, it, ...t }) {
       // Not doing concating path segments in constructor, to make sure the second argument can be an options dict.
       // Instead, we want to provide utilties for it in a path object.
       const outputFile = new File(testDirectory + 'file.txt');
-      expect(outputFile.exists()).toBe(false);
+      expect(outputFile.exists).toBe(false);
       outputFile.write('Hello world');
-      expect(outputFile.exists()).toBe(true);
+      expect(outputFile.exists).toBe(true);
     });
 
     it('Reads a string from a file reference', () => {
       const outputFile = new File(testDirectory + 'file2.txt');
       outputFile.write('Hello world');
-      expect(outputFile.exists()).toBe(true);
+      expect(outputFile.exists).toBe(true);
       const content = outputFile.text();
       expect(content).toBe('Hello world');
     });
@@ -98,38 +101,38 @@ export async function test({ describe, expect, it, ...t }) {
     it('Deletes a file reference', () => {
       const outputFile = new File(testDirectory + 'file3.txt');
       outputFile.write('Hello world');
-      expect(outputFile.exists()).toBe(true);
+      expect(outputFile.exists).toBe(true);
 
       outputFile.delete();
-      expect(outputFile.exists()).toBe(false);
+      expect(outputFile.exists).toBe(false);
     });
 
     it('Creates a folder', () => {
       const folder = new Directory(testDirectory + 'newFolder');
       folder.create();
-      expect(folder.exists()).toBe(true);
+      expect(folder.exists).toBe(true);
     });
 
     it('Creates a folder without a slash', () => {
       const folder = new Directory(testDirectory + 'newFolder2');
       folder.create();
-      expect(folder.exists()).toBe(true);
+      expect(folder.exists).toBe(true);
     });
 
     it('Creates an empty file', () => {
       const file = new File(testDirectory + 'newFolder');
       file.create();
-      expect(file.exists()).toBe(true);
+      expect(file.exists).toBe(true);
       expect(file.text()).toBe('');
     });
 
     it('Deletes a folder', () => {
       const folder = new Directory(testDirectory + 'newFolder');
       folder.create();
-      expect(folder.exists()).toBe(true);
+      expect(folder.exists).toBe(true);
 
       folder.delete();
-      expect(folder.exists()).toBe(false);
+      expect(folder.exists).toBe(false);
     });
 
     describe('When copying a file', () => {
@@ -146,10 +149,10 @@ export async function test({ describe, expect, it, ...t }) {
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.copy(dstFolder);
-        expect(src.exists()).toBe(true);
+        expect(src.exists).toBe(true);
         expect(src.text()).toBe('Hello world');
         const dst = new File(testDirectory + '/destination/file.txt');
-        expect(dst.exists()).toBe(true);
+        expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
       });
 
@@ -165,9 +168,26 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('Hello world');
         const dst = new File(testDirectory + 'file2.txt');
         src.copy(dst);
-        expect(dst.exists()).toBe(true);
+        expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
-        expect(src.exists()).toBe(true);
+        expect(src.exists).toBe(true);
+      });
+
+      it('Can copy from cache to documents', () => {
+        const src = new File(Paths.cache, 'file.txt');
+        const dst = new File(Paths.document, 'file.txt');
+        // cleanup
+        try {
+          src.delete();
+        } catch {}
+        try {
+          dst.delete();
+        } catch {}
+        src.write('Hello world');
+        src.copy(dst);
+        expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
+        expect(dst.exists).toBe(true);
+        expect(dst.md5).toBe(src.md5);
       });
     });
 
@@ -178,22 +198,33 @@ export async function test({ describe, expect, it, ...t }) {
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.copy(dstFolder);
-        expect(src.exists()).toBe(true);
-        expect(new Directory(testDirectory + 'destination/directory').exists()).toBe(true);
+        expect(src.exists).toBe(true);
+        expect(new Directory(testDirectory + 'destination/directory').exists).toBe(true);
       });
 
       it('Throws an error when copying to a nonexistant folder without options', () => {
         const file = new Directory(testDirectory + 'directory/');
         file.create();
-        const folder = new Directory(testDirectory + 'destination/');
+        const folder = new Directory(testDirectory + 'some/nonexistent/directory/');
         expect(() => file.copy(folder)).toThrow();
       });
 
+      it('Creates a copy of the directory if only the bottom level destination directory does not exist', () => {
+        const file = new Directory(testDirectory + 'source/');
+        file.create();
+        const destination = new Directory(testDirectory + 'newDestination/');
+        file.copy(destination);
+        expect(destination.uri).toBe(testDirectory + 'newDestination/');
+        expect(file.uri).toBe(testDirectory + 'source/');
+      });
+
+      // this should not be allowed by TS, but we can handle it anyways
       it('throws an error when copying it to a file', () => {
         const src = new Directory(testDirectory + 'directory/');
         src.create();
         const dst = new File(testDirectory + 'file2.txt');
         dst.create();
+        // @ts-expect-error
         expect(() => src.copy(dst)).toThrow();
       });
     });
@@ -206,15 +237,16 @@ export async function test({ describe, expect, it, ...t }) {
         expect(() => src.move(dstFolder)).toThrow();
       });
 
-      it('Copies it to a folder', () => {
+      it('moves it to a folder', () => {
         const src = new File(testDirectory + 'file.txt');
         src.write('Hello world');
         const dstFolder = new Directory(testDirectory + 'destination');
         dstFolder.create();
         src.move(dstFolder);
-        expect(src.exists()).toBe(false);
+        expect(src.exists).toBe(true);
         const dst = new File(testDirectory + '/destination/file.txt');
-        expect(dst.exists()).toBe(true);
+        expect(src.uri).toBe(dst.uri);
+        expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
       });
 
@@ -225,40 +257,53 @@ export async function test({ describe, expect, it, ...t }) {
         expect(() => file.move(folder)).toThrow();
       });
 
-      it('Copies it to a file', () => {
+      it('moves it to a file', () => {
         const src = new File(testDirectory + 'file.txt');
         src.write('Hello world');
         const dst = new File(testDirectory + 'file2.txt');
         src.move(dst);
-        expect(dst.exists()).toBe(true);
+        expect(dst.exists).toBe(true);
         expect(dst.text()).toBe('Hello world');
-        expect(src.exists()).toBe(false);
+        expect(src.exists).toBe(true);
+        expect(src.uri).toBe(dst.uri);
       });
     });
 
     describe('When moving a directory', () => {
-      it('copies it to a folder', () => {
-        const src = new Directory(testDirectory + 'directory');
+      it('moves it to a folder', () => {
+        const src = new Directory(testDirectory + 'directory/');
         src.create();
-        const dstFolder = new Directory(testDirectory + 'destination');
+        const dstFolder = new Directory(testDirectory + 'destination/');
         dstFolder.create();
         src.move(dstFolder);
-        expect(src.exists()).toBe(false);
-        expect(new Directory(testDirectory + 'destination/directory').exists()).toBe(true);
+        expect(src.exists).toBe(true);
+        const dst = new Directory(testDirectory + 'destination/directory/');
+        expect(src.uri).toBe(dst.uri);
+        expect(dst.exists).toBe(true);
       });
 
       it('Throws an error when moving to a nonexistant folder without options', () => {
-        const file = new Directory(testDirectory + 'directory/');
-        file.create();
-        const folder = new Directory(testDirectory + 'destination/');
+        const file = new File(testDirectory + 'file.txt');
+        file.write('Hello world');
+        const folder = new Directory(testDirectory + 'some/nonexistent/directory/');
         expect(() => file.move(folder)).toThrow();
       });
 
+      it('Renames the directory if only the bottom level destination directory does not exist', () => {
+        const file = new Directory(testDirectory + 'source/');
+        file.create();
+        const folder = new Directory(testDirectory + 'newDestination/');
+        file.move(folder);
+        expect(file.uri).toBe(testDirectory + 'newDestination/');
+      });
+
+      // this should not be allowed by TS, but we can handle it anyways
       it('throws an error when moving it to a file', () => {
         const src = new Directory(testDirectory + 'directory/');
         src.create();
         const dst = new File(testDirectory + 'file2.txt');
         dst.create();
+        // @ts-expect-error
         expect(() => src.move(dst)).toThrow();
       });
     });
@@ -268,7 +313,7 @@ export async function test({ describe, expect, it, ...t }) {
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory + 'image.jpeg');
         const output = await File.downloadFileAsync(url, file);
-        expect(file.exists()).toBe(true);
+        expect(file.exists).toBe(true);
         expect(output.uri).toBe(file.uri);
       });
 
@@ -280,7 +325,7 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(
           testDirectory + (Platform.OS === 'android' ? '300.jpg' : '237-200x300.jpg')
         );
-        expect(file.exists()).toBe(true);
+        expect(file.exists).toBe(true);
         expect(output.uri).toBe(file.uri);
       });
     });
@@ -349,7 +394,85 @@ export async function test({ describe, expect, it, ...t }) {
 
       it('joins paths', () => {
         expect(Paths.join('file:///path', 'to', '..', 'file')).toBe('file:///path/file');
+        expect(Paths.join(new Directory('file:///path'), 'to', '..', 'file')).toBe(
+          'file:///path/file'
+        );
       });
+
+      it('joins paths in the File and Directory constructors', () => {
+        expect(new File('file:///path', 'to', '..', 'file').uri).toBe('file:///path/file');
+        expect(new Directory('file:///path', 'to', '..', 'directory').uri).toBe(
+          'file:///path/directory/'
+        );
+      });
+    });
+
+    describe('Exposes common app directories', () => {
+      it('exposes cache directory', () => {
+        expect(Paths.cache instanceof Directory).toBe(true);
+        expect(Paths.cache.uri).toBe(FS.cacheDirectory);
+      });
+      it('exposes document directory', () => {
+        expect(Paths.document instanceof Directory).toBe(true);
+        expect(Paths.document.uri).toBe(FS.documentDirectory);
+      });
+      it('can be easily used with joining paths', () => {
+        const file = new File(Paths.document, 'file.txt');
+        expect(file.uri).toBe(FS.documentDirectory + 'file.txt');
+      });
+    });
+  });
+
+  addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
+}
+
+function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
+  const firstContainer = Object.values(Paths.appleSharedContainers)?.[0];
+  const sharedContainerTestDir = firstContainer ? firstContainer.uri + 'test/' : null;
+  const scopedIt = sharedContainerTestDir ? it : t.xit;
+
+  describe('Apple App Group', () => {
+    t.beforeEach(async () => {
+      if (sharedContainerTestDir) {
+        await FS.makeDirectoryAsync(sharedContainerTestDir, { intermediates: true });
+      }
+    });
+
+    t.afterEach(async () => {
+      if (sharedContainerTestDir) {
+        await FS.deleteAsync(sharedContainerTestDir, { idempotent: true });
+      }
+    });
+
+    scopedIt('Writes a string to a file reference', () => {
+      const outputFile = new File(sharedContainerTestDir + 'file.txt');
+      expect(outputFile.exists).toBe(false);
+      outputFile.write('Hello world');
+      expect(outputFile.exists).toBe(true);
+    });
+
+    scopedIt('Deletes a file reference', () => {
+      const outputFile = new File(sharedContainerTestDir + 'file3.txt');
+      outputFile.write('Hello world');
+      expect(outputFile.exists).toBe(true);
+
+      outputFile.delete();
+      expect(outputFile.exists).toBe(false);
+    });
+
+    scopedIt('Creates a folder', () => {
+      const folder = new Directory(sharedContainerTestDir + 'newFolder');
+      folder.create();
+      expect(folder.exists).toBe(true);
+    });
+
+    scopedIt('Deletes a folder', () => {
+      const folder = new Directory(sharedContainerTestDir + 'newFolder');
+      folder.create();
+      expect(folder.exists).toBe(true);
+
+      folder.delete();
+      expect(folder.exists).toBe(false);
     });
   });
 }

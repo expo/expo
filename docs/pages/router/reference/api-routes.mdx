@@ -112,7 +112,7 @@ Requests use the global, standard [`Request`](https://fetch.spec.whatwg.org/#req
 
 ```ts app/blog/[post]+api.ts
 export async function GET(request: Request, { post }: Record<string, string>) {
-  // const postId = request.expoUrl.searchParams.get('post')
+  // const postId = new URL(request.url).searchParams.get('post')
   // fetch data for 'post'
   return Response.json({ ... });
 }
@@ -126,6 +126,20 @@ Use the `request.json()` function to access the request body. It automatically p
 export async function POST(request: Request) {
   const body = await request.json();
 
+  return Response.json({ ... });
+}
+```
+
+### Request query parameters
+
+Query parameters can be accessed by parsing the request URL:
+
+```ts app/endpoint+api.ts
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const post = url.searchParams.get('post');
+
+  // fetch data for 'post'
   return Response.json({ ... });
 }
 ```

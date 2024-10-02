@@ -112,7 +112,10 @@ type AllUngroupedRoutes<Path> = Path extends `(${infer PartA})/${infer PartB}`
  * Routes can have known inputs (e.g query params)
  * Unlike outputs, inputs can be undefined or null
  */
-type UnknownInputParams = Record<string, string | number | undefined | null | (string | number)[]>;
+export type UnknownInputParams = Record<
+  string,
+  string | number | undefined | null | (string | number)[]
+>;
 
 /**
  * Routes can have unknown outputs (e.g query params)

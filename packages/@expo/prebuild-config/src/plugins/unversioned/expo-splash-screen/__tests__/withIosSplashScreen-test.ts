@@ -88,7 +88,6 @@ describe(withIosSplashScreen, () => {
   });
 
   it(`runs entire process`, async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let config: ExpoConfig = {
       name: 'foo',
       slug: 'bar',

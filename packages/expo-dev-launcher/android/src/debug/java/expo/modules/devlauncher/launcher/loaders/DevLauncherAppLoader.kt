@@ -3,10 +3,7 @@ package expo.modules.devlauncher.launcher.loaders
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext

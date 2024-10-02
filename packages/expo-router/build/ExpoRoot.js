@@ -54,9 +54,9 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
         <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-          {children}
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
           {!statusbar_1.hasViewControllerBasedStatusBarAppearance && <AutoStatusBar />}
+          {children}
         </react_native_safe_area_context_1.SafeAreaProvider>
       </ParentWrapper>);
     };

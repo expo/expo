@@ -22,7 +22,7 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     }
   }
 
-  override fun exists(): Boolean {
+  val exists: Boolean get() {
     return file.isFile
   }
 
@@ -33,7 +33,7 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
 
   fun write(content: String) {
     validateType()
-    if (!exists()) {
+    if (!exists) {
       create()
     }
     FileOutputStream(file).use {
@@ -43,7 +43,7 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
 
   fun write(content: TypedArray) {
     validateType()
-    if (!exists()) {
+    if (!exists) {
       create()
     }
     FileOutputStream(file).use {

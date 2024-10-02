@@ -4,11 +4,11 @@ import 'server-only';
 import { Link } from 'expo-router/build/rsc/exports';
 
 import { unstable_styles } from '../home.module.css';
-import { View } from '../lib/react-native';
+import { View, SafeAreaView } from '../lib/react-native';
 
 const HomeLayout = (props) => {
   return (
-    <View style={{ flex: 1, padding: 24 }} testID="layout-child-wrapper">
+    <SafeAreaView style={{ flex: 1 }} testID="layout-child-wrapper">
       {props.children}
       <View
         testID="layout-global-style"
@@ -22,7 +22,13 @@ const HomeLayout = (props) => {
         style={[{ width: 100, height: 100 }, unstable_styles.container]}
       />
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          padding: 12,
+
+          justifyContent: 'space-around',
+        }}>
         <Link href="/" style={props.path === '/' ? { color: 'blue' } : {}}>
           One
         </Link>
@@ -30,7 +36,7 @@ const HomeLayout = (props) => {
           Two
         </Link>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

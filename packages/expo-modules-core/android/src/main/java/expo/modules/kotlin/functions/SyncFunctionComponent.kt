@@ -1,8 +1,6 @@
 package expo.modules.kotlin.functions
 
-import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JNIFunctionBody
@@ -23,12 +21,7 @@ class SyncFunctionComponent(
     shouldUseExperimentalConverter = shouldUse
   }
 
-  @Throws(CodedException::class)
-  fun call(args: ReadableArray): Any? {
-    return body(convertArgs(args))
-  }
-
-  fun call(args: Array<Any?>, appContext: AppContext? = null): Any? {
+  fun callUserImplementation(args: Array<Any?>, appContext: AppContext? = null): Any? {
     return body(convertArgs(args, appContext))
   }
 
@@ -37,7 +30,7 @@ class SyncFunctionComponent(
       return@JNIFunctionBody exceptionDecorator({
         FunctionCallException(name, moduleName, it)
       }) {
-        val result = call(args, appContext)
+        val result = callUserImplementation(args, appContext)
         if (shouldUseExperimentalConverter) {
           return@exceptionDecorator returnType.convertToJS(result)
         } else {

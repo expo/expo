@@ -54,10 +54,9 @@ public class AndroidXNotificationsChannelGroupManager implements NotificationsCh
   // Processing options
   @RequiresApi(api = Build.VERSION_CODES.O)
   protected void configureGroupWithOptions(Object maybeGroup, ReadableArguments groupOptions) {
-    if (!(maybeGroup instanceof NotificationChannelGroup)) {
+    if (!(maybeGroup instanceof NotificationChannelGroup group)) {
       return;
     }
-    NotificationChannelGroup group = (NotificationChannelGroup) maybeGroup;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       if (groupOptions.containsKey(DESCRIPTION_KEY)) {
         group.setDescription(groupOptions.getString(DESCRIPTION_KEY));

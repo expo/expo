@@ -54,7 +54,6 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
         }
       } catch (ClassNotFoundException | IOException e) {
         Log.e("expo-notifications", String.format("Could not read category with identifier: %s. %s", categoryIdentifier, e.getMessage()));
-        e.printStackTrace();
       }
       for (NotificationAction action : actions) {
         if (action instanceof TextInputNotificationAction) {

@@ -13,7 +13,7 @@ import { CommandError } from '../../utils/errors';
 import { fetch } from '../../utils/fetch';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { disableNetwork } from '../settings';
-import UserSettings from '../user/UserSettings';
+import { getAccessToken, getSession } from '../user/UserSettings';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
@@ -77,11 +77,11 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
 
     const resolvedHeaders = options.headers ?? ({} as any);
 
-    const token = UserSettings.getAccessToken();
+    const token = getAccessToken();
     if (token) {
       resolvedHeaders.authorization = `Bearer ${token}`;
     } else {
-      const sessionSecret = UserSettings.getSession()?.sessionSecret;
+      const sessionSecret = getSession()?.sessionSecret;
       if (sessionSecret) {
         resolvedHeaders['expo-session'] = sessionSecret;
       }
@@ -112,8 +112,11 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
 
       return response;
     } catch (error: any) {
-      // Specifically, when running `npx expo start` and the wifi is connected but not really (public wifi, airplanes, etc).
-      if ('code' in error && error.code === 'ENOTFOUND') {
+      // When running `expo start`, but wifi or internet has issues
+      if (
+        ('code' in error && error.code === 'ENOTFOUND') || // node-fetch error handling
+        ('cause' in error && 'code' in error.cause && error.cause.code === 'ENOTFOUND') // undici error handling
+      ) {
         disableNetwork();
 
         throw new CommandError(

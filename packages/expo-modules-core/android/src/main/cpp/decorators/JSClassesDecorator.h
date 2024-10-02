@@ -9,6 +9,7 @@
 #include "JSDecorator.h"
 #include "../MethodMetadata.h"
 #include "../JNIFunctionBody.h"
+#include "JSIUtils.h"
 
 namespace jni = facebook::jni;
 
@@ -23,6 +24,7 @@ public:
     jni::alias_ref<jni::HybridClass<JSDecoratorsBridgingObject>::javaobject> prototypeDecorator,
     jboolean takesOwner,
     jni::alias_ref<jclass> ownerClass,
+    jboolean isSharedRef,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
@@ -37,7 +39,15 @@ private:
     std::vector<std::unique_ptr<JSDecorator>> prototypeDecorators;
     std::shared_ptr<MethodMetadata> constructor;
     jni::global_ref<jclass> ownerClass;
+    bool isSharedRef;
   };
+
+  static jsi::Function createClass(
+    jsi::Runtime &runtime,
+    const std::string &className,
+    bool isSharedRef,
+    common::ClassConstructor constructor
+  );
 
   std::unordered_map<
     std::string,

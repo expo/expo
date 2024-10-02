@@ -71,8 +71,7 @@ export function getTestModules() {
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
-    require('./tests/Fetch'),
-    optionalRequire(() => require('./tests/SQLiteLegacy'))
+    require('./tests/Fetch')
   );
 
   if (['android', 'ios'].includes(Platform.OS)) {

@@ -15,7 +15,7 @@ const path_1 = require("./path");
 const utils_1 = require("./router/utils");
 const server_2 = require("./server");
 async function renderRsc(args, opts) {
-    const { searchParams, input, body, contentType, context, onError } = args;
+    const { input, body, contentType, context, onError } = args;
     const { resolveClientEntry, entries } = opts;
     const { default: { renderEntries }, 
     // @ts-expect-error
@@ -141,7 +141,7 @@ async function renderRsc(args, opts) {
         return renderWithContextWithAction(context, fn, args);
     }
     // method === 'GET'
-    return renderWithContext(context, input, searchParams);
+    return renderWithContext(context, input, decodedBody);
 }
 exports.renderRsc = renderRsc;
 // TODO is this correct? better to use a library?

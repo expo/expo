@@ -1,9 +1,7 @@
 package expo.modules.kotlin.functions
 
-import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.enforceType
 
@@ -80,11 +78,6 @@ open class AsyncFunctionComponent<ReturnType>(
   desiredArgsTypes: Array<AnyType>,
   protected val body: (args: Array<out Any?>) -> ReturnType
 ) : AsyncFunction(name, desiredArgsTypes) {
-  @Throws(CodedException::class)
-  override fun callUserImplementation(args: ReadableArray, promise: Promise) {
-    promise.resolve(body(convertArgs(args)))
-  }
-
   override fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext) {
     promise.resolve(body(convertArgs(args, appContext)))
   }

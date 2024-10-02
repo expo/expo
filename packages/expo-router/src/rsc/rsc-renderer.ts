@@ -30,7 +30,6 @@ export type RenderRscArgs = {
 
   // Done
   input: string;
-  searchParams: URLSearchParams;
   context: Record<string, unknown> | undefined;
   body?: ReadableStream | undefined;
   contentType?: string | undefined;
@@ -54,7 +53,7 @@ type RenderRscOpts = {
 };
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
-  const { searchParams, input, body, contentType, context, onError } = args;
+  const { input, body, contentType, context, onError } = args;
   const { resolveClientEntry, entries } = opts;
 
   const {
@@ -210,7 +209,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   }
 
   // method === 'GET'
-  return renderWithContext(context, input, searchParams);
+  return renderWithContext(context, input, decodedBody);
 }
 
 // TODO is this correct? better to use a library?

@@ -34,7 +34,6 @@ public class SingleNotificationHandlerTask {
   private Handler mHandler;
   private EventEmitter mEventEmitter;
   private Notification mNotification;
-  private NotificationBehavior mBehavior;
   private Context mContext;
   private NotificationsHandler mDelegate;
 
@@ -88,12 +87,11 @@ public class SingleNotificationHandlerTask {
    * @param behavior Behavior requested by the app
    * @param promise  Promise to fulfill once the behavior is applied to the notification.
    */
-  /* package */ void handleResponse(NotificationBehavior behavior, final Promise promise) {
-    mBehavior = behavior;
+  /* package */ void processNotificationWithBehavior(final NotificationBehavior behavior, final Promise promise) {
     mHandler.post(new Runnable() {
       @Override
       public void run() {
-        NotificationsService.Companion.present(mContext, mNotification, mBehavior, new ResultReceiver(mHandler) {
+        NotificationsService.Companion.present(mContext, mNotification, behavior, new ResultReceiver(mHandler) {
           @Override
           protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);

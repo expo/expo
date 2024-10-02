@@ -33,3 +33,15 @@ export class ReactServerError extends Error {
     this.name = 'ReactServerError';
   }
 }
+
+export class NetworkError extends Error {
+  code = 'NETWORK_ERROR';
+
+  constructor(
+    message: string,
+    public url: string
+  ) {
+    super(message);
+    this.name = 'NetworkError';
+  }
+}

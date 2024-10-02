@@ -17,6 +17,9 @@ function mapStyles(style) {
     // Looking through react-native-web source code they also just pass styles directly without further conversions, so it's just a cast.
     return flattenedStyles;
 }
+export function isPictureInPictureSupported() {
+    return typeof document === 'object' && typeof document.exitPictureInPicture === 'function';
+}
 export const VideoView = forwardRef((props, ref) => {
     const videoRef = useRef(null);
     const mediaNodeRef = useRef(null);
@@ -31,16 +34,46 @@ export const VideoView = forwardRef((props, ref) => {
     const audioContextRef = useRef(null);
     const zeroGainNodeRef = useRef(null);
     useImperativeHandle(ref, () => ({
-        enterFullscreen: () => {
+        enterFullscreen: async () => {
             if (!props.allowsFullscreen) {
                 return;
             }
-            videoRef.current?.requestFullscreen();
+            await videoRef.current?.requestFullscreen();
         },
-        exitFullscreen: () => {
-            document.exitFullscreen();
+        exitFullscreen: async () => {
+            await document.exitFullscreen();
+        },
+        startPictureInPicture: async () => {
+            await videoRef.current?.requestPictureInPicture();
+        },
+        stopPictureInPicture: async () => {
+            try {
+                await document.exitPictureInPicture();
+            }
+            catch (e) {
+                if (e instanceof DOMException && e.name === 'InvalidStateError') {
+                    console.warn('The VideoView is not in Picture-in-Picture mode.');
+                }
+                else {
+                    throw e;
+                }
+            }
         },
     }));
+    useEffect(() => {
+        const onEnter = () => {
+            props.onPictureInPictureStart?.();
+        };
+        const onLeave = () => {
+            props.onPictureInPictureStop?.();
+        };
+        videoRef.current?.addEventListener('enterpictureinpicture', onEnter);
+        videoRef.current?.addEventListener('leavepictureinpicture', onLeave);
+        return () => {
+            videoRef.current?.removeEventListener('enterpictureinpicture', onEnter);
+            videoRef.current?.removeEventListener('leavepictureinpicture', onLeave);
+        };
+    }, [videoRef, props.onPictureInPictureStop, props.onPictureInPictureStart]);
     // Adds the video view as a candidate for being the audio source for the player (when multiple views play from one
     // player only one will emit audio).
     function attachAudioNodes() {
@@ -126,7 +159,7 @@ export const VideoView = forwardRef((props, ref) => {
                 hasToSetupAudioContext.current = true;
                 maybeSetupAudioContext();
             }
-        }} src={getSourceUri(props.player?.src) ?? ''}/>);
+        }} disablePictureInPicture={!props.allowsPictureInPicture} src={getSourceUri(props.player?.src) ?? ''}/>);
 });
 export default VideoView;
 //# sourceMappingURL=VideoView.web.js.map

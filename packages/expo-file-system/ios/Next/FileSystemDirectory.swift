@@ -20,7 +20,7 @@ internal final class FileSystemDirectory: FileSystemPath {
     try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false)
   }
 
-  func exists() -> Bool {
+  var exists: Bool {
     var isDirectory: ObjCBool = false
     if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
       return isDirectory.boolValue

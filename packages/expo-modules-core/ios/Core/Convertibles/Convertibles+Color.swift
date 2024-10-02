@@ -70,6 +70,9 @@ extension UIColor: Convertible {
         return color as! Self
       }
     }
+    if let color = value as? Self {
+      return color
+    }
     throw Conversions.ConvertingException<UIColor>(value)
     // swiftlint:enable force_cast
   }

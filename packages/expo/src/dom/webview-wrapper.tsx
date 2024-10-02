@@ -8,7 +8,7 @@ import {
   getInjectBodySizeObserverScript,
   getInjectEventScript,
   getInjectEnvsScript,
-  AUTOSIZE_EVENT,
+  MATCH_CONTENTS_EVENT,
   NATIVE_ACTION,
   NATIVE_ACTION_RESULT,
 } from './injection';
@@ -100,7 +100,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
         getInjectEnvsScript(),
         // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
         `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
-        dom?.autoSize ? getInjectBodySizeObserverScript() : null,
+        dom?.matchContents ? getInjectBodySizeObserverScript() : null,
         dom?.injectedJavaScriptBeforeContentLoaded,
         'true;',
       ]
@@ -117,8 +117,8 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
       onMessage={(event) => {
         const { type, data } = JSON.parse(event.nativeEvent.data);
 
-        if (type === AUTOSIZE_EVENT) {
-          if (dom?.autoSize) {
+        if (type === MATCH_CONTENTS_EVENT) {
+          if (dom?.matchContents) {
             setContainerStyle({
               width: data.width,
               height: data.height,

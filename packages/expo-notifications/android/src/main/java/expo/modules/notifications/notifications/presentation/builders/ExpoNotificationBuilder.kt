@@ -24,7 +24,7 @@ import kotlin.math.min
  */
 open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotificationBuilder(context) {
   override suspend fun build(): Notification {
-    val builder = super.createBuilder()
+    val builder = createBuilder()
     builder.setSmallIcon(icon)
     builder.setPriority(priority)
 
@@ -258,7 +258,7 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
       return null
     }
 
-  protected val icon: Int
+  protected open val icon: Int
     /**
      * The method first tries to get the icon from the manifest's meta-data [.META_DATA_DEFAULT_ICON_KEY].
      * If a custom setting is not found, the method falls back to using app icon.
@@ -280,7 +280,7 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
       return context.applicationInfo.icon
     }
 
-  protected val color: Number?
+  protected open val color: Number?
     /**
      * The method responsible for finding and returning a custom color used to color the notification icon.
      * It first tries to use a custom color defined in notification content, then it tries to fetch color

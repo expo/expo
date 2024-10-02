@@ -1,2 +1,1 @@
-export * as Paths from './pathUtilities';
-export { Directory, File } from './FileSystem';
+export { Directory, File, Paths } from './FileSystem';

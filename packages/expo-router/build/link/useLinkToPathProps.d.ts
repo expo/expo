@@ -7,7 +7,8 @@ type UseLinkToPathPropsOptions = LinkToOptions & {
 export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPropsOptions): {
     href: string;
     role: "link";
-    onPress: (e?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
+    onPress: (event?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
 };
+export declare function shouldHandleMouseEvent(event?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent): boolean;
 export {};
 //# sourceMappingURL=useLinkToPathProps.d.ts.map

@@ -126,6 +126,14 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
 
   const componentIds = getComponentIds(route.path);
 
+  //  const refetchRoute = () => {
+  //   const loc = parseRoute(new URL(getHref()));
+  //   const input = getInputString(loc.path);
+  //   refetch(input, loc.query);
+  //   refetch(input, JSON.stringify({ query: route.query }));
+  // };
+  // globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__ = refetchRoute;
+
   const [cached, setCached] = useState<Record<string, RouteProps>>(() => {
     return Object.fromEntries(componentIds.map((id) => [id, route]));
   });

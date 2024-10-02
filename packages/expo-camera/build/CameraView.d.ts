@@ -65,7 +65,7 @@ export default class CameraView extends Component<CameraProps> {
      * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
      *
-     * **Note** Avoid calling this method while the preview is paused. On iOS, this will take a picture of the last frame that is currently on screen, on Android, this will throw an error.
+     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture | undefined>;
     /**

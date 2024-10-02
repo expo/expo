@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import android.util.Pair
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import expo.modules.notifications.notifications.SoundResolver
 import expo.modules.notifications.notifications.enums.NotificationPriority
@@ -103,10 +104,7 @@ open class ExpoPresentationDelegate(
       return
     }
     CoroutineScope(Dispatchers.IO).launch {
-      val androidNotification = CategoryAwareNotificationBuilder(context, SharedPreferencesNotificationCategoriesStore(context)).apply {
-        setNotification(notification)
-        setAllowedBehavior(behavior)
-      }.build()
+      val androidNotification = createNotification(notification, behavior)
 
       NotificationManagerCompat.from(context).notify(
         notification.notificationRequest.identifier,
@@ -159,9 +157,15 @@ open class ExpoPresentationDelegate(
 
   override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
+  protected open suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
+    CategoryAwareNotificationBuilder(context, SharedPreferencesNotificationCategoriesStore(context)).apply {
+      setNotification(notification)
+      setAllowedBehavior(notificationBehavior)
+    }.build()
+
   protected open fun getNotification(statusBarNotification: StatusBarNotification): Notification? {
     val notification = statusBarNotification.notification
-    notification.extras.getByteArray(ExpoNotificationBuilder.Companion.EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY)?.let {
+    notification.extras.getByteArray(ExpoNotificationBuilder.EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY)?.let {
       try {
         with(Parcel.obtain()) {
           this.unmarshall(it, 0, it.size)
@@ -184,14 +188,14 @@ open class ExpoPresentationDelegate(
     // it's either not our notification or we couldn't have unmarshaled it from
     // the byte array. Let's do what we can.
     val content = NotificationContent.Builder()
-      .setTitle(notification.extras.getString(android.app.Notification.EXTRA_TITLE))
-      .setText(notification.extras.getString(android.app.Notification.EXTRA_TEXT))
-      .setSubtitle(notification.extras.getString(android.app.Notification.EXTRA_SUB_TEXT)) // using deprecated field
+      .setTitle(NotificationCompat.getContentTitle(notification)?.toString())
+      .setText(NotificationCompat.getContentText(notification)?.toString())
+      .setSubtitle(NotificationCompat.getSubText(notification)?.toString())
+      .setAutoDismiss(NotificationCompat.getAutoCancel(notification))
+      .setSticky(NotificationCompat.getOngoing(notification))
       .setPriority(NotificationPriority.fromNativeValue(notification.priority)) // using deprecated field
       .setVibrationPattern(notification.vibrate) // using deprecated field
       .setSound(notification.sound)
-      .setAutoDismiss(notification.flags and android.app.Notification.FLAG_AUTO_CANCEL != 0)
-      .setSticky(notification.flags and android.app.Notification.FLAG_ONGOING_EVENT != 0)
       .setBody(fromBundle(notification.extras))
       .build()
     val request = NotificationRequest(getInternalIdentifierKey(statusBarNotification), content, null)

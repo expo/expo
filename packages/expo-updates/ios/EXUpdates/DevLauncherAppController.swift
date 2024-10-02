@@ -33,6 +33,14 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     launcher?.launchAssetUrl
   }
 
+  public var runtimeVersion: String? {
+    config?.runtimeVersion
+  }
+
+  public var updateURL: URL? {
+    config?.updateUrl
+  }
+
   // swiftlint:disable unavailable_function
   public func start() {
     preconditionFailure("Cannot call start on DevLauncherAppController")

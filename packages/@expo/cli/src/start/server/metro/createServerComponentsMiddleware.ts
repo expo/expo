@@ -149,7 +149,7 @@ export function createServerComponentsMiddleware(
 
     // Extract the global CSS modules that are imported from the router.
     // These will be injected in the head of the HTML document for the website.
-    const cssModules = contents.artifacts.filter((a) => a.type === 'css');
+    const cssModules = contents.artifacts.filter((a) => a.type.startsWith('css'));
 
     const reactServerReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
@@ -333,6 +333,7 @@ export function createServerComponentsMiddleware(
       engine,
       contentType,
       ssrManifest,
+      decodedBody,
     }: {
       input: string;
       searchParams: URLSearchParams;
@@ -342,6 +343,7 @@ export function createServerComponentsMiddleware(
       engine?: 'hermes' | null;
       contentType?: string;
       ssrManifest?: Map<string, string>;
+      decodedBody?: unknown;
     },
     isExporting: boolean | undefined = instanceMetroOptions.isExporting
   ) {
@@ -359,7 +361,7 @@ export function createServerComponentsMiddleware(
     return renderRsc(
       {
         body,
-        searchParams,
+        decodedBody,
         context: getRscRenderContext(platform),
         config: {},
         input,

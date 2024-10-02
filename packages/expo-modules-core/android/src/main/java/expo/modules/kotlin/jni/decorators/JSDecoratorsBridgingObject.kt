@@ -64,6 +64,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     prototypeDecorator: JSDecoratorsBridgingObject,
     takesOwner: Boolean,
     ownerClass: Class<*>?,
+    isSharedRef: Boolean,
     desiredTypes: Array<ExpectedType>,
     body: JNIFunctionBody
   )

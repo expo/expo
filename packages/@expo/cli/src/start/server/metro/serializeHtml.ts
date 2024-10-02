@@ -71,16 +71,20 @@ function htmlFromSerialAssets(
 ) {
   // Combine the CSS modules into tags that have hot refresh data attributes.
   const styleString = assets
-    .filter((asset) => asset.type === 'css')
-    .map(({ metadata, filename, source }) => {
-      if (isExporting) {
-        return [
-          `<link rel="preload" href="${combineUrlPath(baseUrl, filename)}" as="style">`,
-          `<link rel="stylesheet" href="${combineUrlPath(baseUrl, filename)}">`,
-        ].join('');
-      } else {
-        return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
+    .filter((asset) => asset.type.startsWith('css'))
+    .map(({ type, metadata, filename, source }) => {
+      if (type === 'css') {
+        if (isExporting) {
+          return [
+            `<link rel="preload" href="${combineUrlPath(baseUrl, filename)}" as="style">`,
+            `<link rel="stylesheet" href="${combineUrlPath(baseUrl, filename)}">`,
+          ].join('');
+        } else {
+          return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
+        }
       }
+      // External link tags will be passed through as-is.
+      return source;
     })
     .join('');
 

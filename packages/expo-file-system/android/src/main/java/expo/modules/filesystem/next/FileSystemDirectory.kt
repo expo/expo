@@ -14,7 +14,7 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     }
   }
 
-  override fun exists(): Boolean {
+  val exists: Boolean get() {
     return file.isDirectory
   }
 

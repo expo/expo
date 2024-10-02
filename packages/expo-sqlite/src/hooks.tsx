@@ -1,7 +1,7 @@
 import { Asset } from 'expo-asset';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
-import ExpoSQLite from './ExpoSQLiteNext';
+import ExpoSQLite from './ExpoSQLite';
 import type { SQLiteOpenOptions } from './NativeDatabase';
 import { openDatabaseAsync, type SQLiteDatabase } from './SQLiteDatabase';
 
@@ -120,7 +120,7 @@ export function SQLiteProvider({
  *
  * export function Main() {
  *   const db = useSQLiteContext();
- *   console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *   console.log('sqlite version', db.getFirstSync('SELECT sqlite_version()'));
  *   return <View />
  * }
  * ```

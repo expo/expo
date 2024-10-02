@@ -2540,7 +2540,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.2.0):
+  - RNSVG (15.7.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2560,9 +2560,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.2.0)
+    - RNSVG/common (= 15.7.1)
     - Yoga
-  - RNSVG/common (15.2.0):
+  - RNSVG/common (15.7.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3227,7 +3227,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 79410307f4679f347480cb5e838c389ca99f8b6f
   ExpoSMS: 26b84c932e095db013ba3633f54795fba688ce7b
   ExpoSpeech: bd49d99ccf7ec89e89cd2f677f88795870e30f54
-  ExpoSQLite: 12e09c65608b7d8db6b9e7d281bbb598370c6128
+  ExpoSQLite: d50844995608455ec1d230126965434c5d53ef98
   ExpoStoreReview: 92cbbce52bbb5c7c45d00956356eea404bcb8f98
   ExpoSymbols: bd22f3ef7bb28605084b355a407552e96915d493
   ExpoSystemUI: ab9245591d740dd89acb4648dee2ae1714bd2262
@@ -3242,7 +3242,7 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 8d16d1242225d0bdb4d8db788349b522aa8e0343
   FBLazyVector: 38bb611218305c3bc61803e287b8a81c6f63b619
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
+  glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: 3b6e0717ca847e2fc90a201e59db36caf04dee88
@@ -3252,7 +3252,7 @@ SPEC CHECKSUMS:
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
-  RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
+  RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 34cbf122b623037ea9facad2e92e53434c5c7422
   RCTRequired: 24c446d7bcd0f517d516b6265d8df04dc3eb1219
   RCTTypeSafety: ef5e91bd791abd3a99b2c75fd565791102a66352
@@ -3323,16 +3323,16 @@ SPEC CHECKSUMS:
   RNGestureHandler: f769e1b9057085db07546aa3e259daa85c898dc7
   RNReanimated: f72882a50158dd5b8b429b60b41331e4aec39151
   RNScreens: de6e57426ba0e6cbc3fb5b4f496e7f08cb2773c2
-  RNSVG: f57ef92b778b88c6481ce0856be993036f4b9279
+  RNSVG: 515aaaaef804aade0f285d7fc9514da8f7f0e11f
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   UMAppLoader: c34fd315863887c7961e059efd9475e056bdd72d
-  Yoga: 2a45d7e59592db061217551fd3bbe2dd993817ae
+  Yoga: a1d7895431387402a674fd0d1c04ec85e87909b8
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: f30038683d0d8eadca2caa6a41cad69453e2d1c7
+PODFILE CHECKSUM: e0aa99f15a032d4553022274167ed85a322af519
 
 COCOAPODS: 1.15.2
