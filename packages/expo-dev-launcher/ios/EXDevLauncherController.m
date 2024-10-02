@@ -325,6 +325,7 @@
   self.manifestURL = nil;
 
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+
   [self _removeInitModuleObserver];
 
   _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
