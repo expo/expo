@@ -339,11 +339,15 @@ export type TimeUpdate = {
    * The exact timestamp when the currently displayed video frame was sent from the server,
    * based on the `EXT-X-PROGRAM-DATE-TIME` tag in the livestream metadata.
    * Same as the [`currentLiveTimestamp`](#currentlivetimestamp) property.
+   * @platform android
+   * @platform ios
    */
-  currentLiveTimestamp?: number;
+  currentLiveTimestamp: number | null;
   /**
    * Float value indicating the latency of the live stream in seconds.
    * Same as the [`currentOffsetFromLive`](#currentoffsetfromlive) property.
+   * @platform android
+   * @platform ios
    */
-  currentOffsetFromLive?: number;
+  currentOffsetFromLive: number | null;
 };

@@ -150,10 +150,18 @@ export default class VideoPlayerWeb
     }
     if (value > 0) {
       // Emit the first event immediately like on other platforms
-      this.emit('timeUpdate', { currentTime: this.currentTime });
+      this.emit('timeUpdate', {
+        currentTime: this.currentTime,
+        currentLiveTimestamp: null,
+        currentOffsetFromLive: null,
+      });
 
       this._timeUpdateLoop = setInterval(() => {
-        this.emit('timeUpdate', { currentTime: this.currentTime });
+        this.emit('timeUpdate', {
+          currentTime: this.currentTime,
+          currentLiveTimestamp: null,
+          currentOffsetFromLive: null,
+        });
       }, value * 1000);
     }
   }
