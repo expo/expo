@@ -31,7 +31,8 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
      * File name. Includes the extension.
      */
     get name(): string;
-    stream(): ReadableStream<any>;
+    readableStream(): ReadableStream<Uint8Array>;
+    writableStream(): WritableStream<Uint8Array>;
 }
 /**
  * Represents a directory on the filesystem.
