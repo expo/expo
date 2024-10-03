@@ -4,8 +4,6 @@
 //  pass error recovery info to an experience which just reloaded.
 //
 
-#import "EXKernelService.h"
-
 @protocol EXErrorRecoveryScopedModuleDelegate
 
 - (void)setDeveloperInfo:(NSDictionary *)developerInfo forScopedModule:(id)scopedModule;
@@ -14,8 +12,7 @@
 
 @class EXKernelAppRecord;
 
-@interface EXErrorRecoveryManager : NSObject
-  <EXKernelService, EXErrorRecoveryScopedModuleDelegate>
+@interface EXErrorRecoveryManager : NSObject<EXErrorRecoveryScopedModuleDelegate>
 
 /**
  *  Associate arbitrary developer info with this experience id. If the experience recovers from an

@@ -8,13 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EXKernelAppRegistryDelegate <NSObject>
-
-- (void)appRegistry:(EXKernelAppRegistry *)registry didRegisterAppRecord:(EXKernelAppRecord *)appRecord;
-- (void)appRegistry:(EXKernelAppRegistry *)registry willUnregisterAppRecord:(EXKernelAppRecord *)appRecord;
-
-@end
-
 @interface EXKernelAppRegistry : NSObject
 
 - (void)registerHomeAppRecord:(EXKernelAppRecord *)homeRecord;
@@ -23,8 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)registerAppWithManifestUrl:(NSURL *)manifestUrl initialProps:(NSDictionary *)initialProps;
 - (void)unregisterAppWithRecordId:(NSString *)recordId;
 - (void)unregisterAppWithRecord:(nullable EXKernelAppRecord *)appRecord;
-
-@property (nonatomic, weak) id<EXKernelAppRegistryDelegate> delegate;
 
 /**
  *  If Expo Home is available, return the record representing the Home app.
