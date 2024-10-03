@@ -6,7 +6,7 @@ import * as Font from 'expo-font';
 import { AppRegistry, StyleSheet } from 'react-native';
 
 import { isRunningInExpoGo } from './environment/ExpoGo';
-import { EntryNotFound } from './errors/EntryNotFound';
+import { AppEntryNotFound } from './errors/AppEntryNotFound';
 import { createErrorHandler } from './errors/ExpoErrorManager';
 
 // If expo-font is installed and the style preprocessor is available, use it to parse fonts.
@@ -21,4 +21,4 @@ if (isRunningInExpoGo()) {
 }
 
 // Register a default component and expect `registerRootComponent` to be called later and update it.
-AppRegistry.registerComponent('main', () => EntryNotFound);
+AppRegistry.registerComponent('main', () => AppEntryNotFound);

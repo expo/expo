@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export function EntryNotFound() {
+export function AppEntryNotFound() {
   return (
     <View style={styles.container}>
-      <Text style={styles.errorTitle}>Application Not Found</Text>
+      <Text style={styles.errorTitle}>App entry not found</Text>
       <Text style={styles.errorDescription}>
-        The application entrypoint "main" was not registered.
+        The app entry point "main" was not registered. It might be caused by an uncaught error thrown from the top-level code. See the logs from CLI for more details.
       </Text>
     </View>
   );
