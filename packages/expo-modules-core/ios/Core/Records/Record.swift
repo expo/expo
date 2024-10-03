@@ -20,7 +20,7 @@ public protocol Record: Convertible {
   /**
    Converts the record back to the dictionary. Only members wrapped by `@Field` will be set in the dictionary.
    */
-  func toDictionary() -> Dict
+  func toDictionary(appContext: AppContext?) -> Dict
 }
 
 /**
@@ -58,9 +58,11 @@ public extension Record {
     }
   }
 
-  func toDictionary() -> Dict {
+  func toDictionary(appContext: AppContext? = nil) -> Dict {
     return fieldsOf(self).reduce(into: Dict()) { result, field in
-      result[field.key!] = Conversions.convertFunctionResult(field.get())
+      if let key = field.key {
+        result[key] = Conversions.convertFunctionResult(field.get(), appContext: appContext)
+      }
     }
   }
 }
