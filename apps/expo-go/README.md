@@ -10,13 +10,13 @@ You can build the React Native Android dep using `./gradlew :packages:react-nati
 
 2. Start metro in `apps/expo-go` directory
 
-Packager needs to run prior running the build. If that's not the case you might get an error `A valid Firebase Project ID is required to communicate with Firebase server APIs.`. This is because `et android-generate-dynamic-macros` is run during the build and it needs the packager to be running.
+Metro needs to run prior running the build. If that's not the case you might get an error `A valid Firebase Project ID is required to communicate with Firebase server APIs.`. This is because `et android-generate-dynamic-macros` is run during the build and it needs the metro to be running.
 
 3. Build Expo Go
 
 For Android, run `./gradlew app:assembleDebug` in the `apps/expo-go/android` directory.
 
-4. Run packager for Native Component List
+4. Run metro for Native Component List
 
 - `cd apps/native-component-list`
 - `EXPO_SDK_VERSION=UNVERSIONED npx expo start --clear`
