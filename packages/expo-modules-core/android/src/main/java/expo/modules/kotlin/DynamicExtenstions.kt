@@ -11,7 +11,7 @@ inline fun <T> Dynamic.recycle(block: Dynamic.() -> T): T {
   }
 }
 
-fun Dynamic.unwrap(): Any?{
+fun Dynamic.unwrap(): Any? {
   return when (this.type) {
     ReadableType.Null -> null
     ReadableType.Boolean -> this.asBoolean()
