@@ -75,7 +75,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
   }
 
   @Nullable
-  public String getSubtitle() {
+  public String getSubText() {
     return mSubtitle;
   }
 
@@ -129,7 +129,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
     return mBody;
   }
 
-  @Nullable
+  @NonNull
   public NotificationPriority getPriority() {
     return mPriority;
   }

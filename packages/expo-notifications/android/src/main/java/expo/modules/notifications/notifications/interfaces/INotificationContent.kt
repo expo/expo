@@ -17,7 +17,7 @@ import org.json.JSONObject
 interface INotificationContent : Parcelable {
   val title: String?
   val text: String?
-  val subtitle: String?
+  val subText: String?
   val badgeCount: Number?
   val shouldPlayDefaultSound: Boolean
 

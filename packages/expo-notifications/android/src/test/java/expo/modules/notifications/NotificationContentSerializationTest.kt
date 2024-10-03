@@ -98,7 +98,7 @@ class NotificationContentSerializationTest {
   private fun assertNotificationContentEquals(expected: NotificationContent, actual: NotificationContent) {
     assertEquals(expected.title, actual.title)
     assertEquals(expected.text, actual.text)
-    assertEquals(expected.subtitle, actual.subtitle)
+    assertEquals(expected.subText, actual.subText)
     assertEquals(expected.badgeCount, actual.badgeCount)
     assertEquals(expected.shouldPlayDefaultSound, actual.shouldPlayDefaultSound)
     assertEquals(expected.soundName, actual.soundName)

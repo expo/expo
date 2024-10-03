@@ -35,7 +35,7 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
 
     builder.setContentTitle(content.title)
     builder.setContentText(content.text)
-    builder.setSubText(content.subtitle)
+    builder.setSubText(content.subText)
     // Sets the text/contentText as the bigText to allow the notification to be expanded and the
     // entire text to be viewed.
     builder.setStyle(NotificationCompat.BigTextStyle().bigText(content.text))
