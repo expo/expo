@@ -5,14 +5,6 @@
 
 import Foundation
 
-/**
- Protocol with a method for sending state change events to JS.
- In production, this will be implemented by the AppController.sharedInstance.
- */
-internal protocol UpdatesStateChangeDelegate: AnyObject {
-  func sendUpdateStateChangeEventToAppContext(_ eventType: UpdatesStateEventType, body: [String: Any?])
-}
-
 // MARK: - Enums
 
 /**
@@ -29,7 +21,7 @@ internal enum UpdatesStateValue: String, CaseIterable {
  All the possible types of events that can be sent to the machine. Each event
  will cause the machine to transition to a new state.
  */
-internal enum UpdatesStateEventType: String {
+public enum UpdatesStateEventType: String {
   case check
   case checkCompleteUnavailable
   case checkCompleteAvailable
@@ -287,9 +279,11 @@ extension UpdatesStateContext {
  in a production app, instantiated as a property of AppController.
  */
 internal class UpdatesStateMachine {
+  private let eventManager: UpdatesEventManager
   private let validUpdatesStateValues: Set<UpdatesStateValue>
 
-  required init(validUpdatesStateValues: Set<UpdatesStateValue>) {
+  required init(eventManager: UpdatesEventManager, validUpdatesStateValues: Set<UpdatesStateValue>) {
+    self.eventManager = eventManager
     self.validUpdatesStateValues = validUpdatesStateValues
   }
 
@@ -322,11 +316,6 @@ internal class UpdatesStateMachine {
   }
 
   /**
-   In production, this is the AppController instance.
-   */
-  internal weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
-
-  /**
    The current state
    */
   private var state: UpdatesStateValue = .idle
@@ -346,7 +335,7 @@ internal class UpdatesStateMachine {
     state = .idle
     context = UpdatesStateContext()
     logger.info(message: "Updates state is reset, state = \(state), context = \(context)")
-    sendChangeEventToJS()
+    sendChangeEventToJS(UpdatesStateEventRestart())
   }
   internal func resetForTesting() {
     reset()
@@ -460,10 +449,8 @@ internal class UpdatesStateMachine {
   /**
    On each state change, all context properties are sent to JS
    */
-  private func sendChangeEventToJS(_ event: UpdatesStateEvent? = nil) {
-    changeEventDelegate?.sendUpdateStateChangeEventToAppContext(event?.type ?? .restart, body: [
-      "context": context.json
-    ])
+  private func sendChangeEventToJS(_ event: UpdatesStateEvent) {
+    eventManager.sendUpdateStateChangeEventToAppContext(event.type, context: context)
   }
 
   // MARK: - Static definitions of the state machine rules

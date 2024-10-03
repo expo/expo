@@ -23,14 +23,14 @@ public class DisabledAppController: InternalAppControllerInterface {
     })
   }
 
-  public var shouldEmitJsEvents = false
-
-  public weak var appContext: AppContext?
-
   public weak var delegate: AppControllerDelegate?
 
+  private let logger = UpdatesLogger()
+
+  public let eventManager: UpdatesEventManager
+
   // disabled controller state machine can only be idle or restarting
-  private let stateMachine = UpdatesStateMachine(validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
+  private let stateMachine: UpdatesStateMachine
 
   private let initializationError: Error?
   private var launcher: AppLauncher?
@@ -39,6 +39,8 @@ public class DisabledAppController: InternalAppControllerInterface {
 
   required init(error: Error?) {
     self.initializationError = error
+    self.eventManager = QueueUpdatesEventManager(logger: self.logger)
+    self.stateMachine = UpdatesStateMachine(eventManager: self.eventManager, validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
   }
 
   public func start() {
