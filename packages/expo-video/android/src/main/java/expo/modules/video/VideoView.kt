@@ -109,6 +109,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   var useNativeControls: Boolean = true
     set(value) {
       playerView.useController = value
+      playerView.setShowSubtitleButton(value)
       field = value
     }
 
