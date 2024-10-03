@@ -1,6 +1,6 @@
-import { SharedObject } from 'expo';
+import { SharedRef } from 'expo';
 import { ImageResult, SaveOptions } from '../ImageManipulator.types';
-export default class ImageManipulatorImageRef extends SharedObject {
+export default class ImageManipulatorImageRef extends SharedRef<'image'> {
     private canvas;
     readonly width: number;
     readonly height: number;

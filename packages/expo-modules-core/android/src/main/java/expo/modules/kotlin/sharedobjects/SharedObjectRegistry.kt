@@ -80,6 +80,10 @@ class SharedObjectRegistry(runtimeContext: RuntimeContext) {
       js.setExternalMemoryPressure(size)
     }
 
+    if (native is SharedRef<*>) {
+      js.defineProperty("nativeRefType", native.nativeRefType)
+    }
+
     val jsWeakObject = js.createWeak()
     synchronized(this) {
       pairs[id] = native to jsWeakObject

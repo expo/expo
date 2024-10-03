@@ -3,6 +3,10 @@
 import ExpoModulesCore
 
 internal final class Image: SharedRef<UIImage> {
+  override var nativeRefType: String {
+    "image"
+  }
+
   var isAnimated: Bool {
     return !(ref.images?.isEmpty ?? true)
   }

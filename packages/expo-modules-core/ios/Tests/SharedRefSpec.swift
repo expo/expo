@@ -37,10 +37,25 @@ final class SharedRefSpec: ExpoSpec {
       expect(result.kind) == .string
       expect(try result.asString()) == sharedDataString
     }
+    
+    it("has native ref type") {
+      let result = try runtime.eval("expo.modules.FirstModule.createSharedString().nativeRefType")
+      
+      expect(result.kind) == .string
+      expect(try result.asString()) == "string"
+    }
   }
 }
 
 private let sharedDataString = "I can be shared among independent modules"
+
+private class SharedString: SharedRef<String> {
+  override var nativeRefType: String {
+    get {
+      "string"
+    }
+  }
+}
 
 private class FirstModule: Module {
   public func definition() -> ModuleDefinition {
@@ -48,13 +63,17 @@ private class FirstModule: Module {
       let data = Data(string.utf8)
       return SharedRef<Data>(data)
     }
+    
+    Function("createSharedString") {
+      SharedString("string")
+    }
   }
 }
 
 private class SecondModule: Module {
   public func definition() -> ModuleDefinition {
     Function("stringFromSharedData") { (data: SharedRef<Data>) -> String in
-      return String(decoding: data.pointer, as: UTF8.self)
+      return String(decoding: data.ref, as: UTF8.self)
     }
   }
 }

@@ -32,7 +32,7 @@ public final class ClassDefinition: ObjectDefinition {
     self.name = name
     self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionDefinition
     self.associatedType = ~AssociatedObject.self
-    self.isSharedRef = AssociatedObject.self is SharedRefAssociatedObject.Type
+    self.isSharedRef = AssociatedObject.self is AnySharedRef.Type
 
     // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
@@ -108,12 +108,6 @@ extension JavaScriptObject: ClassAssociatedObject, AnyArgument, AnyJavaScriptVal
   }
 }
 extension SharedObject: ClassAssociatedObject {}
-
-/**
- A protocol that allows us to detect `SharedRef`'s.
- */
-internal protocol SharedRefAssociatedObject {}
-extension SharedRef : SharedRefAssociatedObject {}
 
 // MARK: - Privates
 

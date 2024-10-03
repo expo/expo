@@ -1,4 +1,5 @@
 import type { NativeModule, SharedRef } from 'expo';
+import type { SharedRef as SharedRefType } from 'expo/types';
 import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
@@ -97,12 +98,19 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
    * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
    * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
    */
-  source?: ImageSource | string | number | ImageSource[] | string[] | ImageRef | null;
+  source?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
 
   /**
    * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
    */
-  placeholder?: ImageSource | string | number | ImageSource[] | string[] | ImageRef | null;
+  placeholder?:
+    | ImageSource
+    | string
+    | number
+    | ImageSource[]
+    | string[]
+    | SharedRefType<'image'>
+    | null;
 
   /**
    * Determines how the image should be resized to fit its container. This property tells the image to fill the container
@@ -347,8 +355,8 @@ export interface ImageProps extends Omit<ViewProps, 'style'> {
  */
 export interface ImageNativeProps extends ImageProps {
   style?: RNImageStyle;
-  source?: ImageSource[] | ImageRef;
-  placeholder?: ImageSource[] | ImageRef;
+  source?: ImageSource[] | SharedRefType<'image'>;
+  placeholder?: ImageSource[] | SharedRefType<'image'>;
   contentPosition?: ImageContentPositionObject;
   transition?: ImageTransition | null;
   autoplay?: boolean;
@@ -517,7 +525,7 @@ export type ImagePrefetchOptions = {
  * Instances of this class can be passed as a source to the [Image](#image) component in which case the image is rendered immediately
  * since its native representation is already available in the memory.
  */
-export declare class ImageRef extends SharedRef {
+export declare class ImageRef extends SharedRef<'image'> {
   /**
    * Logical width of the image. Multiply it by the value in the `scale` property to get the width in pixels.
    */
