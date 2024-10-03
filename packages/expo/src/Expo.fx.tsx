@@ -20,5 +20,7 @@ if (isRunningInExpoGo()) {
   ErrorUtils.setGlobalHandler(createErrorHandler(globalHandler));
 }
 
-// Register a default component and expect `registerRootComponent` to be called later and update it.
-AppRegistry.registerComponent('main', () => AppEntryNotFound);
+if (process.env.NODE_ENV !== 'production') {
+  // Register a default component and expect `registerRootComponent` to be called later and update it.
+  AppRegistry.registerComponent('main', () => AppEntryNotFound);
+}
