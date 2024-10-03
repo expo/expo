@@ -1,3 +1,5 @@
+import { fail } from 'assert';
+
 import NotificationScheduler from '../NotificationScheduler';
 import { SchedulableTriggerInputTypes, NotificationTriggerInput } from '../Notifications.types';
 import scheduleNotificationAsync from '../scheduleNotificationAsync';
@@ -73,6 +75,7 @@ it(`verifies daily trigger input validation`, async () => {
   };
   try {
     await scheduleNotificationAsync(input);
+    fail('Test should have thrown');
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`).toEqual(
@@ -115,6 +118,7 @@ it(`verifies weekly trigger input validation`, async () => {
   };
   try {
     await scheduleNotificationAsync(input);
+    fail('Test should have thrown');
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`).toEqual(
@@ -157,6 +161,7 @@ it(`verifies monthly trigger input validation`, async () => {
   };
   try {
     await scheduleNotificationAsync(input);
+    fail('Test should have thrown');
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`.indexOf('RangeError')).toEqual(0);
@@ -200,6 +205,7 @@ it(`verifies yearly trigger input validation`, async () => {
   };
   try {
     await scheduleNotificationAsync(input);
+    fail('Test should have thrown');
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`).toEqual(
