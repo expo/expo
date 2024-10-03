@@ -27,7 +27,7 @@ interface INotificationContent : Parcelable {
   val shouldUseDefaultVibrationPattern: Boolean
   val vibrationPattern: LongArray?
   val body: JSONObject?
-  val priority: NotificationPriority
+  val priority: NotificationPriority?
   val color: Number?
   val isAutoDismiss: Boolean
   val categoryId: String?
