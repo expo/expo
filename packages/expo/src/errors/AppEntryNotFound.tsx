@@ -5,7 +5,8 @@ export function AppEntryNotFound() {
     <View style={styles.container}>
       <Text style={styles.errorTitle}>App entry not found</Text>
       <Text style={styles.errorDescription}>
-        The app entry point "main" was not registered. It might be caused by an uncaught error thrown from the top-level code. See the logs from CLI for more details.
+        The app entry point "main" was not registered. It might be caused by an uncaught error
+        thrown from the top-level code. See the logs from CLI for more details.
       </Text>
     </View>
   );
