@@ -223,6 +223,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
     if (savedLocations.length === 0) {
       return null;
     }
+
     return (
       <Polyline coordinates={savedLocations} strokeWidth={3} strokeColor={Colors.light.tintColor} />
     );

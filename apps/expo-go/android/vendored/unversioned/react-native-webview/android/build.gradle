@@ -106,5 +106,5 @@ repositories {
 dependencies {
     implementation 'com.facebook.react:react-native:+'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${safeExtGet('kotlinVersion')}"
-    implementation "androidx.webkit:webkit:1.4.0"
+    implementation "androidx.webkit:webkit:${safeExtGet('webkitVersion')}"
 }

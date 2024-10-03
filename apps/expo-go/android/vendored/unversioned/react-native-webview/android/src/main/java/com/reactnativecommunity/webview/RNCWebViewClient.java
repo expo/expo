@@ -31,6 +31,8 @@ import com.reactnativecommunity.webview.events.TopLoadingFinishEvent;
 import com.reactnativecommunity.webview.events.TopLoadingStartEvent;
 import com.reactnativecommunity.webview.events.TopRenderProcessGoneEvent;
 import com.reactnativecommunity.webview.events.TopShouldStartLoadWithRequestEvent;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -54,6 +56,14 @@ public class RNCWebViewClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView webView, String url) {
         super.onPageFinished(webView, url);
+        String cookies = CookieManager.getInstance().getCookie(url);
+        if (cookies != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                CookieManager.getInstance().flush();
+            }else {
+                CookieSyncManager.getInstance().sync();
+            }
+        }
 
         if (!mLastLoadFailed) {
             RNCWebView reactWebView = (RNCWebView) webView;

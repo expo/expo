@@ -42,9 +42,9 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
              @"type": EXUpdatesNotAvailableEventType
              };
   }
-  RCTBridge *bridge = appRecord.appManager.reactBridge;
   if (appRecord.status == kEXKernelAppRecordStatusRunning) {
-    [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventName, body]];
+    RCTEventDispatcher *dispatcher = [[appRecord.appManager.reactHost moduleRegistry] moduleForName:"EventDispatcher"];
+    [dispatcher sendAppEventWithName:EXUpdatesEventName body:@[EXUpdatesEventName, body]];
   }
 }
 

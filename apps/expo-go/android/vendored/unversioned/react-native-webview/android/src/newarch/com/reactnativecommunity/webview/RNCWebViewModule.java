@@ -11,7 +11,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 
 @ReactModule(name = RNCWebViewModuleImpl.NAME)
-public class RNCWebViewModule extends NativeRNCWebViewSpec {
+public class RNCWebViewModule extends NativeRNCWebViewModuleSpec {
     final private RNCWebViewModuleImpl mRNCWebViewModuleImpl;
 
     public RNCWebViewModule(ReactApplicationContext reactContext) {

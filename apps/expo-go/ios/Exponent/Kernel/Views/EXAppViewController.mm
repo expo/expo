@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-@import UIKit;
+#import <UIKit/UIKit.h>
 
 #import "EXAbstractLoader.h"
 #import "EXAppViewController.h"
@@ -23,18 +23,13 @@
 #import "EXUtil.h"
 
 #import <EXSplashScreen/EXSplashScreenService.h>
-#import <React/RCTUtils.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
+#import <React/RCTUtils.h>
 #import <React/RCTAppearance.h>
+#import <React/RCTDevSettings.h>
 
 #import <RNScreens/RNSScreenWindowTraits.h>
-
-#import "Expo_Go-Swift.h"
-
-@import EXManifests;
-
-@import ExpoScreenOrientation;
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -289,7 +284,7 @@ NS_ASSUME_NONNULL_BEGIN
       [self _overrideUserInterfaceStyleOf:self];
       [self _overrideAppearanceModuleBehaviour];
       [self _invalidateRecoveryTimer];
-      [self.appRecord.appManager rebuildBridge];
+      [self.appRecord.appManager rebuildHost];
     });
   }
 }
@@ -603,11 +598,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-  __weak typeof(self) weakSelf = self;
+  __weak EXAppViewController *weakSelf = self;
 
   // Update after the transition ends, this ensures that the trait collection passed to didUpdateDimensionsEvent is already updated
   [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-    __strong __typeof(self) strongSelf = weakSelf;
+    __strong EXAppViewController *strongSelf = weakSelf;
 
     if (!strongSelf) {
       return;

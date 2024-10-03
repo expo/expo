@@ -10,6 +10,8 @@ NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 
 @implementation EXDevSettings
 
+@synthesize bridge = _bridge;
+
 + (NSString *)moduleName { return @"RCTDevSettings"; }
 
 - (instancetype)initWithScopeKey:(NSString *)scopeKey isDevelopment:(BOOL)isDevelopment

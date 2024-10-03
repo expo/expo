@@ -72,7 +72,7 @@
 - (void)navigateToFYI
 {
   NSURL *fyiURL = [[NSURL alloc] initWithString:@"https://expo.fyi/splash-screen-hanging"];
-  [[UIApplication sharedApplication] openURL:fyiURL];
+  [[UIApplication sharedApplication] openURL:fyiURL options:@{} completionHandler:nil];
   [_warningHud hideAnimated: YES];
 }
 

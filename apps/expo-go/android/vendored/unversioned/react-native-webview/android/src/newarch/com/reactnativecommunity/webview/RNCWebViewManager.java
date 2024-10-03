@@ -342,6 +342,9 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
     public void setAllowsInlineMediaPlayback(RNCWebViewWrapper view, boolean value) {}
 
     @Override
+    public void setAllowsPictureInPictureMediaPlayback(RNCWebViewWrapper view, boolean value) {}
+
+    @Override
     public void setAllowsAirPlayForMediaPlayback(RNCWebViewWrapper view, boolean value) {}
 
     @Override
@@ -390,6 +393,9 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
     public void setPullToRefreshEnabled(RNCWebViewWrapper view, boolean value) {}
 
     @Override
+    public void setRefreshControlLightMode(RNCWebViewWrapper view, boolean value) {}
+
+    @Override
     public void setScrollEnabled(RNCWebViewWrapper view, boolean value) {}
 
     @Override
@@ -420,7 +426,6 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
         mRNCWebViewManagerImpl.setUserAgent(view, value);
     }
 
-    // These will never be called because we use the shared impl for now
   @Override
   public void goBack(RNCWebViewWrapper view) {
     view.getWebView().goBack();
@@ -493,7 +498,6 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
   public void clearHistory(RNCWebViewWrapper view) {
       view.getWebView().clearHistory();
   }
-  // !These will never be called
 
   @Override
     protected void addEventEmitters(@NonNull ThemedReactContext reactContext, RNCWebViewWrapper view) {
@@ -532,7 +536,6 @@ public class RNCWebViewManager extends ViewGroupManager<RNCWebViewWrapper>
 
     @Override
     public void receiveCommand(@NonNull RNCWebViewWrapper reactWebView, String commandId, @Nullable ReadableArray args) {
-        mRNCWebViewManagerImpl.receiveCommand(reactWebView, commandId, args);
         super.receiveCommand(reactWebView, commandId, args);
     }
 

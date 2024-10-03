@@ -32,6 +32,8 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 
 @implementation EXStatusBarManager
 
+@synthesize bridge = _bridge;
+
 + (NSString *)moduleName { return @"RCTStatusBarManager"; }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -40,11 +42,11 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
            @"statusBarFrameWillChange"];
 }
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV 
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  [super setBridge:bridge];
+  _bridge = bridge;
   _capturedStatusBarProperties = [[self _currentStatusBarProperties] mutableCopy];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidForeground:)
