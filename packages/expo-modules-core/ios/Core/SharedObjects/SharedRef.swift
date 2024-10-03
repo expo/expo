@@ -11,11 +11,9 @@ public protocol AnySharedRef {
  */
 open class SharedRef<RefType>: SharedObject, AnySharedRef {
   public let ref: RefType
-  
+
   open var nativeRefType: String {
-    get {
-      "unknown"
-    }
+    "unknown"
   }
 
   @available(*, deprecated, renamed: "ref", message: "it has been renamed to 'ref' in Expo SDK 52")

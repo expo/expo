@@ -37,7 +37,7 @@ public final class ClassDefinition: ObjectDefinition {
     // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
     let elementsWithoutConstructors = elements.filter({ !isConstructor($0) })
-    
+
     super.init(definitions: elementsWithoutConstructors)
   }
 
