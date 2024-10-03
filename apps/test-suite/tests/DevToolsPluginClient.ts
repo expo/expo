@@ -21,13 +21,13 @@ interface TestSuiteContext {
 }
 
 export function test({ describe, expect, it, ...t }) {
-  describe('Legacy transportation', () => {
+  describe('Transportation tests', () => {
     const context: TestSuiteContext = {
       browserEchoClient: null,
       client: null,
       responsePromise: null,
     };
-    setupContext(context, t);
+    setupContext(context, t, { websocketBinaryType: 'arraybuffer' });
 
     it('should support plaintext messages', async () => {
       const message = 'Test message';
@@ -52,15 +52,6 @@ export function test({ describe, expect, it, ...t }) {
       const response = await context.responsePromise;
       expect(response).not.toEqual(payload);
     });
-  });
-
-  describe('Next transportation', () => {
-    const context: TestSuiteContext = {
-      browserEchoClient: null,
-      client: null,
-      responsePromise: null,
-    };
-    setupContext(context, t, { useTransportationNext: true, websocketBinaryType: 'arraybuffer' });
 
     it('should support plaintext messages', async () => {
       const message = 'Test message';
