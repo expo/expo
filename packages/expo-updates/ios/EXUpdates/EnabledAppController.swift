@@ -209,7 +209,8 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
       checkOnLaunch: self.config.checkOnLaunch,
       requestHeaders: self.config.requestHeaders,
       assetFilesMap: startupProcedure.assetFilesMap(),
-      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false,
+      initialContext: stateMachine.context
     )
   }
 
@@ -251,13 +252,6 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
       errorBlockArg(error)
     }
     self.stateMachine.queueExecution(stateMachineProcedure: procedure)
-  }
-
-  public func getNativeStateMachineContext(
-    success successBlockArg: @escaping (_ stateMachineContext: UpdatesStateContext) -> Void,
-    error errorBlockArg: @escaping (_ error: Exception) -> Void
-  ) {
-    successBlockArg(self.stateMachine.context)
   }
 
   public func getExtraParams(

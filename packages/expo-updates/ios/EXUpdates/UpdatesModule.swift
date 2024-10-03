@@ -142,16 +142,6 @@ public final class UpdatesModule: Module {
         promise.reject(error)
       }
     }
-
-    // Getter used internally by useUpdates()
-    // to initialize its state
-    AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
-      AppController.sharedInstance.getNativeStateMachineContext { stateMachineContext in
-        promise.resolve(stateMachineContext.json)
-      } error: { error in
-        promise.reject(error)
-      }
-    }
   }
 }
 

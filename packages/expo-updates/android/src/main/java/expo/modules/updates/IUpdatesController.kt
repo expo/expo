@@ -99,7 +99,9 @@ interface IUpdatesController {
      * or a Dev Client, which have their own controller/JS API implementations, we want the JS API
      * calls to go through.
      */
-    val shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Boolean
+    val shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Boolean,
+
+    val initialContext: UpdatesStateContext
   ) {
     fun toModuleConstantsMap(): Map<String, Any?> = mutableMapOf<String, Any?>().apply {
       this["isEmergencyLaunch"] = emergencyLaunchException != null
@@ -112,6 +114,7 @@ interface IUpdatesController {
       this["checkAutomatically"] = checkOnLaunch.toJSString()
       this["channel"] = requestHeaders["expo-channel-name"] ?: ""
       this["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
+      this["initialContext"] = initialContext.bundle
 
       if (launchedUpdate != null) {
         this["updateId"] = launchedUpdate.id.toString()
@@ -133,8 +136,6 @@ interface IUpdatesController {
   fun getConstantsForModule(): UpdatesModuleConstants
 
   fun relaunchReactApplicationForModule(callback: ModuleCallback<Unit>)
-
-  fun getNativeStateMachineContext(callback: ModuleCallback<UpdatesStateContext>)
 
   sealed class CheckForUpdateResult(private val status: Status) {
     private enum class Status {

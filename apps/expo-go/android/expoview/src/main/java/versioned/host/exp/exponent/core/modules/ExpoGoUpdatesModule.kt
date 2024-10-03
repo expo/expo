@@ -39,7 +39,8 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
           shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true,
           launchedUpdate = appLoaderLocal.launcher.launchedUpdate,
           localAssetFiles = appLoaderLocal.launcher.localAssetFiles,
-          launchDuration = appLoaderLocal.launchDuration
+          launchDuration = appLoaderLocal.launchDuration,
+          initialContext = UpdatesStateContext()
         ).toModuleConstantsMap()
       } ?: mapOf()
     }
@@ -47,12 +48,6 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     AsyncFunction("reload") { promise: Promise ->
       KernelProvider.instance.reloadVisibleExperience(manifestUrl!!, true)
       promise.resolve(null)
-    }
-
-    // Used internally by useUpdates() to get its initial state
-    AsyncFunction("getNativeStateMachineContextAsync") { promise: Promise ->
-      val context = UpdatesStateContext()
-      promise.resolve(context.bundle)
     }
 
     AsyncFunction("checkForUpdateAsync") { promise: Promise ->

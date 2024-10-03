@@ -87,7 +87,8 @@ public class DisabledAppController: InternalAppControllerInterface {
       checkOnLaunch: CheckAutomaticallyConfig.Never,
       requestHeaders: [:],
       assetFilesMap: launcher?.assetFilesMap,
-      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false,
+      initialContext: stateMachine.context
     )
   }
 
@@ -131,12 +132,5 @@ public class DisabledAppController: InternalAppControllerInterface {
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
     errorBlockArg(UpdatesDisabledException("Updates.setExtraParamAsync()"))
-  }
-
-  public func getNativeStateMachineContext(
-    success successBlockArg: @escaping (UpdatesStateContext) -> Void,
-    error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
-  ) {
-    successBlockArg(self.stateMachine.context)
   }
 }

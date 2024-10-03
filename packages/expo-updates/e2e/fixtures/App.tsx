@@ -44,7 +44,6 @@ export default function App() {
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
   const [extraParamsString, setExtraParamsString] = React.useState('');
-  const [nativeStateContextString, setNativeStateContextString] = React.useState('{}');
   const [isRollback, setIsRollback] = React.useState(false);
   const [isReloading, setIsReloading] = React.useState(false);
   const [startTime, setStartTime] = React.useState<number | null>(null);
@@ -93,11 +92,6 @@ export default function App() {
       setNumActive((n) => n - 1);
     }
   };
-
-  const handleReadNativeStateContext = runBlockAsync(async () => {
-    const state = await Updates.getNativeStateMachineContextAsync();
-    setNativeStateContextString(JSON.stringify(state));
-  });
 
   const handleSetExtraParams = runBlockAsync(async () => {
     await Updates.setExtraParamAsync('testsetnull', 'testvalue');
@@ -228,13 +222,6 @@ export default function App() {
         </Text>
       </ScrollView>
 
-      <Text>Native state context</Text>
-      <ScrollView contentContainerStyle={styles.logEntriesContainer}>
-        <Text testID="nativeStateContextString" style={styles.logEntriesText}>
-          {nativeStateContextString}
-        </Text>
-      </ScrollView>
-
       {numActive > 0 ? <ActivityIndicator testID="activity" size="small" color="#0000ff" /> : null}
       <View style={{ flexDirection: 'row' }}>
         <View>
@@ -247,7 +234,6 @@ export default function App() {
           <TestButton testID="checkForUpdate" onPress={handleCheckForUpdate} />
           <TestButton testID="downloadUpdate" onPress={handleDownloadUpdate} />
           <TestButton testID="setExtraParams" onPress={handleSetExtraParams} />
-          <TestButton testID="readNativeStateContext" onPress={handleReadNativeStateContext} />
           <TestButton
             testID="triggerParallelFetchAndDownload"
             onPress={handleCheckAndDownloadAtSameTime}

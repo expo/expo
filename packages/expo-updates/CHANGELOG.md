@@ -21,6 +21,7 @@
 - Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
 - Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
 - [cli] Disable console during runtime and fingeprint evaluation ([#31874](https://github.com/expo/expo/pull/31874) by [@wschurman](https://github.com/wschurman))
+- Refactor state machine event emitting and initial state ([#31819](https://github.com/expo/expo/pull/31819) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
