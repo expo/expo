@@ -2075,7 +2075,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated (3.15.0):
+  - RNReanimated (3.15.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2095,10 +2095,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.15.0)
-    - RNReanimated/worklets (= 3.15.0)
+    - RNReanimated/reanimated (= 3.15.4)
+    - RNReanimated/worklets (= 3.15.4)
     - Yoga
-  - RNReanimated/reanimated (3.15.0):
+  - RNReanimated/reanimated (3.15.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2119,7 +2119,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.15.0):
+  - RNReanimated/worklets (3.15.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2900,7 +2900,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: cd42eda5f315fc320f0b359413bd598957f7e601
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: 6dfe7692a191ee224748964127114edf057a1475
-  RNReanimated: fcf3bcecd669832b71f2a4cad6e9ac881d34eced
+  RNReanimated: 97db82e83543c0b68233132ae87cfa033a89b7a8
   RNScreens: 19719a9c326e925498ac3b2d35c4e50fe87afc06
   RNSVG: 4590aa95758149fa27c5c83e54a6a466349a1688
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
