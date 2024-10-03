@@ -8,6 +8,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
 
 Android, iOS, and the web have different capabilities. In our case, both Android and iOS can capture a screenshot with the `react-native-view-shot` library. However, web browsers cannot.
 
@@ -186,9 +187,9 @@ const styles = StyleSheet.create({
 });
 ```
 
-<Collapsible summary="Fix dom-to-image TypeScript module error">
+<Collapsible summary={<>Fix <CODE>dom-to-image</CODE> TypeScript module error</>}>
 
-We need to add a type definition after importing the `domtoimage` library since we're using TypeScript. We can do this by creating a file types.d.ts in the root of our project directory and adding the declaration statement:
+We need to add a type definition after importing the `domtoimage` library since we're using TypeScript. We can do this by creating a file **types.d.ts** in the root of our project directory and adding the declaration statement:
 
 ```tsx types.d.ts
 declare module 'dom-to-image';

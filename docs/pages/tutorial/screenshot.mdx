@@ -7,6 +7,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
 
 In this chapter, we'll learn how to take a screenshot using a third-party library and save it on the device's media library. We'll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) to take a screenshot and [`expo-media-library`](/versions/latest/sdk/media-library/) to save an image on device's media library.
 
@@ -242,8 +243,16 @@ Now, choose a photo and add a sticker in the app. Then tap the "Save" button. We
 <ProgressTracker
   currentChapterIndex={6}
   name="GET_STARTED"
-  summary="We've successfully used react-native-view-shot and expo-media-library to capture a screenshot and save it on the device's library."
-  nextChapterDescription="In the next chapter, let's learn how to handle the differences between mobile and web platforms to implement the same functionality on web."
-  nextChapterTitle="Handle platform differences"
-  nextChapterLink="/tutorial/platform-differences"
+  summary={
+    <>
+
+        We've successfully used <CODE>react-native-view-shot</CODE> and <CODE>expo-media-library</CODE> to capture a
+        screenshot and save it on the device's library.
+    </>
+
+}
+nextChapterDescription="In the next chapter, let's learn how to handle the differences between mobile and web
+platforms to implement the same functionality on web."
+nextChapterTitle="Handle platform differences"
+nextChapterLink="/tutorial/platform-differences"
 />

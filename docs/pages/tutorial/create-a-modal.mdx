@@ -36,7 +36,7 @@ const PlaceholderImage = require('../../assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
-  /* @info Create a state variable inside the <CODE>Index</CODE> component. */
+  /* @tutinfo Create a state variable inside the <CODE>Index</CODE> component. */
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   /* @end */
 
@@ -49,7 +49,7 @@ export default function Index() {
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
-      /* @info After selecting the image, set the app options to true. */
+      /* @tutinfo After selecting the image, set the app options to true. */
       setShowAppOptions(true);
       /* @end */
     } else {
@@ -62,18 +62,18 @@ export default function Index() {
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
-      /* @info Based on the value of <CODE>showAppOptions</CODE>, the buttons will be displayed. Also, move the existing buttons in the conditional operator block. */
+      /* @tutinfo Based on the value of <CODE>showAppOptions</CODE>, the buttons will be displayed. Also, move the existing buttons in the conditional operator block. */
       {showAppOptions ? (
         <View />
       /* @end */
       ) : (
         <View style={styles.footerContainer}>
           <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
-          /* @info Replace the <CODE>alert()</CODE> with the <CODE>onPress</CODE>.*/
+          /* @tutinfo Replace the <CODE>alert()</CODE> with the <CODE>onPress</CODE>.*/
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
           /* @end */
         </View>
-      /* @info */)}/* @end */
+      /* @tutinfo */)}/* @end */
     </View>
   );
 }
@@ -100,7 +100,7 @@ Now, we can remove the `alert` on the `Button` component and update the `onPress
 
 {/* prettier-ignore */}
 ```tsx components/Button.tsx
-<Pressable style={styles.button} /* @info Replace the <CODE>alert()</CODE> with the <CODE>onPress</CODE>.*/ onPress={onPress}/* @end */ >
+<Pressable style={styles.button} /* @tutinfo Replace the <CODE>alert()</CODE> with the <CODE>onPress</CODE>.*/ onPress={onPress}/* @end */ >
 ```
 
 </Step>
@@ -211,7 +211,7 @@ import { useState } from 'react';
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
-/* @info Import <CODE>IconButton</CODE> and <CODE>CircleButton</CODE> components.*/
+/* @tutinfo Import <CODE>IconButton</CODE> and <CODE>CircleButton</CODE> components.*/
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 /* @end */
@@ -237,7 +237,7 @@ export default function Index() {
     }
   };
 
-  /* @info Add placeholder functions that we will add logic for in the next sections. */
+  /* @tutinfo Add placeholder functions that we will add logic for in the next sections. */
   const onReset = () => {
     setShowAppOptions(false);
   };
@@ -257,7 +257,7 @@ export default function Index() {
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
       {showAppOptions ? (
-        /* @info Replace empty <CODE>View</CODE> component with this snippet to display App option buttons. */
+        /* @tutinfo Replace empty <CODE>View</CODE> component with this snippet to display App option buttons. */
         <View style={styles.optionsContainer}>
           <View style={styles.optionsRow}>
             <IconButton icon="refresh" label="Reset" onPress={onReset} />
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     flex: 1 / 3,
     alignItems: 'center',
   },
-  /* @info Add styles for the new <CODE>View</CODE> components. */
+  /* @tutinfo Add styles for the new <CODE>View</CODE> components. */
   optionsContainer: {
     position: 'absolute',
     bottom: 80,
@@ -318,7 +318,7 @@ Let's take a look at our app on Android, iOS and the web:
 
 The modal allows the user to choose an emoji from a list of available emoji. Create an **EmojiPicker.tsx** file inside the **components** directory. This component accepts three props:
 
-- `isVisible`: a boolean determining the state of the modal's visibility.
+- `isVisible`: a boolean to determine the state of the modal's visibility.
 - `onClose`: a function to close the modal.
 - `children`: used later to display a list of emoji.
 
@@ -387,7 +387,7 @@ Let's learn what the above code does:
 The next step is to add the corresponding styles for the `<EmojiPicker>` component:
 
 {/* prettier-ignore */}
-```jsx EmojiPicker.js
+```jsx components/EmojiPicker.tsx
 const styles = StyleSheet.create({
   modalContent: {
     height: '25%',
@@ -433,7 +433,7 @@ import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
-/* @info import the <CODE>EmojiPicker</CODE> component. */
+/* @tutinfo import the <CODE>EmojiPicker</CODE> component. */
 import EmojiPicker from '@/components/EmojiPicker';
 /* @end */
 
@@ -442,7 +442,7 @@ const PlaceholderImage = require('../../assets/images/background-image.png');
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
-  /* @info Create a state variable. */
+  /* @tutinfo Create a state variable. */
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   /* @end */
 
@@ -465,7 +465,7 @@ export default function Index() {
     setShowAppOptions(false);
   };
 
-  /* @info Update functions to control the modal's visibility.*/
+  /* @tutinfo Update functions to control the modal's visibility.*/
   const onAddSticker = () => {
     setIsModalVisible(true);
   };
@@ -498,7 +498,7 @@ export default function Index() {
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
         </View>
       )}
-      /* @info Render the <CODE>EmojiPicker</CODE> component at the bottom of the <CODE>Index</CODE> component. */
+      /* @tutinfo Render the <CODE>EmojiPicker</CODE> component at the bottom of the <CODE>Index</CODE> component. */
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         {/* A list of emoji component will go here */}
       </EmojiPicker>
@@ -625,7 +625,7 @@ import ImageViewer from '@/components/ImageViewer';
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 import EmojiPicker from '@/components/EmojiPicker';
-/* @info Import the <CODE>EmojiList</CODE> component. */
+/* @tutinfo Import the <CODE>EmojiList</CODE> component. */
 import EmojiList from '@/components/EmojiList';
 /* @end */
 
@@ -635,7 +635,7 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  /* @info Define a state variable. */
+  /* @tutinfo Define a state variable. */
   const [pickedEmoji, setPickedEmoji] = useState<string | undefined>(undefined);
   /* @end */
 
@@ -690,7 +690,7 @@ export default function Index() {
         </View>
       )}
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
-        /* @info Render the <CODE>EmojiList</CODE> component inside the <CODE>EmojiPicker</CODE> component. */
+        /* @tutinfo Render the <CODE>EmojiList</CODE> component inside the <CODE>EmojiPicker</CODE> component. */
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
         /* @end */
       </EmojiPicker>
@@ -777,7 +777,7 @@ import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
-/* @info Import the <CODE>EmojiSticker</CODE> component. */
+/* @tutinfo Import the <CODE>EmojiSticker</CODE> component. */
 import EmojiSticker from '@/components/EmojiSticker';
 /* @end */
 
@@ -824,7 +824,7 @@ export default function Index() {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
-        /* @info Add this line to display the emoji sticker on the image. */
+        /* @tutinfo Add this line to display the emoji sticker on the image. */
         {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
         /* @end */
       </View>

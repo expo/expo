@@ -15,15 +15,37 @@ In this chapter, we'll address some app details before deploying our app to an a
 
 ## Configure the status bar
 
-[`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `<StatusBar>` component to configure the app's status bar by changing the text color, background color, making it translucent, and so on.
+[`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `setStatusBarStyle()` method to configure the app's status bar text color.
 
-Inside **app/(tabs)/index.tsx**:
+Inside **app/\_layout.tsx**:
 
-1. Import `StatusBar` from `expo-status-bar`.
-2. Mount the `<StatusBar>` component inside the `Index` component.
+1. Import `setStatusBarStyle` from `expo-status-bar` and `useEffect` from React.
+2. Add the `useEffect` hook to set the status bar style to `light` when the app loads.
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx app/_layout.tsx
+import { Stack } from "expo-router";
+/* @tutinfo */
+import { setStatusBarStyle } from "expo-status-bar";
+import { useEffect } from "react";
+/* @end */
+
+export default function RootLayout() {
+  /* @tutinfo Add the <CODE>useEffect</CODE> hook to set the status bar style to <CODE>light</CODE> when the app loads. */
+  useEffect(() => {
+    setTimeout(() => {
+      setStatusBarStyle("light");
+    }, 0);
+  }, []);
+  /* @end */
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
+
 // ...rest of the import statements remain same
 import { StatusBar } from 'expo-status-bar';
 
