@@ -198,7 +198,7 @@ public final class ImageModule: Module {
       Property("width", \.ref.size.width)
       Property("height", \.ref.size.height)
       Property("scale", \.ref.scale)
-      Property("isAnimated", \.ref.sd_isAnimated)
+      Property("isAnimated", \.isAnimated)
       Property("mediaType") { image in
         return imageFormatToMediaType(image.ref.sd_imageFormat)
       }
