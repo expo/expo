@@ -43,19 +43,6 @@ class ClassComponentBuilder<SharedObjectType : Any>(
         }
     }
 
-    if (isSharedRef) {
-      if (properties.contains("nativeRefType")) {
-        throw IllegalArgumentException("'nativeRefType' is a reserved property name for SharedRef")
-      }
-
-      properties["nativeRefType"] = PropertyComponentBuilderWithThis<SharedRef<*>>(ownerType.kType, "nativeRefType")
-        .also {
-          it.get { owner ->
-            owner.nativeRefType
-          }
-        }
-    }
-
     val objectData = buildObject()
     objectData.functions.forEach {
       it.ownerType = ownerType.kType

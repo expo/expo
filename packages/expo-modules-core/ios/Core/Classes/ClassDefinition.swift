@@ -36,14 +36,7 @@ public final class ClassDefinition: ObjectDefinition {
 
     // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
-    var elementsWithoutConstructors = elements.filter({ !isConstructor($0) })
-    if (isSharedRef) {
-      elementsWithoutConstructors.append(
-        PropertyDefinition<AssociatedObject>(name: "nativeRefType", getter: { (owner: AssociatedObject) -> String in
-          return (owner as! AnySharedRef).nativeRefType
-        })
-      )
-    }
+    let elementsWithoutConstructors = elements.filter({ !isConstructor($0) })
     
     super.init(definitions: elementsWithoutConstructors)
   }

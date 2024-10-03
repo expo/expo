@@ -39,7 +39,7 @@ final class SharedRefSpec: ExpoSpec {
     }
     
     it("has native ref type") {
-      let result = try runtime.eval("(new expo.modules.FirstModule.SharedString()).nativeRefType")
+      let result = try runtime.eval("expo.modules.FirstModule.createSharedString().nativeRefType")
       
       expect(result.kind) == .string
       expect(try result.asString()) == "string"
@@ -64,10 +64,8 @@ private class FirstModule: Module {
       return SharedRef<Data>(data)
     }
     
-    Class(SharedString.self) {
-      Constructor {
-        SharedString("string")
-      }
+    Function("createSharedString") {
+      SharedString("string")
     }
   }
 }

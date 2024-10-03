@@ -50,14 +50,12 @@ class SharedRefTest {
   fun has_native_ref_type() = withJSIInterop(
     inlineModule {
       Name("TestModule")
-      Class("SharedString", SharedString::class) {
-        Constructor {
-          SharedString("shared string")
-        }
+      Function("create") {
+        SharedString("shared string")
       }
     }
   ) {
-    val nativeRefType = evaluateScript("(new expo.modules.TestModule.SharedString()).nativeRefType").getString()
+    val nativeRefType = evaluateScript("expo.modules.TestModule.create().nativeRefType").getString()
     Truth.assertThat(nativeRefType).isEqualTo("string")
   }
 }
