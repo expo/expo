@@ -109,6 +109,32 @@ export function replaceSlashCommentsWithAnnotations(value: string) {
     );
 }
 
+export function replaceSlashCommentsWithAnnotationsForTutorial(value: string) {
+  return value
+    .replace(
+      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @tutinfo (.*?)\*\/[\n\r\s]*<\/span>\s*/g,
+      (match, type, beforeWhitespace, content) => {
+        return content
+          ? `${beforeWhitespace}<span class="tutorial-code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+              content
+            )}">`
+          : `${beforeWhitespace}<span class="tutorial-code-annotation">`;
+      }
+    )
+    .replace(
+      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @hide (.*?)\*\/([\n\r\s]*)<\/span>\s*/g,
+      (match, type, beforeWhitespace, content, afterWhitespace) => {
+        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${beforeWhitespace}${escapeHtml(
+          content
+        )}${afterWhitespace}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+      }
+    )
+    .replace(
+      /\s*<span class="token (comment|plain-text)">[\n\r\s]*\/\* @end \*\/([\n\r\s]*)<\/span>/g,
+      (match, type, afterWhitespace) => `</span>${afterWhitespace}`
+    );
+}
+
 export function parseValue(value: string) {
   if (value.startsWith('@@@')) {
     const valueChunks = value.split('@@@');
@@ -185,7 +211,6 @@ export function getCodeData(value: string, className?: string) {
   // mdx will add the class `language-foo` to codeblocks with the tag `foo`
   // if this class is present, we want to slice out `language-`
   let lang = className && className.split('-').at(-1)?.toLowerCase();
-
   if (!lang) {
     return value;
   }
@@ -204,6 +229,8 @@ export function getCodeData(value: string, className?: string) {
     return replaceHashCommentsWithAnnotations(rawHtml);
   } else if (['xml', 'html'].includes(lang)) {
     return replaceXmlCommentsWithAnnotations(rawHtml);
+  } else if (value.includes('tut')) {
+    return replaceSlashCommentsWithAnnotationsForTutorial(rawHtml);
   } else {
     return replaceSlashCommentsWithAnnotations(rawHtml);
   }
