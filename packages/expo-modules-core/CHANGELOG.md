@@ -94,6 +94,7 @@
 - Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
 - Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
 - Removed deprecated code for react-native 0.74.0. ([#31740](https://github.com/expo/expo/pull/31740) by [@kudo](https://github.com/kudo))
+- [Android] Improve error messages when converting the `Either` type. ([#31787](https://github.com/expo/expo/pull/31787) by [@lukmccall](https://github.com/lukmccall))
 
 ### ⚠️ Notices
 
