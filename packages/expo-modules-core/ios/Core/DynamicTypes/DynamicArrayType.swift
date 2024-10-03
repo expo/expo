@@ -30,6 +30,15 @@ internal struct DynamicArrayType: AnyDynamicType {
     return [try elementType.cast(value, appContext: appContext)]
   }
 
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    if let result = result as? [Any] {
+      return try result.map({ element in
+        return try elementType.convertResult(element, appContext: appContext)
+      })
+    }
+    return result
+  }
+
   var description: String {
     "[\(elementType.description)]"
   }
