@@ -6,15 +6,15 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.WritableMap
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
+import expo.modules.updates.events.IUpdatesEventManager
+import expo.modules.updates.events.QueueUpdatesEventManager
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.logging.UpdatesLogReader
@@ -26,9 +26,7 @@ import expo.modules.updates.procedures.FetchUpdateProcedure
 import expo.modules.updates.procedures.RelaunchProcedure
 import expo.modules.updates.procedures.StartupProcedure
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
-import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
 import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
@@ -43,18 +41,19 @@ class EnabledUpdatesController(
   private val context: Context,
   private val updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
-) : IUpdatesController, UpdatesStateChangeEventSender {
+) : IUpdatesController {
   override var appContext: WeakReference<AppContext>? = null
-  override var eventEmitter: EventEmitter? = null
 
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
   private val logger = UpdatesLogger(context)
+  override val eventManager: IUpdatesEventManager = QueueUpdatesEventManager(logger)
+
   private val fileDownloader = FileDownloader(context, updatesConfiguration)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
-  private val stateMachine = UpdatesStateMachine(context, this, UpdatesStateValue.entries.toSet())
+  private val stateMachine = UpdatesStateMachine(context, eventManager, UpdatesStateValue.entries.toSet())
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
@@ -70,18 +69,11 @@ class EnabledUpdatesController(
   private var startupStartTimeMillis: Long? = null
   private var startupEndTimeMillis: Long? = null
 
-  override var shouldEmitJsEvents = false
-    set(value) {
-      field = value
-      UpdatesUtils.sendQueuedEventsToAppContext(value, appContext, logger)
-    }
-
   @Synchronized
   private fun onStartupProcedureFinished() {
     isStartupFinished = true
     startupEndTimeMillis = System.currentTimeMillis()
     (this@EnabledUpdatesController as java.lang.Object).notify()
-    UpdatesUtils.sendQueuedEventsToAppContext(shouldEmitJsEvents, appContext, logger)
   }
 
   private val startupProcedure = StartupProcedure(
@@ -172,14 +164,6 @@ class EnabledUpdatesController(
       callback
     )
     stateMachine.queueExecution(procedure)
-  }
-
-  override fun sendUpdateStateChangeEventToAppContext(eventType: UpdatesStateEventType, context: UpdatesStateContext) {
-    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
-  }
-
-  private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEvent(eventEmitter, shouldEmitJsEvents, logger, eventName, eventType, params)
   }
 
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
