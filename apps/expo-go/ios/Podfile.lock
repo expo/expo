@@ -1697,7 +1697,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-maps (1.14.0):
+  - react-native-maps (1.18.0):
     - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
