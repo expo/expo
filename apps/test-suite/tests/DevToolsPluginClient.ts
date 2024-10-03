@@ -46,30 +46,6 @@ export function test({ describe, expect, it, ...t }) {
       expect(response).toEqual(json);
     });
 
-    it('should be known to not support binary payload', async () => {
-      const payload = new Uint8Array([0x01, 0x02, 0x03]);
-      context.client.sendMessage(METHOD_PING, payload);
-      const response = await context.responsePromise;
-      expect(response).not.toEqual(payload);
-    });
-
-    it('should support plaintext messages', async () => {
-      const message = 'Test message';
-      context.client.sendMessage(METHOD_PING, message);
-      const response = await context.responsePromise;
-      expect(response).toEqual(message);
-    });
-
-    it('should support object payload', async () => {
-      const json = {
-        foo: 'foo',
-        bar: 'bar',
-      };
-      context.client.sendMessage(METHOD_PING, json);
-      const response = await context.responsePromise;
-      expect(response).toEqual(json);
-    });
-
     it('should support binary payload', async () => {
       const payload = new Uint8Array([0x01, 0x02, 0x03]);
       context.client.sendMessage(METHOD_PING, payload);
