@@ -2409,7 +2409,7 @@ PODS:
     - Yoga
   - RNFlashList (1.6.4):
     - React-Core
-  - RNGestureHandler (2.18.1):
+  - RNGestureHandler (2.20.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3320,7 +3320,7 @@ SPEC CHECKSUMS:
   RNCPicker: 7973f617de8809ab9e7577b93ce23d3449fb1ec7
   RNDateTimePicker: 00f430c6e77e6d9723954a5b5a820644d4b488a2
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
-  RNGestureHandler: f769e1b9057085db07546aa3e259daa85c898dc7
+  RNGestureHandler: c374c750a0a9bacd95f5c740d146ab9428549d6b
   RNReanimated: b3d406ee69af6972be20715d972b45d713aad400
   RNScreens: de6e57426ba0e6cbc3fb5b4f496e7f08cb2773c2
   RNSVG: 515aaaaef804aade0f285d7fc9514da8f7f0e11f

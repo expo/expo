@@ -35,6 +35,11 @@ internal struct DynamicOptionalType: AnyDynamicType {
     return try wrappedType.cast(value, appContext: appContext)
   }
 
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    // Delegate the conversion to the wrapped type
+    return try wrappedType.convertResult(result, appContext: appContext)
+  }
+
   var description: String {
     "\(wrappedType)?"
   }

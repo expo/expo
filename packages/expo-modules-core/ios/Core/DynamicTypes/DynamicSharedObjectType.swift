@@ -58,6 +58,26 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
     throw NativeSharedObjectNotFoundException()
   }
 
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    // If the result is a native shared object, create its JS representation and add the pair to the registry of shared objects.
+    if let sharedObject = result as? SharedObject {
+      // If the JS object already exists, just return it.
+      if let jsObject = sharedObject.getJavaScriptObject() {
+        return jsObject
+      }
+      guard let jsObject = try? appContext.newObject(nativeClassId: typeIdentifier) else {
+        log.warn("Unable to create a JS object for \(description)")
+        return Optional<Any>.none as Any
+      }
+
+      // Add newly created objects to the registry.
+      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject)
+
+      return jsObject
+    }
+    return result
+  }
+
   var description: String {
     return "SharedObject<\(innerType)>"
   }
