@@ -118,7 +118,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         this[UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY] = 60000
       }
       this[UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders
-      this[UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY] = "exposdk:${Constants.TEMPORARY_SDK_VERSION}"
+      this[UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY] = "exposdk:${Constants.SDK_VERSION}"
       // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates from the multipart manifest response part
       this[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE] = context.assets.open("expo-root.pem").readBytes().decodeToString()
       this[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_METADATA] = mapOf(
@@ -132,7 +132,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     }.toMap()
 
     val configuration = UpdatesConfiguration(null, configMap)
-    val sdkVersionsList = (Constants.SDK_VERSIONS_LIST + listOf(RNObject.UNVERSIONED)).flatMap {
+    val sdkVersionsList = listOf(Constants.SDK_VERSION, RNObject.UNVERSIONED).flatMap {
       listOf(it, "exposdk:$it")
     }
     val selectionPolicy = SelectionPolicy(
@@ -307,7 +307,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
         headers["Exponent-SDK-Version"] = "UNVERSIONED"
       } else {
-        headers["Exponent-SDK-Version"] = Constants.SDK_VERSIONS
+        headers["Exponent-SDK-Version"] = Constants.SDK_VERSION
       }
       return headers
     }
@@ -326,10 +326,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     if (RNObject.UNVERSIONED == sdkVersion) {
       return true
     }
-    for (version in Constants.SDK_VERSIONS_LIST) {
-      if (version == sdkVersion) {
-        return true
-      }
+    if (Constants.SDK_VERSION == sdkVersion) {
+      return true
     }
     return false
   }
@@ -340,7 +338,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       errorJson.put("message", "Invalid SDK version")
       if (sdkVersion == null) {
         errorJson.put("errorCode", "NO_SDK_VERSION_SPECIFIED")
-      } else if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSIONS_LIST[0])) {
+      } else if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSION)) {
         errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_TOO_NEW")
       } else {
         errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED")
