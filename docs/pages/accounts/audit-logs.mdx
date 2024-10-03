@@ -1,0 +1,79 @@
+---
+title: Audit logs
+description: Learn how to track and analyze your account's activities by using the audit logs.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** Audit logs are available for [Enterprise plan](https://expo.dev/pricing) customers.
+
+Audit logs record actions made with Expo Application Services (EAS) by accounts. Recorded data includes information about the affected entities, the type of modification made to them, who performed the action, and when the activity occurred.
+
+Since audit logs can only be created and never modified or deleted, they serve as a source of truth to help monitor events and debug issues occurring within accounts.
+
+**Audit logs are available to Enterprise plan customers**. When subscribed, some of the logs used internally by Expo are immediately available, while other types of logs are starting to be collected after the subscription is activated.
+
+Audit logs are stored for 1.5 years. In case an account is deleted, its audit logs will be deleted no later than 90 days after.
+
+To access them, go to **Account settings** > [**Audit logs**](https://expo.dev/accounts/[account]/settings/audit-logs).
+
+<ContentSpotlight
+  alt="Screenshot showing the audit logs page for an account."
+  src="/static/images/accounts/audit-logs.png"
+/>
+
+## Use cases
+
+### Permission monitoring
+
+Audit logs can track user invitations and permission changes within your organization. An example security event could include a compromised employee account that invites an attacker into an organization and changes their permission to [Admin](/accounts/account-types/#manage-access).
+
+In this scenario, audit logs would record which employee account invited the attacker and modified permissions. Since audit logs are immutable, the attacker would not be able to delete this recorded history. Other organization members will be able to review the audit logs to determine which account was compromised, take action to revoke the attacker's permissions and secure the employee's account.
+
+### Access history
+
+An Expo organization account can include many projects where development access is controlled by distribution certificates assigned to individual teams. When devices are granted to join these teams, it is important to track when access is granted and removed for historical record keeping. While a device may not currently be included in an Apple team, it may be useful to see who previously had access to the team in the event of an internal security incident.
+
+The Apple devices listed within Expo's team settings will only show devices that are currently registered to an account, but with the creation of audit logs, historical modifications of Apple teams and devices can be viewed.
+
+## Audit log entities
+
+While we are working on adding more entities in future, the following entities are already enabled:
+
+- Accounts
+- Android App Credentials
+- Android Keystore
+- Apple devices
+- Apple Distribution Certificate
+- Apple Provisioning Profile
+- Apple Team
+- App Store Connect API key
+- Google Service Account key
+- iOS App Credentials
+- Project
+- User Invitations
+- User Permissions
+
+### Structure
+
+Audit log entries include the following fields:
+
+| Field         | Description                                                                                               |
+| ------------- | --------------------------------------------------------------------------------------------------------- |
+| Actor         | The account actor that performed the particular action.                                                   |
+| Entity Type   | The object that was modified with the one of the modification types &mdash; `CREATE`, `UPDATE`, `DELETE`. |
+| Mutation Type | The type of modification, `CREATE`, `UPDATE`, `DELETE`.                                                   |
+| Created At    | When the particular action was performed.                                                                 |
+
+Additionally, clicking on an Audit log row, you can view the metadata relevant to that log.
+
+<ContentSpotlight
+  alt="Screenshot showing the details drawer for an audit log."
+  src="/static/images/accounts/audit-logs-details.png"
+/>
+
+## Export
+
+Audit logs can be exported in the following file formats: CSV, JSON, and JSONL from the page in **Account settings** > [**Audit logs**](https://expo.dev/accounts/[account]/settings/audit-logs).
+
+Export is available with a time range of up to 30 days. The exported file will include all the fields shown on the Audit logs page except for the **Message** field.
