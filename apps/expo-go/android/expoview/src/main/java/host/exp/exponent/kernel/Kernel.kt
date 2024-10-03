@@ -689,7 +689,7 @@ class Kernel : KernelInterface() {
             }
           }
 
-          override fun updateStatus(status: AppLoaderStatus) {
+          override fun updateStatus(status: AppLoaderStatus?) {
             if (optimisticActivity != null) {
               optimisticActivity!!.setLoadingProgressStatusIfEnabled(status)
             }
