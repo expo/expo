@@ -2,10 +2,9 @@ require_relative './podfile_helpers.rb'
 require_relative '../../../react-native-lab/react-native/packages/react-native/scripts/react_native_pods'
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
-install! 'cocoapods',
-         :generate_multiple_pod_projects => true,
-         :incremental_installation => true
 platform :ios, '15.1'
+install! 'cocoapods',
+  :deterministic_uuids => false
 inhibit_all_warnings!
 
 # Disable expo-updates auto create updates resources in podspec script_phase

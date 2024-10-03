@@ -31,10 +31,6 @@ NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
-@interface EXKernel () <EXKernelAppRegistryDelegate>
-
-@end
-
 // Protocol that should be implemented by all versions of EXAppState class.
 @protocol EXAppStateProtocol
 
@@ -63,7 +59,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   if (self = [super init]) {
     // init app registry: keep track of RN bridges we are running
     _appRegistry = [[EXKernelAppRegistry alloc] init];
-    _appRegistry.delegate = self;
 
     // init service registry: classes which manage shared resources among all bridges
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
@@ -96,20 +91,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-#pragma mark - bridge registry delegate
-
-- (void)appRegistry:(EXKernelAppRegistry *)registry didRegisterAppRecord:(EXKernelAppRecord *)appRecord
-{
-  // forward to service registry
-  [_serviceRegistry appRegistry:registry didRegisterAppRecord:appRecord];
-}
-
-- (void)appRegistry:(EXKernelAppRegistry *)registry willUnregisterAppRecord:(EXKernelAppRecord *)appRecord
-{
-  // forward to service registry
-  [_serviceRegistry appRegistry:registry willUnregisterAppRecord:appRecord];
 }
 
 #pragma mark - Interfacing with JS
