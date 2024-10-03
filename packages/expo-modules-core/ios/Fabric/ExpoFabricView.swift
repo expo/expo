@@ -123,9 +123,8 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    */
   @objc
   public static func shouldBeRecycled() -> Bool {
-    // Turn off recycling for Expo views by default.
-    // We don't think there is any benefit of recycling – it may lead to more bugs than gains.
-    // Module authors can override this function if they want to change the behavior.
+    // Turn off recycling for Expo views. We don't think there is any benefit of recycling – it may lead to more bugs than gains.
+    // TODO: Make it possible to override this behavior for particular views
     return false
   }
 
