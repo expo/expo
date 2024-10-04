@@ -26,6 +26,7 @@
 - Make `babel-plugin-react-compiler` an optional peer dependency. ([#30960](https://github.com/expo/expo/pull/30960) by [@EvanBacon](https://github.com/EvanBacon))
 - Changed the react client reference collection property to be a string. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed DOM components bundling issues for Android emulators and release builds. ([#30974](https://github.com/expo/expo/pull/30974) by [@kudo](https://github.com/kudo))
+- Allows type exports in DOM components. ([#31855](https://github.com/expo/expo/pull/31855) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 
