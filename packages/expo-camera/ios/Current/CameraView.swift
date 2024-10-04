@@ -569,7 +569,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
           self.setVideoOptions(options: options, for: connection, promise: promise)
 
           if connection.isVideoOrientationSupported && self.mirror {
-            connection.preferredVideoStabilizationMode = .auto
             connection.isVideoMirrored = self.mirror
           }
         }
