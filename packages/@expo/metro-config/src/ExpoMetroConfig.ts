@@ -141,6 +141,7 @@ function createStableModuleIdFactory(root: string): (path: string) => number {
   return (modulePath: string, context?: { platform: string; environment?: string }): number => {
     // Helps find missing parts to the patch.
     if (!context?.platform) {
+      // context = { platform: 'web' };
       throw new Error('createStableModuleIdFactory: `context.platform` is required');
     }
 

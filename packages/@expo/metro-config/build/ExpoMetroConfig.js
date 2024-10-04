@@ -124,6 +124,7 @@ function createStableModuleIdFactory(root) {
     return (modulePath, context) => {
         // Helps find missing parts to the patch.
         if (!context?.platform) {
+            // context = { platform: 'web' };
             throw new Error('createStableModuleIdFactory: `context.platform` is required');
         }
         const env = context.environment ?? 'client';

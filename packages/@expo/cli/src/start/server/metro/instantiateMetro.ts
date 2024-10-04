@@ -27,6 +27,7 @@ import { createJsInspectorMiddleware } from '../middleware/inspector/createJsIns
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
 import { ReadOnlyGraph } from 'metro';
+const hmrJSBundle = require('metro/src/DeltaBundler/Serializers/hmrJSBundle');
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -58,6 +59,9 @@ class LogRespectingTerminal extends Terminal {
 
 // Share one instance of Terminal for all instances of Metro.
 const terminal = new LogRespectingTerminal(process.stdout);
+
+const formatBundlingError = require('metro/src/lib/formatBundlingError');
+const RevisionNotFoundError = require('metro/src/IncrementalBundler/RevisionNotFoundError');
 
 export async function loadMetroConfigAsync(
   projectRoot: string,
@@ -286,6 +290,71 @@ export async function instantiateMetroAsync(
       (a, b) => this._createModuleId(a.path, ctx) - this._createModuleId(b.path, ctx)
     );
   };
+
+  if (hmrServer) {
+    // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs.
+    hmrServer._prepareMessage = async function (this: MetroHmrServer, group, options, changeEvent) {
+      // Fork of https://github.com/facebook/metro/blob/3b3e0aaf725cfa6907bf2c8b5fbc0da352d29efe/packages/metro/src/HmrServer.js#L327-L393
+      // with patch for `_createModuleId`.
+      const logger = !options.isInitialUpdate ? changeEvent?.logger : null;
+      try {
+        const revPromise = this._bundler.getRevision(group.revisionId);
+        if (!revPromise) {
+          return {
+            type: 'error',
+            body: formatBundlingError(new RevisionNotFoundError(group.revisionId)),
+          };
+        }
+        logger?.point('updateGraph_start');
+        const { revision, delta } = await this._bundler.updateGraph(await revPromise, false);
+        logger?.point('updateGraph_end');
+        this._clientGroups.delete(group.revisionId);
+        group.revisionId = revision.id;
+        for (const client of group.clients) {
+          client.revisionIds = client.revisionIds.filter(
+            (revisionId) => revisionId !== group.revisionId
+          );
+          client.revisionIds.push(revision.id);
+        }
+        this._clientGroups.set(group.revisionId, group);
+        logger?.point('serialize_start');
+        // NOTE(EvanBacon): This is the patch
+        const moduleIdContext = {
+          platform: revision.graph.transformOptions.platform,
+          environment: revision.graph.transformOptions.customTransformOptions?.environment,
+        };
+        const hmrUpdate = hmrJSBundle(delta, revision.graph, {
+          clientUrl: group.clientUrl,
+          // NOTE(EvanBacon): This is also the patch
+          createModuleId: (moduleId: string) => {
+            return this._createModuleId(moduleId, moduleIdContext);
+          },
+          includeAsyncPaths: group.graphOptions.lazy,
+          projectRoot: this._config.projectRoot,
+          serverRoot: this._config.server.unstable_serverRoot ?? this._config.projectRoot,
+        });
+        logger?.point('serialize_end');
+        return {
+          type: 'update',
+          body: {
+            revisionId: revision.id,
+            isInitialUpdate: options.isInitialUpdate,
+            ...hmrUpdate,
+          },
+        };
+      } catch (error: any) {
+        const formattedError = formatBundlingError(error);
+        this._config.reporter.update({
+          type: 'bundling_error',
+          error,
+        });
+        return {
+          type: 'error',
+          body: formattedError,
+        };
+      }
+    };
+  }
 
   return {
     metro,

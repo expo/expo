@@ -231,6 +231,7 @@ export const fetchRSC = (
 
   // eslint-disable-next-line no-multi-assign
   const prefetched = ((globalThis as any).__EXPO_PREFETCHED__ ||= {});
+
   // TODO: Load from on-disk on native when indicated.
   // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
   const url = getAdjustedFilePath(BASE_PATH + encodeInput(input));

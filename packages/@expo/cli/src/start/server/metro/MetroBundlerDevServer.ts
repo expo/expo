@@ -1095,15 +1095,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               deleted,
             }: {
               isInitialUpdate?: boolean;
-              added: unknown[];
-              modified: unknown[];
-              deleted: unknown[];
+              added: {
+                module: [number | string, string];
+                sourceURL: string;
+                sourceMappingURL: string;
+              }[];
+              modified: {
+                module: [number | string, string];
+                sourceURL: string;
+                sourceMappingURL: string;
+              }[];
+              deleted: (number | string)[];
             } = update;
 
             const hasUpdate = added.length || modified.length || deleted.length;
 
             // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
             if (!isInitialUpdate && hasUpdate) {
+              // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
+              if (typeof globalThis.__c === 'function') globalThis.__c();
+
               onReload();
             }
           }

@@ -78,6 +78,11 @@ declare module 'metro/src/HmrServer' {
   };
 
   export class MetroHmrServer {
+    _config: ConfigT;
+    _bundler: IncrementalBundler;
+    _clientGroups: Map<RevisionId, ClientGroup>;
+    _createModuleId: (path: string) => number | string;
+
     constructor(
       bundler: IncrementalBundler,
       createModuleId: (path: string) => number,
@@ -116,6 +121,8 @@ declare module 'metro/src/HmrServer' {
         logger?: RootPerfLogger;
       }
     ): Promise<HmrUpdateMessage | HmrErrorMessage>;
+
+    
   }
 
   export default MetroHmrServer;
