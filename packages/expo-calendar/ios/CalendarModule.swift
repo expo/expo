@@ -5,7 +5,10 @@ import EventKitUI
 
 public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
-  private var eventStore = EKEventStore()
+  private static let sharedEventStore = EKEventStore()
+  private var eventStore: EKEventStore {
+    return CalendarModule.sharedEventStore
+  }
   private var calendarDialogDelegate: CalendarDialogDelegate?
 
   // swiftlint:disable:next cyclomatic_complexity
