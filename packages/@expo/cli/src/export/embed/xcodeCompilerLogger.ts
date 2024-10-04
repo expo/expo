@@ -7,6 +7,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import { Log } from '../../log';
+
 function isPossiblyUnableToResolveError(
   error: any
 ): error is { message: string; originModulePath: string; targetModuleName: string } {
@@ -39,7 +41,9 @@ export function getXcodeCompilerErrorMessage(
   const makeFilepathAbsolute = (filepath: string) =>
     filepath.startsWith('/') ? filepath : path.join(projectRoot, filepath);
 
-  if ('message' in error) {
+  if (typeof error === 'string') {
+    return makeXcodeCompilerLog('error', error);
+  } else if ('message' in error) {
     // Metro's `UnableToResolveError`
     if (isPossiblyUnableToResolveError(error)) {
       const loc = getLineNumberForStringInFile(error.originModulePath, error.targetModuleName);
@@ -65,13 +69,23 @@ export function getXcodeCompilerErrorMessage(
   return null;
 }
 
-export function logMetroErrorInXcode(projectRoot: string, error: Error) {
+/** Log an error that can be parsed by Xcode and related build tools https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Log-errors-and-warnings-from-your-script */
+export function logMetroErrorInXcode(projectRoot: string, error: Error | string) {
   const message = getXcodeCompilerErrorMessage(projectRoot, error);
   if (message != null) {
     console.error(message);
   }
 }
 
+export function logInXcode(message: string) {
+  Log.log(makeXcodeCompilerLog('note', message));
+}
+
+export function warnInXcode(message: string) {
+  Log.warn(makeXcodeCompilerLog('warning', message));
+}
+
+// Detect running in xcode build script. This means the logs need to be formatted in a way that Xcode can parse them, it also means that the shell is not reliable or interactive.
 // https://developer.apple.com/documentation/xcode/running-custom-scripts-during-a-build#Access-script-related-files-from-environment-variables
 export function isExecutingFromXcodebuild() {
   return !!process.env.BUILT_PRODUCTS_DIR;
@@ -91,6 +105,9 @@ function makeXcodeCompilerLog(
     column?: number;
   } = {}
 ) {
+  if (!isExecutingFromXcodebuild()) {
+    return message;
+  }
   // TODO: Figure out how to support multi-line logs.
   const firstLine = message.split('\n')[0];
   if (fileName && !fileName?.includes(':')) {

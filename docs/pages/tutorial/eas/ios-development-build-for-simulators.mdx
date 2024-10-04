@@ -1,0 +1,136 @@
+---
+title: Create and run a cloud build for iOS Simulator
+sidebar_title: iOS development build for simulators
+description: Learn how to configure a development build for iOS Simulators using EAS Build.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+In this chapter, we'll create a development build that can run on an iOS Simulator with EAS Build.
+
+Development builds for iOS Simulators are generated in the **.app** format which is different from iOS devices.
+
+## Create a simulator build profile in eas.json
+
+In **eas.json**, add a new build profile called `ios-simulator` with the property [`ios.simulator`](/eas/json/#simulator) property. Set its value `true`:
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "build": {
+    "development": {
+      /* @hide ... */ /* @end */
+    },
+    /* @info The <CODE>simulator</CODE> property is required for iOS Simulator builds. */
+    "ios-simulator": {
+      "ios": {
+        "simulator": true
+      }
+    }
+    /* @end */
+  }
+}
+```
+
+For a development build, it's necessary to have the `developmentClient` and `distribution` properties defined in the profile. To avoid redundancy, we can extend the `development` profile properties:
+
+```json eas.json
+{
+  "ios-simulator": {
+      /* @info The <CODE>extends</CODE> keyword inherits properties from the <CODE>development</CODE> profile. */
+      "extends": "development",
+      /* @end */
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+## Development build for iOS Simulator
+
+<Step label="1">
+
+### Create
+
+Run the `eas build` command with `ios` as a platform and `ios-simulator` as the build profile:
+
+<Terminal cmd={['$ eas build --platform ios --profile ios-simulator']} />
+
+This command prompts us with the following questions when we create the build for the first time:
+
+- **What would you like your iOS bundle identifier to be?** Press <kbd>return</kbd> to select the default value provided for this prompt. This will add [`ios.bundleIdentifier`](/versions/latest/config/app/#package) in **app.json**.
+
+After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard:
+
+<ContentSpotlight
+  alt="iOS Simulator build details page"
+  src="/static/images/tutorial/eas/ios-sim-build.png"
+  className="max-w-[800px]"
+/>
+
+<Collapsible summary="What does a build details page contain?">
+
+The build details page displays the build type, profile, Expo SDK version, app version, build number, last commit hash, and the identity of the developer or account owner who initiated the build.
+
+In the above image, the current status of the **Build artifact** shows that the build is in progress. Upon completion, this section will offer an option to download the build. The **Logs** outlines every step taken during the iOS build process on EAS Build. For the sake of brevity, we won't explore each step in detail here. To learn more, see [iOS build process](/build-reference/ios-builds/).
+
+</Collapsible>
+
+<Collapsible summary="What is iOS bundle identifier?">
+
+The `ios.bundleIdentifier` is a unique name of our app. If we publish our app right now, the Apple App Store will use this property and its value to identify our app on the store.
+
+This notation is defined as `host.owner.app-name`. For example, our example app has `com.owner.stickersmash` where `com.owner` is the domain and `stickersmash` is our app name.
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+### Install
+
+In the terminal, once the build finishes, EAS CLI prompts us by asking whether we want to run the build on an iOS Simulator. Press <kbd>Y</kbd>.
+
+<ContentSpotlight
+  alt="EAS CLI automatically gives option to run a build on iOS Simulator"
+  src="/static/images/tutorial/eas/ios-sim-cli.png"
+  className="max-w-[480px]"
+/>
+
+<Collapsible summary="Alternate: Use Expo Orbit">
+
+You can use [Expo Orbit] to install the development build. From **Build artifact** on the Expo dashboard, click **Open with Expo Orbit** to install the development build on the iOS Simulator.
+
+</Collapsible>
+
+</Step>
+
+<Step label="3">
+
+### Run
+
+Start the development server by running the `npx expo start` command from the project directory:
+
+<Terminal cmd={['$ npx expo start']} />
+
+Press <kbd>i</kbd> in the terminal window to open the project on the iOS Simulator.
+
+</Step>
+
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={2}
+  name="EAS_TUTORIAL"
+  summary="We successfully used EAS Build to create and run development builds on iOS Simulators."
+  nextChapterDescription="In the next chapter, let's create a development build for iOS, install it on a device, and get it running."
+  nextChapterTitle="Create and run a cloud build for iOS device"
+  nextChapterLink="/tutorial/eas/ios-development-build-for-devices/"
+/>

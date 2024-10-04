@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import expo.modules.contacts.models.BaseModel
+import expo.modules.contacts.models.BirthdayModel
 import expo.modules.contacts.models.DateModel
 import expo.modules.contacts.models.EmailModel
 import expo.modules.contacts.models.ExtraNameModel
@@ -67,6 +68,7 @@ private val defaultFields = setOf(
 
 const val RC_EDIT_CONTACT = 2137
 const val RC_PICK_CONTACT = 2138
+const val RC_ADD_CONTACT = 2139
 
 // TODO: Evan: default API is confusing. Duplicate data being requested.
 private val DEFAULT_PROJECTION = listOf(
@@ -124,8 +126,8 @@ class ContactsModule : Module() {
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
 
-  private val activity: Activity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+  private val currentActivity: Activity
+    get() = appContext.throwingActivity
 
   override fun definition() = ModuleDefinition {
     Name("ExpoContacts")
@@ -223,7 +225,7 @@ class ContactsModule : Module() {
       resolver.delete(uri, null, null)
     }
 
-    AsyncFunction("shareContactAsync") { contactId: String?, subject: String?, promise: Promise ->
+    AsyncFunction("shareContactAsync") { contactId: String?, subject: String? ->
       val lookupKey = getLookupKeyForContactId(contactId) ?: throw LookupKeyNotFoundException()
 
       val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey)
@@ -232,7 +234,7 @@ class ContactsModule : Module() {
         putExtra(Intent.EXTRA_STREAM, uri)
         putExtra(Intent.EXTRA_SUBJECT, subject)
       }
-      activity.startActivity(intent)
+      currentActivity.startActivity(intent)
     }
 
     AsyncFunction("writeContactToFileAsync") { contact: Map<String, Any?> ->
@@ -243,7 +245,7 @@ class ContactsModule : Module() {
       uri.toString()
     }
 
-    AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>?, options: Map<String, Any?>?, promise: Promise ->
+    AsyncFunction("presentFormAsync") { contactId: String?, contactData: Map<String, Any>?, _: Map<String, Any?>?, promise: Promise ->
       ensureReadPermission()
 
       if (contactManipulationPromise != null) {
@@ -253,20 +255,17 @@ class ContactsModule : Module() {
       if (contactId != null) {
         val contact = getContactById(contactId, defaultFields) ?: throw ContactNotFoundException()
         presentEditForm(contact, promise)
-        return@AsyncFunction
       }
       // Create contact from supplied data.
       if (contactData != null) {
         val contact = mutateContact(null, contactData)
-        contactManipulationPromise = promise
-        presentForm(contact)
+        presentForm(contact, promise)
       }
-      promise.resolve()
     }
 
     OnActivityResult { _, payload ->
       val (requestCode, resultCode, intent) = payload
-      if (requestCode == RC_EDIT_CONTACT) {
+      if (requestCode == RC_EDIT_CONTACT || requestCode == RC_ADD_CONTACT) {
         val pendingPromise = contactManipulationPromise ?: return@OnActivityResult
 
         pendingPromise.resolve(0)
@@ -276,14 +275,12 @@ class ContactsModule : Module() {
       if (requestCode == RC_PICK_CONTACT) {
         val pendingPromise = contactPickingPromise ?: return@OnActivityResult
 
-        if (resultCode == Activity.RESULT_CANCELED) {
-          pendingPromise.resolve()
-        }
-
         if (resultCode == Activity.RESULT_OK) {
           val contactId = intent?.data?.lastPathSegment
           val contact = getContactById(contactId, defaultFields)
           pendingPromise.resolve(contact?.toMap(defaultFields))
+        } else {
+          pendingPromise.resolve()
         }
 
         contactPickingPromise = null
@@ -299,16 +296,16 @@ class ContactsModule : Module() {
       intent.setType(ContactsContract.Contacts.CONTENT_TYPE)
 
       contactPickingPromise = promise
-      activity.startActivityForResult(intent, RC_PICK_CONTACT)
+      currentActivity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
   }
 
-  private fun presentForm(contact: Contact) {
+  private fun presentForm(contact: Contact, promise: Promise) {
     val intent = Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI)
     intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getFinalDisplayName())
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.contentValues)
-    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-    activity.startActivity(intent)
+    contactManipulationPromise = promise
+    currentActivity.startActivityForResult(intent, RC_ADD_CONTACT)
   }
 
   private fun presentEditForm(contact: Contact, promise: Promise) {
@@ -319,14 +316,14 @@ class ContactsModule : Module() {
     val intent = Intent(Intent.ACTION_EDIT)
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
     contactManipulationPromise = promise
-    activity.startActivityForResult(intent, RC_EDIT_CONTACT)
+    currentActivity.startActivityForResult(intent, RC_EDIT_CONTACT)
   }
 
   private val resolver: ContentResolver
     get() = (appContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
 
-  private fun mutateContact(contact: Contact?, data: Map<String, Any>): Contact {
-    val contact = contact ?: Contact(UUID.randomUUID().toString())
+  private fun mutateContact(initContact: Contact?, data: Map<String, Any>): Contact {
+    val contact = initContact ?: Contact(UUID.randomUUID().toString())
 
     data.safeGet<String>("firstName")?.let { contact.firstName = it }
     data.safeGet<String>("middleName")?.let { contact.middleName = it }
@@ -401,6 +398,14 @@ class ContactsModule : Module() {
       contact.dates = it
     }
 
+    data["birthday"]?.takeIf { it is Map<*, *> }?.let {
+      contact.dates.add(
+        BirthdayModel().apply {
+          fromMap(it as Map<String, Any>)
+        }
+      )
+    }
+
     BaseModel.decodeList(
       data.safeGet("relationships"),
       RelationshipModel::class.java
@@ -438,10 +443,7 @@ class ContactsModule : Module() {
       null
     )?.use { cursor ->
       val contacts = loadContactsFrom(cursor)
-      val contactList = ArrayList(contacts.values)
-      if (contactList.size > 0) {
-        return contactList[0]
-      }
+      return contacts.values.firstOrNull()
     }
     return null
   }
@@ -565,11 +567,11 @@ class ContactsModule : Module() {
     pageOffset: Int,
     pageSize: Int,
     queryStrings: Array<String>?,
-    queryField: String?,
+    initQueryField: String?,
     keysToFetch: Set<String>,
     sortOrder: String?
   ): ContactPage? {
-    val queryField = queryField ?: ContactsContract.Data.CONTACT_ID
+    val queryField = initQueryField ?: ContactsContract.Data.CONTACT_ID
     val getAll = pageSize == 0
     val queryArguments = createProjectionForQuery(keysToFetch)
     val contacts: Map<String, Contact>
@@ -651,11 +653,8 @@ class ContactsModule : Module() {
       val contactId = cursor.getString(columnIndex)
 
       // add or update existing contact for iterating data based on contact id
-      if (!map.containsKey(contactId)) {
-        map[contactId] = Contact(contactId)
-      }
-      val contact = map[contactId]
-      contact!!.fromCursor(cursor)
+      val contact = map.getOrPut(contactId) { Contact(contactId) }
+      contact.fromCursor(cursor)
     }
     return map
   }

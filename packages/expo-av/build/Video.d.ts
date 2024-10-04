@@ -90,8 +90,8 @@ declare class Video extends React.Component<VideoProps, VideoState> implements P
     _nativeOnFullscreenUpdate: (event: {
         nativeEvent: VideoFullscreenUpdateEvent;
     }) => void;
-    _renderPoster: () => JSX.Element | null;
-    render(): JSX.Element;
+    _renderPoster: () => React.JSX.Element | null;
+    render(): React.JSX.Element;
 }
 export default Video;
 //# sourceMappingURL=Video.d.ts.map

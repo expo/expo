@@ -1,18 +1,15 @@
 package expo.modules.kotlin.functions
 
 import android.view.View
-import com.facebook.react.bridge.ReadableArray
 import expo.modules.BuildConfig
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.FunctionCallException
-import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
-import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.weak
 import kotlinx.coroutines.launch
 
 /**
@@ -22,43 +19,14 @@ abstract class AsyncFunction(
   name: String,
   desiredArgsTypes: Array<AnyType>
 ) : BaseAsyncFunctionComponent(name, desiredArgsTypes) {
-
-  override fun call(holder: ModuleHolder<*>, args: ReadableArray, promise: Promise) {
-    val queue = when (queue) {
-      Queues.MAIN -> holder.module.appContext.mainQueue
-      Queues.DEFAULT -> null
-    }
-
-    if (queue == null) {
-      callUserImplementation(args, promise)
-    } else {
-      queue.launch {
-        try {
-          exceptionDecorator({
-            FunctionCallException(name, holder.name, it)
-          }) {
-            callUserImplementation(args, promise)
-          }
-        } catch (e: CodedException) {
-          promise.reject(e)
-        } catch (e: Throwable) {
-          promise.reject(UnexpectedException(e))
-        }
-      }
-    }
-  }
-
-  @Throws(CodedException::class)
-  internal abstract fun callUserImplementation(args: ReadableArray, promise: Promise)
-
   internal abstract fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext)
 
-  override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
-    val appContextHolder = appContext.jsiInterop.appContextHolder
-    val moduleName = jsObject.name
+  override fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String) {
+    val appContextHolder = appContext.weak()
     jsObject.registerAsyncFunction(
       name,
       takesOwner,
+      isEnumerable,
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, promiseImpl ->
       if (BuildConfig.DEBUG) {

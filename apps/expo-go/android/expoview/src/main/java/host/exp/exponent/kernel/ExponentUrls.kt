@@ -32,7 +32,7 @@ object ExponentUrls {
     // TODO: set user agent
     val builder = Request.Builder()
       .url(urlString)
-      .header("Exponent-SDK-Version", Constants.SDK_VERSIONS)
+      .header("Exponent-SDK-Version", Constants.SDK_VERSION)
       .header("Exponent-Platform", "android")
     val versionName = ExpoViewKernel.instance.versionName
     if (versionName != null) {

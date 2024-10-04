@@ -4,11 +4,52 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Add missing `react-native` peer dependencies for isolated modules. ([#30482](https://github.com/expo/expo/pull/30482) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Fix incorrect event emitting tests. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Remove usage of deprecated internal modules API. ([#28715](https://github.com/expo/expo/pull/28715) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix pedometer sensor when app goes to background then foreground. ([#29957]https://github.com/expo/expo/pull/29957) by [@rlods](https://github.com/rlods))
+
+## 13.0.9 - 2024-06-27
+
+### 🎉 New features
+
+- [iOS] Allow excluding motion permission APIs. ([#29845](https://github.com/expo/expo/pull/29845) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 13.0.8 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `NPE` in `DeviceMotionListener`. ([#29022](https://github.com/expo/expo/pull/29022) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.0.7 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Fix crash when using `DeviceMotion` module. ([#28839](https://github.com/expo/expo/pull/28839) by [@behenate](https://github.com/behenate))
+
+## 13.0.6 — 2024-05-13
+
+### 💡 Others
+
+- Add timestamps to relevant sensor events. ([#28761](https://github.com/expo/expo/pull/28761) by [@jkaufman](https://github.com/jkaufman))
+
+## 13.0.5 — 2024-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.4 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
 
 ## 13.0.3 — 2024-04-24
 

@@ -1,3 +1,6 @@
+import { SharedRef } from 'expo';
+import type { SharedRef as SharedRefType } from 'expo/types';
+
 import {
   ImageContentFit,
   ImageContentPosition,
@@ -106,4 +109,11 @@ export function resolveTransition(
     return { duration: fadeDuration };
   }
   return transition ?? null;
+}
+
+/**
+ * Checks whether the given value is an instance of the `SharedRef<'image'>` class.
+ */
+export function isImageRef(value: any): value is SharedRefType<'image'> {
+  return value instanceof SharedRef && value.nativeRefType === 'image';
 }

@@ -23,7 +23,9 @@ open class BaseExpoAppDelegateSubscriber: UIResponder {
  Might be useful for compatibility reasons if we decide to add more things here.
  */
 @objc(EXAppDelegateSubscriberProtocol)
-public protocol ExpoAppDelegateSubscriberProtocol: UIApplicationDelegate {}
+public protocol ExpoAppDelegateSubscriberProtocol: UIApplicationDelegate {
+  @objc optional func customizeRootView(_ rootView: UIView)
+}
 
 /**
  Typealias merging the base class for app delegate subscribers and protocol inheritance to `UIApplicationDelegate`.

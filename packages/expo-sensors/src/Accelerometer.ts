@@ -20,6 +20,10 @@ export type AccelerometerMeasurement = {
    * Value of `g`s device reported in Z axis.
    */
   z: number;
+  /**
+   * Timestamp of the measurement in seconds.
+   */
+  timestamp: number;
 };
 
 export class AccelerometerSensor extends DeviceSensor<AccelerometerMeasurement> {

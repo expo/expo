@@ -1,6 +1,6 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { Orientation, OrientationChangeEvent, OrientationChangeListener, OrientationLock, PlatformOrientationInfo, WebOrientationLock, WebOrientation, SizeClassIOS, ScreenOrientationInfo } from './ScreenOrientation.types';
-export { Orientation, OrientationLock, PlatformOrientationInfo, OrientationChangeListener, OrientationChangeEvent, WebOrientationLock, WebOrientation, SizeClassIOS, ScreenOrientationInfo, Subscription, };
+export { Orientation, OrientationLock, PlatformOrientationInfo, OrientationChangeListener, OrientationChangeEvent, WebOrientationLock, WebOrientation, SizeClassIOS, ScreenOrientationInfo, EventSubscription as Subscription, };
 /**
  * Lock the screen orientation to a particular `OrientationLock`.
  * @param orientationLock The orientation lock to apply. See the [`OrientationLock`](#orientationlock)
@@ -61,7 +61,7 @@ export declare function supportsOrientationLockAsync(orientationLock: Orientatio
  * @param listener Each orientation update will pass an object with the new [`OrientationChangeEvent`](#orientationchangeevent)
  * to the listener.
  */
-export declare function addOrientationChangeListener(listener: OrientationChangeListener): Subscription;
+export declare function addOrientationChangeListener(listener: OrientationChangeListener): EventSubscription;
 /**
  * Removes all listeners subscribed to orientation change updates.
  */
@@ -72,5 +72,5 @@ export declare function removeOrientationChangeListeners(): void;
  * @param subscription A subscription object that manages the updates passed to a listener function
  * on an orientation change.
  */
-export declare function removeOrientationChangeListener(subscription: Subscription): void;
+export declare function removeOrientationChangeListener(subscription: EventSubscription): void;
 //# sourceMappingURL=ScreenOrientation.d.ts.map

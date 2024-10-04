@@ -122,6 +122,14 @@ export default {
     serverContext.clear();
   },
 
+  getLoadedFonts(): string[] {
+    if (typeof window === 'undefined') {
+      return [...serverContext.values()].map(({ name }) => name);
+    }
+    const rules = getFontFaceRules();
+    return rules.map(({ rule }) => rule.style.fontFamily);
+  },
+
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
     if (typeof window === 'undefined') {
       return !![...serverContext.values()].find((asset) => {

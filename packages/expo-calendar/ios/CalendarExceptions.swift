@@ -20,7 +20,7 @@ internal class CalendarNotSavedException: GenericException<String> {
 
 internal class EntityNotSupportedException: GenericException<String?> {
   override var reason: String {
-    "Calendar entityType \(param) is not supported"
+    "Calendar entityType \(String(describing: param)) is not supported"
   }
 }
 
@@ -56,7 +56,7 @@ internal class ReminderNotFoundException: GenericException<String> {
 
 internal class InvalidCalendarEntityException: GenericException<String?> {
   override var reason: String {
-    "Calendar entityType \(param) is not supported"
+    "Calendar entityType \(String(describing: param)) is not supported"
   }
 }
 
@@ -111,5 +111,11 @@ internal class MissingCalendarPListValueException: GenericException<String> {
 internal class MissingRemindersPListValueException: GenericException<String> {
   override var reason: String {
     "This app is missing \(param), so reminders methods will fail. Add this key to your bundle's Info.plist"
+  }
+}
+
+internal class EventDialogInProgressException: Exception {
+  override var reason: String {
+    "Different calendar dialog is already being presented. Await its result before presenting another."
   }
 }

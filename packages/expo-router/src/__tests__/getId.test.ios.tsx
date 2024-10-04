@@ -1,5 +1,5 @@
 import { RouteNode } from '../Route';
-import { generateDynamic } from '../getRoutes';
+import { generateDynamic } from '../getRoutesCore';
 import { createGetIdForRoute } from '../useScreens';
 
 function createMockRoute(routeName: string, contextKey: string, children: RouteNode[] = []) {

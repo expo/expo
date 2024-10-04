@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { LinkBase, shadows, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { TriangleDownIcon } from '@expo/styleguide-icons';
+import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon';
 import { useRouter } from 'next/compat/router';
 import {
   type ComponentType,
@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
   useEffect,
+  MouseEventHandler,
 } from 'react';
 
 import withHeadingManager, {
@@ -39,7 +40,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
     open = false,
   }: CollapsibleProps & HeadingManagerProps) => {
     // track open state so we can collapse header if it is set to open by the URL hash
-    const [isOpen, setOpen] = useState<boolean>(open);
+    const [isOpen, setIsOpen] = useState<boolean>(open);
     const router = useRouter();
 
     // HeadingManager is used to generate a slug that corresponds to the collapsible summary.
@@ -53,27 +54,34 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
         const splitUrl = router.asPath.split('#');
         const hash = splitUrl.length ? splitUrl[1] : undefined;
         if (hash && hash === heading.current.slug) {
-          setOpen(true);
+          setIsOpen(true);
         }
       }
     }, []);
 
-    function onToggle() {
-      setOpen(!isOpen);
-    }
+    const onToggle: MouseEventHandler<HTMLElement> = event => {
+      // Detect if we are clicking the PermalinkIcon. Probably a better way to do this?
+      if (event.target instanceof SVGElement) {
+        if (!isOpen) {
+          setIsOpen(true);
+        }
+      } else {
+        setIsOpen(!isOpen);
+        // Ensure that the collapsible opens nicely on the first click
+        event.preventDefault();
+      }
+    };
 
     return (
       <details id={heading.current.slug} css={detailsStyle} open={isOpen} data-testid={testID}>
-        <summary css={summaryStyle} className="group">
-          <div css={markerWrapperStyle} onClick={onToggle}>
+        <summary css={summaryStyle} className="group" onClick={onToggle}>
+          <div css={markerWrapperStyle}>
             <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
           </div>
-          <LinkBase
-            href={'#' + heading.current.slug}
-            onClick={onToggle}
-            ref={heading.current.ref}
-            className="inline-flex gap-1.5 items-center scroll-m-5 relative">
+          <span className="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative">
             <DEMI>{summary}</DEMI>
+          </span>
+          <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
             <PermalinkIcon className="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible" />
           </LinkBase>
         </summary>
@@ -147,7 +155,10 @@ const markerStyle = css({
   transform: 'rotate(-90deg)',
   transition: `transform 200ms`,
 
-  'details[open] &': { transform: 'rotate(0)' },
+  // Only rotate the icon when its direct parent 'details' is open
+  'details[open] > summary &': {
+    transform: 'rotate(0)',
+  },
 });
 
 const contentStyle = css({

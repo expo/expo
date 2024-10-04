@@ -61,6 +61,10 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("createRootView")
   }
 
+  override fun getReactDelegate(): ReactDelegate? {
+    return invokeDelegateMethod("getReactDelegate")
+  }
+
   override fun getReactNativeHost(): ReactNativeHost {
     return _reactNativeHost
   }
@@ -238,7 +242,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-    return delegate.onKeyDown(keyCode, event)
+    // if any of the handlers return true, intentionally consume the event instead of passing it
+    // through to the delegate
+    return reactActivityHandlers
+      .map { it.onKeyDown(keyCode, event) }
+      .fold(false) { accu, current -> accu || current } || delegate.onKeyDown(keyCode, event)
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
@@ -250,7 +258,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
-    return delegate.onKeyLongPress(keyCode, event)
+    // if any of the handlers return true, intentionally consume the event instead of passing it
+    // through to the delegate
+    return reactActivityHandlers
+      .map { it.onKeyLongPress(keyCode, event) }
+      .fold(false) { accu, current -> accu || current } || delegate.onKeyLongPress(keyCode, event)
   }
 
   override fun onBackPressed(): Boolean {

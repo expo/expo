@@ -1,3 +1,4 @@
+import type { ExpoConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
@@ -23,6 +24,7 @@ const debug = require('debug')('expo:init:template') as typeof console.log;
 
 const isMacOS = process.platform === 'darwin';
 
+// keep this list in sync with the validation helper in WWW: src/utils/experienceParser.ts
 const FORBIDDEN_NAMES = [
   'react-native',
   'react',
@@ -53,21 +55,28 @@ function deepMerge(target: any, source: any) {
   return target;
 }
 
+function coerceUrl(urlString: string) {
+  try {
+    return new URL(urlString);
+  } catch (e) {
+    if (!/^(https?:\/\/)/.test(urlString)) {
+      return new URL(`https://${urlString}`);
+    }
+    throw e;
+  }
+}
+
 export function resolvePackageModuleId(moduleId: string) {
   if (
     // Supports github repository URLs
-    moduleId.startsWith('https://github.com')
+    /^(https?:\/\/)?github\.com\//.test(moduleId)
   ) {
     try {
-      const uri = new URL(moduleId);
+      const uri = coerceUrl(moduleId);
       debug('Resolved moduleId to repository path:', moduleId);
       return { type: 'repository', uri } as const;
-    } catch (error: any) {
-      if (error.code === 'ERR_INVALID_URL') {
-        throw new Error(`Invalid URL: "${moduleId}" provided`);
-      } else {
-        throw error;
-      }
+    } catch {
+      throw new Error(`Invalid URL: "${moduleId}" provided`);
     }
   }
 
@@ -102,7 +111,7 @@ export async function extractAndPrepareTemplateAppAsync(
 
   debug(`Extracting template app (pkg: ${npmPackage}, projectName: ${projectName})`);
 
-  const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-blank');
+  const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-default');
 
   if (type === 'repository') {
     await downloadAndExtractGitHubRepositoryAsync(uri, {
@@ -297,25 +306,25 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
     await fs.promises.copyFile(templatePath, ignorePath);
   }
 
-  const config: Record<string, any> = {
-    expo: {
-      name: projectName,
-      slug: projectName,
-    },
+  const defaultConfig: ExpoConfig = {
+    name: projectName,
+    slug: projectName,
   };
 
-  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {
-    default: { expo: {} },
-  });
-  const appJson = deepMerge(await appFile.readAsync(), config);
-  await appFile.writeAsync(appJson);
+  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), { default: {} });
+  const appContent = (await appFile.readAsync()) as ExpoConfig | Record<'expo', ExpoConfig>;
+  const appJson = deepMerge(
+    appContent,
+    'expo' in appContent ? { expo: defaultConfig } : defaultConfig
+  );
 
+  await appFile.writeAsync(appJson);
   debug(`Created app.json:\n%O`, appJson);
 
   const packageFile = new JsonFile(path.join(projectRoot, 'package.json'));
   const packageJson = await packageFile.readAsync();
   // name and version are required for yarn workspaces (monorepos)
-  const inputName = 'name' in config ? config.name : config.expo.name;
+  const inputName = 'name' in appJson ? appJson.name : appJson.expo.name;
   packageJson.name = applyKnownNpmPackageNameRules(inputName) || 'app';
   // These are metadata fields related to the template package, let's remove them from the package.json.
   // A good place to start
@@ -324,6 +333,11 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
   delete packageJson.description;
   delete packageJson.tags;
   delete packageJson.repository;
+
+  // Only strip the license if it's 0BSD, used by our templates. Leave other licenses alone.
+  if (packageJson.license === '0BSD') {
+    delete packageJson.license;
+  }
 
   await packageFile.writeAsync(packageJson);
 }

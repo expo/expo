@@ -45,12 +45,6 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
     return jsSourceUrl()
   }
 
-  override func extraModules(for bridge: RCTBridge) -> [RCTBridgeModule] {
-    var modules: [RCTBridgeModule] = [DevMenuLoadingView.init()]
-    modules.append(DevMenuRCTDevSettings.init())
-    return modules
-  }
-
   override func bridge(_ bridge: RCTBridge, didNotFindModule moduleName: String) -> Bool {
     return moduleName == "DevMenu"
   }
@@ -61,7 +55,7 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
     #if DEBUG
     if let packagerHost = jsPackagerHost(),
       let url = RCTBundleURLProvider.jsBundleURL(
-        forBundleRoot: "index",
+        forBundleRoot: "packages/expo-dev-menu/index",
         packagerHost: packagerHost,
         enableDev: true,
         enableMinification: false,
@@ -81,10 +75,12 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
       return nil
     }
     // Return `nil` if the content is not a valid URL.
-    guard let content = try? String(contentsOfFile: packagerHostPath, encoding: String.Encoding.utf8).trimmingCharacters(in: CharacterSet.newlines),
-      let url = URL(string: content) else {
+    guard let content = try? String(contentsOfFile: packagerHostPath, encoding: .utf8).trimmingCharacters(in: .newlines) else {
       return nil
     }
-    return url.absoluteString
+    guard let url = URL(string: "http://\(content)"), let host = url.host else {
+      return nil
+    }
+    return "\(host):\(url.port ?? 8081)"
   }
 }

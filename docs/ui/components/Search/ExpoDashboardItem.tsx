@@ -1,4 +1,5 @@
-import { ArrowUpRightIcon, BuildIcon } from '@expo/styleguide-icons';
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { addHighlight, CommandItemBaseWithCopy } from '@expo/styleguide-search-ui';
 import { type ComponentType, HTMLAttributes } from 'react';
 

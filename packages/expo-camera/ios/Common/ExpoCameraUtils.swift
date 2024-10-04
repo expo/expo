@@ -24,7 +24,27 @@ struct ExpoCameraUtils {
     }
 
     return orientation
-}
+  }
+
+  // .landscapeRight and .landscapeLeft of UIInterfaceOrientation are reversed when mapped to UIDeviceOrientation
+  static func physicalOrientation(
+    for orientation: UIInterfaceOrientation
+  ) -> UIDeviceOrientation {
+    switch orientation {
+    case .portrait:
+      return .portrait
+    case .landscapeLeft:
+      return .landscapeRight
+    case .landscapeRight:
+      return .landscapeLeft
+    case .portraitUpsideDown:
+      return .portraitUpsideDown
+    case .unknown:
+      return .unknown
+    default:
+      return .unknown
+    }
+  }
 
   static func videoOrientation(for interfaceOrientation: UIInterfaceOrientation) -> AVCaptureVideoOrientation {
     switch interfaceOrientation {
@@ -41,6 +61,7 @@ struct ExpoCameraUtils {
     }
   }
 
+  // .landscapeRight and .landscapeLeft need to be reversed when mapped back to AVCaptureVideoOrientation
   static func videoOrientation(for deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation {
     switch deviceOrientation {
     case .portrait:
@@ -48,9 +69,9 @@ struct ExpoCameraUtils {
     case .portraitUpsideDown:
       return .portraitUpsideDown
     case .landscapeLeft:
-      return .landscapeLeft
-    case .landscapeRight:
       return .landscapeRight
+    case .landscapeRight:
+      return .landscapeLeft
     default:
       return .portrait
     }
@@ -77,16 +98,26 @@ struct ExpoCameraUtils {
     }
   }
 
-  static func export(orientation: UIImage.Orientation) -> Int {
+  static func toExifOrientation(orientation: UIImage.Orientation) -> Int {
     switch orientation {
-    case .left:
-      return 90
-    case .right:
-      return -90
+    case .up:
+      return 1
     case .down:
-      return 180
-    default:
-      return 0
+      return 3
+    case .left:
+      return 8
+    case .right:
+      return 6
+    case .upMirrored:
+      return 2
+    case .downMirrored:
+      return 4
+    case .leftMirrored:
+      return 5
+    case .rightMirrored:
+      return 7
+    @unknown default:
+      return 1
     }
   }
 

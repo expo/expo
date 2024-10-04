@@ -30,13 +30,6 @@ class JSIContext;
  */
 class JavaScriptRuntime : public std::enable_shared_from_this<JavaScriptRuntime> {
 public:
-  /**
-   * Initializes a runtime that is independent from React Native and its runtime initialization.
-   * This flow is mostly intended for tests. The JS call invoker is set to `SyncCallInvoker`.
-   * See **JavaScriptRuntime.cpp** for the `SyncCallInvoker` implementation.
-   */
-  JavaScriptRuntime();
-
   JavaScriptRuntime(
     jsi::Runtime *runtime,
     std::shared_ptr<react::CallInvoker> jsInvoker
@@ -45,7 +38,7 @@ public:
   /**
    * Returns the underlying runtime object.
    */
-  jsi::Runtime &get() const;
+  jsi::Runtime &get() const noexcept;
 
   /**
    * Evaluates given JavaScript source code.
@@ -59,12 +52,12 @@ public:
   /**
    * Returns the runtime global object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> global();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> global() noexcept;
 
   /**
    * Creates a new object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> createObject();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> createObject() noexcept;
 
   /**
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
@@ -75,7 +68,7 @@ public:
 
   std::shared_ptr<react::CallInvoker> jsInvoker;
 
-  std::shared_ptr<jsi::Object> getMainObject();
+  std::shared_ptr<jsi::Object> getMainObject() noexcept;
 
 private:
   std::shared_ptr<jsi::Runtime> runtime;

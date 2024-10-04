@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { forwardRef, useState, type MouseEvent } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
-import { Tag } from '~/ui/components/Tag';
 import { MONOSPACE, CALLOUT, FOOTNOTE } from '~/ui/components/Text';
 import * as Tooltip from '~/ui/components/Tooltip';
 
@@ -29,6 +28,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
 
     const [tooltipVisible, setTooltipVisible] = useState(false);
+
     const onMouseOver = (event: MouseEvent<HTMLAnchorElement>) => {
       setTooltipVisible(isOverflowing(event.currentTarget));
     };
@@ -38,6 +38,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
     };
 
     const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
+    const isDeprecated = tags && tags.length > 0 ? tags.find(tag => tag === 'deprecated') : null;
 
     return (
       <Tooltip.Root open={tooltipVisible}>
@@ -48,34 +49,29 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
             onMouseOut={isCode ? onMouseOut : undefined}
             href={'#' + slug}
             onClick={onClick}
-            style={paddingLeft ? { paddingLeft } : undefined}
             className={mergeClasses(
               'flex mb-1.5 truncate items-center justify-between !text-pretty',
+              convertToIndentClass(paddingLeft),
               'focus-visible:relative focus-visible:z-10'
             )}>
             <TitleElement
               className={mergeClasses(
-                '!text-secondary hocus:!text-link',
+                'w-full !text-secondary hocus:!text-link',
                 isCodeOrFilePath && 'truncate !text-2xs',
-                isActive && '!text-link'
+                isActive && '!text-link',
+                isDeprecated && 'opacity-80 line-through'
               )}>
               {displayTitle}
             </TitleElement>
-            {tags && tags.length ? (
-              <div className="inline-flex">
-                {tags.map(tag => (
-                  <Tag name={tag} type="toc" key={`${displayTitle}-${tag}`} />
-                ))}
-              </div>
-            ) : undefined}
           </Link>
         </Tooltip.Trigger>
         <Tooltip.Content
           side="bottom"
+          align="start"
           collisionPadding={{
             right: 22,
           }}>
-          <FOOTNOTE tag="code">{displayTitle}</FOOTNOTE>
+          <FOOTNOTE tag={isCode ? 'code' : undefined}>{displayTitle}</FOOTNOTE>
         </Tooltip.Content>
       </Tooltip.Root>
     );
@@ -83,11 +79,15 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
 );
 
 /**
- * Replaces `Module.someFunction(arguments: argType)` with `someFunction()`
+ * Replaces `Module.someFunction<T>(arguments: argType)` with `someFunction()`
  */
 const trimCodedTitle = (str: string) => {
-  const dotIdx = str.indexOf('.');
-  if (dotIdx > 0) str = str.substring(dotIdx + 1);
+  if (!str.includes('...')) {
+    const dotIdx = str.indexOf('.');
+    if (dotIdx > 0) str = str.substring(dotIdx + 1);
+  }
+
+  str = str.replace(/<.+>/g, '');
 
   const parIdx = str.indexOf('(');
   if (parIdx > 0) str = str.substring(0, parIdx + 1) + ')';
@@ -106,7 +106,20 @@ const isOverflowing = (el: HTMLElement) => {
 
   const childrenWidth = Array.from(el.children).reduce((sum, child) => sum + child.scrollWidth, 0);
   const indent = parseInt(window.getComputedStyle(el).paddingLeft, 10);
-  return childrenWidth >= el.scrollWidth - indent;
+  return childrenWidth > 220 && childrenWidth >= el.scrollWidth - indent;
 };
+
+function convertToIndentClass(spacing: number) {
+  switch (spacing) {
+    case 12:
+      return 'pl-3';
+    case 24:
+      return 'pl-6';
+    case 36:
+      return 'pl-9';
+    default:
+      return '';
+  }
+}
 
 export default DocumentationSidebarRightLink;

@@ -1,20 +1,14 @@
 import Constants from 'expo-constants';
 import React from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import DoneText from './DoneText';
 import SuiteResult from './SuiteResult';
+import { useTheme } from '../../common/ThemeProvider';
 
 export default function Suites({ suites, done, numFailed, results }) {
   const ref = React.useRef(null);
-
-  const renderItem = ({ item }) => <SuiteResult r={item} depth={0} />;
-
-  const keyExtractor = (item) => item.get('result').get('id');
-
-  const ListHeaderComponent = () => (
-    <DoneText done={done} numFailed={numFailed} results={results} />
-  );
+  const { theme } = useTheme();
 
   return (
     <FlatList
@@ -22,19 +16,34 @@ export default function Suites({ suites, done, numFailed, results }) {
       style={styles.list}
       contentContainerStyle={styles.contentContainerStyle}
       data={[...suites]}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-      ListHeaderComponent={ListHeaderComponent}
+      keyExtractor={(item) => item.get('result').get('id')}
+      renderItem={({ item }) => <SuiteResult r={item} depth={0} />}
+      ListHeaderComponent={() => (
+        <View
+          style={[
+            styles.headerContainer,
+            {
+              backgroundColor: theme.background.default,
+              borderBottomColor: theme.border.secondary,
+            },
+          ]}>
+          <DoneText done={done} numFailed={numFailed} results={results} />
+        </View>
+      )}
+      stickyHeaderIndices={[0]}
     />
   );
 }
 
 const styles = StyleSheet.create({
   contentContainerStyle: {
-    padding: 5,
     paddingBottom: (Constants.statusBarHeight || 24) + 128,
   },
   list: {
     flex: 1,
+  },
+  headerContainer: {
+    backgroundColor: '#fff',
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });

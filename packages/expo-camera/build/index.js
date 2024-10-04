@@ -63,6 +63,19 @@ export const useMicrophonePermissions = createPermissionHook({
     getMethod: getMicrophonePermissionsAsync,
     requestMethod: requestMicrophonePermissionsAsync,
 });
+/**
+ * Scan bar codes from the image at the given URL.
+ * @param url URL to get the image from.
+ * @param barcodeTypes An array of bar code types. Defaults to all supported bar code types on
+ * the platform.
+ * > __Note:__ Only QR codes are supported on iOS.
+ * On android, the barcode should take up the majority of the image for best results.
+ * @return A possibly empty array of objects of the `BarcodeScanningResult` shape, where the type
+ * refers to the barcode type that was scanned and the data is the information encoded in the barcode.
+ */
+export async function scanFromURLAsync(url, barcodeTypes = ['qr']) {
+    return CameraManager.scanFromURLAsync(url, barcodeTypes);
+}
 export * from './Camera.types';
 /**
  * @hidden
@@ -72,5 +85,6 @@ export const Camera = {
     requestCameraPermissionsAsync,
     getMicrophonePermissionsAsync,
     requestMicrophonePermissionsAsync,
+    scanFromURLAsync,
 };
 //# sourceMappingURL=index.js.map

@@ -24,6 +24,9 @@ public protocol UpdatesExternalInterface {
   @objc weak var updatesExternalInterfaceDelegate: (any UpdatesExternalInterfaceDelegate)? { get set }
   @objc var launchAssetURL: URL? { get }
 
+  @objc var runtimeVersion: String? { get }
+  @objc var updateURL: URL? { get }
+
   @objc func reset()
 
   @objc func fetchUpdate(
@@ -33,6 +36,8 @@ public protocol UpdatesExternalInterface {
     success successBlock: @escaping UpdatesUpdateSuccessBlock,
     error errorBlock: @escaping UpdatesErrorBlock
   )
+
+  @objc func isValidUpdatesConfiguration(_ configuration: [String: Any]) -> Bool
 }
 
 /**

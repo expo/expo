@@ -1,7 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import "DevClientRootViewFactory.h"
+#import <EXDevMenu/DevClientNoOpLoadingView.h>
 #import <EXDevMenu/DevMenuRCTBridge.h>
+#import <EXDevMenu/DevMenuRCTDevSettings.h>
 
 #if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
 #import <React-RCTAppDelegate/RCTAppDelegate.h>
@@ -16,6 +18,7 @@
 #import <React/RCTCxxBridgeDelegate.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#import <jsireact/JSIExecutor.h>
 
 @interface RCTRootViewFactory () <RCTCxxBridgeDelegate> {
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
@@ -31,6 +34,15 @@
   }
 
   self.bridge = [[DevMenuRCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
+  [modules addObject:[[DevClientNoOpLoadingView alloc] init]];
+  [modules addObject:[[DevMenuRCTDevSettings alloc] init]];
+
+  return modules;
 }
 
 #pragma mark - RCTCxxBridgeDelegate

@@ -26,7 +26,7 @@ public class HapticsModule: Module {
     .runOnQueue(.main)
   }
 
-  enum NotificationType: String, EnumArgument {
+  enum NotificationType: String, Enumerable {
     case success
     case warning
     case error
@@ -43,7 +43,7 @@ public class HapticsModule: Module {
     }
   }
 
-  enum ImpactStyle: String, EnumArgument {
+  enum ImpactStyle: String, Enumerable {
     case light
     case medium
     case heavy

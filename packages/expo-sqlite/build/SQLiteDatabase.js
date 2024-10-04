@@ -1,7 +1,5 @@
-import { EventEmitter } from 'expo-modules-core';
-import ExpoSQLite from './ExpoSQLiteNext';
+import ExpoSQLite from './ExpoSQLite';
 import { SQLiteStatement, } from './SQLiteStatement';
-const emitter = new EventEmitter(ExpoSQLite);
 /**
  * A SQLite database.
  */
@@ -67,7 +65,7 @@ export class SQLiteDatabase {
      *   // The following UPDATE query out of transaction may be executed here and break the expectation.
      *   //
      *
-     *   const result = await db.getAsync<{ name: string }>('SELECT name FROM Users');
+     *   const result = await db.getFirstAsync<{ name: string }>('SELECT name FROM Users');
      *   expect(result?.name).toBe('aaa');
      * });
      * db.execAsync('UPDATE test SET name = "bbb"');
@@ -360,7 +358,7 @@ export function deleteDatabaseSync(databaseName) {
  * @returns A `Subscription` object that you can call `remove()` on when you would like to unsubscribe the listener.
  */
 export function addDatabaseChangeListener(listener) {
-    return emitter.addListener('onDatabaseChange', listener);
+    return ExpoSQLite.addListener('onDatabaseChange', listener);
 }
 /**
  * A new connection specific used for [`withExclusiveTransactionAsync`](#withexclusivetransactionasynctask).

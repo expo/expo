@@ -6,24 +6,25 @@ packageName: 'expo-image-picker'
 iconUrl: '/static/images/packages/expo-image-picker.png'
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { BoxLink } from '~/ui/components/BoxLink';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-import Video from '~/components/plugins/Video';
+} from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
 import { PlatformTags } from '~/ui/components/Tag';
 
-**`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
+`expo-image-picker` provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
-<Video file={'sdk/imagepicker.mp4'} loop={false} />
+<ContentSpotlight file="sdk/imagepicker.mp4" loop={false} />
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -91,13 +92,13 @@ Learn how to configure the native projects in the [installation instructions in 
 
 <SnackInline label='Image Picker' dependencies={['expo-image-picker']}>
 
-```js
-import React, { useState, useEffect } from 'react';
+```tsx
+import { useState, useEffect } from 'react';
 import { Button, Image, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function ImagePickerExample() {
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<string | null>(null);
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library

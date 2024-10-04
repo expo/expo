@@ -1,8 +1,8 @@
 // Run a number of basic operations on the minifier to ensure it works as expected
 import * as babel from '@babel/core';
 
-import { minifyLikeMetroAsync } from './minify-util';
 import preset from '..';
+import { minifyLikeMetroAsync } from './minify-util';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;

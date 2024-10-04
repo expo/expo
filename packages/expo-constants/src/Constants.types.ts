@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 import type {
   EASConfig as ManifestsEASConfig,
   ExpoGoConfig as ManifestsExpoGoConfig,
@@ -14,6 +14,7 @@ import type {
 export enum AppOwnership {
   /**
    * The experience is running inside of the Expo Go app.
+   * @deprecated Use [`Constants.executionEnvironment`](#executionenvironment) instead.
    */
   Expo = 'expo',
 }
@@ -49,23 +50,23 @@ export interface IOSManifest {
    */
   buildNumber: string | null;
   /**
-   * The Apple internal model identifier for this device, e.g. `iPhone1,1`.
+   * The Apple internal model identifier for this device. For example, `iPhone1,1`.
    * @deprecated Use `expo-device`'s [`Device.modelId`](./device/#devicemodelid).
    */
   platform: string;
   /**
-   * The human-readable model name of this device, e.g. `"iPhone 7 Plus"` if it can be determined,
+   * The human-readable model name of this device. For example, `"iPhone 7 Plus"` if it can be determined,
    * otherwise will be `null`.
    * @deprecated Moved to `expo-device` as [`Device.modelName`](./device/#devicemodelname).
    */
   model: string | null;
   /**
-   * The user interface idiom of this device, i.e. whether the app is running on an iPhone, iPad, Mac or Apple TV.
+   * The user interface idiom of the current device, such as whether the app is running on an iPhone, iPad, Mac or Apple TV.
    * @deprecated Use `expo-device`'s [`Device.getDeviceTypeAsync()`](./device/#devicegetdevicetypeasync).
    */
   userInterfaceIdiom: UserInterfaceIdiom;
   /**
-   * The version of iOS running on this device, e.g. `10.3`.
+   * The version of iOS running on this device. For example, `10.3`.
    * @deprecated Use `expo-device`'s [`Device.osVersion`](./device/#deviceosversion).
    */
   systemVersion: string;
@@ -120,8 +121,12 @@ export interface NativeConstants {
   name: 'ExponentConstants';
   /**
    * Returns `expo` when running in Expo Go, otherwise `null`.
+   * @deprecated Use [`Constants.executionEnvironment`](#executionenvironment) instead.
    */
   appOwnership: AppOwnership | null;
+  /**
+   * Returns `true` when the app is running in debug mode (`__DEV__`). Otherwise, returns `false`.
+   */
   debugMode: boolean;
   /**
    * A human-readable name for the device type.
@@ -132,6 +137,9 @@ export interface NativeConstants {
    * @deprecated Moved to `expo-device` as [`Device.deviceYearClass`](./device/#deviceyearclass).
    */
   deviceYearClass: number | null;
+  /**
+   * Returns the current execution environment.
+   */
   executionEnvironment: ExecutionEnvironment;
   experienceUrl: string;
   // only nullable on web
@@ -143,6 +151,9 @@ export interface NativeConstants {
   expoVersion: string | null;
   isDetached?: boolean;
   intentUri?: string;
+  /**
+   * Returns `true` if the app is running in headless mode. Otherwise, returns `false`.
+   */
   isHeadless: boolean;
   linkingUri: string;
 
@@ -159,7 +170,7 @@ export interface NativeConstants {
    */
   manifest2: ExpoUpdatesManifest | null;
   /**
-   * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
+   * The standard Expo config object defined in **app.json** and **app.config.js** files. For both
    * classic and modern manifests, whether they are embedded or remote.
    */
   expoConfig:
@@ -197,6 +208,11 @@ export interface NativeConstants {
    * @hidden
    */
   supportedExpoSdks?: string[];
+  /**
+   * Returns the specific platform manifest object.
+   *
+   * > **Note**: This is distinct from the `manifest` and `manifest2`.
+   */
   platform?: PlatformManifest;
   /**
    * Gets the user agent string which would be included in requests sent by a web view running on
@@ -210,7 +226,7 @@ export interface NativeConstants {
 export interface Constants extends NativeConstants {
   /**
    * @hidden
-   * @warning do not use this property. Use `manifest` by default.
+   * > **Warning**: Do not use this property. Use `manifest` by default.
    *
    * In certain cases accessing manifest via this property
    * suppresses important warning about missing manifest.
@@ -218,7 +234,7 @@ export interface Constants extends NativeConstants {
   __unsafeNoWarnManifest?: EmbeddedManifest;
   /**
    * @hidden
-   * @warning do not use this property. Use `manifest2` by default.
+   * > **Warning**: Do not use this property. Use `manifest2` by default.
    *
    * In certain cases accessing manifest via this property
    * suppresses important warning about missing manifest.

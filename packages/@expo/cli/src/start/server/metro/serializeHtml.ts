@@ -10,6 +10,7 @@ export function serializeHtmlWithAssets({
   baseUrl,
   route,
   isExporting,
+  hydrate,
 }: {
   resources: SerialAsset[];
   template: string;
@@ -18,6 +19,7 @@ export function serializeHtmlWithAssets({
   devBundleUrl?: string;
   route?: RouteNode;
   isExporting: boolean;
+  hydrate?: boolean;
 }): string {
   if (!resources) {
     return '';
@@ -28,6 +30,7 @@ export function serializeHtmlWithAssets({
     baseUrl,
     bundleUrl: isExporting ? undefined : devBundleUrl,
     route,
+    hydrate,
   });
 }
 
@@ -55,6 +58,7 @@ function htmlFromSerialAssets(
     baseUrl,
     bundleUrl,
     route,
+    hydrate,
   }: {
     isExporting: boolean;
     template: string;
@@ -62,20 +66,25 @@ function htmlFromSerialAssets(
     /** This is dev-only. */
     bundleUrl?: string;
     route?: RouteNode;
+    hydrate?: boolean;
   }
 ) {
   // Combine the CSS modules into tags that have hot refresh data attributes.
   const styleString = assets
-    .filter((asset) => asset.type === 'css')
-    .map(({ metadata, filename, source }) => {
-      if (isExporting) {
-        return [
-          `<link rel="preload" href="${combineUrlPath(baseUrl, filename)}" as="style">`,
-          `<link rel="stylesheet" href="${combineUrlPath(baseUrl, filename)}">`,
-        ].join('');
-      } else {
-        return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
+    .filter((asset) => asset.type.startsWith('css'))
+    .map(({ type, metadata, filename, source }) => {
+      if (type === 'css') {
+        if (isExporting) {
+          return [
+            `<link rel="preload" href="${combineUrlPath(baseUrl, filename)}" as="style">`,
+            `<link rel="stylesheet" href="${combineUrlPath(baseUrl, filename)}">`,
+          ].join('');
+        } else {
+          return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
+        }
       }
+      // External link tags will be passed through as-is.
+      return source;
     })
     .join('');
 
@@ -113,6 +122,11 @@ function htmlFromSerialAssets(
           return `<script src="${combineUrlPath(baseUrl, filename)}" defer></script>`;
         })
         .join('');
+
+  if (hydrate) {
+    const hydrateScript = `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
+    template = template.replace('</head>', `${hydrateScript}</head>`);
+  }
 
   return template
     .replace('</head>', `${styleString}</head>`)

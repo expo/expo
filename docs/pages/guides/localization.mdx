@@ -3,9 +3,8 @@ title: Localization
 description: Learn about getting started and configuring localization in an Expo project using expo-localization.
 ---
 
-import { SnackInline } from '~/ui/components/Snippet';
-import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
 
 If you want your app to be easy to use for users who speak different languages or come from different cultures, you should localize it. Localizing an app makes it adapt to the locale of the user's device. The app will show translations and currencies that the user knows and understands. Numbers, lists, and more will be formatted in a way that the user is used to.
 
@@ -72,7 +71,7 @@ On iOS, when a user changes the device's language, the app will reset. This mean
 
 ```tsx
 import { View, StyleSheet, Text } from 'react-native';
-import * as Localization from 'expo-localization';
+import { getLocales } from 'expo-localization';
 import { I18n } from 'i18n-js';
 
 // Set the key-value pairs for the different languages you want to support.
@@ -83,7 +82,7 @@ const translations = {
 const i18n = new I18n(translations);
 
 // Set the locale once at the beginning of your app.
-i18n.locale = Localization.locale;
+i18n.locale = getLocales()[0].languageCode ?? 'en';
 
 // When a value is missing from a language it'll fall back to another language with the key present.
 i18n.enableFallback = true;
@@ -97,7 +96,7 @@ export default function App() {
         {i18n.t('welcome')} {i18n.t('name')}
       </Text>
       <Text>Current locale: {i18n.locale}</Text>
-      <Text>Device locale: {Localization.getLocales()[0].languageCode}</Text>
+      <Text>Device locale: {getLocales()[0].languageCode}</Text>
     </View>
   );
 }
@@ -166,7 +165,7 @@ Now, iOS knows to set the display name of your app to `こんにちは` whenever
 
 Several regions around the world write text from right to left. If you want to localize your app, so it looks as expected in RTL languages, you need to make sure your app handles these layout and text direction changes accordingly.
 
-For SDK 48 or above, to enable RTL support using SDK 48 or later you have to install [`expo-localization`](/versions/latest/sdk/localization/#installation) library and enable `extra.supports.RTL` property in app config:
+To enable RTL support, use the [`expo-localization`](/versions/latest/sdk/localization/#installation) config plugin and enable `extra.supportsRTL` property in app config:
 
 ```json app.json
 {
@@ -183,6 +182,22 @@ This enables RTL when your app is loaded in Expo Go, in Expo dev Client, and in 
 
 When an application starts, Expo checks if the current device locale should render in RTL layout to look correctly. For example, an app marked to support RTL in the app config file will render in RTL mode in Hebrew or Arabic locale.
 
+### Forcing RTL layout
+
+You can also force the RTL layout for testing or for applications that are only localized for RTL locales by enabling `extra.forcesRTL` property in the app config:
+
+```json app.json
+{
+  "expo": {
+    "extra": {
+      "supportsRTL": true,
+      "forcesRTL": true
+    },
+    "plugins": ["expo-localization"]
+  }
+}
+```
+
 <Collapsible summary="Dynamically overriding RTL settings">
 
 If you want to override the default RTL detection from your application code dynamically, you cannot use the static configuration in app config. Instead, apply these changes dynamically from your application code.
@@ -194,10 +209,9 @@ label="Overriding RTL settings"
 dependencies={['expo-updates', 'expo-constants']}
 >
 
-```jsx
+```tsx
 import { Text, View, StyleSheet, I18nManager, Platform } from 'react-native';
 import Constants from 'expo-constants';
-
 import * as Updates from 'expo-updates';
 
 export default function App() {
@@ -241,7 +255,7 @@ const styles = StyleSheet.create({
 
 ### Layouts and views
 
-You don't need to manually adjust `<View>` styling properties based on locale. You can use properties like `justifyContext`, `alignItems`, and others. Their property values change behavior as required.
+You don't need to manually adjust `<View>` styling properties based on locale. You can use properties like `justifyContent`, `alignItems`, and others. Their property values change behavior as required.
 
 - On LTR locales, `start` and `end` are the same as `left` and `right`.
 - On RTL locales, `start` and `end` are the same as `right` and `left`.

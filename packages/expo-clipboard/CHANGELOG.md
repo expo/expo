@@ -4,11 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30860](https://github.com/expo/expo/pull/30860) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- [iOS] fix ClipboardPasteButton asking for paste permission ([#30623](https://github.com/expo/expo/pull/30623) by [@vonovak](https://github.com/vonovak))
+- Fixed issue when copying PNG images on Android. ([#29629](https://github.com/expo/expo/pull/29629) by [@weslley75](https://github.com/weslley75))
+- Add missing `react`/`react-native` peer dependencies for isolated modules. ([#30463](https://github.com/expo/expo/pull/30463) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 6.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.2 — 2024-04-24
 

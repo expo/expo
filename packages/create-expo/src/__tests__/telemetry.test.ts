@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import fs from 'fs';
-import fetch from 'node-fetch';
 
 import { dotExpoHomeDirectory, getStateJsonPath } from '../paths';
 import {
@@ -13,14 +12,13 @@ import {
   track,
 } from '../telemetry';
 
-jest.mock('node-fetch');
 jest.mock('crypto', () => {
   const actual = jest.requireActual('crypto');
   return { ...actual, randomUUID: jest.fn(actual.randomUUID) };
 });
 
-const fetchAsMock = fetch as any as jest.Mock;
 const randomUUIDAsMock = (crypto as any).randomUUID as jest.Mock;
+let fetchAsMock: jest.SpyInstance;
 
 function clearGlobals() {
   fetchAsMock.mockClear();
@@ -36,6 +34,10 @@ function clearGlobals() {
 }
 
 describe('telemetry', () => {
+  beforeAll(() => {
+    fetchAsMock = jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve({} as any));
+  });
+
   describe('with no pre-existing state', () => {
     beforeEach(() => {
       clearGlobals();

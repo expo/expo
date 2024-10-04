@@ -3,14 +3,33 @@ import { vol } from 'memfs';
 import { startInterfaceAsync } from '../../start/interface/startInterface';
 import { startBundlerAsync } from '../startBundler';
 
-jest.mock('../../start/server/DevServerManager', () => ({
-  DevServerManager: jest.fn(() => ({
+jest.mock('../../start/server/DevServerManager', () => {
+  const DevServerManager = jest.fn(() => ({
     startAsync: jest.fn(),
     getDefaultDevServer: jest.fn(),
     bootstrapTypeScriptAsync: jest.fn(),
     watchEnvironmentVariables: jest.fn(),
-  })),
-}));
+  }));
+
+  // @ts-expect-error
+  DevServerManager.startMetroAsync = async (projectRoot, startOptions) => {
+    // @ts-expect-error
+    const devServerManager = new DevServerManager(projectRoot, startOptions);
+
+    await devServerManager.startAsync([
+      {
+        type: 'metro',
+        options: startOptions,
+      },
+    ]);
+
+    return devServerManager;
+  };
+
+  return {
+    DevServerManager,
+  };
+});
 
 jest.mock('../../utils/interactive', () => ({
   isInteractive: jest.fn(() => true),

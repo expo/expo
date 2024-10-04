@@ -1,51 +1,61 @@
 import { ProxyNativeModule } from 'expo-modules-core';
 
-import {
-  NotificationRequest,
-  NotificationContentInput,
-  CalendarTriggerInputValue,
-} from './Notifications.types';
+import { NotificationRequest, NotificationContentInput } from './Notifications.types';
+
+type CalendarTriggerInputValue = {
+  timezone?: string;
+  year?: number;
+  month?: number;
+  weekday?: number;
+  weekOfMonth?: number;
+  weekOfYear?: number;
+  weekdayOrdinal?: number;
+  day?: number;
+  hour?: number;
+  minute?: number;
+  second?: number;
+};
 
 export interface NotificationSchedulerModule extends ProxyNativeModule {
   getAllScheduledNotificationsAsync?: () => Promise<NotificationRequest[]>;
   scheduleNotificationAsync?: (
     identifier: string,
     notificationContent: NotificationContentInput,
-    trigger: NotificationTriggerInput
+    trigger: NativeNotificationTriggerInput
   ) => Promise<string>;
   cancelScheduledNotificationAsync?: (identifier: string) => Promise<void>;
   cancelAllScheduledNotificationsAsync?: () => Promise<void>;
-  getNextTriggerDateAsync?: (trigger: NotificationTriggerInput) => Promise<number>;
+  getNextTriggerDateAsync?: (trigger: NativeNotificationTriggerInput) => Promise<number>;
 }
 
-export interface ChannelAwareTriggerInput {
+export interface NativeChannelAwareTriggerInput {
   type: 'channel';
   channelId?: string;
 }
 
 // ISO8601 calendar pattern-matching
-export interface CalendarTriggerInput {
+export interface NativeCalendarTriggerInput {
   type: 'calendar';
   channelId?: string;
   repeats?: boolean;
   value: CalendarTriggerInputValue;
 }
 
-export interface TimeIntervalTriggerInput {
+export interface NativeTimeIntervalTriggerInput {
   type: 'timeInterval';
   channelId?: string;
   repeats: boolean;
   seconds: number;
 }
 
-export interface DailyTriggerInput {
+export interface NativeDailyTriggerInput {
   type: 'daily';
   channelId?: string;
   hour: number;
   minute: number;
 }
 
-export interface WeeklyTriggerInput {
+export interface NativeWeeklyTriggerInput {
   type: 'weekly';
   channelId?: string;
   weekday: number;
@@ -53,7 +63,7 @@ export interface WeeklyTriggerInput {
   minute: number;
 }
 
-export interface YearlyTriggerInput {
+export interface NativeYearlyTriggerInput {
   type: 'yearly';
   channelId?: string;
   day: number;
@@ -62,18 +72,27 @@ export interface YearlyTriggerInput {
   minute: number;
 }
 
-export interface DateTriggerInput {
+export interface NativeMonthlyTriggerInput {
+  type: 'monthly';
+  channelId?: string;
+  day: number;
+  hour: number;
+  minute: number;
+}
+
+export interface NativeDateTriggerInput {
   type: 'date';
   channelId?: string;
   timestamp: number; // seconds since 1970
 }
 
-export type NotificationTriggerInput =
+export type NativeNotificationTriggerInput =
   | null
-  | ChannelAwareTriggerInput
-  | DateTriggerInput
-  | CalendarTriggerInput
-  | TimeIntervalTriggerInput
-  | DailyTriggerInput
-  | WeeklyTriggerInput
-  | YearlyTriggerInput;
+  | NativeChannelAwareTriggerInput
+  | NativeDateTriggerInput
+  | NativeCalendarTriggerInput
+  | NativeTimeIntervalTriggerInput
+  | NativeDailyTriggerInput
+  | NativeWeeklyTriggerInput
+  | NativeMonthlyTriggerInput
+  | NativeYearlyTriggerInput;

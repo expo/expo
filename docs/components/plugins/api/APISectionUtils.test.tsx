@@ -3,6 +3,10 @@ import { render } from '@testing-library/react';
 import type { CommentData } from './APIDataTypes';
 import { CommentTextBlock, resolveTypeName } from './APISectionUtils';
 
+import { attachEmotionSerializer } from '~/common/test-utilities';
+
+attachEmotionSerializer(expect);
+
 describe('APISectionUtils.resolveTypeName', () => {
   test('void', () => {
     const { container } = render(

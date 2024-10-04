@@ -4,11 +4,27 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+## 0.14.3 — 2024-05-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.2 — 2024-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.1 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
 
 ## 0.14.0 — 2024-04-18
 

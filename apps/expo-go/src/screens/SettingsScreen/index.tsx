@@ -22,23 +22,13 @@ export function SettingsScreen() {
       <View flex="1" padding="medium">
         <ThemeSection />
         <Spacer.Vertical size="medium" />
-        {Platform.OS === 'ios' && (
-          <>
-            <DevMenuGestureSection />
-            <Spacer.Vertical size="medium" />
-          </>
-        )}
-        {Tracking.isAvailable() && (
-          <>
-            <TrackingSection />
-            <Spacer.Vertical size="medium" />
-          </>
-        )}
+        {Platform.OS === 'ios' && <DevMenuGestureSection />}
+        {Tracking.isAvailable() && <TrackingSection />}
         <ConstantsSection />
         {data?.meUserActor && data.meUserActor.__typename === 'User' ? (
           <>
             <Spacer.Vertical size="xl" />
-            <DeleteAccountSection viewerUsername={data.meUserActor.username} />
+            <DeleteAccountSection />
           </>
         ) : null}
       </View>

@@ -5,10 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase
 import org.junit.Assert
-import org.junit.Test
 
 class UpdatesConfigurationTest : TestCase() {
-  @Test
   fun testGetNormalizedUrlOrigin_NoPort() {
     val mockedUri = mockk<Uri>()
     every { mockedUri.scheme } returns "https"
@@ -17,7 +15,6 @@ class UpdatesConfigurationTest : TestCase() {
     Assert.assertEquals("https://exp.host", getNormalizedUrlOrigin(mockedUri))
   }
 
-  @Test
   fun testGetNormalizedUrlOrigin_DefaultPort() {
     val mockedUri = mockk<Uri>()
     every { mockedUri.scheme } returns "https"
@@ -26,7 +23,6 @@ class UpdatesConfigurationTest : TestCase() {
     Assert.assertEquals("https://exp.host", getNormalizedUrlOrigin(mockedUri))
   }
 
-  @Test
   fun testGetNormalizedUrlOrigin_OtherPort() {
     val mockedUri = mockk<Uri>()
     every { mockedUri.scheme } returns "https"

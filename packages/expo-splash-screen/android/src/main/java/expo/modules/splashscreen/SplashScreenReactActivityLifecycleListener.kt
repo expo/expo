@@ -9,7 +9,7 @@ import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.splashscreen.singletons.SplashScreen
 
-class SplashScreenReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
+class SplashScreenReactActivityLifecycleListener : ReactActivityLifecycleListener {
   override fun onContentChanged(activity: Activity) {
     SplashScreen.ensureShown(
       activity,

@@ -9,6 +9,7 @@
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
 #include "JNIDeallocator.h"
+#include "ThreadSafeJNIGlobalRef.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -55,7 +56,7 @@ public:
     jlong jsRuntimePointer,
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
     jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
-  );
+  ) noexcept;
 
 #if IS_NEW_ARCHITECTURE_ENABLED
 
@@ -69,13 +70,6 @@ public:
     );
 
 #endif
-
-  /**
-   * Initializes the test runtime. Shouldn't be used in the production.
-   */
-  void installJSIForTests(
-    jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator
-  );
 
   /**
    * Gets a module for a given name. It will throw an exception if the module doesn't exist.
@@ -100,12 +94,12 @@ public:
   /**
    * Exposes a `JavaScriptRuntime::global` function to Kotlin
    */
-  jni::local_ref<JavaScriptObject::javaobject> global();
+  jni::local_ref<JavaScriptObject::javaobject> global() noexcept;
 
   /**
    * Exposes a `JavaScriptRuntime::createObject` function to Kotlin
    */
-  jni::local_ref<JavaScriptObject::javaobject> createObject();
+  jni::local_ref<JavaScriptObject::javaobject> createObject() noexcept;
 
   /**
   * Gets a core module.
@@ -122,8 +116,17 @@ public:
     jni::local_ref<JavaScriptObject::javaobject> js
   );
 
+  /**
+   * Gets a shared object from the internal registry
+   * @param objectId
+   * @return
+   */
+  jni::local_ref<JavaScriptObject::javaobject> getSharedObject(
+    int objectId
+  );
+
   static void deleteSharedObject(
-    jni::global_ref<JSIContext::javaobject> javaObject,
+    jni::alias_ref<JSIContext::javaobject> javaObject,
     int objectId
   );
 
@@ -141,13 +144,25 @@ public:
 
   jni::local_ref<JavaScriptObject::javaobject> getJavascriptClass(jni::local_ref<jclass> native);
 
-  ~JSIContext();
+  void prepareForDeallocation() noexcept;
 
-  void prepareForDeallocation();
+  bool wasDeallocated() const noexcept;
 
 private:
   friend HybridBase;
+
+  /*
+   * We store two global references to the Java part of the JSIContext.registerClass
+   * However, one is wrapped in additional abstraction to make it thread-safe,
+   * which increase the access time. For most operations, we should use the bare reference.
+   * Only for operations that are executed on different threads that aren't attached to JVM,
+   * we should use the thread-safe reference.
+   */
   jni::global_ref<JSIContext::javaobject> javaPart_;
+  std::shared_ptr<ThreadSafeJNIGlobalRef<JSIContext::javaobject>> threadSafeJThis;
+
+  bool wasDeallocated_ = false;
+
 
   explicit JSIContext(jni::alias_ref<jhybridobject> jThis);
 
@@ -164,14 +179,14 @@ private:
     jlong jsRuntimePointer,
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
     std::shared_ptr<react::CallInvoker> callInvoker
-  );
+  ) noexcept;
 
-  void prepareRuntime();
+  void prepareRuntime() noexcept;
 
   void jniSetNativeStateForSharedObject(
     int id,
     jni::alias_ref<JavaScriptObject::javaobject> jsObject
-  );
+  ) noexcept;
 };
 
 /**

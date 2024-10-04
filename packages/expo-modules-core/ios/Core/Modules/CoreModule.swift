@@ -1,3 +1,7 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+import React
+
 // The core module that describes the `global.expo` object.
 internal final class CoreModule: Module {
   internal func definition() -> ModuleDefinition {
@@ -38,6 +42,12 @@ internal final class CoreModule: Module {
         "validAttributes": validAttributes,
         "directEventTypes": directEventTypes
       ]
+    }
+
+    AsyncFunction("reloadAppAsync") { (reason: String) in
+      DispatchQueue.main.async {
+        RCTTriggerReloadCommandListeners(reason)
+      }
     }
   }
 }

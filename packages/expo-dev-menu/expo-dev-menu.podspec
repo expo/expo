@@ -24,7 +24,9 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.4'
+  s.platforms      = {
+    :ios => '15.1'
+  }
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -46,13 +48,17 @@ Pod::Spec.new do |s|
   }
 
   header_search_paths = [
-    '"$(PODS_ROOT)/boost"',
     '"${PODS_ROOT}/Headers/Private/React-Core"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/ExpoModulesCore/Swift Compatibility Header"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/expo-dev-menu-interface/Swift Compatibility Header"',
   ]
   if ENV['USE_FRAMEWORKS']
     header_search_paths.concat([
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-Mapbuffer/React_Mapbuffer.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeApple/React_RuntimeApple.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeCore/React_RuntimeCore.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-nativeconfig/React_nativeconfig.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
     ])
   end
@@ -98,7 +104,14 @@ Pod::Spec.new do |s|
     s.exclude_files  = 'ios/*Tests/**/*', 'ios/ReactNativeCompatibles/**/*', 'vendored/**/*'
     s.compiler_flags = compiler_flags
 
+    # add_dependency() requires to be defined
+    main.pod_target_xcconfig = {}
+
     main.dependency 'React-Core'
+    if ENV['USE_FRAMEWORKS'] && reactNativeTargetVersion >= 75
+      add_dependency(main, "React-rendererconsistency")
+    end
+    add_dependency(main, "React-jsinspector", :framework_name => 'jsinspector_modern')
     main.dependency "EXManifests"
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
@@ -121,7 +134,9 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React-CoreModules'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.platform = :ios, '13.4'
+    test_spec.platforms = {
+      :ios => '15.1'
+    }
   end
 
   s.test_spec 'UITests' do |test_spec|
@@ -129,7 +144,9 @@ Pod::Spec.new do |s|
     test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'React'
-    test_spec.platform = :ios, '13.4'
+    test_spec.platforms = {
+      :ios => '15.1'
+    }
   end
 
   s.default_subspec = ['Main', 'ReactNativeCompatibles']

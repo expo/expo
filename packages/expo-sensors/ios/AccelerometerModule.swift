@@ -27,13 +27,14 @@ public final class AccelerometerModule: Module {
         return
       }
       motionManager.startAccelerometerUpdates(to: operationQueue) { [weak self] data, _ in
-        guard let acceleration = data?.acceleration else {
+        guard let acceleration = data?.acceleration, let timestamp = data?.timestamp else {
           return
         }
         self?.sendEvent(EVENT_ACCELEROMETER_DID_UPDATE, [
           "x": acceleration.x,
           "y": acceleration.y,
-          "z": acceleration.z
+          "z": acceleration.z,
+          "timestamp": timestamp
         ])
       }
     }

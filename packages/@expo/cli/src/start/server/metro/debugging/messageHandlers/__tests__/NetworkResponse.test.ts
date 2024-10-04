@@ -1,7 +1,8 @@
-import { mockConnection } from './testUtilts';
+import { mockConnection } from '../../__tests__/mockConnection';
 import { NetworkResponseHandler } from '../NetworkResponse';
 
 it('is disabled when device capability includes `nativeNetworkInspection`', () => {
+  // @ts-expect-error There are more capabilities, but we only care about this one
   const connection = mockConnection({ page: { capabilities: { nativeNetworkInspection: true } } });
   const handler = new NetworkResponseHandler(connection);
   expect(handler.isEnabled()).toBe(false);
@@ -39,7 +40,7 @@ it('responds to response body from device and debugger', () => {
   ).toBe(true);
 
   // Expect the proper response was sent
-  expect(connection.debugger.sendMessage).toBeCalledWith(
+  expect(connection.debugger.sendMessage).toHaveBeenCalledWith(
     expect.objectContaining({
       id: 420,
       result: {
@@ -63,5 +64,5 @@ it('does not respond to non-existing response', () => {
     })
   ).toBe(false);
 
-  expect(connection.debugger.sendMessage).not.toBeCalled();
+  expect(connection.debugger.sendMessage).not.toHaveBeenCalled();
 });

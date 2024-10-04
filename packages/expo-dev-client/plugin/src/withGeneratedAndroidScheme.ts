@@ -1,14 +1,10 @@
+import type { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
-  AndroidManifest,
-  ConfigPlugin,
+  type AndroidManifest,
+  type ConfigPlugin,
   withAndroidManifest,
-} from '@expo/config-plugins';
-import {
-  ManifestActivity,
-  ManifestIntentFilter,
-} from '@expo/config-plugins/build/android/Manifest';
-import { ExpoConfig } from 'expo/config';
+} from 'expo/config-plugins';
 
 import getDefaultScheme from './getDefaultScheme';
 
@@ -73,20 +69,25 @@ export function removeExpoSchemaFromVerifiedIntentFilters(
  *
  * @see https://github.com/expo/expo-cli/blob/f1624c75b52cc1c4f99354ec4021494e0eff74aa/packages/config-plugins/src/android/Scheme.ts#L166
  */
-function activityHasSingleTaskLaunchMode(activity: ManifestActivity) {
+function activityHasSingleTaskLaunchMode(activity: AndroidConfig.Manifest.ManifestActivity) {
   return activity?.$?.['android:launchMode'] === 'singleTask';
 }
 
 /**
  * Determine if the intent filter has `autoVerify=true`.
  */
-function intentFilterHasAutoVerification(intentFilter: ManifestIntentFilter) {
+function intentFilterHasAutoVerification(
+  intentFilter: AndroidConfig.Manifest.ManifestIntentFilter
+) {
   return intentFilter?.$?.['android:autoVerify'] === 'true';
 }
 
 /**
  * Remove schemes from the intent filter that matches the function.
  */
-function intentFilterRemoveSchemeFromData(intentFilter: ManifestIntentFilter, schemeMatcher: any) {
+function intentFilterRemoveSchemeFromData(
+  intentFilter: AndroidConfig.Manifest.ManifestIntentFilter,
+  schemeMatcher: any
+) {
   return intentFilter?.data?.filter((entry) => !schemeMatcher(entry?.$['android:scheme'] || ''));
 }

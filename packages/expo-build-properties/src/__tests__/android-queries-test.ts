@@ -82,7 +82,7 @@ describe(withAndroidQueries, () => {
     );
     const result = androidModResults.manifest.queries[0];
     expect(result.provider).toBeDefined();
-    expect(result.provider?.$['android:authorities']).toBe('com.expo.provider');
+    expect(result.provider?.[0].$['android:authorities']).toBe('com.expo.provider');
   });
 
   test('it does not add the provider if undefined', async () => {
@@ -113,7 +113,7 @@ describe(withAndroidQueries, () => {
       }
     );
     const result = androidModResults.manifest.queries[0];
-    expect(result.provider).not.toBeDefined();
+    expect(result.provider).toHaveLength(0);
   });
 
   it('it changes the package name', async () => {
@@ -144,7 +144,8 @@ describe(withAndroidQueries, () => {
     );
     const result = androidModResults.manifest.queries[0];
     expect(result.package).toBeDefined();
-    expect(result.package[0].$['android:name']).toBe('com.expo.dev');
+    expect(result.package?.some((p) => p.$['android:name'] === 'com.expo.dev')).toBe(true);
+    expect(result.package?.some((p) => p.$['android:name'] === 'com.expo.test')).toBe(true);
   });
 
   test('it correctly adds a single intent', async () => {

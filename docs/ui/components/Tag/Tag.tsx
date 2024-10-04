@@ -8,7 +8,6 @@ import { getPlatformName } from '~/ui/components/Tag/helpers';
 export type TagProps = {
   name: string;
   firstElement?: boolean;
-  type?: 'regular' | 'toc';
 } & HTMLAttributes<HTMLDivElement>;
 
 export const Tag = ({ name, ...rest }: TagProps) => {

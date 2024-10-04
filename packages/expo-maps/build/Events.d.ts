@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { CameraPosition, MapCluster, Marker, Point, PointOfInterest, UserLocation } from './Common.types';
 /**
  * Type of an argument of MarkerClick listener.
@@ -99,7 +99,7 @@ export type OnLocationChangeEvent = {
  * Adds a new listener to be called when a marker or cluster is clicked.
  * @returns Subscription which can be used later to remove this particular listener.
  */
-export declare function addOnMarkerClickListener(listener: (event: MarkerClickEvent) => void): Subscription;
+export declare function addOnMarkerClickListener(listener: (event: MarkerClickEvent) => void): EventSubscription;
 /**
  * Removes all listeners registered to listen for MarkerClick event.
  */
@@ -109,7 +109,7 @@ export declare function removeAllOnMarkerClickListeners(): void;
  * Does not work for markers which are children of Cluster.
  * @returns Subscription which can be used later to remove this particular listener.
  */
-export declare function addOnMarkerDragStartedListener(listener: (event: MarkerDragStartedEvent) => void): Subscription;
+export declare function addOnMarkerDragStartedListener(listener: (event: MarkerDragStartedEvent) => void): EventSubscription;
 /**
  * Removes all listeners registered to listen for MarkerDragStarted event.
  */
@@ -119,7 +119,7 @@ export declare function removeAllOnMarkerDragStartedListeners(): void;
  * Does not work for markers which are children of Cluster.
  * @returns Subscription which can be used later to remove this particular listener.
  */
-export declare function addOnMarkerDragEndedListener(listener: (event: MarkerDragEndedEvent) => void): Subscription;
+export declare function addOnMarkerDragEndedListener(listener: (event: MarkerDragEndedEvent) => void): EventSubscription;
 /**
  * Removes all listeners registered to listen for MarkerDragEnded event.
  */
@@ -127,7 +127,7 @@ export declare function removeAllOnMarkerDragEndedListeners(): void;
 /**
  * Removes particular listener, which was earlier registered.
  */
-export declare function removeEventListener(subscription: Subscription): void;
+export declare function removeEventListener(subscription: EventSubscription): void;
 /**
  * Removes all registered listeners.
  */

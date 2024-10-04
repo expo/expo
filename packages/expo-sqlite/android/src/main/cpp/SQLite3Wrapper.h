@@ -36,11 +36,11 @@ private:
 
   static jni::local_ref<jni::JString> convertSqlLiteErrorToString(sqlite3 *db);
 
-  static void bindStatement(sqlite3_stmt *statement,
+  static void bindStatement(exsqlite3_stmt *statement,
                             jni::alias_ref<jni::JObject> arg, int index);
 
   static jni::local_ref<jni::JObject>
-  getSqlValue(int columnType, sqlite3_stmt *statement, int index);
+  getSqlValue(int columnType, exsqlite3_stmt *statement, int index);
 
   static void OnUpdateHook(void *arg, int action, char const *dbName,
                            char const *tableName, sqlite3_int64 rowId);

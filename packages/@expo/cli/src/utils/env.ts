@@ -99,11 +99,6 @@ class Env {
     return string('EXPO_EDITOR', '');
   }
 
-  /** Enable auto server root detection for Metro. This will change the server root to the workspace root. */
-  get EXPO_USE_METRO_WORKSPACE_ROOT(): boolean {
-    return boolish('EXPO_USE_METRO_WORKSPACE_ROOT', false);
-  }
-
   /**
    * Overwrite the dev server URL, disregarding the `--port`, `--host`, `--tunnel`, `--lan`, `--localhost` arguments.
    * This is useful for browser editors that require custom proxy URLs.
@@ -185,6 +180,11 @@ class Env {
     return string('EXPO_ADB_USER', '0');
   }
 
+  /** Used internally to enable E2E utilities. This behavior is not stable to external users. */
+  get __EXPO_E2E_TEST(): boolean {
+    return boolish('__EXPO_E2E_TEST', false);
+  }
+
   /** Unstable: Force single-bundle exports in production. */
   get EXPO_NO_BUNDLE_SPLITTING(): boolean {
     return boolish('EXPO_NO_BUNDLE_SPLITTING', false);
@@ -193,6 +193,31 @@ class Env {
   /** Enable unstable/experimental Atlas to gather bundle information during development or export */
   get EXPO_UNSTABLE_ATLAS() {
     return boolish('EXPO_UNSTABLE_ATLAS', false);
+  }
+
+  /** Unstable: Enable tree shaking for Metro. */
+  get EXPO_UNSTABLE_TREE_SHAKING() {
+    return boolish('EXPO_UNSTABLE_TREE_SHAKING', false);
+  }
+
+  /** Unstable: Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and less optimized for development bundling. */
+  get EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH() {
+    return boolish('EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH', false);
+  }
+
+  /** Enable the use of Expo's custom metro require implementation. The custom require supports better debugging, tree shaking, and React Server Components. */
+  get EXPO_USE_METRO_REQUIRE() {
+    return boolish('EXPO_USE_METRO_REQUIRE', false);
+  }
+
+  /** Internal key used to pass eager bundle data from the CLI to the native run scripts during `npx expo run` commands. */
+  get __EXPO_EAGER_BUNDLE_OPTIONS() {
+    return string('__EXPO_EAGER_BUNDLE_OPTIONS', '');
+  }
+
+  /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */
+  get EXPO_NO_DEPLOY(): boolean {
+    return boolish('EXPO_NO_DEPLOY', false);
   }
 }
 

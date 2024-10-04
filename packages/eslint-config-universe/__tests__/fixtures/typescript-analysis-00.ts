@@ -21,5 +21,5 @@ export function myFunc(foo: T | null) {
 }
 
 export function myFunc2(foo: T2 | null) {
-  return foo && foo.a && foo.a.b.method && foo.a.b.method();
+  foo && foo.a && foo.a.b.method && foo.a.b.method();
 }

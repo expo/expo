@@ -1,3 +1,4 @@
+'use client';
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -48,8 +49,8 @@ else {
 }
 let StackTrace;
 if (process.env.NODE_ENV === 'development') {
-    const { LogContext } = require('@expo/metro-runtime/build/error-overlay/Data/LogContext');
-    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/build/error-overlay/overlay/LogBoxInspectorStackFrames');
+    const { LogContext } = require('@expo/metro-runtime/src/error-overlay/Data/LogContext');
+    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/src/error-overlay/overlay/LogBoxInspectorStackFrames');
     StackTrace = function ({ logData }) {
         if (!logData?.symbolicated?.stack?.stack) {
             return null;
@@ -79,7 +80,7 @@ function ErrorBoundary({ error, retry }) {
         <react_native_1.View style={{
             marginBottom: 12,
             gap: 4,
-            flexWrap: 'wrap',
+            flexWrap: process.env.EXPO_OS === 'web' ? 'wrap' : 'nowrap',
         }}>
           <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong

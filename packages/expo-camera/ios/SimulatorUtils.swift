@@ -1,8 +1,12 @@
 import ExpoModulesCore
 
+protocol CameraEvent {
+  var onPictureSaved: EventDispatcher { get }
+}
+
 func takePictureForSimulator(
   _ appContext: AppContext?,
-  _ view: CameraViewLegacy,
+  _ event: CameraEvent,
   _ options: TakePictureOptions,
   _ promise: Promise
 ) throws {
@@ -12,7 +16,7 @@ func takePictureForSimulator(
   let result = try generatePictureForSimulator(appContext: appContext, options: options)
 
   if options.fastMode {
-    view.onPictureSaved([
+    event.onPictureSaved([
       "data": result,
       "id": options.id
     ])

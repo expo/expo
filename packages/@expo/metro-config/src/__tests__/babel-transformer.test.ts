@@ -54,7 +54,6 @@ it(`passes the environment as isServer to the babel preset`, () => {
     plugins: [],
   });
 
-  expect(console.warn).toBeCalledTimes(1);
   expect(generate(results.ast).code).toMatchSnapshot();
 
   expect(babel.transformSync).toBeCalledWith(fixture, {

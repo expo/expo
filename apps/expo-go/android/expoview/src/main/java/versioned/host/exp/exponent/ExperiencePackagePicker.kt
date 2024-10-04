@@ -26,8 +26,10 @@ import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.facedetector.FaceDetectorModule
 import expo.modules.facedetector.FaceDetectorPackage
+import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
+import expo.modules.font.FontLoaderModule
 import expo.modules.gl.GLObjectManagerModule
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
@@ -41,6 +43,8 @@ import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
+import expo.modules.linking.ExpoLinkingModule
+import expo.modules.linking.ExpoLinkingPackage
 import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationModule
@@ -58,10 +62,8 @@ import expo.modules.notifications.notifications.channels.NotificationChannelMana
 import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
-import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
-import expo.modules.sensors.SensorsPackage
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
 import expo.modules.sensors.modules.DeviceMotionModule
@@ -76,7 +78,6 @@ import expo.modules.speech.SpeechModule
 import expo.modules.splashscreen.SplashScreenModule
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.sqlite.SQLiteModule
-import expo.modules.sqlite.SQLiteModuleNext
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
@@ -94,11 +95,11 @@ object ExperiencePackagePicker : ModulesProvider {
     ConstantsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
+    ExpoLinkingPackage(),
     ImageLoaderPackage(),
     KeepAwakePackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
-    SensorsPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
     TaskManagerPackage(),
@@ -157,8 +158,11 @@ object ExperiencePackagePicker : ModulesProvider {
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
+    ExpoFetchModule::class.java,
+    ExpoLinkingModule::class.java,
     FileSystemModule::class.java,
     FaceDetectorModule::class.java,
+    FontLoaderModule::class.java,
     PrintModule::class.java,
     GLViewModule::class.java,
     GLObjectManagerModule::class.java,
@@ -176,7 +180,6 @@ object ExperiencePackagePicker : ModulesProvider {
     MediaLibraryModule::class.java,
     NavigationBarModule::class.java,
     NetworkModule::class.java,
-    RandomModule::class.java,
     ScreenCaptureModule::class.java,
     ScreenOrientationModule::class.java,
     // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
@@ -187,7 +190,6 @@ object ExperiencePackagePicker : ModulesProvider {
     SplashScreenModule::class.java,
     StoreReviewModule::class.java,
     SQLiteModule::class.java,
-    SQLiteModuleNext::class.java,
     SystemUIModule::class.java,
     TaskManagerModule::class.java,
     TrackingTransparencyModule::class.java,

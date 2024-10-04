@@ -1,4 +1,4 @@
-import { StatusWaitingIcon } from '@expo/styleguide-icons';
+import { StatusWaitingIcon } from '@expo/styleguide-icons/custom/StatusWaitingIcon';
 
 import { IconBase, DocIconProps } from './IconBase';
 

@@ -25,7 +25,7 @@ internal struct DynamicOptionalType: AnyDynamicType {
     if jsValue.isUndefined() || jsValue.isNull() {
       return Optional<Any>.none as Any
     }
-    return try wrappedType.cast(jsValue: jsValue, appContext: appContext)
+    return try appContext.converter.toNative(jsValue, wrappedType)
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
@@ -33,6 +33,11 @@ internal struct DynamicOptionalType: AnyDynamicType {
       return Optional<Any>.none as Any
     }
     return try wrappedType.cast(value, appContext: appContext)
+  }
+
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    // Delegate the conversion to the wrapped type
+    return try wrappedType.convertResult(result, appContext: appContext)
   }
 
   var description: String {

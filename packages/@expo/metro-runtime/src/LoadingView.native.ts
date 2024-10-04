@@ -1,3 +1,3 @@
-import LoadingView from 'react-native/Libraries/Utilities/LoadingView';
+import LoadingView from 'react-native/Libraries/Utilities/DevLoadingView';
 
 export default LoadingView;

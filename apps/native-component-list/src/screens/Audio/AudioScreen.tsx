@@ -1,51 +1,48 @@
-import { Asset } from 'expo-asset';
-import { Audio } from 'expo-av';
-import React from 'react';
-import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
+import { optionalRequire } from '../../navigation/routeBuilder';
+import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
-import Player from './AudioPlayer';
-import HeadingText from '../../components/HeadingText';
-import ListButton from '../../components/ListButton';
-import AudioModeSelector from '../AV/AudioModeSelector.android';
+export const AudioScreens = [
+  {
+    name: 'Expo Audio Player',
+    route: 'audio/expo-audio',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./expo-audio/AudioScreen'));
+    },
+  },
+  {
+    name: 'Expo Audio Recording',
+    route: 'audio/expo-audio-recording',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./expo-audio/RecordingScreen'));
+    },
+  },
+  {
+    name: 'Expo AV Player',
+    route: 'audio/expo-av',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AV/AudioScreen'));
+    },
+  },
+  {
+    name: 'Expo AV Recording',
+    route: 'audio/expo-av-recording',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AV/RecordingScreen'));
+    },
+  },
+];
 
-export default function AudioScreen(props: any) {
-  React.useLayoutEffect(() => {
-    props.navigation.setOptions({
-      title: 'Audio (expo-audio)',
-    });
+export default function AudioScreen() {
+  const apis: ListElement[] = AudioScreens.map((screen) => {
+    return {
+      name: screen.name,
+      isAvailable: true,
+      route: `/apis/${screen.route}`,
+    };
   });
-
-  const setAudioActive = (active: boolean) => () => Audio.setIsEnabledAsync(active);
-
-  return (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
-      <HeadingText>Audio state</HeadingText>
-      <ListButton title="Activate Audio" onPress={() => setAudioActive(true)} />
-      <ListButton title="Deactivate Audio" onPress={() => setAudioActive(false)} />
-      <HeadingText>Audio mode</HeadingText>
-      <AudioModeSelector />
-      <HeadingText>HTTP player</HeadingText>
-      <Player
-        source={{
-          uri: 'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
-        }}
-        style={styles.player}
-      />
-      <HeadingText>Local asset player</HeadingText>
-      <Player
-        source={Asset.fromModule(require('../../../assets/sounds/polonez.mp3'))}
-        style={styles.player}
-      />
-    </ScrollView>
-  );
+  return <ComponentListScreen apis={apis} sort={false} />;
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    padding: 10,
-  },
-  player: {
-    borderBottomWidth: 1.0 / PixelRatio.get(),
-    borderBottomColor: '#cccccc',
-  },
-});

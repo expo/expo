@@ -3,7 +3,7 @@ title: Privacy manifests
 description: Learn about configuring iOS privacy manifests for your mobile app.
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
 If you're using a native iOS library that uses a "restricted reason" APIs, you'll need to configure an iOS privacy manifest to declare why you're including native code to call those APIs.
 
@@ -41,6 +41,8 @@ You can include an iOS privacy manifest by using the `privacyManifests` field un
 }
 ```
 
+> Available with SDK 50 and above. Make sure you have updated your Expo SDK libraries to the latest versions for your SDK version using `npx expo install --fix`. For SDK versions below 50, use the [`expo-privacy-manifest-polyfill-plugin`](https://www.npmjs.com/package/expo-privacy-manifest-polyfill-plugin).
+
 <ConfigReactNative>
 
 You can include an iOS privacy manifest in a bare Expo app by creating a **PrivacyInfo.xcprivacy** file using Xcode and adding it to your iOS app target.
@@ -49,8 +51,6 @@ Follow [Apple's Privacy manifest files](https://developer.apple.com/documentatio
 </ConfigReactNative>
 
 You can identify the `NSPrivacyAccessedAPITypes` and `NSPrivacyAccessedAPITypeReasons` values by looking at the [Apple Developer documentation](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api).
-
-> **warning** Make sure you have updated your Expo SDK libraries to the latest versions for your SDK version using `npx expo install --fix`.
 
 ### Including required reasons for Expo SDK packages and other third-party libraries
 

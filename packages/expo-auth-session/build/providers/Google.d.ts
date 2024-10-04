@@ -1,10 +1,13 @@
 import { ProviderAuthRequestConfig } from './Provider.types';
-import { AuthRequest, AuthRequestConfig, AuthRequestPromptOptions, AuthSessionRedirectUriOptions, AuthSessionResult, DiscoveryDocument } from '../AuthSession';
+import { AuthRequest } from '../AuthRequest';
+import { AuthRequestConfig, AuthRequestPromptOptions } from '../AuthRequest.types';
+import { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
+import { DiscoveryDocument } from '../Discovery';
 export declare const discovery: DiscoveryDocument;
 /**
  * @deprecated See [Google authentication](/guides/google-authentication/).
  */
-export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
+export type GoogleAuthRequestConfig = ProviderAuthRequestConfig & {
     /**
      * If the user's email address is known ahead of time, it can be supplied to be the default option.
      * If the user has approved access for this app in the past then auth may return without any further interaction.
@@ -15,10 +18,6 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      * @default false.
      */
     selectAccount?: boolean;
-    /**
-     * Proxy client ID for use in the Expo client on Android and iOS.
-     */
-    expoClientId?: string;
     /**
      * Expo web client ID for use in the browser.
      */
@@ -41,7 +40,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      * Language code ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'.
      */
     language?: string;
-}
+};
 /**
  * Extends [`AuthRequest`](#authrequest) and accepts [`GoogleAuthRequestConfig`](#googleauthrequestconfig) in the constructor.
  */

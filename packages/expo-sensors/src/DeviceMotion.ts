@@ -9,6 +9,7 @@ export type DeviceMotionMeasurement = {
     x: number;
     y: number;
     z: number;
+    timestamp: number;
   };
   /**
    * Device acceleration with the effect of gravity on the three axis as an object with `x`, `y`, `z` keys. Expressed in meters per second squared (m/s^2).
@@ -17,6 +18,7 @@ export type DeviceMotionMeasurement = {
     x: number;
     y: number;
     z: number;
+    timestamp: number;
   };
   /**
    * Device's orientation in space as an object with alpha, beta, gamma keys where alpha is for rotation around Z axis, beta for X axis rotation and gamma for Y axis rotation.
@@ -25,6 +27,7 @@ export type DeviceMotionMeasurement = {
     alpha: number;
     beta: number;
     gamma: number;
+    timestamp: number;
   };
   /**
    * Device's rate of rotation in space expressed in degrees per second (deg/s).
@@ -42,6 +45,10 @@ export type DeviceMotionMeasurement = {
      * Rotation in Z axis.
      */
     gamma: number;
+    /**
+     * Timestamp of the measurement in seconds.
+     */
+    timestamp: number;
   };
   /**
    * Interval at which data is obtained from the native platform. Expressed in **milliseconds** (ms).

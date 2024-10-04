@@ -26,7 +26,7 @@ export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
 
     Log.log();
     const answer = await confirmAsync({
-      message: `Would you like to proceed?`,
+      message: `Continue with uncommited changes?`,
     });
 
     if (!answer) {
@@ -49,21 +49,23 @@ export async function validateGitStatusAsync(): Promise<boolean> {
   }
 
   if (workingTreeStatus === 'clean') {
-    Log.log(`Your git working tree is ${chalk.green('clean')}`);
-    Log.log('To revert the changes after this command completes, you can run the following:');
-    Log.log('  git clean --force && git reset --hard');
     return true;
   } else if (workingTreeStatus === 'dirty') {
-    Log.log(`${chalk.bold('Warning!')} Your git working tree is ${chalk.red('dirty')}.`);
-    Log.log(
-      `It's recommended to ${chalk.bold(
-        'commit all your changes before proceeding'
-      )}, so you can revert the changes made by this command if necessary.`
+    logWarning(
+      'Git branch has uncommited file changes',
+      `It's recommended to commit all changes before proceeding in case you want to revert generated changes.`
     );
   } else {
-    Log.log("We couldn't find a git repository in your project directory.");
-    Log.log("It's recommended to back up your project before proceeding.");
+    logWarning(
+      'No git repo found in current directory',
+      `Use git to track file changes before running commands that modify project files.`
+    );
   }
 
   return false;
+}
+
+function logWarning(warning: string, hint: string) {
+  Log.warn(chalk.bold`! ` + warning);
+  Log.log(chalk.gray`\u203A ` + chalk.gray(hint));
 }

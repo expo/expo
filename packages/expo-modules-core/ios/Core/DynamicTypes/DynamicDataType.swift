@@ -4,6 +4,8 @@
  A dynamic type representing Swift `Data` or Objective-C `NSData` type and backing by JavaScript `Uint8Array`.
  */
 internal struct DynamicDataType: AnyDynamicType {
+  static let shared = DynamicDataType()
+
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return InnerType.self == Data.self
   }

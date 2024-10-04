@@ -13,7 +13,7 @@ class SplashScreenPackage : Package {
   }
 
   override fun createReactActivityLifecycleListeners(activityContext: Context): List<ReactActivityLifecycleListener> {
-    return listOf(SplashScreenReactActivityLifecycleListener(activityContext))
+    return listOf(SplashScreenReactActivityLifecycleListener())
   }
 
   override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {

@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
-  "platforms": ["ios", "android"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "podspecPath": "expo-dev-launcher.podspec",
     "swiftModuleName": "EXDevLauncher",
     "modules": ["DevLauncherInternal", "DevLauncherAuth", "RNCSafeAreaProviderManager"],

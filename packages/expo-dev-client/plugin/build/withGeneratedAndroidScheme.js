@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeExpoSchemaFromVerifiedIntentFilters = exports.setGeneratedAndroidScheme = exports.withGeneratedAndroidScheme = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const getDefaultScheme_1 = __importDefault(require("./getDefaultScheme"));
 const withGeneratedAndroidScheme = (config) => {
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {

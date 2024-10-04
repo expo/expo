@@ -28,6 +28,9 @@ fun interface JSAssertion {
 
   class IntEqual(expectedValue: Int) :
     Equal<Int>(expectedValue, JavaScriptValue::getInt)
+
+  class DoubleEqual(expectedValue: Double) :
+    Equal<Double>(expectedValue, JavaScriptValue::getDouble)
 }
 
 internal class TestCase<T, R>(
@@ -51,13 +54,13 @@ internal class TestCase<T, R>(
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal inline fun <reified T> conversionTest(
-  vararg cases: TestCase<T, out Any?>
+internal inline fun <reified T, reified R> conversionTest(
+  vararg cases: TestCase<T, R>
 ) {
   withJSIInterop(
     inlineModule {
       Name("TestModule")
-      Function("conversionTest") { testID: Int, value: T ->
+      Function<R, Int, T>("conversionTest") { testID: Int, value: T ->
         val case = cases[testID]
         case.nativeAssertion(value)
         return@Function case.map(value)
@@ -86,6 +89,19 @@ internal inline fun <reified T, reified R> conversionTest(
     TestCase(jsValue, nativeAssertion, map, jsAssertion)
   )
 }
+
+@JvmName("conversionTestT")
+internal inline fun <reified T> conversionTest(
+  jsValue: String,
+  noinline nativeAssertion: (T) -> Unit = {},
+  noinline map: (T) -> T = { it },
+  jsAssertion: JSAssertion
+) = conversionTest<T, T>(
+  jsValue,
+  nativeAssertion,
+  map,
+  jsAssertion
+)
 
 @JvmName("conversionTestT")
 internal inline fun <reified T> conversionTest(

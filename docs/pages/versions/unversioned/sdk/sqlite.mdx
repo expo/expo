@@ -3,19 +3,73 @@ title: SQLite
 description: A library that provides access to a database that can be queried through a SQLite API.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sqlite'
 packageName: 'expo-sqlite'
-maxHeadingDepth: 3
 iconUrl: '/static/images/packages/expo-sqlite.png'
 platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
 
 ## Installation
 
 <APIInstallSection />
+
+## Configuration in app.json/app.config.js
+
+You can configure `expo-sqlite` for advanced configurations using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true,
+          "android": {
+            // Override the shared configuration for Android
+            "enableFTS": false,
+            "useSQLCipher": false
+          },
+          "ios": {
+            // You can also override the shared configurations for iOS
+            "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'customBuildFlags',
+      description: 'Custom build flags to be passed to the SQLite build process.',
+    },
+    {
+      name: 'enableFTS',
+      description:
+        'Whether to enable the [FTS3, FTS4](https://www.sqlite.org/fts3.html) and [FTS5](https://www.sqlite.org/fts5.html) extensions.',
+      default: 'true',
+    },
+    {
+      name: 'useSQLCipher',
+      description:
+        'Use the [SQLCipher](https://www.zetetic.net/sqlcipher/) implementations rather than the default SQLite.',
+      default: 'false',
+    },
+  ]}
+/>
 
 ## Usage
 
@@ -321,13 +375,48 @@ const row = await db.getFirstAsync<{ data: Uint8Array }>('SELECT * FROM blobs');
 expect(row.data).toEqual(blob);
 ```
 
+### Browse an on-device database
+
+You can inspect a database, execute queries against it, and explore data with the [drizzle-studio-expo dev tools plugin](https://github.com/drizzle-team/drizzle-studio-expo). This plugin enables you to launch [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), connected to a database in your app, directly from Expo CLI. This plugin can be used with any `expo-sqlite` configuration. It does not require that you use [Drizzle ORM](#drizzle-orm) in your app. [Learn how to install and use the plugin](https://github.com/drizzle-team/drizzle-studio-expo).
+
+## AsyncStorage
+
+The `expo-sqlite` library provides [`AsyncStorage`](#sqliteasyncstorage) as a drop-in replacement for the [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage) library. This key-value store is backed by SQLite. If your project already uses `expo-sqlite`, you can leverage `AsyncStorage` from `expo-sqlite` without needing to add another dependency.
+
+[`AsyncStorage`](#sqliteasyncstorage) provides the same API as `@react-native-async-storage/async-storage`:
+
+```ts Using Storage
+import AsyncStorage from 'expo-sqlite/async-storage';
+
+await AsyncStorage.setItem('key', JSON.stringify({ entity: 'value' }));
+const value = await AsyncStorage.getItem('key');
+const entity = JSON.parse(value);
+console.log(entity); // { entity: 'value' }
+```
+
+A key benefit of using `AsyncStorage` from `expo-sqlite` is the addition of synchronous APIs for added convenience:
+
+```ts Using Storage with synchronous APIs
+import AsyncStorage from 'expo-sqlite/async-storage';
+
+AsyncStorage.setItemSync('key', 'value');
+const value = AsyncStorage.getItemSync('key');
+```
+
+If you're currently using `@react-native-async-storage/async-storage` in your project, switching to `expo-sqlite`'s `AsyncStorage` is as simple as changing the import statement:
+
+```diff
+- import AsyncStorage from '@react-native-async-storage/async-storage';
++ import AsyncStorage from 'expo-sqlite/async-storage';
+```
+
 ## Third-party library integrations
 
 The `expo-sqlite` library is designed to be a solid SQLite foundation. It enables broader integrations with third-party libraries for more advanced higher-level features. Here are some of the libraries that you can use with `expo-sqlite`.
 
 ### Drizzle ORM
 
-[Drizzle](https://orm.drizzle.team/) is a ["headless TypeScript ORM with a head"](https://orm.drizzle.team/docs/overview). It runs on Node.js, Bun, Deno, and React Native. It also has a CLI compansion called [`drizzle-kit`](https://orm.drizzle.team/kit-docs/overview) for generating SQL migrations.
+[Drizzle](https://orm.drizzle.team/) is a ["headless TypeScript ORM with a head"](https://orm.drizzle.team/docs/overview). It runs on Node.js, Bun, Deno, and React Native. It also has a CLI companion called [`drizzle-kit`](https://orm.drizzle.team/kit-docs/overview) for generating SQL migrations.
 
 Check out the [Drizzle ORM documentation](https://orm.drizzle.team/) and the [`expo-sqlite` integration guide](https://orm.drizzle.team/docs/get-started-sqlite#expo-sqlite) for more details.
 
@@ -350,4 +439,4 @@ The following table summarizes the common API for [`SQLiteDatabase`](#sqlitedata
 | [`getAllAsync()`](#getallasyncsource-params)     | [`executeAsync()`](#executeasyncparams) + [`getFirstAsync()`](#getallasync)   | Fetches all query results at once.                                                                                                                                     | Best suited for scenarios with smaller result sets, such as queries with a LIMIT clause, like `SELECT * FROM Table LIMIT 100`, where you intend to retrieve all results in a single batch. |
 | [`getEachAsync()`](#geteachasyncsource-params)   | [`executeAsync()`](#executeasyncparams) + `for-await-of` async iterator       | Provides an iterator for result set traversal. This method fetches one row at a time from the database, potentially reducing memory usage compared to `getAllAsync()`. | Recommended for handling large result sets incrementally, such as with infinite scrolling implementations.                                                                                 |
 
-<APISection packageName="expo-sqlite" apiName="SQLite" exposeAllClassPropsInSidebar={true} />
+<APISection packageName="expo-sqlite" apiName="SQLite" exposeAllClassPropsInSidebar />

@@ -142,7 +142,7 @@ export type VideoProps = {
     useNativeControls?: boolean;
     /**
      * A string describing how the video should be scaled for display in the component view bounds.
-     * Must be one of the [`ResizeMode`](#resizemode) enum values.
+     * Must be one of the [`ResizeMode`](#resizemode-1) enum values.
      */
     resizeMode?: ResizeMode;
     /**

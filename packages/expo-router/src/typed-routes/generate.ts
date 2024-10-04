@@ -1,6 +1,3 @@
-import fs from 'node:fs';
-import path from 'path';
-
 import { RouteNode } from '../Route';
 import { getRoutes } from '../getRoutes';
 import { isTypedRoute, removeSupportedExtensions } from '../matchers';
@@ -16,38 +13,37 @@ export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
   const dynamicRoutes = new Set<string>();
   const dynamicRouteContextKeys = new Set<string>();
 
-  walkRouteNode(
-    getRoutes(ctx, {
+  let routeNode: RouteNode | null = null;
+
+  try {
+    routeNode = getRoutes(ctx, {
       platformRoutes: false, // We don't need to generate platform specific routes
       ignoreEntryPoints: true,
       ignoreRequireErrors: true,
       importMode: 'async',
-    }),
-    staticRoutes,
-    dynamicRoutes,
-    dynamicRouteContextKeys
-  );
+    });
+  } catch {
+    // Ignore errors from `getRoutes`. This is also called inside the app, which has
+    // a nicer UX for showing error messages
+  }
 
-  // If the user has expo-router v3+ installed, we can use the types from the package
-  return (
-    fs
-      .readFileSync(path.join(__dirname, '../../types/expo-router.d.ts'), 'utf-8')
-      // Swap from being a namespace to a module
-      .replace('declare namespace ExpoRouter {', `declare module "expo-router" {`)
-      // Add the route values
-      .replace(
-        'type StaticRoutes = string;',
-        `type StaticRoutes = ${setToUnionType(staticRoutes)};`
-      )
-      .replace(
-        'type DynamicRoutes<T extends string> = string;',
-        `type DynamicRoutes<T extends string> = ${setToUnionType(dynamicRoutes)};`
-      )
-      .replace(
-        'type DynamicRouteTemplate = never;',
-        `type DynamicRouteTemplate = ${setToUnionType(dynamicRouteContextKeys)};`
-      )
-  );
+  walkRouteNode(routeNode, '', staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+
+  return `/* eslint-disable */
+import * as Router from 'expo-router';
+
+export * from 'expo-router';
+
+declare module 'expo-router' {
+  export namespace ExpoRouter {
+    export interface __routes<T extends string = string> extends Record<string, unknown> {
+      StaticRoutes: ${setToUnionType(staticRoutes)};
+      DynamicRoutes: ${setToUnionType(dynamicRoutes)};
+      DynamicRouteTemplate: ${setToUnionType(dynamicRouteContextKeys)};
+    }
+  }
+}
+`;
 }
 
 /**
@@ -55,16 +51,19 @@ export function getTypedRoutesDeclarationFile(ctx: RequireContext) {
  */
 function walkRouteNode(
   routeNode: RouteNode | null,
+  parentRoutePath: string,
   staticRoutes: Set<string>,
   dynamicRoutes: Set<string>,
   dynamicRouteContextKeys: Set<string>
 ) {
   if (!routeNode) return;
 
-  addRouteNode(routeNode, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+  addRouteNode(routeNode, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+
+  parentRoutePath = `${removeSupportedExtensions(`${parentRoutePath}/${routeNode.route}`).replace(/\/?index$/, '')}`; // replace /index with /
 
   for (const child of routeNode.children) {
-    walkRouteNode(child, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
+    walkRouteNode(child, parentRoutePath, staticRoutes, dynamicRoutes, dynamicRouteContextKeys);
   }
 }
 
@@ -74,6 +73,7 @@ function walkRouteNode(
  */
 function addRouteNode(
   routeNode: RouteNode | null,
+  parentRoutePath: string,
   staticRoutes: Set<string>,
   dynamicRoutes: Set<string>,
   dynamicRouteContextKeys: Set<string>
@@ -81,7 +81,7 @@ function addRouteNode(
   if (!routeNode?.route) return;
   if (!isTypedRoute(routeNode.route)) return;
 
-  let routePath = `${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
+  let routePath = `${parentRoutePath}/${removeSupportedExtensions(routeNode.route).replace(/\/?index$/, '')}`; // replace /index with /
 
   if (!routePath.startsWith('/')) {
     routePath = `/${routePath}`;
@@ -91,9 +91,7 @@ function addRouteNode(
     for (const path of generateCombinations(routePath)) {
       dynamicRouteContextKeys.add(path);
       dynamicRoutes.add(
-        `${path
-          .replaceAll(CATCH_ALL, '${CatchAllRoutePart<T>}')
-          .replaceAll(SLUG, '${SingleRoutePart<T>}')}`
+        `${path.replaceAll(CATCH_ALL, '${string}').replaceAll(SLUG, '${Router.SingleRoutePart<T>}')}`
       );
     }
   } else {
@@ -107,7 +105,12 @@ function addRouteNode(
  * Converts a Set to a TypeScript union type
  */
 const setToUnionType = <T>(set: Set<T>) => {
-  return set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
+  return set.size > 0
+    ? [...set]
+        .sort()
+        .map((s) => `\`${s}\``)
+        .join(' | ')
+    : 'never';
 };
 
 function generateCombinations(pathname) {
@@ -121,7 +124,7 @@ function generateCombinations(pathname) {
     }
 
     const group = groups[currentIndex];
-    const withoutGroup = currentPath.replace(group, '');
+    const withoutGroup = currentPath.replace(`/${group}`, '');
     generate(currentIndex + 1, withoutGroup);
     generate(currentIndex + 1, currentPath);
   }

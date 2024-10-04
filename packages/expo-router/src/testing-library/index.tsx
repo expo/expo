@@ -1,14 +1,14 @@
 import './expect';
+import './mocks';
 
 import { NavigationState, PartialState } from '@react-navigation/native';
 import { act, render, RenderResult, screen } from '@testing-library/react-native';
 import React from 'react';
 
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
-import { setInitialUrl } from './mocks';
 import { ExpoRoot } from '../ExpoRoot';
 import getPathFromState from '../fork/getPathFromState';
-import { stateCache } from '../getLinkingConfig';
+import { ExpoLinkingOptions } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 
@@ -19,8 +19,9 @@ afterAll(() => {
   store.cleanup();
 });
 
-type RenderRouterOptions = Parameters<typeof render>[1] & {
+export type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
+  linking?: Partial<ExpoLinkingOptions>;
 };
 
 type Result = ReturnType<typeof render> & {
@@ -47,30 +48,26 @@ export { MockContextConfig, getMockConfig, getMockContext };
 
 export function renderRouter(
   context: MockContextConfig = './app',
-  { initialUrl = '/', ...options }: RenderRouterOptions = {}
+  { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
 ): Result {
   jest.useFakeTimers();
 
   const mockContext = getMockContext(context);
 
-  // Reset the initial URL
-  setInitialUrl(initialUrl);
-
   // Force the render to be synchronous
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-  stateCache.clear();
 
-  let location: URL | undefined;
+  const result = render(
+    <ExpoRoot context={mockContext} location={initialUrl} linking={linking} />,
+    options
+  );
 
-  if (typeof initialUrl === 'string') {
-    location = new URL(initialUrl, 'test://');
-  } else if (initialUrl instanceof URL) {
-    location = initialUrl;
-  }
-
-  const result = render(<ExpoRoot context={mockContext} location={location} />, {
-    ...options,
-  });
+  /**
+   * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
+   * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
+   * (that the app will briefly be in the right state, but then update to an invalid state)
+   */
+  store.subscribeToRootState(() => jest.runOnlyPendingTimers());
 
   return Object.assign(result, {
     getPathname(this: RenderResult): string {
@@ -120,7 +117,7 @@ export const testRouter = {
     return router.canGoBack();
   },
   /** Update the current route query params and assert the new pathname */
-  setParams(params?: Record<string, string>, path?: string) {
+  setParams(params: Record<string, string>, path?: string) {
     router.setParams(params);
     if (path) {
       expect(screen).toHavePathnameWithParams(path);

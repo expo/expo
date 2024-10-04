@@ -1,4 +1,4 @@
-import { ExpoConfig } from 'expo/config';
+import type { ExpoConfig } from 'expo/config';
 
 /*
  * Converts the slug from app configuration to a string that's a valid URI scheme.

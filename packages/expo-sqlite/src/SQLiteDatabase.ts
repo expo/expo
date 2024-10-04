@@ -1,6 +1,6 @@
-import { EventEmitter, Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 
-import ExpoSQLite from './ExpoSQLiteNext';
+import ExpoSQLite from './ExpoSQLite';
 import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
 import {
   SQLiteBindParams,
@@ -12,8 +12,6 @@ import {
 } from './SQLiteStatement';
 
 export { SQLiteOpenOptions };
-
-const emitter = new EventEmitter(ExpoSQLite);
 
 /**
  * A SQLite database.
@@ -83,7 +81,7 @@ export class SQLiteDatabase {
    *   // The following UPDATE query out of transaction may be executed here and break the expectation.
    *   //
    *
-   *   const result = await db.getAsync<{ name: string }>('SELECT name FROM Users');
+   *   const result = await db.getFirstAsync<{ name: string }>('SELECT name FROM Users');
    *   expect(result?.name).toBe('aaa');
    * });
    * db.execAsync('UPDATE test SET name = "bbb"');
@@ -523,8 +521,8 @@ export type DatabaseChangeEvent = {
  */
 export function addDatabaseChangeListener(
   listener: (event: DatabaseChangeEvent) => void
-): Subscription {
-  return emitter.addListener('onDatabaseChange', listener);
+): EventSubscription {
+  return ExpoSQLite.addListener('onDatabaseChange', listener);
 }
 
 /**

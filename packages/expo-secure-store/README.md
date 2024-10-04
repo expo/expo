@@ -11,8 +11,8 @@ Provides a way to encrypt and securely store key–value pairs locally on the de
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/securestore.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/securestore/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/securestore/)
 
 # Installation in managed Expo projects
 
@@ -28,13 +28,13 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-secure-store
 ```
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
 ### Configure for Android
 
 No additional set up necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

@@ -16,3 +16,8 @@ export declare function renamePackageOnDiskForType({ projectRoot, type, packageN
 }): Promise<void>;
 export declare function setPackageInBuildGradle(config: Pick<ExpoConfig, 'android'>, buildGradle: string): string;
 export declare function getApplicationIdAsync(projectRoot: string): Promise<string | null>;
+/**
+ * Make a package name safe to use in a kotlin file,
+ * e.g. is.pvin.hello -> `is`.pvin.hello
+ */
+export declare function kotlinSanitized(packageName: string): string;

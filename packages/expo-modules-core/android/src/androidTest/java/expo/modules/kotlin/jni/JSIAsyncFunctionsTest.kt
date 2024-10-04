@@ -3,10 +3,12 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
@@ -255,5 +257,37 @@ class JSIAsyncFunctionsTest {
     Truth.assertThat(e2).isEqualTo(2)
     Truth.assertThat(e3).isEqualTo(3)
     Truth.assertThat(e4).isEqualTo(4)
+  }
+
+  @Test
+  fun long_array_should_be_convertible() = withSingleModule({
+    AsyncFunction("longArray") { a: LongArray -> a }
+  }) {
+    val array = callAsync("longArray", "[1, 2, 3]").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getDouble()
+    val e2 = array[1].getDouble()
+    val e3 = array[2].getDouble()
+
+    Truth.assertThat(e1).isEqualTo(1.0)
+    Truth.assertThat(e2).isEqualTo(2.0)
+    Truth.assertThat(e3).isEqualTo(3.0)
+  }
+
+  private class MySharedRef(value: Int, runtimeContext: RuntimeContext) : SharedRef<Int>(value, runtimeContext)
+
+  @Test
+  fun shared_ref_should_be_convertible() = withSingleModule({
+    AsyncFunction("createRef") {
+      MySharedRef(123, module!!.runtimeContext)
+    }
+    Function("getRef") { ref: MySharedRef ->
+      ref.ref
+    }
+  }) {
+    callAsync("createRef").getObject()
+    val value = call("getRef", "global.promiseResult").getInt()
+    Truth.assertThat(value).isEqualTo(123)
   }
 }

@@ -23,7 +23,7 @@ public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
       return "NSCalendarsUsageDescription"
     }()
 
-    if let calendarUsageDescription = Bundle.main.object(forInfoDictionaryKey: description) {
+    if Bundle.main.object(forInfoDictionaryKey: description) != nil {
       permissions = EKEventStore.authorizationStatus(for: .event)
     } else {
       EXFatal(MissingCalendarPListValueException(description))

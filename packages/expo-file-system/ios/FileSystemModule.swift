@@ -37,11 +37,12 @@ public final class FileSystemModule: Module {
     Events(EVENT_DOWNLOAD_PROGRESS, EVENT_UPLOAD_PROGRESS)
 
     AsyncFunction("getInfoAsync") { (url: URL, options: InfoOptions, promise: Promise) in
+      let optionsDict = options.toDictionary(appContext: appContext)
       switch url.scheme {
       case "file":
-        EXFileSystemLocalFileHandler.getInfoForFile(url, withOptions: options.toDictionary(), resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        EXFileSystemLocalFileHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
       case "assets-library", "ph":
-        EXFileSystemAssetLibraryHandler.getInfoForFile(url, withOptions: options.toDictionary(), resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        EXFileSystemAssetLibraryHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
       default:
         throw UnsupportedSchemeException(url.scheme)
       }
@@ -206,7 +207,6 @@ public final class FileSystemModule: Module {
       try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
 
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
-      let resumeData = resumeDataString != nil ? Data(base64Encoded: resumeDataString ?? "") : nil
       let onWrite: EXDownloadDelegateOnWriteCallback = { [weak self] _, _, totalBytesWritten, totalBytesExpectedToWrite in
         self?.sendEvent(EVENT_DOWNLOAD_PROGRESS, [
           "uuid": uuid,
@@ -255,14 +255,21 @@ public final class FileSystemModule: Module {
       taskHandlersManager.task(forId: id)?.cancel()
     }
 
-    AsyncFunction("getFreeDiskStorageAsync") { () -> Int in
+    AsyncFunction("getFreeDiskStorageAsync") { () -> Int64 in
     // Uses required reason API based on the following reason: E174.1 85F4.1
-      let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeAvailableCapacityKey])
-
-      guard let availableCapacity = resourceValues?.volumeAvailableCapacity else {
+#if !os(tvOS)
+      let resourceValues = try getResourceValues(from: documentDirectory, forKeys: [.volumeAvailableCapacityForImportantUsageKey])
+      guard let availableCapacity = resourceValues?.volumeAvailableCapacityForImportantUsage else {
         throw CannotDetermineDiskCapacity()
       }
       return availableCapacity
+#else
+      let resourceValues = try getResourceValues(from: cacheDirectory, forKeys: [.volumeAvailableCapacityKey])
+      guard let availableCapacity = resourceValues?.volumeAvailableCapacity else {
+        throw CannotDetermineDiskCapacity()
+      }
+      return Int64(availableCapacity)
+#endif
     }
 
     AsyncFunction("getTotalDiskCapacityAsync") { () -> Int in

@@ -41,9 +41,13 @@ export interface ConnectedDevice {
 async function getConnectedDevicesUsingNativeToolsAsync(): Promise<ConnectedDevice[]> {
   return (
     (await devicectl.getConnectedAppleDevicesAsync())
-      // Filter out unpaired devices.
+      // Filter out unpaired and unavailable devices.
       // TODO: We could improve this logic in the future to attempt pairing if specified.
-      .filter((device) => device.connectionProperties.pairingState === 'paired')
+      .filter(
+        (device) =>
+          device.connectionProperties.pairingState === 'paired' &&
+          device.connectionProperties.tunnelState !== 'unavailable'
+      )
       .map((device) => {
         return {
           name: device.deviceProperties.name,
@@ -74,6 +78,7 @@ function coercePlatformToOsType(platform: string): OSType {
 function coerceUsbmuxdPlatformToOsType(platform: string): OSType {
   // The only connectable device I have to test against...
   switch (platform) {
+    case 'iPhone':
     case 'iPhone OS':
       return 'iOS';
     default:

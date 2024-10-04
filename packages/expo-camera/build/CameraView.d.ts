@@ -1,8 +1,7 @@
-import { Subscription } from 'expo-modules-core';
-import * as React from 'react';
-import { Ref } from 'react';
+import { type EventSubscription } from 'expo-modules-core';
+import { type Ref, Component } from 'react';
 import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
-export default class CameraView extends React.Component<CameraProps> {
+export default class CameraView extends Component<CameraProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
      */
@@ -26,13 +25,21 @@ export default class CameraView extends React.Component<CameraProps> {
      * The list varies across Android devices but is the same for every iOS.
      */
     getAvailablePictureSizesAsync(): Promise<string[]>;
+    /**
+     * Resumes the camera preview.
+     */
+    resumePreview(): Promise<void>;
+    /**
+     * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
+     */
+    pausePreview(): Promise<void>;
     static ConversionTables: {
         type: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
         flash: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
     };
     static defaultProps: CameraProps;
     _cameraHandle?: number | null;
-    _cameraRef: React.RefObject<CameraViewRef>;
+    _cameraRef: import("react").RefObject<CameraViewRef>;
     _lastEvents: {
         [eventName: string]: string;
     };
@@ -41,19 +48,24 @@ export default class CameraView extends React.Component<CameraProps> {
     };
     /**
      * Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation
-     * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview. Anyway on Android it is essential
-     * to set ratio prop to get a picture with correct dimensions.
+     * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview.
      * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
      * @param options An object in form of `CameraPictureOptions` type.
-     * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on iOS,
-     * Android, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
-     * the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data
-     * of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source
-     * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
-     * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
+     * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on Android,
+     * iOS, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
+     * the dimensions of the image.
+     *
+     * `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data
+     * of the image in Base64. Prepend it with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source
+     * for an `Image` element for example.
+     *
+     * `exif` is included if the `exif` option was truthy, and is an object containing EXIF
+     * data for the image. The names of its properties are EXIF tags and their values are the values for those tags.
      *
      * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
+     *
+     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture | undefined>;
     /**
@@ -62,7 +74,7 @@ export default class CameraView extends React.Component<CameraProps> {
      */
     static launchScanner(options?: ScanningOptions): Promise<void>;
     /**
-     * Dimiss the scanner presented by `launchScanner`.
+     * Dismiss the scanner presented by `launchScanner`.
      * @platform ios
      */
     static dismissScanner(): Promise<void>;
@@ -74,7 +86,7 @@ export default class CameraView extends React.Component<CameraProps> {
      *
      * @platform ios
      */
-    static onModernBarcodeScanned(listener: (event: ScanningResult) => void): Subscription;
+    static onModernBarcodeScanned(listener: (event: ScanningResult) => void): EventSubscription;
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
      * Flipping camera during a recording results in stopping it.
@@ -106,6 +118,6 @@ export default class CameraView extends React.Component<CameraProps> {
         nativeEvent: any;
     }) => void;
     _setReference: (ref: Ref<CameraViewRef>) => void;
-    render(): JSX.Element;
+    render(): import("react").JSX.Element;
 }
 //# sourceMappingURL=CameraView.d.ts.map

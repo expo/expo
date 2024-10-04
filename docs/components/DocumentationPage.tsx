@@ -12,14 +12,19 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
+import { Callout } from '~/ui/components/Callout';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { PagePlatformTags } from '~/ui/components/PagePlatformTags';
 import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar';
-import { P } from '~/ui/components/Text';
+import { versionToText } from '~/ui/components/Sidebar/ApiVersionSelect';
+import { A } from '~/ui/components/Text';
+
+const { LATEST_VERSION } = versions;
 
 export type DocPageProps = PropsWithChildren<PageMetadata>;
 
@@ -33,6 +38,7 @@ export default function DocumentationPage({
   hideFromSearch,
   platforms,
   hideTOC,
+  modificationDate,
 }: DocPageProps) {
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { version } = usePageApiVersion();
@@ -134,18 +140,21 @@ export default function DocumentationPage({
           'mx-auto py-10 px-14',
           'max-lg-gutters:px-4 max-lg-gutters:pt-5 max-lg-gutters:pb-12'
         )}>
+        {version && version === 'unversioned' && (
+          <Callout type="default" size="sm" className="!inline-flex w-full !mb-5">
+            This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
+            <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
+            {versionToText(LATEST_VERSION)}).
+          </Callout>
+        )}
         {title && (
           <PageTitle
             title={title}
+            description={description}
             sourceCodeUrl={sourceCodeUrl}
             packageName={packageName}
             iconUrl={iconUrl}
           />
-        )}
-        {description && (
-          <P theme="secondary" data-description="true">
-            {description}
-          </P>
         )}
         {platforms && <PagePlatformTags platforms={platforms} />}
         {title && <Separator />}
@@ -156,6 +165,7 @@ export default function DocumentationPage({
           packageName={packageName}
           previousPage={previousPage}
           nextPage={nextPage}
+          modificationDate={modificationDate}
         />
       </div>
     </DocumentationNestedScrollLayout>

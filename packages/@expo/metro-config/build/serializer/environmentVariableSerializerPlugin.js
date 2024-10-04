@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.environmentVariableSerializerPlugin = exports.serverPreludeSerializerPlugin = exports.getTransformEnvironment = void 0;
+exports.getEnvVarDevString = exports.environmentVariableSerializerPlugin = exports.serverPreludeSerializerPlugin = exports.getTransformEnvironment = void 0;
 const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
 const debug = require('debug')('expo:metro-config:serializer:env-var');
@@ -12,13 +12,13 @@ function getTransformEnvironment(url) {
     return match ? match[1] : null;
 }
 exports.getTransformEnvironment = getTransformEnvironment;
-function getAllExpoPublicEnvVars() {
+function getAllExpoPublicEnvVars(inputEnv = process.env) {
     // Create an object containing all environment variables that start with EXPO_PUBLIC_
     const env = {};
-    for (const key in process.env) {
+    for (const key in inputEnv) {
         if (key.startsWith('EXPO_PUBLIC_')) {
-            // @ts-ignore
-            env[key] = process.env[key];
+            // @ts-expect-error: TS doesn't know that the key starts with EXPO_PUBLIC_
+            env[key] = inputEnv[key];
         }
     }
     return env;
@@ -62,33 +62,42 @@ function environmentVariableSerializerPlugin(entryPoint, preModules, graph, opti
         debug('Skipping environment variable inlining in production environment in favor of babel-preset-expo inlining with source maps.');
         return [entryPoint, preModules, graph, options];
     }
-    // Set the process.env object to the current environment variables object
-    // ensuring they aren't iterable, settable, or enumerable.
-    const str = `process.env=Object.defineProperties(process.env, {${Object.keys(getAllExpoPublicEnvVars())
-        .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`)
-        .join(',')}});`;
-    const [firstModule, ...restModules] = preModules;
-    // const envCode = `var process=this.process||{};${str}`;
-    // process.env
-    return [
-        entryPoint,
-        [
-            // First module defines the process.env object.
-            firstModule,
-            // Second module modifies the process.env object.
-            getEnvPrelude(str),
-            // Now we add the rest
-            ...restModules,
-        ],
-        graph,
-        options,
-    ];
+    const code = getEnvVarDevString();
+    const prelude = preModules.find((module) => module.path === '\0polyfill:environment-variables');
+    if (prelude) {
+        debug('Injecting environment variables in virtual module.');
+        // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
+        prelude.output[0].data.code = code;
+        return [entryPoint, preModules, graph, options];
+    }
+    // Old system which doesn't work very well since Metro doesn't serialize graphs the same way in all cases.
+    // e.g. the `.map` endpoint is serialized differently to error symbolication.
+    // Inject the new module at index 1
+    // @ts-expect-error: The preModules are mutable and we need to mutate them in order to ensure the changes are applied outside of the serializer.
+    preModules.splice(
+    // Inject at index 1 to ensure it runs after the prelude (which injects env vars).
+    1, 0, getEnvPrelude(code));
+    return [entryPoint, preModules, graph, options];
 }
 exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
-function getEnvPrelude(contents) {
-    const code = '// HMR env vars from Expo CLI (dev-only)\n' + contents;
-    const name = '__env__';
+function getEnvVarDevString(env = process.env) {
+    // Set the process.env object to the current environment variables object
+    // ensuring they aren't iterable, settable, or enumerable.
+    const str = `process.env=Object.defineProperties(process.env, {` +
+        Object.keys(getAllExpoPublicEnvVars(env))
+            .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(env[key])} }`)
+            .join(',') +
+        '});';
+    const code = '/* HMR env vars from Expo CLI (dev-only) */ ' + str;
     const lineCount = (0, countLines_1.default)(code);
+    if (lineCount !== 1) {
+        throw new Error(`Virtual environment variable code must be one line, got "${lineCount}" lines.`);
+    }
+    return code;
+}
+exports.getEnvVarDevString = getEnvVarDevString;
+function getEnvPrelude(code) {
+    const name = `\0polyfill:environment-variables`;
     return {
         dependencies: new Map(),
         getSource: () => Buffer.from(code),
@@ -100,7 +109,7 @@ function getEnvPrelude(contents) {
                 data: {
                     code,
                     // @ts-expect-error: typed incorrectly upstream
-                    lineCount,
+                    lineCount: 1,
                     map: [],
                 },
             },

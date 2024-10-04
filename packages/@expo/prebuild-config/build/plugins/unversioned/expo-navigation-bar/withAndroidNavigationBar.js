@@ -53,13 +53,13 @@ function setNavigationBarColors(config, colors) {
 function setNavigationBarStyles(config, styles) {
   styles = _configPlugins().AndroidConfig.Styles.assignStylesValue(styles, {
     add: getNavigationBarStyle(config) === 'dark-content',
-    parent: _configPlugins().AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
+    parent: _configPlugins().AndroidConfig.Styles.getAppThemeGroup(),
     name: 'android:windowLightNavigationBar',
     value: 'true'
   });
   styles = _configPlugins().AndroidConfig.Styles.assignStylesValue(styles, {
     add: !!getNavigationBarColor(config),
-    parent: _configPlugins().AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
+    parent: _configPlugins().AndroidConfig.Styles.getAppThemeGroup(),
     name: `android:${NAVIGATION_BAR_COLOR}`,
     value: `@color/${NAVIGATION_BAR_COLOR}`
   });

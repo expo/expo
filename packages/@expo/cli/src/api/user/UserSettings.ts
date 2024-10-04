@@ -21,47 +21,46 @@ export type UserSettingsData = {
 };
 
 /** Return the user cache directory. */
-function getDirectory() {
+export function getSettingsDirectory() {
   return getExpoHomeDirectory();
 }
 
-function getFilePath(): string {
+/** Return the file path of the settings file */
+export function getSettingsFilePath(): string {
   return getUserStatePath();
 }
 
-function userSettingsJsonFile(): JsonFile<UserSettingsData> {
-  return new JsonFile<UserSettingsData>(getFilePath(), {
+/** Get a new JsonFile instance pointed towards the settings file */
+export function getSettings(): JsonFile<UserSettingsData> {
+  return new JsonFile<UserSettingsData>(getSettingsFilePath(), {
     ensureDir: true,
     jsonParseErrorDefault: {},
     cantReadFileDefault: {},
   });
 }
 
-async function setSessionAsync(sessionData?: SessionData): Promise<void> {
-  await UserSettings.setAsync('auth', sessionData, {
+export function getAccessToken(): string | null {
+  return process.env.EXPO_TOKEN ?? null;
+}
+
+export function getSession() {
+  return getSettings().get('auth', null);
+}
+
+export async function setSessionAsync(sessionData?: SessionData) {
+  await getSettings().setAsync('auth', sessionData, {
     default: {},
     ensureDir: true,
   });
 }
 
-function getSession(): SessionData | null {
-  try {
-    return JsonFile.read<UserSettingsData>(getUserStatePath())?.auth ?? null;
-  } catch (error: any) {
-    if (error.code === 'ENOENT') {
-      return null;
-    }
-    throw error;
-  }
-}
-
-function getAccessToken(): string | null {
-  return process.env.EXPO_TOKEN ?? null;
-}
-
-// returns an anonymous, unique identifier for a user on the current computer
-async function getAnonymousIdentifierAsync(): Promise<string> {
-  const settings = await userSettingsJsonFile();
+/**
+ * Get an anonymous and randomly generated identifier.
+ * This is used to group telemetry event by unknown actor,
+ * and cannot be used to identify a single user.
+ */
+export async function getAnonymousIdAsync(): Promise<string> {
+  const settings = getSettings();
   let id = await settings.getAsync('uuid', null);
 
   if (!id) {
@@ -72,14 +71,19 @@ async function getAnonymousIdentifierAsync(): Promise<string> {
   return id;
 }
 
-const UserSettings = Object.assign(userSettingsJsonFile(), {
-  getSession,
-  setSessionAsync,
-  getAccessToken,
-  getDirectory,
-  getFilePath,
-  userSettingsJsonFile,
-  getAnonymousIdentifierAsync,
-});
+/**
+ * Get an anonymous and randomly generated identifier.
+ * This is used to group telemetry event by unknown actor,
+ * and cannot be used to identify a single user.
+ */
+export function getAnonymousId(): string {
+  const settings = getSettings();
+  let id = settings.get('uuid', null);
 
-export default UserSettings;
+  if (!id) {
+    id = crypto.randomUUID();
+    settings.set('uuid', id);
+  }
+
+  return id;
+}

@@ -1,18 +1,17 @@
-import { EventEmitter, Subscription, requireNativeModule } from 'expo-modules-core';
+import { type EventSubscription, requireNativeModule } from 'expo-modules-core';
 
 const ExpoLocalizationModule = requireNativeModule('ExpoLocalization');
-const emitter = new EventEmitter(ExpoLocalizationModule);
 
-export function addLocaleListener(listener: (event) => void): Subscription {
-  return emitter.addListener('onLocaleSettingsChanged', listener);
+export function addLocaleListener(listener: (event) => void): EventSubscription {
+  return ExpoLocalizationModule.addListener('onLocaleSettingsChanged', listener);
 }
 
-export function addCalendarListener(listener: (event) => void): Subscription {
-  return emitter.addListener('onCalendarSettingsChanged', listener);
+export function addCalendarListener(listener: (event) => void): EventSubscription {
+  return ExpoLocalizationModule.addListener('onCalendarSettingsChanged', listener);
 }
 
-export function removeSubscription(subscription: Subscription) {
-  return emitter.removeSubscription(subscription);
+export function removeSubscription(subscription: EventSubscription) {
+  subscription.remove();
 }
 
 export default ExpoLocalizationModule;

@@ -36,10 +36,5 @@
   "peerDependencies": {
     "expo-crypto": "^13.0.0"
   },
-  "peerDependenciesMeta": {
-    "expo-random": {
-      "optional": true
-    }
-  },
   "dependencies": {}
 }

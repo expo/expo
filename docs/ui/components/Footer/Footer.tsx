@@ -1,5 +1,6 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
-import { ArrowLeftIcon, ArrowRightIcon } from '@expo/styleguide-icons';
+import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
 
 import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
@@ -7,7 +8,7 @@ import { NewsletterSignUp } from './NewsletterSignUp';
 import { PageVote } from './PageVote';
 
 import { NavigationRouteWithSection } from '~/types/common';
-import { P, FOOTNOTE, UL } from '~/ui/components/Text';
+import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
 type Props = {
   title?: string;
@@ -15,20 +16,28 @@ type Props = {
   packageName?: string;
   previousPage?: NavigationRouteWithSection;
   nextPage?: NavigationRouteWithSection;
+  modificationDate?: string;
 };
 
-export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPage }: Props) => {
+const isDev = process.env.NODE_ENV === 'development';
+
+export const Footer = ({
+  title,
+  sourceCodeUrl,
+  packageName,
+  previousPage,
+  nextPage,
+  modificationDate,
+}: Props) => {
   const router = useRouter();
   const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
-  const isExpoPackage = packageName && packageName.startsWith('expo-');
+  const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
+  const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
+
+  const shouldShowModifiedDate = !isExpoPackage && !isTutorial;
 
   return (
-    <footer
-      className={mergeClasses(
-        'flex flex-col gap-8',
-        title && 'pt-10 mt-10 border-t border-default',
-        !title && 'pt-2'
-      )}>
+    <footer className={mergeClasses('flex flex-col gap-10', title && 'pt-10', !title && 'pt-6')}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(
@@ -86,6 +95,16 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
               <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
             )}
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
+            {!isDev && shouldShowModifiedDate && modificationDate && (
+              <LI className="!text-quaternary !text-2xs !mt-4">
+                Last updated on {modificationDate}
+              </LI>
+            )}
+            {isDev && shouldShowModifiedDate && (
+              <LI className="!text-quaternary !text-2xs !mt-4">
+                Last updated data is not available in dev mode
+              </LI>
+            )}
           </UL>
         </div>
         <NewsletterSignUp />

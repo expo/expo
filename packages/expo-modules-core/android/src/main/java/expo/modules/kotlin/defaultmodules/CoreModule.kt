@@ -1,5 +1,6 @@
 package expo.modules.kotlin.defaultmodules
 
+import com.facebook.react.ReactActivity
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -24,7 +25,7 @@ class CoreModule : Module() {
     }
 
     Function("getViewConfig") { viewName: String ->
-      val holder = appContext.registry.getModuleHolder(viewName)
+      val holder = runtimeContext.registry.getModuleHolder(viewName)
         ?: return@Function null
 
       val viewManagerDefinition = holder.definition.viewManagerDefinition
@@ -49,6 +50,12 @@ class CoreModule : Module() {
         "validAttributes" to validAttributes,
         "directEventTypes" to directEventTypes
       )
+    }
+
+    AsyncFunction("reloadAppAsync") { _: String ->
+      val reactActivity = appContext.throwingActivity as? ReactActivity ?: return@AsyncFunction
+      val reactDelegate = reactActivity.reactDelegate ?: return@AsyncFunction
+      reactDelegate.reload()
     }
   }
 }

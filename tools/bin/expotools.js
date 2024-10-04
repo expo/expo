@@ -17,7 +17,7 @@ function createLogModifier(modifier) {
   return (text) => {
     try {
       return modifier(require('chalk'))(text);
-    } catch (e) {
+    } catch {
       return text;
     }
   };
@@ -78,7 +78,7 @@ function buildFolderExists() {
   try {
     fs.accessSync(BUILD_PATH, fs.constants.R_OK);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -138,7 +138,7 @@ function loadCommand(program, commandFile) {
 
 async function loadAllCommandsAsync(callback) {
   const program = require('@expo/commander');
-  const glob = require('glob-promise');
+  const { glob } = require('glob');
 
   const commandFiles = await glob('build/commands/*.js', {
     cwd: ROOT_PATH,

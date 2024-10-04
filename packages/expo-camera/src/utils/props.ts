@@ -33,9 +33,10 @@ export function convertNativeProps(props?: CameraProps): CameraNativeProps {
 export function ensureNativeProps(props?: CameraProps): CameraNativeProps {
   const newProps = convertNativeProps(props);
 
-  newProps.barcodeScannerEnabled = !!newProps.onBarcodeScanned;
+  newProps.barcodeScannerEnabled = !!props?.onBarcodeScanned;
   newProps.flashMode = props?.flash ?? 'off';
   newProps.mute = props?.mute ?? false;
+  newProps.autoFocus = props?.autofocus ?? 'off';
 
   if (Platform.OS !== 'web') {
     delete newProps.poster;

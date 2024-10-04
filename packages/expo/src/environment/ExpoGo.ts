@@ -16,7 +16,7 @@ type ExpoGoProjectConfig = {
   packagerOpts?: ExpoGoPackagerOpts;
 };
 
-type ExpoGoPackagerOpts = {
+export type ExpoGoPackagerOpts = {
   hostType?: string;
   dev?: boolean;
   strict?: boolean;
@@ -45,6 +45,7 @@ export function isRunningInExpoGo(): boolean {
 }
 
 /**
+ * @hidden
  * Returns an Expo Go project config from the manifest or `null` if the app is not running in Expo Go.
  */
 export function getExpoGoProjectConfig(): ExpoGoProjectConfig | null {

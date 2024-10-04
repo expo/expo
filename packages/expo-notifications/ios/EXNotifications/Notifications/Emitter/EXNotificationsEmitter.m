@@ -15,8 +15,6 @@
 
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 
-@property (nonatomic, strong) UNNotificationResponse *lastNotificationResponse;
-
 @end
 
 @implementation EXNotificationsEmitter
@@ -26,7 +24,15 @@ EX_EXPORT_MODULE(ExpoNotificationsEmitter);
 EX_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
                     getLastNotificationResponseAsyncWithResolver:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
 {
-  resolve(_lastNotificationResponse ? [self serializedNotificationResponse:_lastNotificationResponse] : [NSNull null]);
+  UNNotificationResponse* lastResponse = _notificationCenterDelegate.lastNotificationResponse;
+  resolve(lastResponse ? [self serializedNotificationResponse:lastResponse] : [NSNull null]);
+}
+
+EX_EXPORT_METHOD_AS(clearLastNotificationResponseAsync,
+                    clearLastNotificationResponseAsyncWithResolver:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
+{
+  _notificationCenterDelegate.lastNotificationResponse = nil;
+  resolve([NSNull null]);
 }
 
 # pragma mark - EXModuleRegistryConsumer
@@ -41,7 +47,7 @@ EX_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[onDidReceiveNotification, onDidReceiveNotificationResponse];
+  return @[onDidReceiveNotification, onDidReceiveNotificationResponse, onDidClearNotificationResponse];
 }
 
 - (void)startObserving
@@ -77,7 +83,7 @@ EX_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
-  _lastNotificationResponse = response;
+  _notificationCenterDelegate.lastNotificationResponse = response;
   [self sendEventWithName:onDidReceiveNotificationResponse body:[self serializedNotificationResponse:response]];
   completionHandler();
 }

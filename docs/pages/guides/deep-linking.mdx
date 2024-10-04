@@ -3,22 +3,21 @@ title: Deep linking
 description: Learn how to use app/universal links to open your app from a standard web URL.
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { Terminal } from '~/ui/components/Snippet';
+import { CODE } from '~/ui/components/Text';
 
-Universal links are different from standard deep links as they use regular HTTPS links to direct users to a specific route in your app. If a user doesn't have your app installed, the link will take them to the associated website. This allows you to send notification emails with links that work seamlessly on desktop web browsers while opening the content in your app on mobile. Android refers to this concept as **app links**, and iOS refers to it as **universal links**. This guide specifically discusses universal links that do not use a custom URL scheme.
+Universal links are different from [standard deep links](/guides/linking/#linking-to-your-app) as they use regular HTTPS links to direct users to a specific route in your app. If a user doesn't have your app installed, the link will take them to the associated website. This allows you to send notification emails with links that work seamlessly on desktop web browsers while opening the content in your app on mobile. Android refers to this concept as **app links**, and iOS refers to it as **universal links**. This guide specifically discusses universal links that do not use a custom URL scheme.
 
 > Deferred deep links can be implemented with [`react-native-branch`](https://github.com/expo/config-plugins/tree/main/packages/react-native-branch).
 
-Before you can use an app/universal links, you have to setup the two-way association between the website and app for both Android and iOS:
+Before you can use app/universal links, you have to set up the two-way association between the website and app for both Android and iOS:
 
 1. **Native app verification:** This requires some form of code signing that references the target website domain (URL).
 2. **Website verification:** This requires a file to be hosted on the target website in the **/.well-known** directory.
 
-After the two-way association is setup, you have to setup the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/router/introduction/).
+After setting up the two-way association, you have to set up the runtime routing of the link in your app. This is done in JavaScript and must be configured for every route, then coordinated between web and native. Expo offers a fully automated solution for this called [Expo Router](/router/introduction/).
 
 > Universal links cannot be tested in the Expo Go app. You need to create a [development build](/develop/development-builds/introduction).
 
@@ -98,7 +97,7 @@ This snippet tells iOS that any links to `https://www.myapp.io/records/*` (with 
 
 > The `activitycontinuation` and `webcredentials` objects are optional, but recommended.
 
-After you have setup the AASA file, deploy your website to a server that supports HTTPS (most modern web hosts).
+After you have set up the AASA file, deploy your website to a server that supports HTTPS (most modern web hosts).
 
 See [Apple's documentation](https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/UniversalLinks.html) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
 
@@ -383,7 +382,7 @@ If you are using [EAS Build](/build/introduction/), you will have to create a ne
 Expo CLI enables you to test your universal links without deploying a website. Utilizing the [`--tunnel` functionality](/more/expo-cli/#tunneling), you can forward your dev server to a publicly available https URL.
 
 1. Set the environment variable `EXPO_TUNNEL_SUBDOMAIN=my-custom-domain` where "my-custom-domain" is a unique string that you will use during development. This will ensure that your tunnel URL is consistent across dev server restarts.
-2. Setup universal links as described above, but this time using an Ngrok URL: `my-custom-domain.ngrok.io`
+2. Set up universal links as described above, but this time using an Ngrok URL: `my-custom-domain.ngrok.io`
 3. Start your dev server with the `--tunnel` flag:
 
 <Terminal cmd={['$ npx expo start --tunnel --dev-client']} />
@@ -424,5 +423,7 @@ An example of this is Gmail which strips the `href` property from the links of m
 Instead of linking to `example://path/into/app`, you could link to `https://example.com/redirect-to-app.html` and `redirect-to-app.html` would contain the following code:
 
 ```html
-<script>window.location.replace("example://path/into/app");</script>
+<script>
+  window.location.replace('example://path/into/app');
+</script>
 ```

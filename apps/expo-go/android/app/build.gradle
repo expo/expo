@@ -39,6 +39,9 @@ react {
 
   cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
   bundleCommand = "export:embed"
+
+  /* Autolinking */
+  autolinkLibrariesWithApp()
 }
 
 android {
@@ -50,8 +53,8 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    versionCode 226
-    versionName '2.31.0'
+    versionCode 227
+    versionName '2.31.2'
 
     multiDexEnabled true
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -109,6 +112,9 @@ android {
     pickFirst "lib/**/libfbjni.so"
     // AGP will give priority of libc++_shared coming from App modules.
     pickFirst "**/libc++_shared.so"
+  }
+  androidResources {
+    ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
   }
 }
 

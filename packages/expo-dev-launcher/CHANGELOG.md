@@ -4,11 +4,122 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30861](https://github.com/expo/expo/pull/30861) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
+- Fix swift and c compiler debug flags for expo dev launcher in debug configurations. ([#30159](https://github.com/expo/expo/pull/30159) by [@matinzd](https://github.com/matinzd))
+- [Android] Fix `"launchMode": "launcher"` support. ([#30004](https://github.com/expo/expo/pull/30004) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Prevent React Native Dev Menu from showing up on launcher screen. ([#28936](https://github.com/expo/expo/pull/28936) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Skip dev server websocket connection for expo updates. ([#30535](https://github.com/expo/expo/pull/30535) by [@joeporpeglia](https://github.com/joeporpeglia))
+- Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
+
+- Improve stack trace for errors that happen during module initialization. ([#30341](https://github.com/expo/expo/pull/30341) by [@vonovak](https://github.com/vonovak))
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Fix and update link for `expo-dev-client` in package's README. ([#30162](https://github.com/expo/expo/pull/30162) by [@amandeepmittal](https://github.com/amandeepmittal)).
+- Fixed broken unit test on iOS 17 where `URL()` without scheme returns nil. ([#30178](https://github.com/expo/expo/pull/30178) by [@kudo](https://github.com/kudo))
+- Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+## 4.0.27 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.26 - 2024-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.23 - 2024-07-29
+
+### 🐛 Bug fixes
+
+- Fixed the "Connect to Metro to develop JavaScript" banner lingering on iOS. ([#30663](https://github.com/expo/expo/pull/30663) by [@kudo](https://github.com/kudo))
+
+## 4.0.22 - 2024-07-03
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.74.3. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.0.21 - 2024-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.20 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.19 - 2024-06-12
+
+### 🎉 New features
+
+- [Android] Automatically detect dev servers running on localhost with adb reverse. ([#29625](https://github.com/expo/expo/pull/29625) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Fixed empty screen after reloading on Android. ([#29400](https://github.com/expo/expo/pull/29400) by [@kudo](https://github.com/kudo))
+
+## 4.0.18 - 2024-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.17 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.15 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Removes the unnecessary reload when opening the backgrounded app from the icon. ([#28893](https://github.com/expo/expo/pull/28893) by [@lukmccall](https://github.com/lukmccall))
+
+## 4.0.14 — 2024-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.13 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fixed loading error when both `expo-dev-client` and `expo-updates` installed but no `runtimeVersion` configured. ([#28662](https://github.com/expo/expo/pull/28662) by [@kudo](https://github.com/kudo))
+- Fixed loading error from a https dev-server on Android. ([#28691](https://github.com/expo/expo/pull/28691) by [@kudo](https://github.com/kudo))
+- Fixed build errors with use_frameworks on iOS. ([#28702](https://github.com/expo/expo/pull/28702) by [@kudo](https://github.com/kudo))
+
+## 4.0.12 — 2024-05-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed DevMenu getting unresponsive after reloading bundle. ([#28664](https://github.com/expo/expo/pull/28664) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.0.11 — 2024-05-04
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.10 — 2024-05-03
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `LogBox` isn't working on the new architecture. ([#28602](https://github.com/expo/expo/pull/28602) by [@lukmccall](https://github.com/lukmccall))
+
+## 4.0.9 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.8 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.7 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
 
 ## 4.0.6 — 2024-04-25
 

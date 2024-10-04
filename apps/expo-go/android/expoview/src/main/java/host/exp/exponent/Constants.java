@@ -29,33 +29,14 @@ public class Constants {
   private static final String TAG = Constants.class.getSimpleName();
 
   public static String VERSION_NAME = null;
-  public static String ABI_VERSIONS;
-  public static String SDK_VERSIONS;
-  public static List<String> SDK_VERSIONS_LIST;
-  public static final String TEMPORARY_SDK_VERSION = ExponentBuildConstants.TEMPORARY_SDK_VERSION;
+  public static String SDK_VERSION = ExponentBuildConstants.TEMPORARY_SDK_VERSION;
   public static final String EMBEDDED_KERNEL_PATH = "assets://kernel.android.bundle";
   public static boolean DISABLE_NUX = false;
   public static int ANDROID_VERSION_CODE;
   public static boolean FCM_ENABLED;
   public static SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
 
-  public static void setSdkVersions(List<String> sdkVersions) {
-    ABI_VERSIONS = TextUtils.join(",", sdkVersions);
-
-    // NOTE: Currently public-facing SDK versions and internal ABI versions are the same, but
-    // eventually we may decouple them
-    SDK_VERSIONS = ABI_VERSIONS;
-    SDK_VERSIONS_LIST = sdkVersions;
-  }
-
   static {
-    List<String> abiVersions = new ArrayList<>();
-    if (TEMPORARY_SDK_VERSION != null) {
-      abiVersions.add(TEMPORARY_SDK_VERSION);
-    }
-
-    setSdkVersions(abiVersions);
-
     try {
       Class appConstantsClass = Class.forName("host.exp.exponent.generated.AppConstants");
       ExpoViewAppConstants appConstants = (ExpoViewAppConstants) appConstantsClass.getMethod("get").invoke(null);
@@ -80,21 +61,6 @@ public class Constants {
   public static final boolean ENABLE_LEAK_CANARY = false;
   public static final boolean WRITE_BUNDLE_TO_LOG = false;
   public static final boolean WAIT_FOR_DEBUGGER = false;
-
-  public static String getVersionName(Context context) {
-    if (VERSION_NAME != null) {
-      // This will be set in shell apps
-      return VERSION_NAME;
-    } else {
-      try {
-        PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-        return pInfo.versionName;
-      } catch (PackageManager.NameNotFoundException e) {
-        EXL.e(TAG, e.toString());
-        return "";
-      }
-    }
-  }
 
   private static boolean sIsTest = false;
 

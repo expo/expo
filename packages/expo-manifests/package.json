@@ -1,6 +1,6 @@
 {
   "name": "expo-manifests",
-  "version": "0.14.0",
+  "version": "0.14.3",
   "description": "Code to parse and use Expo and Expo Updates manifests.",
   "main": "build/Manifests.js",
   "types": "build/Manifests.d.ts",
@@ -29,12 +29,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/manifests/",
   "jest": {
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config": "~9.0.0-beta.0",
+    "@expo/config": "~9.0.0",
     "expo-json-utils": "~0.13.0"
   },
   "devDependencies": {

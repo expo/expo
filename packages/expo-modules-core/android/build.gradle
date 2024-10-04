@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '1.12.2'
+version = '1.12.11'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -63,7 +63,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.12.2"
+    versionName "1.12.11"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -105,9 +105,11 @@ android {
       "**/libhermes.so",
       "**/libjscexecutor.so",
       "**/libjsi.so",
+      "**/libreactnative.so",
       "**/libreactnativejni.so",
       "**/libreact_debug.so",
       "**/libreact_nativemodule_core.so",
+      "**/libreact_utils.so",
       "**/libreact_render_debug.so",
       "**/libreact_render_graphics.so",
       "**/libreact_render_core.so",
@@ -117,6 +119,14 @@ android {
       "**/libruntimeexecutor.so",
       "**/libyoga.so",
     ]
+
+    // Required or mockk will crash
+    resources {
+      excludes += [
+          "META-INF/LICENSE.md",
+          "META-INF/LICENSE-notice.md"
+      ]
+    }
 
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
     // Otherwise, those files should be excluded, because will be loaded by the application.
@@ -148,9 +158,9 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
   implementation 'androidx.annotation:annotation:1.7.1'
 
-  api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
-  api "androidx.core:core-ktx:1.12.0"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+  api "androidx.core:core-ktx:1.13.1"
 
   implementation("androidx.tracing:tracing-ktx:1.2.0")
 
@@ -160,7 +170,7 @@ dependencies {
 
   testImplementation 'androidx.test:core:1.5.0'
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'io.mockk:mockk:1.13.5'
+  testImplementation 'io.mockk:mockk:1.13.10'
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation "org.robolectric:robolectric:4.11.1"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
@@ -169,7 +179,7 @@ dependencies {
   androidTestImplementation 'androidx.test:runner:1.5.2'
   androidTestImplementation 'androidx.test:core:1.5.0'
   androidTestImplementation 'androidx.test:rules:1.5.0'
-  androidTestImplementation "io.mockk:mockk-android:1.12.3"
+  androidTestImplementation "io.mockk:mockk-android:1.13.10"
   androidTestImplementation "com.google.truth:truth:1.1.2"
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 

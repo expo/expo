@@ -62,22 +62,26 @@ public final class DeviceMotionModule: Module {
         "acceleration": [
           "x": userAcceleration.x * GRAVITY,
           "y": userAcceleration.y * GRAVITY,
-          "z": userAcceleration.z * GRAVITY
+          "z": userAcceleration.z * GRAVITY,
+          "timestamp": data.timestamp
         ],
         "accelerationIncludingGravity": [
           "x": (userAcceleration.x + data.gravity.x) * GRAVITY,
           "y": (userAcceleration.y + data.gravity.y) * GRAVITY,
-          "z": (userAcceleration.z + data.gravity.z) * GRAVITY
+          "z": (userAcceleration.z + data.gravity.z) * GRAVITY,
+          "timestamp": data.timestamp
         ],
         "rotation": [
           "alpha": attitude.yaw,
           "beta": attitude.pitch,
-          "gamma": attitude.roll
+          "gamma": attitude.roll,
+          "timestamp": data.timestamp
         ],
         "rotationRate": [
           "alpha": radiansToDegrees(rotationRate.z),
           "beta": radiansToDegrees(rotationRate.y),
-          "gamma": radiansToDegrees(rotationRate.x)
+          "gamma": radiansToDegrees(rotationRate.x),
+          "timestamp": data.timestamp
         ],
         "orientation": getDeviceOrientationRotation(),
         "interval": Double(self.motionManager.deviceMotionUpdateInterval)

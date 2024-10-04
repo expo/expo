@@ -4,11 +4,25 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
+
+## 0.16.2 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fixed loading error when both `expo-dev-client` and `expo-updates` installed but no `runtimeVersion` configured. ([#28662](https://github.com/expo/expo/pull/28662) by [@kudo](https://github.com/kudo))
+
+## 0.16.1 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
 
 ## 0.16.0 — 2024-04-18
 

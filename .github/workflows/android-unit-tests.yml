@@ -61,15 +61,16 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🚨 Run Spotless lint check
+      - name: 💅 Run Spotless lint check
         working-directory: apps/expo-go/android
-        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
+        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` from `apps/expo-go/android` to automatically fix formatting.' && exit 1; }
       - name: 🎸 Run native Android unit tests
+        if: always()
         timeout-minutes: 30
         run: expotools native-unit-tests --platform android
       - name: 💾 Save test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: packages/**/build/test-results/**/*xml

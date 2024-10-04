@@ -5,6 +5,10 @@ try {
   require('@testing-library/jest-native/extend-expect');
 } catch {}
 
+try {
+  require('react-native-gesture-handler/jestSetup');
+} catch {}
+
 // include this section and the NativeAnimatedHelper section for mocking react-native-reanimated
 jest.mock('react-native-reanimated', () => {
   try {
@@ -23,12 +27,6 @@ jest.mock('react-native-reanimated', () => {
 // Silence the warning: Animated: `useNativeDriver` is not supported because the native animated module is missing
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-let mockInitialUrl: string | Promise<string> = '';
-
-export function setInitialUrl(value: string) {
-  mockInitialUrl = value;
-}
-
 jest.mock('expo-linking', () => {
   const module: typeof import('expo-linking') = {
     ...jest.requireActual('expo-linking'),
@@ -40,9 +38,6 @@ jest.mock('expo-linking', () => {
     },
     addEventListener() {
       return { remove() {} } as any;
-    },
-    async getInitialURL() {
-      return mockInitialUrl;
     },
   };
 

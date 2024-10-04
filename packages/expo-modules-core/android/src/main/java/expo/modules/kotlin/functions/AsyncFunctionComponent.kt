@@ -1,21 +1,19 @@
 package expo.modules.kotlin.functions
 
-import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.enforceType
 
-inline fun <reified T> createAsyncFunctionComponent(
+inline fun <reified ReturnType> createAsyncFunctionComponent(
   name: String,
   desiredArgsTypes: Array<AnyType>,
-  noinline body: (args: Array<out Any?>) -> T
+  noinline body: (args: Array<out Any?>) -> ReturnType
 ): AsyncFunction {
-  if (null is T) {
+  if (null is ReturnType) {
     return AsyncFunctionComponent<Any?>(name, desiredArgsTypes, body)
   }
-  return when (T::class.java) {
+  return when (ReturnType::class.java) {
     Int::class.java -> {
       enforceType<(Array<out Any?>) -> Int>(body)
       IntAsyncFunctionComponent(name, desiredArgsTypes, body)
@@ -80,11 +78,6 @@ open class AsyncFunctionComponent<ReturnType>(
   desiredArgsTypes: Array<AnyType>,
   protected val body: (args: Array<out Any?>) -> ReturnType
 ) : AsyncFunction(name, desiredArgsTypes) {
-  @Throws(CodedException::class)
-  override fun callUserImplementation(args: ReadableArray, promise: Promise) {
-    promise.resolve(body(convertArgs(args)))
-  }
-
   override fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext) {
     promise.resolve(body(convertArgs(args, appContext)))
   }

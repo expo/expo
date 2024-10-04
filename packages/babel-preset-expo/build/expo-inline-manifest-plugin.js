@@ -113,14 +113,16 @@ function getConfigMemo(projectRoot) {
 // Convert `process.env.APP_MANIFEST` to a modified web-specific variation of the app.json public manifest.
 function expoInlineManifestPlugin(api) {
     const { types: t } = api;
+    const isReactServer = api.caller(common_1.getIsReactServer);
     const platform = api.caller(common_1.getPlatform);
     const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
+    const shouldInline = platform === 'web' || isReactServer;
     return {
         name: 'expo-inline-manifest-plugin',
         visitor: {
             MemberExpression(path, state) {
-                // Web-only feature, the native manifest is provided dynamically by the client.
-                if (platform !== 'web') {
+                // Web-only/React Server-only feature: the native manifest is provided dynamically by the client.
+                if (!shouldInline) {
                     return;
                 }
                 if (!t.isIdentifier(path.node.object, { name: 'process' }) ||

@@ -25,7 +25,7 @@ export function dedupSources(sources: HashSource[], projectRoot: string): HashSo
           reasons: [...source.reasons, ...duplicatedItem.reasons],
         };
       } else {
-        duplicatedItem.reasons.push(...source.reasons);
+        duplicatedItem.reasons = [...duplicatedItem.reasons, ...source.reasons];
       }
     } else {
       newSources.push(source);

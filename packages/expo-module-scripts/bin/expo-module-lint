@@ -7,7 +7,7 @@ script_dir="$(dirname "$0")"
 args=()
 
 # If the command is used like `yarn lint plugin` then set the target to `plugin/src`
-extra_module_build_types=("plugin" "cli" "utils")
+extra_module_build_types=("plugin" "cli" "utils" "scripts")
 found_target=""
 for i in "${extra_module_build_types[@]}"
 do

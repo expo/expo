@@ -10,9 +10,8 @@ import {
   execute,
   projectRoot,
   getLoadedModulesAsync,
-  setupTestProjectAsync,
   bin,
-  ensurePortFreeAsync,
+  setupTestProjectWithOptionsAsync,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -47,11 +46,10 @@ it('runs `npx expo export --help`', async () => {
 });
 
 describe('server', () => {
-  beforeEach(() => ensurePortFreeAsync(8081));
   it(
     'runs `npx expo export`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
       // `npx expo export`
       await execa('node', [bin, 'export', '--source-maps', '--dump-assetmap'], {
         cwd: projectRoot,
@@ -95,7 +93,7 @@ describe('server', () => {
                 path: 'assets/3858f62230ac3c915f300c664312c63f',
               },
             ],
-            bundle: expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-.*\.hbc/),
+            bundle: expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-.*\.js/),
           },
           ios: {
             assets: [
@@ -112,7 +110,7 @@ describe('server', () => {
                 path: 'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
               },
             ],
-            bundle: expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc/),
+            bundle: expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.js/),
           },
         },
         version: 0,
@@ -163,10 +161,10 @@ describe('server', () => {
 
       // If this changes then everything else probably changed as well.
       expect(files).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc/),
-        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.hbc\.map/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map/),
+        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/android\/AppEntry-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.js\.map/),
         expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js/),
         expect.stringMatching(/_expo\/static\/js\/web\/AppEntry-[\w\d]+\.js\.map/),
         'assetmap.json',
@@ -178,7 +176,6 @@ describe('server', () => {
         'assets/assets/icon.8034d8318b239108719ff3f22f31ef15@2x.png',
 
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        'debug.html',
         'favicon.ico',
         'index.html',
         'metadata.json',
@@ -191,7 +188,7 @@ describe('server', () => {
   it(
     'runs `npx expo export --no-bytecode`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-export', 'with-assets');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
 
       await execa(
         'node',
@@ -284,7 +281,6 @@ describe('server', () => {
         'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
         'assets/9ce7db807e4147e00df372d053c154c2',
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
-        'debug.html',
         'favicon.ico',
         'metadata.json',
       ]);
@@ -299,7 +295,7 @@ describe('server', () => {
 
       expect(bundle).toMatch('__d(');
       // General check
-      expect(bundle.split('\n').length).toBeLessThan(550);
+      expect(bundle.split('\n').length).toBeLessThan(600);
     },
     // Could take 45s depending on how fast npm installs
     120 * 1000

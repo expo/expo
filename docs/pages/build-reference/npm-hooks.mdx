@@ -1,20 +1,32 @@
 ---
 title: Build lifecycle hooks
 description: Learn how to use the EAS Build lifecycle hooks with npm to customize your build process.
+maxHeadingDepth: 4
 ---
 
-There are five EAS Build lifecycle npm hooks that you can set in your **package.json**. See the [Android build process](android-builds.mdx) and [iOS build process](ios-builds.mdx) docs to get a better understanding about the internals of the build process.
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
 
-- `eas-build-pre-install` - executed before EAS Build runs `npm install`.
-- `eas-build-post-install` - the behavior depends on the platform and project type:
-  - Android - runs once after the following commands have all completed: `npm install` and `npx expo prebuild` (if needed)
-  - iOS - runs once after the following commands have all completed: `npm install`, `npx expo prebuild` (if needed), and `pod install`.
-- `eas-build-on-success` - this hook is triggered at the end of the build process if the build was successful.
-- `eas-build-on-error` - this hook is triggered at the end of the build process if the build failed.
-- `eas-build-on-complete` - this hook is triggered at the end of the build process. You can check the build's status with the `EAS_BUILD_STATUS` environment variable. It's either `finished` or `errored`.
-- `eas-build-on-cancel` - this hook is triggered if the build is canceled.
+EAS Build lifecycle npm hooks allows you to customize your build process by running scripts before or after the build process.
 
-Below is an example of how your **package.json** can look with lifecycle hooks:
+> For better understanding, see the [Android build process](/build-reference/android-builds/) and the [iOS build process](/build-reference/ios-builds/).
+
+> **warning** The lifecycle hooks are not executed by the build process in [custom builds](/custom-builds/get-started/). They need to be manually extracted and called by the build steps during the process.
+
+## EAS Build lifecycle hooks
+
+There are six EAS Build lifecycle npm hooks available. To use, them, you can set them in your **package.json**.
+
+| Build Lifecycle npm hook | Description                                                                                                                                                                                                                                                                                                                                    |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `eas-build-pre-install`  | Executed before EAS Build runs `npm install`.                                                                                                                                                                                                                                                                                                  |
+| `eas-build-post-install` | The behavior depends on the platform and project type. <br/> <br/> For Android, runs once after the following commands have all completed: `npm install` and `npx expo prebuild` (if needed).<br/><br/> For iOS, runs once after the following commands have all completed: `npm install`, `npx expo prebuild` (if needed), and `pod install`. |
+| `eas-build-on-success`   | This hook is triggered at the end of the build process if the build was successful.                                                                                                                                                                                                                                                            |
+| `eas-build-on-error`     | This hook is triggered at the end of the build process if the build failed.                                                                                                                                                                                                                                                                    |
+| `eas-build-on-complete`  | This hook is triggered at the end of the build process. You can check the build's status with the `EAS_BUILD_STATUS` environment variable. It's either `finished` or `errored`.                                                                                                                                                                |
+| `eas-build-on-cancel`    | This hook is triggered if the build is canceled.                                                                                                                                                                                                                                                                                               |
+
+An example of how a **package.json** can look when using one or more lifecycle hooks:
 
 ```json package.json
 {
@@ -29,19 +41,19 @@ Below is an example of how your **package.json** can look with lifecycle hooks:
     "test": "jest"
   },
   "dependencies": {
-    "expo": "~46.0.0"
-    // ...
+    "expo": "51.0.0"
+    /* @hide ... */ /* @end */
   }
 }
 ```
 
 ## Platform-specific hook behavior
 
-If you would like to run a script (or some part of a script) only for iOS builds or only for Android builds, you can fork the behavior depending on the platform within the script. See examples for common ways to do this through a shell script or a Node script below.
+To run a script (or some part of a script) only for Android or iOS builds, you can fork the behavior depending on the platform within the script. See the following common examples to do this through a shell script or a Node script.
 
-## Examples
+### Examples
 
-### `package.json` and shell script
+#### package.json and shell script
 
 ```json package.json
 {
@@ -49,10 +61,11 @@ If you would like to run a script (or some part of a script) only for iOS builds
   "scripts": {
     "eas-build-pre-install": "./pre-install",
     "start": "expo start"
-    // ...
+    /* @hide ... */ /* @end */
   },
   "dependencies": {
-    // ...
+    /* @hide ... */
+    /* @end */
   }
 }
 ```
@@ -69,7 +82,25 @@ elif [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
 fi
 ```
 
-### `package.json` and Node script
+<Collapsible summary={<>Example: Pre-install script that installs <CODE>git-lfs</CODE> on macOS workers</>}>
+
+The following script installs [`git-lfs`](https://git-lfs.com/) if it is not yet installed. This is useful in some cases where `git-lfs` is required to install certain CocoaPods.
+
+```bash pre-install
+if [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
+  if brew list git-lfs > /dev/null 2>&1; then
+    echo "=====> git-lfs is already installed."
+  else
+    echo "=====> Installing git-lfs"
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install git-lfs
+    git lfs install
+  fi
+fi
+```
+
+</Collapsible>
+
+#### package.json and Node script
 
 ```json package.json
 {
@@ -86,7 +117,7 @@ fi
 ```
 
 ```js pre-install.js
-// This is a file called "pre-install.js" in the root of the project
+// Create a file called "pre-install.js" at the root of the project
 
 if (process.env.EAS_BUILD_PLATFORM === 'android') {
   console.log('Run commands for Android builds here');

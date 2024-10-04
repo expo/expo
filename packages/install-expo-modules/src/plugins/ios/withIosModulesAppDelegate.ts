@@ -5,7 +5,7 @@ import {
   insertContentsInsideSwiftFunctionBlock,
 } from '@expo/config-plugins/build/ios/codeMod';
 import fs from 'fs';
-import { sync as globSync } from 'glob';
+import { globSync } from 'glob';
 import semver from 'semver';
 
 import {

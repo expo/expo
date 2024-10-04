@@ -324,7 +324,10 @@ module.exports = {
         ExpoDocumentPicker: [
           { name: 'getDocumentAsync', argumentsCount: 1, key: 'getDocumentAsync' },
         ],
-        ExpoFontLoader: [{ name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' }],
+        ExpoFontLoader: [
+          { name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' },
+          { name: 'getLoadedFonts', argumentsCount: 0, key: 'getLoadedFonts' },
+        ],
         ExpoGo: [],
         ExpoHaptics: [
           { name: 'impactAsync', argumentsCount: 1, key: 'impactAsync' },
@@ -925,6 +928,7 @@ module.exports = {
         ExpoFontLoader: {
           addListener: { type: 'function' },
           loadAsync: { type: 'function' },
+          getLoadedFonts: { type: 'function' },
           removeListeners: { type: 'function' },
         },
         ExpoGo: {

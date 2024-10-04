@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.helpers
 
-import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -11,7 +10,7 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.devsupport.DevLauncherDevServerHelper
-import com.facebook.react.devsupport.DevLauncherInternalSettings
+import com.facebook.react.devsupport.DevLauncherSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -19,7 +18,6 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import expo.interfaces.devmenu.ReactHostWrapper
-import expo.interfaces.devmenu.annotations.ContainsDevMenuExtension
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
 import expo.modules.devlauncher.rncompatibility.DevLauncherBridgeDevSupportManager
@@ -63,10 +61,10 @@ fun injectDebugServerHost(
   debugServerHost: String,
   appBundleName: String
 ): Boolean {
-  if (reactHost.isBridgelessMode) {
-    return injectDebugServerHost(context, reactHost.reactHost, debugServerHost, appBundleName)
+  return if (reactHost.isBridgelessMode) {
+    injectDebugServerHost(context, reactHost.reactHost, debugServerHost, appBundleName)
   } else {
-    return injectDebugServerHost(context, reactHost.reactNativeHost, debugServerHost, appBundleName)
+    injectDebugServerHost(context, reactHost.reactNativeHost, debugServerHost, appBundleName)
   }
 }
 
@@ -114,7 +112,7 @@ private fun injectDebugServerHost(
   debugServerHost: String,
   appBundleName: String
 ) {
-  val settings = DevLauncherInternalSettings(context, debugServerHost)
+  val settings = DevLauncherSettings(context, debugServerHost)
   val devSupportManagerBaseClass: Class<*> = DevSupportManagerBase::class.java
   devSupportManagerBaseClass.setProtectedDeclaredField(
     devSupportManager,
@@ -217,7 +215,7 @@ private fun injectLocalBundleLoader(
 
 fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager, controller: DevLauncherControllerInterface?) {
   val defaultServerHost = AndroidInfoHelpers.getServerHost(context)
-  val devSettings = DevLauncherInternalSettings(context, defaultServerHost)
+  val devSettings = DevLauncherSettings(context, defaultServerHost)
   val devLauncherDevServerHelper = DevLauncherDevServerHelper(
     context = context,
     controller = controller,
@@ -237,25 +235,6 @@ fun findDevMenuPackage(): ReactPackage? {
     clazz.newInstance() as? ReactPackage
   } catch (e: Exception) {
     null
-  }
-}
-
-fun findPackagesWithDevMenuExtension(application: Application): List<ReactPackage> {
-  return try {
-    val clazz = Class.forName("com.facebook.react.PackageList")
-    val ctor = clazz.getConstructor(Application::class.java)
-    val packageList = ctor.newInstance(application)
-
-    val getPackagesMethod = packageList.javaClass.getDeclaredMethod("getPackages")
-    val packages = getPackagesMethod.invoke(packageList) as List<*>
-    return packages
-      .filterIsInstance<ReactPackage>()
-      .filter {
-        it.javaClass.isAnnotationPresent(ContainsDevMenuExtension::class.java)
-      }
-  } catch (e: Exception) {
-    Log.e("DevLauncher", "Unable find packages with dev menu extension.`.", e)
-    emptyList()
   }
 }
 

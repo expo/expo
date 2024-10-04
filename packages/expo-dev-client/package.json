@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client",
-  "version": "4.0.6",
+  "version": "4.0.14",
   "description": "Expo Development Client",
   "main": "build/DevClient.js",
   "types": "build/DevClient.d.ts",
@@ -30,13 +30,13 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.dev/clients/introduction/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
   "dependencies": {
-    "expo-dev-launcher": "4.0.6",
-    "expo-dev-menu": "5.0.7",
-    "expo-dev-menu-interface": "1.8.2",
+    "expo-dev-launcher": "4.0.15",
+    "expo-dev-menu": "5.0.14",
+    "expo-dev-menu-interface": "1.8.3",
     "expo-manifests": "~0.14.0",
-    "expo-updates-interface": "~0.16.0"
+    "expo-updates-interface": "~0.16.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0",

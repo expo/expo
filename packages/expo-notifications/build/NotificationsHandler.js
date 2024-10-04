@@ -1,4 +1,4 @@
-import { EventEmitter, CodedError, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, CodedError, UnavailabilityError, } from 'expo-modules-core';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
 /**
  * @hidden
@@ -11,7 +11,7 @@ export class NotificationTimeoutError extends CodedError {
     }
 }
 // Web uses SyntheticEventEmitter
-const notificationEmitter = new EventEmitter(NotificationsHandlerModule);
+const notificationEmitter = new LegacyEventEmitter(NotificationsHandlerModule);
 const handleNotificationEventName = 'onHandleNotification';
 const handleNotificationTimeoutEventName = 'onHandleNotificationTimeout';
 let handleSubscription = null;

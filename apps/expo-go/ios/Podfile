@@ -2,10 +2,9 @@ require_relative './podfile_helpers.rb'
 require_relative '../../../react-native-lab/react-native/packages/react-native/scripts/react_native_pods'
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
+platform :ios, '15.1'
 install! 'cocoapods',
-         :generate_multiple_pod_projects => true,
-         :incremental_installation => true
-platform :ios, '13.4'
+  :deterministic_uuids => false
 inhibit_all_warnings!
 
 # Disable expo-updates auto create updates resources in podspec script_phase
@@ -94,7 +93,7 @@ target 'Expo Go' do
       end
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
       end
 
       if pod_name == 'Branch'

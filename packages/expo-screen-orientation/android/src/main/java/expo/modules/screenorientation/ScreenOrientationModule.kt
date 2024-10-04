@@ -17,9 +17,7 @@ import expo.modules.screenorientation.enums.OrientationAttr
 import expo.modules.screenorientation.enums.OrientationLock
 
 class ScreenOrientationModule : Module(), LifecycleEventListener {
-  private val weakCurrentActivity
-    get() = appContext.activityProvider?.currentActivity
-
+  private val weakCurrentActivity get() = appContext.currentActivity
   private val currentActivity
     get() = weakCurrentActivity ?: throw Exceptions.MissingActivity()
 
@@ -99,6 +97,7 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
     val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       currentActivity.window.context.display?.rotation ?: return Orientation.UNKNOWN
     } else {
+      @Suppress("DEPRECATION")
       windowManager.defaultDisplay.rotation
     }
 
@@ -111,6 +110,7 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
         heightPixels = windowMetrics.bounds.height() - insets.top - insets.bottom
       }
     } else {
+      @Suppress("DEPRECATION")
       DisplayMetrics().also(windowManager.defaultDisplay::getMetrics)
     }
 

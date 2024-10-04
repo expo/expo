@@ -1,6 +1,9 @@
 {
-  "platforms": ["ios"],
+  "platforms": ["ios", "android"],
   "ios": {
     "modules": ["AudioModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.audio.AudioModule"]
   }
 }

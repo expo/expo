@@ -14,6 +14,7 @@ import expo.modules.devlauncher.koin.optInject
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
+import java.lang.reflect.InvocationTargetException
 
 class DevLauncherBridgeDevSupportManager(
   applicationContext: Context,
@@ -34,6 +35,7 @@ class DevLauncherBridgeDevSupportManager(
   minNumShakes,
   customPackagerCommandHandlers,
   null,
+  null,
   null
 ),
   DevLauncherKoinComponent {
@@ -43,7 +45,11 @@ class DevLauncherBridgeDevSupportManager(
     injectDevServerHelper(applicationContext, this, controller)
   }
 
-  override fun showNewJavaError(message: String?, e: Throwable) {
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @get:JvmName("getjSBundleURLForRemoteDebugging")
+  override val jSBundleURLForRemoteDebugging: String? = super.getJSBundleURLForRemoteDebugging()
+
+  override fun showNewJavaError(message: String?, e: Throwable?) {
     Log.e("DevLauncher", "$message", e)
     if (!DevLauncherController.wasInitialized()) {
       Log.e(
@@ -60,7 +66,8 @@ class DevLauncherBridgeDevSupportManager(
     }
 
     controller?.onAppLoadedWithError()
-    DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
+    val cause: Throwable? = if (e is InvocationTargetException) e.cause ?: e else e
+    DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, cause))
   }
 
   override fun getUniqueTag() = "DevLauncherApp-Bridge"

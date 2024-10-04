@@ -23,7 +23,10 @@ export function replaceMiddlewareWith(
   sourceMiddleware: HandleFunction,
   targetMiddleware: HandleFunction
 ) {
-  const item = app.stack.find((middleware) => middleware.handle === sourceMiddleware);
+  const item = app.stack.find((middleware) => {
+    const handlerCode = middleware.handle.toString();
+    return !handlerCode.includes('[native code]') && handlerCode === sourceMiddleware.toString();
+  });
   if (item) {
     item.handle = targetMiddleware;
   }

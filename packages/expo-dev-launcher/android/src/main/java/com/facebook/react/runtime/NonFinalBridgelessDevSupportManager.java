@@ -27,6 +27,9 @@ import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.runtime.internal.bolts.Continuation;
 import com.facebook.react.runtime.internal.bolts.Task;
+
+import java.lang.ref.WeakReference;
+
 import javax.annotation.Nullable;
 
 //
@@ -61,7 +64,8 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
                 2 /* minNumShakes */,
                 null /* customPackagerCommandHandlers */,
                 null /* surfaceDelegateFactory */,
-                null /* devLoadingViewManager */);
+                null /* devLoadingViewManager */,
+                null);
         mReactHost = host;
     }
 
@@ -81,21 +85,18 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
                         mReactHost
                                 .loadBundle(bundleLoader)
                                 .onSuccess(
-                                        new Continuation<Boolean, Void>() {
-                                            @Override
-                                            public Void then(Task<Boolean> task) {
-                                                if (task.getResult().equals(Boolean.TRUE)) {
-                                                    String bundleURL =
-                                                            getDevServerHelper().getDevServerSplitBundleURL(bundlePath);
-                                                    ReactContext reactContext = mReactHost.getCurrentReactContext();
-                                                    if (reactContext != null) {
-                                                        reactContext.getJSModule(HMRClient.class).registerBundle(bundleURL);
-                                                    }
-                                                    callback.onSuccess();
-                                                }
-                                                return null;
-                                            }
-                                        });
+                                  (Continuation<Boolean, Void>) task -> {
+                                      if (task.getResult().equals(Boolean.TRUE)) {
+                                          String bundleURL =
+                                                  getDevServerHelper().getDevServerSplitBundleURL(bundlePath);
+                                          ReactContext reactContext = mReactHost.getCurrentReactContext();
+                                          if (reactContext != null) {
+                                              reactContext.getJSModule(HMRClient.class).registerBundle(bundleURL);
+                                          }
+                                          callback.onSuccess();
+                                      }
+                                      return null;
+                                  });
                     }
 
                     @Override
@@ -113,15 +114,21 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
         hideRedboxDialog();
         mReactHost.reload("BridgelessDevSupportManager.handleReloadJS()");
 
-        PrinterHolder.getPrinter()
-                .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server");
-        String bundleURL =
-                getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
-        reloadJSFromServer(bundleURL);
+        // 0.74 workaround for https://github.com/facebook/react-native/commit/524e3eec3e73f56746ace8bef569f36802a7a62e
+        isPackagerRunning(isMetroRunning -> {
+          if (!isMetroRunning) {
+            String bundleURL = getDevServerHelper().getDevServerBundleURL(Assertions.assertNotNull(getJSAppBundleName()));
+            reloadJSFromServer(bundleURL, () -> {
+              UiThreadUtil.runOnUiThread(getReactInstanceDevHelper()::onJSBundleLoadedFromServer);
+            });
+          }
+        });
     }
 
     private static ReactInstanceDevHelper createInstanceDevHelper(final ReactHostImpl reactHost) {
         return new ReactInstanceDevHelper() {
+            private WeakReference<ReactSurfaceImpl> logBoxSurface = new WeakReference<>(null);
+
             @Override
             public void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory) {
                 // Not implemented
@@ -160,6 +167,11 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
                 if (currentActivity != null && !reactHost.isSurfaceWithModuleNameAttached(appKey)) {
                     ReactSurfaceImpl reactSurface =
                             ReactSurfaceImpl.createWithView(currentActivity, appKey, new Bundle());
+
+                    if (appKey.equals("LogBox")) {
+                        logBoxSurface = new WeakReference<>(reactSurface);
+                    }
+
                     reactSurface.attach(reactHost);
                     reactSurface.start();
 
@@ -170,7 +182,15 @@ public class NonFinalBridgelessDevSupportManager extends DevSupportManagerBase {
 
             @Override
             public void destroyRootView(View rootView) {
-                // Not implemented
+                // The log box surface is a special case and needs to be detached from the host.
+                // The detachment process should be handled by React Native, but it appears to be malfunctioning.
+                // This is a temporary solution and should be removed
+                // once we identify the root cause of the surface remaining attached after reloads.
+                ReactSurfaceImpl logBox = logBoxSurface.get();
+                if (logBox != null) {
+                  reactHost.detachSurface(logBox);
+                  logBoxSurface.clear();
+                }
             }
         };
     }

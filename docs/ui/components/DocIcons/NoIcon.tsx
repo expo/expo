@@ -1,4 +1,4 @@
-import { StatusFailureIcon } from '@expo/styleguide-icons';
+import { StatusFailureIcon } from '@expo/styleguide-icons/custom/StatusFailureIcon';
 
 import { IconBase, DocIconProps } from './IconBase';
 

@@ -4,6 +4,7 @@ import path from 'path';
 import * as XcodeBuild from './XcodeBuild';
 import { BuildProps } from './XcodeBuild.types';
 import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
+import { Log } from '../../log';
 import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
 import { launchBinaryOnMacAsync } from '../../start/platforms/ios/devicectl';
 import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
@@ -11,14 +12,21 @@ import { DevServerManager } from '../../start/server/DevServerManager';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
 
+type BinaryLaunchInfo = {
+  bundleId: string;
+  schemes: string[];
+};
+
 /** Install and launch the app binary on a device. */
 export async function launchAppAsync(
   binaryPath: string,
   manager: DevServerManager,
-  props: Pick<BuildProps, 'isSimulator' | 'device' | 'shouldStartBundler'>
+  props: Pick<BuildProps, 'isSimulator' | 'device' | 'shouldStartBundler'>,
+  appId?: string
 ) {
-  const appId = await profile(getBundleIdentifierForBinaryAsync)(binaryPath);
+  appId ??= (await profile(getLaunchInfoForBinaryAsync)(binaryPath)).bundleId;
 
+  Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
   if (!props.isSimulator) {
     if (props.device.osType === 'macOS') {
       await launchBinaryOnMacAsync(appId, binaryPath);
@@ -57,8 +65,26 @@ export async function launchAppAsync(
   );
 }
 
-async function getBundleIdentifierForBinaryAsync(binaryPath: string): Promise<string> {
+export async function getLaunchInfoForBinaryAsync(binaryPath: string): Promise<BinaryLaunchInfo> {
   const builtInfoPlistPath = path.join(binaryPath, 'Info.plist');
-  const { CFBundleIdentifier } = await parsePlistAsync(builtInfoPlistPath);
-  return CFBundleIdentifier;
+  const { CFBundleIdentifier, CFBundleURLTypes } = await parsePlistAsync(builtInfoPlistPath);
+
+  let schemes: string[] = [];
+
+  if (Array.isArray(CFBundleURLTypes)) {
+    schemes =
+      CFBundleURLTypes.reduce<string[]>((acc, urlType: unknown) => {
+        if (
+          urlType &&
+          typeof urlType === 'object' &&
+          'CFBundleURLSchemes' in urlType &&
+          Array.isArray(urlType.CFBundleURLSchemes)
+        ) {
+          return [...acc, ...urlType.CFBundleURLSchemes];
+        }
+        return acc;
+      }, []) ?? [];
+  }
+
+  return { bundleId: CFBundleIdentifier, schemes };
 }

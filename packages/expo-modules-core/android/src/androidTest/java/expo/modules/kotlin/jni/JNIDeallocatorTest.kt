@@ -15,23 +15,8 @@ class JNIDeallocatorTest {
   ) {
     val moduleObject = evaluateScript("expo.modules.TestModule")
 
-    val deallocator = appContextHolder.get()!!.jniDeallocator
+    val deallocator = runtimeContextHolder.get()!!.jniDeallocator
 
     Truth.assertThat(deallocator.inspectMemory()).contains(moduleObject)
-  }
-
-  @Test
-  fun deallocate_should_clear_all_saved_references() {
-    withJSIInterop(
-      inlineModule {
-        Name("TestModule")
-      },
-      block = {
-        evaluateScript("expo.modules.TestModule")
-      },
-      afterCleanup = {
-        Truth.assertThat(it.inspectMemory()).isEmpty()
-      }
-    )
   }
 }

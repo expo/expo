@@ -1,6 +1,8 @@
+import type { SharedRef as SharedRefType } from 'expo/types';
 import React, { useState } from 'react';
 
 import { ImageProps, ImageSource } from '../Image.types';
+import { isImageRef } from '../utils';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 
 function findBestSourceForSize(
@@ -94,12 +96,12 @@ function selectSource(
 }
 
 export default function useSourceSelection(
-  sources: ImageSource[] | undefined,
+  sources: ImageSource[] | SharedRefType<'image'> | undefined,
   responsivePolicy: ImageProps['responsivePolicy'] = 'static',
   containerRef: React.MutableRefObject<HTMLDivElement | null>,
   measurementCallback: ((target: HTMLElement, size: DOMRect) => void) | null = null
-): ImageSource | SrcSetSource | null {
-  const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
+): ImageSource | SrcSetSource | SharedRefType<'image'> | null {
+  const hasMoreThanOneSource = (Array.isArray(sources) ? sources.length : 0) > 1;
   const [size, setSize] = useState<null | DOMRect>(
     containerRef.current?.getBoundingClientRect() ?? null
   );
@@ -124,5 +126,9 @@ export default function useSourceSelection(
     return () => {};
   }, [responsivePolicy, hasMoreThanOneSource, containerRef.current, measurementCallback]);
 
+  if (isImageRef(sources)) {
+    // There is always only one image ref, so there is nothing else to select from.
+    return sources;
+  }
   return selectSource(sources, size, responsivePolicy);
 }

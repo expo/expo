@@ -1,8 +1,13 @@
 import fs from 'fs/promises';
+import type { IMinimatch } from 'minimatch';
 import os from 'os';
 import path from 'path';
 
-import type { NormalizedOptions, Options } from './Fingerprint.types';
+import { loadConfigAsync } from './Config';
+import { satisfyExpoVersion } from './ExpoVersions';
+import type { Config, NormalizedOptions, Options } from './Fingerprint.types';
+import { SourceSkips } from './sourcer/SourceSkips';
+import { buildPathMatchObjects } from './utils/Path';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
@@ -46,6 +51,9 @@ export const DEFAULT_IGNORE_PATHS = [
   'app.config.json',
   'app.json',
 
+  // Ignore nested node_modules
+  '**/node_modules/**/node_modules/**',
+
   // Ignore default javascript files when calling `getConfig()`
   '**/node_modules/@babel/**/*',
   '**/node_modules/@expo/**/*',
@@ -74,22 +82,45 @@ export const DEFAULT_IGNORE_PATHS = [
   ].join(',')}}/**/*`,
 ];
 
+export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
+
 export async function normalizeOptionsAsync(
   projectRoot: string,
   options?: Options
 ): Promise<NormalizedOptions> {
+  const config = await loadConfigAsync(projectRoot, options?.silent ?? false);
   return {
+    // Defaults
+    platforms: ['android', 'ios'],
+    concurrentIoLimit: os.cpus().length,
+    hashAlgorithm: 'sha1',
+    sourceSkips: DEFAULT_SOURCE_SKIPS,
+    // Options from config
+    ...config,
+    // Explicit options
     ...options,
-    platforms: options?.platforms ?? ['android', 'ios'],
-    concurrentIoLimit: options?.concurrentIoLimit ?? os.cpus().length,
-    hashAlgorithm: options?.hashAlgorithm ?? 'sha1',
-    ignorePaths: await collectIgnorePathsAsync(projectRoot, options),
+    // These options are computed by both default and explicit options, so we put them last.
+    enableReactImportsPatcher:
+      options?.enableReactImportsPatcher ??
+      config?.enableReactImportsPatcher ??
+      satisfyExpoVersion(projectRoot, '<52.0.0') ??
+      false,
+    ignorePathMatchObjects: await collectIgnorePathsAsync(
+      projectRoot,
+      config?.ignorePaths,
+      options
+    ),
   };
 }
 
-async function collectIgnorePathsAsync(projectRoot: string, options?: Options): Promise<string[]> {
+async function collectIgnorePathsAsync(
+  projectRoot: string,
+  pathsFromConfig: Config['ignorePaths'],
+  options: Options | undefined
+): Promise<IMinimatch[]> {
   const ignorePaths = [
     ...DEFAULT_IGNORE_PATHS,
+    ...(pathsFromConfig ?? []),
     ...(options?.ignorePaths ?? []),
     ...(options?.dirExcludes?.map((dirExclude) => `${dirExclude}/**/*`) ?? []),
   ];
@@ -106,5 +137,5 @@ async function collectIgnorePathsAsync(projectRoot: string, options?: Options): 
     }
   } catch {}
 
-  return ignorePaths;
+  return buildPathMatchObjects(ignorePaths);
 }

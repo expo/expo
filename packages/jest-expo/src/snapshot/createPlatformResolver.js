@@ -1,7 +1,7 @@
 const path = require('path');
 
-const testDirectory = `__tests__`;
-module.exports = (platform) => {
+module.exports = (platform, { isReactServer } = {}) => {
+  const testDirectory = isReactServer ? '__rsc_tests__' : `__tests__`;
   const customPath = path.join(testDirectory, '__snapshots__');
   const getExt = (ext) => `${ext}.${platform}`;
   return {

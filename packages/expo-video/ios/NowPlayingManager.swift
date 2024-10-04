@@ -2,20 +2,20 @@
 
 import Foundation
 import MediaPlayer
+import ExpoModulesCore
 
 /**
  * A class meant to manage the "NowPlaying" widget based on currently playing players. When multiple players
  * are present the one that has most recently started playing and will be used as the source of information for the widget.
  * Paused player will be used as a data source for "NowPlaying" only if no other players are currently playing.
  */
-class NowPlayingManager {
+class NowPlayingManager: VideoPlayerObserverDelegate {
   static var shared = NowPlayingManager()
 
   private let skipTimeInterval = 10.0
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
-  private var players = NSHashTable<AVPlayer>.weakObjects()
-  private var observations: [AVPlayer: NSKeyValueObservation] = [:]
+  private var players = NSHashTable<VideoPlayer>.weakObjects()
 
   private var playTarget: Any?
   private var pauseTarget: Any?
@@ -30,20 +30,23 @@ class NowPlayingManager {
     commandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: skipTimeInterval)]
   }
 
-  func registerPlayer(_ player: AVPlayer) {
-    if let oldObservation = observations[player] {
-      oldObservation.invalidate()
-    }
-    observations[player] = observePlayerRate(player: player)
+  func registerPlayer(_ player: VideoPlayer) {
     players.add(player)
+    player.observer?.registerDelegate(delegate: self)
+
+    if mostRecentInteractionPlayer == nil {
+      setMostRecentInteractionPlayer(player: player.pointer)
+    }
   }
 
-  func unregisterPlayer(_ player: AVPlayer) {
-    if let observation = observations[player] {
-      observation.invalidate()
-    }
-    observations.removeValue(forKey: player)
+  func unregisterPlayer(_ player: VideoPlayer) {
     players.remove(player)
+    player.observer?.unregisterDelegate(delegate: self)
+
+    if mostRecentInteractionPlayer == player.pointer {
+      let newPlayer = players.allObjects.first(where: { $0.playbackRate != 0 })
+      setMostRecentInteractionPlayer(player: newPlayer?.pointer)
+    }
 
     if players.allObjects.isEmpty {
       let commandCenter = MPRemoteCommandCenter.shared()
@@ -53,7 +56,7 @@ class NowPlayingManager {
     }
   }
 
-  private func setMostRecentInteractionPlayer(player: AVPlayer) {
+  private func setMostRecentInteractionPlayer(player: AVPlayer?) {
     if player == mostRecentInteractionPlayer {
       return
     }
@@ -64,12 +67,13 @@ class NowPlayingManager {
 
     self.mostRecentInteractionPlayer = player
     self.setupNowPlayingControls()
+    self.updateNowPlayingInfo()
 
-    timeObserver = player.addPeriodicTimeObserver(
+    timeObserver = player?.addPeriodicTimeObserver(
       forInterval: CMTimeMake(value: 1, timescale: 4),
       queue: .main,
       using: { [weak self] _ in
-        self?.updateNowPlayingInfo()
+        self?.updateNowPlayingDynamicValues()
       })
   }
 
@@ -95,7 +99,7 @@ class NowPlayingManager {
       }
 
       for player in players.allObjects {
-        player.pause()
+        player.pointer.pause()
       }
       return .success
     }
@@ -134,32 +138,47 @@ class NowPlayingManager {
   }
 
   private func updateNowPlayingInfo() {
-    guard let player = mostRecentInteractionPlayer, let currentItem = mostRecentInteractionPlayer?.currentItem else {
+    guard let player = mostRecentInteractionPlayer, let currentItem = player.currentItem else {
       return
     }
-    let metadata = currentItem.asset.commonMetadata
+    let videoPlayerItem = currentItem as? VideoPlayerItem
 
-    let title = metadata.first(where: {
-      $0.commonKey == .commonKeyTitle
-    })
+    // Metadata explicitly specified by the user
+    let userMetadata = videoPlayerItem?.videoSource.metadata
 
-    let artist = metadata.first(where: {
-      $0.commonKey == .commonKeyArtist
-    })
+    Task {
+      // Metadata fetched with the video
+      let assetMetadata = try? await loadMetadata(for: currentItem)
 
-    let artwork = metadata.first(where: {
-      $0.commonKey == .commonKeyArtwork
-    })
+      let title = assetMetadata?.first(where: {
+        $0.commonKey == .commonKeyTitle
+      })
 
-    var nowPlayingInfo = [String: Any]()
+      let artist = assetMetadata?.first(where: {
+        $0.commonKey == .commonKeyArtist
+      })
 
-    nowPlayingInfo[MPMediaItemPropertyTitle] = title
-    nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
-    nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
-    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
-    nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      let artwork = assetMetadata?.first(where: {
+        $0.commonKey == .commonKeyArtwork
+      })
 
-    MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+      var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+
+      nowPlayingInfo[MPMediaItemPropertyTitle] = userMetadata?.title ?? title
+      nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
+      nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
+      nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
+      nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
+      nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = await player.rate
+      nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
+      nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+
+      MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+  }
+
+  private func loadMetadata(for mediaItem: AVPlayerItem) async throws -> [AVMetadataItem] {
+    return try await mediaItem.asset.loadMetadata(for: .iTunesMetadata)
   }
 
   // Updates nowPlaying information that changes dynamically during playback e.g. progress
@@ -172,6 +191,7 @@ class NowPlayingManager {
       return
     }
 
+    nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
     nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds.rounded()
     nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
     MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
@@ -185,20 +205,26 @@ class NowPlayingManager {
     commandCenter.changePlaybackPositionCommand.removeTarget(playbackPositionTarget)
   }
 
-  private func observePlayerRate(player: AVPlayer) -> NSKeyValueObservation {
-    return player.observe(\.rate) { [weak self] changedPlayer, value in
-      guard let self else {
-        return
-      }
+  func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
+    setupNowPlayingControls()
+    updateNowPlayingInfo()
+  }
 
-      let newRate = value.newValue
-      if newRate == 0 && mostRecentInteractionPlayer == changedPlayer {
-        if let newPlayer = players.allObjects.first(where: { $0.rate != 0 }) {
-          setMostRecentInteractionPlayer(player: newPlayer)
-        }
-      } else if newRate != 0 && mostRecentInteractionPlayer != changedPlayer {
-        setMostRecentInteractionPlayer(player: changedPlayer)
+  func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
+    if newRate == 0 && mostRecentInteractionPlayer == player {
+      if let newPlayer = players.allObjects.first(where: { $0.pointer.rate != 0 }) {
+        setMostRecentInteractionPlayer(player: newPlayer.pointer)
       }
+    } else if newRate != 0 && mostRecentInteractionPlayer != player {
+      setMostRecentInteractionPlayer(player: player)
+    }
+  }
+
+  func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status) {
+    // The player can be registered before it's item has loaded. We have to re-update the notification when item data is loaded
+    if player == mostRecentInteractionPlayer && newStatus == .readyToPlay {
+      setupNowPlayingControls()
+      updateNowPlayingInfo()
     }
   }
 }

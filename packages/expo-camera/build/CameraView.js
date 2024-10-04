@@ -1,31 +1,37 @@
-import { Platform, UnavailabilityError, EventEmitter } from 'expo-modules-core';
-import * as React from 'react';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { Component, createRef } from 'react';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
-const emitter = new EventEmitter(CameraManager);
 const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
 function ensurePictureOptions(options) {
-    const pictureOptions = !options || typeof options !== 'object' ? {} : options;
-    if (!pictureOptions.quality) {
-        pictureOptions.quality = 1;
+    if (!options || typeof options !== 'object') {
+        return {};
     }
-    if (pictureOptions.onPictureSaved) {
+    if (options.quality === undefined) {
+        options.quality = 1;
+    }
+    if (options.mirror) {
+        console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
+    }
+    if (options.onPictureSaved) {
         const id = _GLOBAL_PICTURE_ID++;
-        _PICTURE_SAVED_CALLBACKS[id] = pictureOptions.onPictureSaved;
-        pictureOptions.id = id;
-        pictureOptions.fastMode = true;
+        _PICTURE_SAVED_CALLBACKS[id] = options.onPictureSaved;
+        options.id = id;
+        options.fastMode = true;
     }
-    return pictureOptions;
+    return options;
 }
-function ensureRecordingOptions(options) {
-    let recordingOptions = options || {};
-    if (!recordingOptions || typeof recordingOptions !== 'object') {
-        recordingOptions = {};
+function ensureRecordingOptions(options = {}) {
+    if (!options || typeof options !== 'object') {
+        return {};
     }
-    return recordingOptions;
+    if (options.mirror) {
+        console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
+    }
+    return options;
 }
 function _onPictureSaved({ nativeEvent, }) {
     const { id, data } = nativeEvent;
@@ -35,7 +41,7 @@ function _onPictureSaved({ nativeEvent, }) {
         delete _PICTURE_SAVED_CALLBACKS[id];
     }
 }
-export default class CameraView extends React.Component {
+export default class CameraView extends Component {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
      */
@@ -72,6 +78,18 @@ export default class CameraView extends React.Component {
     async getAvailablePictureSizesAsync() {
         return (await this._cameraRef.current?.getAvailablePictureSizes()) ?? [];
     }
+    /**
+     * Resumes the camera preview.
+     */
+    async resumePreview() {
+        return this._cameraRef.current?.resumePreview();
+    }
+    /**
+     * Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
+     */
+    async pausePreview() {
+        return this._cameraRef.current?.pausePreview();
+    }
     // Values under keys from this object will be transformed to native options
     static ConversionTables = ConversionTables;
     static defaultProps = {
@@ -82,29 +100,34 @@ export default class CameraView extends React.Component {
         flash: 'off',
     };
     _cameraHandle;
-    _cameraRef = React.createRef();
+    _cameraRef = createRef();
     _lastEvents = {};
     _lastEventsTimes = {};
     // @needsAudit
     /**
      * Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation
-     * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview. Anyway on Android it is essential
-     * to set ratio prop to get a picture with correct dimensions.
+     * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview.
      * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
      * @param options An object in form of `CameraPictureOptions` type.
-     * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on iOS,
-     * Android, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
-     * the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data
-     * of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source
-     * for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF
-     * data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
+     * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on Android,
+     * iOS, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
+     * the dimensions of the image.
+     *
+     * `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data
+     * of the image in Base64. Prepend it with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source
+     * for an `Image` element for example.
+     *
+     * `exif` is included if the `exif` option was truthy, and is an object containing EXIF
+     * data for the image. The names of its properties are EXIF tags and their values are the values for those tags.
      *
      * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
+     *
+     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
      */
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
-        return await this._cameraRef.current?.takePicture(pictureOptions);
+        return this._cameraRef.current?.takePicture(pictureOptions);
     }
     /**
      * Presents a modal view controller that uses the [`DataScannerViewController`](https://developer.apple.com/documentation/visionkit/scanning_data_with_the_camera) available on iOS 16+.
@@ -119,7 +142,7 @@ export default class CameraView extends React.Component {
         }
     }
     /**
-     * Dimiss the scanner presented by `launchScanner`.
+     * Dismiss the scanner presented by `launchScanner`.
      * @platform ios
      */
     static async dismissScanner() {
@@ -136,7 +159,7 @@ export default class CameraView extends React.Component {
      * @platform ios
      */
     static onModernBarcodeScanned(listener) {
-        return emitter.addListener('onModernBarcodeScanned', listener);
+        return CameraManager.addListener('onModernBarcodeScanned', listener);
     }
     /**
      * Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation.
@@ -149,7 +172,7 @@ export default class CameraView extends React.Component {
      */
     async recordAsync(options) {
         const recordingOptions = ensureRecordingOptions(options);
-        return await this._cameraRef.current?.record(recordingOptions);
+        return this._cameraRef.current?.record(recordingOptions);
     }
     /**
      * Stops recording if any is in progress.

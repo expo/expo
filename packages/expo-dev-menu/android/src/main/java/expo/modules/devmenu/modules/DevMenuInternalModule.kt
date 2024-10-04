@@ -3,16 +3,12 @@ package expo.modules.devmenu.modules
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReadableMap
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devmenu.DevMenuManager
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import kotlinx.coroutines.launch
 
 class DevMenuInternalModule : Module() {
   private val context: Context
@@ -28,9 +24,12 @@ class DevMenuInternalModule : Module() {
       DevMenuManager.loadFonts(context)
     }
 
-    AsyncFunction("dispatchCallableAsync") { callableId: String, args: ReadableMap? ->
-      DevMenuManager.dispatchCallable(callableId, args)
-    }
+    AsyncFunction("reload", DevMenuManager::reload)
+    AsyncFunction("togglePerformanceMonitor", DevMenuManager::togglePerformanceMonitor)
+    AsyncFunction("toggleInspector", DevMenuManager::toggleInspector)
+    AsyncFunction("toggleRemoteDebug", DevMenuManager::toggleRemoteDebug)
+    AsyncFunction("openJSInspector", DevMenuManager::openJSInspector)
+    AsyncFunction("toggleFastRefresh", DevMenuManager::toggleFastRefresh)
 
     AsyncFunction<Unit>("hideMenu") {
       DevMenuManager.hideMenu()
@@ -45,25 +44,15 @@ class DevMenuInternalModule : Module() {
     }
 
     AsyncFunction<Unit>("openDevMenuFromReactNative") {
-      val devSupportManager = DevMenuManager.getReactHost()?.devSupportManager ?: return@AsyncFunction
-      val activity = DevMenuManager.getReactHost()?.currentReactContext?.currentActivity ?: return@AsyncFunction
+      val devSupportManager = DevMenuManager.getReactHost()?.devSupportManager
+        ?: return@AsyncFunction
+      val activity = DevMenuManager.getReactHost()?.currentReactContext?.currentActivity
+        ?: return@AsyncFunction
 
       activity.runOnUiThread {
         DevMenuManager.closeMenu()
         devSupportManager.devSupportEnabled = true
         devSupportManager.showDevOptionsDialog()
-      }
-    }
-
-    AsyncFunction("onScreenChangeAsync") { currentScreen: String? ->
-      DevMenuManager.setCurrentScreen(currentScreen)
-    }
-
-    AsyncFunction("fetchDataSourceAsync") { id: String, promise: Promise ->
-      DevMenuManager.coroutineScope.launch {
-        val data = DevMenuManager.fetchDataSource(id)
-        val result = Arguments.fromList(data.map { it.serialize() })
-        promise.resolve(result)
       }
     }
 

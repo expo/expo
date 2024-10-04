@@ -1,14 +1,8 @@
 package expo.modules.video
 
-import android.content.ComponentName
 import android.content.Context
-import android.content.Context.BIND_AUTO_CREATE
-import android.content.Intent
-import android.content.ServiceConnection
-import android.os.Build
-import android.os.IBinder
-import android.util.Log
 import android.view.SurfaceView
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
@@ -17,91 +11,105 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.enums.PlayerStatus.*
+import expo.modules.video.playbackService.ExpoVideoPlaybackService
+import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.TimeUpdate
+import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(context: Context, appContext: AppContext, private val mediaItem: MediaItem) : AutoCloseable, SharedObject(appContext) {
+class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
+  private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
 
   val player = ExoPlayer
     .Builder(context, renderersFactory)
     .setLooper(context.mainLooper)
     .build()
 
-  // We duplicate some properties of the player, because we don't want to always use the mainQueue to access them.
-  var playing = false
-    set(value) {
-      if (field != value) {
-        sendEventOnJSThread("playingChange", value, field)
-      }
-      field = value
-    }
+  val serviceConnection = PlaybackServiceConnection(WeakReference(this))
+  val intervalUpdateClock = IntervalUpdateClock(this)
 
-  var status: PlayerStatus = IDLE
+  var playing by IgnoreSameSet(false) { new, old ->
+    sendEvent(PlayerEvent.IsPlayingChanged(new, old))
+  }
 
-  var currentMediaItem: MediaItem? = null
-    set(newMediaItem) {
-      if (field != newMediaItem) {
-        val oldVideoSource = VideoManager.getVideoSourceFromMediaItem(field)
-        val newVideoSource = VideoManager.getVideoSourceFromMediaItem(newMediaItem)
-
-        sendEventOnJSThread("sourceChange", newVideoSource, oldVideoSource)
-      }
-      field = newMediaItem
-    }
+  var uncommittedSource: VideoSource? = source
+  private var lastLoadedSource by IgnoreSameSet<VideoSource?>(null) { new, old ->
+    sendEvent(PlayerEvent.SourceChanged(new, old))
+  }
 
   // Volume of the player if there was no mute applied.
   var userVolume = 1f
+  var status: PlayerStatus = IDLE
   var requiresLinearPlayback = false
   var staysActiveInBackground = false
   var preservesPitch = false
     set(preservesPitch) {
-      playbackParameters = applyPitchCorrection(playbackParameters)
       field = preservesPitch
+      playbackParameters = applyPitchCorrection(playbackParameters)
     }
-
-  private var serviceConnection: ServiceConnection
-  internal var playbackServiceBinder: PlaybackServiceBinder? = null
-  lateinit var timeline: Timeline
-
-  var volume = 1f
-    set(volume) {
-      if (player.volume == volume) return
-      player.volume = if (muted) 0f else volume
-      sendEventOnJSThread("volumeChange", VolumeEvent(volume, muted), VolumeEvent(field, muted))
-      field = volume
+  var showNowPlayingNotification = false
+    set(value) {
+      field = value
+      serviceConnection.playbackServiceBinder?.service?.setShowNotification(value, this.player)
     }
+  var duration = 0f
+  var isLive = false
 
-  var muted = false
-    set(muted) {
-      if (field == muted) return
-      sendEventOnJSThread("volumeChange", VolumeEvent(volume, muted), VolumeEvent(volume, field))
-      player.volume = if (muted) 0f else userVolume
-      field = muted
+  var volume: Float by IgnoreSameSet(1f) { new: Float, old: Float ->
+    player.volume = if (muted) 0f else new
+    userVolume = volume
+    sendEvent(PlayerEvent.VolumeChanged(VolumeEvent(new, muted), VolumeEvent(old, muted)))
+  }
+
+  var muted: Boolean by IgnoreSameSet(false) { new: Boolean, old: Boolean ->
+    player.volume = if (new) 0f else userVolume
+    sendEvent(PlayerEvent.VolumeChanged(VolumeEvent(volume, new), VolumeEvent(volume, old)))
+  }
+
+  var playbackParameters by IgnoreSameSet(
+    PlaybackParameters.DEFAULT,
+    propertyMapper = { applyPitchCorrection(it) }
+  ) { new: PlaybackParameters, old: PlaybackParameters ->
+    player.playbackParameters = new
+
+    if (old.speed != new.speed) {
+      sendEvent(PlayerEvent.PlaybackRateChanged(new.speed, old.speed))
     }
+  }
 
-  var playbackParameters: PlaybackParameters = PlaybackParameters.DEFAULT
-    set(newPlaybackParameters) {
-      if (playbackParameters.speed != newPlaybackParameters.speed) {
-        sendEventOnJSThread("playbackRateChange", newPlaybackParameters.speed, playbackParameters.speed)
+  val currentOffsetFromLive: Float?
+    get() {
+      return if (player.currentLiveOffset == C.TIME_UNSET) {
+        null
+      } else {
+        player.currentLiveOffset / 1000f
       }
-      val pitchCorrectedPlaybackParameters = applyPitchCorrection(newPlaybackParameters)
-      field = pitchCorrectedPlaybackParameters
+    }
 
-      if (player.playbackParameters != pitchCorrectedPlaybackParameters) {
-        player.playbackParameters = pitchCorrectedPlaybackParameters
+  val currentLiveTimestamp: Long?
+    get() {
+      val window = Timeline.Window()
+      if (!player.currentTimeline.isEmpty) {
+        player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
       }
+      if (window.windowStartTimeMs == C.TIME_UNSET) {
+        return null
+      }
+      return window.windowStartTimeMs + player.currentPosition
     }
 
   private val playerListener = object : Player.Listener {
@@ -109,14 +117,11 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
       this@VideoPlayer.playing = isPlaying
     }
 
-    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-      this@VideoPlayer.timeline = timeline
-    }
-
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      this@VideoPlayer.currentMediaItem = mediaItem
+      this@VideoPlayer.duration = 0f
+      this@VideoPlayer.isLive = false
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
-        sendEventOnJSThread("playToEnd")
+        sendEvent(PlayerEvent.PlayedToEnd())
       }
       super.onMediaItemTransition(mediaItem, reason)
     }
@@ -125,12 +130,18 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
       if (playbackState == Player.STATE_IDLE && player.playerError != null) {
         return
       }
+      if (playbackState == Player.STATE_READY) {
+        this@VideoPlayer.duration = this@VideoPlayer.player.duration / 1000f
+        this@VideoPlayer.isLive = this@VideoPlayer.player.isCurrentMediaItemLive
+      }
       setStatus(playerStateToPlayerStatus(playbackState), null)
       super.onPlaybackStateChanged(playbackState)
     }
 
     override fun onVolumeChanged(volume: Float) {
-      this@VideoPlayer.volume = volume
+      if (!muted) {
+        this@VideoPlayer.volume = volume
+      }
     }
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
@@ -140,6 +151,8 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
 
     override fun onPlayerErrorChanged(error: PlaybackException?) {
       error?.let {
+        this@VideoPlayer.duration = 0f
+        this@VideoPlayer.isLive = false
         setStatus(ERROR, error)
       } ?: run {
         setStatus(playerStateToPlayerStatus(player.playbackState), null)
@@ -150,58 +163,22 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   init {
-    serviceConnection = object : ServiceConnection {
-      override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
-        playbackServiceBinder = binder as? PlaybackServiceBinder
-        playbackServiceBinder?.service?.registerPlayer(player) ?: run {
-          Log.w(
-            "ExpoVideo",
-            "Expo Video could not bind to the playback service. " +
-              "This will cause issues with playback notifications and sustaining background playback."
-          )
-        }
-      }
-
-      override fun onServiceDisconnected(componentName: ComponentName) {
-        playbackServiceBinder = null
-      }
-
-      override fun onNullBinding(componentName: ComponentName) {
-        Log.w(
-          "ExpoVideo",
-          "Expo Video could not bind to the playback service. " +
-            "This will cause issues with playback notifications and sustaining background playback."
-        )
-      }
-    }
-
-    appContext.reactContext?.apply {
-      val intent = Intent(context, ExpoVideoPlaybackService::class.java)
-      intent.action = MediaSessionService.SERVICE_INTERFACE
-
-      startService(intent)
-
-      val flags = if (Build.VERSION.SDK_INT >= 29) {
-        BIND_AUTO_CREATE or Context.BIND_INCLUDE_CAPABILITIES
-      } else {
-        BIND_AUTO_CREATE
-      }
-
-      bindService(intent, serviceConnection, flags)
-    }
+    ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
     player.addListener(playerListener)
     VideoManager.registerVideoPlayer(this)
   }
 
   override fun close() {
     appContext?.reactContext?.unbindService(serviceConnection)
-    playbackServiceBinder?.service?.unregisterPlayer(player)
+    serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(player)
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
     appContext?.mainQueue?.launch {
       player.removeListener(playerListener)
       player.release()
     }
+    uncommittedSource = null
+    lastLoadedSource = null
   }
 
   override fun deallocate() {
@@ -216,8 +193,16 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
   }
 
   fun prepare() {
-    player.setMediaItem(mediaItem)
-    player.prepare()
+    uncommittedSource?.let { videoSource ->
+      val mediaSource = videoSource.toMediaSource(context)
+      player.setMediaSource(mediaSource)
+      player.prepare()
+      lastLoadedSource = videoSource
+      uncommittedSource = null
+    } ?: run {
+      player.clearMediaItems()
+      player.prepare()
+    }
   }
 
   private fun applyPitchCorrection(playbackParameters: PlaybackParameters): PlaybackParameters {
@@ -243,24 +228,47 @@ class VideoPlayer(context: Context, appContext: AppContext, private val mediaIte
       else -> IDLE
     }
   }
+
   private fun setStatus(status: PlayerStatus, error: PlaybackException?) {
+    val oldStatus = this.status
+    this.status = status
+
     val playbackError = error?.let {
       PlaybackError(it)
     }
 
     if (playbackError == null && player.playbackState == Player.STATE_ENDED) {
-      sendEventOnJSThread("playToEnd")
+      sendEvent(PlayerEvent.PlayedToEnd())
     }
 
-    if (this.status != status) {
-      sendEventOnJSThread("statusChange", status.value, this.status.value, playbackError)
+    if (this.status != oldStatus) {
+      sendEvent(PlayerEvent.StatusChanged(status, oldStatus, playbackError))
     }
-    this.status = status
   }
 
-  private fun sendEventOnJSThread(eventName: String, vararg args: Any?) {
-    appContext?.executeOnJavaScriptThread {
-      sendEvent(eventName, *args)
+  fun addListener(videoPlayerListener: VideoPlayerListener) {
+    if (listeners.all { it.get() != videoPlayerListener }) {
+      listeners.add(WeakReference(videoPlayerListener))
+    }
+  }
+
+  fun removeListener(videoPlayerListener: VideoPlayerListener) {
+    listeners.removeAll { it.get() == videoPlayerListener }
+  }
+
+  private fun sendEvent(event: PlayerEvent) {
+    // Emits to the native listeners
+    event.emit(this, listeners.mapNotNull { it.get() })
+    // Emits to the JS side
+    emit(event.name, *event.arguments)
+  }
+
+  // MARK: IntervalUpdateEmitter
+
+  override fun emitTimeUpdate() {
+    appContext?.mainQueue?.launch {
+      val updatePayload = TimeUpdate(player.currentPosition / 1000.0, currentOffsetFromLive, currentLiveTimestamp)
+      sendEvent(PlayerEvent.TimeUpdated(updatePayload))
     }
   }
 }

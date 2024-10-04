@@ -38,8 +38,6 @@ enum CameraTypeLegacy: Int, Enumerable {
       return .front
     case .back:
       return .back
-    default:
-      return .back
     }
   }
 }
@@ -53,9 +51,7 @@ enum AutoFocus: Int, Enumerable {
     case .on:
       return .autoFocus
     case .off:
-      return .locked
-    default:
-      return .autoFocus
+      return .continuousAutoFocus
     }
   }
 }

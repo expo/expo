@@ -3,9 +3,11 @@ title: Reference
 hideTOC: true
 ---
 
-import RedirectNotification from '~/components/plugins/RedirectNotification';
-import { Terminal } from '~/ui/components/Snippet';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
+import RedirectNotification from '~/ui/components/RedirectNotification';
+import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 
 <RedirectNotification>
@@ -45,12 +47,14 @@ Expo apps are React Native apps, so all Expo SDK packages work in any React Nati
       SDK packages.
     </>
   }
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
-  title="Using libraries"
+  title="Use libraries"
   description="Learn how to install Expo SDK packages in your project."
   href="/workflow/using-libraries"
+  Icon={BookOpen02Icon}
 />
 
 ## Using pre-release versions
@@ -59,7 +63,7 @@ New Expo SDK versions are released three times each year. Between these releases
 
 ### Canary releases
 
-Canary releases represent a snapshot of the state of the `main` branch at the time they are published. Canary package versions include `-canary` in the name, along with the date and commit hash, such as `50.0.0-canary-20231205-250b31f`. To install the latest canary release:
+Canary releases represent a snapshot of the state of the `main` branch at the time they are published. Canary package versions include `-canary` in the name, along with the date and commit hash, such as `51.0.0-canary-20240418-8d74597`. To install the latest canary release:
 
 <Terminal
   cmd={[
@@ -81,9 +85,9 @@ Approximately every four months there is a new Expo SDK release that typically u
 
 | Expo SDK version | React Native version | React Native Web version |
 | ---------------- | -------------------- | ------------------------ |
+| 51.0.0           | 0.74                 | 0.19.10                  |
 | 50.0.0           | 0.73                 | 0.19.6                   |
 | 49.0.0           | 0.72                 | 0.19.6                   |
-| 48.0.0           | 0.71                 | 0.18.10                  |
 
 ### Support for other React Native versions
 
@@ -95,6 +99,6 @@ Each version of Expo SDK supports a minimum OS version of Android and iOS. For A
 
 | Expo SDK version | Android version | `compileSdkVersion` | iOS version |
 | ---------------- | --------------- | ------------------- | ----------- |
+| 51.0.0           | 6+              | 34                  | 13.4+       |
 | 50.0.0           | 6+              | 34                  | 13.4+       |
 | 49.0.0           | 5+              | 33                  | 13+         |
-| 48.0.0           | 5+              | 33                  | 13+         |

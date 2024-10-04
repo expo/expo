@@ -19,15 +19,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.testRouter = exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
 require("./expect");
+require("./mocks");
 const react_native_1 = require("@testing-library/react-native");
 const react_1 = __importDefault(require("react"));
 const mock_config_1 = require("./mock-config");
 Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
 Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
-const mocks_1 = require("./mocks");
 const ExpoRoot_1 = require("../ExpoRoot");
 const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
-const getLinkingConfig_1 = require("../getLinkingConfig");
 const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
 // re-export everything
@@ -35,24 +34,18 @@ __exportStar(require("@testing-library/react-native"), exports);
 afterAll(() => {
     router_store_1.store.cleanup();
 });
-function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) {
+function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
     jest.useFakeTimers();
     const mockContext = (0, mock_config_1.getMockContext)(context);
-    // Reset the initial URL
-    (0, mocks_1.setInitialUrl)(initialUrl);
     // Force the render to be synchronous
     process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-    getLinkingConfig_1.stateCache.clear();
-    let location;
-    if (typeof initialUrl === 'string') {
-        location = new URL(initialUrl, 'test://');
-    }
-    else if (initialUrl instanceof URL) {
-        location = initialUrl;
-    }
-    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={mockContext} location={location}/>, {
-        ...options,
-    });
+    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={mockContext} location={initialUrl} linking={linking}/>, options);
+    /**
+     * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
+     * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
+     * (that the app will briefly be in the right state, but then update to an invalid state)
+     */
+    router_store_1.store.subscribeToRootState(() => jest.runOnlyPendingTimers());
     return Object.assign(result, {
         getPathname() {
             return router_store_1.store.routeInfoSnapshot().pathname;

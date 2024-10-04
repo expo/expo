@@ -9,11 +9,19 @@ import { PixelRatio, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
 
-const bigBuckBunnySource: VideoSource =
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+const bigBuckBunnySource: VideoSource = {
+  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  metadata: {
+    title: 'Big Buck Bunny',
+    artist: 'The Open Movie Project',
+  },
+};
 
 const elephantsDreamSource: VideoSource =
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
+
+const forBiggerBlazesSource: VideoSource =
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
 
 // source: https://reference.dashif.org/dash.js/latest/samples/drm/widevine.html
 const androidDrmSource: VideoSource = {
@@ -27,8 +35,12 @@ const androidDrmSource: VideoSource = {
     licenseServer: 'https://drm-widevine-licensing.axtest.net/AcquireLicense',
   },
 };
-const videoLabels: string[] = ['Big Buck Bunny', 'Elephants Dream'];
-const videoSources: VideoSource[] = [bigBuckBunnySource, elephantsDreamSource];
+const videoLabels: string[] = ['Big Buck Bunny', 'Elephants Dream', 'For Bigger Blazes'];
+const videoSources: VideoSource[] = [
+  bigBuckBunnySource,
+  elephantsDreamSource,
+  forBiggerBlazesSource,
+];
 const playbackRates: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
 const eventsToListen: (keyof VideoPlayerEvents)[] = [
   'statusChange',
@@ -37,6 +49,7 @@ const eventsToListen: (keyof VideoPlayerEvents)[] = [
   'volumeChange',
   'playToEnd',
   'sourceChange',
+  'timeUpdate',
 ];
 if (Platform.OS === 'android') {
   videoLabels.push('Tears of Steel (DRM protected)');
@@ -49,6 +62,7 @@ export default function VideoScreen() {
   const [allowPictureInPicture, setAllowPictureInPicture] = React.useState(true);
   const [startPictureInPictureAutomatically, setStartPictureInPictureAutomatically] =
     React.useState(false);
+  const [allowsVideoFrameAnalysis, setAllowsVideoFrameAnalysis] = React.useState(true);
   const [showNativeControls, setShowNativeControls] = React.useState(true);
   const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
   const [staysActiveInBackground, setStaysActiveInBackground] = React.useState(false);
@@ -58,12 +72,16 @@ export default function VideoScreen() {
   const [volume, setVolume] = React.useState(1);
   const [currentSource, setCurrentSource] = React.useState(videoSources[0]);
   const [logEvents, setLogEvents] = React.useState(false);
+  const [showNowPlayingNotification, setShowNowPlayingNotification] = React.useState(true);
 
   const player = useVideoPlayer(currentSource, (player) => {
     player.volume = volume;
     player.loop = loop;
     player.preservesPitch = preservePitch;
     player.staysActiveInBackground = staysActiveInBackground;
+    player.showNowPlayingNotification = true;
+    player.allowsExternalPlayback = true;
+    player.timeUpdateEventInterval = 0.25;
     player.play();
   });
 
@@ -123,6 +141,14 @@ export default function VideoScreen() {
     [player]
   );
 
+  const updateShowNowPlayingNotification = useCallback(
+    (showNowPlayingNotification: boolean) => {
+      player.showNowPlayingNotification = showNowPlayingNotification;
+      setShowNowPlayingNotification(showNowPlayingNotification);
+    },
+    [player]
+  );
+
   useEffect(() => {
     if (logEvents) {
       eventsToListen.forEach((eventName) => {
@@ -155,6 +181,7 @@ export default function VideoScreen() {
         requiresLinearPlayback={requiresLinearPlayback}
         allowsPictureInPicture={allowPictureInPicture}
         startsPictureInPictureAutomatically={startPictureInPictureAutomatically}
+        allowsVideoFrameAnalysis={allowsVideoFrameAnalysis}
         onPictureInPictureStart={() => {
           setIsInPictureInPicture(true);
           console.log('Entered Picture in Picture mode');
@@ -162,6 +189,12 @@ export default function VideoScreen() {
         onPictureInPictureStop={() => {
           setIsInPictureInPicture(false);
           console.log('Exited Picture in Picture mode');
+        }}
+        onFullscreenEnter={() => {
+          console.log('entered fullscreen');
+        }}
+        onFullscreenExit={() => {
+          console.log('exited fullscreen');
         }}
       />
       <ScrollView style={styles.controlsContainer}>
@@ -273,6 +306,24 @@ export default function VideoScreen() {
             style={styles.switch}
             titleStyle={styles.switchTitle}
           />
+        </View>
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Show now playing notification"
+            value={showNowPlayingNotification}
+            setValue={updateShowNowPlayingNotification}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+          {Platform.OS === 'ios' && (
+            <TitledSwitch
+              title="Allow video frame analysis (Live Text interaction for video)"
+              value={allowsVideoFrameAnalysis}
+              setValue={setAllowsVideoFrameAnalysis}
+              style={styles.switch}
+              titleStyle={styles.switchTitle}
+            />
+          )}
         </View>
       </ScrollView>
     </View>

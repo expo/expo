@@ -10,3 +10,6 @@ class GenerateThumbnailException :
 
 class FilePermissionsModuleNotFound :
   CodedException("File permissions module not found")
+
+class InvalidSourceFilenameException :
+  CodedException("Invalid source URI")

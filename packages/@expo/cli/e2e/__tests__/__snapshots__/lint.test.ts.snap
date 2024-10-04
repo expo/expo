@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runs \`npx expo lint --help\` 1`] = `
+"
+  Info
+    Utility to run ESLint. Prompts to install and configure if not yet set up.
+
+  Usage
+    $ npx expo lint
+
+  Options
+    -h, --help    Usage info
+"
+`;

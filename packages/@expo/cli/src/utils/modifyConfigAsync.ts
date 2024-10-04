@@ -9,23 +9,14 @@ export async function attemptModification(
   projectRoot: string,
   edits: Partial<ExpoConfig>,
   exactEdits: Partial<ExpoConfig>
-): Promise<void> {
+): Promise<boolean> {
   const modification = await modifyConfigAsync(projectRoot, edits, {
     skipSDKVersionRequirement: true,
   });
-  if (modification.type === 'success') {
-    Log.log();
-  } else {
+  if (modification.type !== 'success') {
     warnAboutConfigAndThrow(modification.type, modification.message!, exactEdits);
   }
-}
-
-function logNoConfig() {
-  Log.log(
-    chalk.yellow(
-      `No Expo config was found. Please create an Expo config (${chalk.bold`app.json`} or ${chalk.bold`app.config.js`}) in your project root.`
-    )
-  );
+  return modification.type === 'success';
 }
 
 export function warnAboutConfigAndThrow(type: string, message: string, edits: Partial<ExpoConfig>) {
@@ -33,10 +24,7 @@ export function warnAboutConfigAndThrow(type: string, message: string, edits: Pa
   if (type === 'warn') {
     // The project is using a dynamic config, give the user a helpful log and bail out.
     Log.log(chalk.yellow(message));
-  } else {
-    logNoConfig();
   }
-
   notifyAboutManualConfigEdits(edits);
   throw new SilentError();
 }

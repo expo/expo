@@ -13,6 +13,7 @@ exceptions:
   - '.*app\.config\.js.*'
   - '.*app\.json.*'
   - '.*app\.plugin\.js.*'
+  - '.*app directory.*'
   - '.*assets.*'
   - '.*create-expo-app.*'
   - '.*create-react-native-app.*'
@@ -131,6 +132,8 @@ exceptions:
   - '.*Jest.*'
   - '.*Keychain.*'
   - '.*Kotlin.*'
+  - '.*layout.*'
+  - '.*Legend-State.*'
   - '.*Library.*'
   - '.*Link.*'
   - '.*Linking.*'
@@ -151,8 +154,10 @@ exceptions:
   - '.*New Architecture.*'
   - '.*Node.*'
   - '.*npm.*'
+  - '.*OTA.*'
   - '.*OTF.*'
   - '.*Organizations.*'
+  - '.*Optional.*'
   - '.*Package.*'
   - '.*Personal Accounts.*'
   - '.*Performance Monitor.*'
@@ -221,6 +226,7 @@ exceptions:
   - '.*Update.*'
   - '.*Watchman.*'
   - '.*UI.*'
+  - '.*USB.*'
   - '.*URI.*'
   - '.*URL.*'
   - '.*URLs.*'
@@ -247,3 +253,4 @@ exceptions:
   - (experimental support)
   - How can I implement a custom
   - Drizzle ORM
+  - architecture?

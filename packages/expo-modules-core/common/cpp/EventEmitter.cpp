@@ -2,15 +2,17 @@
 #include "EventEmitter.h"
 #include "LazyObject.h"
 
+#include <cxxreact/ErrorUtils.h>
+
 namespace expo::EventEmitter {
 
 #pragma mark - Listeners
 
-void Listeners::add(jsi::Runtime &runtime, std::string eventName, const jsi::Function &listener) noexcept {
+void Listeners::add(jsi::Runtime &runtime, const std::string& eventName, const jsi::Function &listener) noexcept {
   listenersMap[eventName].emplace_back(runtime, listener);
 }
 
-void Listeners::remove(jsi::Runtime &runtime, std::string eventName, const jsi::Function &listener) noexcept {
+void Listeners::remove(jsi::Runtime &runtime, const std::string& eventName, const jsi::Function &listener) noexcept {
   if (!listenersMap.contains(eventName)) {
     return;
   }
@@ -21,7 +23,7 @@ void Listeners::remove(jsi::Runtime &runtime, std::string eventName, const jsi::
   });
 }
 
-void Listeners::removeAll(std::string eventName) noexcept {
+void Listeners::removeAll(const std::string& eventName) noexcept {
   if (listenersMap.contains(eventName)) {
     listenersMap[eventName].clear();
   }
@@ -31,14 +33,14 @@ void Listeners::clear() noexcept {
   listenersMap.clear();
 }
 
-size_t Listeners::listenersCount(std::string eventName) noexcept {
+size_t Listeners::listenersCount(const std::string& eventName) noexcept {
   if (!listenersMap.contains(eventName)) {
     return 0;
   }
   return listenersMap[eventName].size();
 }
 
-void Listeners::call(jsi::Runtime &runtime, std::string eventName, const jsi::Object &thisObject, const jsi::Value *args, size_t count) noexcept {
+void Listeners::call(jsi::Runtime &runtime, const std::string& eventName, const jsi::Object &thisObject, const jsi::Value *args, size_t count) noexcept {
   if (!listenersMap.contains(eventName)) {
     return;
   }
@@ -51,11 +53,15 @@ void Listeners::call(jsi::Runtime &runtime, std::string eventName, const jsi::Ob
   }
   if (listSize == 1) {
     // The most common scenario – just call the only listener.
-    listenersList
-      .front()
-      .asObject(runtime)
-      .asFunction(runtime)
-      .callWithThis(runtime, thisObject, args, count);
+    try {
+      listenersList
+        .front()
+        .asObject(runtime)
+        .asFunction(runtime)
+        .callWithThis(runtime, thisObject, args, count);
+    } catch (jsi::JSError& error) {
+      facebook::react::handleJSError(runtime, error, false);
+    }
     return;
   }
   // When there are more than one listener, we copy the list to a vector as the list may be modified during the loop.
@@ -71,7 +77,14 @@ void Listeners::call(jsi::Runtime &runtime, std::string eventName, const jsi::Ob
   // i.e. newly added listeners will not be called and removed listeners will be called one last time.
   // This is compliant with the EventEmitter in Node.js
   for (const jsi::Function &listener : listenersVector) {
-    listener.callWithThis(runtime, thisObject, args, count);
+    // As opposed to Node.js and fbemitter, when the listener throws an error the behavior is the same as on web.
+    // That is, it doesn't stop the execution of subsequent listeners and the error is not propagated to the `emit` function.
+    // The motivation behind this is that errors thrown from a module or user's code shouldn't affect other modules' behavior.
+    try {
+      listener.callWithThis(runtime, thisObject, args, count);
+    } catch (jsi::JSError& error) {
+      facebook::react::handleJSError(runtime, error, false);
+    }
   }
 }
 
@@ -97,7 +110,7 @@ NativeState::Shared NativeState::get(jsi::Runtime &runtime, const jsi::Object &o
 
 #pragma mark - Utils
 
-void callObservingFunction(jsi::Runtime &runtime, const jsi::Object &object, const char* functionName, std::string eventName) {
+void callObservingFunction(jsi::Runtime &runtime, const jsi::Object &object, const char* functionName, const std::string& eventName) {
   jsi::Value fnValue = object.getProperty(runtime, functionName);
 
   if (!fnValue.isObject()) {
@@ -118,6 +131,7 @@ void addListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std::s
     state->listeners.add(runtime, eventName, listener);
 
     if (state->listeners.listenersCount(eventName) == 1) {
+      callObservingFunction(runtime, emitter, "__expo_onStartListeningToEvent", eventName);
       callObservingFunction(runtime, emitter, "startObserving", eventName);
     }
   }
@@ -130,6 +144,7 @@ void removeListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std
     state->listeners.remove(runtime, eventName, listener);
 
     if (listenersCountBefore >= 1 && state->listeners.listenersCount(eventName) == 0) {
+      callObservingFunction(runtime, emitter, "__expo_onStopListeningToEvent", eventName);
       callObservingFunction(runtime, emitter, "stopObserving", eventName);
     }
   }
@@ -142,6 +157,7 @@ void removeAllListeners(jsi::Runtime &runtime, const jsi::Object &emitter, const
     state->listeners.removeAll(eventName);
 
     if (listenersCountBefore >= 1) {
+      callObservingFunction(runtime, emitter, "__expo_onStopListeningToEvent", eventName);
       callObservingFunction(runtime, emitter, "stopObserving", eventName);
     }
   }

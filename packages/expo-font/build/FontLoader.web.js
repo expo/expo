@@ -6,19 +6,22 @@ function uriFromFontSource(asset) {
     if (typeof asset === 'string') {
         return asset || null;
     }
-    else if (typeof asset === 'object') {
-        return asset.uri || asset.localUri || asset.default || null;
-    }
     else if (typeof asset === 'number') {
         return uriFromFontSource(Asset.fromModule(asset));
+    }
+    else if (typeof asset === 'object' && typeof asset.uri === 'number') {
+        return uriFromFontSource(asset.uri);
+    }
+    else if (typeof asset === 'object') {
+        return asset.uri || asset.localUri || asset.default || null;
     }
     return null;
 }
 function displayFromFontSource(asset) {
-    return asset.display || FontDisplay.AUTO;
-}
-export function fontFamilyNeedsScoping(name) {
-    return false;
+    if (typeof asset === 'object' && 'display' in asset) {
+        return asset.display || FontDisplay.AUTO;
+    }
+    return FontDisplay.AUTO;
 }
 export function getAssetForSource(source) {
     const uri = uriFromFontSource(source);
@@ -27,7 +30,7 @@ export function getAssetForSource(source) {
         throwInvalidSourceError(uri);
     }
     return {
-        uri: uri,
+        uri,
         display,
     };
 }
@@ -49,8 +52,5 @@ export function loadSingleFontAsync(name, input) {
         // No-op.
     }
     return Promise.resolve();
-}
-export function getNativeFontName(name) {
-    return name;
 }
 //# sourceMappingURL=FontLoader.web.js.map

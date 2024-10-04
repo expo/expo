@@ -1,4 +1,4 @@
-import type { State } from './fork/getPathFromState';
+import { decodeParams, type State } from './fork/getPathFromState';
 import { stripBaseUrl } from './fork/getStateFromPath';
 
 type SearchParams = Record<string, string | string[]>;
@@ -68,23 +68,6 @@ export function getNormalizedStatePath(
     segments: stripBaseUrl(pathname, baseUrl).split('/').filter(Boolean).map(decodeURIComponent),
     // TODO: This is not efficient, we should generate based on the state instead
     // of converting to string then back to object
-    params: Object.entries(params).reduce((prev, [key, value]) => {
-      if (Array.isArray(value)) {
-        prev[key] = value.map((v: string) => {
-          try {
-            return decodeURIComponent(v);
-          } catch {
-            return v;
-          }
-        });
-      } else {
-        try {
-          prev[key] = decodeURIComponent(value as string);
-        } catch {
-          prev[key] = value as string;
-        }
-      }
-      return prev;
-    }, {} as SearchParams),
+    params: decodeParams(params),
   };
 }

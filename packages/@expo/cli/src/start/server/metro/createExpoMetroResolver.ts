@@ -122,7 +122,7 @@ export function createFastResolver({
           ...new Set([
             'default',
             ...context.unstable_conditionNames,
-            ...(platform != null ? context.unstable_conditionsByPlatform[platform] ?? [] : []),
+            ...(platform != null ? (context.unstable_conditionsByPlatform[platform] ?? []) : []),
           ]),
         ]
       : [];
@@ -131,7 +131,9 @@ export function createFastResolver({
         blockList,
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
-        paths: context.nodeModulesPaths.length ? (context.nodeModulesPaths as string[]) : undefined,
+        moduleDirectory: context.nodeModulesPaths.length
+          ? (context.nodeModulesPaths as string[])
+          : undefined,
         extensions,
         conditions,
         realpathSync(file: string): string {

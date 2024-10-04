@@ -203,14 +203,12 @@ private inline fun <reified T : Any> Map<String, Any>.readValueCheckingType(key:
 }
 
 private fun getDefaultPortForScheme(scheme: String?): Int {
-  if ("http" == scheme || "ws" == scheme) {
-    return 80
-  } else if ("https" == scheme || "wss" == scheme) {
-    return 443
-  } else if ("ftp" == scheme) {
-    return 21
+  return when (scheme) {
+    "http", "ws" -> 80
+    "https", "wss" -> 443
+    "ftp" -> 21
+    else -> -1
   }
-  return -1
 }
 
 internal fun getNormalizedUrlOrigin(url: Uri): String {

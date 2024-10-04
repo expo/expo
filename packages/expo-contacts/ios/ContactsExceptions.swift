@@ -32,7 +32,7 @@ internal class FailedToSaveException: Exception {
 
 internal class FilePermissionException: GenericException<String?> {
   override var reason: String {
-    "File '\(param)' isn't readable."
+    "File '\(String(describing: param))' isn't readable."
   }
 }
 

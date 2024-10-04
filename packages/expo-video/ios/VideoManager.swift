@@ -63,7 +63,11 @@ class VideoManager {
     let needsPiPSupport = videoViews.allObjects.contains { view in
       view.allowPictureInPicture
     }
-    let shouldAllowMixing = !isAnyPlayerPlaying || areAllPlayersMuted
+    let anyPlayerShowsNotification = videoPlayers.allObjects.contains { player in
+      player.showNowPlayingNotification
+    }
+    // The notification won't be shown if we allow the audio to mix with others
+    let shouldAllowMixing = (!isAnyPlayerPlaying || areAllPlayersMuted) && !anyPlayerShowsNotification
     let isOutputtingAudio = !areAllPlayersMuted && isAnyPlayerPlaying
     let shouldUpdateToAllowMixing = !audioSession.categoryOptions.contains(.mixWithOthers) && shouldAllowMixing
 
@@ -71,9 +75,9 @@ class VideoManager {
       audioSessionCategoryOptions.insert(.mixWithOthers)
     }
 
-    if isOutputtingAudio || needsPiPSupport || shouldUpdateToAllowMixing {
+    if isOutputtingAudio || needsPiPSupport || shouldUpdateToAllowMixing || anyPlayerShowsNotification {
       do {
-        try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
+        try audioSession.setCategory(.playback, mode: .moviePlayback)
       } catch {
         log.warn("Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
       }

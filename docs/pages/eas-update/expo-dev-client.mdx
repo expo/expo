@@ -1,13 +1,14 @@
 ---
-title: Load a published update with expo-dev-client and EAS Update
-sidebar_title: Use expo-dev-client
+title: Preview an update in a development build
+sidebar_title: Use development builds
 description: Learn how to use the expo-dev-client library to preview a published EAS Update inside a development build.
 ---
 
-import { Step } from '~/ui/components/Step';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
 [`expo-dev-client`](/develop/development-builds/introduction/) library allows launching different versions of a project by creating a development build. Any compatible EAS Update can be previewed in a development build.
@@ -21,10 +22,10 @@ This guide walks through the steps required to load and preview a published upda
 
 ## What is an Extensions tab
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Extensions tab in a development build."
   src="/static/images/eas-update/extensions-01.png"
-  style={{ maxWidth: 320 }}
+  className="max-w-[320px]"
 />
 
 When using the `expo-updates` library inside a development build, the **Extensions** tab provides the ability to load and preview a published update automatically.
@@ -33,7 +34,7 @@ When using the `expo-updates` library inside a development build, the **Extensio
 
 <Step label="1">
 
-Make non-native changes locally in your project and then [publish them using `eas update`](/eas-update/publish/). The update will be published on a branch.
+Make non-native changes locally in your project and then [publish them using `eas update`](/eas-update/getting-started/#publish-an-update). The update will be published on a branch.
 
 </Step>
 
@@ -45,16 +46,16 @@ After publishing the update, open your development build, go to **Extensions**, 
 
 <Step label="3">
 
-After logging in, an EAS Update section will appear inside the **Extensions** tab with one or more of the latest published updates. Tap **Open** next to the update you want to previous.
+After logging in, an EAS Update section will appear inside the **Extensions** tab with one or more of the latest published updates. Tap **Open** next to the update you want to preview.
 
 </Step>
 
 In the **Extensions** tab, you can view the list of all published updates for a branch. Tap the branch name in the **Extensions** tab.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Extensions tab in a development build."
   src="/static/images/eas-update/extensions-02.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 ## Preview an update using the Expo dashboard

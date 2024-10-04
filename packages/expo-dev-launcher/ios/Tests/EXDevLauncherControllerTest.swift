@@ -1,5 +1,6 @@
 import Quick
 import Nimble
+import React
 
 @testable import EXDevLauncher
 

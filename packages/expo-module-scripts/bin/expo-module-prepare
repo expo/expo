@@ -11,7 +11,7 @@ echo "Configuring module"
 "$script_dir/expo-module-configure"
 "$script_dir/expo-module-build"
 
-extra_module_build_types=("plugin" "cli" "utils")
+extra_module_build_types=("plugin" "cli" "utils" "scripts")
 for i in "${extra_module_build_types[@]}"
 do
   if [[ -d "$i" ]]; then

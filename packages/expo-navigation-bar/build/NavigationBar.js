@@ -1,16 +1,7 @@
-import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import { processColor } from 'react-native';
 import ExpoNavigationBar from './ExpoNavigationBar';
-let _emitter;
-// Lazily initialize the event emitter because it isn't available on iOS,
-// this enables us to use the same code for all platforms.
-function getEmitter() {
-    if (!_emitter) {
-        _emitter = new EventEmitter(ExpoNavigationBar);
-    }
-    return _emitter;
-}
 /**
  * Observe changes to the system navigation bar.
  * Due to platform constraints, this callback will also be triggered when the status bar visibility changes.
@@ -27,7 +18,7 @@ export function addVisibilityListener(listener) {
     if (!ExpoNavigationBar.addListener) {
         throw new UnavailabilityError('NavigationBar', 'addVisibilityListener');
     }
-    return getEmitter().addListener('ExpoNavigationBar.didChange', listener);
+    return ExpoNavigationBar.addListener('ExpoNavigationBar.didChange', listener);
 }
 /**
  * Changes the navigation bar's background color.

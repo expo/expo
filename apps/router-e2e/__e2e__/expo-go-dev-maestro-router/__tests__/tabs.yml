@@ -1,0 +1,49 @@
+appId: host.exp.Exponent
+name: Tabs navigation
+---
+# Can navigate between routes
+- stopApp: host.exp.Exponent
+- openLink:
+    link: ${MAESTRO_APP_URL}/(tabs)
+- assertVisible:
+    id: e2e-pathname
+    text: '/'
+- assertVisible:
+    id: e2e-screen
+    text: 'One'
+- tapOn: 'two, tab, 2 of 3'
+- assertVisible:
+    id: e2e-screen
+    text: 'Two'
+- tapOn: 'three, tab, 3 of 3'
+- assertVisible:
+    id: e2e-screen
+    text: 'Three'
+- tapOn:
+    id: e2e-back
+- assertVisible:
+    id: e2e-screen
+    text: 'One'
+# Stacks within tabs
+- tapOn: 'three, tab, 3 of 3'
+- assertVisible:
+    id: e2e-screen
+    text: 'Orange'
+- tapOn:
+    id: e2e-navigate-apple
+- assertVisible:
+    id: e2e-screen
+    text: '{"fruit":"apple"}'
+- tapOn:
+    id: e2e-navigate-banana
+- assertVisible:
+    id: e2e-screen
+    text: '{"fruit":"banana"}'
+- tapOn: 'two, tab, 2 of 3'
+- assertVisible:
+    id: e2e-screen
+    text: 'Two'
+- tapOn: 'three, tab, 3 of 3'
+- assertVisible:
+    id: e2e-screen
+    text: '{"fruit":"banana"}'

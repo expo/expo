@@ -3,7 +3,7 @@ title: Account types
 description: Learn about the different types of Expo accounts and how to use them.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 An Expo account is a container that holds Expo projects and allows for different amounts of collaboration. There are two types of Expo accounts: **Personal**, and **Organization**.
 
@@ -25,7 +25,7 @@ Creating an organization account is useful when:
 
 - You think you may need to transfer control of that Organization's projects in the future.
 - Sharing one or multiple projects with a team of collaborators.
-- More than one [Owner](/accounts/working-together/#managing-access) needs to be assigned.
+- More than one [Owner](/accounts/account-types/#manage-access) needs to be assigned.
 - Expenses need to be isolated.
 - Granting different levels of access by assigning a role to each member of the organization.
 - Structuring projects for different contexts. For example, when working for different clients, a new organization may be created for each client.
@@ -38,18 +38,18 @@ If you are logged in to your Personal account, you can create a new Organization
 - Select your account's username in the navigation menu to open the dropdown menu.
 - Select **Create Organization** under Organizations in the dropdown menu.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Open the dropdown menu on the dashboard to create a new organization."
   src="/static/images/accounts/create-an-organization.png"
-  style={{ maxWidth: 200 }}
+  className="max-w-[200px]"
 />
 
 - Add a name for your Organization and select the **Create** button.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Enter the name of your new organization."
   src="/static/images/accounts/enter-name-org.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 After creating a new Organization, you are redirected to the new dashboard page for the organization. To associate a new project with the Organization, you have to add the [`owner` key](/versions/latest/config/app/#owner) under the `expo` key to your project's **app.json**.
@@ -68,18 +68,6 @@ When you are going through this process, we take a lot of care to make sure that
 - Your EAS subscription will continue without interruption.
 - Your production apps will continue to operate without interruption.
 
-The Organization account will adopt your old username. Converting a Personal account into an Organization account requires you to designate a new user as the owner of the Organization account. You will have the opportunity to designate an existing user or sign up as a new user during the account conversion process.
-
-The example below is Step 3 in the conversion process on a Personal account with the username:
-
-<ImageSpotlight
-  alt="Example demonstrating the Step 3 of the conversion process."
-  src="/static/images/accounts/converting-personal-account.png"
-  style={{ maxWidth: 480 }}
-/>
-
-After completing the conversion process, you can no longer log in as your old user. To continue using Expo services, log into [expo.dev](https://expo.dev/) with the user you selected or created during the conversion process. Then, select the Organization from the navigation dropdown to access the organization.
-
 ### Invite a member
 
 Other Expo users can be invited to join your Organization. To invite a new member:
@@ -88,7 +76,7 @@ Other Expo users can be invited to join your Organization. To invite a new membe
 - Click the button **Invite**. This will open a form to invite a member to the organization.
 - In the form, enter the email of the user you want to invite and select the role they should have upon joining the organization. For more information, see [role privileges in Manage access](#manage-access).
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Example demonstrating multiple members in an organization."
   src="/static/images/accounts/members.png"
 />
@@ -101,14 +89,14 @@ When inviting a new member, keep in mind:
 
 ### Change the role of a member
 
-To change the role privileges of a member, make sure you have either an [**Owner** or **Admin** role](/accounts/working-together/#manage-access) and follow the steps below:
+To change the role privileges of a member, make sure you have either an [**Owner** or **Admin** role](/accounts/account-types/#manage-access) and follow the steps below:
 
 - Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the Expo dashboard.
 - Next to the member whose role you want to change, click on the three-dotted menu icon and change the role.
 
 ### Remove a member
 
-To remove a member, make sure you have either an [**Owner** or **Admin** role](/accounts/working-together/#manage-access) and follow the steps below:
+To remove a member, make sure you have either an [**Owner** or **Admin** role](/accounts/account-types/#manage-access) and follow the steps below:
 
 - Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the Expo dashboard.
 - Next to the member you want to remove, click on the three-dotted menu icon.
@@ -116,27 +104,25 @@ To remove a member, make sure you have either an [**Owner** or **Admin** role](/
 
 ### Rename an account
 
-Accounts can be renamed a limited number of times. Only Owners can rename accounts. To rename an account, visit [the account settings](https://expo.dev/accounts/[account]/settings) and follow the steps under [**Rename account**](https://expo.dev/accounts/[account]/settings#rename-account).
+Accounts can be renamed a limited number of times. Only Owners can rename accounts. To rename an account, visit **Organization settings** > [**Overview**](https://expo.dev/accounts/[account]/settings) and follow the steps under [**Rename account**](https://expo.dev/accounts/[account]/settings#rename-account).
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Rename Account settings panel."
   src="/static/images/accounts/rename-account.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 ### Transfer projects between accounts
 
-Projects can be transferred a limited number of times. A user must be an Owner or Admin on both source and destination accounts to transfer projects between them. Visit [the project settings page](https://expo.dev/accounts/[account]/projects/[project]/settings) and follow the steps under **Transfer project**.
+Projects can be transferred a limited number of times. A user must be an Owner or Admin on both source and destination accounts to transfer projects between them. Visit **Project** > **Configuration** > [**Project settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and follow the steps under **Transfer project**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Transfer Projects settings panel."
   src="/static/images/accounts/transfer-project.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 #### Caveats
-
-Before transferring a project, make sure that it is on Expo SDK 43 or above. If not, you must upgrade it and rebuild it for OTA updates to continue to work on that project.
 
 > If you want to transfer the ownership of a project from your Personal or Organization account (source) to another person or company (destination), and you are not allowed "Owner" or "Admin" permissions on the destination account, you can create an escrow account (a new Organization account). This solves the problem that a user must be an "Owner" on the source account and either an "Owner" or "Admin" on the destination account to transfer projects between them. Once the escrow account is created, you can grant the ultimate destination account member the Owner role on the escrow account and safely transfer the project to the escrow account. The receiving person or company can then transfer it to their destination account from the escrow account without having had access to the destination account itself.
 

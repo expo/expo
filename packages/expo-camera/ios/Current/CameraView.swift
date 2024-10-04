@@ -3,7 +3,7 @@ import ExpoModulesCore
 import CoreMotion
 
 public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
-  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate {
+  AVCaptureFileOutputRecordingDelegate, AVCapturePhotoCaptureDelegate, CameraEvent {
   public var session = AVCaptureSession()
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
 
@@ -19,7 +19,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
   private var photoCaptureOptions: TakePictureOptions?
-  private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
   private var errorNotification: NSObjectProtocol?
   private var physicalOrientation: UIDeviceOrientation = .unknown
   private var motionManager: CMMotionManager = {
@@ -29,6 +28,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     return mm
   }()
   private var cameraShouldInit = true
+  private var isSessionPaused = false
 
   // MARK: Property Observers
 
@@ -68,6 +68,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
   }
 
+  var autoFocus = AVCaptureDevice.FocusMode.continuousAutoFocus {
+    didSet {
+      setFocusMode()
+    }
+  }
+
   var pictureSize = PictureSize.high {
     didSet {
       updatePictureSize()
@@ -86,7 +92,14 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     }
   }
 
+  var active = true {
+    didSet {
+      updateCameraIsActive()
+    }
+  }
+
   var animateShutter = true
+  var mirror = false
 
   var zoom: CGFloat = 0 {
     didSet {
@@ -134,9 +147,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   private func setupPreview() {
-    previewLayer.videoPreviewLayer.session = session
-    previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
-    previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
+    DispatchQueue.main.async {
+      self.previewLayer.videoPreviewLayer.session = self.session
+      self.previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
+      self.previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
+      self.addSubview(self.previewLayer)
+    }
   }
 
   func initCamera() {
@@ -152,15 +168,18 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   public func onAppForegrounded() {
-    if !session.isRunning {
+    if !session.isRunning && isSessionPaused {
+      isSessionPaused = false
       sessionQueue.async {
         self.session.startRunning()
+        self.enableTorch()
       }
     }
   }
 
   public func onAppBackgrounded() {
-    if session.isRunning {
+    if session.isRunning && !isSessionPaused {
+      isSessionPaused = true
       sessionQueue.async {
         self.session.stopRunning()
       }
@@ -192,8 +211,25 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
+    }
+    device.unlockForConfiguration()
+  }
+
+  private func setFocusMode() {
+    guard let device = captureDeviceInput?.device else {
       return
     }
+
+    do {
+      try device.lockForConfiguration()
+      if device.isFocusModeSupported(autoFocus), device.focusMode != autoFocus {
+        device.focusMode = autoFocus
+      }
+    } catch {
+      log.info("\(#function): \(error.localizedDescription)")
+      return
+    }
+    device.unlockForConfiguration()
   }
 
   private func setCameraMode() {
@@ -202,6 +238,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         if self.videoFileOutput == nil {
           self.setupMovieFileCapture()
         }
+        self.updateSessionAudioIsMuted()
       } else {
         self.cleanupMovieFileCapture()
       }
@@ -229,6 +266,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
         self.photoOutput = photoOutput
       }
 
+      self.session.sessionPreset = self.mode == .video ? self.pictureSize.toCapturePreset() : .photo
       self.addErrorNotification()
       self.changePreviewOrientation()
     }
@@ -238,6 +276,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.barcodeScanner.maybeStartBarcodeScanning()
       self.session.startRunning()
       self.onCameraReady()
+      self.enableTorch()
     }
   }
 
@@ -273,11 +312,9 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
 
       if error.code == .mediaServicesWereReset {
-        if !self.session.isRunning {
-          self.session.startRunning()
-          self.updateSessionAudioIsMuted()
-          self.onCameraReady()
-        }
+        self.session.startRunning()
+        self.updateSessionAudioIsMuted()
+        self.onCameraReady()
       }
     }
   }
@@ -327,13 +364,16 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       let connection = photoOutput.connection(with: .video)
       let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
       connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
+
+      // options.mirror is deprecated but should continue to work until removed
+      connection?.isVideoMirrored = self.presetCamera == .front && (self.mirror || options.mirror)
       var photoSettings = AVCapturePhotoSettings()
 
       if photoOutput.availablePhotoCodecTypes.contains(AVVideoCodecType.hevc) {
         photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
       }
 
-      var requestedFlashMode = self.flashMode.toDeviceFlashMode()
+      let requestedFlashMode = self.flashMode.toDeviceFlashMode()
       if photoOutput.supportedFlashModes.contains(requestedFlashMode) {
         photoSettings.flashMode = requestedFlashMode
       }
@@ -358,6 +398,10 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
   }
 
   public func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
+    if photoCaptureOptions?.shutterSound == false {
+      AudioServicesDisposeSystemSoundID(1108)
+    }
+
     guard animateShutter else {
       return
     }
@@ -442,7 +486,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       }
       let updatedExif = ExpoCameraUtils.updateExif(
         metadata: exifDict,
-        with: ["Orientation": ExpoCameraUtils.export(orientation: takenImage.imageOrientation)]
+        with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
       )
 
       updatedExif[kCGImagePropertyExifPixelYDimension] = width
@@ -520,20 +564,12 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     sessionQueue.async {
       if let videoFileOutput = self.videoFileOutput, !videoFileOutput.isRecording && self.videoRecordedPromise == nil {
         if let connection = videoFileOutput.connection(with: .video) {
-          if !connection.isVideoStabilizationSupported {
-            log.warn("\(#function): Video Stabilization is not supported on this device.")
-          } else {
-            if let videoStabilizationMode = self.videoStabilizationMode {
-              connection.preferredVideoStabilizationMode = videoStabilizationMode
-            }
-          }
-
           let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
           connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
           self.setVideoOptions(options: options, for: connection, promise: promise)
 
-          if connection.isVideoOrientationSupported && options.mirror {
-            connection.isVideoMirrored = options.mirror
+          if connection.isVideoOrientationSupported && self.mirror {
+            connection.isVideoMirrored = self.mirror
           }
         }
 
@@ -643,9 +679,23 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   public override func removeFromSuperview() {
     lifecycleManager?.unregisterAppLifecycleListener(self)
+    self.stopSession()
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     super.removeFromSuperview()
+  }
+
+  func updateCameraIsActive() {
+    if self.session.isRunning == active {
+      return
+    }
+    sessionQueue.async {
+      if self.active {
+        self.session.startRunning()
+      } else {
+        self.session.stopRunning()
+      }
+    }
   }
 
   public func fileOutput(
@@ -669,10 +719,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
     videoRecordedPromise = nil
     videoCodecType = nil
-
-    if session.sessionPreset != pictureSize.toCapturePreset() {
-      updateSessionPreset(preset: pictureSize.toCapturePreset())
-    }
   }
 
   func setPresetCamera(presetCamera: AVCaptureDevice.Position) {
@@ -749,8 +795,18 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       self.session.commitConfiguration()
 
       self.motionManager.stopAccelerometerUpdates()
-      self.session.stopRunning()
+      if self.session.isRunning {
+        self.session.stopRunning()
+      }
     }
+  }
+
+  func resumePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = true
+  }
+
+  func pausePreview() {
+    previewLayer.videoPreviewLayer.connection?.isEnabled = false
   }
 
   @objc func orientationChanged(notification: Notification) {
@@ -762,6 +818,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
       // We shouldn't access the device orientation anywhere but on the main thread
       let videoOrientation = ExpoCameraUtils.videoOrientation(for: self.deviceOrientation)
       if (self.previewLayer.videoPreviewLayer.connection?.isVideoOrientationSupported) == true {
+        self.physicalOrientation = ExpoCameraUtils.physicalOrientation(for: self.deviceOrientation)
         self.previewLayer.videoPreviewLayer.connection?.videoOrientation = videoOrientation
       }
     }
@@ -769,6 +826,7 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
 
   private func createBarcodeScanner() -> BarcodeScanner {
     let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
+    scanner.setPreviewLayer(layer: previewLayer.videoPreviewLayer)
     scanner.onBarcodeScanned = { [weak self] body in
       guard let self else {
         return

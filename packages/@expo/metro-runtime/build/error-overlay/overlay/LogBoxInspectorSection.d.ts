@@ -11,6 +11,6 @@ type Props = {
     children: React.ReactNode;
     action?: any;
 };
-export declare function LogBoxInspectorSection(props: Props): JSX.Element;
+export declare function LogBoxInspectorSection(props: Props): React.JSX.Element;
 export {};
 //# sourceMappingURL=LogBoxInspectorSection.d.ts.map

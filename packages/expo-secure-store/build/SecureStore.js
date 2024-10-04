@@ -1,4 +1,5 @@
 import ExpoSecureStore from './ExpoSecureStore';
+import { byteCountOverLimit, VALUE_BYTES_LIMIT } from './byteCounter';
 // @needsAudit
 /**
  * The data in the keychain item cannot be accessed after a restart until the device has been
@@ -16,6 +17,8 @@ export const AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY = ExpoSecureStore.AFTER_FIRST_U
 /**
  * The data in the keychain item can always be accessed regardless of whether the device is locked.
  * This is the least secure option.
+ *
+ * @deprecated Use an accessibility level that provides some user protection, such as `AFTER_FIRST_UNLOCK`.
  */
 export const ALWAYS = ExpoSecureStore.ALWAYS;
 // @needsAudit
@@ -27,6 +30,8 @@ export const WHEN_PASSCODE_SET_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_PASSCODE_
 // @needsAudit
 /**
  * Similar to `ALWAYS`, except the entry is not migrated to a new device when restoring from a backup.
+ *
+ * @deprecated Use an accessibility level that provides some user protection, such as `AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY`.
  */
 export const ALWAYS_THIS_DEVICE_ONLY = ExpoSecureStore.ALWAYS_THIS_DEVICE_ONLY;
 // @needsAudit
@@ -40,7 +45,6 @@ export const WHEN_UNLOCKED = ExpoSecureStore.WHEN_UNLOCKED;
  * a backup.
  */
 export const WHEN_UNLOCKED_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY;
-const VALUE_BYTES_LIMIT = 2048;
 // @needsAudit
 /**
  * Returns whether the SecureStore API is enabled on the current device. This does not check the app
@@ -59,7 +63,7 @@ export async function isAvailableAsync() {
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return A promise that will reject if the value couldn't be deleted.
+ * @return A promise that rejects if the value can't be deleted.
  */
 export async function deleteItemAsync(key, options = {}) {
     ensureValidKey(key);
@@ -72,8 +76,8 @@ export async function deleteItemAsync(key, options = {}) {
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return A promise that resolves to the previously stored value. It will return `null` if there is no entry
- * for the given key or if the key has been invalidated. It will reject if an error occurs while retrieving the value.
+ * @return A promise that resolves to the previously stored value. It resolves with `null` if there is no entry
+ * for the given key or if the key has been invalidated. It rejects if an error occurs while retrieving the value.
  *
  * > Keys are invalidated by the system when biometrics change, such as adding a new fingerprint or changing the face profile used for face recognition.
  * > After a key has been invalidated, it becomes impossible to read its value.
@@ -91,7 +95,7 @@ export async function getItemAsync(key, options = {}) {
  * @param value The value to store. Size limit is 2048 bytes.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return A promise that will reject if value cannot be stored on the device.
+ * @return A promise that rejects if value cannot be stored on the device.
  */
 export async function setItemAsync(key, value, options = {}) {
     ensureValidKey(key);
@@ -123,7 +127,8 @@ export function setItem(key, value, options = {}) {
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return Previously stored value. It will return `null` if there is no entry for the given key or if the key has been invalidated.
+ * @return Previously stored value. It resolves with `null` if there is no entry
+ * for the given key or if the key has been invalidated.
  */
 export function getItem(key, options = {}) {
     ensureValidKey(key);
@@ -131,7 +136,9 @@ export function getItem(key, options = {}) {
 }
 /**
  * Checks if the value can be saved with `requireAuthentication` option enabled.
- * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`.
+ * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`. Always returns false on tvOS.
+ * @platform android
+ * @platform ios
  */
 export function canUseBiometricAuthentication() {
     return ExpoSecureStore.canUseBiometricAuthentication();
@@ -148,29 +155,9 @@ function isValidValue(value) {
     if (typeof value !== 'string') {
         return false;
     }
-    if (byteCount(value) > VALUE_BYTES_LIMIT) {
-        console.warn('Value being stored in SecureStore is larger than 2048 bytes and it may not be stored successfully. In a future SDK version, this call may throw an error.');
+    if (byteCountOverLimit(value, VALUE_BYTES_LIMIT)) {
+        console.warn(`Value being stored in SecureStore is larger than ${VALUE_BYTES_LIMIT} bytes and it may not be stored successfully. In a future SDK version, this call may throw an error.`);
     }
     return true;
-}
-// copy-pasted from https://stackoverflow.com/a/39488643
-function byteCount(value) {
-    let bytes = 0;
-    for (let i = 0; i < value.length; i++) {
-        const codePoint = value.charCodeAt(i);
-        // Lone surrogates cannot be passed to encodeURI
-        if (codePoint >= 0xd800 && codePoint < 0xe000) {
-            if (codePoint < 0xdc00 && i + 1 < value.length) {
-                const next = value.charCodeAt(i + 1);
-                if (next >= 0xdc00 && next < 0xe000) {
-                    bytes += 4;
-                    i++;
-                    continue;
-                }
-            }
-        }
-        bytes += codePoint < 0x80 ? 1 : codePoint < 0x800 ? 2 : 3;
-    }
-    return bytes;
 }
 //# sourceMappingURL=SecureStore.js.map

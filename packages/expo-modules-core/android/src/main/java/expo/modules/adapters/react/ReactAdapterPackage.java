@@ -9,8 +9,6 @@ import java.util.List;
 
 import expo.modules.adapters.react.permissions.PermissionsService;
 import expo.modules.adapters.react.services.EventEmitterModule;
-import expo.modules.adapters.react.services.FontManagerModule;
-import expo.modules.adapters.react.services.RuntimeEnvironmentModule;
 import expo.modules.adapters.react.services.UIManagerModuleWrapper;
 import expo.modules.core.BasePackage;
 import expo.modules.core.interfaces.InternalModule;
@@ -28,8 +26,6 @@ public class ReactAdapterPackage extends BasePackage {
     return Arrays.asList(
         new UIManagerModuleWrapper(reactContext),
         new EventEmitterModule(reactContext),
-        new FontManagerModule(),
-        new RuntimeEnvironmentModule(),
         new PermissionsService(reactContext)
     );
   }

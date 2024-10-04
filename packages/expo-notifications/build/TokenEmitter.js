@@ -1,7 +1,7 @@
-import { EventEmitter, Platform } from 'expo-modules-core';
+import { LegacyEventEmitter, Platform } from 'expo-modules-core';
 import PushTokenManager from './PushTokenManager';
 // Web uses SyntheticEventEmitter
-const tokenEmitter = new EventEmitter(PushTokenManager);
+const tokenEmitter = new LegacyEventEmitter(PushTokenManager);
 const newTokenEventName = 'onDevicePushToken';
 /**
  * In rare situations, a push token may be changed by the push notification service while the app is running.
@@ -39,6 +39,6 @@ export function addPushTokenListener(listener) {
  * @header fetch
  */
 export function removePushTokenSubscription(subscription) {
-    tokenEmitter.removeSubscription(subscription);
+    subscription.remove();
 }
 //# sourceMappingURL=TokenEmitter.js.map

@@ -6,6 +6,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface RCTRootViewFactory ()
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
+
+@end
+
 @interface DevMenuRCTCxxBridge : RCTCxxBridge
 
 - (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules;

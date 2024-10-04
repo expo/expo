@@ -4,11 +4,24 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- `isAvailableAsync()` now returns `false` in Expo Go for Android. ([#29823](https://github.com/expo/expo/pull/29823)) by [@vonovak](https://github.com/vonovak)
+- Add missing `react-native` peer dependencies for isolated modules. ([#30486](https://github.com/expo/expo/pull/30486) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 11.8.2 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- [Android] Fix the task manager events not being sent to the JS side. ([#29024](https://github.com/expo/expo/pull/29024) by [@behenate](https://github.com/behenate))
 
 ## 11.8.1 — 2024-04-23
 

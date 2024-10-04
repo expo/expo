@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
 import { applyRequiredScopes } from './ProviderUtils';
+import { AuthRequest } from '../AuthRequest';
+import { ResponseType } from '../AuthRequest.types';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
-import { AuthRequest, makeRedirectUri, ResponseType, } from '../AuthSession';
+import { makeRedirectUri } from '../AuthSession';
 import { generateHexStringAsync } from '../PKCE';
 const settings = {
     windowFeatures: { width: 700, height: 600 },
@@ -83,13 +85,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
             default: 'webClientId',
         });
         return config[propertyName] ?? config.clientId;
-    }, [
-        config.expoClientId,
-        config.iosClientId,
-        config.androidClientId,
-        config.webClientId,
-        config.clientId,
-    ]);
+    }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);
     const redirectUri = useMemo(() => {
         if (typeof config.redirectUri !== 'undefined') {
             return config.redirectUri;

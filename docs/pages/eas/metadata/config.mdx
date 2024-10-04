@@ -18,7 +18,7 @@ Besides the default JSON format, EAS Metadata also supports more dynamic config 
 The default store config type for EAS Metadata is a simple JSON file.
 The code snippet below shows an example store config with basic App Store information written in English (U.S.).
 
-You can find all configuration options in the [store config schema](./schema.mdx).
+You can find all configuration options in the [store config schema](/eas/metadata/schema/).
 
 > If you have the [VS Code Expo Tools extension](https://github.com/expo/vscode-expo#readme) installed, you get auto-complete, suggestions, and warnings for **store.config.json** files.
 
@@ -45,7 +45,7 @@ You can find all configuration options in the [store config schema](./schema.mdx
 
 At times, Metadata properties can benefit from dynamic values. For example, the Metadata **copyright notice** should contain the current year. This can be automated with EAS Metadata.
 
-To generate content dynamically, start by creating a JavaScript config file **store.config.js**. Then, use the [`metadataPath`](../../submit/eas-json.mdx#metadatapath) property in the **eas.json** file to pick the JS config file.
+To generate content dynamically, start by creating a JavaScript config file **store.config.js**. Then, use the [`metadataPath`](/eas/json/#metadatapath) property in the **eas.json** file to pick the JS config file.
 
 > `eas metadata:pull` can't update dynamic store config files. Instead, it creates a JSON file with the same name as the configured file. You can import the JSON file to reuse the data from `eas metadata:pull`.
 

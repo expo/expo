@@ -5,8 +5,8 @@ ${description}
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/${docName}.md)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/${docName}/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/${docName}/)
 
 <!--- end remove for interfaces --->
 # Installation in managed Expo projects
@@ -23,13 +23,6 @@ For bare React Native projects, you must ensure that you have [installed and con
 npm install ${packageName}
 ```
 
-<!--- remove for no-ios --->
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
-<!--- end remove for no-ios --->
-
 <!--- remove for no-android --->
 ### Configure for Android
 
@@ -41,6 +34,13 @@ No additional setup necessary.
 <!--- end remove for no-package --->
 <!--- end remove for interfaces --->
 <!--- end remove for no-android --->
+
+<!--- remove for no-ios --->
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
+
+<!--- end remove for no-ios --->
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).

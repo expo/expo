@@ -1,10 +1,12 @@
-import spawnAsync from '@expo/spawn-async';
+import glob from 'fast-glob';
 import { vol } from 'memfs';
 
-import { mockSpawnPromise } from '../../__tests__/spawn-utils';
+import { isFileIgnoredAsync } from '../../utils/files';
 import { ProjectSetupCheck } from '../ProjectSetupCheck';
 
 jest.mock('fs');
+jest.mock('fast-glob');
+jest.mock('../../utils/files');
 
 const projectRoot = '/tmp/project';
 
@@ -20,12 +22,20 @@ const additionalProjectProps = {
   dynamicConfigPath: null,
 };
 
+/**
+ * Helper to mock the results of isFileIgnoredAsync for all matching files.
+ */
+function mockIsFileIgnoredResult(isFileIgnored: boolean) {
+  (isFileIgnoredAsync as jest.Mock).mockResolvedValue(isFileIgnored);
+}
+
 describe('runAsync', () => {
   afterEach(() => {
     vol.reset();
+    jest.resetAllMocks();
   });
-  // unintentionally bare check
-  it('returns result with isSuccessful = true if no ios/ android folders and no config plugins', async () => {
+  // ignoring native files for local modules check
+  it('returns result with isSuccessful = true if no local expo modules are present', async () => {
     const check = new ProjectSetupCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
@@ -34,74 +44,118 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeTruthy();
   });
 
-  it('returns result with isSuccessful = true if ios/ android folders but no config plugins', async () => {
+  it('returns result with isSuccessful = true if local module with ios folder and ios folder is not gitignored', async () => {
+    const iosPath = `${projectRoot}/modules/HelloModule/ios/HelloModule.podspec`;
     vol.fromJSON({
-      [projectRoot + '/ios/something.pbxproj']: 'test',
+      [iosPath]: 'test',
     });
+
+    const mockGlob = glob as jest.MockedFunction<typeof glob>;
+    mockGlob.mockImplementation((pattern: string | string[]) => {
+      if (typeof pattern === 'string' && pattern === `${projectRoot}/modules/**/ios/*.podspec`) {
+        return Promise.resolve([iosPath]);
+      }
+      return Promise.resolve([]);
+    });
+
+    mockIsFileIgnoredResult(false);
+
     const check = new ProjectSetupCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
     });
+
     expect(result.isSuccessful).toBeTruthy();
+    expect(glob).toHaveBeenCalledWith(`${projectRoot}/modules/**/ios/*.podspec`);
+    expect(isFileIgnoredAsync).toHaveBeenCalledWith(iosPath, expect.anything());
   });
 
-  it('returns result with isSuccessful = false with ios/ android folders and config plugins present, not in gitignore', async () => {
-    jest
-      .mocked(spawnAsync)
-      .mockImplementationOnce(() =>
-        mockSpawnPromise(
-          Promise.resolve({
-            status: 0,
-            stdout: '',
-          })
-        )
-      )
-      .mockImplementationOnce(() => {
-        const error: any = new Error();
-        error.status = -1;
-        return mockSpawnPromise(Promise.reject(error));
-      });
-
+  it('returns result with isSuccessful = true if local module with android folder and android folder is not gitignored', async () => {
+    const androidPath = `${projectRoot}/modules/HelloModule/android/build.gradle`;
     vol.fromJSON({
-      [projectRoot + '/ios/Podfile']: 'test',
+      [androidPath]: 'test',
     });
+
+    const mockGlob = glob as jest.MockedFunction<typeof glob>;
+    mockGlob.mockImplementation((pattern: string | string[]) => {
+      if (
+        typeof pattern === 'string' &&
+        pattern === `${projectRoot}/modules/**/android/build.gradle`
+      ) {
+        return Promise.resolve([androidPath]);
+      }
+      return Promise.resolve([]);
+    });
+
+    (isFileIgnoredAsync as jest.MockedFunction<typeof isFileIgnoredAsync>).mockResolvedValue(false);
+
     const check = new ProjectSetupCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
-      exp: {
-        name: 'name',
-        slug: 'slug',
-        plugins: ['expo-something'],
-      },
     });
+
+    expect(result.isSuccessful).toBeTruthy();
+    expect(mockGlob).toHaveBeenCalledWith(`${projectRoot}/modules/**/android/build.gradle`);
+    expect(isFileIgnoredAsync).toHaveBeenCalledWith(androidPath, expect.anything());
+  });
+
+  it('returns result with isSuccessful = false if local module with ios folder and ios folder is gitignored', async () => {
+    const iosPath = `${projectRoot}/modules/HelloModule/ios/HelloModule.podspec`;
+    vol.fromJSON({
+      [iosPath]: 'test',
+    });
+
+    const mockGlob = glob as jest.MockedFunction<typeof glob>;
+    mockGlob.mockImplementation((pattern: string | string[]) => {
+      if (typeof pattern === 'string' && pattern === `${projectRoot}/modules/**/ios/*.podspec`) {
+        return Promise.resolve([iosPath]);
+      }
+      return Promise.resolve([]);
+    });
+
+    (isFileIgnoredAsync as jest.MockedFunction<typeof isFileIgnoredAsync>).mockResolvedValue(true);
+
+    const check = new ProjectSetupCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0' },
+      ...additionalProjectProps,
+    });
+
     expect(result.isSuccessful).toBeFalsy();
+    expect(mockGlob).toHaveBeenCalledWith(`${projectRoot}/modules/**/ios/*.podspec`);
+    expect(isFileIgnoredAsync).toHaveBeenCalledWith(iosPath, expect.anything());
   });
 
-  it('returns result with isSuccessful = true with ios/ android folders and config plugins present, in gitignore', async () => {
-    jest.mocked(spawnAsync).mockImplementation(() =>
-      mockSpawnPromise(
-        Promise.resolve({
-          status: 0,
-          stdout: '',
-        })
-      )
-    );
+  it('returns result with isSuccessful = false if local module with android folder and android folder is gitignored', async () => {
+    const androidPath = `${projectRoot}/modules/HelloModule/android/build.gradle`;
     vol.fromJSON({
-      [projectRoot + '/ios/Podfile']: 'test',
+      [androidPath]: 'test',
     });
+
+    const mockGlob = glob as jest.MockedFunction<typeof glob>;
+    mockGlob.mockImplementation((pattern: string | string[]) => {
+      if (
+        typeof pattern === 'string' &&
+        pattern === `${projectRoot}/modules/**/android/build.gradle`
+      ) {
+        return Promise.resolve([androidPath]);
+      }
+      return Promise.resolve([]);
+    });
+
+    (isFileIgnoredAsync as jest.MockedFunction<typeof isFileIgnoredAsync>).mockResolvedValue(true);
+
     const check = new ProjectSetupCheck();
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
-      exp: {
-        name: 'name',
-        slug: 'slug',
-        plugins: ['expo-something'],
-      },
     });
-    expect(result.isSuccessful).toBeTruthy();
+
+    expect(result.isSuccessful).toBeFalsy();
+    expect(mockGlob).toHaveBeenCalledWith(`${projectRoot}/modules/**/android/build.gradle`);
+    expect(isFileIgnoredAsync).toHaveBeenCalledWith(androidPath, expect.anything());
   });
 
   // multiple lock files

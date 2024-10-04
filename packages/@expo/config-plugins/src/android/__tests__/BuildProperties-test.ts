@@ -148,4 +148,48 @@ describe(updateAndroidBuildProperty, () => {
       })
     ).toEqual([{ type: 'property', key: 'foo', value: 'foo' }]);
   });
+
+  it('should merge properties when `value` is a string array', () => {
+    const gradleProperties: PropertiesItem[] = [
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: `["name1"]` },
+    ];
+    expect(updateAndroidBuildProperty(gradleProperties, 'somearray', `["name2"]`)).toEqual([
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: `["name1","name2"]` },
+    ]);
+  });
+
+  it('should merge properties when `value` is an object array', () => {
+    const gradleProperties: PropertiesItem[] = [
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: `[{"url": "name1"}]` },
+    ];
+    expect(updateAndroidBuildProperty(gradleProperties, 'somearray', `[{"url":"name2"}]`)).toEqual([
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: `[{"url":"name1"},{"url":"name2"}]` },
+    ]);
+  });
+
+  it('should merge properties when `value` is an array but not is the value is already here', () => {
+    const gradleProperties: PropertiesItem[] = [
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: `["name1","name2"]` },
+    ];
+    expect(updateAndroidBuildProperty(gradleProperties, 'somearray', `["name2"]`)).toEqual([
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: `["name1","name2"]` },
+    ]);
+  });
+
+  it('should merge properties when `value` is an array but not is the value is already here - with objects', () => {
+    const gradleProperties: PropertiesItem[] = [
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: `[{"url":"name1"},{"url":"name2"}]` },
+    ];
+    expect(updateAndroidBuildProperty(gradleProperties, 'somearray', `[{"url":"name2"}]`)).toEqual([
+      { type: 'property', key: 'foo', value: 'foo' },
+      { type: 'property', key: 'somearray', value: `[{"url":"name1"},{"url":"name2"}]` },
+    ]);
+  });
 });

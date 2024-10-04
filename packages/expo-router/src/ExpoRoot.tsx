@@ -1,22 +1,30 @@
 'use client';
 
-import { NavigationAction } from '@react-navigation/native';
-import Constants from 'expo-constants';
-import { StatusBar } from 'expo-status-bar';
-import React, { type PropsWithChildren, Fragment, type ComponentType } from 'react';
-import { Platform } from 'react-native';
+import { LinkingOptions, NavigationAction } from '@react-navigation/native';
+import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import UpstreamNavigationContainer from './fork/NavigationContainer';
+import { ExpoLinkingOptions } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
-import { ServerLocationContext } from './global-state/serverLocationContext';
+import ServerContext, { ServerContextType } from './global-state/serverContext';
 import { RequireContext } from './types';
+import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
 import { SplashScreen } from './views/Splash';
 
 export type ExpoRootProps = {
   context: RequireContext;
-  location?: URL;
+  location?: URL | string;
   wrapper?: ComponentType<PropsWithChildren>;
+  linking?: Partial<ExpoLinkingOptions>;
+};
+
+export type NativeIntent = {
+  redirectSystemPath?: (event: {
+    path: string | null;
+    initial: boolean;
+  }) => Promise<string | null | undefined> | string | null | undefined;
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -28,10 +36,6 @@ const INITIAL_METRICS =
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
       }
     : undefined;
-
-const hasViewControllerBasedStatusBarAppearance =
-  Platform.OS === 'ios' &&
-  !!Constants.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
 
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
   /*
@@ -45,15 +49,19 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
         <SafeAreaProvider
           // SSR support
           initialMetrics={INITIAL_METRICS}>
-          {children}
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {!hasViewControllerBasedStatusBarAppearance && <StatusBar style="auto" />}
+          {!hasViewControllerBasedStatusBarAppearance && <AutoStatusBar />}
+          {children}
         </SafeAreaProvider>
       </ParentWrapper>
     );
   };
 
   return <ContextNavigator {...props} wrapper={wrapper} />;
+}
+
+function AutoStatusBar() {
+  return <StatusBar barStyle={useColorScheme() === 'light' ? 'dark-content' : 'light-content'} />;
 }
 
 const initialUrl =
@@ -65,8 +73,47 @@ function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
   wrapper: WrapperComponent = Fragment,
+  linking = {},
 }: ExpoRootProps) {
-  const store = useInitializeExpoRouter(context, initialLocation);
+  // location and linking.getInitialURL are both used to initialize the router state
+  //  - location is used on web and during static rendering
+  //  - linking.getInitialURL is used on native
+  const serverContext = useMemo(() => {
+    let contextType: ServerContextType = {};
+
+    if (initialLocation instanceof URL) {
+      contextType = {
+        location: {
+          pathname: initialLocation.pathname + initialLocation.hash,
+          search: initialLocation.search,
+        },
+      };
+    } else if (typeof initialLocation === 'string') {
+      // The initial location is a string, so we need to parse it into a URL.
+      const url = new URL(initialLocation, 'http://placeholder.base');
+      contextType = {
+        location: {
+          pathname: url.pathname,
+          search: url.search,
+        },
+      };
+    }
+
+    return contextType;
+  }, []);
+
+  /*
+   * The serverUrl is an initial URL used in server rendering environments.
+   * e.g Static renders, units tests, etc
+   */
+  const serverUrl = serverContext.location
+    ? `${serverContext.location.pathname}${serverContext.location.search}`
+    : undefined;
+
+  const store = useInitializeExpoRouter(context, {
+    ...linking,
+    serverUrl,
+  });
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
@@ -89,16 +136,16 @@ function ContextNavigator({
     <UpstreamNavigationContainer
       ref={store.navigationRef}
       initialState={store.initialState}
-      linking={store.linking}
+      linking={store.linking as LinkingOptions<any>}
       onUnhandledAction={onUnhandledAction}
       documentTitle={{
         enabled: false,
       }}>
-      <ServerLocationContext.Provider value={initialLocation}>
+      <ServerContext.Provider value={serverContext}>
         <WrapperComponent>
           <Component />
         </WrapperComponent>
-      </ServerLocationContext.Provider>
+      </ServerContext.Provider>
     </UpstreamNavigationContainer>
   );
 }

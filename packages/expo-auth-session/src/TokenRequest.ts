@@ -137,7 +137,7 @@ export class TokenResponse implements TokenResponseConfig {
   }
 }
 
-class Request<T, B> {
+export class Request<T, B> {
   constructor(protected request: T) {}
 
   async performAsync(discovery: ServiceConfig.DiscoveryDocument): Promise<B> {
@@ -156,7 +156,7 @@ class Request<T, B> {
 /**
  * A generic token request.
  */
-class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenResponse> {
+export class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenResponse> {
   readonly clientId: string;
   readonly clientSecret?: string;
   readonly scopes?: string[];

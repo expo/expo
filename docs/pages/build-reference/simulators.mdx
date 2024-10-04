@@ -3,8 +3,8 @@ title: Build for iOS Simulators
 description: Learn how to configure and install build for iOS simulators when using EAS Build.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 Running a build of your app on an iOS Simulator is useful. You can configure the build profile and install the build automatically on the simulator. This provides a standalone (independent of Expo Go) version of the app running without needing to deploy to TestFlight or even having an Apple Developer account.
 
@@ -45,12 +45,12 @@ The command also shows a list of available builds of your project. You can selec
 
 For example, the image below lists two previous builds of a project:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Running eas build:run command shows a list of available builds in a project."
   src="/static/images/eas-build/eas-build-run-on-ios.png"
 />
 
-When the build's installation is complete, it will appear on the home screen. If it's a development build, open a terminal window and start the development server by running the command `npx expo start`. For SDK 48 and lower, use the `--dev-client` flag with the command.
+When the build's installation is complete, it will appear on the home screen. If it's a development build, open a terminal window and start the development server by running the command `npx expo start`.
 
 ### Running the latest build
 

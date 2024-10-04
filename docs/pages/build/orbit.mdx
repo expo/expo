@@ -3,13 +3,13 @@ title: Expo Orbit
 description: Accelerate your development workflow with one-click build and update launches and simulator management.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
-import Video from '~/components/plugins/Video';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-Expo Orbit for macOS and Windows enables faster to install and launch builds or updates from EAS, local files, or run Snack projects, on simulators and physical devices.
+[Expo Orbit](https://expo.dev/orbit) for macOS and Windows enables faster to install and launch builds or updates from EAS, local files, or run Snack projects, on simulators and physical devices.
 
-<Video file="orbit/basic-features.mp4" />
+<ContentSpotlight file="orbit/basic-features.mp4" />
 
 ## Why Orbit
 
@@ -22,9 +22,11 @@ Before Orbit, installing builds or updates from EAS (on Android and iOS physical
 - [Install and open updates from EAS](/review/with-orbit/) on Android Emulators or iOS Simulators.
 - Launch Snack projects in your simulators in one click.
 - Install and launch apps from local files using Finder or drag and drop a file into the menu bar app. Orbit supports any Android **.apk**, iOS Simulator compatible **.app**, or ad hoc signed apps.
-- See pinned projects from your EAS dashboard and quickly launch your latest builds.
+- See pinned projects from your [EAS dashboard](https://expo.dev) and quickly launch your latest builds.
 
 ## Installation
+
+> **info** Orbit relies on the Android SDK on both macOS and Windows and `xcrun` for device management only on macOS, which requires setting up both [Android Studio](/workflow/android-studio-emulator/) and [Xcode](/workflow/ios-simulator/).
 
 <Tabs>
 
@@ -47,5 +49,3 @@ You can download Orbit for Windows directly from the [GitHub releases](https://g
 </Tab>
 
 </Tabs>
-
-> **info** Orbit relies on the Android SDK on both macOS and Windows and `xcrun` for device management only on macOS, which requires setting up both [Android Studio](/workflow/android-studio-emulator/) and [Xcode](/workflow/ios-simulator/).

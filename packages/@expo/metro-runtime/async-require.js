@@ -1,1 +1,1 @@
-module.exports = require('./build/async-require');
+require('./src/async-require');

@@ -40,7 +40,7 @@ describe(validateConfig, () => {
     expect(() =>
       validateConfig({ ios: { deploymentTarget: '9.0' } })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\`ios.deploymentTarget\` needs to be at least version 13.4."`
+      `"\`ios.deploymentTarget\` needs to be at least version 15.1."`
     );
   });
 
@@ -66,6 +66,24 @@ describe(validateConfig, () => {
         },
       })
     ).toThrow();
+  });
+
+  it('should validate android.enablePngCrunchInReleaseBuilds', () => {
+    expect(() =>
+      validateConfig({
+        android: {
+          enablePngCrunchInReleaseBuilds: true,
+        },
+      })
+    ).not.toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enablePngCrunchInReleaseBuilds: false,
+        },
+      })
+    ).not.toThrow();
   });
 
   it('should validate ios.extraPods', () => {

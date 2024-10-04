@@ -60,3 +60,10 @@ function prefixForStatus(status: ReviewStatus): string {
   }
   return '';
 }
+
+/**
+ * Returns a link in markdown format.
+ */
+export function markdownLink(name: string, url: string): string {
+  return `[${name}](${url})`;
+}

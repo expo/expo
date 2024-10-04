@@ -1,5 +1,5 @@
-import { requireNativeModule } from 'expo-modules-core';
-const SplashModule = requireNativeModule('ExpoSplashScreen');
+import { requireOptionalNativeModule } from 'expo-modules-core';
+const SplashModule = requireOptionalNativeModule('ExpoSplashScreen');
 let _userControlledAutoHideEnabled = false;
 let _preventAutoHideAsyncInvoked = false;
 /**
@@ -11,6 +11,9 @@ let _preventAutoHideAsyncInvoked = false;
  * @private
  */
 export async function _internal_preventAutoHideAsync() {
+    if (!SplashModule) {
+        return false;
+    }
     // Memoize, this should only be called once.
     if (_preventAutoHideAsyncInvoked) {
         return false;
@@ -43,6 +46,9 @@ export const _internal_maybeHideAsync = () => {
     hideAsync();
 };
 export function hideAsync() {
+    if (!SplashModule) {
+        return Promise.resolve(false);
+    }
     return SplashModule.hideAsync().catch((error) => {
         // Hide this very unfortunate error.
         if (

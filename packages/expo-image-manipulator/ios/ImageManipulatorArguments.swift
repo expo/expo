@@ -4,23 +4,6 @@ import CoreGraphics
 import ExpoModulesCore
 
 /**
- Represents a single manipulate action. Only one field can be set.
- */
-internal struct ManipulateAction: Record {
-  @Field
-  var resize: ResizeOptions?
-
-  @Field
-  var rotate: Double?
-
-  @Field
-  var flip: FlipType?
-
-  @Field
-  var crop: CropRect?
-}
-
-/**
  Options provided for resize action.
  */
 internal struct ResizeOptions: Record {
@@ -69,7 +52,7 @@ internal struct ManipulateOptions: Record {
 /**
  Possible options for flip action.
  */
-internal enum FlipType: String, EnumArgument {
+internal enum FlipType: String, Enumerable {
   case vertical
   case horizontal
 }
@@ -77,7 +60,7 @@ internal enum FlipType: String, EnumArgument {
 /**
  Enum with supported image formats.
  */
-internal enum ImageFormat: String, EnumArgument {
+internal enum ImageFormat: String, Enumerable {
   case jpeg
   case jpg
   case png

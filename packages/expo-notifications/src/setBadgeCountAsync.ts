@@ -16,7 +16,7 @@ export interface SetBadgeCountOptions {
  * otherwise it will automatically return `false`.
  * > **Note:** Not all Android launchers support application badges. If the launcher does not support icon badges, the method will resolve to `false`.
  * @param badgeCount The count which should appear on the badge. A value of `0` will clear the badge.
- * @param options An object of options configuring behavior applied in Web environment.
+ * @param options An object of options configuring behavior applied.
  * @return It returns a Promise resolving to a boolean representing whether the setting of the badge succeeded.
  * @header badge
  */

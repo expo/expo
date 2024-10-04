@@ -4,7 +4,12 @@ import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
-import { expectChunkPathMatching, projectRoot, setupTestProjectAsync, bin } from './utils';
+import {
+  expectChunkPathMatching,
+  projectRoot,
+  bin,
+  setupTestProjectWithOptionsAsync,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -23,8 +28,8 @@ afterAll(() => {
 it(
   'runs `npx expo export -p web`',
   async () => {
-    const projectRoot = await setupTestProjectAsync(
-      'basic-export-web',
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'expo-28016-export-async-imports',
       'with-circular-async-imports'
     );
     // `npx expo export:web`

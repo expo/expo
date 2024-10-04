@@ -3,51 +3,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createForProject = exports.resolvePackageManager = exports.findWorkspaceRoot = exports.RESOLUTION_ORDER = void 0;
+exports.createForProject = exports.resolvePackageManager = exports.RESOLUTION_ORDER = exports.BUN_LOCK_FILE = exports.PNPM_LOCK_FILE = exports.YARN_LOCK_FILE = exports.NPM_LOCK_FILE = exports.resolveWorkspaceRoot = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const nodeWorkspaces_1 = require("./nodeWorkspaces");
+const resolve_workspace_root_1 = require("resolve-workspace-root");
 const BunPackageManager_1 = require("../node/BunPackageManager");
 const NpmPackageManager_1 = require("../node/NpmPackageManager");
 const PnpmPackageManager_1 = require("../node/PnpmPackageManager");
 const YarnPackageManager_1 = require("../node/YarnPackageManager");
+var resolve_workspace_root_2 = require("resolve-workspace-root");
+Object.defineProperty(exports, "resolveWorkspaceRoot", { enumerable: true, get: function () { return resolve_workspace_root_2.resolveWorkspaceRoot; } });
+exports.NPM_LOCK_FILE = 'package-lock.json';
+exports.YARN_LOCK_FILE = 'yarn.lock';
+exports.PNPM_LOCK_FILE = 'pnpm-lock.yaml';
+exports.BUN_LOCK_FILE = 'bun.lockb';
 /** The order of the package managers to use when resolving automatically */
 exports.RESOLUTION_ORDER = ['bun', 'yarn', 'npm', 'pnpm'];
-/**
- * Resolve the workspace root for a project, if its part of a monorepo.
- * Optionally, provide a specific packager to only resolve that one specifically.
- */
-function findWorkspaceRoot(projectRoot, preferredManager) {
-    const strategies = {
-        npm: nodeWorkspaces_1.findYarnOrNpmWorkspaceRoot,
-        yarn: nodeWorkspaces_1.findYarnOrNpmWorkspaceRoot,
-        pnpm: nodeWorkspaces_1.findPnpmWorkspaceRoot,
-        bun: nodeWorkspaces_1.findYarnOrNpmWorkspaceRoot,
-    };
-    if (preferredManager) {
-        return strategies[preferredManager](projectRoot);
-    }
-    for (const strategy of exports.RESOLUTION_ORDER) {
-        const root = strategies[strategy](projectRoot);
-        if (root) {
-            return root;
-        }
-    }
-    return null;
-}
-exports.findWorkspaceRoot = findWorkspaceRoot;
 /**
  * Resolve the used node package manager for a project by checking the lockfile.
  * This also tries to resolve the workspace root, if its part of a monorepo.
  * Optionally, provide a preferred packager to only resolve that one specifically.
  */
 function resolvePackageManager(projectRoot, preferredManager) {
-    const root = findWorkspaceRoot(projectRoot, preferredManager) ?? projectRoot;
+    const root = (0, resolve_workspace_root_1.resolveWorkspaceRoot)(projectRoot) ?? projectRoot;
     const lockFiles = {
-        npm: nodeWorkspaces_1.NPM_LOCK_FILE,
-        pnpm: nodeWorkspaces_1.PNPM_LOCK_FILE,
-        yarn: nodeWorkspaces_1.YARN_LOCK_FILE,
-        bun: nodeWorkspaces_1.BUN_LOCK_FILE,
+        npm: exports.NPM_LOCK_FILE,
+        pnpm: exports.PNPM_LOCK_FILE,
+        yarn: exports.YARN_LOCK_FILE,
+        bun: exports.BUN_LOCK_FILE,
     };
     if (preferredManager) {
         if (fs_1.default.existsSync(path_1.default.join(root, lockFiles[preferredManager]))) {

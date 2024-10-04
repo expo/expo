@@ -28,14 +28,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = void 0;
-const expo_constants_1 = __importDefault(require("expo-constants"));
-const expo_status_bar_1 = require("expo-status-bar");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const NavigationContainer_1 = __importDefault(require("./fork/NavigationContainer"));
 const router_store_1 = require("./global-state/router-store");
-const serverLocationContext_1 = require("./global-state/serverLocationContext");
+const serverContext_1 = __importDefault(require("./global-state/serverContext"));
+const statusbar_1 = require("./utils/statusbar");
 const Splash_1 = require("./views/Splash");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
@@ -44,8 +43,6 @@ const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
     }
     : undefined;
-const hasViewControllerBasedStatusBarAppearance = react_native_1.Platform.OS === 'ios' &&
-    !!expo_constants_1.default.expoConfig?.ios?.infoPlist?.UIViewControllerBasedStatusBarAppearance;
 function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper
@@ -57,20 +54,58 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
         <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-          {children}
           {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {!hasViewControllerBasedStatusBarAppearance && <expo_status_bar_1.StatusBar style="auto"/>}
+          {!statusbar_1.hasViewControllerBasedStatusBarAppearance && <AutoStatusBar />}
+          {children}
         </react_native_safe_area_context_1.SafeAreaProvider>
       </ParentWrapper>);
     };
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
 exports.ExpoRoot = ExpoRoot;
+function AutoStatusBar() {
+    return <react_native_1.StatusBar barStyle={(0, react_native_1.useColorScheme)() === 'light' ? 'dark-content' : 'light-content'}/>;
+}
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
-function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, }) {
-    const store = (0, router_store_1.useInitializeExpoRouter)(context, initialLocation);
+function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, linking = {}, }) {
+    // location and linking.getInitialURL are both used to initialize the router state
+    //  - location is used on web and during static rendering
+    //  - linking.getInitialURL is used on native
+    const serverContext = (0, react_1.useMemo)(() => {
+        let contextType = {};
+        if (initialLocation instanceof URL) {
+            contextType = {
+                location: {
+                    pathname: initialLocation.pathname + initialLocation.hash,
+                    search: initialLocation.search,
+                },
+            };
+        }
+        else if (typeof initialLocation === 'string') {
+            // The initial location is a string, so we need to parse it into a URL.
+            const url = new URL(initialLocation, 'http://placeholder.base');
+            contextType = {
+                location: {
+                    pathname: url.pathname,
+                    search: url.search,
+                },
+            };
+        }
+        return contextType;
+    }, []);
+    /*
+     * The serverUrl is an initial URL used in server rendering environments.
+     * e.g Static renders, units tests, etc
+     */
+    const serverUrl = serverContext.location
+        ? `${serverContext.location.pathname}${serverContext.location.search}`
+        : undefined;
+    const store = (0, router_store_1.useInitializeExpoRouter)(context, {
+        ...linking,
+        serverUrl,
+    });
     if (store.shouldShowTutorial()) {
         Splash_1.SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
@@ -88,11 +123,11 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     return (<NavigationContainer_1.default ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
             enabled: false,
         }}>
-      <serverLocationContext_1.ServerLocationContext.Provider value={initialLocation}>
+      <serverContext_1.default.Provider value={serverContext}>
         <WrapperComponent>
           <Component />
         </WrapperComponent>
-      </serverLocationContext_1.ServerLocationContext.Provider>
+      </serverContext_1.default.Provider>
     </NavigationContainer_1.default>);
 }
 let onUnhandledAction;

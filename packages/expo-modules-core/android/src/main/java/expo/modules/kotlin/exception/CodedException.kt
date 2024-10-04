@@ -8,7 +8,8 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun Throwable.toCodedException() = when (this) {
+inline fun Throwable?.toCodedException() = when (this) {
+  null -> UnexpectedException("Unknown error")
   is CodedException -> this
   is expo.modules.core.errors.CodedException -> CodedException(this.code, this.message, this.cause)
   else -> UnexpectedException(this)
@@ -26,6 +27,7 @@ open class CodedException(
   // the javaClass property in the constructor.
   private var providedCode: String? = null
 
+  @get:DoNotStrip
   val code
     get() = providedCode ?: inferCode(javaClass)
 
@@ -88,7 +90,7 @@ internal class EnumNoSuchValueException(
 internal class MissingTypeConverter(
   forType: KType
 ) : CodedException(
-  message = "Cannot find type converter for '$forType'."
+  message = "Cannot find type converter for '$forType'. Make sure the class implements `expo.modules.kotlin.records.Record` (i.e. `class MyObj : Record`)."
 )
 
 @DoNotStrip
@@ -125,7 +127,7 @@ internal class ValidationException(message: String) :
 /**
  * A base class for all exceptions used in `exceptionDecorator` function.
  */
-internal open class DecoratedException(
+open class DecoratedException(
   message: String,
   cause: CodedException
 ) : CodedException(
@@ -184,6 +186,13 @@ internal class InvalidSharedObjectException(
   sharedType: KType
 ) : CodedException(
   message = "Cannot convert provided JavaScriptObject to the '$sharedType', because it doesn't contain valid id"
+)
+
+internal class IncorrectRefTypeException(
+  desiredType: KType,
+  receivedClass: Class<*>
+) : CodedException(
+  message = "Cannot convert received '$receivedClass' to the '$desiredType', because of the inner ref type mismatch"
 )
 
 internal class FieldCastException(

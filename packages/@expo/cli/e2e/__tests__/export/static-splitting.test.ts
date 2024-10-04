@@ -22,6 +22,7 @@ describe('exports static with bundle splitting', () => {
 
   beforeAll(
     async () => {
+      // NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering E2E_ROUTER_ASYNC=production EXPO_USE_FAST_RESOLVER=1 npx expo export -p web --source-maps --output-dir dist-static-splitting
       await execa(
         'node',
         [bin, 'export', '-p', 'web', '--source-maps', '--output-dir', outputName],
@@ -32,8 +33,7 @@ describe('exports static with bundle splitting', () => {
             EXPO_USE_STATIC: 'static',
             E2E_ROUTER_SRC: 'static-rendering',
             E2E_ROUTER_ASYNC: 'production',
-            // TODO: Reenable this after investigating unstable_getRealPath
-            EXPO_USE_FAST_RESOLVER: 'false',
+            EXPO_USE_FAST_RESOLVER: 'true',
           },
         }
       );
@@ -85,9 +85,7 @@ describe('exports static with bundle splitting', () => {
   it('has eager script tags in dynamic html', async () => {
     const staticParamsPage = await getScriptTagsAsync('welcome-to-the-universe.html');
 
-    expect(staticParamsPage).toEqual(
-      ['index', '[post]', '_layout'].map(expectChunkPathMatching)
-    );
+    expect(staticParamsPage).toEqual(['index', '[post]', '_layout'].map(expectChunkPathMatching));
 
     expect(await getScriptTagsAsync('[post].html')).toEqual(staticParamsPage);
   });
@@ -123,9 +121,8 @@ describe('exports static with bundle splitting', () => {
     // "_expo/static/js/web/links-4545c832242c66b83e4bd38b67066808.js.map",
     // "_expo/static/js/web/styled-93437b3b1dcaa498dabb3a1de3aae7ac.js.map",
     expect(mapFiles).toEqual(
-      ['\\[post\\]', '_layout', 'about', 'asset', 'index', 'index', 'links', 'styled'].map(
-        (file) =>
-          expect.stringMatching(new RegExp(`_expo\\/static\\/js\\/web\\/${file}-.*\\.js\\.map`))
+      ['\\[post\\]', '_layout', 'about', 'asset', 'index', 'index', 'links', 'styled'].map((file) =>
+        expect.stringMatching(new RegExp(`_expo\\/static\\/js\\/web\\/${file}-.*\\.js\\.map`))
       )
     );
 
@@ -177,7 +174,9 @@ describe('exports static with bundle splitting', () => {
     // non-public env vars are injected during SSG
     expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
 
-    const script = indexHtml.querySelectorAll('script')[0];
+    const script = indexHtml
+      .querySelectorAll('script')
+      .filter((script) => !!script.attributes.src)[0];
     const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
 
     // Ensure the bundle is valid

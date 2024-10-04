@@ -1,6 +1,8 @@
+import { ThemeProvider } from 'ThemeProvider';
 import React from 'react';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
+
 let Notifications;
 try {
   Notifications = require('expo-notifications');
@@ -54,9 +56,5 @@ export default function Main() {
 
   const isLoaded = useLoaded();
 
-  if (!isLoaded) {
-    return null;
-  }
-
-  return <MainNavigator />;
+  return <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>;
 }

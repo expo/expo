@@ -1,4 +1,4 @@
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export type SymbolViewProps = {
     /**
@@ -6,7 +6,7 @@ export type SymbolViewProps = {
      */
     name: SFSymbol;
     /**
-     * Fallback to render on Android where `SF Symbols` are not available.
+     * Fallback to render on Android and Web where `SF Symbols` are not available.
      */
     fallback?: React.ReactNode;
     /**
@@ -25,9 +25,14 @@ export type SymbolViewProps = {
      */
     weight?: SymbolWeight;
     /**
-     * An array of colors to use when the [SymbolType](#symboltype) is `palette`.
+     * An array of colors to use when the {@link SymbolType} is `palette`.
      */
     colors?: string | string[] | null;
+    /**
+     * The size of the symbol.
+     * @default 24
+     */
+    size?: number;
     /**
      * The tint color to apply to the symbol.
      * @default null

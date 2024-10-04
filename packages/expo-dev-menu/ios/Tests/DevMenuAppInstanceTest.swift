@@ -1,5 +1,6 @@
 import Quick
 import Nimble
+import React
 
 @testable import EXDevMenu
 
@@ -51,7 +52,7 @@ class DevMenuAppInstanceTest: QuickSpec {
         bridge: mockedBridge
       )
 
-      let extraModules = appInstance.extraModules(for: mockedBridge)
+      let extraModules = appInstance.rootViewFactory.extraModules(for: mockedBridge)
 
       expect(extraModules.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
       expect(extraModules.first { type(of: $0).moduleName() == "DevSettings" }).toNot(beNil())

@@ -13,7 +13,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     kotlinVersion: '1.6.10',
   },
   ios: {
-    deploymentTarget: '13.4',
+    deploymentTarget: '15.1',
   },
 };
 
@@ -72,11 +72,18 @@ export interface PluginConfigTypeAndroid {
    */
   enableShrinkResourcesInReleaseBuilds?: boolean;
   /**
+   * Enable [`crunchPngs`](https://developer.android.com/topic/performance/reduce-apk-size#crunch) in release builds to optimize PNG files.
+   * This property is enabled by default, but "might inflate PNG files that are already compressed", so you may want to disable it if you do your own PNG optimization.
+   *
+   * @default true
+   */
+  enablePngCrunchInReleaseBuilds?: boolean;
+  /**
    * Append custom [Proguard rules](https://www.guardsquare.com/manual/configuration/usage) to **android/app/proguard-rules.pro**.
    */
   extraProguardRules?: string;
   /**
-   * Interface representing available configuration for Android Gradle plugin [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
+   * Interface representing available configuration for Android Gradle plugin [`PackagingOptions`](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
    */
   packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
 
@@ -87,9 +94,10 @@ export interface PluginConfigTypeAndroid {
    */
   networkInspector?: boolean;
 
+  // For the implementation details, this property is actually handled by `expo-modules-autolinking`
+  // not the config-plugins inside `expo-build-properties`
   /**
    * Add extra maven repositories to all gradle projects.
-   *
    *
    * Takes an array of objects or strings.
    * Strings are passed as the `url` property of the object with no credentials or authentication scheme.
@@ -105,7 +113,6 @@ export interface PluginConfigTypeAndroid {
    * ```
    *
    * By using an `AndroidMavenRepository` object, you can specify credentials and an authentication scheme.
-   *
    * ```groovy
    * allprojects {
    *   repositories {
@@ -124,9 +131,6 @@ export interface PluginConfigTypeAndroid {
    * ```
    *
    * @see [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:case-for-maven)
-   *
-   * @hide For the implementation details,
-   * this property is actually handled by `expo-modules-autolinking` not the config-plugins inside `expo-build-properties`
    */
   extraMavenRepos?: (AndroidMavenRepository | string)[];
   /**
@@ -154,6 +158,10 @@ export interface PluginConfigTypeAndroid {
   manifestQueries?: PluginConfigTypeAndroidQueries;
 }
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export interface AndroidMavenRepository {
   /**
    * The URL of the Maven repository.
@@ -163,7 +171,7 @@ export interface AndroidMavenRepository {
    * The credentials to use when accessing the Maven repository.
    * May be of type PasswordCredentials, HttpHeaderCredentials, or AWSCredentials.
    *
-   * @see the authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
+   * @see The authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
    */
   credentials?: AndroidMavenRepositoryCredentials;
   /**
@@ -172,23 +180,39 @@ export interface AndroidMavenRepository {
   authentication?: 'basic' | 'digest' | 'header';
 }
 
-interface AndroidMavenRepositoryPasswordCredentials {
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryPasswordCredentials {
   username: string;
   password: string;
 }
 
-interface AndroidMavenRepositoryHttpHeaderCredentials {
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryHttpHeaderCredentials {
   name: string;
   value: string;
 }
 
-interface AndroidMavenRepositoryAWSCredentials {
+// @docsMissing
+/**
+ * @platform android
+ */
+export interface AndroidMavenRepositoryAWSCredentials {
   accessKey: string;
   secretKey: string;
   sessionToken?: string;
 }
 
-type AndroidMavenRepositoryCredentials =
+// @docsMissing
+/**
+ * @platform android
+ */
+export type AndroidMavenRepositoryCredentials =
   | AndroidMavenRepositoryPasswordCredentials
   | AndroidMavenRepositoryHttpHeaderCredentials
   | AndroidMavenRepositoryAWSCredentials;
@@ -222,20 +246,49 @@ export interface PluginConfigTypeIos {
    */
   networkInspector?: boolean;
 
+  // For the implementation details, this property is actually handled by `expo-modules-autolinking`
+  // but not the config-plugins inside `expo-build-properties`.
   /**
    * Add extra CocoaPods dependencies for all targets.
    *
-   * This acts like to add the following code to **ios/Podfile**:
+   * This configuration is responsible for adding the new Pod entries to **ios/Podfile**.
+   *
+   * @example
+   * Creating entry in the configuration like below:
+   * ```json
+   * [
+   *   {
+   *     name: "Protobuf",
+   *     version: "~> 3.14.0",
+   *   }
+   * ]
    * ```
-   * pod '[EXTRA_POD_NAME]', '~> [EXTRA_POD_VERSION]'
-   * # e.g.
+   * Will produce the following entry in the generated **ios/Podfile**:
+   * ```ruby
    * pod 'Protobuf', '~> 3.14.0'
    * ```
-   *
-   * @hide For the implementation details,
-   * this property is actually handled by `expo-modules-autolinking` but not the config-plugins inside expo-build-properties.
    */
   extraPods?: ExtraIosPodDependency[];
+
+  /**
+   * Enable C++ compiler cache for iOS builds.
+   *
+   * This speeds up compiling C++ code by caching the results of previous compilations.
+   *
+   * @see [React Native's documentation on local caches](https://reactnative.dev/docs/build-speed#local-caches) and
+   * [Ccache documentation](https://ccache.dev/).
+   */
+  ccacheEnabled?: boolean;
+
+  /**
+   * Enable aggregation of Privacy Manifests (`PrivacyInfo.xcprivacy`) from
+   * CocoaPods resource bundles. If enabled, the manifests will be merged into a
+   * single file. If not enabled, developers will need to manually aggregate them.
+   *
+   * @see [Privacy manifests](https://docs.expo.dev/guides/apple-privacy/) guide
+   * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
+   */
+  privacyManifestAggregationEnabled?: boolean;
 }
 
 /**
@@ -303,12 +356,17 @@ export interface ExtraIosPodDependency {
    * Use the bleeding edge version of a Pod.
    *
    * @example
-   * ```
-   * { "name": "AFNetworking", "git": "https://github.com/gowalla/AFNetworking.git", "tag": "0.7.0" }
+   * ```json
+   * {
+   *   "name": "AFNetworking",
+   *   "git": "https://github.com/gowalla/AFNetworking.git",
+   *   "tag": "0.7.0"
+   * }
    * ```
    *
    * This acts like to add this pod dependency statement:
-   * ```
+   *
+   * ```rb
    * pod 'AFNetworking', :git => 'https://github.com/gowalla/AFNetworking.git', :tag => '0.7.0'
    * ```
    */
@@ -328,7 +386,7 @@ export interface ExtraIosPodDependency {
 }
 
 /**
- * Interface representing available configuration for Android Gradle plugin [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
+ * Interface representing available configuration for Android Gradle plugin [`PackagingOptions`](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
  * @platform android
  */
 export interface PluginConfigTypeAndroidPackagingOptions {
@@ -350,13 +408,17 @@ export interface PluginConfigTypeAndroidPackagingOptions {
   doNotStrip?: string[];
 }
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export interface PluginConfigTypeAndroidQueries {
   /**
-   * Specifies a single app that your app intends to access. This other app might integrate with your app, or your app might use services that the other app provides.
+   * Specifies one or more apps that your app intends to access. These other apps might integrate with your app, or your app might use services that these other apps provide.
    */
-  package: string[];
+  package?: string[];
   /**
-   * Specifies an intent filter signature. Your app can discover other apps that have matching <intent-filter> elements.
+   * Specifies an intent filter signature. Your app can discover other apps that have matching `<intent-filter>` elements.
    * These intents have restrictions compared to typical intent filter signatures.
    *
    * @see [Android documentation](https://developer.android.com/training/package-visibility/declaring#intent-filter-signature) for details
@@ -364,14 +426,18 @@ export interface PluginConfigTypeAndroidQueries {
   intent?: PluginConfigTypeAndroidQueriesIntent[];
   /**
    * Specifies one or more content provider authorities. Your app can discover other apps whose content providers use the specified authorities.
-   * There are some restrictions on the options that you can include in this <provider> element, compared to a typical <provider> manifest element. You may only specify the android:authorities attribute.
+   * There are some restrictions on the options that you can include in this `<provider>` element, compared to a typical `<provider>` manifest element. You may only specify the `android:authorities` attribute.
    */
   provider?: string[];
 }
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export interface PluginConfigTypeAndroidQueriesIntent {
   /**
-   * A string naming the action to perform. Usually one of the platform-defined values, such as ACTION_SEND or ACTION_VIEW
+   * A string naming the action to perform. Usually one of the platform-defined values, such as `ACTION_SEND` or `ACTION_VIEW`.
    */
   action?: string;
   /**
@@ -385,6 +451,10 @@ export interface PluginConfigTypeAndroidQueriesIntent {
   category?: string | string[];
 }
 
+// @docsMissing
+/**
+ * @platform android
+ */
 export interface PluginConfigTypeAndroidQueriesData {
   /**
    * Specify a URI scheme that is handled
@@ -415,6 +485,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
 
         enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
         enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
+        enablePngCrunchInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
 
         packagingOptions: {
@@ -493,10 +564,9 @@ const schema: JSONSchemaType<PluginConfigType> = {
         useLegacyPackaging: { type: 'boolean', nullable: true },
 
         manifestQueries: {
-          required: ['package'],
           type: 'object',
           properties: {
-            package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: false },
+            package: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
             intent: {
               type: 'array',
               items: {
@@ -517,7 +587,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
               },
               nullable: true,
             },
-            provider: { type: 'array', items: { type: 'string' }, nullable: true },
+            provider: { type: 'array', items: { type: 'string' }, minItems: 1, nullable: true },
           },
           nullable: true,
         },
@@ -532,6 +602,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
 
         networkInspector: { type: 'boolean', nullable: true },
+        ccacheEnabled: { type: 'boolean', nullable: true },
+        privacyManifestAggregationEnabled: { type: 'boolean', nullable: true },
 
         extraPods: {
           type: 'array',

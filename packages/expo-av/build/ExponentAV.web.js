@@ -1,4 +1,5 @@
-import { DeviceEventEmitter, PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 import { RecordingOptionsPresets } from './Audio/RecordingConstants';
 async function getPermissionWithQueryAsync(name) {
     if (!navigator || !navigator.permissions || !navigator.permissions.query)
@@ -102,6 +103,9 @@ async function setStatusForMedia(media, status) {
     }
     if (status.rate !== undefined) {
         media.playbackRate = status.rate;
+    }
+    if (status.shouldCorrectPitch !== undefined) {
+        media.preservesPitch = status.shouldCorrectPitch;
     }
     if (status.volume !== undefined) {
         media.volume = status.volume;

@@ -1,0 +1,58 @@
+import AndroidStudioEnvironmentInstructions from './_androidStudioEnvironmentInstructions.mdx';
+import AndroidStudioInstructions from './_androidStudioInstructions.mdx';
+import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+## Set up an Android device with a development build
+
+<BuildEnvironmentSwitch />
+
+<AndroidStudioEnvironmentInstructions />
+
+<AndroidStudioInstructions />
+
+## Running your app on an Android device
+
+<Step label="1">
+
+### Install expo-dev-client
+
+Run the following command in your project's root directory:
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+</Step>
+
+<Step label="2">
+### Enable debugging over USB
+
+Most Android devices can only install and run apps downloaded from Google Play, by default. You will need to enable USB Debugging on your device to install your app during development.
+
+To enable USB debugging on your device, you will first need to enable the "Developer options" menu by going to **Settings** > **About phone** > **Software information** and then tapping the `Build number` row at the bottom seven times. You can then go back to **Settings** > **Developer options** to enable "USB debugging".
+
+</Step>
+
+<Step label="3">
+
+### Plug in your device via USB
+
+Plug in your Android device via USB to your computer.
+
+Check that your device is properly connecting to ADB, the Android Debug Bridge, by running `adb devices` in your terminal. You should see your device listed with `device` listed next to it. For example:
+
+<Terminal cmd={['$ adb devices', '', 'List of devices attached', '8AHX0T32K	device']} />
+
+</Step>
+
+<Step label="4">
+### Run your app
+
+Run the following from your terminal:
+
+<Terminal cmd={['$ npx expo run:android']} />
+
+> This command runs a development server after building your app. You can skip running `npx expo start` on the next page.
+
+</Step>

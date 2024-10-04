@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.0.2 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.1 — 2024-04-23
 

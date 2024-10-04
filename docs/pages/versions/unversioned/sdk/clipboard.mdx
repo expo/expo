@@ -11,7 +11,7 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-**`expo-clipboard`** provides an interface for getting and setting Clipboard content on Android, iOS, and Web.
+`expo-clipboard` provides an interface for getting and setting Clipboard content on Android, iOS, and Web.
 
 ## Installation
 
@@ -22,12 +22,12 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Clipboard' dependencies={['expo-clipboard']} platforms={['ios', 'android', 'web']}>
 
 ```jsx
-import * as React from 'react';
+import { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 
 export default function App() {
-  const [copiedText, setCopiedText] = React.useState('');
+  const [copiedText, setCopiedText] = useState('');
 
   const copyToClipboard = async () => {
     /* @info Copy the text to the clipboard */

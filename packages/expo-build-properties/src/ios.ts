@@ -22,6 +22,15 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
       propName: 'apple.extraPods',
       propValueGetter: (config) => JSON.stringify(config.ios?.extraPods ?? []),
     },
+    {
+      propName: 'apple.ccacheEnabled',
+      propValueGetter: (config) => (config.ios?.ccacheEnabled ?? false).toString(),
+    },
+    {
+      propName: 'apple.privacyManifestAggregationEnabled',
+      propValueGetter: (config) =>
+        (config.ios?.privacyManifestAggregationEnabled ?? true).toString(),
+    },
   ],
   'withIosBuildProperties'
 );
@@ -64,8 +73,7 @@ function updateDeploymentTargetXcodeProject(
     .map(([_, target]) => target.buildConfigurationList);
 
   for (const buildConfigListId of targetBuildConfigListIds) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const [_, configurations] of IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
+    for (const [, configurations] of IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
       project,
       buildConfigListId
     )) {

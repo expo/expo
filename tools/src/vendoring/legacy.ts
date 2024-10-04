@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import ncp from 'ncp';
 import path from 'path';
 import xcode from 'xcode';

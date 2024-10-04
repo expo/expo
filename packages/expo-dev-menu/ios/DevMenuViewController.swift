@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import UIKit
+import React
 
 class DevMenuViewController: UIViewController {
   static let JavaScriptDidLoadNotification = Notification.Name("RCTJavaScriptDidLoadNotification")
@@ -52,7 +53,6 @@ class DevMenuViewController: UIViewController {
     }
   }
 
-  @available(iOS 12.0, *)
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {
       return manager.userInterfaceStyle
@@ -79,7 +79,13 @@ class DevMenuViewController: UIViewController {
   private func rebuildRootView() {
     reactRootView = manager.appInstance.rootViewFactory.view(withModuleName: "main", initialProperties: initialProps())
     reactRootView?.frame = view.bounds
-    reactRootView?.backgroundColor = UIColor.clear
+    reactRootView?.backgroundColor = UIColor { (traitCollection: UITraitCollection) -> UIColor in
+      if traitCollection.userInterfaceStyle == .dark {
+        return  UIColor(red: 22 / 255.0, green: 27 / 255.0, blue: 34 / 255.0, alpha: 1)
+      }
+
+      return UIColor.clear
+    }
 
     if isViewLoaded, let reactRootView = reactRootView {
       view.addSubview(reactRootView)

@@ -27,7 +27,6 @@ object EmulatorUtilities {
       Build.BOOTLOADER.lowercase(Locale.ROOT).contains("nox") ||
       Build.HARDWARE.lowercase(Locale.ROOT).contains("nox") ||
       Build.PRODUCT.lowercase(Locale.ROOT).contains("nox") ||
-      Build.SERIAL.lowercase(Locale.ROOT).contains("nox") ||
       (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
   }
 }

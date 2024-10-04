@@ -1,5 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { CheckIcon, XIcon } from '@expo/styleguide-icons';
+import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
+import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
 

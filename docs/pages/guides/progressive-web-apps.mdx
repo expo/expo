@@ -3,13 +3,12 @@ title: Progressive web apps
 description: Learn how to add progressive web app support to Expo websites.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 
 <TabsGroup>
-
 
 A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. We recommend building native apps whenever possible as they have the best offline support, but PWAs are a great option for desktop users.
 
@@ -71,9 +70,9 @@ The files **logo192.png** and **logo512.png** are the icons that will be used wh
 
 <FileTree
   files={[
-    ['public/manifest.json', "PWA Manifest"],
-    ['public/logo192.png', "192x192 icon"],
-    ['public/logo512.png', "512x512 icon"],
+    ['public/manifest.json', 'PWA Manifest'],
+    ['public/logo192.png', '192x192 icon'],
+    ['public/logo512.png', '512x512 icon'],
   ]}
 />
 
@@ -85,7 +84,7 @@ Now link the manifest in your HTML file. The method here depends on the output m
 
 <Tabs>
 
-<Tab label={`single`}>
+<Tab label="single">
 
 If you're using a single-page app, you can link the manifest in your HTML file by first creating a template HTML in **public/index.html**:
 
@@ -102,7 +101,7 @@ Then add the manifest to the `<head>` tag:
 
 </Tab>
 
-<Tab label={`static & server`}>
+<Tab label="static & server">
 
 If you're using static or server rendering, the HTML entry can be dynamically created in **app/+html.tsx**. Here we'll link the manifest by adding a `<link>` tag to the `<head>` component:
 
@@ -151,17 +150,16 @@ Service workers are primarily used to add offline support to websites. Google's 
 
 > **warning:** Be careful adding service workers as they are known to cause unexpected behavior on web. If you accidentally ship a service worker that aggressively caches your website, users cannot request updates easily. For the best offline mobile experience, create a native app with Expo. Unlike websites with service workers, native apps can be updated through the app store to clear the cached experience. This would be similar to resetting the user's native browser (which they may have to do if the service worker is aggressive enough). See [why service workers are suboptimal](https://github.com/facebook/create-react-app/issues/2398) for more information.
 
-
 For example, here's a possible flow for setting up Workbox:
 
 <Step label="1">
 
-  Create a new project with the following command:
+Create a new project with the following command:
 
-  <Terminal
-    cmd={['$ npm create expo -t tabs my-app', '', '$ cd my-app']}
-    cmdCopy="npm create expo -t tabs my-app && cd my-app"
-  />
+<Terminal
+  cmd={['$ npm create expo -t tabs my-app', '', '$ cd my-app']}
+  cmdCopy="npm create expo -t tabs my-app && cd my-app"
+/>
 
 </Step>
 
@@ -171,8 +169,7 @@ Now register the service worker in the HTML file. The method here depends on the
 
 <Tabs>
 
-<Tab label={`single`}>
-
+<Tab label="single">
 
 Next add a service worker registration script to the root **index.html**.
 
@@ -189,11 +186,14 @@ Then create the service worker registration script in the `<head>` tag:
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      }).catch(error => {
-        console.error('Service Worker registration failed:', error);
-      });
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then(registration => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch(error => {
+          console.error('Service Worker registration failed:', error);
+        });
     });
   }
 </script>
@@ -201,7 +201,7 @@ Then create the service worker registration script in the `<head>` tag:
 
 </Tab>
 
-<Tab label={`static & server`}>
+<Tab label="static & server">
 
 Next, create a root HTML file for the app and add the service worker registration script:
 

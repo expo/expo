@@ -1,4 +1,7 @@
-import { writeReadableStreamToWritable, createReadableStreamFromReadable } from '@remix-run/node';
+import {
+  createReadableStreamFromReadable,
+  writeReadableStreamToWritable,
+} from '@remix-run/node/dist/stream';
 import * as http from 'http';
 
 import { createRequestHandler as createExpoHandler } from '..';
@@ -56,7 +59,6 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     init.body = createReadableStreamFromReadable(req);
-    // @ts-expect-error
     init.duplex = 'half';
   }
 

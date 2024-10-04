@@ -66,7 +66,7 @@ func serializeCalendar(calendar: EKCalendar) -> [String: Any?] {
     "source": serialize(ekSource: calendar.source),
     "entityType": entity(type: calendar.allowedEntityTypes),
     "color": calendar.cgColor != nil ? EXUtilities.hexString(with: calendar.cgColor) : nil,
-    "type": calendarTypeToString(type: calendar.type),
+    "type": calendarTypeToString(type: calendar.type, source: calendar.source.sourceType),
     "allowsModifications": calendar.allowsContentModifications,
     "allowedAvailabilities": calendarSupportedAvailabilities(fromMask: calendar.supportedEventAvailabilities)
   ]

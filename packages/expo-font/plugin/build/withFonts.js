@@ -8,11 +8,14 @@ const withFonts = (config, props) => {
     if (!props) {
         return config;
     }
-    if (props.fonts && props.fonts.length === 0) {
-        return config;
+    const iosFonts = [...(props.fonts ?? []), ...(props.ios?.fonts ?? [])];
+    if (iosFonts.length > 0) {
+        config = (0, withFontsIos_1.withFontsIos)(config, iosFonts);
     }
-    config = (0, withFontsIos_1.withFontsIos)(config, props.fonts ?? []);
-    config = (0, withFontsAndroid_1.withFontsAndroid)(config, props.fonts ?? []);
+    const androidFonts = [...(props.fonts ?? []), ...(props.android?.fonts ?? [])];
+    if (androidFonts.length > 0) {
+        config = (0, withFontsAndroid_1.withFontsAndroid)(config, androidFonts);
+    }
     return config;
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withFonts, pkg.name, pkg.version);

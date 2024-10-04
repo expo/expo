@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.ReactHostWrapper
+import expo.modules.manifests.core.ExpoUpdatesManifest
 
 object DevMenuAppInfo {
   fun getAppInfo(reactHost: ReactHostWrapper, reactContext: ReactContext): Bundle {
@@ -14,10 +15,9 @@ object DevMenuAppInfo {
     var appVersion = packageInfo.versionName
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     var appName = packageManager.getApplicationLabel(applicationInfo).toString()
-    val runtimeVersion = getMetadataValue(reactContext, "expo.modules.updates.EXPO_RUNTIME_VERSION")
     val appIcon = getApplicationIconUri(reactContext)
     var hostUrl = reactContext.sourceURL
-
+    var runtimeVersion = ""
     val manifest = DevMenuManager.currentManifest
 
     if (manifest != null) {
@@ -29,6 +29,10 @@ object DevMenuAppInfo {
       val manifestVersion = manifest.getVersion()
       if (manifestVersion != null) {
         appVersion = manifestVersion
+      }
+
+      if (manifest is ExpoUpdatesManifest) {
+        runtimeVersion = manifest.getRuntimeVersion()
       }
     }
 
@@ -53,23 +57,12 @@ object DevMenuAppInfo {
     }
   }
 
-  private fun getMetadataValue(reactContext: ReactContext, key: String): String {
-    val packageManager = reactContext.packageManager
-    val packageName = reactContext.packageName
-    val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-    return applicationInfo.metaData?.get(key)?.toString() ?: ""
-  }
-
   private fun getApplicationIconUri(reactContext: ReactContext): String {
-    var appIcon = ""
     val packageManager = reactContext.packageManager
     val packageName = reactContext.packageName
     val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
 
-    if (applicationInfo.icon != null) {
-      appIcon = "" + applicationInfo.icon
-    }
     //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
-    return appIcon
+    return applicationInfo.icon.toString()
   }
 }

@@ -2,30 +2,6 @@ import { AuthError } from './Errors';
 import { TokenResponse } from './TokenRequest';
 
 // @needsAudit
-export type AuthSessionOptions = {
-  /**
-   * The URL that points to the sign in page that you would like to open the user to.
-   */
-  authUrl: string;
-  /**
-   * The URL to return to the application. In managed apps, it's optional and defaults to output of [`Linking.createURL('expo-auth-session', params)`](./linking/#linkingcreateurlpath-namedparameters)
-   * call with `scheme` and `queryParams` params. However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response.
-   * Hence, this method will throw an exception, if you don't provide `returnUrl`.
-   */
-  returnUrl?: string;
-  /**
-   * A boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view.
-   * @default false
-   * @platform android
-   */
-  showInRecents?: boolean;
-  /**
-   * Project name to use for the `auth.expo.io` proxy.
-   */
-  projectNameForProxy?: string;
-};
-
-// @needsAudit
 /**
  * Object returned after an auth request has completed.
  * - If the user cancelled the authentication session by closing the browser, the result is `{ type: 'cancel' }`.

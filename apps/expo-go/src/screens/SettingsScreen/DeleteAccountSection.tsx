@@ -1,22 +1,65 @@
 import { TrashIcon } from '@expo/styleguide-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
+import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 
+import Config from '../../api/Config';
 import { Button } from '../../components/Button';
 import { SectionHeader } from '../../components/SectionHeader';
-import { SettingsStackRoutes } from '../../navigation/Navigation.types';
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
+import { useDispatch } from '../../redux/Hooks';
+import SessionActions from '../../redux/SessionActions';
+import { useAccountName } from '../../utils/AccountNameContext';
 
-type Props = {
-  viewerUsername: string;
-};
-
-export function DeleteAccountSection(props: Props) {
-  const { viewerUsername } = props;
-
-  const navigation = useNavigation<StackNavigationProp<SettingsStackRoutes>>();
+export function DeleteAccountSection() {
   const theme = useExpoTheme();
+  const { setAccountName } = useAccountName();
+  const dispatch = useDispatch();
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const navigation = useNavigation<NavigationProp<HomeStackRoutes>>();
+  const [deletionError, setDeletionError] = React.useState<string | null>(null);
+  const mounted = React.useRef<boolean | null>(true);
+
+  const _handleDeleteAccount = async () => {
+    if (isDeleting) {
+      return;
+    }
+    setDeletionError(null);
+    setIsDeleting(true);
+
+    try {
+      const redirectBase = 'expauth://after-delete';
+      const authSessionURL = `${
+        Config.website.origin
+      }/settings/delete-user-expo-go?post_delete_redirect_uri=${encodeURIComponent(redirectBase)}`;
+      const result = await WebBrowser.openAuthSessionAsync(authSessionURL, redirectBase, {
+        /** note(brentvatne): We should disable the showInRecents option when
+         * https://github.com/expo/expo/issues/8072 is resolved. This workaround
+         * prevents the Chrome Custom Tabs activity from closing when the user
+         * switches from the login / sign up form to a password manager or 2fa
+         * app. The downside of using this flag is that the browser window will
+         * remain open in the background after authentication completes. */
+        showInRecents: true,
+      });
+
+      if (!mounted.current) {
+        return;
+      }
+
+      if (result.type === 'success') {
+        setAccountName(undefined);
+        dispatch(SessionActions.signOut());
+        navigation.navigate('Home');
+      }
+    } catch (e) {
+      // TODO(wschurman): Put this into Sentry
+      console.error({ e });
+      setDeletionError(e.message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <View>
@@ -36,11 +79,19 @@ export function DeleteAccountSection(props: Props) {
             activity.
           </Text>
           <Spacer.Vertical size="small" />
+          {deletionError ? (
+            <>
+              <View bg="error" padding="medium" rounded="medium" border="error">
+                <Text>{deletionError}</Text>
+              </View>
+              <Spacer.Vertical size="small" />
+            </>
+          ) : null}
           <Row justify="end">
             <Button
               label="Delete Account"
               theme="error"
-              onPress={() => navigation.navigate('DeleteAccount', { viewerUsername })}
+              onPress={_handleDeleteAccount}
               style={{
                 alignSelf: 'flex-start',
               }}

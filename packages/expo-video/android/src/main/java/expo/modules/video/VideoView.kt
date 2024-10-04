@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Build
+import android.util.Log
 import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
@@ -14,16 +15,18 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.ui.PlayerView
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import expo.modules.video.drawing.OutlineProvider
+import expo.modules.video.enums.ContentFit
+import expo.modules.video.utils.ifYogaDefinedUse
 import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -33,13 +36,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   val playerView: PlayerView = PlayerView(context.applicationContext)
   val onPictureInPictureStart by EventDispatcher<Unit>()
   val onPictureInPictureStop by EventDispatcher<Unit>()
+  val onFullscreenEnter by EventDispatcher<Unit>()
+  val onFullscreenExit by EventDispatcher<Unit>()
 
   var willEnterPiP: Boolean = false
   var isInFullscreen: Boolean = false
     private set
 
-  private val currentActivity = appContext.currentActivity
-    ?: throw Exceptions.MissingActivity()
+  private val currentActivity = appContext.throwingActivity
   private val decorView = currentActivity.window.decorView
   private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
 
@@ -52,6 +56,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   private val outlineProvider = OutlineProvider(context)
 
+  @UnstableReactNativeAPI
   private val borderDrawableLazyHolder = lazy {
     ReactViewBackgroundDrawable(context).apply {
       callback = this@VideoView
@@ -69,15 +74,18 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
   }
 
+  @UnstableReactNativeAPI
   private val borderDrawable
     get() = borderDrawableLazyHolder.value
 
   var autoEnterPiP: Boolean = false
     set(value) {
-      field = value
-      if (Build.VERSION.SDK_INT >= 31) {
-        currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(value).build())
+      if (Build.VERSION.SDK_INT >= 31 && isPictureInPictureSupported(currentActivity) && field != value) {
+        runWithPiPMisconfigurationSoftHandling {
+          currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(value).build())
+        }
       }
+      field = value
     }
 
   var contentFit: ContentFit = ContentFit.CONTAIN
@@ -146,8 +154,10 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     if (Build.VERSION.SDK_INT >= 34) {
       currentActivity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, 0, 0)
     } else {
+      @Suppress("DEPRECATION")
       currentActivity.overridePendingTransition(0, 0)
     }
+    onFullscreenEnter(Unit)
     isInFullscreen = true
   }
 
@@ -156,6 +166,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     val fullScreenButton: ImageButton = playerView.findViewById(androidx.media3.ui.R.id.exo_fullscreen)
     fullScreenButton.setImageResource(androidx.media3.ui.R.drawable.exo_icon_fullscreen_enter)
     videoPlayer?.changePlayerView(playerView)
+    onFullscreenExit(Unit)
     isInFullscreen = false
   }
 
@@ -250,8 +261,10 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   private fun applyRectHint() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setSourceRectHint(rectHint).build())
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isPictureInPictureSupported(currentActivity)) {
+      runWithPiPMisconfigurationSoftHandling(ignore = true) {
+        currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setSourceRectHint(rectHint).build())
+      }
     }
   }
 
@@ -274,6 +287,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     applyRectHint()
   }
 
+  @UnstableReactNativeAPI
   override fun draw(canvas: Canvas) {
     // When the border-radii are not all the same, a convex-path
     // is used for the Outline. Unfortunately clipping is not supported
@@ -284,14 +298,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
     // Draw borders on top of the video
     if (borderDrawableLazyHolder.isInitialized()) {
-      val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) {
+      val newLayoutDirection = if (I18nUtil.instance.isRTL(context)) {
         LAYOUT_DIRECTION_RTL
       } else {
         LAYOUT_DIRECTION_LTR
       }
 
       borderDrawable.apply {
-        resolvedLayoutDirection = layoutDirection
+        layoutDirection = newLayoutDirection
         setBounds(0, 0, width, height)
         draw(canvas)
       }
@@ -320,6 +334,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
   }
 
+  @UnstableReactNativeAPI
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
     val isInvalidated = outlineProvider.setBorderRadius(borderRadius, position)
     if (isInvalidated) {
@@ -344,21 +359,25 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
   }
 
+  @UnstableReactNativeAPI
   internal fun setBorderWidth(position: Int, width: Float) {
     borderDrawable.setBorderWidth(position, width)
     shouldInvalided = true
   }
 
+  @UnstableReactNativeAPI
   internal fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
     borderDrawable.setBorderColor(position, rgb, alpha)
     shouldInvalided = true
   }
 
+  @UnstableReactNativeAPI
   internal fun setBorderStyle(style: String?) {
     borderDrawable.setBorderStyle(style)
     shouldInvalided = true
   }
 
+  @UnstableReactNativeAPI
   fun didUpdateProps() {
     val hasBorder = if (borderDrawableLazyHolder.isInitialized()) {
       val spacings = listOf(
@@ -384,6 +403,21 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     if (shouldInvalided) {
       shouldInvalided = false
       invalidate()
+    }
+  }
+
+  // We can't check if AndroidManifest.xml is configured properly, so we have to handle the exceptions ourselves to prevent crashes
+  internal fun runWithPiPMisconfigurationSoftHandling(shouldThrow: Boolean = false, ignore: Boolean = false, block: () -> Any?) {
+    try {
+      block()
+    } catch (e: IllegalStateException) {
+      if (ignore) {
+        return
+      }
+      Log.e("ExpoVideo", "Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
+      if (shouldThrow) {
+        throw PictureInPictureConfigurationException()
+      }
     }
   }
 

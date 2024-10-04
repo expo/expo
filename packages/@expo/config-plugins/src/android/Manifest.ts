@@ -156,7 +156,7 @@ export type AndroidManifest = {
 type ManifestQueryIntent = Omit<ManifestIntentFilter, '$'>;
 
 export type ManifestQuery = {
-  package: {
+  package?: {
     $: {
       'android:name': string;
     };
@@ -166,7 +166,7 @@ export type ManifestQuery = {
     $: {
       'android:authorities': string;
     };
-  };
+  }[];
 };
 
 export async function writeAndroidManifestAsync(

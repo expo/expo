@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { EventSubscription } from 'expo-modules-core';
 import { AppleAuthenticationCredential, AppleAuthenticationCredentialState, AppleAuthenticationRefreshOptions, AppleAuthenticationSignInOptions, AppleAuthenticationSignOutOptions } from './AppleAuthentication.types';
 /**
  * Determine if the current device's operating system supports Apple authentication.
@@ -59,6 +59,6 @@ export declare function signOutAsync(options: AppleAuthenticationSignOutOptions)
  * value depending on the state of the credential.
  */
 export declare function getCredentialStateAsync(user: string): Promise<AppleAuthenticationCredentialState>;
-export declare function addRevokeListener(listener: () => void): Subscription;
-export { Subscription };
+export declare function addRevokeListener(listener: () => void): EventSubscription;
+export { EventSubscription as Subscription };
 //# sourceMappingURL=AppleAuthentication.d.ts.map

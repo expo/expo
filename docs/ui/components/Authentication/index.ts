@@ -1,6 +1,6 @@
+export { Box } from './Box';
 export { Grid } from './Grid';
 export { GridItem } from './GridItem';
-export { Box } from './Box';
 
 const ASSETS_PATH = '/static/images/sdk/auth-session/';
 export const ASSETS = {
@@ -26,7 +26,9 @@ export const ASSETS = {
   slack: ASSETS_PATH + 'slack.png',
   spotify: ASSETS_PATH + 'spotify.png',
   strava: ASSETS_PATH + 'strava.png',
+  strivacity: ASSETS_PATH + 'strivacity.png',
   twitch: ASSETS_PATH + 'twitch.png',
   twitter: ASSETS_PATH + 'twitter.png',
   uber: ASSETS_PATH + 'uber.png',
+  logto: ASSETS_PATH + 'logto.png',
 } as const;

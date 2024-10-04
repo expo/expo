@@ -1,5 +1,6 @@
 package expo.modules.updates.loader
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
@@ -52,6 +53,7 @@ open class LoaderFiles {
     }
   }
 
+  @SuppressLint("DiscouragedApi")
   @Throws(NoSuchAlgorithmException::class, IOException::class)
   internal fun copyResourceAndGetHash(
     asset: AssetEntity,

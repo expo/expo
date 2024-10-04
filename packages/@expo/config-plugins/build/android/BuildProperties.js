@@ -58,6 +58,7 @@ function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, config
 }
 function updateAndroidBuildProperty(gradleProperties, name, value, options) {
   const oldPropIndex = gradleProperties.findIndex(prop => prop.type === 'property' && prop.key === name);
+  const oldProp = oldPropIndex >= 0 ? gradleProperties[oldPropIndex] : null;
   if (value) {
     // found the matched value, add or merge new property
     const newProp = {
@@ -65,13 +66,27 @@ function updateAndroidBuildProperty(gradleProperties, name, value, options) {
       key: name,
       value
     };
-    if (oldPropIndex >= 0) {
-      gradleProperties[oldPropIndex] = newProp;
-    } else {
-      gradleProperties.push(newProp);
+    if (oldProp && oldProp.type === 'property') {
+      try {
+        const prevValue = JSON.parse(oldProp.value);
+        const newValue = JSON.parse(value);
+        if (Array.isArray(prevValue) && Array.isArray(newValue)) {
+          const prevArrayWithStringifiedValues = prevValue.map(v => JSON.stringify(v));
+          const newArrayWithStringifiedValues = newValue.map(v => JSON.stringify(v));
+          const mergedValues = [...new Set([...prevArrayWithStringifiedValues, ...newArrayWithStringifiedValues])].map(v => JSON.parse(v));
+          oldProp.value = JSON.stringify(mergedValues);
+          return gradleProperties;
+        }
+      } catch {}
+      oldProp.value = value;
+      return gradleProperties;
     }
-  } else if (options?.removePropWhenValueIsNull && oldPropIndex >= 0) {
+    gradleProperties.push(newProp);
+    return gradleProperties;
+  }
+  if (options?.removePropWhenValueIsNull && oldPropIndex >= 0) {
     gradleProperties.splice(oldPropIndex, 1);
+    return gradleProperties;
   }
   return gradleProperties;
 }

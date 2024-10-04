@@ -89,7 +89,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
         }
 
         override fun emitEvent(params: JSONObject) {}
-        override fun updateStatus(status: AppLoaderStatus) {}
+        override fun updateStatus(status: AppLoaderStatus?) {}
         override fun onError(e: Exception) {
           Exponent.instance.runOnUiThread { this@InternalHeadlessAppLoader.callback!!.onComplete(false, Exception(e.message)) }
         }
@@ -110,20 +110,14 @@ class InternalHeadlessAppLoader(private val context: Context) :
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
     // to point to the unversioned code in ReactAndroid.
-    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
+    if (Constants.SDK_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
 
     detachSdkVersion = sdkVersion
 
     if (RNObject.UNVERSIONED != sdkVersion) {
-      var isValidVersion = false
-      for (version in Constants.SDK_VERSIONS_LIST) {
-        if (version == sdkVersion) {
-          isValidVersion = true
-          break
-        }
-      }
+      val isValidVersion = sdkVersion == Constants.SDK_VERSION
       if (!isValidVersion) {
         callback!!.onComplete(false, Exception("$sdkVersion is not a valid SDK version."))
         return

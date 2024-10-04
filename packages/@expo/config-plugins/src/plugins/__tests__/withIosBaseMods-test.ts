@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config-types';
-import glob from 'glob';
+import { globSync } from 'glob';
 import { vol } from 'memfs';
 import path from 'path';
 
@@ -47,7 +47,7 @@ describe('entitlements', () => {
     // @ts-ignore: mods are untyped
     expect(config.mods.ios.entitlements).toBeDefined();
 
-    expect(config._internal.modResults.ios.entitlements).toBeDefined();
+    expect(config._internal?.modResults.ios.entitlements).toBeDefined();
 
     // Ensure no files were written
     expect(vol.toJSON()).toStrictEqual({});
@@ -72,7 +72,7 @@ describe('entitlements', () => {
     });
 
     // Mock glob response to "find" the memfs files
-    jest.mocked(glob.sync).mockImplementation((pattern) => {
+    jest.mocked(globSync).mockImplementation((pattern) => {
       if (pattern === 'ios/**/*.xcodeproj') return ['/ios/HelloWorld.xcodeproj'];
       if (pattern === 'ios/*/AppDelegate.@(m|mm|swift)') return ['/ios/HelloWorld/AppDelegate.mm'];
       throw new Error('Unexpected glob pattern used in test');
@@ -142,7 +142,7 @@ describe('entitlements', () => {
     });
 
     // Mock glob response to "find" the memfs files
-    jest.mocked(glob.sync).mockImplementation((pattern) => {
+    jest.mocked(globSync).mockImplementation((pattern) => {
       if (pattern === 'ios/**/*.xcodeproj') return ['/ios/HelloWorld.xcodeproj'];
       if (pattern === 'ios/*/AppDelegate.@(m|mm|swift)') return ['/ios/HelloWorld/AppDelegate.mm'];
       throw new Error('Unexpected glob pattern used in test');
@@ -215,7 +215,7 @@ describe('infoPlist', () => {
     // @ts-ignore: mods are untyped
     expect(config.mods.ios.infoPlist).toBeDefined();
 
-    expect(config._internal.modResults.ios.infoPlist).toBeDefined();
+    expect(config._internal?.modResults.ios.infoPlist).toBeDefined();
 
     // Ensure no files were written
     expect(vol.toJSON()).toStrictEqual({});

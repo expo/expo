@@ -4,7 +4,7 @@ import AVFoundation
 import ExpoModulesCore
 import VisionKit
 
-let cameraNextEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged"]
+let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged"]
 
 struct ScannerContext {
   var controller: Any?
@@ -37,9 +37,40 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       return false
     }
 
+    AsyncFunction("scanFromURLAsync") { (url: URL, _: [BarcodeType], promise: Promise) in
+      guard let imageLoader = appContext?.imageLoader else {
+        throw ImageLoaderNotFound()
+      }
+
+      imageLoader.loadImage(for: url) { error, image in
+        if error != nil {
+          promise.reject(FailedToLoadImage())
+          return
+        }
+
+        guard let cgImage = image?.cgImage else {
+          promise.reject(FailedToLoadImage())
+          return
+        }
+
+        guard let detector = CIDetector(
+          ofType: CIDetectorTypeQRCode,
+          context: nil,
+          options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]
+        ) else {
+          promise.reject(InitScannerFailed())
+          return
+        }
+
+        let ciImage = CIImage(cgImage: cgImage)
+        let features = detector.features(in: ciImage)
+        promise.resolve(BarcodeUtils.getResultFrom(features))
+      }
+    }
+
     // swiftlint:disable:next closure_body_length
     View(CameraView.self) {
-      Events(cameraNextEvents)
+      Events(cameraEvents)
 
       Prop("facing") { (view, type: CameraType?) in
         if let type, view.presetCamera != type.toPosition() {
@@ -101,14 +132,42 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
       }
 
+      Prop("autoFocus") { (view, focusMode: FocusMode?) in
+        view.autoFocus = focusMode?.toAVCaptureFocusMode() ?? .continuousAutoFocus
+      }
+
       Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool?) in
         if let responsiveOrientation, view.responsiveWhenOrientationLocked != responsiveOrientation {
           view.responsiveWhenOrientationLocked = responsiveOrientation
         }
       }
 
+      Prop("mirror") { (view, mirror: Bool?) in
+        if let mirror {
+          view.mirror = mirror
+          return
+        }
+        view.mirror = false
+      }
+
+      Prop("active") { (view, active: Bool?) in
+        if let active {
+          view.active = active
+          return
+        }
+        view.active = true
+      }
+
       OnViewDidUpdateProps { view in
         view.initCamera()
+      }
+
+      AsyncFunction("resumePreview") { view in
+        view.resumePreview()
+      }
+
+      AsyncFunction("pausePreview") { view in
+        view.pausePreview()
       }
 
       AsyncFunction("getAvailablePictureSizes") { (_: String?) in
@@ -118,11 +177,11 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
-        #if targetEnvironment(simulator)
+        #if targetEnvironment(simulator) // simulator
         try takePictureForSimulator(self.appContext, view, options, promise)
-        #else // simulator
+        #else // not simulator
         view.takePicture(options: options, promise: promise)
-        #endif // not simulator
+        #endif
       }.runOnQueue(.main)
 
       AsyncFunction("record") { (view, options: CameraRecordingOptions, promise: Promise) in

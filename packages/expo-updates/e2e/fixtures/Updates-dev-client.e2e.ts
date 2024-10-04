@@ -14,7 +14,7 @@ const pressTestButtonAsync = async (testID: string) => await element(by.id(testI
 const waitForAppToBecomeVisible = async () => {
   await waitFor(element(by.id('updateString')))
     .toBeVisible()
-    .withTimeout(2000);
+    .withTimeout(3000);
 };
 
 describe('Basic tests', () => {
@@ -34,7 +34,7 @@ describe('Basic tests', () => {
 
     jestExpect(await testElementValueAsync('updateString')).toBe('test');
     jestExpect(await testElementValueAsync('updateID')).toBeTruthy();
-    jestExpect(await testElementValueAsync('runtimeVersion')).toBe('');
+    jestExpect(await testElementValueAsync('runtimeVersion')).toBe('null');
     jestExpect(await testElementValueAsync('checkAutomatically')).toBe('NEVER');
     jestExpect(await testElementValueAsync('isEmbeddedLaunch')).toBe('false');
     jestExpect(await testElementValueAsync('availableUpdateID')).toBe('undefined');

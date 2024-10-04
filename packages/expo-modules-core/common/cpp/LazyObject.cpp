@@ -5,7 +5,7 @@
 
 namespace expo {
 
-LazyObject::LazyObject(const LazyObjectInitializer initializer) : initializer(initializer) {}
+LazyObject::LazyObject(LazyObjectInitializer initializer) : initializer(std::move(initializer)) {}
 
 LazyObject::~LazyObject() {
   backedObject = nullptr;

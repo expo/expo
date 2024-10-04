@@ -9,14 +9,14 @@ const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const npm_package_arg_1 = __importDefault(require("npm-package-arg"));
 const path_1 = __importDefault(require("path"));
 const BasePackageManager_1 = require("./BasePackageManager");
-const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
+const nodeManagers_1 = require("../utils/nodeManagers");
 const spawn_1 = require("../utils/spawn");
 class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
     name = 'npm';
     bin = 'npm';
-    lockFile = nodeWorkspaces_1.NPM_LOCK_FILE;
+    lockFile = nodeManagers_1.NPM_LOCK_FILE;
     workspaceRoot() {
-        const root = (0, nodeWorkspaces_1.findYarnOrNpmWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
+        const root = (0, nodeManagers_1.resolveWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
         if (root) {
             return new NpmPackageManager({
                 ...this.options,
@@ -86,7 +86,8 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
             .forEach((spec) => {
             // When using a dist-tag version of a library, we need to consider it as "unversioned".
             // Doing so will install that version with `npm install --save(-dev)`, and resolve the dist-tag properly.
-            if (spec && spec.rawSpec && spec.type !== 'tag') {
+            const hasExactSpec = !!spec && spec.rawSpec !== '' && spec.rawSpec !== '*';
+            if (spec && hasExactSpec && spec.type !== 'tag') {
                 result.versioned.push(spec);
             }
             else if (spec) {

@@ -9,10 +9,10 @@ platforms: ['android', 'ios*']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline } from '~/ui/components/Snippet';
 import { NoIcon } from '~/ui/components/DocIcons';
+import { SnackInline } from '~/ui/components/Snippet';
 
-`Barometer` from **`expo-sensors`** provides access to the device barometer sensor to respond to changes in air pressure, which is measured in hectopascals (`hPa`).
+`Barometer` from `expo-sensors` provides access to the device barometer sensor to respond to changes in air pressure, which is measured in hectopascals (`hPa`).
 
 ## Installation
 
@@ -23,7 +23,7 @@ import { NoIcon } from '~/ui/components/DocIcons';
 <SnackInline label='Basic Barometer usage' dependencies={['expo-sensors']} platforms={['android', 'ios']}>
 
 ```jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import { Barometer } from 'expo-sensors';
 

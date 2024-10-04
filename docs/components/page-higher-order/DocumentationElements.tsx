@@ -21,6 +21,10 @@ export default function DocumentationElements(props: DocumentationElementsProps)
     headings: props.headings,
   });
 
+  if (!props.meta) {
+    return props.children;
+  }
+
   return (
     <AnchorContext.Provider value={slugger}>
       <HeadingsContext.Provider value={manager}>
@@ -34,6 +38,7 @@ export default function DocumentationElements(props: DocumentationElementsProps)
               hideFromSearch={props.meta.hideFromSearch}
               packageName={props.meta.packageName}
               iconUrl={props.meta.iconUrl}
+              modificationDate={props.meta.modificationDate}
               platforms={props.meta.platforms}>
               {props.children}
             </DocumentationPage>

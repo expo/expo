@@ -22,7 +22,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label="Basic WebBrowser usage" dependencies={["expo-web-browser", "expo-constants"]}>
 
 ```jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Text, View, StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 /* @hide */
@@ -73,7 +73,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 ### `ERR_WEB_BROWSER_REDIRECT`
 
-**Web only:** The window cannot complete the redirect request because the invoking window doesn't have a reference to it's parent. This can happen if the parent window was reloaded.
+**Web only:** The window cannot complete the redirect request because the invoking window doesn't have a reference to its parent. This can happen if the parent window was reloaded.
 
 ### `ERR_WEB_BROWSER_BLOCKED`
 

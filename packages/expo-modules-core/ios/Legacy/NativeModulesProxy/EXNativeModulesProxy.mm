@@ -2,15 +2,8 @@
 
 #import <objc/runtime.h>
 
-#import <React/RCTLog.h>
-#import <React/RCTUIManager.h>
-#import <React/RCTComponentData.h>
-#import <React/RCTModuleData.h>
-#import <React/RCTEventDispatcherProtocol.h>
-
-#ifdef RN_FABRIC_ENABLED
-#import <React/RCTComponentViewFactory.h>
-#endif
+#import <React/React-Core-umbrella.h>
+#import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 
 #import <jsi/jsi.h>
 
@@ -351,7 +344,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
                                                                         bridge:bridge];
   componentDataByName[className] = componentData;
 
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
   Class viewClass = [ExpoFabricView makeViewClassForAppContext:_appContext className:className];
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
 #endif

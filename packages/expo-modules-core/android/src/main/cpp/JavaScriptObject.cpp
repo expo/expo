@@ -37,6 +37,8 @@ void JavaScriptObject::registerNatives() {
                                     JavaScriptObject::defineProperty<jni::alias_ref<JavaScriptObject::javaobject>>),
                    makeNativeMethod("defineNativeDeallocator",
                                     JavaScriptObject::defineNativeDeallocator),
+                   makeNativeMethod("setExternalMemoryPressure",
+                                    JavaScriptObject::setExternalMemoryPressure),
                  });
 }
 
@@ -111,7 +113,8 @@ jni::local_ref<jni::JArrayClass<jstring>> JavaScriptObject::jniGetPropertyNames(
   return paredResult;
 }
 
-jni::local_ref<jni::HybridClass<JavaScriptWeakObject, Destructible>::javaobject> JavaScriptObject::createWeak() {
+jni::local_ref<jni::HybridClass<JavaScriptWeakObject, Destructible>::javaobject>
+JavaScriptObject::createWeak() {
   return JavaScriptWeakObject::newInstance(
     runtimeHolder.getJSIContext(),
     runtimeHolder,
@@ -179,12 +182,17 @@ void JavaScriptObject::defineNativeDeallocator(
     [globalRef = std::move(globalRef)]() mutable {
       auto args = jni::Environment::ensureCurrentThreadIsAttached()->NewObjectArray(
         0,
-        JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
+        JCacheHolder::get().jObject,
         nullptr
       );
-      globalRef->invoke(args);
+      JNIFunctionBody::invoke(globalRef.get(), args);
       globalRef.reset();
     }
   );
+}
+
+void JavaScriptObject::setExternalMemoryPressure(int size) {
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  jsObject->setExternalMemoryPressure(jsRuntime, size);
 }
 } // namespace expo

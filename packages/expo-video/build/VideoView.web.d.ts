@@ -1,8 +1,9 @@
 import React from 'react';
-import { VideoPlayerWeb } from './VideoPlayer.web';
-import { VideoViewProps } from './VideoView.types';
+import VideoPlayer from './VideoPlayer.web';
+import type { VideoViewProps } from './VideoView.types';
+export declare function isPictureInPictureSupported(): boolean;
 export declare const VideoView: React.ForwardRefExoticComponent<{
-    player?: VideoPlayerWeb | undefined;
+    player?: VideoPlayer | undefined;
 } & VideoViewProps & React.RefAttributes<unknown>>;
 export default VideoView;
 //# sourceMappingURL=VideoView.web.d.ts.map

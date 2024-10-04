@@ -1,4 +1,5 @@
-import { DeviceEventEmitter, PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 
 import type { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV.types';
 import type { RecordingStatus } from './Audio/Recording.types';
@@ -120,6 +121,9 @@ async function setStatusForMedia(
   }
   if (status.rate !== undefined) {
     media.playbackRate = status.rate;
+  }
+  if (status.shouldCorrectPitch !== undefined) {
+    media.preservesPitch = status.shouldCorrectPitch;
   }
   if (status.volume !== undefined) {
     media.volume = status.volume;

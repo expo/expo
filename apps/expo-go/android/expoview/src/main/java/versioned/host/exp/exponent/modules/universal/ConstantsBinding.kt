@@ -26,7 +26,7 @@ class ConstantsBinding(
       this["manifest"] = manifest.toString()
       this["nativeAppVersion"] = ExpoViewKernel.instance.versionName
       this["nativeBuildVersion"] = Constants.ANDROID_VERSION_CODE
-      this["supportedExpoSdks"] = Constants.SDK_VERSIONS_LIST
+      this["supportedExpoSdks"] = listOf(Constants.SDK_VERSION)
       this["appOwnership"] = "expo"
       this["executionEnvironment"] = executionEnvironment.string
 

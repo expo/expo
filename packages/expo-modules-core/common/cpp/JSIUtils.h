@@ -64,7 +64,7 @@ struct PropertyDescriptor {
 /**
  Defines the property on the object with the provided descriptor options.
  */
-void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, const PropertyDescriptor descriptor);
+void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, const PropertyDescriptor& descriptor);
 
 /**
  Calls `Object.defineProperty(object, name, descriptor)`.

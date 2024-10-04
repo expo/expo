@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 /** Represents version info for a particular SDK. */
 export type SDKVersion = {
   /** @example { "typescript": "~3.9.5" } */
@@ -21,7 +19,7 @@ export type Versions = {
 /** Get versions from remote endpoint. */
 export async function getVersionsAsync(): Promise<Versions> {
   const results = await fetch(new URL(`/v2/versions/latest`, getExpoApiBaseUrl()).toString());
-  const json = await results.json();
+  const json: any = await results.json();
   return json.data;
 }
 

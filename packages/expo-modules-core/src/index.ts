@@ -1,12 +1,12 @@
-import { DeviceEventEmitter } from 'react-native';
-
-import { EventEmitter, Subscription } from './EventEmitter';
+import EventEmitter, { type EventSubscription } from './EventEmitter';
+import { LegacyEventEmitter } from './LegacyEventEmitter';
 import NativeModule from './NativeModule';
 import NativeModulesProxy from './NativeModulesProxy';
 import { ProxyNativeModule } from './NativeModulesProxy.types';
 import { requireNativeViewManager } from './NativeViewManagerAdapter';
 import Platform from './Platform';
 import SharedObject from './SharedObject';
+import SharedRef from './SharedRef';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
 
@@ -18,29 +18,27 @@ export type * from './ts-declarations/global';
 export { default as uuid } from './uuid';
 
 export {
-  DeviceEventEmitter,
-  EventEmitter,
-  NativeModulesProxy,
   ProxyNativeModule,
   Platform,
-  Subscription,
   requireNativeViewManager,
   // Globals
+  EventEmitter,
   SharedObject,
+  SharedRef,
   NativeModule,
   // Errors
   CodedError,
   UnavailabilityError,
+  // Types
+  EventSubscription,
+  // Deprecated
+  NativeModulesProxy,
+  LegacyEventEmitter,
 };
 
 export * from './requireNativeModule';
-export * from './createWebModule';
+export * from './registerWebModule';
 export * from './TypedArrays.types';
-
-/**
- * @deprecated renamed to `DeviceEventEmitter`
- */
-export const SyntheticPlatformEmitter = DeviceEventEmitter;
 
 export * from './PermissionsInterface';
 export * from './PermissionsHook';
@@ -48,3 +46,4 @@ export * from './PermissionsHook';
 export * from './Refs';
 
 export * from './hooks/useReleasingSharedObject';
+export * from './reload';

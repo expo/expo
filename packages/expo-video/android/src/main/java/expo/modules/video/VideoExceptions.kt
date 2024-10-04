@@ -15,6 +15,9 @@ internal class MethodUnsupportedException(methodName: String) :
 internal class PictureInPictureEnterException(message: String?) :
   CodedException("Failed to enter Picture in Picture mode${message?.let { ". $message" } ?: ""}")
 
+internal class PictureInPictureConfigurationException :
+  CodedException("Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
+
 internal class PictureInPictureUnsupportedException :
   CodedException("Picture in Picture mode is not supported on this device")
 
@@ -23,3 +26,6 @@ internal class UnsupportedDRMTypeException(type: DRMType) :
 
 internal class PlaybackException(reason: String?, cause: Throwable? = null) :
   CodedException("A playback exception has occurred: ${reason ?: "reason unknown"}", cause)
+
+internal class FailedToGetAudioFocusManagerException :
+  CodedException("Failed to get AudioFocusManager service")

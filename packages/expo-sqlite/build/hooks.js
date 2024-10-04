@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import ExpoSQLite from './ExpoSQLiteNext';
+import ExpoSQLite from './ExpoSQLite';
 import { openDatabaseAsync } from './SQLiteDatabase';
 /**
  * Create a context for the SQLite database
@@ -37,7 +37,7 @@ export function SQLiteProvider({ children, onError, useSuspense = false, ...prop
  *
  * export function Main() {
  *   const db = useSQLiteContext();
- *   console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *   console.log('sqlite version', db.getFirstSync('SELECT sqlite_version()'));
  *   return <View />
  * }
  * ```
@@ -141,7 +141,13 @@ async function openDatabaseWithInitAsync({ databaseName, options, assetSource, o
     }
     return database;
 }
-async function importDatabaseFromAssetAsync(databaseName, assetSource) {
+/**
+ * Imports an asset database into the SQLite database directory.
+ *
+ * Exposed only for testing purposes.
+ * @hidden
+ */
+export async function importDatabaseFromAssetAsync(databaseName, assetSource) {
     const asset = await Asset.fromModule(assetSource.assetId).downloadAsync();
     if (!asset.localUri) {
         throw new Error(`Unable to get the localUri from asset ${assetSource.assetId}`);

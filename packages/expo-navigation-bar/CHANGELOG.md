@@ -8,7 +8,34 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+- Replaced the config-plugins deprecated `getAppThemeLightNoActionBarGroup` method with the new `getAppThemeGroup`. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 3.0.7 - 2024-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.5 - 2024-06-05
+
+### 💡 Others
+
+- Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
+
+## 3.0.4 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
 
 ## 3.0.2 — 2024-04-23
 

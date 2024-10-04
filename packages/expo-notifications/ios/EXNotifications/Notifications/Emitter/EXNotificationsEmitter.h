@@ -9,6 +9,7 @@
 
 static NSString * const onDidReceiveNotification = @"onDidReceiveNotification";
 static NSString * const onDidReceiveNotificationResponse = @"onDidReceiveNotificationResponse";
+static NSString * const onDidClearNotificationResponse = @"onDidClearNotificationResponse";
 
 @interface EXNotificationsEmitter : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXNotificationsDelegate>
 

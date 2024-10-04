@@ -4,17 +4,102 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30861](https://github.com/expo/expo/pull/30861) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
+
+- Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `disableOnboarding=1` wasn't working when using the dev-client. ([#29697](https://github.com/expo/expo/pull/29697) by [@lukmccall](https://github.com/lukmccall))
+- [macOS] Don't hide the dev menu when hovering the window with the mouse. ([#30066](https://github.com/expo/expo/pull/30066) by [@343max](https://github.com/343max))
+- Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
+
+- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
+- Removed deprecated code for SDK 49. ([#31740](https://github.com/expo/expo/pull/31740) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+## 5.0.21 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.20 - 2024-08-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fix build error on `0.75` because of missing headers. ([#31100](https://github.com/expo/expo/pull/31100) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix a crash on android when calling `setSystemGestureExclusionRects` on apis below 29. ([#31114](https://github.com/expo/expo/pull/31114) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.0.17 - 2024-07-29
+
+### 🐛 Bug fixes
+
+- Fixed the "Connect to Metro to develop JavaScript" banner lingering on iOS. ([#30663](https://github.com/expo/expo/pull/30663) by [@kudo](https://github.com/kudo))
+
+## 5.0.16 - 2024-07-03
+
+### 📚 3rd party library updates
+
+- Update react-native to 0.74.3. ([#30139](https://github.com/expo/expo/pull/30139) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.15 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.14 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- Fixed build errors with use_frameworks on iOS. ([#28702](https://github.com/expo/expo/pull/28702) by [@kudo](https://github.com/kudo))
+
+## 5.0.13 — 2024-05-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed DevMenu getting unresponsive after reloading bundle. ([#28664](https://github.com/expo/expo/pull/28664) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.12 — 2024-05-04
+
+### 🐛 Bug fixes
+
+- Fix reloading app through "r" hotkey on iOS. ([#28617](https://github.com/expo/expo/pull/28617) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.11 — 2024-05-03
+
+### 🐛 Bug fixes
+
+- Fixed `java.lang.IllegalStateException: DevMenu isn't available in release builds` when running dev-menu on Android release builds. ([#28607](https://github.com/expo/expo/pull/28607) by [@kudo](https://github.com/kudo))
+- Fixed JS Debugger not detecting correct engine in new arch on iOS. ([#28606](https://github.com/expo/expo/pull/28606) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.10 — 2024-05-02
+
+### 🐛 Bug fixes
+
+- Fixed some dev menu items like "Reload" that are not functional. ([#28578](https://github.com/expo/expo/pull/28578) by [@kudo](https://github.com/kudo))
+- Fixed DevMenu showing up before the app is loaded when using the new architecture. ([#28589](https://github.com/expo/expo/pull/28589) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Update Menu background color in dark mode. ([#28549](https://github.com/expo/expo/pull/28549) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.9 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.8 — 2024-04-29
+
+_This version does not introduce any user-facing changes._
 
 ## 5.0.7 — 2024-04-25
 
 ### 🐛 Bug fixes
 
 - Use DevMenuRCTBridge in DevClientRootViewFactory. ([#28460](https://github.com/expo/expo/pull/28460) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add missing header that causes an error when using `JSC`. ([#28492](https://github.com/expo/expo/pull/28492) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 5.0.6 — 2024-04-25
 

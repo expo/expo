@@ -15,6 +15,10 @@ export type BarometerMeasurement = {
    * @platform ios
    */
   relativeAltitude?: number;
+  /**
+   * Timestamp of the measurement in seconds.
+   */
+  timestamp: number;
 };
 
 /**

@@ -1,8 +1,6 @@
-import { EventEmitter } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import { BatteryState, } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
-const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 // @needsAudit
 /**
  * Resolves with whether the battery API is available on the current device. The value of this
@@ -133,7 +131,7 @@ export async function getPowerStateAsync() {
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  */
 export function addBatteryLevelListener(listener) {
-    return BatteryEventEmitter.addListener('Expo.batteryLevelDidChange', listener);
+    return ExpoBattery.addListener('Expo.batteryLevelDidChange', listener);
 }
 // @needsAudit
 /**
@@ -146,7 +144,7 @@ export function addBatteryLevelListener(listener) {
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  */
 export function addBatteryStateListener(listener) {
-    return BatteryEventEmitter.addListener('Expo.batteryStateDidChange', listener);
+    return ExpoBattery.addListener('Expo.batteryStateDidChange', listener);
 }
 // @needsAudit
 /**
@@ -159,7 +157,7 @@ export function addBatteryStateListener(listener) {
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  */
 export function addLowPowerModeListener(listener) {
-    return BatteryEventEmitter.addListener('Expo.powerModeDidChange', listener);
+    return ExpoBattery.addListener('Expo.powerModeDidChange', listener);
 }
 // @needsAudit
 /**

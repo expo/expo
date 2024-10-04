@@ -2,9 +2,8 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext
@@ -60,10 +59,9 @@ abstract class DevLauncherAppLoader(
         }
       })
 
-      activity.lifecycle.addObserver(object : LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-        fun onCreate() {
-          onCreate(activity)
+      activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+        override fun onCreate(owner: LifecycleOwner) {
+          super.onCreate(owner)
           activity.lifecycle.removeObserver(this)
         }
       })

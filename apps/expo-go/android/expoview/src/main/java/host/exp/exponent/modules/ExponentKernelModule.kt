@@ -33,7 +33,7 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(
-      "sdkVersions" to Constants.SDK_VERSIONS
+      "sdkVersions" to listOf(Constants.SDK_VERSION)
     )
   }
 
@@ -86,7 +86,7 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   fun setSessionAsync(session: ReadableMap, promise: Promise) {
     try {
-      val sessionJsonObject = JSONObject(session.toHashMap())
+      val sessionJsonObject = JSONObject(session.toHashMap() as Map<*, *>?)
       exponentSharedPreferences.updateSession(sessionJsonObject)
       promise.resolve(null)
     } catch (e: Exception) {

@@ -1,9 +1,9 @@
 import { Image, StyleSheet, Platform } from 'react-native';
 
+import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { HelloWave } from '@/components/HelloWave';
 
 export default function HomeScreen() {
   return (
@@ -25,7 +25,11 @@ export default function HomeScreen() {
           Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
           Press{' '}
           <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
+            {Platform.select({
+              ios: 'cmd + d',
+              android: 'cmd + m',
+              web: 'F12'
+            })}
           </ThemedText>{' '}
           to open developer tools.
         </ThemedText>
@@ -58,6 +62,7 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     gap: 8,
+    marginBottom: 8,
   },
   reactLogo: {
     height: 178,

@@ -3,7 +3,6 @@ query HomeScreenData($accountName: String!, $platform: AppPlatform!) {
     byName(accountName: $accountName) {
       id
       name
-      isCurrent
       ownerUserActor {
         ...CurrentUserActorData
       }

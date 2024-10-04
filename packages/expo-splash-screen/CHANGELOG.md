@@ -4,11 +4,31 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.27.6 - 2024-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.5 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.4 — 2024-05-03
+
+### 💡 Others
+
+- No-op when native module is not installed ([#28599](https://github.com/expo/expo/pull/28599) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.27.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
 
 ## 0.27.2 — 2024-04-23
 

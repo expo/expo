@@ -20,7 +20,7 @@ To use [drawer navigator](https://reactnavigation.org/docs/drawer-based-navigati
 
 <Tab label="SDK 50 and higher">
 
-No additional configuration is required for SDK 50 and above. [Reanimated Babel plugin](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#reanimated-babel-plugin) is automatically configured in `babel-expo-preset` when you install the library.
+No additional configuration is required for SDK 50 and above. [Reanimated Babel plugin](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/glossary#reanimated-babel-plugin) is automatically configured in `babel-preset-expo` when you install the library.
 
 </Tab>
 
@@ -57,9 +57,9 @@ After you add the Babel plugin, restart your development server and clear the bu
 
 <Tab label="SDK 50 and higher">
 
-Now you can use the `Drawer` layout to create a drawer navigator. You'll need to wrap the `<Drawer />` in a `<GestureHandlerRootView>` to enable gestures. It is required as of Expo Router v3 and greater. You only need one `<GestureHandlerRootView>` in your component tree. Any nested routes are not required to be wrapped individually.
+Now you can use the `Drawer` layout to create a drawer navigator. You'll need to wrap the `<Drawer />` in a `<GestureHandlerRootView>` to enable gestures. You only need one `<GestureHandlerRootView>` in your component tree. Any nested routes are not required to be wrapped individually.
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
 
@@ -74,7 +74,7 @@ export default function Layout() {
 
 To edit the drawer navigation menu labels, titles and screen options specific screens are required as follows:
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
 
@@ -110,7 +110,7 @@ export default function Layout() {
 
 Now you can use the `Drawer` layout to create a drawer navigator.
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { Drawer } from 'expo-router/drawer';
 
 export default function Layout() {
@@ -120,7 +120,7 @@ export default function Layout() {
 
 To edit the drawer navigation menu labels, titles and screen options specific screens are required as follows:
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { Drawer } from 'expo-router/drawer';
 
 export default function Layout() {

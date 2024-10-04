@@ -4,7 +4,7 @@ import path from 'path';
 import util from 'util';
 
 function osascriptArgs(script: string | string[]): string[] {
-  if (!util.isArray(script)) {
+  if (!Array.isArray(script)) {
     script = [script];
   }
 

@@ -22,7 +22,7 @@ const renderConstant = (
   apiName?: string
 ): JSX.Element => (
   <div key={`constant-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
-    <APISectionDeprecationNote comment={comment} />
+    <APISectionDeprecationNote comment={comment} sticky />
     <APISectionPlatformTags comment={comment} />
     <H3Code tags={getTagNamesList(comment)}>
       <MONOSPACE weight="medium" className="wrap-anywhere">

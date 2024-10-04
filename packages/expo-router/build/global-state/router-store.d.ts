@@ -3,7 +3,7 @@ import { ComponentType } from 'react';
 import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { ResultState } from '../fork/getStateFromPath';
-import { ExpoLinkingOptions } from '../getLinkingConfig';
+import { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
 import { RequireContext } from '../types';
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -35,7 +35,7 @@ export declare class RouterStore {
     canDismiss: any;
     setParams: any;
     navigate: any;
-    initialize(context: RequireContext, navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>, initialLocation?: URL): void;
+    initialize(context: RequireContext, navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>, linkingConfigOptions?: LinkingConfigOptions): void;
     updateState(state: ResultState, nextState?: ResultState): void;
     getRouteInfo(state: ResultState): UrlObject;
     shouldShowTutorial(): boolean;
@@ -51,5 +51,5 @@ export declare const store: RouterStore;
 export declare function useExpoRouter(): RouterStore;
 export declare function useStoreRootState(): ResultState;
 export declare function useStoreRouteInfo(): UrlObject;
-export declare function useInitializeExpoRouter(context: RequireContext, initialLocation: URL | undefined): RouterStore;
+export declare function useInitializeExpoRouter(context: RequireContext, options: LinkingConfigOptions): RouterStore;
 //# sourceMappingURL=router-store.d.ts.map

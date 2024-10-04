@@ -2,13 +2,107 @@
 
 ## Unpublished
 
+- Add `addGeneratedScheme` config plugin option to disable automatic adding of dev client app scheme. ([#31147](https://github.com/expo/expo/pull/31147) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
+- Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
+- Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Fix homepage link in `package.json`. ([#30163](https://github.com/expo/expo/pull/30163) by [@amandeepmittal](https://github.com/amandeepmittal))
+
+## 4.0.27 - 2024-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.26 - 2024-09-03
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.25 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.24 - 2024-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.23 - 2024-08-14
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.22 - 2024-08-08
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.21 - 2024-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.20 - 2024-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.19 - 2024-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.18 - 2024-06-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.17 - 2024-06-12
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.16 - 2024-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.15 - 2024-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.14 — 2024-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.13 — 2024-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.12 — 2024-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.11 — 2024-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.10 — 2024-05-04
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.9 — 2024-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.8 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.7 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
 
 ## 4.0.6 — 2024-04-25
 

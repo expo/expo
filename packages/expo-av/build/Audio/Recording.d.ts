@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionHookOptions, Subscription } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions, type EventSubscription } from 'expo-modules-core';
 import { RecordingInput, RecordingObject, RecordingOptions, RecordingStatus } from './Recording.types';
 import { SoundObject } from './Sound';
 import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
@@ -56,7 +56,7 @@ export declare const usePermissions: (options?: PermissionHookOptions<object> | 
  * @platform ios
  */
 export declare class Recording {
-    _subscription: Subscription | null;
+    _subscription: EventSubscription | null;
     _canRecord: boolean;
     _isDoneRecording: boolean;
     _finalDurationMillis: number;
