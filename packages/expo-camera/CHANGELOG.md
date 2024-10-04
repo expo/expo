@@ -24,6 +24,7 @@
 - Updated docs for the `pictureSize` prop. ([#30195](https://github.com/expo/expo/pull/30195) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Migrated cameraview AAR to autolinking and removed related config-plugin about adding the maven repository. ([#30707](https://github.com/expo/expo/pull/30707) by [@kudo](https://github.com/kudo))
 - Remove the dependency on the legacy types from the newer package on web. ([#30952](https://github.com/expo/expo/pull/30952) by [@alanjhughes](https://github.com/alanjhughes))
+- Remove `preferredVideoStabilizationMode` until is is fully supported. ([#31514](https://github.com/expo/expo/pull/31514) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### ⚠️ Notices
 
