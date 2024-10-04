@@ -4,7 +4,8 @@ type ResolveClientEntry = (id: string) => {
     id: string;
     chunks: string[];
 };
-export declare function renderHtml({ pathname, isExporting, htmlHead, searchParams, serverRoot, loadModule, getSsrConfigForHtml, resolveClientEntry, renderRscForHtml, }: {
+export declare function renderHtml({ pathname, isExporting, htmlHead, searchParams, serverRoot, loadModule, getSsrConfigForHtml, resolveClientEntry, renderRscForHtml, scriptUrl, }: {
+    scriptUrl: string;
     pathname: string;
     isExporting: boolean;
     searchParams: URLSearchParams;

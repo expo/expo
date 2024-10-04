@@ -45,12 +45,14 @@ export function createServerComponentsMiddleware(
     ssrLoadModule,
     ssrLoadModuleArtifacts,
     getServerUrl,
+    getStaticScriptUrl,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
     getServerUrl: () => string;
+    getStaticScriptUrl: () => string;
   }
 ) {
   const serverRoot = getMetroServerRootMemo(projectRoot);
@@ -142,6 +144,7 @@ export function createServerComponentsMiddleware(
         pathname: url.pathname,
         searchParams: url.searchParams,
         htmlHead,
+        scriptUrl: getStaticScriptUrl(),
 
         // renderRscForHtml: async (input, searchParams) => {
         //   ctx.req.url.pathname =

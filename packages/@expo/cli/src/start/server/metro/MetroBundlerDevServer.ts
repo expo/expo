@@ -342,7 +342,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
-  private async getStaticPageAsync(pathname: string) {
+  private getStaticBundleUrlForDev() {
     const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
@@ -356,7 +356,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
     const platform = 'web';
 
-    const devBundleUrlPathname = createBundleUrlPath({
+    return createBundleUrlPath({
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
       mode,
@@ -371,6 +371,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       clientBoundaries,
       bytecode: false,
     });
+  }
+
+  private async getStaticPageAsync(pathname: string) {
+    const { mode, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
+      this.instanceMetroOptions;
+    assert(
+      mode != null &&
+        isExporting != null &&
+        baseUrl != null &&
+        reactCompiler != null &&
+        routerRoot != null &&
+        asyncRoutes != null,
+      'The server must be started before calling getStaticPageAsync.'
+    );
+    const platform = 'web';
+
+    const devBundleUrlPathname = this.getStaticBundleUrlForDev();
 
     const bundleStaticHtml = async (): Promise<string> => {
       const { getStaticContent } = await this.ssrLoadModule<
@@ -928,6 +945,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           getServerUrl: () => {
             return this.getDevServerUrlOrAssert();
+          },
+          getStaticScriptUrl: () => {
+            return this.getStaticBundleUrlForDev();
           },
         });
         this.rscRenderer = rscMiddleware;

@@ -25,7 +25,7 @@ global.__webpack_require__ = (id) => {
     'node:' + id);
 };
 const DIST_SSR = 'TODO';
-async function renderHtml({ pathname, isExporting, htmlHead, searchParams, serverRoot, loadModule, getSsrConfigForHtml, resolveClientEntry, renderRscForHtml, }) {
+async function renderHtml({ pathname, isExporting, htmlHead, searchParams, serverRoot, loadModule, getSsrConfigForHtml, resolveClientEntry, renderRscForHtml, scriptUrl, }) {
     // const loadClientModule = async <T>(name: string): Promise<T> => {
     //   // console.log('loadClientModule:', name);
     //   const m = await $$require_external(name);
@@ -112,7 +112,7 @@ async function renderHtml({ pathname, isExporting, htmlHead, searchParams, serve
         },
     }))
         .pipeThrough(rectifyHtml())
-        .pipeThrough(injectScript(config.basePath + config.rscPath + '/web/' + encodeInput(ssrConfig.input), !isExporting ? `${config.basePath}${config.srcDir}/${SRC_MAIN}` : ''))
+        .pipeThrough(injectScript(config.basePath + config.rscPath + '/web/' + encodeInput(ssrConfig.input), !isExporting ? scriptUrl : ''))
         .pipeThrough(injectRSCPayload(stream2));
     return readable;
 }
@@ -197,8 +197,7 @@ const injectScript = (urlForFakeFetch, mainJsPath // for DEV only, pass `''` for
                     const [firstPart, secondPart] = closingBodyIndex === -1
                         ? [data, '']
                         : [data.slice(0, closingBodyIndex), data.slice(closingBodyIndex)];
-                    data =
-                        firstPart + `<script src="${mainJsPath}" async type="module"></script>` + secondPart;
+                    data = firstPart + `<script src="${mainJsPath}" async></script>` + secondPart;
                 }
             }
             controller.enqueue(encoder.encode(data));

@@ -76,7 +76,9 @@ export async function renderHtml({
   getSsrConfigForHtml,
   resolveClientEntry,
   renderRscForHtml,
+  scriptUrl,
 }: {
+  scriptUrl: string;
   pathname: string;
   isExporting: boolean;
   searchParams: URLSearchParams;
@@ -208,7 +210,7 @@ export async function renderHtml({
     .pipeThrough(
       injectScript(
         config.basePath + config.rscPath + '/web/' + encodeInput(ssrConfig.input),
-        !isExporting ? `${config.basePath}${config.srcDir}/${SRC_MAIN}` : ''
+        !isExporting ? scriptUrl : ''
       )
     )
     .pipeThrough(injectRSCPayload(stream2));
@@ -313,8 +315,7 @@ const injectScript = (
             closingBodyIndex === -1
               ? [data, '']
               : [data.slice(0, closingBodyIndex), data.slice(closingBodyIndex)];
-          data =
-            firstPart + `<script src="${mainJsPath}" async type="module"></script>` + secondPart;
+          data = firstPart + `<script src="${mainJsPath}" async></script>` + secondPart;
         }
       }
       controller.enqueue(encoder.encode(data));
