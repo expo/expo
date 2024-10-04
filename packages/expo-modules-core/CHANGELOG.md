@@ -97,6 +97,7 @@
 - Removed deprecated code for react-native 0.74.0. ([#31740](https://github.com/expo/expo/pull/31740) by [@kudo](https://github.com/kudo))
 - [Android] Improve error messages when converting the `Either` type. ([#31787](https://github.com/expo/expo/pull/31787) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Improved converting function results. ([#31827](https://github.com/expo/expo/pull/31827) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Disabled `ExpoView` recycling from the New Architecture. ([#31841](https://github.com/expo/expo/pull/31841) by [@tsapeta](https://github.com/tsapeta))
 
 ### ⚠️ Notices
 
