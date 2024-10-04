@@ -925,6 +925,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
         this.onReloadRscEvent = rscMiddleware.onReloadRscEvent;
+
+        middleware.use(
+          createRouteHandlerMiddleware(this.projectRoot, {
+            renderHtmlAsync: rscMiddleware.htmlMiddleware,
+            appDir,
+            routerRoot,
+            config,
+            ...config.exp.extra?.router,
+            bundleApiRoute: (functionFilePath) =>
+              this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
+            getStaticPageAsync: (pathname) => {
+              return this.getStaticPageAsync(pathname);
+            },
+          })
+        );
       }
 
       // Append support for redirecting unhandled requests to the index.html page on web.

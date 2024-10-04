@@ -25,6 +25,7 @@ const resolveAsync = promisify(resolve) as any as (
 export function createRouteHandlerMiddleware(
   projectRoot: string,
   options: {
+    renderHtmlAsync?: (request: Request) => Promise<Response>;
     appDir: string;
     routerRoot: string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
@@ -69,9 +70,16 @@ export function createRouteHandlerMiddleware(
       },
       async getHtml(request) {
         try {
+          if (options.renderHtmlAsync) {
+            return await options.renderHtmlAsync(request);
+          }
+
           const { content } = await options.getStaticPageAsync(request.url);
           return content;
         } catch (error: any) {
+          if (error == null) {
+            throw error;
+          }
           // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
 
           try {
