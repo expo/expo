@@ -1,7 +1,5 @@
 // SSR middleware:
 
-// import '@expo/metro-runtime/async-require';
-
 import type {
   default as ReactType,
   createElement as createElementType,
@@ -9,23 +7,15 @@ import type {
   FunctionComponent,
   ComponentProps,
 } from 'react';
-// import type * as RDServerType from 'react-dom/server.edge';
-// import type { default as RSDWClientType } from 'react-server-dom-webpack/client.edge';
-
 import { createElement } from 'react';
 import { renderToReadableStream } from 'react-dom/server.edge';
 import { createFromReadableStream } from 'react-server-dom-webpack/client.edge';
 import { ServerRoot } from './router/host';
-// import { injectRSCPayload } from 'rsc-html-stream/server';
 
-// import 'expo-router/build/rsc/router/client.js';
-
-// import 'react-dom';
-
-console.log('REACT VERSIONS:', {
-  react: require('react/package.json').version,
-  'react-dom': require('react-dom/package.json').version,
-});
+// console.log('REACT VERSIONS:', {
+//   react: require('react/package.json').version,
+//   'react-dom': require('react-dom/package.json').version,
+// });
 
 global.__webpack_chunk_load__ = async (chunk) => {
   return globalThis.__metro_node_chunk_load__(chunk);
@@ -33,10 +23,7 @@ global.__webpack_chunk_load__ = async (chunk) => {
 
 global.__webpack_require__ = (id) => {
   console.log('[SSR]__webpack_require__:', id);
-  return global[`__r`](
-    // TODO: The require path needs to be populated with the right ID.
-    'node:' + id
-  );
+  return global[`__r`](id);
 };
 
 // renderHtml:
@@ -147,9 +134,9 @@ export async function renderHtml({
         {
           get(_target, name: string) {
             const fp = joinPath(serverRoot, filePath);
-            // console.log('SSR module map:', fp, filePath, name);
 
             const { id, chunks } = resolveClientEntry(fp);
+            console.log('SSR module map:', { fp, filePath, name, id, chunks });
             // console.log('SSR module map>>id:', id, chunks);
             return { id, chunks, name, async: true };
 

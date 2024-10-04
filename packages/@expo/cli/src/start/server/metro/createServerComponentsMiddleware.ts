@@ -360,7 +360,12 @@ export function createServerComponentsMiddleware(
     return (file: string) => {
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
-        const relativeFilePath = path.relative(serverRoot, file);
+        let relativeFilePath = path.relative(serverRoot, file);
+
+        if (context.environment === 'node') {
+          // Use prefixed modules in SSR space.
+          relativeFilePath = 'node:' + relativeFilePath;
+        }
 
         assert(
           context.ssrManifest.has(relativeFilePath),
@@ -407,7 +412,7 @@ export function createServerComponentsMiddleware(
       clientReferenceUrl.search = searchParams.toString();
 
       const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
-      const relativeFilePath = path.relative(serverRoot, filePath);
+      let relativeFilePath = path.relative(serverRoot, filePath);
 
       clientReferenceUrl.pathname = relativeFilePath;
 
@@ -418,6 +423,11 @@ export function createServerComponentsMiddleware(
 
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
       const id = clientReferenceUrl.pathname + clientReferenceUrl.search;
+
+      if (context.environment === 'node') {
+        // Use prefixed modules in SSR space.
+        relativeFilePath = 'node:' + relativeFilePath;
+      }
 
       return { id: relativeFilePath, chunks: [id] };
     };
