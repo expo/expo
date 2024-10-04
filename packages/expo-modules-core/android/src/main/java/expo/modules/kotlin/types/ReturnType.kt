@@ -3,6 +3,8 @@ package expo.modules.kotlin.types
 import android.os.Bundle
 import expo.modules.kotlin.types.folly.FollyDynamicExtensionConverter
 import kotlin.reflect.KClass
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 object ReturnTypeProvider {
   val types = mutableMapOf<KClass<*>, ReturnType>()
@@ -139,6 +141,13 @@ interface ExperimentalJSTypeConverter<T> {
     }
   }
 
+  class DurationConverter : ExperimentalJSTypeConverter<Duration> {
+    override fun convertToJS(value: Any?): Any? {
+      enforceType<Duration?>(value)
+      return value?.toDouble(DurationUnit.SECONDS)
+    }
+  }
+
   class RawTypedArrayHolderConverter : ExperimentalJSTypeConverter<expo.modules.kotlin.typedarray.RawTypedArrayHolder> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<expo.modules.kotlin.typedarray.RawTypedArrayHolder?>(value)
@@ -178,6 +187,7 @@ class ReturnType(
       java.io.File::class -> ExperimentalJSTypeConverter.FileConverter()
       Pair::class -> ExperimentalJSTypeConverter.PairConverter()
       Long::class -> ExperimentalJSTypeConverter.LongConverter()
+      Duration::class -> ExperimentalJSTypeConverter.DurationConverter()
       Any::class -> ExperimentalJSTypeConverter.AnyConverter()
       else -> null
     }
