@@ -383,18 +383,11 @@ abstract class ReactNativeActivity :
       instanceManagerBuilderProperties,
       manifest!!.getMainModuleName()
     )
-    val hostWrapper = ReactNativeHostWrapper(application, nativeHost)
-    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper)
-    reactNativeHost = nativeHost
 
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
-    val devSupportManager = ExpoGoDevSupportManager(
-      reactHost as ReactHostImpl,
-      this,
-      jsBundlePath,
-      devBundleDownloadListener
-    )
-    setDevSettings(reactHost, devSupportManager)
+    val hostWrapper = ReactNativeHostWrapper(application, nativeHost)
+    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper, devBundleDownloadListener)
+    reactNativeHost = nativeHost
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
@@ -476,15 +469,6 @@ abstract class ReactNativeActivity :
     reactHost.onHostResume(this, this)
     KernelNetworkInterceptor.start(manifest!!, reactHost)
     return reactHost
-  }
-
-  private fun setDevSettings(
-    reactHost: ReactHost,
-    devSupportManager: DevSupportManager
-  ) {
-    val devSupportManagerField = ReactHostImpl::class.java.getDeclaredField("mDevSupportManager")
-    devSupportManagerField.isAccessible = true
-    devSupportManagerField[reactHost] = devSupportManager
   }
 
   protected fun shouldShowErrorScreen(errorMessage: ExponentErrorMessage): Boolean {

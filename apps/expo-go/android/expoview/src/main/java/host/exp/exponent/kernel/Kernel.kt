@@ -49,6 +49,7 @@ import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.HomeActivity
 import host.exp.exponent.experience.KernelData
 import host.exp.exponent.experience.KernelReactNativeHost
+import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.headless.InternalHeadlessAppLoader
 import host.exp.exponent.kernel.ExponentErrorMessage.Companion.developerErrorMessage
 import host.exp.exponent.kernel.ExponentKernelModuleProvider.KernelEventCallback
@@ -64,6 +65,7 @@ import host.exp.exponent.storage.ExponentDB
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.AsyncCondition
 import host.exp.exponent.utils.AsyncCondition.AsyncConditionListener
+import host.exp.exponent.utils.BundleJSONConverter
 import host.exp.expoview.BuildConfig
 import host.exp.expoview.ExpoViewBuildConfig
 import host.exp.expoview.Exponent
@@ -147,9 +149,9 @@ class Kernel : KernelInterface() {
       val action = intent.action
       val uri = intent.data
       return if ((
-        uri != null &&
-          ((Intent.ACTION_VIEW == action) || (NfcAdapter.ACTION_NDEF_DISCOVERED == action))
-        )
+                uri != null &&
+                        ((Intent.ACTION_VIEW == action) || (NfcAdapter.ACTION_NDEF_DISCOVERED == action))
+                )
       ) {
         uri.toString()
       } else {
@@ -240,7 +242,7 @@ class Kernel : KernelInterface() {
             )
           )
           val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
-          reactHost = ExpoReactHostFactory.createFromReactNativeHost(applicationContext, hostWrapper)
+          reactHost = ReactHostFactory.createFromReactNativeHost(applicationContext, hostWrapper)
 
           if (nativeHost.devSupportEnabled) {
             Exponent.enableDeveloperSupport(
@@ -329,211 +331,9 @@ class Kernel : KernelInterface() {
       surface.start()
       return surface
     }
-  private val kernelLaunchOptions: Bundle
-    get() {
-      val exponentProps = JSONObject()
-      val referrer =
-        exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.REFERRER_KEY)
-      if (referrer != null) {
-        try {
-          exponentProps.put("referrer", referrer)
-        } catch (e: JSONException) {
-          EXL.e(TAG, e)
-        }
-      }
-      val bundle = Bundle()
-      try {
-        bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps))
-      } catch (e: JSONException) {
-        throw Error("JSONObject failed to be converted to Bundle", e)
-      }
-      return bundle
-    }
-  private val jsExecutorFactory: JavaScriptExecutorFactory
-    get() {
-      val manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
-      val appName = manifest.getName() ?: ""
-      val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
-
-      val jsEngineFromManifest = manifest.jsEngine
-      return if (jsEngineFromManifest == "hermes") {
-        HermesExecutorFactory()
-      } else {
-        JSCExecutorFactory(
-          appName,
-          deviceName
-        )
-      }
-    }
-
-  fun hasOptionsForManifestUrl(manifestUrl: String?): Boolean {
-    return manifestUrlToOptions.containsKey(manifestUrl)
-  }
-
-  fun popOptionsForManifestUrl(manifestUrl: String?): ExperienceOptions? {
-    return manifestUrlToOptions.remove(manifestUrl)
-  }
-
-  fun addAppLoaderForManifestUrl(manifestUrl: String, appLoader: ExpoUpdatesAppLoader) {
-    manifestUrlToAppLoader[manifestUrl] = appLoader
-  }
-
-  override fun getAppLoaderForManifestUrl(manifestUrl: String?): ExpoUpdatesAppLoader? {
-    return manifestUrlToAppLoader[manifestUrl]
-  }
-
-  fun getExperienceActivityTask(manifestUrl: String): ExperienceActivityTask {
-    var task = manifestUrlToExperienceActivityTask[manifestUrl]
-    if (task != null) {
-      return task
-    }
-    task = ExperienceActivityTask(manifestUrl)
-    manifestUrlToExperienceActivityTask[manifestUrl] = task
-    return task
-  }
-
-    private val kernelDebuggerHost: String
-        get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost()
-    private val kernelMainModuleName: String
-        get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
-    private val bundleUrl: String?
-        get() {
-            return try {
-                exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getBundleURL()
-            } catch (e: JSONException) {
-                KernelProvider.instance.handleError(e)
-                null
-            }
-        }
-    private val bundleAssetRequestHeaders: JSONObject
-        get() {
-            return try {
-                val manifestAndAssetRequestHeaders =
-                    exponentManifest.getKernelManifestAndAssetRequestHeaders()
-                val manifest = manifestAndAssetRequestHeaders.manifest
-                if (manifest is ExpoUpdatesManifest) {
-                    val bundleKey = manifest.getLaunchAsset().getString("key")
-                    val map: Map<String, JSONObject> =
-                        manifestAndAssetRequestHeaders.assetRequestHeaders.let {
-                            it.keys().asSequence().associateWith { key -> it.require(key) }
-                        }
-                    map[bundleKey] ?: JSONObject()
-                } else {
-                    JSONObject()
-                }
-            } catch (e: JSONException) {
-                KernelProvider.instance.handleError(e)
-                JSONObject()
-            }
-        }
-    private val kernelRevisionId: String?
-        get() {
-            return try {
-                exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getRevisionId()
-            } catch (e: JSONException) {
-                KernelProvider.instance.handleError(e)
-                null
-            }
-        }
-    var isRunning: Boolean = false
-        get() = field && !hasError
-        private set
-
-    val surface: ReactSurface?
-        get() {
-            val surface = reactHost?.createSurface(
-                context,
-                KernelConstants.HOME_MODULE_NAME,
-                kernelLaunchOptions
-            )
-            return surface
-        }
-      }
-
-      override fun onError(e: Exception) {
-        setHasError()
-        if (ExpoViewBuildConfig.DEBUG) {
-          handleError("Can't load kernel. Are you sure your packager is running and your phone is on the same wifi? " + e.message)
-        } else {
-          handleError("Expo requires an internet connection.")
-          EXL.d(TAG, "Expo requires an internet connection." + e.message)
-        }
-      }
-    }
-  }
-
-  private val kernelDebuggerHost: String
-    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost()
-  private val kernelMainModuleName: String
-    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
-  private val bundleUrl: String?
-    get() {
-      return try {
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getBundleURL()
-      } catch (e: JSONException) {
-        KernelProvider.instance.handleError(e)
-        null
-      }
-    }
-  private val bundleAssetRequestHeaders: JSONObject
-    get() {
-      return try {
-        val manifestAndAssetRequestHeaders = exponentManifest.getKernelManifestAndAssetRequestHeaders()
-        val manifest = manifestAndAssetRequestHeaders.manifest
-        if (manifest is ExpoUpdatesManifest) {
-          val bundleKey = manifest.getLaunchAsset().getString("key")
-          val map: Map<String, JSONObject> = manifestAndAssetRequestHeaders.assetRequestHeaders.let { it.keys().asSequence().associateWith { key -> it.require(key) } } ?: mapOf()
-          map[bundleKey] ?: JSONObject()
-        } else {
-          JSONObject()
-        }
-      } catch (e: JSONException) {
-        KernelProvider.instance.handleError(e)
-        JSONObject()
-      }
-    }
-  private val kernelRevisionId: String?
-    get() {
-      return try {
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getRevisionId()
-      } catch (e: JSONException) {
-        KernelProvider.instance.handleError(e)
-        null
-      }
-    }
-  var isRunning: Boolean = false
-    get() = field && !hasError
-    private set
-
-  val reactRootView: ReactRootView
-    get() {
-      val reactRootView: ReactRootView = ReactUnthemedRootView(activityContext)
-      reactRootView.startReactApplication(
-        reactInstanceManager,
-        KernelConstants.HOME_MODULE_NAME,
-        kernelLaunchOptions
-      )
-      return reactRootView
-    }
   private val kernelLaunchOptions = bundleOf(
     "exp" to Bundle()
   )
-  private val jsExecutorFactory: JavaScriptExecutorFactory
-    get() {
-      val manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
-      val appName = manifest.getName() ?: ""
-      val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
-
-      val jsEngineFromManifest = manifest.jsEngine
-      return if (jsEngineFromManifest == "hermes") {
-        HermesExecutorFactory()
-      } else {
-        JSCExecutorFactory(
-          appName,
-          deviceName
-        )
-      }
-    }
 
   fun hasOptionsForManifestUrl(manifestUrl: String?): Boolean {
     return manifestUrlToOptions.containsKey(manifestUrl)
@@ -561,7 +361,7 @@ class Kernel : KernelInterface() {
     return task
   }
 
-  fun removeExperienceActivityTask(manifestUrl: String?) {
+  private fun removeExperienceActivityTask(manifestUrl: String?) {
     if (manifestUrl != null) {
       manifestUrlToExperienceActivityTask.remove(manifestUrl)
     }
@@ -581,323 +381,11 @@ class Kernel : KernelInterface() {
     activityContext!!.startActivity(intent)
   }
 
-  private fun openShellAppActivity(forceCache: Boolean) {
-    try {
-      val activityClass = Class.forName("host.exp.exponent.MainActivity")
-      val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-      for (task: AppTask in manager.appTasks) {
-        val baseIntent = task.taskInfo.baseIntent
-        if ((activityClass.name == baseIntent.component!!.className)) {
-          moveTaskToFront(task.taskInfo.id)
-          return
-        }
-      }
-      val intent = Intent(activityContext, activityClass)
-      addIntentDocumentFlags(intent)
-      if (forceCache) {
-        intent.putExtra(KernelConstants.LOAD_FROM_CACHE_KEY, true)
-      }
-      activityContext!!.startActivity(intent)
-    } catch (e: ClassNotFoundException) {
-      throw IllegalStateException("Could not find activity to open (MainActivity is not present).")
-    }
-  }
-
   /*
    *
    * Manifests
    *
    */
-  fun handleIntent(activity: Activity, intent: Intent) {
-    try {
-      if (intent.getBooleanExtra("EXKernelDisableNuxDefaultsKey", false)) {
-        Constants.DISABLE_NUX = true
-      }
-    } catch (e: Throwable) {
-    }
-    activityContext = activity
-    if (intent.action != null && (ExpoHandlingDelegate.OPEN_APP_INTENT_ACTION == intent.action)) {
-      if (!openExperienceFromNotificationIntent(intent)) {
-        openDefaultUrl()
-      }
-      return
-    }
-    val bundle = intent.extras
-    val uri = intent.data
-    val intentUri = uri?.toString()
-    if (bundle != null) {
-      // Notification
-      val notification = bundle.getString(KernelConstants.NOTIFICATION_KEY) // deprecated
-      val notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY)
-      val notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY)
-      if (notificationManifestUrl != null) {
-        val exponentNotification = ExponentNotification.fromJSONObjectString(notificationObject)
-        if (exponentNotification != null) {
-          // Add action type
-          if (bundle.containsKey(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY)) {
-            exponentNotification.actionType = bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY)
-            val manager = ExponentNotificationManager(context)
-            val experienceKey = ExperienceKey(exponentNotification.experienceScopeKey)
-            manager.cancel(experienceKey, exponentNotification.notificationId)
-          }
-          // Add remote input
-          val remoteInput = RemoteInput.getResultsFromIntent(intent)
-          if (remoteInput != null) {
-            exponentNotification.inputText = remoteInput.getString(NotificationActionCenter.KEY_TEXT_REPLY)
-          }
-        }
-        openExperience(
-          ExperienceOptions(
-            notificationManifestUrl,
-            intentUri ?: notificationManifestUrl,
-            notification,
-            exponentNotification
-          )
-        )
-        return
-      }
-
-      // Shortcut
-      // TODO: Remove once we decide to stop supporting shortcuts to experiences.
-      val shortcutManifestUrl = bundle.getString(KernelConstants.SHORTCUT_MANIFEST_URL_KEY)
-      if (shortcutManifestUrl != null) {
-        openExperience(ExperienceOptions(shortcutManifestUrl, intentUri, null))
-        return
-      }
-    }
-    if (uri != null && shouldOpenUrl(uri)) {
-      // We got an "exp://", "exps://", "http://", or "https://" app link
-      openExperience(ExperienceOptions(uri.toString(), uri.toString(), null))
-      return
-    }
-    openDefaultUrl()
-  }
-
-  // Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
-  private fun shouldOpenUrl(uri: Uri): Boolean {
-    val host = uri.host ?: ""
-    val path = uri.path ?: ""
-    return !(((host == "expo.io") || (host == "expo.dev")) && (path == "/expo-go"))
-  }
-
-  private fun openExperienceFromNotificationIntent(intent: Intent): Boolean {
-    val response = getNotificationResponseFromOpenIntent(intent)
-    val experienceScopeKey = ScopedNotificationsUtils.getExperienceScopeKey(response) ?: return false
-    val exponentDBObject = try {
-      val exponentDBObjectInner = ExponentDB.experienceScopeKeyToExperienceSync(experienceScopeKey)
-      if (exponentDBObjectInner == null) {
-        Log.w("expo-notifications", "Couldn't find experience from scopeKey: $experienceScopeKey")
-      }
-      exponentDBObjectInner
-    } catch (e: JSONException) {
-      Log.w("expo-notifications", "Couldn't deserialize experience from scopeKey: $experienceScopeKey")
-      null
-    } ?: return false
-
-    val manifestUrl = exponentDBObject.manifestUrl
-    openExperience(ExperienceOptions(manifestUrl, manifestUrl, null))
-    return true
-  }
-
-  private fun openDefaultUrl() {
-    val defaultUrl = KernelConstants.HOME_MANIFEST_URL
-    openExperience(ExperienceOptions(defaultUrl, defaultUrl, null))
-  }
-
-  override fun openExperience(options: ExperienceOptions) {
-    openManifestUrl(getManifestUrlFromFullUri(options.manifestUri), options, true)
-  }
-
-  private fun getManifestUrlFromFullUri(uriString: String?): String? {
-    if (uriString == null) {
-      return null
-    }
-
-    val uri = Uri.parse(uriString)
-    val builder = uri.buildUpon()
-    val deepLinkPositionDashes =
-      uriString.indexOf(ExponentManifest.DEEP_LINK_SEPARATOR_WITH_SLASH)
-    if (deepLinkPositionDashes >= 0) {
-      // do this safely so we preserve any query string
-      val pathSegments = uri.pathSegments
-      builder.path(null)
-      for (segment: String in pathSegments) {
-        if ((ExponentManifest.DEEP_LINK_SEPARATOR == segment)) {
-          break
-        }
-        builder.appendEncodedPath(segment)
-      }
-    }
-
-    // transfer the release-channel param to the built URL as this will cause Expo Go to treat
-    // this as a different project
-    var releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL)
-    builder.query(null)
-    if (releaseChannel != null) {
-      // release channels cannot contain the ' ' character, so if this is present,
-      // it must be an encoded form of '+' which indicated a deep link in SDK <27.
-      // therefore, nothing after this is part of the release channel name so we should strip it.
-      // TODO: remove this check once SDK 26 and below are no longer supported
-      val releaseChannelDeepLinkPosition = releaseChannel.indexOf(' ')
-      if (releaseChannelDeepLinkPosition > -1) {
-        releaseChannel = releaseChannel.substring(0, releaseChannelDeepLinkPosition)
-      }
-      builder.appendQueryParameter(
-        ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL,
-        releaseChannel
-      )
-    }
-
-    // transfer the expo-updates query params: runtime-version, channel-name
-    val expoUpdatesQueryParameters = listOf(
-      ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_RUNTIME_VERSION,
-      ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_CHANNEL_NAME
-    )
-    for (queryParameter: String in expoUpdatesQueryParameters) {
-      val queryParameterValue = uri.getQueryParameter(queryParameter)
-      if (queryParameterValue != null) {
-        builder.appendQueryParameter(queryParameter, queryParameterValue)
-      }
-    }
-
-    // ignore fragments as well (e.g. those added by auth-session)
-    builder.fragment(null)
-    var newUriString = builder.build().toString()
-    val deepLinkPositionPlus = newUriString.indexOf('+')
-    if (deepLinkPositionPlus >= 0 && deepLinkPositionDashes < 0) {
-      // need to keep this for backwards compatibility
-      newUriString = newUriString.substring(0, deepLinkPositionPlus)
-    }
-
-    // manifest url doesn't have a trailing slash
-    if (newUriString.isNotEmpty()) {
-      val lastUrlChar = newUriString[newUriString.length - 1]
-      if (lastUrlChar == '/') {
-        newUriString = newUriString.substring(0, newUriString.length - 1)
-      }
-    }
-    return newUriString
-  }
-
-  private fun openManifestUrl(
-    manifestUrl: String?,
-    options: ExperienceOptions?,
-    isOptimistic: Boolean,
-    forceCache: Boolean = false
-  ) {
-    SoLoader.init(context, false)
-    if (options == null) {
-      manifestUrlToOptions.remove(manifestUrl)
-    } else {
-      manifestUrlToOptions[manifestUrl] = options
-    }
-    if (manifestUrl == null || (manifestUrl == KernelConstants.HOME_MANIFEST_URL)) {
-      openHomeActivity()
-      return
-    }
-
-    ErrorActivity.clearErrorList()
-    val tasks: List<AppTask> = experienceActivityTasks
-    var existingTask: AppTask? = run {
-      for (i in tasks.indices) {
-        val task = tasks[i]
-        // When deep linking from `NotificationForwarderActivity`, the task will finish immediately.
-        // There is race condition to retrieve the taskInfo from the finishing task.
-        // Uses try-catch to handle the cases.
-        try {
-          val baseIntent = task.taskInfo.baseIntent
-          if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
-              baseIntent.getStringExtra(
-                KernelConstants.MANIFEST_URL_KEY
-              ) == manifestUrl
-              )
-          ) {
-            return@run task
-          }
-        } catch (e: Exception) {}
-      }
-      return@run null
-    }
-
-    if (isOptimistic && existingTask == null) {
-      openOptimisticExperienceActivity(manifestUrl)
-    }
-    if (existingTask != null) {
-      try {
-        moveTaskToFront(existingTask.taskInfo.id)
-      } catch (e: IllegalArgumentException) {
-        // Sometimes task can't be found.
-        existingTask = null
-        openOptimisticExperienceActivity(manifestUrl)
-      }
-    }
-    val finalExistingTask = existingTask
-    if (existingTask == null) {
-      ExpoUpdatesAppLoader(
-        manifestUrl,
-        object : AppLoaderCallback {
-          override fun onOptimisticManifest(optimisticManifest: Manifest) {
-            Exponent.instance
-              .runOnUiThread { sendOptimisticManifestToExperienceActivity(optimisticManifest) }
-          }
-
-          override fun onManifestCompleted(manifest: Manifest) {
-            Exponent.instance.runOnUiThread {
-              try {
-                openManifestUrlStep2(manifestUrl, manifest, finalExistingTask)
-              } catch (e: JSONException) {
-                handleError(e)
-              }
-            }
-            val bundle = Bundle()
-            try {
-                bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps))
-            } catch (e: JSONException) {
-                throw Error("JSONObject failed to be converted to Bundle", e)
-            }
-            return bundle
-        }
-    private val jsExecutorFactory: JavaScriptExecutorFactory
-        get() {
-            val manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
-            val appName = manifest.getName() ?: ""
-            val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
-
-            val jsEngineFromManifest = manifest.jsEngine
-            return if (jsEngineFromManifest == "hermes") {
-                HermesExecutorFactory()
-            } else {
-                JSCExecutorFactory(
-                    appName,
-                    deviceName
-                )
-            }
-        }
-
-    fun hasOptionsForManifestUrl(manifestUrl: String?): Boolean {
-        return manifestUrlToOptions.containsKey(manifestUrl)
-    }
-  }
-
-  fun openHomeActivity() {
-    val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-    for (task: AppTask in manager.appTasks) {
-      val baseIntent = task.taskInfo.baseIntent
-      if ((HomeActivity::class.java.name == baseIntent.component!!.className)) {
-        task.moveToFront()
-        return
-      }
-    }
-    val intent = Intent(activityContext, HomeActivity::class.java)
-    addIntentDocumentFlags(intent)
-    activityContext!!.startActivity(intent)
-  }
-
-    /*
-     *
-     * Manifests
-     *
-     */
   fun handleIntent(activity: Activity, intent: Intent) {
     try {
       if (intent.getBooleanExtra("EXKernelDisableNuxDefaultsKey", false)) {
@@ -1109,10 +597,10 @@ class Kernel : KernelInterface() {
         try {
           val baseIntent = task.taskInfo.baseIntent
           if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
-              baseIntent.getStringExtra(
-                KernelConstants.MANIFEST_URL_KEY
-              ) == manifestUrl
-              )
+                    baseIntent.getStringExtra(
+                      KernelConstants.MANIFEST_URL_KEY
+                    ) == manifestUrl
+                    )
           ) {
             return@run task
           }
@@ -1223,11 +711,11 @@ class Kernel : KernelInterface() {
     killOrphanedLauncherActivities()
   }
 
-    /*
-     *
-     * Optimistic experiences
-     *
-     */
+  /*
+   *
+   * Optimistic experiences
+   *
+   */
   private fun openOptimisticExperienceActivity(manifestUrl: String?) {
     try {
       val intent = Intent(activityContext, ExperienceActivity::class.java).apply {
@@ -1300,11 +788,11 @@ class Kernel : KernelInterface() {
     )
   }
 
-    /*
-     *
-     * Tasks
-     *
-     */
+  /*
+   *
+   * Tasks
+   *
+   */
   val tasks: List<AppTask>
     get() {
       val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -1483,11 +971,11 @@ class Kernel : KernelInterface() {
       return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.bundleUrl
     }
 
-        /*
-         *
-         * Error handling
-         *
-         */
+    /*
+     *
+     * Error handling
+     *
+     */
     // Called using reflection from ReactAndroid.
     @DoNotStrip
     fun handleReactNativeError(
@@ -1549,9 +1037,9 @@ class Kernel : KernelInterface() {
         for (i in 2 until stackTraceElements.size) {
           val element = stackTraceElements[i]
           if ((
-            (element.fileName != null) && element.fileName.startsWith(Kernel::class.java.simpleName) &&
-              ((element.methodName == "handleReactNativeError") || (element.methodName == "handleError"))
-            )
+                    (element.fileName != null) && element.fileName.startsWith(Kernel::class.java.simpleName) &&
+                            ((element.methodName == "handleReactNativeError") || (element.methodName == "handleError"))
+                    )
           ) {
             // Ignore these base error handling methods.
             continue
