@@ -8,17 +8,6 @@
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-#if DEBUG
-  BOOL useDevClient = NO;
-
-  if (!useDevClient) {
-    ExpoDevLauncherReactDelegateHandler.enableAutoSetup = NO;
-
-    // Uncomment to use the default dev-menu from react-native
-    // ExpoDevMenuReactDelegateHandler.enableAutoSetup = NO;
-  }
-#endif
-
   self.moduleName = @"main";
 
   // You can add your custom initial props in the dictionary below.

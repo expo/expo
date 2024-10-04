@@ -1,16 +1,22 @@
 # Contributing to the Expo SDK
 
-- [📦 Download and Setup](#-download-and-setup)
-- [✍️ Editing SDK Packages](#%EF%B8%8F-editing-sdk-packages)
-  - [Style](#style)
-  - [Extra Credit](#extra-credit)
-- [⏱ Testing Your Changes](#-testing-your-changes)
-  - [✅ Unit Testing](#-unit-testing)
-  - [🏁 E2E Testing](#-e2e-testing)
-- [📚 Updating Documentation](#-updating-documentation)
-- [📝 Writing a Commit Message](#-writing-a-commit-message)
-- [🔎 Before Submitting](#-before-submitting)
-  - [Extra Credit](#extra-credit-1)
+- [Contributing to the Expo SDK](#contributing-to-the-expo-sdk)
+  - [📦 Download and Setup](#-download-and-setup)
+    - [Set up documentation](#set-up-documentation)
+    - [Set up Android](#set-up-android)
+    - [Set up iOS](#set-up-ios)
+    - [Verify native installation is successful](#verify-native-installation-is-successful)
+  - [✍️ Editing SDK Packages](#️-editing-sdk-packages)
+    - [Finding a task to work on](#finding-a-task-to-work-on)
+    - [Style](#style)
+    - [Extra Credit](#extra-credit)
+  - [⏱ Testing Your Changes](#-testing-your-changes)
+    - [✅ Unit Testing](#-unit-testing)
+    - [🏁 E2E Testing](#-e2e-testing)
+  - [📚 Updating Documentation](#-updating-documentation)
+  - [📝 Writing a Commit Message](#-writing-a-commit-message)
+  - [🔎 Before Submitting](#-before-submitting)
+    - [Extra Credit](#extra-credit-1)
 
 Thanks for the help! We currently review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files.
 
@@ -73,6 +79,7 @@ If you will be working with the iOS project, ensure **ruby 2.7** is installed on
    - iOS: `yarn ios`
    - Android: `yarn android`
    - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="konsole"`)
+   - You might also need to open a new terminal window in the same directory and run `yarn start` (you'll need to be logged in with your expo account within the built app to see the projects)
 
 3. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 

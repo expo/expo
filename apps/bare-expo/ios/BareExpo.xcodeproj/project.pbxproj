@@ -43,7 +43,7 @@
 /* Begin PBXFileReference section */
 		00D2C15177E524102E602A5E /* Pods-BareExpoMain-BareExpo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpo.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpo/Pods-BareExpoMain-BareExpo.debug.xcconfig"; sourceTree = "<group>"; };
 		00E356EE1AD99517003FC87E /* BareExpoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BareExpoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07F961A680F5B00A75B9A /* BareExpo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BareExpo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Bare Expo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bare Expo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BareExpo/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = BareExpo/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BareExpo/Images.xcassets; sourceTree = "<group>"; };
@@ -87,7 +87,7 @@
 		41B63EBCAA219161360788BE /* Pods-BareExpoMain-BareExpoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpoTests.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpoTests/Pods-BareExpoMain-BareExpoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5011CACA040B4EC49D327CB1 /* BareExpo-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "BareExpo-Bridging-Header.h"; path = "BareExpo/BareExpo-Bridging-Header.h"; sourceTree = "<group>"; };
 		57FFECAB053942999310E7F8 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "BareExpo/noop-file.swift"; sourceTree = "<group>"; };
-		638290664253FC5AFF306E0F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = BareExpo/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		638290664253FC5AFF306E0F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = BareExpo/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6C2E3173556A471DD304B334 /* Pods-BareExpo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpo.debug.xcconfig"; path = "Target Support Files/Pods-BareExpo/Pods-BareExpo.debug.xcconfig"; sourceTree = "<group>"; };
 		6EC5EFD75D8ADD489B03287F /* Pods-BareExpoMain-BareExpoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpoTests.release.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpoTests/Pods-BareExpoMain-BareExpoTests.release.xcconfig"; sourceTree = "<group>"; };
 		6F906615D6F7426F93226251 /* notification.wav */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = notification.wav; path = BareExpo/notification.wav; sourceTree = "<group>"; };
@@ -204,7 +204,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* BareExpo.app */,
+				13B07F961A680F5B00A75B9A /* Bare Expo.app */,
 				00E356EE1AD99517003FC87E /* BareExpoTests.xctest */,
 			);
 			name = Products;
@@ -302,7 +302,7 @@
 			);
 			name = BareExpo;
 			productName = BareExpo;
-			productReference = 13B07F961A680F5B00A75B9A /* BareExpo.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Bare Expo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -314,12 +314,8 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1250;
 						DevelopmentTeam = U4N2R6M7H7;
 						LastSwiftMigration = 1140;
-					};
-					B2C02649256BDB3E008FD925 = {
-						DevelopmentTeam = C8D8QTF339;
 					};
 				};
 			};
@@ -1017,14 +1013,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BareExpo/BareExpo.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = C8D8QTF339;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = U4N2R6M7H7;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
-				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = U4N2R6M7H7;
 				INFOPLIST_FILE = BareExpo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1045,11 +1040,9 @@
 				PRODUCT_NAME = "Bare Expo";
 				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo-Bridging-Header.h";
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\" -DDEBUG -DFB_SONARKIT_ENABLED -DEX_DEV_LAUNCHER_ENABLED -DEX_DEV_MENU_ENABLED -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
-				PRODUCT_NAME = BareExpo;
-				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo/BareExpo-Bridging-Header.h";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Paymentsxc;
 				PRODUCT_NAME = "Bare Expo";
+				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo/BareExpo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1065,7 +1058,6 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BareExpo/BareExpo.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = C8D8QTF339;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = U4N2R6M7H7;
 				INFOPLIST_FILE = BareExpo/Info.plist;
@@ -1087,11 +1079,9 @@
 				PRODUCT_NAME = "Bare Expo";
 				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo-Bridging-Header.h";
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
-				PRODUCT_NAME = BareExpo;
-				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo/BareExpo-Bridging-Header.h";
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Paymentsxc;
 				PRODUCT_NAME = "Bare Expo";
+				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo/BareExpo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1168,10 +1158,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -1239,10 +1226,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

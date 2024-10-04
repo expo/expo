@@ -7,20 +7,20 @@ declare const _default: {
     unloadForVideo(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
     setStatusForVideo(element: HTMLMediaElement, status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
     replayVideo(element: HTMLMediaElement, status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
-    setAudioMode(): Promise<void>;
-    setAudioIsEnabled(): Promise<void>;
-    getStatusForSound(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
+    setAudioMode(): any;
+    setAudioIsEnabled(): any;
+    getStatusForSound(element: HTMLMediaElement): unknown;
     loadForSound(nativeSource: string | {
         [key: string]: any;
         uri: string;
     }, fullInitialStatus: AVPlaybackStatusToSet): Promise<[HTMLMediaElement, AVPlaybackStatus]>;
-    unloadForSound(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
+    unloadForSound(element: HTMLMediaElement): unknown;
     setStatusForSound(element: HTMLMediaElement, status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
     replaySound(element: HTMLMediaElement, status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
     getAudioRecordingStatus(): Promise<RecordingStatus>;
     prepareAudioRecorder(options: any): Promise<{
         uri: string | null;
-        status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
+        status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, "canRecord">>;
     }>;
     startAudioRecording(): Promise<RecordingStatus>;
     pauseAudioRecording(): Promise<RecordingStatus>;
