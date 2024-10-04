@@ -26,6 +26,7 @@ import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
+import { ReadOnlyGraph } from 'metro';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -263,6 +264,28 @@ export async function instantiateMetroAsync(
   };
 
   setEventReporter(eventsSocket.reportMetroEvent);
+
+  // This function ensures that modules in source maps are sorted in the same
+  // order as in a plain JS bundle.
+  // @ts-expect-error
+  metro._getSortedModules = function (this: Metro.Server, graph: ReadOnlyGraph) {
+    const modules = [...graph.dependencies.values()];
+
+    const ctx = {
+      platform: graph.transformOptions.platform,
+      environment: graph.transformOptions.customTransformOptions?.environment,
+    };
+    // Assign IDs to modules in a consistent order
+    for (const module of modules) {
+      // @ts-expect-error
+      this._createModuleId(module.path, ctx);
+    }
+    // Sort by IDs
+    return modules.sort(
+      // @ts-expect-error
+      (a, b) => this._createModuleId(a.path, ctx) - this._createModuleId(b.path, ctx)
+    );
+  };
 
   return {
     metro,

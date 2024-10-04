@@ -120,25 +120,55 @@ function createNumericModuleIdFactory(): (path: string) => number {
 }
 
 function createStableModuleIdFactory(root: string): (path: string) => number {
-  const fileToIdMap = new Map<string, string>();
+  // const fileToIdMap = new Map<string, string>();
+  const fileToIdMapForEnv = new Map<string, Map<string, string>>();
+
+  const getModulePath = (modulePath: string, prefix: string) => {
+    // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+    if (modulePath == null) {
+      return 'MODULE_NOT_FOUND';
+    } else if (isVirtualModule(modulePath)) {
+      // Virtual modules should be stable.
+      return modulePath;
+    } else if (path.isAbsolute(modulePath)) {
+      return prefix + path.relative(root, modulePath);
+    } else {
+      return prefix + modulePath;
+    }
+  };
+
   // This is an absolute file path.
-  return (modulePath: string): number => {
+  return (modulePath: string, context?: { platform: string; environment?: string }): number => {
+    // Helps find missing parts to the patch.
+    if (!context?.platform) {
+      throw new Error('createStableModuleIdFactory: `context.platform` is required');
+    }
+
+    const env = context.environment ?? 'client';
+    let fileToIdMap = fileToIdMapForEnv.get(env);
+
+    if (!fileToIdMap) {
+      fileToIdMap = new Map();
+      fileToIdMapForEnv.set(env, fileToIdMap);
+    }
     // TODO: We may want a hashed version for production builds in the future.
     let id = fileToIdMap.get(modulePath);
-    if (id == null) {
-      // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
-      if (modulePath == null) {
-        id = 'MODULE_NOT_FOUND';
-      } else if (isVirtualModule(modulePath)) {
-        // Virtual modules should be stable.
-        id = modulePath;
-      } else if (path.isAbsolute(modulePath)) {
-        id = path.relative(root, modulePath);
-      } else {
-        id = modulePath;
-      }
-      fileToIdMap.set(modulePath, id);
+
+    if (id != null) {
+      // @ts-expect-error: we patch this to support being a string.
+      return id;
     }
+
+    if (context.environment === 'node') {
+      // TODO: We may want a hashed version for production builds in the future.
+
+      const prefix = context.environment + ':';
+      id = getModulePath(modulePath, prefix);
+    } else {
+      id = getModulePath(modulePath, '');
+    }
+
+    fileToIdMap.set(modulePath, id);
     // @ts-expect-error: we patch this to support being a string.
     return id;
   };

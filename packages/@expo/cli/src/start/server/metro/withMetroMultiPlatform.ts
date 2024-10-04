@@ -298,8 +298,12 @@ export function withExtendedResolver(
   }
 
   // TODO: This is a hack to get resolveWeak working.
-  const idFactory =
-    config.serializer?.createModuleIdFactory?.() ?? ((id: number | string): number | string => id);
+  const idFactory = (config.serializer?.createModuleIdFactory?.() ??
+    ((id: number | string, context: { platform: string; environment?: string }): number | string =>
+      id)) as (
+    id: number | string,
+    context: { platform: string; environment?: string }
+  ) => number | string;
 
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
@@ -463,6 +467,8 @@ export function withExtendedResolver(
         return null;
       }
 
+      const environment = context.customResolverOptions?.environment;
+
       const strictResolve = getStrictResolver(context, platform);
 
       for (const external of externals) {
@@ -476,7 +482,7 @@ export function withExtendedResolver(
             // TODO: Make this use require.resolveWeak again. Previously this was just resolving to the same path.
             const realModule = strictResolve(moduleName);
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
-            const opaqueId = idFactory(realPath);
+            const opaqueId = idFactory(realPath, { platform, environment });
 
             const contents =
               typeof opaqueId === 'number'
