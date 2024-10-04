@@ -283,7 +283,7 @@ redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
 
 # After adding "Linking" (/linking/**) section
 redirects[guides/linking]=linking/overview
-redirects[guides/deep-linking]=linking/deep-linking
+redirects[guides/deep-linking]=/linking/into-your-app/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
