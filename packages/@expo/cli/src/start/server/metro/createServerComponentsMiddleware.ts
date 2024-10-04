@@ -91,11 +91,17 @@ export function createServerComponentsMiddleware(
 
       environment: 'node', // getStringParam('transform.environment') ?? 'node',
       platform: url.searchParams.get('platform') ?? 'web',
-    };
+    } as const;
 
     // console.log('[SSR] load:', options);
 
-    await ssrLoadModule(path.join(serverRoot, pathname), options);
+    console.log(
+      await ssrLoadModule(path.join(serverRoot, pathname), {
+        ...options,
+
+        skipRunningSsr: true,
+      })
+    );
   };
 
   // globalThis.__webpack_require__ = (id) => {
@@ -417,22 +423,22 @@ export function createServerComponentsMiddleware(
   // const htmlRendererCache = new Map<string, typeof import('expo-router/src/rsc/html-renderer')>();
 
   async function getHtmlRendererAsync(platform: string) {
-    return require('expo-router/build/rsc/html-renderer');
+    // return require('expo-router/build/rsc/html-renderer');
     // // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
     // if (htmlRendererCache.has(platform)) {
     //   return htmlRendererCache.get(platform)!;
     // }
 
-    // const renderer = await ssrLoadModule<typeof import('expo-router/src/rsc/html-renderer')>(
-    //   'expo-router/build/rsc/html-renderer',
-    //   {
-    //     environment: 'node',
-    //     platform,
-    //   }
-    // );
+    const renderer = await ssrLoadModule<typeof import('expo-router/src/rsc/html-renderer')>(
+      'expo-router/build/rsc/html-renderer',
+      {
+        environment: 'node',
+        platform,
+      }
+    );
 
     // htmlRendererCache.set(platform, renderer);
-    // return renderer;
+    return renderer;
   }
 
   const rscRendererCache = new Map<string, typeof import('expo-router/src/rsc/rsc-renderer')>();

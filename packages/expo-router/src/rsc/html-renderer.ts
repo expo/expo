@@ -18,13 +18,25 @@ import { createFromReadableStream } from 'react-server-dom-webpack/client.edge';
 import { ServerRoot } from './router/host';
 // import { injectRSCPayload } from 'rsc-html-stream/server';
 
+import 'expo-router/build/rsc/router/client.js';
+
+import 'react-dom';
+
+console.log('REACT VERSIONS:', {
+  react: require('react/package.json').version,
+  'react-dom': require('react-dom/package.json').version,
+});
+
 global.__webpack_chunk_load__ = async (chunk) => {
   return globalThis.__metro_node_chunk_load__(chunk);
 };
 
 global.__webpack_require__ = (id) => {
-  //   console.log('[SSR]__webpack_require__:', id);
-  return global[`__r`](id);
+  console.log('[SSR]__webpack_require__:', id);
+  return global[`__r`](
+    // TODO: The require path needs to be populated with the right ID.
+    'node:' + id
+  );
 };
 
 // renderHtml:
@@ -195,7 +207,7 @@ export async function renderHtml({
     .pipeThrough(rectifyHtml())
     .pipeThrough(
       injectScript(
-        config.basePath + config.rscPath + '/' + encodeInput(ssrConfig.input),
+        config.basePath + config.rscPath + '/web/' + encodeInput(ssrConfig.input),
         !isExporting ? `${config.basePath}${config.srcDir}/${SRC_MAIN}` : ''
       )
     )

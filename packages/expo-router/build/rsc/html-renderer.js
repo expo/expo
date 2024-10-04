@@ -9,12 +9,20 @@ const server_edge_1 = require("react-dom/server.edge");
 const client_edge_1 = require("react-server-dom-webpack/client.edge");
 const host_1 = require("./router/host");
 // import { injectRSCPayload } from 'rsc-html-stream/server';
+require("expo-router/build/rsc/router/client.js");
+require("react-dom");
+console.log('REACT VERSIONS:', {
+    react: require('react/package.json').version,
+    'react-dom': require('react-dom/package.json').version,
+});
 global.__webpack_chunk_load__ = async (chunk) => {
     return globalThis.__metro_node_chunk_load__(chunk);
 };
 global.__webpack_require__ = (id) => {
-    //   console.log('[SSR]__webpack_require__:', id);
-    return global[`__r`](id);
+    console.log('[SSR]__webpack_require__:', id);
+    return global[`__r`](
+    // TODO: The require path needs to be populated with the right ID.
+    'node:' + id);
 };
 const DIST_SSR = 'TODO';
 async function renderHtml({ pathname, isExporting, htmlHead, searchParams, serverRoot, loadModule, getSsrConfigForHtml, resolveClientEntry, renderRscForHtml, }) {
@@ -104,7 +112,7 @@ async function renderHtml({ pathname, isExporting, htmlHead, searchParams, serve
         },
     }))
         .pipeThrough(rectifyHtml())
-        .pipeThrough(injectScript(config.basePath + config.rscPath + '/' + encodeInput(ssrConfig.input), !isExporting ? `${config.basePath}${config.srcDir}/${SRC_MAIN}` : ''))
+        .pipeThrough(injectScript(config.basePath + config.rscPath + '/web/' + encodeInput(ssrConfig.input), !isExporting ? `${config.basePath}${config.srcDir}/${SRC_MAIN}` : ''))
         .pipeThrough(injectRSCPayload(stream2));
     return readable;
 }

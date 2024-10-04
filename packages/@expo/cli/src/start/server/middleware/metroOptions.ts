@@ -38,6 +38,8 @@ export type ExpoMetroOptions = {
   usedExports?: boolean;
   /** Enable optimized bundling (required for tree shaking). */
   optimize?: boolean;
+
+  skipRunningSsr?: boolean;
 };
 
 export type SerializerOptions = {

@@ -420,12 +420,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   ) => {
     const res = await this.ssrLoadModuleContents(filePath, specificOptions);
 
+    if (filePath.includes('html')) {
+      console.log(res.src);
+    }
+
     if (extras.hot && this.instanceMetroOptions.isExporting !== true) {
       // Register SSR HMR
       const serverRoot = getMetroServerRoot(this.projectRoot);
       const relativePath = path.relative(serverRoot, res.filename);
       const url = new URL(relativePath, this.getDevServerUrlOrAssert());
       this.setupHmr(url);
+    }
+
+    if (specificOptions.skipRunningSsr) {
+      return evalMetroNoHandling(this.projectRoot, res.src, res.filename);
     }
 
     return evalMetroAndWrapFunctions(
@@ -586,7 +594,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
-    const scriptContents = wrapBundle(bundle);
+    const scriptContents = specificOptions.skipRunningSsr ? bundle : wrapBundle(bundle);
 
     if (map) {
       debug('Registering SSR source map for:', filename);
