@@ -29,6 +29,7 @@ import { MetroServerError, ReactServerError } from './errors';
 import { fetch } from './fetch';
 import { encodeInput, encodeActionId } from './utils';
 import { getDevServer } from '../../getDevServer';
+import { RootWrap } from './root-wrap';
 
 const { createFromFetch, encodeReply } = RSDWClient;
 
@@ -363,4 +364,8 @@ export const Children = () => use(ChildrenContext);
  * This is not a public API.
  */
 export const ServerRoot = ({ elements, children }: { elements: Elements; children: ReactNode }) =>
-  createElement(ElementsContext.Provider, { value: elements }, children);
+  createElement(
+    RootWrap,
+    null,
+    createElement(ElementsContext.Provider, { value: elements }, children)
+  );

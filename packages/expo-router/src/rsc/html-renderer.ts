@@ -18,9 +18,9 @@ import { createFromReadableStream } from 'react-server-dom-webpack/client.edge';
 import { ServerRoot } from './router/host';
 // import { injectRSCPayload } from 'rsc-html-stream/server';
 
-import 'expo-router/build/rsc/router/client.js';
+// import 'expo-router/build/rsc/router/client.js';
 
-import 'react-dom';
+// import 'react-dom';
 
 console.log('REACT VERSIONS:', {
   react: require('react/package.json').version,
@@ -177,7 +177,6 @@ export async function renderHtml({
     rscPath: '/_flight',
     srcDir: 'TODO+SRC',
   };
-  const SRC_MAIN = 'TODO+SRC+MAIN';
 
   const [stream1, stream2] = stream.tee();
   const elements: Promise<Record<string, ReactNode>> = createFromReadableStream(stream1, {

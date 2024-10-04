@@ -9,8 +9,8 @@ const server_edge_1 = require("react-dom/server.edge");
 const client_edge_1 = require("react-server-dom-webpack/client.edge");
 const host_1 = require("./router/host");
 // import { injectRSCPayload } from 'rsc-html-stream/server';
-require("expo-router/build/rsc/router/client.js");
-require("react-dom");
+// import 'expo-router/build/rsc/router/client.js';
+// import 'react-dom';
 console.log('REACT VERSIONS:', {
     react: require('react/package.json').version,
     'react-dom': require('react-dom/package.json').version,
@@ -97,7 +97,6 @@ async function renderHtml({ pathname, isExporting, htmlHead, searchParams, serve
         rscPath: '/_flight',
         srcDir: 'TODO+SRC',
     };
-    const SRC_MAIN = 'TODO+SRC+MAIN';
     const [stream1, stream2] = stream.tee();
     const elements = (0, client_edge_1.createFromReadableStream)(stream1, {
         ssrManifest: { moduleMap, moduleLoading: null },

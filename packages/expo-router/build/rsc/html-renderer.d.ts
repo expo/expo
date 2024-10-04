@@ -1,5 +1,3 @@
-import 'expo-router/build/rsc/router/client.js';
-import 'react-dom';
 type ResolveClientEntry = (id: string) => {
     id: string;
     chunks: string[];

@@ -49,6 +49,8 @@ export declare const Children: () => any;
 export declare const ServerRoot: ({ elements, children }: {
     elements: Elements;
     children: ReactNode;
-}) => import("react").FunctionComponentElement<import("react").ProviderProps<Elements | null>>;
+}) => import("react").FunctionComponentElement<{
+    children: any;
+}>;
 export {};
 //# sourceMappingURL=host.d.ts.map
