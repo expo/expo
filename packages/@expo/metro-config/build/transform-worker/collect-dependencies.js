@@ -41,6 +41,8 @@ const types_1 = require("@babel/types");
 const t = __importStar(require("@babel/types"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const crypto = __importStar(require("node:crypto"));
+const debug = require('debug')('expo:metro:collect-dependencies');
+const MAGIC_IMPORT_COMMENT = '@metro-ignore';
 // asserts non-null
 function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
@@ -299,7 +301,6 @@ function collectImports(path, state) {
         }, path);
     }
 }
-const MAGIC_IMPORT_COMMENT = '@metro-ignore';
 /**
  * @returns `true` if the import contains the magic comment for opting-out of bundling.
  */
@@ -315,6 +316,8 @@ function hasMagicImportComment(path) {
 function processImportCall(path, state, options) {
     // Check both leading and inner comments
     if (hasMagicImportComment(path)) {
+        const line = path.node.loc && path.node.loc.start && path.node.loc.start.line;
+        debug(`Magic comment at line ${line || '<unknown>'}: Ignoring import: ${(0, generator_1.default)(path.node).code}`);
         return;
     }
     const name = getModuleNameFromCallArgs(path);

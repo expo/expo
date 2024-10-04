@@ -15,6 +15,10 @@ import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 
+const debug = require('debug')('expo:metro:collect-dependencies') as typeof console.log;
+
+const MAGIC_IMPORT_COMMENT = '@metro-ignore';
+
 // asserts non-null
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
@@ -457,8 +461,6 @@ function collectImports(path: NodePath<any>, state: State): void {
   }
 }
 
-const MAGIC_IMPORT_COMMENT = '@metro-ignore';
-
 /**
  * @returns `true` if the import contains the magic comment for opting-out of bundling.
  */
@@ -482,6 +484,10 @@ function processImportCall(
 ): void {
   // Check both leading and inner comments
   if (hasMagicImportComment(path)) {
+    const line = path.node.loc && path.node.loc.start && path.node.loc.start.line;
+    debug(
+      `Magic comment at line ${line || '<unknown>'}: Ignoring import: ${generate(path.node).code}`
+    );
     return;
   }
 
