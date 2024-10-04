@@ -57,11 +57,18 @@ export interface NativeYearlyTriggerInput {
     hour: number;
     minute: number;
 }
+export interface NativeMonthlyTriggerInput {
+    type: 'monthly';
+    channelId?: string;
+    day: number;
+    hour: number;
+    minute: number;
+}
 export interface NativeDateTriggerInput {
     type: 'date';
     channelId?: string;
     timestamp: number;
 }
-export type NativeNotificationTriggerInput = null | NativeChannelAwareTriggerInput | NativeDateTriggerInput | NativeCalendarTriggerInput | NativeTimeIntervalTriggerInput | NativeDailyTriggerInput | NativeWeeklyTriggerInput | NativeYearlyTriggerInput;
+export type NativeNotificationTriggerInput = null | NativeChannelAwareTriggerInput | NativeDateTriggerInput | NativeCalendarTriggerInput | NativeTimeIntervalTriggerInput | NativeDailyTriggerInput | NativeWeeklyTriggerInput | NativeMonthlyTriggerInput | NativeYearlyTriggerInput;
 export {};
 //# sourceMappingURL=NotificationScheduler.types.d.ts.map

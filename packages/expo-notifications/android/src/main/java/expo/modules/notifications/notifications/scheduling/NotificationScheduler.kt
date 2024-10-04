@@ -21,6 +21,7 @@ import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger
 import expo.modules.notifications.notifications.triggers.DailyTrigger
 import expo.modules.notifications.notifications.triggers.DateTrigger
+import expo.modules.notifications.notifications.triggers.MonthlyTrigger
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger
 import expo.modules.notifications.notifications.triggers.WeeklyTrigger
 import expo.modules.notifications.notifications.triggers.YearlyTrigger
@@ -191,6 +192,23 @@ open class NotificationScheduler : Module() {
         }
         WeeklyTrigger(
           weekday.toInt(),
+          hour.toInt(),
+          minute.toInt(),
+          channelId
+        )
+      }
+
+      "monthly" -> {
+        val day = params["day"] as? Number
+        val hour = params["hour"] as? Number
+        val minute = params["minute"] as? Number
+
+        if (day == null || hour == null || minute == null) {
+          throw InvalidArgumentException("Invalid value(s) provided for yearly trigger.")
+        }
+
+        MonthlyTrigger(
+          day.toInt(),
           hour.toInt(),
           minute.toInt(),
           channelId

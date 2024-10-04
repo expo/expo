@@ -22,6 +22,11 @@ static NSString * const weeklyNotificationTriggerWeekdayKey = @"weekday";
 static NSString * const weeklyNotificationTriggerHourKey = @"hour";
 static NSString * const weeklyNotificationTriggerMinuteKey = @"minute";
 
+static NSString * const monthlyNotificationTriggerType = @"monthly";
+static NSString * const monthlyNotificationTriggerDayKey = @"day";
+static NSString * const monthlyNotificationTriggerHourKey = @"hour";
+static NSString * const monthlyNotificationTriggerMinuteKey = @"minute";
+
 static NSString * const yearlyNotificationTriggerType = @"yearly";
 static NSString * const yearlyNotificationTriggerDayKey = @"day";
 static NSString * const yearlyNotificationTriggerMonthKey = @"month";
@@ -179,6 +184,17 @@ EX_EXPORT_METHOD_AS(getNextTriggerDateAsync,
     NSNumber *minute = [params objectForKey:weeklyNotificationTriggerMinuteKey verifyingClass:[NSNumber class]];
     NSDateComponents *dateComponents = [NSDateComponents new];
     dateComponents.weekday = [weekday integerValue];
+    dateComponents.hour = [hour integerValue];
+    dateComponents.minute = [minute integerValue];
+
+    return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents
+                                                                    repeats:YES];
+  } else if ([monthlyNotificationTriggerType isEqualToString:triggerType]) {
+    NSNumber *day = [params objectForKey:monthlyNotificationTriggerDayKey verifyingClass:[NSNumber class]];
+    NSNumber *hour = [params objectForKey:monthlyNotificationTriggerHourKey verifyingClass:[NSNumber class]];
+    NSNumber *minute = [params objectForKey:monthlyNotificationTriggerMinuteKey verifyingClass:[NSNumber class]];
+    NSDateComponents *dateComponents = [NSDateComponents new];
+    dateComponents.day = [day integerValue];
     dateComponents.hour = [hour integerValue];
     dateComponents.minute = [minute integerValue];
 

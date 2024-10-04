@@ -1,3 +1,5 @@
+import { fail } from 'assert';
+
 import NotificationScheduler from '../NotificationScheduler';
 import { SchedulableTriggerInputTypes, NotificationTriggerInput } from '../Notifications.types';
 import scheduleNotificationAsync from '../scheduleNotificationAsync';
@@ -73,6 +75,7 @@ it(`verifies daily trigger input validation`, async () => {
   };
   try {
     await scheduleNotificationAsync(input);
+    fail('Test should have thrown');
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`).toEqual(
@@ -115,11 +118,54 @@ it(`verifies weekly trigger input validation`, async () => {
   };
   try {
     await scheduleNotificationAsync(input);
+    fail('Test should have thrown');
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`).toEqual(
       'RangeError: The weekday parameter needs to be between 1 and 7. Found: 8'
     );
+  }
+});
+
+it(`verifies monthly trigger handling`, async () => {
+  const trigger: NotificationTriggerInput = {
+    type: SchedulableTriggerInputTypes.MONTHLY,
+    day: 5,
+    hour: 12,
+    minute: 30,
+  };
+  const input = {
+    ...notificationTriggerInputTest,
+    trigger,
+  };
+  await scheduleNotificationAsync(input);
+  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
+    input.identifier,
+    input.content,
+    {
+      ...input.trigger,
+    }
+  );
+});
+
+it(`verifies monthly trigger input validation`, async () => {
+  const trigger: NotificationTriggerInput = {
+    type: SchedulableTriggerInputTypes.MONTHLY,
+    day: 32,
+    hour: 12,
+    minute: 30,
+  };
+  const input = {
+    ...notificationTriggerInputTest,
+    trigger,
+  };
+  try {
+    await scheduleNotificationAsync(input);
+    fail('Test should have thrown');
+  } catch (e) {
+    expect(e instanceof RangeError).toBe(true);
+    expect(`${e}`.indexOf('RangeError')).toEqual(0);
+    expect(`${e}`.indexOf('Found: 32')).not.toEqual(-1);
   }
 });
 
@@ -159,6 +205,7 @@ it(`verifies yearly trigger input validation`, async () => {
   };
   try {
     await scheduleNotificationAsync(input);
+    fail('Test should have thrown');
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`).toEqual(
