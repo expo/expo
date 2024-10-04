@@ -40,7 +40,7 @@ class EitherTypeConversionTest {
   )
 
   @Test
-  fun either_with_overlapping_types_should_be_convertible() = conversionTest(
+  fun either_with_overlapping_types_should_be_convertible() = conversionTest<Either<URL, String>, URL>(
     jsValue = "https://expo.dev/".addSingleQuotes(),
     nativeAssertion = { either: Either<URL, String> ->
       Truth.assertThat(either.`is`(URL::class)).isTrue()

@@ -11,6 +11,8 @@ import expo.modules.kotlin.types.folly.FollyDynamicExtensionConverter
 import java.io.File
 import java.net.URI
 import java.net.URL
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 object JSTypeConverter {
   interface ContainerProvider {
@@ -48,6 +50,7 @@ object JSTypeConverter {
       is File -> value.toJSValue()
       is Pair<*, *> -> value.toJSValue(containerProvider)
       is Long -> value.toDouble()
+      is Duration -> value.toDouble(DurationUnit.SECONDS)
       is RawTypedArrayHolder -> value.rawArray
       is Collection<*> -> value.toJSValue(containerProvider)
       else -> value
@@ -78,6 +81,7 @@ object JSTypeConverter {
       is File -> value.toJSValue()
       is Pair<*, *> -> value.toJSValue(containerProvider)
       is Long -> value.toDouble()
+      is Duration -> value.toDouble(DurationUnit.SECONDS)
       is RawTypedArrayHolder -> value.rawArray
       is Collection<*> -> if (useExperimentalConverter) {
         value.toJSValueExperimental()
