@@ -258,3 +258,46 @@ const streamToString = async (stream: ReadableStream): Promise<string> => {
   outs.push(decoder.decode());
   return outs.join('');
 };
+
+export type GetSsrConfigArgs = {
+  config: Omit<ResolvedConfig, 'middleware'>;
+  pathname: string;
+  searchParams: URLSearchParams;
+};
+
+type GetSsrConfigOpts = {
+  entries: EntriesDev;
+  resolveClientEntry: ResolveClientEntry;
+};
+
+export async function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpts) {
+  const { pathname, searchParams } = args;
+  const { entries, resolveClientEntry } = opts;
+
+  const {
+    default: { getSsrConfig },
+    buildConfig,
+  } = entries as (EntriesDev & { loadModule: never; buildConfig: never }) | EntriesPrd;
+
+  const ssrConfig = await getSsrConfig?.(pathname, {
+    searchParams,
+    buildConfig,
+  });
+  if (!ssrConfig) {
+    return null;
+  }
+  const bundlerConfig = new Proxy(
+    {},
+    {
+      get(_target, encodedId: string) {
+        const [file, name] = encodedId.split('#') as [string, string];
+        const { id } = resolveClientEntry(file);
+        return { id, chunks: [id], name, async: true };
+      },
+    }
+  );
+  return {
+    ...ssrConfig,
+    body: renderToReadableStream(ssrConfig.body, bundlerConfig),
+  };
+}
