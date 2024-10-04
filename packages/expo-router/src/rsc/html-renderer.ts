@@ -9,13 +9,13 @@ import type {
   FunctionComponent,
   ComponentProps,
 } from 'react';
-import type * as RDServerType from 'react-dom/server.edge';
-import type { default as RSDWClientType } from 'react-server-dom-webpack/client.edge';
+// import type * as RDServerType from 'react-dom/server.edge';
+// import type { default as RSDWClientType } from 'react-server-dom-webpack/client.edge';
 
-// import { createElement } from 'react';
-// import { renderToReadableStream } from 'react-dom/server.edge';
-// import { createFromReadableStream } from 'react-server-dom-webpack/client.edge';
-// import { ServerRoot } from './router/host';
+import { createElement } from 'react';
+import { renderToReadableStream } from 'react-dom/server.edge';
+import { createFromReadableStream } from 'react-server-dom-webpack/client.edge';
+import { ServerRoot } from './router/host';
 // import { injectRSCPayload } from 'rsc-html-stream/server';
 
 global.__webpack_chunk_load__ = async (chunk) => {
@@ -82,34 +82,34 @@ export async function renderHtml({
   resolveClientEntry: ResolveClientEntry;
   loadModule: (id: string) => Promise<any>;
 }) {
-  const loadClientModule = async <T>(name: string): Promise<T> => {
-    // console.log('loadClientModule:', name);
-    const m = await $$require_external(name);
-    // console.log('loadClientModule.2:', m);
-    // Interop default
-    return { default: m.default ? Promise.resolve(m.default) : m };
-  };
+  // const loadClientModule = async <T>(name: string): Promise<T> => {
+  //   // console.log('loadClientModule:', name);
+  //   const m = await $$require_external(name);
+  //   // console.log('loadClientModule.2:', m);
+  //   // Interop default
+  //   return { default: m.default ? Promise.resolve(m.default) : m };
+  // };
   //   const { injectRSCPayload } = await import('rsc-html-stream/server');
 
-  const [
-    {
-      default: { createElement },
-    },
-    {
-      default: { renderToReadableStream },
-    },
-    {
-      default: { createFromReadableStream },
-    },
-    {
-      default: { ServerRoot },
-    },
-  ] = await Promise.all([
-    loadClientModule<{ default: typeof ReactType }>('react'),
-    loadClientModule<{ default: typeof RDServerType }>('react-dom/server.edge'),
-    loadClientModule<{ default: typeof RSDWClientType }>('react-server-dom-webpack/client.edge'),
-    loadClientModule<typeof import('./router/host')>('expo-router/build/rsc/router/host'),
-  ]);
+  // const [
+  //   {
+  //     default: { createElement },
+  //   },
+  //   {
+  //     default: { renderToReadableStream },
+  //   },
+  //   {
+  //     default: { createFromReadableStream },
+  //   },
+  //   {
+  //     default: { ServerRoot },
+  //   },
+  // ] = await Promise.all([
+  //   loadClientModule<{ default: typeof ReactType }>('react'),
+  //   loadClientModule<{ default: typeof RDServerType }>('react-dom/server.edge'),
+  //   loadClientModule<{ default: typeof RSDWClientType }>('react-server-dom-webpack/client.edge'),
+  //   loadClientModule<typeof import('./router/host')>('expo-router/build/rsc/router/host'),
+  // ]);
 
   const ssrConfig = await getSsrConfigForHtml?.(pathname, searchParams);
   if (!ssrConfig) {

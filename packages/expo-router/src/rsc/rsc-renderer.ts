@@ -276,12 +276,12 @@ export async function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpt
 
   const {
     default: { getSsrConfig },
-    buildConfig,
+    // buildConfig,
   } = entries as (EntriesDev & { loadModule: never; buildConfig: never }) | EntriesPrd;
 
   const ssrConfig = await getSsrConfig?.(pathname, {
     searchParams,
-    buildConfig,
+    // buildConfig,
   });
   if (!ssrConfig) {
     return null;
@@ -298,6 +298,6 @@ export async function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpt
   );
   return {
     ...ssrConfig,
-    body: renderToReadableStream(ssrConfig.body, bundlerConfig),
+    body: renderToReadableStream(ssrConfig.html, bundlerConfig),
   };
 }

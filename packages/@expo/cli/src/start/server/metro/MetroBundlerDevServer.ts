@@ -918,6 +918,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
+          getServerUrl: () => {
+            return this.getDevServerUrlOrAssert();
+          },
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -927,19 +930,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {
         if (useServerRendering) {
-          middleware.use(
-            createRouteHandlerMiddleware(this.projectRoot, {
-              appDir,
-              routerRoot,
-              config,
-              ...config.exp.extra?.router,
-              bundleApiRoute: (functionFilePath) =>
-                this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
-              getStaticPageAsync: (pathname) => {
-                return this.getStaticPageAsync(pathname);
-              },
-            })
-          );
+          // middleware.use(
+          //   createRouteHandlerMiddleware(this.projectRoot, {
+          //     appDir,
+          //     routerRoot,
+          //     config,
+          //     ...config.exp.extra?.router,
+          //     bundleApiRoute: (functionFilePath) =>
+          //       this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
+          //     getStaticPageAsync: (pathname) => {
+          //       return this.getStaticPageAsync(pathname);
+          //     },
+          //   })
+          // );
 
           observeAnyFileChanges(
             {

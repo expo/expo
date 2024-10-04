@@ -9,7 +9,7 @@
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRsc = void 0;
+exports.getSsrConfig = exports.renderRsc = void 0;
 const server_1 = require("react-server-dom-webpack/server");
 const path_1 = require("./path");
 const utils_1 = require("./router/utils");
@@ -186,4 +186,30 @@ const streamToString = async (stream) => {
     outs.push(decoder.decode());
     return outs.join('');
 };
+async function getSsrConfig(args, opts) {
+    const { pathname, searchParams } = args;
+    const { entries, resolveClientEntry } = opts;
+    const { default: { getSsrConfig },
+    // buildConfig,
+     } = entries;
+    const ssrConfig = await getSsrConfig?.(pathname, {
+        searchParams,
+        // buildConfig,
+    });
+    if (!ssrConfig) {
+        return null;
+    }
+    const bundlerConfig = new Proxy({}, {
+        get(_target, encodedId) {
+            const [file, name] = encodedId.split('#');
+            const { id } = resolveClientEntry(file);
+            return { id, chunks: [id], name, async: true };
+        },
+    });
+    return {
+        ...ssrConfig,
+        body: (0, server_1.renderToReadableStream)(ssrConfig.html, bundlerConfig),
+    };
+}
+exports.getSsrConfig = getSsrConfig;
 //# sourceMappingURL=rsc-renderer.js.map
