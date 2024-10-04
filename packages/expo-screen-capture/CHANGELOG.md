@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Make permissions auto-grant on Android 14+. ([#31865](https://github.com/expo/expo/pull/31865) by [@aleqsio](https://github.com/aleqsio))
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
