@@ -299,7 +299,24 @@ function collectImports(path, state) {
         }, path);
     }
 }
+const MAGIC_IMPORT_COMMENT = '@metro-ignore';
+/**
+ * @returns `true` if the import contains the magic comment for opting-out of bundling.
+ */
+function hasMagicImportComment(path) {
+    // Get first argument of import()
+    const [firstArg] = path.node.arguments;
+    // Check comments before the argument
+    return !!(firstArg?.leadingComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)) ||
+        path.node.leadingComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)) ||
+        // Get the inner comments between import and its argument
+        path.node.innerComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)));
+}
 function processImportCall(path, state, options) {
+    // Check both leading and inner comments
+    if (hasMagicImportComment(path)) {
+        return;
+    }
     const name = getModuleNameFromCallArgs(path);
     if (name == null) {
         if (options.dynamicRequires === 'warn') {
