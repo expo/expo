@@ -127,7 +127,7 @@
     "gl-mat4": "^1.1.4",
     "hsv2rgb": "^1.1.0",
     "i18n-js": "^3.1.0",
-    "lottie-react-native": "6.7.0",
+    "lottie-react-native": "7.0.0",
     "moment": "^2.29.4",
     "path": "^0.12.7",
     "pixi.js": "^4.6.1",
