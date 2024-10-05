@@ -1,7 +1,7 @@
 import { defaultDatabaseDirectory } from '../SQLiteDatabase';
 import { createDatabasePath } from '../pathUtils';
 
-jest.mock('../ExpoSQLiteNext', () => require('../__mocks__/ExpoSQLiteNext'));
+jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 describe(createDatabasePath, () => {
   it('should return :memory: without any changes', () => {
