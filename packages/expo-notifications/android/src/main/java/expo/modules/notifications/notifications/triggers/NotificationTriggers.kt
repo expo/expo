@@ -8,10 +8,9 @@ import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
 
-open class ChannelAwareTrigger(
-  private val channelId: String?
-) : NotificationTrigger, Serializable {
-  constructor(parcel: Parcel): this(parcel.readString())
+open class ChannelAwareTrigger(open val channelId: String?) :
+  NotificationTrigger, Serializable {
+  constructor(parcel: Parcel) : this(parcel.readString())
 
   override fun describeContents(): Int = 0
 
@@ -41,21 +40,9 @@ open class ChannelAwareTrigger(
 /**
  * A schedulable trigger representing a notification to be scheduled once per day.
  */
-class DailyTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
-  var hour: Int
-    private set
-  var minute: Int
-    private set
+class DailyTrigger(override val channelId: String?, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
 
-  constructor(hour: Int, minute: Int, channelId: String?) : super(channelId) {
-    this.hour = hour
-    this.minute = minute
-  }
-
-  private constructor(parcel: Parcel) : super(parcel) {
-    hour = `in`.readInt()
-    minute = `in`.readInt()
-  }
+  private constructor(parcel: Parcel) : this(parcel.readString(), parcel.readInt(), parcel.readInt())
 
   override fun nextTriggerDate(): Date? {
     val nextTriggerDate = Calendar.getInstance()
@@ -97,17 +84,10 @@ class DailyTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
 /**
  * A schedulable trigger representing notification to be scheduled only once at a given moment of time.
  */
-class DateTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
-  var triggerDate: Date
-    private set
+class DateTrigger(override val channelId: String?, private val timestamp: Long) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+  val triggerDate = Date(timestamp)
 
-  constructor(timestamp: Long, channelId: String?) : super(channelId) {
-    triggerDate = Date(timestamp)
-  }
-
-  private constructor(`in`: Parcel) : super(`in`) {
-    triggerDate = Date(`in`.readLong())
-  }
+  private constructor(parcel: Parcel) : this(parcel.readString(), parcel.readLong())
 
   override fun nextTriggerDate(): Date? {
     val now = Date()
@@ -145,25 +125,9 @@ class DateTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
 /**
  * A schedulable trigger representing a notification to be scheduled once per month.
  */
-class MonthlyTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
-  var day: Int
-    private set
-  var hour: Int
-    private set
-  var minute: Int
-    private set
+class MonthlyTrigger(override val channelId: String?, val day: Int, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
 
-  constructor(day: Int, hour: Int, minute: Int, channelId: String?) : super(channelId) {
-    this.day = day
-    this.hour = hour
-    this.minute = minute
-  }
-
-  private constructor(`in`: Parcel) : super(`in`) {
-    day = `in`.readInt()
-    hour = `in`.readInt()
-    minute = `in`.readInt()
-  }
+  private constructor(parcel: Parcel) : this(parcel.readString(), parcel.readInt(), parcel.readInt(), parcel.readInt())
 
   override fun nextTriggerDate(): Date? {
     val nextTriggerDate = Calendar.getInstance()
@@ -213,39 +177,26 @@ class MonthlyTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
  * * initial time, so eg. a trigger started at 11111000 time repeated every 1000 ms should always
  * * trigger around …000 timestamp.*
  */
-class TimeIntervalTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
-  private var mTriggerDate: Date
-  var timeInterval: Long
-    private set
-  var isRepeating: Boolean
-    private set
+class TimeIntervalTrigger(override val channelId: String?, val timeInterval: Long, private val repeats: Boolean) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+  private var triggerDate = Date(Date().time + timeInterval * 1000)
+  val isRepeating = repeats
 
-  constructor(timeInterval: Long, repeats: Boolean, channelId: String?) : super(channelId) {
-    this.timeInterval = timeInterval
-    mTriggerDate = Date(Date().time + this.timeInterval * 1000)
-    isRepeating = repeats
-  }
-
-  private constructor(`in`: Parcel) : super(`in`) {
-    mTriggerDate = Date(`in`.readLong())
-    timeInterval = `in`.readLong()
-    isRepeating = `in`.readByte().toInt() == 1
-  }
+  private constructor(parcel: Parcel) : this(parcel.readString(), parcel.readLong(), parcel.readByte().toInt() == 1)
 
   override fun nextTriggerDate(): Date? {
     val now = Date()
 
     if (isRepeating) {
-      while (mTriggerDate.before(now)) {
-        mTriggerDate.time += timeInterval * 1000
+      while (triggerDate.before(now)) {
+        triggerDate.time += timeInterval * 1000
       }
     }
 
-    if (mTriggerDate.before(now)) {
+    if (triggerDate.before(now)) {
       return null
     }
 
-    return mTriggerDate
+    return triggerDate
   }
 
   override fun describeContents(): Int {
@@ -254,7 +205,6 @@ class TimeIntervalTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger 
 
   override fun writeToParcel(dest: Parcel, flags: Int) {
     super.writeToParcel(dest, flags)
-    dest.writeLong(mTriggerDate.time)
     dest.writeLong(timeInterval)
     dest.writeByte((if (isRepeating) 1 else 0).toByte())
   }
@@ -277,25 +227,9 @@ class TimeIntervalTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger 
 /**
  * A schedulable trigger representing a notification to be scheduled once per week.
  */
-class WeeklyTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
-  var weekday: Int
-    private set
-  var hour: Int
-    private set
-  var minute: Int
-    private set
+class WeeklyTrigger(override val channelId: String?, val weekday: Int, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
 
-  constructor(weekday: Int, hour: Int, minute: Int, channelId: String?) : super(channelId) {
-    this.weekday = weekday
-    this.hour = hour
-    this.minute = minute
-  }
-
-  private constructor(`in`: Parcel) : super(`in`) {
-    weekday = `in`.readInt()
-    hour = `in`.readInt()
-    minute = `in`.readInt()
-  }
+  private constructor(parcel: Parcel) : this(parcel.readString(), parcel.readInt(), parcel.readInt(), parcel.readInt())
 
   override fun nextTriggerDate(): Date? {
     val nextTriggerDate = Calendar.getInstance()
@@ -339,29 +273,9 @@ class WeeklyTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
 /**
  * A schedulable trigger representing a notification to be scheduled once per year.
  */
-class YearlyTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
-  var day: Int
-    private set
-  var month: Int
-    private set
-  var hour: Int
-    private set
-  var minute: Int
-    private set
+class YearlyTrigger(override val channelId: String?, val day: Int, val month: Int, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
 
-  constructor(day: Int, month: Int, hour: Int, minute: Int, channelId: String?) : super(channelId) {
-    this.day = day
-    this.month = month
-    this.hour = hour
-    this.minute = minute
-  }
-
-  private constructor(`in`: Parcel) : super(`in`) {
-    day = `in`.readInt()
-    month = `in`.readInt()
-    hour = `in`.readInt()
-    minute = `in`.readInt()
-  }
+  private constructor(parcel: Parcel) : this(parcel.readString(), parcel.readInt(), parcel.readInt(), parcel.readInt(), parcel.readInt())
 
   override fun nextTriggerDate(): Date? {
     val nextTriggerDate = Calendar.getInstance()

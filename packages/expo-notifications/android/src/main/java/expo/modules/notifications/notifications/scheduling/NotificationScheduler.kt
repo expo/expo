@@ -157,14 +157,14 @@ open class NotificationScheduler : Module() {
         val seconds = params["seconds"] as? Number
           ?: throw InvalidArgumentException("Invalid value provided as interval of trigger.")
 
-        TimeIntervalTrigger(seconds.toLong(), params.getBoolean("repeats"), channelId)
+        TimeIntervalTrigger(channelId, seconds.toLong(), params.getBoolean("repeats"))
       }
 
       "date" -> {
         val timestamp = params["timestamp"] as? Number
           ?: throw InvalidArgumentException("Invalid value provided as date of trigger.")
 
-        DateTrigger(timestamp.toLong(), channelId)
+        DateTrigger(channelId, timestamp.toLong())
       }
 
       "daily" -> {
@@ -176,9 +176,9 @@ open class NotificationScheduler : Module() {
         }
 
         DailyTrigger(
+          channelId,
           hour.toInt(),
-          minute.toInt(),
-          channelId
+          minute.toInt()
         )
       }
 
@@ -191,10 +191,10 @@ open class NotificationScheduler : Module() {
           throw InvalidArgumentException("Invalid value(s) provided for weekly trigger.")
         }
         WeeklyTrigger(
+          channelId,
           weekday.toInt(),
           hour.toInt(),
-          minute.toInt(),
-          channelId
+          minute.toInt()
         )
       }
 
@@ -208,10 +208,10 @@ open class NotificationScheduler : Module() {
         }
 
         MonthlyTrigger(
+          channelId,
           day.toInt(),
           hour.toInt(),
-          minute.toInt(),
-          channelId
+          minute.toInt()
         )
       }
 
@@ -226,11 +226,11 @@ open class NotificationScheduler : Module() {
         }
 
         YearlyTrigger(
+          channelId,
           day.toInt(),
           month.toInt(),
           hour.toInt(),
-          minute.toInt(),
-          channelId
+          minute.toInt()
         )
       }
 
