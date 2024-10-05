@@ -358,6 +358,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/custom-updates-server/': '/versions/latest/sdk/updates/',
   '/bare/error-recovery/': '/eas-update/error-recovery/',
   '/deploy/instant-updates/': '/deploy/send-over-the-air-updates/',
+  '/eas-update/build-locally/': '/eas-update/standalone-service/',
+  '/eas-update/updating-your-app/': '/eas-update/getting-started/',
 
   // Expo Router Advanced guides
   '/router/advance/root-layout': '/router/advanced/root-layout/',

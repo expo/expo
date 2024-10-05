@@ -1,0 +1,71 @@
+---
+title: Using EAS Update independently of other services
+sidebar_title: Using EAS Update independently
+description: Learn how to use EAS Update independently of other EAS services, such as Build.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+EAS Update works great as a standalone service, so you can use it with or without EAS Build and other EAS services. All of the main features of EAS Update are designed to be agnostic of the build pipeline and used in production by large organizations that do not use other EAS services.
+
+## What are the downsides of using EAS Update without other EAS services?
+
+EAS Update and Build work closely together to provide an experience that is greater than the sum of its parts. For example, when you create a build with EAS Build we will help with the bookkeeping for various aspects related to updates, such as the runtime version, the channel, and its fingerprint. Builds that use the same channel and runtime version are grouped into a "Deployments" section, and this works as a dashboard to monitor the progress of update adoption. These sorts of bookkeeping and insights features that depend on knowledge of builds or other aspects of your app won't be available if you use EAS Update independently of other EAS services.
+
+That said, many organizations are already heavily invested in their CI/CD infrastructure or may have other reasons for wanting to use another build pipeline, and the benefits offered by deeper integration across EAS services may not be worth the switching costs of migrating to a different CI/CD provider.
+
+## Installing and configuring EAS Update
+
+Most of the installation and configuration steps are identical whether you are using EAS Build or not. Follow the [Getting Started](/eas-update/getting-started/). The main difference is in the [Configure the update channel](/eas-update/getting-started/#configure-the-update-channel) step.
+
+Each release of your app will point to a single EAS Update channel that it will pull updates from. Before you run a build, you'll need to configure the channel name. If you create a build with EAS Build, the channel name from **eas.json** will automatically be added to our build's **AndroidManifest.xml** and **Expo.plist** at build time. The primary difference between using EAS Update without EAS Build is that you will need to configure this field manually.
+
+## Using Continuous Native Generation (CNG)
+
+With [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), you can configure the channel name in the **app.json** file.
+
+{/* prettier-ignore */}
+```json app.json
+{
+  "expo": {
+    /* @hide ... */ /* @end */
+    "updates": {
+      /* @hide ... */ /* @end */
+      "requestHeaders": {
+        "expo-channel-name": "your-channel-name"
+      }
+      /* @hide ... */ /* @end */
+    }
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+Now when you run `npx expo prebuild`, the channel name will be added to the **AndroidManifest.xml** and **Expo.plist** files.
+
+## Without Continuous Native Generation (CNG)
+
+If you are not using [CNG](/workflow/continuous-native-generation/), you can configure the channel name directly in both **AndroidManifest.xml** and **Expo.plist**.
+
+### Android
+
+In **AndroidManifest.xml**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
+
+```xml android/app/src/main/AndroidManifest.xml
+<meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;your-channel-name&quot;}"/>
+```
+
+### iOS
+
+In **Expo.plist**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>EXUpdatesRequestHeaders</key>
+<dict>
+  <key>expo-channel-name</key>
+  <string>your-channel-name</string>
+</dict>
+```
