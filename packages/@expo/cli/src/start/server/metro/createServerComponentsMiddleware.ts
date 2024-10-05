@@ -4,6 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
@@ -21,6 +24,7 @@ import {
 import { createBundleUrlSearchParams, ExpoMetroOptions } from '../middleware/metroOptions';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { ExportAssetMap } from '../../../export/saveAssets';
+import { PathSpec } from 'expo-router/build/rsc/path';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
 
@@ -97,13 +101,13 @@ export function createServerComponentsMiddleware(
 
     // console.log('[SSR] load:', options);
 
-    console.log(
-      await ssrLoadModule(path.join(serverRoot, pathname), {
-        ...options,
+    // console.log(
+    //   await ssrLoadModule(path.join(serverRoot, pathname), {
+    //     ...options,
 
-        skipRunningSsr: true,
-      })
-    );
+    //     skipRunningSsr: true,
+    //   })
+    // );
   };
 
   // globalThis.__webpack_require__ = (id) => {
@@ -549,6 +553,122 @@ export function createServerComponentsMiddleware(
     // Get the static client boundaries (no dead code elimination allowed) for the production export.
     getExpoRouterClientReferencesAsync,
 
+    exportHtmlFiles: async () => {
+      const platform = 'web';
+
+      const { renderHtml } = await getHtmlRendererAsync(platform);
+
+      const { getSsrConfig } = await getRscRendererAsync(platform);
+
+      const nonJsAssets = clientBuildOutput.output.flatMap(({ type, fileName }) =>
+        type === 'asset' && !fileName.endsWith('.js') ? [fileName] : []
+      );
+      const cssAssets = nonJsAssets.filter((asset) => asset.endsWith('.css'));
+      const basePrefix = config.basePath + config.rscPath + '/';
+      const publicIndexHtmlFile = joinPath(rootDir, config.distDir, DIST_PUBLIC, 'index.html');
+      const publicIndexHtml = await fs.promises.readFile(publicIndexHtmlFile, {
+        encoding: 'utf8',
+      });
+      if (await willEmitPublicIndexHtml(env, config, distEntries, buildConfig)) {
+        await unlink(publicIndexHtmlFile);
+      }
+      const publicIndexHtmlHead = publicIndexHtml.replace(/.*?<head>(.*?)<\/head>.*/s, '$1');
+      const dynamicHtmlPathMap = new Map<PathSpec, string>();
+      await Promise.all(
+        Array.from(buildConfig).map(
+          async ({ pathname, isStatic, entries, customCode, context }) => {
+            const pathSpec = typeof pathname === 'string' ? pathname2pathSpec(pathname) : pathname;
+            let htmlStr = publicIndexHtml;
+            let htmlHead = publicIndexHtmlHead;
+            if (cssAssets.length) {
+              const cssStr = cssAssets
+                .map((asset) => `<link rel="stylesheet" href="${config.basePath}${asset}">`)
+                .join('\n');
+              // HACK is this too naive to inject style code?
+              htmlStr = htmlStr.replace(/<\/head>/, cssStr);
+              htmlHead += cssStr;
+            }
+            const inputsForPrefetch = new Set<string>();
+            const moduleIdsForPrefetch = new Set<string>();
+            for (const { input, skipPrefetch } of entries || []) {
+              if (!skipPrefetch) {
+                inputsForPrefetch.add(input);
+                for (const id of getClientModules(input)) {
+                  moduleIdsForPrefetch.add(id);
+                }
+              }
+            }
+            const code =
+              generatePrefetchCode(basePrefix, inputsForPrefetch, moduleIdsForPrefetch) +
+              (customCode || '');
+            if (code) {
+              // HACK is this too naive to inject script code?
+              htmlStr = htmlStr.replace(
+                /<\/head>/,
+                `<script type="module" async>${code}</script></head>`
+              );
+              htmlHead += `<script type="module" async>${code}</script>`;
+            }
+            if (!isStatic) {
+              dynamicHtmlPathMap.set(pathSpec, htmlHead);
+              return;
+            }
+            pathname = pathSpec2pathname(pathSpec);
+            const destHtmlFile = path.join(
+              rootDir,
+              config.distDir,
+              DIST_PUBLIC,
+              path.extname(pathname)
+                ? pathname
+                : pathname === '/404'
+                  ? '404.html' // HACK special treatment for 404, better way?
+                  : pathname + '/index.html'
+            );
+            // In partial mode, skip if the file already exists.
+            if (fs.existsSync(destHtmlFile)) {
+              return;
+            }
+            const htmlReadable = await renderHtml({
+              // config: {},
+              pathname,
+              searchParams: new URLSearchParams(),
+              htmlHead,
+              renderRscForHtml: (input, params) =>
+                renderRsc(
+                  { env, config, input, context, decodedBody: params },
+                  { isDev: false, entries: distEntries }
+                ),
+              // getSsrConfigForHtml: async (pathname, searchParams) => {
+              //   return getSsrConfig(
+              //     { config: {}, pathname, searchParams },
+              //     {
+              //       entries,
+              //       resolveClientEntry: getResolveClientEntry({ platform }),
+              //     }
+              //   );
+              // },
+              getSsrConfigForHtml: (pathname, searchParams) =>
+                getSsrConfig(
+                  { config: {}, pathname, searchParams },
+                  { isDev: false, entries: distEntries }
+                ),
+              isExporting: true,
+              loadModule: distEntries.loadModule,
+            });
+            await fs.promises.mkdir(path.join(destHtmlFile, '..'), { recursive: true });
+            if (htmlReadable) {
+              await pipeline(
+                Readable.fromWeb(htmlReadable as any),
+                createWriteStream(destHtmlFile)
+              );
+            } else {
+              await fs.promises.writeFile(destHtmlFile, htmlStr);
+            }
+          }
+        )
+      );
+    },
+
     async exportRoutesAsync(
       {
         platform,
@@ -661,9 +781,54 @@ const encodeInput = (input: string) => {
   return input + '.txt';
 };
 
+const generatePrefetchCode = (
+  basePrefix: string,
+  inputs: Iterable<string>,
+  moduleIds: Iterable<string>
+) => {
+  const inputsArray = Array.from(inputs);
+  let code = '';
+  if (inputsArray.length) {
+    code += `
+globalThis.__EXPO_PREFETCHED__ = {
+${inputsArray
+  .map((input) => {
+    const url = basePrefix + encodeInput(input);
+    return `  '${url}': fetch('${url}'),`;
+  })
+  .join('\n')}
+};`;
+  }
+  for (const moduleId of moduleIds) {
+    code += `
+import('${moduleId}');`;
+  }
+  return code;
+};
+
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
   return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
 }
+
+const pathname2pathSpec = (pathname: string): PathSpec =>
+  pathname
+    .split('/')
+    .filter(Boolean)
+    .map((name) => ({ type: 'literal', name }));
+
+const pathSpec2pathname = (pathSpec: PathSpec): string => {
+  if (pathSpec.some(({ type }) => type !== 'literal')) {
+    throw new Error('Cannot convert pathSpec to pathname: ' + JSON.stringify(pathSpec));
+  }
+  return '/' + pathSpec.map(({ name }) => name!).join('/');
+};
+
+import fs from 'fs';
+
+const filePathToOsPath = (filePath: string) =>
+  path.sep === '/' ? filePath : filePath.replace(/\//g, '\\');
+
+const createWriteStream = (filePath: string) => fs.createWriteStream(filePathToOsPath(filePath));

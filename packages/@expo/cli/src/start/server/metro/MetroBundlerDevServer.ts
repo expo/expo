@@ -1032,6 +1032,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
+          getServerUrl: () => {
+            return this.getDevServerUrlOrAssert();
+          },
+          getStaticScriptUrl() {
+            return '';
+          },
         });
         this.rscRenderer = rscMiddleware;
       }
