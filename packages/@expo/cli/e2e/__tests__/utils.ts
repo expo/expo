@@ -23,7 +23,12 @@ export function getTemporaryPath() {
 }
 
 export function execute(...args: string[]) {
-  return execa('node', [bin, ...args], { cwd: projectRoot });
+  return execaLog('node', [bin, ...args], { cwd: projectRoot });
+}
+
+export function execaLog(command: string, args: string[], options: execa.Options) {
+  //   console.log(`Running: ${command} ${args.join(' ')}`);
+  return execa(command, args, options);
 }
 
 export function getRoot(...args: string[]) {

@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- Throw clear error when importing `react-native/Libraries/Utilities/codegenNativeCommands` on web. ([#31791](https://github.com/expo/expo/pull/31791) by [@EvanBacon](https://github.com/EvanBacon))
+- automatically deploy server from eager exports. ([#31707](https://github.com/expo/expo/pull/31707) by [@EvanBacon](https://github.com/EvanBacon))
 - eagerly bundle JS during `npx expo run:ios` for faster production failures. ([#31670](https://github.com/expo/expo/pull/31670) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `npx expo export --no-ssg` to export web API routes without static rendering the pages. ([#31475](https://github.com/expo/expo/pull/31475) by [@EvanBacon](https://github.com/EvanBacon))
 - disable export:embed cache reset when running in CI. ([#31663](https://github.com/expo/expo/pull/31663) by [@EvanBacon](https://github.com/EvanBacon))
@@ -37,9 +39,11 @@
 - Remove `node-fetch` in favor of `undici` for improved Node 22+ support. ([#29511](https://github.com/expo/expo/pull/29511) by [@byCedric](https://github.com/byCedric))
 - Added support to download template from npm when running prebuild. ([#31195](https://github.com/expo/expo/pull/31195) by [@kudo](https://github.com/kudo))
 - Add an optional New Architecture compatibility check for dependencies added via `install` command. ([#31222](https://github.com/expo/expo/pull/31222) by [@Simek](https://github.com/Simek))
+- Add support in `expo run android` for product flavors with custom app ids. ([#31756](https://github.com/expo/expo/pull/31756) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
+- Fix search params in RSC. ([#31641](https://github.com/expo/expo/pull/31641) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix cache sharing across Expo Go and dev client. ([#31566](https://github.com/expo/expo/pull/31566) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix exporting index files for server hosting in Expo Router. ([#31543](https://github.com/expo/expo/pull/31543) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix API route bundling in development. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))

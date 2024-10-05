@@ -17,7 +17,7 @@ async function action(options: ActionOptions) {
   try {
     await reviewPullRequestAsync(+options.pr);
   } catch (error) {
-    logger.error(error);
+    logger.error(error, error.stack);
     throw error;
   }
 }

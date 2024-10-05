@@ -1,4 +1,4 @@
-import ExpoSQLite from './ExpoSQLiteNext';
+import ExpoSQLite from './ExpoSQLite';
 import { SQLiteStatement, } from './SQLiteStatement';
 import { createDatabasePath } from './pathUtils';
 /**

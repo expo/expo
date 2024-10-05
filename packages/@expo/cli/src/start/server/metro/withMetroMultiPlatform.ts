@@ -13,7 +13,7 @@ import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { createFastResolver } from './createExpoMetroResolver';
+import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
@@ -565,6 +565,13 @@ export function withExtendedResolver(
 
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
+          // // Disallow importing confusing native modules on web
+          if (moduleName.includes('react-native/Libraries/Utilities/codegenNativeCommands')) {
+            throw new FailedToResolvePathError(
+              `Importing native-only module "${moduleName}" on web from: ${context.originModulePath}`
+            );
+          }
+
           // Replace with static shims
 
           const normalName = normalizeSlashes(result.filePath)

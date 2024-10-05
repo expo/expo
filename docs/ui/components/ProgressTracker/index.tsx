@@ -20,13 +20,18 @@ type ProgressTrackerProps = {
 
 export function ProgressTracker({
   currentChapterIndex,
+  name,
   summary,
   nextChapterTitle,
   nextChapterDescription,
   nextChapterLink,
 }: ProgressTrackerProps) {
-  const { chapters, setChapters } = useTutorialChapterCompletion();
-  const currentChapter = chapters[currentChapterIndex];
+  const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
+    useTutorialChapterCompletion();
+  const isGetStartedTutorial = name === 'GET_STARTED';
+  const currentChapter = isGetStartedTutorial
+    ? getStartedChapters[currentChapterIndex]
+    : chapters[currentChapterIndex];
 
   const handleChapterComplete = () => {
     const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
@@ -36,6 +41,16 @@ export function ProgressTracker({
       return chapter;
     });
     setChapters(updatedChapters);
+  };
+
+  const handleGetStartedChapterComplete = () => {
+    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: true };
+      }
+      return chapter;
+    });
+    setGetStartedChapters(updatedChapters);
   };
 
   const handleChapterIncomplete = () => {
@@ -48,11 +63,29 @@ export function ProgressTracker({
     setChapters(updatedChapters);
   };
 
+  const handleGetStartedChapterIncomplete = () => {
+    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
+      if (index === currentChapterIndex) {
+        return { ...chapter, completed: false };
+      }
+      return chapter;
+    });
+    setGetStartedChapters(updatedChapters);
+  };
+
   const handleCheckboxChange = () => {
     if (currentChapter.completed) {
       handleChapterIncomplete();
     } else {
       handleChapterComplete();
+    }
+  };
+
+  const handleCheckboxChangeForGetStarted = () => {
+    if (currentChapter.completed) {
+      handleGetStartedChapterIncomplete();
+    } else {
+      handleGetStartedChapterComplete();
     }
   };
 
@@ -77,8 +110,9 @@ export function ProgressTracker({
             label={
               currentChapter.completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'
             }
-            // readOnly
-            onChange={handleCheckboxChange}
+            onChange={
+              isGetStartedTutorial ? handleCheckboxChangeForGetStarted : handleCheckboxChange
+            }
           />
         </div>
       </div>

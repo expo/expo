@@ -24,7 +24,7 @@ import expo.modules.notifications.service.interfaces.SchedulingDelegate
 import kotlin.concurrent.thread
 
 /**
- * Subclass of FirebaseMessagingService, central dispatcher for all the notifications-related actions.
+ * Central dispatcher for all the notifications-related actions.
  */
 open class NotificationsService : BroadcastReceiver() {
   companion object {
@@ -586,6 +586,11 @@ open class NotificationsService : BroadcastReceiver() {
   protected open fun getSchedulingDelegate(context: Context): SchedulingDelegate =
     ExpoSchedulingDelegate(context)
 
+  /*
+   * All of the doWork calls are dispatched to this method.
+   * Pretty much everything from presenting a notification to handling a response
+   * to a notification button press is handled through here.
+   * */
   override fun onReceive(context: Context, intent: Intent?) {
     val pendingIntent = goAsync()
     thread {

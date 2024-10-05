@@ -1,4 +1,4 @@
-import type { NativeModule, SharedObject } from 'expo';
+import type { NativeModule, SharedObject, SharedRef } from 'expo';
 export type ImageResult = {
     /**
      * An URI to the modified image (usable as the source for an `Image` or `Video` element).
@@ -164,7 +164,7 @@ export declare class Context extends SharedObject {
 /**
  * A reference to a native instance of the image.
  */
-export declare class ImageRef extends SharedObject {
+export declare class ImageRef extends SharedRef<'image'> {
     /**
      * Width of the image.
      */

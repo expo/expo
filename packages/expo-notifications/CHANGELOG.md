@@ -10,9 +10,11 @@
 ### 🎉 New features
 
 - Add clearLastNotificationResponseAsync to API. ([#31607](https://github.com/expo/expo/pull/31607) by [@douglowder](https://github.com/douglowder))
+- New monthly trigger type for scheduled notifications. ([#31823](https://github.com/expo/expo/pull/31823) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
+- [android] fix notifications actions not being presented ([#31795](https://github.com/expo/expo/pull/31795) by [@vonovak](https://github.com/vonovak))
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30478](https://github.com/expo/expo/pull/30478) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others

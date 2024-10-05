@@ -1,6 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 
-import ExpoSQLite from './ExpoSQLiteNext';
+import ExpoSQLite from './ExpoSQLite';
 import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
 import {
   SQLiteBindParams,

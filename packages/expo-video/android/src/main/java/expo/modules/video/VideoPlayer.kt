@@ -2,10 +2,12 @@ package expo.modules.video
 
 import android.content.Context
 import android.view.SurfaceView
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
@@ -18,6 +20,7 @@ import expo.modules.video.enums.PlayerStatus.*
 import expo.modules.video.playbackService.ExpoVideoPlaybackService
 import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
@@ -25,7 +28,7 @@ import java.lang.ref.WeakReference
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?) : AutoCloseable, SharedObject(appContext) {
+class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
@@ -37,6 +40,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .build()
 
   val serviceConnection = PlaybackServiceConnection(WeakReference(this))
+  val intervalUpdateClock = IntervalUpdateClock(this)
 
   var playing by IgnoreSameSet(false) { new, old ->
     sendEvent(PlayerEvent.IsPlayingChanged(new, old))
@@ -86,6 +90,27 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       sendEvent(PlayerEvent.PlaybackRateChanged(new.speed, old.speed))
     }
   }
+
+  val currentOffsetFromLive: Float?
+    get() {
+      return if (player.currentLiveOffset == C.TIME_UNSET) {
+        null
+      } else {
+        player.currentLiveOffset / 1000f
+      }
+    }
+
+  val currentLiveTimestamp: Long?
+    get() {
+      val window = Timeline.Window()
+      if (!player.currentTimeline.isEmpty) {
+        player.currentTimeline.getWindow(player.currentMediaItemIndex, window)
+      }
+      if (window.windowStartTimeMs == C.TIME_UNSET) {
+        return null
+      }
+      return window.windowStartTimeMs + player.currentPosition
+    }
 
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
@@ -236,5 +261,14 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     event.emit(this, listeners.mapNotNull { it.get() })
     // Emits to the JS side
     emit(event.name, *event.arguments)
+  }
+
+  // MARK: IntervalUpdateEmitter
+
+  override fun emitTimeUpdate() {
+    appContext?.mainQueue?.launch {
+      val updatePayload = TimeUpdate(player.currentPosition / 1000.0, currentOffsetFromLive, currentLiveTimestamp)
+      sendEvent(PlayerEvent.TimeUpdated(updatePayload))
+    }
   }
 }

@@ -118,6 +118,16 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
 
   // MARK: - Statics
 
+  /**
+   Called by React Native to check if the view supports recycling.
+   */
+  @objc
+  public static func shouldBeRecycled() -> Bool {
+    // Turn off recycling for Expo views. We don't think there is any benefit of recycling – it may lead to more bugs than gains.
+    // TODO: Make it possible to override this behavior for particular views
+    return false
+  }
+
   internal static var viewClassesRegistry = [String: AnyClass]()
 
   /**

@@ -4,6 +4,7 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VolumeEvent
 
@@ -37,6 +38,11 @@ sealed class PlayerEvent {
     override val arguments = arrayOf(rate, oldRate)
   }
 
+  data class TimeUpdated(val timeUpdate: TimeUpdate) : PlayerEvent() {
+    override val name = "timeUpdate"
+    override val arguments = arrayOf(timeUpdate)
+  }
+
   class PlayedToEnd : PlayerEvent() {
     override val name = "playToEnd"
   }
@@ -48,6 +54,7 @@ sealed class PlayerEvent {
       is VolumeChanged -> listeners.forEach { it.onVolumeChanged(player, newValue, oldValue) }
       is SourceChanged -> listeners.forEach { it.onSourceChanged(player, source, oldSource) }
       is PlaybackRateChanged -> listeners.forEach { it.onPlaybackRateChanged(player, rate, oldRate) }
+      is TimeUpdated -> listeners.forEach { it.onTimeUpdate(player, timeUpdate) }
       is PlayedToEnd -> listeners.forEach { it.onPlayedToEnd(player) }
     }
   }

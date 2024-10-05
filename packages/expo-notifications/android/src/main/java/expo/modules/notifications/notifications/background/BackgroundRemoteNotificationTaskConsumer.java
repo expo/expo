@@ -25,9 +25,10 @@ import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
 /**
  * Represents a task to be run when the app is receives a remote push
  * notification. Map of current tasks is maintained in {@link FirebaseMessagingDelegate}.
+ *
+ * Instances are instantiated by expo task manager, after being registered in ExpoBackgroundNotificationTasksModule
  */
 public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer implements TaskConsumerInterface {
-  private static final String TAG = BackgroundRemoteNotificationTaskConsumer.class.getSimpleName();
   private static final String NOTIFICATION_KEY = "notification";
 
   private TaskInterface mTask;

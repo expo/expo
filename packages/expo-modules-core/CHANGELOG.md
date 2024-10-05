@@ -27,10 +27,13 @@
 - [Android] The single parameter now can be auto-cast to the list. ([#31290](https://github.com/expo/expo/pull/31290) by [@lukmccall](https://github.com/lukmccall))
 - [Android] `SharedRef` converter now checks the inner ref type. ([#31441](https://github.com/expo/expo/pull/31441) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Added support for changing if functions are enumerable. ([#31495](https://github.com/expo/expo/pull/31495) by [@lukmccall](https://github.com/lukmccall))
-- [Android] Introduced a base class for all shared refs (`expo.SharedRef`). ([#31513](https://github.com/expo/expo/pull/31513) by [@lukmccall](https://github.com/lukmccall))
+- Introduced a base class for all shared refs (`expo.SharedRef`). ([#31513](https://github.com/expo/expo/pull/31513) & [#31706](https://github.com/expo/expo/pull/31706) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Add support for react-native 0.76 ([#31580](https://github.com/expo/expo/pull/31580) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Added `onStartListeningToEvent` and `onStopListeningToEvent` to the `SharedObject`. ([#31385](https://github.com/expo/expo/pull/31385) by [@lukmccall](https://github.com/lukmccall))
 - Added Apple shared app groups support. ([#31519](https://github.com/expo/expo/pull/31519) by [@kudo](https://github.com/kudo))
+- [Android] Added a way to provide shared objects memory pressure to improve garbage collection of native objects retaining some heavy data. ([#31784](https://github.com/expo/expo/pull/31784) by [@lukmccall](https://github.com/lukmccall))
+- Added `nativeRefType` to `SharedRef`. ([#31776](https://github.com/expo/expo/pull/31776) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Added `kotlin.time.Duration` support. ([#31858](https://github.com/expo/expo/pull/31858) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -56,6 +59,7 @@
 - [Android] Fixed getter for the third parameter of `Either`. ([#31443](https://github.com/expo/expo/pull/31443) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fixed R8 build error `Missing class expo.modules.kotlin.types.ExperimentalJSTypeConverter$URIConverter`. on macOS host. ([#31452](https://github.com/expo/expo/pull/31452) by [@kudo](https://github.com/kudo))
 - [iOS] Fixed `No space left on device` when saving persistent log. ([#31583](https://github.com/expo/expo/pull/31583) by [@RodolfoGS](https://github.com/RodolfoGS))
+- Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -91,6 +95,10 @@
 - Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
 - Align web implementation exports as native to support DOM components when using `@expo/dom-webview`. ([#31662](https://github.com/expo/expo/pull/31662) by [@kudo](https://github.com/kudo))
 - Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
+- Removed deprecated code for react-native 0.74.0. ([#31740](https://github.com/expo/expo/pull/31740) by [@kudo](https://github.com/kudo))
+- [Android] Improve error messages when converting the `Either` type. ([#31787](https://github.com/expo/expo/pull/31787) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Improved converting function results. ([#31827](https://github.com/expo/expo/pull/31827) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Disabled `ExpoView` recycling from the New Architecture. ([#31841](https://github.com/expo/expo/pull/31841) by [@tsapeta](https://github.com/tsapeta))
 
 ### ⚠️ Notices
 

@@ -45,7 +45,9 @@ internal final class CoreModule: Module {
     }
 
     AsyncFunction("reloadAppAsync") { (reason: String) in
-      RCTTriggerReloadCommandListeners(reason)
+      DispatchQueue.main.async {
+        RCTTriggerReloadCommandListeners(reason)
+      }
     }
   }
 }

@@ -152,8 +152,11 @@
 
 #pragma mark - Classes
 
-- (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
-                                constructor:(nonnull ClassConstructorBlock)constructor
+typedef jsi::Function (^InstanceFactory)(jsi::Runtime& runtime, NSString * name, expo::common::ClassConstructor constructor);
+
+- (nonnull EXJavaScriptObject *)createInstance:(nonnull NSString *)name
+                               instanceFactory:(nonnull InstanceFactory)instanceFactory
+                                   constructor:(nonnull ClassConstructorBlock)constructor
 {
   expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
     std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
@@ -165,7 +168,7 @@
 
     return jsi::Value(runtime, thisValue);
   };
-  std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::common::createClass(*_runtime, [name UTF8String], jsConstructor));
+  std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(instanceFactory(*_runtime, name, jsConstructor));
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
@@ -180,16 +183,23 @@
 - (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
                                             constructor:(nonnull ClassConstructorBlock)constructor
 {
-  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
-    std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
-    EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
-    NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
-
-    constructor(caller, arguments);
-    return jsi::Value(runtime, thisValue);
+  InstanceFactory instanceFactory = ^(jsi::Runtime& runtime, NSString * name, expo::common::ClassConstructor constructor){
+    return expo::SharedObject::createClass(*self->_runtime, [name UTF8String], constructor);
   };
-  std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(expo::SharedObject::createClass(*_runtime, [name UTF8String], jsConstructor));
-  return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
+  
+  return [self createInstance:name instanceFactory:instanceFactory constructor:constructor];
+}
+
+#pragma mark - Shared refs
+
+- (nonnull EXJavaScriptObject *)createSharedRefClass:(nonnull NSString *)name
+                                         constructor:(nonnull ClassConstructorBlock)constructor
+{
+  InstanceFactory instanceFactory = ^(jsi::Runtime& runtime, NSString * name, expo::common::ClassConstructor constructor){
+    return expo::SharedRef::createClass(*self->_runtime, [name UTF8String], constructor);
+  };
+  
+  return [self createInstance:name instanceFactory:instanceFactory constructor:constructor];
 }
 
 #pragma mark - Script evaluation

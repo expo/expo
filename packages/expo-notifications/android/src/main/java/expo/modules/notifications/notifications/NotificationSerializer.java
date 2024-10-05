@@ -32,6 +32,7 @@ import expo.modules.notifications.notifications.model.triggers.FirebaseNotificat
 
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
+import expo.modules.notifications.notifications.triggers.MonthlyTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
 import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
 import expo.modules.notifications.notifications.triggers.YearlyTrigger;
@@ -211,6 +212,11 @@ public class NotificationSerializer {
       bundle.putInt("weekday", ((WeeklyTrigger) trigger).getWeekday());
       bundle.putInt("hour", ((WeeklyTrigger) trigger).getHour());
       bundle.putInt("minute", ((WeeklyTrigger) trigger).getMinute());
+    } else if (trigger instanceof MonthlyTrigger) {
+      bundle.putString("type", "monthly");
+      bundle.putInt("day", ((MonthlyTrigger) trigger).getDay());
+      bundle.putInt("hour", ((MonthlyTrigger) trigger).getHour());
+      bundle.putInt("minute", ((MonthlyTrigger) trigger).getMinute());
     } else if (trigger instanceof YearlyTrigger) {
       bundle.putString("type", "yearly");
       bundle.putInt("day", ((YearlyTrigger) trigger).getDay());

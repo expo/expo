@@ -19,6 +19,11 @@ public final class ClassDefinition: ObjectDefinition {
    */
   let associatedType: AnyDynamicType?
 
+  /**
+   Whether the associatedType inherits from `SharedRef`.
+   */
+  let isSharedRef: Bool
+
   init<AssociatedObject: ClassAssociatedObject>(
     name: String,
     associatedType: AssociatedObject.Type,
@@ -27,6 +32,7 @@ public final class ClassDefinition: ObjectDefinition {
     self.name = name
     self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionDefinition
     self.associatedType = ~AssociatedObject.self
+    self.isSharedRef = AssociatedObject.self is AnySharedRef.Type
 
     // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
@@ -38,7 +44,7 @@ public final class ClassDefinition: ObjectDefinition {
   // MARK: - JavaScriptObjectBuilder
 
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
-    let klass = try appContext.runtime.createSharedObjectClass(name) { [weak self, weak appContext] this, arguments in
+    let constructorBlock: ClassConstructorBlock = { [weak self, weak appContext] this, arguments in
       guard let self = self, let appContext else {
         // TODO: Throw an exception? (@tsapeta)
         return
@@ -52,6 +58,8 @@ public final class ClassDefinition: ObjectDefinition {
         appContext.sharedObjectRegistry.add(native: result, javaScript: this)
       }
     }
+
+    let klass = try createClass(appContext: appContext, name: name, consturctor: constructorBlock)
 
     try decorate(object: klass, appContext: appContext)
 
@@ -72,6 +80,14 @@ public final class ClassDefinition: ObjectDefinition {
     try decorateWithFunctions(object: prototype, appContext: appContext)
     try decorateWithClasses(object: prototype, appContext: appContext)
     try decorateWithProperties(object: prototype, appContext: appContext)
+  }
+  
+  private func createClass(appContext: AppContext, name: String, consturctor: @escaping ClassConstructorBlock) throws -> JavaScriptObject {
+    if isSharedRef {
+      return try appContext.runtime.createSharedRefClass(name, constructor: consturctor)
+    }
+    
+    return try appContext.runtime.createSharedObjectClass(name, constructor: consturctor)
   }
 }
 

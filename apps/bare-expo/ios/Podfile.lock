@@ -1903,9 +1903,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-netinfo (11.3.1):
+  - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.4.0):
+  - react-native-pager-view (6.4.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1918,7 +1918,7 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-pager-view/common (= 6.4.0)
+    - react-native-pager-view/common (= 6.4.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1927,7 +1927,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-pager-view/common (6.4.0):
+  - react-native-pager-view/common (6.4.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2014,7 +2014,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-segmented-control (2.5.2):
+  - react-native-segmented-control (2.5.4):
     - React-Core
   - react-native-slider (4.5.2):
     - DoubleConversion
@@ -2386,7 +2386,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNDateTimePicker (8.0.0):
+  - RNDateTimePicker (8.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2407,9 +2407,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNFlashList (1.6.4):
-    - React-Core
-  - RNGestureHandler (2.18.1):
+  - RNFlashList (1.7.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2430,30 +2428,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated (3.15.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.01.01.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.15.0)
-    - RNReanimated/worklets (= 3.15.0)
-    - Yoga
-  - RNReanimated/reanimated (3.15.0):
+  - RNGestureHandler (2.20.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2474,7 +2449,51 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNReanimated/worklets (3.15.0):
+  - RNReanimated (3.15.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated (= 3.15.4)
+    - RNReanimated/worklets (= 3.15.4)
+    - Yoga
+  - RNReanimated/reanimated (3.15.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - RNReanimated/worklets (3.15.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3227,7 +3246,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 79410307f4679f347480cb5e838c389ca99f8b6f
   ExpoSMS: 26b84c932e095db013ba3633f54795fba688ce7b
   ExpoSpeech: bd49d99ccf7ec89e89cd2f677f88795870e30f54
-  ExpoSQLite: 12e09c65608b7d8db6b9e7d281bbb598370c6128
+  ExpoSQLite: d50844995608455ec1d230126965434c5d53ef98
   ExpoStoreReview: 92cbbce52bbb5c7c45d00956356eea404bcb8f98
   ExpoSymbols: bd22f3ef7bb28605084b355a407552e96915d493
   ExpoSystemUI: ab9245591d740dd89acb4648dee2ae1714bd2262
@@ -3282,10 +3301,10 @@ SPEC CHECKSUMS:
   React-logger: 8db32983d75dc2ad54f278f344ccb9b256e694fc
   React-Mapbuffer: 1c08607305558666fd16678b85ef135e455d5c96
   React-microtasksnativemodule: f13f03163b6a5ec66665dfe80a0df4468bb766a6
-  react-native-netinfo: bdb108d340cdb41875c9ced535977cac6d2ff321
-  react-native-pager-view: 7985124bceda6e09dd9ca6811d5cebf5127e93cf
+  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
+  react-native-pager-view: 94195f1bf32e7f78359fa20057c97e632364a08b
   react-native-safe-area-context: 38fdd9b3c5561de7cabae64bd0cd2ce05d2768a1
-  react-native-segmented-control: b92809e9111013dfa266e1168ba366d62898d9a4
+  react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-slider: e1f4b4538f7de7417b626174874f4f58d4cf6c28
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688
   react-native-webview: ad29375839c9aa0409ce8e8693291b42bdc067a4
@@ -3318,10 +3337,10 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: a927b768986f83467b635cf6d7559e6edb46db7a
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
   RNCPicker: 7973f617de8809ab9e7577b93ce23d3449fb1ec7
-  RNDateTimePicker: 00f430c6e77e6d9723954a5b5a820644d4b488a2
-  RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
-  RNGestureHandler: f769e1b9057085db07546aa3e259daa85c898dc7
-  RNReanimated: f72882a50158dd5b8b429b60b41331e4aec39151
+  RNDateTimePicker: 6008d74df8122d6af6d9d08096bff19a8c6ba647
+  RNFlashList: 6f169ad83e52579b7754cbbcec1b004c27d82c93
+  RNGestureHandler: c374c750a0a9bacd95f5c740d146ab9428549d6b
+  RNReanimated: b3d406ee69af6972be20715d972b45d713aad400
   RNScreens: de6e57426ba0e6cbc3fb5b4f496e7f08cb2773c2
   RNSVG: 515aaaaef804aade0f285d7fc9514da8f7f0e11f
   SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
@@ -3330,9 +3349,9 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   UMAppLoader: c34fd315863887c7961e059efd9475e056bdd72d
-  Yoga: a1d7895431387402a674fd0d1c04ec85e87909b8
+  Yoga: 2a45d7e59592db061217551fd3bbe2dd993817ae
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: e0aa99f15a032d4553022274167ed85a322af519
+PODFILE CHECKSUM: 453324bb0c65cf3972121640836c8744febbf4c7
 
 COCOAPODS: 1.15.2

@@ -109,10 +109,11 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   /**
    * @param launchActivity Activity to launch `[application identifier]/.[main activity name]`, ex: `com.bacon.app/.MainActivity`
    */
-  async launchActivityAsync(launchActivity: string): Promise<string> {
+  async launchActivityAsync(launchActivity: string, url?: string): Promise<string> {
     try {
       return await AndroidDebugBridge.launchActivityAsync(this.device, {
         launchActivity,
+        url,
       });
     } catch (error: any) {
       let errorMessage = `Couldn't open Android app with activity "${launchActivity}" on device "${this.name}".`;

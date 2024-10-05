@@ -73,6 +73,17 @@ class SharedObjectRegistry(runtimeContext: RuntimeContext) {
       .jsiContext
       .setNativeStateForSharedObject(id.value, js)
 
+    val size = native.getAdditionalMemoryPressure()
+    // If the size is less or equal to 0, it means that the object doesn't require additional memory pressure.
+    // We can skip the call to the JSI method.
+    if (size > 0) {
+      js.setExternalMemoryPressure(size)
+    }
+
+    if (native is SharedRef<*>) {
+      js.defineProperty("nativeRefType", native.nativeRefType)
+    }
+
     val jsWeakObject = js.createWeak()
     synchronized(this) {
       pairs[id] = native to jsWeakObject

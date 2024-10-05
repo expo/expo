@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- fix: more strict config plugin resolution ([#31569](https://github.com/expo/expo/pull/31569) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 - Upgrade `glob@7` to `glob@10`. ([#29894](https://github.com/expo/expo/pull/29894) by [@byCedric](https://github.com/byCedric))

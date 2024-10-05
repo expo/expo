@@ -15,6 +15,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     _preservesPitch: boolean;
     _status: VideoPlayerStatus;
     _error: PlayerError | null;
+    _timeUpdateLoop: number | null;
+    _timeUpdateEventInterval: number;
     allowsExternalPlayback: boolean;
     staysActiveInBackground: boolean;
     showNowPlayingNotification: boolean;
@@ -35,6 +37,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     get duration(): number;
     get preservesPitch(): boolean;
     set preservesPitch(value: boolean);
+    get timeUpdateEventInterval(): number;
+    set timeUpdateEventInterval(value: number);
     get status(): VideoPlayerStatus;
     private set status(value);
     mountVideoView(video: HTMLVideoElement): void;

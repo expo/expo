@@ -53,6 +53,22 @@ describe('launchActivityAsync', () => {
     });
     await expect(device.launchActivityAsync).rejects.toThrow(/\.\.\./);
   });
+  it(`launches activity with provided props`, async () => {
+    const device = createDevice();
+    await expect(
+      device.launchActivityAsync(
+        'dev.expo.test/.MainActivity',
+        'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081'
+      )
+    ).resolves.toBeUndefined();
+    expect(launchActivityAsync).toBeCalledWith(
+      expect.anything(), // Device context
+      expect.objectContaining({
+        launchActivity: 'dev.expo.test/.MainActivity',
+        url: 'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081',
+      })
+    );
+  });
 });
 
 describe('openUrlAsync', () => {

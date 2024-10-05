@@ -3,20 +3,17 @@ title: Use an image picker
 description: In this tutorial, learn how to use Expo Image Picker.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { A } from '~/ui/components/Text';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
-React Native provides built-in components that are standard building blocks used by every application, such as `<View>`, `<Text>`, and `<Pressable>`.
-We want to build a feature that isn't possible with these core components and API: selecting an image from the device's media library. For that, we will need a library.
+React Native provides built-in components as standard building blocks, such as `<View>`, `<Text>`, and `<Pressable>`. We are building a feature to select an image from the device's media gallery. This isn't possible with the core components and we'll need a library to add this feature in our app.
 
-To achieve this, we'll use an Expo SDK library called <A href="/versions/latest/sdk/imagepicker">`expo-image-picker`</A>.
+We'll use [`expo-image-picker`](/versions/latest/sdk/imagepicker), a library from Expo SDK.
 
-> `expo-image-picker` provides access to the system's UI to select images and videos from the phone's library or take a photo with the camera.
+> `expo-image-picker` provides access to the system's UI to select images and videos from the phone's library.
 
 <Step label="1">
 
@@ -26,8 +23,7 @@ To install the library, run the following command:
 
 <Terminal cmd={['$ npx expo install expo-image-picker']} />
 
-> **Tip:** Any time we install a new library in our project, we must stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal and then running the installation command.
-> After the installation, we can start the development server again by running `npx expo start` from the same terminal window.
+> **info** **Tip:** Any time we install a new library in our project, stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal and then run the installation command. After the installation completes, we can start the development server again by running `npx expo start` from the same terminal window.
 
 </Step>
 
@@ -35,21 +31,18 @@ To install the library, run the following command:
 
 ## Pick an image from the device's media library
 
-`expo-image-picker` provides the `launchImageLibraryAsync()` method that displays the system UI for choosing an image or a video from the device's media library.
+`expo-image-picker` provides `launchImageLibraryAsync()` method to display the system UI by choosing an image or a video from the device's media library. We'll use the primary themed button created in the previous chapter to select an image from the device's media library and create a function to launch the device's image library to implement this functionality.
 
-We can use the button with the primary theme we created in the previous chapter to pick an image from the device's media library.
-We'll create a function to launch the device's image library to implement this functionality.
-
-In **App.js**, import the `expo-image-picker` library and create a `pickImageAsync()` function inside the `App` component:
+In **app/(tabs)/index.tsx**, import `expo-image-picker` library and create a `pickImageAsync()` function inside the `Index` component:
 
 {/* prettier-ignore */}
-```jsx App.js|collapseHeight=440
+```tsx app/(tabs)/index.tsx|collapseHeight=440
 // ...rest of the import statements remain unchanged
-/* @info Import the ImagePicker. */ import * as ImagePicker from 'expo-image-picker'; /* @end */
+/* @tutinfo Import <CODE>ImagePicker</CODE>. */ import * as ImagePicker from 'expo-image-picker';/* @end */
 
-export default function App() {
+export default function Index() {
   const pickImageAsync = async () => {
-    /* @info Pass image picker options to launchImageLibraryAsync() */
+    /* @tutinfo Pass image picker options to <CODE>launchImageLibraryAsync()</CODE> */
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
@@ -57,11 +50,11 @@ export default function App() {
     /* @end */
 
     if (!result.canceled) {
-      /* @info If the image is picked, print its information in terminal window. */
+      /* @tutinfo If the image is picked, print its information in terminal window. */
       console.log(result);
       /* @end */
     } else {
-      /* @info If the user does not pick an image, show an alert. */
+      /* @tutinfo If the user does not pick an image, show an alert. */
       alert('You did not select any image.');
       /* @end */
     }
@@ -71,12 +64,10 @@ export default function App() {
 }
 ```
 
-Let's learn what the above code does.
+Let's learn what the above code does:
 
-- The `launchImageLibraryAsync()` receives an object in which different options are specified.
-  This object is an <A href="/versions/latest/sdk/imagepicker/#imagepickeroptions">`ImagePickerOptions` object</A>.
-  We can pass the object to specify different options when invoking the method.
-- When `allowsEditing` is set to `true`, the user can crop the image during the selection process on Android and iOS but not on the web.
+- The `launchImageLibraryAsync()` receives an object to specify different options. This object is the [`ImagePickerOptions`](/versions/latest/sdk/imagepicker/#imagepickeroptions) object, which we are passing when invoking the method.
+- When `allowsEditing` is set to `true`, the user can crop the image during the selection process on Android and iOS.
 
 </Step>
 
@@ -84,49 +75,138 @@ Let's learn what the above code does.
 
 ## Update the button component
 
-When the primary button gets pressed, we need to call the `pickImageAsync()` function.
-To call it, update the `onPress` property of the `<Button>` component in **components/Button.js**:
+On pressing the primary button, we'll call the `pickImageAsync()` function on the `Button` component. Update the `onPress` prop of the `Button` component in **components/Button.tsx**:
 
 {/* prettier-ignore */}
-```jsx Button.js
-export default function Button({ label, theme, /* @info Pass this prop to trigger the handler method from the parent component. */onPress/* @end */}) {
-  // ...rest of the code remains same
-  if (theme === "primary") {
+```tsx components/Button.tsx
+import { StyleSheet, View, Pressable, Text } from 'react-native';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
+type Props = {
+  label: string;
+  theme?: 'primary';
+  /* @tutinfo Define the type for <CODE>onPress</CODE> prop. */
+  onPress?: () => void;
+  /* @end */
+};
+
+export default function Button({ label, theme, /* @tutinfo Pass this prop to trigger the handler method from the parent component. */onPress/* @end */ }: Props) {
+  if (theme === 'primary') {
     return (
-      <View>
-        {/* ...rest of the code remains same */}
-        <Pressable
-          style={[styles.button, { backgroundColor: '#fff' }]}
-          onPress={/* @info */onPress/* @end */}
-        >
+      <View
+        style={[
+          styles.buttonContainer,
+          { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 },
+        ]}>
+        <Pressable style={[styles.button, { backgroundColor: '#fff' }]} onPress={/* @tutinfo */onPress/* @end */}>
+          <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
+          <Text style={[styles.buttonLabel, { color: '#25292e' }]}>{label}</Text>
+        </Pressable>
       </View>
     );
   }
-}
-```
-
-In **App.js**, add the `pickImageAsync()` function to the `onPress` prop on the first `<Button>`.
-
-{/* prettier-ignore */}
-```jsx App.js
-export default function App() {
-  // ...rest of the code remains same
 
   return (
-    <View style={styles.container}>
-      {/* ...rest of the code remains same */}
-      <Button theme="primary" label="Choose a photo" onPress={/* @info */pickImageAsync/* @end */} />
+    <View style={styles.buttonContainer}>
+      <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
+        <Text style={styles.buttonLabel}>{label}</Text>
+      </Pressable>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    width: 320,
+    height: 68,
+    marginHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 3,
+  },
+  button: {
+    borderRadius: 10,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  buttonIcon: {
+    paddingRight: 8,
+  },
+  buttonLabel: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
 ```
 
-The `pickImageAsync()` function is responsible for invoking `ImagePicker.launchImageLibraryAsync()` and then handling the result.
-The `launchImageLibraryAsync()` method returns an object containing information about the selected image.
+In **app/(tabs)/index.tsx**, add the `pickImageAsync()` function to the `onPress` prop on the first `<Button>`.
 
-To demonstrate what properties the `result` object contains, here is an example result object:
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
-```json
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+
+const PlaceholderImage = require('../../assets/images/background-image.png');
+
+export default function Index() {
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      console.log(result);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} />
+      </View>
+      <View style={styles.footerContainer}>
+        <Button theme="primary" label="Choose a photo" onPress={/* @tutinfo Add this. */pickImageAsync/* @end */} />
+        <Button label="Use this photo" />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+});
+```
+
+The `pickImageAsync()` function invokes `ImagePicker.launchImageLibraryAsync()` and then handles the result. The `launchImageLibraryAsync()` method returns an object containing information about the selected image.
+
+Here is an example of the `result` object and the properties it contains:
+
+<Tabs>
+
+<Tab label="Android">
+
+```json collapseHeight=280
 {
   "assets": [
     {
@@ -134,16 +214,66 @@ To demonstrate what properties the `result` object contains, here is an example 
       "base64": null,
       "duration": null,
       "exif": null,
-      "height": 4800,
+      "fileName": "ea574eaa-f332-44a7-85b7-99704c22b402.jpeg",
+      "fileSize": 4513577,
+      "height": 4570,
+      "mimeType": "image/jpeg",
       "rotation": null,
       "type": "image",
-      "uri": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%username%252Fsticker-smash-47-beta/ImagePicker/77c4e56f-4ccc-4c83-8634-fc376597b6fb.jpeg",
-      "width": 3200
+      "uri": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FStickerSmash-13f21121-fc9d-4ec6-bf89-bf7d6165eb69/ImagePicker/ea574eaa-f332-44a7-85b7-99704c22b402.jpeg",
+      "width": 2854
     }
   ],
   "canceled": false
 }
 ```
+
+</Tab>
+
+<Tab label="iOS">
+
+```json collapseHeight=280
+{
+  "assets": [
+    {
+      "assetId": "99D53A1F-FEEF-40E1-8BB3-7DD55A43C8B7/L0/001",
+      "base64": null,
+      "duration": null,
+      "exif": null,
+      "fileName": "IMG_0004.JPG",
+      "fileSize": 2548364,
+      "height": 1669,
+      "mimeType": "image/jpeg",
+      "type": "image",
+      "uri": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FStickerSmash-13f21121-fc9d-4ec6-bf89-bf7d6165eb69/ImagePicker/ea574eaa-f332-44a7-85b7-99704c22b402.jpeg",
+      "width": 1668
+    }
+  ],
+  "canceled": false
+}
+```
+
+</Tab>
+
+<Tab label="web">
+
+```json
+{
+  "assets": [
+    {
+      "fileName": "some-image.png",
+      "height": 720,
+      "mimeType": "image/png",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAA"
+    }
+  ],
+  "canceled": false
+}
+```
+
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -151,34 +281,39 @@ To demonstrate what properties the `result` object contains, here is an example 
 
 ## Use the selected image
 
-The `result` object provides the `assets` array, which contains the `uri` of the selected image.
-Let's take this value from the image picker and use it to show the selected image in the app.
+The `result` object provides the `assets` array, which contains the `uri` of the selected image. Let's take this value from the image picker and use it to show the selected image in the app.
 
-Modify the **App.js** file in the following steps:
+Modify the **app/(tabs)/index.tsx** file:
 
-- Declare a state variable called `selectedImage` using the <A href="https://react.dev/learn/state-a-components-memory#adding-a-state-variable" openInNewTab>`useState`</A> hook from React.
-  We'll use this state variable to hold the URI of the selected image.
-- Update the `pickImageAsync()` function to save the image URI in the `selectedImage` state variable.
-- Then, pass the `selectedImage` as a prop to the `ImageViewer` component.
+1. Declare a state variable called `selectedImage` using the [`useState`](https://react.dev/learn/state-a-components-memory#adding-a-state-variable) hook from React. We'll use this state variable to hold the URI of the selected image.
+2. Update the `pickImageAsync()` function to save the image URI in the `selectedImage` state variable.
+3. Pass the `selectedImage` as a prop to the `ImageViewer` component.
 
 {/* prettier-ignore */}
-```jsx App.js
-/* @info Import useState hook from React. */ import { useState } from 'react'; /* @end */
-// ...rest of the import statements remain unchanged
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+/* @tutinfo Import useState hook from React. */ import { useState } from 'react';/* @end */
 
-export default function App() {
-  /* @info Create a state variable that will hold the value of selected image. */
-  const [selectedImage, setSelectedImage] = useState(null);
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+
+const PlaceholderImage = require('../../assets/images/background-image.png');
+
+export default function Index() {
+  /* @tutinfo Create a state variable that will hold the value of selected image. */
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   /* @end */
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     });
 
     if (!result.canceled) {
-      /* @info Pick the first uri from the assets array. Also, there is only one image selected at a time so you don't have to change this. */
+      /* @tutinfo Pick the first uri from the <CODE>assets</CODE> array. Also, there is only one image selected at a time so you don't have to change this. */
       setSelectedImage(result.assets[0].uri);
       /* @end */
     } else {
@@ -189,66 +324,88 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @info Pass the selected image URI to the ImageViewer component. */<ImageViewer
-          placeholderImageSource={PlaceholderImage}
-          selectedImage={selectedImage}
-        />
+        /* @tutinfo Pass the selected image URI to the <CODE>ImageViewer</CODE> component. */
+        <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
         /* @end */
       </View>
-      {/* ...rest of the code remains same */}
+      <View style={styles.footerContainer}>
+        <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+        <Button label="Use this photo" />
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+});
 ```
 
-Now, modify the **components/ImageViewer.js** file to conditionally display the selected image in place of the placeholder image.
-We'll need to pass the `selectedImage` prop to the component.
+Pass the `selectedImage` prop to the `ImageViewer` component to display the selected image instead of a placeholder image.
 
-The source of the image is getting long, so let's also move it to a separate variable called `imageSource`.
-Then, pass it as the value of the `source` prop on the `<Image>` component.
-
-<SnackInline
-label="Image picker"
-templateId="tutorial/02-image-picker/App"
-dependencies={['expo-image-picker', 'expo-status-bar', '@expo/vector-icons', '@expo/vector-icons/FontAwesome']}
-files={{
-'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910',
-'components/ImageViewer.js': 'tutorial/02-image-picker/ImageViewer.js',
-'components/Button.js': 'tutorial/02-image-picker/Button.js'
-}}>
+1. Modify the **components/ImageViewer.tsx** file to accept the `selectedImage` prop.
+2. The source of the image is getting long, so let's also move it to a separate variable called `imageSource`.
+3. Pass `imageSource` as the value of the `source` prop on the `Image` component.
 
 {/* prettier-ignore */}
-```jsx
-export default function ImageViewer({ placeholderImageSource, /* @info Pass the selectedImage prop.*/selectedImage/* @end */ }) {
-  /* @info If the selected image is not null, show the image from the device, otherwise, show the placeholder image. */
-  const imageSource = selectedImage  ? { uri: selectedImage } : placeholderImageSource;
+```tsx components/ImageViewer.tsx
+import { StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+
+type Props = {
+  imgSource: string;
+  /* @tutinfo */
+  selectedImage?: string;
+  /* @end */
+};
+
+export default function ImageViewer({ imgSource, /* @tutinfo Pass the selectedImage prop.*/selectedImage/* @end */ }: Props) {
+  /* @tutinfo If the selected image is not null, show the image from the device, otherwise, show the placeholder image. */
+  const imageSource = selectedImage ? { uri: selectedImage } : imgSource;
   /* @end */
 
-  return <Image /* @info */source={imageSource}/* @end */ style={styles.image} />;
+  /* @tutinfo <CODE>imgSource</CODE> replaced by <CODE>imageSource</CODE>. */
+  return <Image source={imageSource} style={styles.image} />;
+  /* @end */
 }
+
+const styles = StyleSheet.create({
+  image: {
+    width: 320,
+    height: 440,
+    borderRadius: 18,
+  },
+});
 ```
 
-</SnackInline>
-
-In the above snippet, the `<Image>` component uses a conditional operator to load the source of the image.
-This is because the image picked from the image picker is a <A href="https://reactnative.dev/docs/images#network-images" openInNewTab>`uri` string</A>,
-not a local asset like the placeholder image.
+In the above snippet, the Image component uses a conditional operator to load the image's source. The picked image is a [`uri` string](https://reactnative.dev/docs/images#network-images), not a local asset like the placeholder image.
 
 Let's take a look at our app now:
 
 <ContentSpotlight file="tutorial/03-image-picker-demo.mp4" />
 
-> The images used for the demo in this tutorial were picked from [Unsplash](https://unsplash.com).
+> The images used for the example app in this tutorial were picked from [Unsplash](https://unsplash.com).
 
 </Step>
 
-## Next step
+## Summary
 
-We added the functionality to pick an image from the device's media library.
-
-<BoxLink
-  title="Create an emoji picker modal"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we'll learn how to create an emoji picker modal component."
-  href="/tutorial/create-a-modal"
+<ProgressTracker
+  currentChapterIndex={3}
+  name="GET_STARTED"
+  summary="We've successfully added the functionality to pick an image from the device's media library."
+  nextChapterDescription="In the next chapter, we'll learn how to create an emoji picker modal component."
+  nextChapterTitle="Create an emoji picker modal"
+  nextChapterLink="/tutorial/create-a-modal"
 />

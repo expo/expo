@@ -95,7 +95,7 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
           style={{
             marginBottom: 12,
             gap: 4,
-            flexWrap: 'wrap',
+            flexWrap: process.env.EXPO_OS === 'web' ? 'wrap' : 'nowrap',
           }}>
           <Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong

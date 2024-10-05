@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import ExpoSQLite from './ExpoSQLiteNext';
+import ExpoSQLite from './ExpoSQLite';
 import { openDatabaseAsync } from './SQLiteDatabase';
 import { createDatabasePath } from './pathUtils';
 /**
