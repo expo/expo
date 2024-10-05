@@ -1,3 +1,5 @@
+import { TextDecoder, TextEncoder } from 'util';
+
 import MockWebSocket from './MockWebSocket';
 import { DevToolsPluginClient } from '../DevToolsPluginClient';
 import { createDevToolsPluginClient } from '../DevToolsPluginClientFactory';
@@ -5,6 +7,10 @@ import { WebSocketBackingStore } from '../WebSocketBackingStore';
 
 // @ts-expect-error - We don't mock all properties from WebSocket
 globalThis.WebSocket = MockWebSocket;
+
+// @ts-ignore - TextDecoder and TextEncoder are not defined in native jest environments.
+globalThis.TextDecoder ??= TextDecoder;
+globalThis.TextEncoder ??= TextEncoder;
 
 describe(`DevToolsPluginClient`, () => {
   let appClient: DevToolsPluginClient;
@@ -174,6 +180,7 @@ describe(`DevToolsPluginClient (browser <> app)`, () => {
     browserClient.sendMessage(method, { from: 'browserClient' });
     browserClient2.sendMessage(method, { from: 'browserClient2' });
 
+    await delayAsync(100);
     expect(receivedMessages.length).toBe(1);
     expect(receivedMessages[0]).toEqual({ from: 'browserClient2' });
     await browserClient2.closeAsync();
