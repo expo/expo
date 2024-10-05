@@ -8,27 +8,19 @@ import java.io.Serializable
 import java.util.Calendar
 import java.util.Date
 
-open class ChannelAwareTrigger : NotificationTrigger, Serializable {
-  private var mChannelId: String?
+open class ChannelAwareTrigger(
+  private val channelId: String?
+) : NotificationTrigger, Serializable {
+  constructor(parcel: Parcel): this(parcel.readString())
 
-  constructor(channelId: String?) {
-    mChannelId = channelId
-  }
-
-  constructor(`in`: Parcel) {
-    mChannelId = `in`.readString()
-  }
-
-  override fun describeContents(): Int {
-    return 0
-  }
+  override fun describeContents(): Int = 0
 
   override fun writeToParcel(dest: Parcel, flags: Int) {
-    dest.writeString(mChannelId)
+    dest.writeString(channelId)
   }
 
   override fun getNotificationChannel(): String? {
-    return mChannelId
+    return channelId
   }
 
   companion object {
@@ -60,7 +52,7 @@ class DailyTrigger : ChannelAwareTrigger, SchedulableNotificationTrigger {
     this.minute = minute
   }
 
-  private constructor(`in`: Parcel) : super(`in`) {
+  private constructor(parcel: Parcel) : super(parcel) {
     hour = `in`.readInt()
     minute = `in`.readInt()
   }
