@@ -1,5 +1,5 @@
 ---
-title: Create a local production build locally
+title: Create a production build locally
 sidebar_title: Production
 description: Learn how to create a production build for your Expo app locally.
 ---
@@ -7,11 +7,11 @@ description: Learn how to create a production build for your Expo app locally.
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-To create your app's production build (also known as release build) locally, you need to follow separate steps on your computer and use the tools required to create any native app. This guide provides the necessary steps to create a production build for Android and iOS locally.
+To create your app's production build (also known as release build) locally, you need to follow separate steps on your computer and use the tools required to create any native app. This guide provides the necessary steps for Android and iOS.
 
 ## Android
 
-Creating a local production build for Android requires signing it with an [upload key](https://developer.android.com/studio/publish/app-signing#certificates-keystores) and generating an Android Application Bundle (**.aab**). Follow the steps below to create a production build:
+Creating a production build locally for Android requires signing it with an [upload key](https://developer.android.com/studio/publish/app-signing#certificates-keystores) and generating an Android Application Bundle (**.aab**). Follow the steps below:
 
 ### Prerequisites
 
@@ -102,7 +102,7 @@ This command will generate app-release.aab inside the android/app/build/outputs/
 
 ## iOS
 
-To create an iOS production build for Apple App Store, you need to use Xcode which handles the signing and submission process via App Store Connect.
+To create an iOS production build locally for Apple App Store, you need to use Xcode which handles the signing and submission process via App Store Connect.
 
 ### Prerequisites
 
