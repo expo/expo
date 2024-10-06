@@ -1,6 +1,6 @@
 // Copyright © 2024 650 Industries.
 'use client';
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import { View } from 'react-native';
 
 import { BlurViewProps } from './BlurView.types';
