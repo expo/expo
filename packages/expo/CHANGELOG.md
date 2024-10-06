@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added a default `AppEntryNotFound` component and prevent the `Invariant Violation: "main" has not been registered.` error. ([#31813](https://github.com/expo/expo/pull/31813) by [@kudo](https://github.com/kudo))
+
 ## 51.0.36 — 2024-10-02
 
 _This version does not introduce any user-facing changes._
