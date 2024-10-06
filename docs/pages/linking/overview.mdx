@@ -22,7 +22,7 @@ There are different linking strategies you handle in your Expo app:
 - Linking to other apps from your app (outgoing links)
 - Linking to your app from other apps or a web browser (incoming links)
 - Linking to specific content within your app (deep links)
-- Redirecting links to your web domain to your app if it is installed (Android App Links and iOS Universal Links); also known as App shortcuts
+- Redirecting links from your web domain to your app if it is installed (Android App Links and iOS Universal Links); also known as App shortcuts
 
 > **info** **Tip:** We recommend using [Development builds](/develop/development-builds/introduction/) to test your app's linking strategies instead of Expo Go.
 
@@ -30,7 +30,7 @@ There are different linking strategies you handle in your Expo app:
 
 Linking to other apps from your app is achieved using a URL based on the target app's URL scheme. This **URL scheme** allows you to reference resources within that native app.
 
-Your app can use a [common URL scheme](/linking/into-other-apps/#common-url-schemes) for default apps or implement any URL scheme, including `https` and `http` (commonly used by web browsers like Chrome, Safari, and so on), and use JavaScript to handle the URL that launches the corresponding native app.
+Your app can use a [common URL scheme](/linking/into-other-apps/#common-url-schemes) for default apps, including `https` and `http` (commonly used by web browsers like Chrome, Safari, and so on), and use JavaScript to invoke the URL that launches the corresponding native app.
 
 <BoxLink
   title="Linking into other apps"
@@ -88,7 +88,7 @@ This link type allows your app to always open when a user clicks the link instea
 
 iOS Universal Links are different from [standard deep links](#into-your-app) as they use regular HTTP and HTTPS schemes and are exclusive to iOS devices.
 
-This link type allows your app to always open when a user clicks the link instead of choosing between the browser or another handler from a dialog displayed on the device. If the user doesn't have your app installed, the link takes them to your app's associated website. You can further configure the website by displaying a banner to the user to open your app using [Apple Smart Banner](/linking/ios-universal-links/#apple-smart-banner).
+This link type allows your app to open when a user clicks an HTTP(S) link pointing to your web domain. If the user doesn't have your app installed, the link takes them to your app's associated website. You can further configure the website by displaying a banner for the user to open your app using [Apple Smart Banner](/linking/ios-universal-links/#apple-smart-banner).
 
 <BoxLink
   title="Configure iOS Universal Links"
