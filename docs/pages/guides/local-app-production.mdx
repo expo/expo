@@ -4,6 +4,7 @@ sidebar_title: Production
 description: Learn how to create a production build for your Expo app locally.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -21,6 +22,17 @@ Creating a production build locally for Android requires signing it with an [upl
 <Step label="1">
 
 ### Create an upload key
+
+<Collapsible summary="Already created a build with EAS Build? Download your credentials and skip to the next step.">
+
+If you've already created a build with EAS Build, follow the steps below to download the credentials, which contains the upload key and its password, key alias, and key password:
+
+1. In your terminal, run `eas credentials -p android` and select the build profile.
+2. Select **credentials.json** > **Download credentials from EAS to credentials.json**.
+3. Move the downloaded **keystore.jks** file to the **android/app** directory.
+4. Copy the values for the upload keystore password, key alias, and key password from the **credentials.json** as you will need them in the next step.
+
+</Collapsible>
 
 Inside your Expo project directory, run the following `keytool` command to create an upload key:
 
