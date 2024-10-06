@@ -1,17 +1,17 @@
 ---
-title: Create a release build locally
-sidebar_title: Release
-description: Learn how to create a release build for your Expo app locally on your computer.
+title: Create a production build locally
+sidebar_title: Production
+description: Learn how to create a production build for your Expo app locally.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-To create your app's release build (also known as production build) locally, you need to follow separate steps on your computer and use the tools required to create any native app. This guide provides the necessary steps for Android and iOS.
+To create your app's production build (also known as release build) locally, you need to follow separate steps on your computer and use the tools required to create any native app. This guide provides the necessary steps for Android and iOS.
 
 ## Android
 
-Creating a release build locally for Android requires signing it with an [upload key](https://developer.android.com/studio/publish/app-signing#certificates-keystores) and generating an Android Application Bundle (**.aab**). Follow the steps below:
+Creating a production build locally for Android requires signing it with an [upload key](https://developer.android.com/studio/publish/app-signing#certificates-keystores) and generating an Android Application Bundle (**.aab**). Follow the steps below:
 
 ### Prerequisites
 
@@ -92,7 +92,7 @@ android {
 
 ### Generate release Android Application Bundle (aab)
 
-Create a release build in **.aab** format by running Gradle's `bundleRelease` command:
+Create a production build in **.aab** format by running Gradle's `bundleRelease` command:
 
 <Terminal cmd={['$ ./gradlew app:bundleRelease']} />
 
@@ -102,7 +102,7 @@ This command will generate app-release.aab inside the android/app/build/outputs/
 
 ## iOS
 
-To create an iOS release build locally for Apple App Store, you need to use Xcode which handles the signing and submission process via App Store Connect.
+To create an iOS production build locally for Apple App Store, you need to use Xcode which handles the signing and submission process via App Store Connect.
 
 ### Prerequisites
 
