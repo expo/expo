@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - Added SQLCipher support. ([#30824](https://github.com/expo/expo/pull/30824), [#30825](https://github.com/expo/expo/pull/30825) by [@kudo](https://github.com/kudo))
+- Added a way to specify custom directory for the database. ([#31278](https://github.com/expo/expo/pull/31278)) by [@IgorKhramtsov](https://github.com/IgorKhramtsov)
 - Added key-value storage and compatible API with `@react-native-async-storage/async-storage`. ([#31596](https://github.com/expo/expo/pull/31596), [#31676](https://github.com/expo/expo/pull/31676) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
