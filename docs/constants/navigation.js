@@ -136,7 +136,6 @@ const general = [
   makeSection('Development process', [
     makePage('workflow/overview.mdx'),
     makePage('workflow/configuration.mdx'),
-    makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
     makePage('guides/apple-privacy.mdx'),
     makePage('guides/permissions.mdx'),
@@ -152,6 +151,13 @@ const general = [
         makePage('guides/adopting-prebuild.mdx'),
       ],
       { expanded: false }
+    ),
+    makeGroup(
+      'Local app',
+      [makePage('guides/local-app-development.mdx'), makePage('guides/local-app-production.mdx')],
+      {
+        expanded: false,
+      }
     ),
     makeGroup(
       'Web',
