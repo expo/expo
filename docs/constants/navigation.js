@@ -140,8 +140,19 @@ const general = [
     makePage('guides/apple-privacy.mdx'),
     makePage('guides/permissions.mdx'),
     makePage('guides/environment-variables.mdx'),
-    makePage('guides/linking.mdx'),
-    makePage('guides/deep-linking.mdx'),
+    makeGroup(
+      'Linking',
+      [
+        makePage('linking/overview.mdx'),
+        makePage('linking/into-other-apps.mdx'),
+        makePage('linking/into-your-app.mdx'),
+        makePage('linking/android-app-links.mdx'),
+        makePage('linking/ios-universal-links.mdx'),
+      ],
+      {
+        expanded: false,
+      }
+    ),
     makeGroup(
       'Custom native code',
       [
