@@ -79,6 +79,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     isAudioSamplingSupported = false;
     isBuffering = false;
     shouldCorrectPitch = false;
+    enableLockScreenControls = false;
     src = null;
     media;
     interval = 100;

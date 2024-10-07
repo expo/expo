@@ -7,6 +7,7 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     isAudioSamplingSupported: boolean;
     isBuffering: boolean;
     shouldCorrectPitch: boolean;
+    enableLockScreenControls: boolean;
     private src;
     private media;
     private interval;

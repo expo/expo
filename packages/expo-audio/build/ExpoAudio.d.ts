@@ -1,7 +1,7 @@
 import { AudioMode, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
-export declare function useAudioPlayer(source?: AudioSource | string | number | null, updateInterval?: number): AudioPlayer;
+export declare function useAudioPlayer(source?: AudioSource | string | number | null, updateInterval?: number, enableLockScreenControls?: boolean): AudioPlayer;
 export declare function useAudioPlayerStatus(player: AudioPlayer): AudioStatus;
 export declare function useAudioSampleListener(player: AudioPlayer, listener: (data: {
     channels: {

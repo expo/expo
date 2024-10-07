@@ -5,9 +5,9 @@ import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
-export function useAudioPlayer(source = null, updateInterval = 500) {
+export function useAudioPlayer(source = null, updateInterval = 500, enableLockScreenControls = false) {
     const parsedSource = resolveSource(source);
-    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
+    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval, enableLockScreenControls), [JSON.stringify(parsedSource), enableLockScreenControls]);
     return player;
 }
 export function useAudioPlayerStatus(player) {

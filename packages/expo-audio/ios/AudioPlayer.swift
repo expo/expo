@@ -1,5 +1,6 @@
-import ExpoModulesCore
 import Combine
+import ExpoModulesCore
+import MediaPlayer
 
 private let playbackStatus = "onPlaybackStatusUpdate"
 private let audioSample = "onAudioSampleUpdate"
@@ -21,10 +22,23 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var samplingEnabled = false
   private var tapInstalled = false
 
-  init(_ ref: AVPlayer, interval: Double) {
-    self.interval = interval
-    super.init(ref)
+  private let nowPlayingInfoController: NowPlayingInfoControllerProtocol
+  private let remoteCommandController: RemoteCommandController
 
+  var enableLockScreenControls: Bool = false
+
+  init(_ ref: AVPlayer, interval: Double, enableLockScreenControls: Bool) {
+    self.interval = interval
+    self.enableLockScreenControls = enableLockScreenControls
+    self.nowPlayingInfoController = NowPlayingInfoController()
+    self.remoteCommandController = RemoteCommandController()
+
+    super.init(ref)
+    self.remoteCommandController.audioPlayer = self
+
+    if enableLockScreenControls {
+      initNotificationCenter()
+    }
     setupPublisher()
   }
 
@@ -41,9 +55,88 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func play(at rate: Float) {
+    do {
+      try audioSession.setCategory(.playback, mode: .default)
+      try audioSession.setActive(true)
+    } catch {
+      print("Failed to set audio session category: \(error)")
+    }
+
     addPlaybackEndNotification()
     registerTimeObserver()
     ref.playImmediately(atRate: rate)
+    if enableLockScreenControls {
+      updateNowPlayingInfo()
+    }
+  }
+
+  func initNotificationCenter() {
+    // Reset playback values
+    nowPlayingInfoController.setWithoutUpdate(keyValues: [
+      MediaItemProperty.duration(nil),
+      NowPlayingInfoProperty.playbackRate(nil),
+      NowPlayingInfoProperty.elapsedPlaybackTime(nil),
+    ])
+    loadNowPlayingMetaValues()
+    setupRemoteTransportControls()
+  }
+
+  public func loadNowPlayingMetaValues() {
+    guard let item = ref.currentItem else { return }
+
+    let duration = item.duration.isNumeric ? item.duration.seconds : 0
+    let title = "Your Audio Title"  // Replace with actual title
+    let artist = "Artist Name"  // Replace with actual artist name
+    let albumTitle = "Album Name"  // Replace with actual album name
+
+    nowPlayingInfoController.set(keyValues: [
+      MediaItemProperty.artist(artist),
+      MediaItemProperty.title(title),
+      MediaItemProperty.albumTitle(albumTitle),
+      MediaItemProperty.duration(duration),
+      NowPlayingInfoProperty.playbackRate(Double(ref.rate)),
+      NowPlayingInfoProperty.elapsedPlaybackTime(item.currentTime().seconds),
+    ])
+
+    // You can add artwork here if available
+    // if let artwork = MPMediaItemArtwork(/* your artwork */) {
+    //     nowPlayingInfoController.set(keyValue: MediaItemProperty.artwork(artwork))
+    // }
+  }
+
+  private func setupRemoteTransportControls() {
+    let commandCenter = MPRemoteCommandCenter.shared()
+
+    commandCenter.playCommand.addTarget { [weak self] _ in
+      self?.play(at: 1.0)
+      return .success
+    }
+
+    commandCenter.pauseCommand.addTarget { [weak self] _ in
+      self?.ref.pause()
+      return .success
+    }
+
+    commandCenter.togglePlayPauseCommand.addTarget { [weak self] _ in
+      if self?.playing == true {
+        self?.ref.pause()
+      } else {
+        self?.play(at: 1.0)
+      }
+      return .success
+    }
+
+    // Add more commands as needed (e.g., skip, seek)
+  }
+
+  private func removeRemoteTransportControls() {
+    let commandCenter = MPRemoteCommandCenter.shared()
+
+    commandCenter.playCommand.removeTarget(self)
+    commandCenter.pauseCommand.removeTarget(self)
+    commandCenter.togglePlayPauseCommand.removeTarget(self)
+
+    // Remove other commands if added
   }
 
   func setSamplingEnabled(enabled: Bool) {
@@ -71,7 +164,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "isLoaded": ref.currentItem?.status == .readyToPlay,
       "playbackRate": ref.rate,
       "shouldCorrectPitch": shouldCorrectPitch,
-      "isBuffering": isBuffering
+      "isBuffering": isBuffering,
     ]
   }
 
@@ -121,9 +214,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       tapInstalled = audioProcessor?.installTap() ?? false
       audioProcessor?.sampleBufferCallback = { [weak self] buffer, frameCount, timestamp in
         guard let self,
-        let audioBuffer = buffer?.pointee,
-        let data = audioBuffer.mData,
-        samplingEnabled else {
+          let audioBuffer = buffer?.pointee,
+          let data = audioBuffer.mData,
+          samplingEnabled
+        else {
           return
         }
 
@@ -131,16 +225,19 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         let dataPointer = data.assumingMemoryBound(to: Float.self)
 
         let channels = (0..<channelCount).map { channelIndex in
-          let channelData = stride(from: channelIndex, to: frameCount, by: channelCount).map { frameIndex in
+          let channelData = stride(from: channelIndex, to: frameCount, by: channelCount).map {
+            frameIndex in
             dataPointer[frameIndex]
           }
           return ["frames": channelData]
         }
 
-        self.emit(event: audioSample, arguments: [
-          "channels": channels,
-          "timestamp": timestamp
-        ])
+        self.emit(
+          event: audioSample,
+          arguments: [
+            "channels": channels,
+            "timestamp": timestamp,
+          ])
       }
     }
   }
@@ -174,11 +271,25 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private func registerTimeObserver() {
     let updateInterval = interval / 1000
     let interval = CMTime(seconds: updateInterval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-    timeToken = ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { time in
-      self.updateStatus(with: [
+    timeToken = ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
+      self?.updateStatus(with: [
         "currentPosition": time.seconds * 1000
       ])
+      self?.updateNowPlayingInfo()
     }
+  }
+
+  private var audioSession: AVAudioSession {
+    AVAudioSession.sharedInstance()
+  }
+
+  private func updateNowPlayingInfo() {
+    guard let item = ref.currentItem else { return }
+
+    nowPlayingInfoController.set(keyValues: [
+      NowPlayingInfoProperty.playbackRate(Double(ref.rate)),
+      NowPlayingInfoProperty.elapsedPlaybackTime(item.currentTime().seconds),
+    ])
   }
 
   public override func sharedObjectWillRelease() {
@@ -189,5 +300,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     NotificationCenter.default.removeObserver(endObserver as Any)
     ref.pause()
+    if enableLockScreenControls {
+      removeRemoteTransportControls()
+      MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+    }
   }
 }

@@ -19,7 +19,7 @@ public class AudioModule: Module {
       try setAudioMode(mode: mode)
     }
 
-    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool)  in
+    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool) in
       try setIsAudioActive(isActive)
     }
 
@@ -45,9 +45,12 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
+      Constructor {
+        (source: AudioSource?, updateInterval: Double, enableLockScreenControls: Bool)
+          -> AudioPlayer in
         let avPlayer = AudioUtils.createAVPlayer(source: source)
-        let player = AudioPlayer(avPlayer, interval: updateInterval)
+        let player = AudioPlayer(
+          avPlayer, interval: updateInterval, enableLockScreenControls: enableLockScreenControls)
         AudioComponentRegistry.shared.add(player)
         return player
       }
@@ -128,7 +131,8 @@ public class AudioModule: Module {
         player.play(at: rate)
       }
 
-      Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
+      Function("setPlaybackRate") {
+        (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
         let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
         if player.playing {
           player.ref.rate = playerRate
@@ -165,7 +169,9 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
-        guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
+        guard let cachesDir = appContext?.fileSystem?.cachesDirectory,
+          let directory = URL(string: cachesDir)
+        else {
           throw Exceptions.AppContextLost()
         }
         let avRecorder = AudioUtils.createRecorder(directory: directory, with: options)
@@ -249,7 +255,8 @@ public class AudioModule: Module {
     }
 
     do {
-      try AVAudioSession.sharedInstance().setActive(isActive, options: [.notifyOthersOnDeactivation])
+      try AVAudioSession.sharedInstance().setActive(
+        isActive, options: [.notifyOthersOnDeactivation])
       sessionIsActive = isActive
     } catch {
       throw AudioStateException(error.localizedDescription)

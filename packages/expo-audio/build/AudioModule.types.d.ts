@@ -14,7 +14,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      * Initializes a new audio player instance with the given source.
      * @hidden
      */
-    constructor(source: AudioSource, updateInterval: number);
+    constructor(source: AudioSource, updateInterval: number, enableLockScreenControls: boolean);
     /**
      * Unique identifier for the player object.
      */
@@ -100,6 +100,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      * Remove the player from memory to free up resources.
      */
     remove(): void;
+    enableLockScreenControls: boolean;
 }
 type AudioSample = {
     channels: {

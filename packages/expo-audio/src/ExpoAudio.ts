@@ -17,12 +17,13 @@ import { resolveSource } from './utils/resolveSource';
 
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null,
-  updateInterval: number = 500
+  updateInterval: number = 500,
+  enableLockScreenControls: boolean = false
 ): AudioPlayer {
   const parsedSource = resolveSource(source);
   const player = useReleasingSharedObject(
-    () => new AudioModule.AudioPlayer(parsedSource, updateInterval),
-    [JSON.stringify(parsedSource)]
+    () => new AudioModule.AudioPlayer(parsedSource, updateInterval, enableLockScreenControls),
+    [JSON.stringify(parsedSource), enableLockScreenControls]
   );
 
   return player;
