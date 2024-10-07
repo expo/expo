@@ -19,10 +19,9 @@ This is especially important on Android since the [`android.media.projection`](h
 
 On Android, the screen capture callback works without additional permissions only for Android 14+. **You don't need to request or check permissions for blocking screen capture or using the callback on Android 14+.**
 
-If you want to use the screen capture callback on Android 13 or lower, you need to add the `READ_MEDIA_IMAGES` permission to your `AndroidManifest.xml` file.
-You can do that using the `android.permissions` key in your app config. [Learn more.](https://docs.expo.dev/guides/permissions/#android)
+If you want to use the screen capture callback on Android 13 or lower, you need to add the `READ_MEDIA_IMAGES` permission to your `AndroidManifest.xml` file. You can use the `android.permissions` key in your app config. See [Android permissions](/guides/permissions/#android) for more information.
 
-> **warning** The `READ_MEDIA_IMAGES` permission can be added only for apps with a need for broad access to photos. [Learn more.](https://support.google.com/googleplay/android-developer/answer/14115180)
+> **warning** The `READ_MEDIA_IMAGES` permission can be added only for apps needing broad access to photos. See [Details on Google Play's Photo and Video Permissions policy](https://support.google.com/googleplay/android-developer/answer/14115180).
 
 > **warning** Currently, taking screenshots on iOS cannot be prevented. This is due to underlying OS limitations.
 
