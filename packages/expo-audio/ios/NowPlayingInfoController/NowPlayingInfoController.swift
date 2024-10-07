@@ -16,7 +16,7 @@ public class NowPlayingInfoController: NowPlayingInfoControllerProtocol {
 
     private(set) var infoCenter: NowPlayingInfoCenter
     private(set) var info: [String: Any] = [:]
-    
+
     public required init() {
         infoCenter = MPNowPlayingInfoCenter.default()
     }
@@ -26,11 +26,11 @@ public class NowPlayingInfoController: NowPlayingInfoControllerProtocol {
         infoQueue = dispatchQueue
         self.infoCenter = infoCenter
     }
-    
+
     public required init(infoCenter: NowPlayingInfoCenter = MPNowPlayingInfoCenter.default()) {
         self.infoCenter = infoCenter
     }
-    
+
     public func set(keyValues: [NowPlayingInfoKeyValue]) {
         infoQueue.async(flags: .barrier) { [weak self] in
             guard let self = self else { return }
@@ -49,7 +49,7 @@ public class NowPlayingInfoController: NowPlayingInfoControllerProtocol {
             }
         }
     }
-    
+
     public func set(keyValue: NowPlayingInfoKeyValue) {
         infoQueue.async(flags: .barrier) { [weak self] in
             guard let self = self else { return }
@@ -57,11 +57,11 @@ public class NowPlayingInfoController: NowPlayingInfoControllerProtocol {
             self.update()
         }
     }
-   
+
     private func update() {
         infoCenter.nowPlayingInfo = info
     }
-    
+
     public func clear() {
         infoQueue.async(flags: .barrier) { [weak self] in
             guard let self = self else { return }
@@ -69,5 +69,5 @@ public class NowPlayingInfoController: NowPlayingInfoControllerProtocol {
             self.infoCenter.nowPlayingInfo = nil
         }
     }
-    
+
 }

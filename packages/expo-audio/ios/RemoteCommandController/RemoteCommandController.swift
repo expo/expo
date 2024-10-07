@@ -88,8 +88,7 @@ public class RemoteCommandController {
         handleChangePlaybackPositionCommandDefault
 
     private func handlePlayCommandDefault(event: MPRemoteCommandEvent)
-        -> MPRemoteCommandHandlerStatus
-    {
+        -> MPRemoteCommandHandlerStatus {
         if let audioPlayer = audioPlayer {
             let rate = audioPlayer.currentRate > 0 ? audioPlayer.currentRate : 1.0
             audioPlayer.play(at: rate)
@@ -99,8 +98,7 @@ public class RemoteCommandController {
     }
 
     private func handlePauseCommandDefault(event: MPRemoteCommandEvent)
-        -> MPRemoteCommandHandlerStatus
-    {
+        -> MPRemoteCommandHandlerStatus {
         if let audioPlayer = audioPlayer {
 
             audioPlayer.ref.pause()
@@ -110,11 +108,9 @@ public class RemoteCommandController {
     }
 
     private func handleChangePlaybackPositionCommandDefault(event: MPRemoteCommandEvent)
-        -> MPRemoteCommandHandlerStatus
-    {
+        -> MPRemoteCommandHandlerStatus {
         if let event = event as? MPChangePlaybackPositionCommandEvent,
-            let audioPlayer = audioPlayer
-        {
+            let audioPlayer = audioPlayer {
 
             let seconds = event.positionTime
             audioPlayer.seekTo(seconds)

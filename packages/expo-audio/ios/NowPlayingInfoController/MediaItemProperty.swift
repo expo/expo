@@ -8,13 +8,12 @@
 import Foundation
 import MediaPlayer
 
-
 /**
  Enum representing MPMediaItemProperties.
  Docs for each property is taken from [Apple docs](https://developer.apple.com/documentation/mediaplayer/mpmediaitem/general_media_item_property_keys)
  */
 public enum MediaItemProperty: NowPlayingInfoKeyValue {
-    
+
     /**
      The performing artist(s) for a media item—which may vary from the primary artist for the album that a media item belongs to.
      
@@ -22,14 +21,13 @@ public enum MediaItemProperty: NowPlayingInfoKeyValue {
      */
     case artist(String?)
 
-
     /**
      The title (or name) of the media item.
      
      This property is unrelated to the MPMediaItemPropertyAlbumTitle property. Value is an NSString object.
      */
     case title(String?)
-    
+
     /**
      The title of an album.
      
@@ -42,7 +40,6 @@ public enum MediaItemProperty: NowPlayingInfoKeyValue {
      Value is an NSNumber object representing a duration in seconds as an TimeInterval.
      */
     case duration(TimeInterval?)
-        
 
     /**
      The artwork image for the media item.
@@ -51,20 +48,20 @@ public enum MediaItemProperty: NowPlayingInfoKeyValue {
 
     public func getKey() -> String {
         switch self {
-            
-        case .artist(_):
+
+        case .artist:
             return MPMediaItemPropertyArtist
-            
-        case .title(_):
+
+        case .title:
             return MPMediaItemPropertyTitle
-            
-        case .albumTitle(_):
+
+        case .albumTitle:
             return MPMediaItemPropertyAlbumTitle
-            
-        case .duration(_):
+
+        case .duration:
             return MPMediaItemPropertyPlaybackDuration
-            
-        case .artwork(_):
+
+        case .artwork:
             return MPMediaItemPropertyArtwork
 
         }
@@ -72,19 +69,19 @@ public enum MediaItemProperty: NowPlayingInfoKeyValue {
 
     public func getValue() -> Any? {
         switch self {
-            
+
         case .artist(let artist):
             return artist
-            
+
         case .title(let title):
             return title
-            
+
         case .albumTitle(let title):
             return title
-            
+
         case .duration(let duration):
             return duration != nil ? NSNumber(floatLiteral: duration!) : nil
-            
+
         case .artwork(let artwork):
             return artwork
 
@@ -92,4 +89,3 @@ public enum MediaItemProperty: NowPlayingInfoKeyValue {
     }
 
 }
-

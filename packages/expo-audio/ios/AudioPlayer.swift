@@ -37,8 +37,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
   private var metadata: [String: Any]
 
-  init(_ ref: AVPlayer, interval: Double, enableLockScreenControls: Bool, metadata: [String: Any]?)
-  {
+  init(_ ref: AVPlayer, interval: Double, enableLockScreenControls: Bool, metadata: [String: Any]?) {
     self.interval = interval
     self.enableLockScreenControls = enableLockScreenControls
     self.nowPlayingInfoController = NowPlayingInfoController()
@@ -87,14 +86,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     nowPlayingInfoController.setWithoutUpdate(keyValues: [
       MediaItemProperty.duration(nil),
       NowPlayingInfoProperty.playbackRate(nil),
-      NowPlayingInfoProperty.elapsedPlaybackTime(nil),
+      NowPlayingInfoProperty.elapsedPlaybackTime(nil)
     ])
     loadNowPlayingMetaValues()
     setupRemoteTransportControls()
   }
 
   public func loadNowPlayingMetaValues() {
-    guard let item = ref.currentItem else { return }
+    guard let item = ref.currentItem else {
+      return
+    }
 
     let duration = item.duration.isNumeric ? item.duration.seconds : 0
     let title = metadata["title"] as? String ?? "Unknown Title"
@@ -107,7 +108,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       MediaItemProperty.albumTitle(albumTitle),
       MediaItemProperty.duration(duration),
       NowPlayingInfoProperty.playbackRate(Double(ref.rate)),
-      NowPlayingInfoProperty.elapsedPlaybackTime(item.currentTime().seconds),
+      NowPlayingInfoProperty.elapsedPlaybackTime(item.currentTime().seconds)
     ])
 
     if let artworkUrl = metadata["artwork"] as? String, let url = URL(string: artworkUrl) {
@@ -193,7 +194,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "isLoaded": ref.currentItem?.status == .readyToPlay,
       "playbackRate": ref.rate,
       "shouldCorrectPitch": shouldCorrectPitch,
-      "isBuffering": isBuffering,
+      "isBuffering": isBuffering
     ]
   }
 
@@ -265,7 +266,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
           event: audioSample,
           arguments: [
             "channels": channels,
-            "timestamp": timestamp,
+            "timestamp": timestamp
           ])
       }
     }
@@ -318,7 +319,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     nowPlayingInfoController.set(keyValues: [
       NowPlayingInfoProperty.playbackRate(Double(ref.rate)),
       NowPlayingInfoProperty.elapsedPlaybackTime(item.currentTime().seconds),
-      MediaItemProperty.duration(item.duration.seconds),  // Add this line
+      MediaItemProperty.duration(item.duration.seconds)  // Add this line
     ])
   }
 

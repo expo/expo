@@ -79,7 +79,7 @@ public enum RemoteCommand: CustomStringConvertible {
         return [
             .play,
             .pause,
-            .changePlaybackPosition,
+            .changePlaybackPosition
         ]
     }
 
