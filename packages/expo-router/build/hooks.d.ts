@@ -1,5 +1,5 @@
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
+import { RouteSegments, UnknownOutputParams } from './types';
 type SearchParams = Record<string, string | string[]>;
 export declare function useRootNavigationState(): import("./fork/getStateFromPath").ResultState;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
@@ -44,8 +44,9 @@ export declare function usePathname(): string;
  *
  * @see `useLocalSearchParams`
  */
-export declare function useGlobalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TParams>;
-export declare function useGlobalSearchParams<TRoute extends Routes, TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TRoute, TParams>;
+type Routes = any;
+export declare function useGlobalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): any;
+export declare function useGlobalSearchParams<TRoute extends Routes, TParams extends SearchParams = UnknownOutputParams>(): any;
 /**
  * Returns the URL parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
@@ -55,8 +56,8 @@ export declare function useGlobalSearchParams<TRoute extends Routes, TParams ext
  *
  * @see `useGlobalSearchParams`
  */
-export declare function useLocalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TParams>;
-export declare function useLocalSearchParams<TRoute extends Routes, TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TRoute, TParams>;
+export declare function useLocalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): any;
+export declare function useLocalSearchParams<TRoute extends Routes, TParams extends SearchParams = UnknownOutputParams>(): any;
 export declare function useSearchParams({ global }?: {
     global?: boolean | undefined;
 }): URLSearchParams;

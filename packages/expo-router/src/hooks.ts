@@ -3,7 +3,7 @@ import React from 'react';
 import { LocalRouteParamsContext } from './Route';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams } from './types';
 
 type SearchParams = Record<string, string | string[]>;
 export function useRootNavigationState() {
@@ -91,18 +91,17 @@ export function usePathname(): string {
  *
  * @see `useLocalSearchParams`
  */
-export function useGlobalSearchParams<
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams>;
+type Routes = any;
+export function useGlobalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): any;
 export function useGlobalSearchParams<
   TRoute extends Routes,
   TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TRoute, TParams>;
+>(): any;
 export function useGlobalSearchParams<
   TParams1 extends SearchParams | Routes = UnknownOutputParams,
   TParams2 extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams1, TParams2> {
-  return useStoreRouteInfo().params as RouteParams<TParams1, TParams2>;
+>(): any {
+  return useStoreRouteInfo().params;
 }
 
 /**
@@ -114,17 +113,15 @@ export function useGlobalSearchParams<
  *
  * @see `useGlobalSearchParams`
  */
-export function useLocalSearchParams<
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams>;
+export function useLocalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): any;
 export function useLocalSearchParams<
   TRoute extends Routes,
   TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TRoute, TParams>;
+>(): any;
 export function useLocalSearchParams<
   TParams1 extends SearchParams | Routes = UnknownOutputParams,
   TParams2 extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams1, TParams2> {
+>(): any {
   const params = React.useContext(LocalRouteParamsContext) ?? {};
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
@@ -147,7 +144,7 @@ export function useLocalSearchParams<
         }
       }
     })
-  ) as RouteParams<TParams1, TParams2>;
+  ) as any;
 }
 
 export function useSearchParams({ global = false } = {}): URLSearchParams {

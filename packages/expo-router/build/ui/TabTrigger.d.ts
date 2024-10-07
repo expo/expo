@@ -7,7 +7,7 @@ type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & 
 };
 export type TabTriggerProps<T extends string | object> = PressablePropsWithoutFunctionChildren & {
     name: string;
-    href?: Href<T>;
+    href?: Href;
     /** Forward props to child component. Useful for custom wrappers. */
     asChild?: boolean;
     /** Reset the route when switching to the tab */
@@ -15,7 +15,7 @@ export type TabTriggerProps<T extends string | object> = PressablePropsWithoutFu
 };
 export type TabTriggerOptions<T extends string | object> = {
     name: string;
-    href: Href<T>;
+    href: Href;
 };
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.RefAttributes<View> & {
     isFocused?: boolean;

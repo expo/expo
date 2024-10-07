@@ -1,5 +1,5 @@
 import { NavigationOptions } from './global-state/routing';
-import { Href, RouteParamInput, Routes } from './types';
+import { Href } from './types';
 export type Router = {
     /** Go back in the history. */
     back: () => void;
@@ -18,7 +18,7 @@ export type Router = {
     /** If there's history that supports invoking the `dismiss` and `dismissAll` function. */
     canDismiss: () => boolean;
     /** Update the current route query params. */
-    setParams: <T extends Routes>(params: Partial<RouteParamInput<T>>) => void;
+    setParams: (params: any) => void;
 };
 export declare const router: Router;
 //# sourceMappingURL=imperative-api.d.ts.map

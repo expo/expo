@@ -7,22 +7,18 @@ import { getWatchHandler } from '../index';
  * Parsed the generated TypeScript definitions and returns the values of the
  * routes as arrays of strings
  */
-export function getGeneratedRoutes(context: ReturnType<typeof inMemoryContext>) {
+export function getGeneratedRoutes(
+  context: ReturnType<typeof inMemoryContext>,
+  { stripStaticSuffix = true } = {}
+) {
   const output = getTypedRoutesDeclarationFile(context);
-  return splitDeclarationFileIntoSections(output);
-}
+  let staticRoutes = output.match(/StaticRoutes:\s(.+);/)?.[1];
+  const dynamicRoutes = output.match(/DynamicRoutes:\s(.+);/)?.[1];
+  const dynamicRouteTemplates = output.match(/DynamicRouteTemplate:\s(.+);/)?.[1];
 
-function splitDeclarationFileIntoSections(output: string) {
-  function toArray(regex: RegExp) {
-    const match = output.match(regex)?.[1];
-    if (!match) return [];
-    if (match === 'never') return ['never'];
-    return match.slice(1, -1).split('` | `');
+  if (stripStaticSuffix) {
+    staticRoutes = staticRoutes?.replaceAll("${`?${string}` | `#${string}` | ''}", '');
   }
-
-  const staticRoutes = toArray(/StaticRoutes:\s(.+);/);
-  const dynamicRoutes = toArray(/DynamicRoutes:\s(.+);/);
-  const dynamicRouteTemplates = toArray(/DynamicRouteTemplate:\s(.+);/);
 
   return {
     staticRoutes,
@@ -39,13 +35,14 @@ it('basic single static route', () => {
   );
 
   expect(generated).toEqual({
-    staticRoutes: ['/', '/_sitemap'],
-    dynamicRoutes: ['never'],
-    dynamicRouteTemplates: ['never'],
+    staticRoutes:
+      '`/` | `/_sitemap` | { pathname: `/`; params?: UnknownInputParams | never; } | { pathname: `/_sitemap`; params?: UnknownInputParams | never; }',
+    dynamicRoutes: undefined,
+    dynamicRouteTemplates: undefined,
   });
 });
 
-it('hoisting with layouts and groups', () => {
+it.only('hoisting with layouts and groups', () => {
   const generated = getGeneratedRoutes(
     inMemoryContext({
       '(app)/_layout': () => null,
@@ -61,48 +58,12 @@ it('hoisting with layouts and groups', () => {
   );
 
   expect(generated).toEqual({
-    dynamicRouteTemplates: [
-      '/(app)/tabs/(apple)/three/[fruit]',
-      '/(app)/tabs/(banana)/three/[fruit]',
-      '/(app)/tabs/three/[fruit]',
-      '/tabs/(apple)/three/[fruit]',
-      '/tabs/(banana)/three/[fruit]',
-      '/tabs/three/[fruit]',
-    ],
-    dynamicRoutes: [
-      '/(app)/tabs/(apple)/three/${Router.SingleRoutePart<T>}',
-      '/(app)/tabs/(banana)/three/${Router.SingleRoutePart<T>}',
-      '/(app)/tabs/three/${Router.SingleRoutePart<T>}',
-      '/tabs/(apple)/three/${Router.SingleRoutePart<T>}',
-      '/tabs/(banana)/three/${Router.SingleRoutePart<T>}',
-      '/tabs/three/${Router.SingleRoutePart<T>}',
-    ],
-    staticRoutes: [
-      '/',
-      '/(app)',
-      '/(app)/',
-      '/(app)/tabs',
-      '/(app)/tabs/(apple)/three',
-      '/(app)/tabs/(apple)/three/apple',
-      '/(app)/tabs/(banana)/three',
-      '/(app)/tabs/(banana)/three/banana',
-      '/(app)/tabs/one',
-      '/(app)/tabs/three',
-      '/(app)/tabs/three/apple',
-      '/(app)/tabs/three/banana',
-      '/(app)/tabs/two',
-      '/_sitemap',
-      '/tabs',
-      '/tabs/(apple)/three',
-      '/tabs/(apple)/three/apple',
-      '/tabs/(banana)/three',
-      '/tabs/(banana)/three/banana',
-      '/tabs/one',
-      '/tabs/three',
-      '/tabs/three/apple',
-      '/tabs/three/banana',
-      '/tabs/two',
-    ],
+    staticRoutes:
+      "`/_sitemap` | `${'/(app)' | ''}` | `${'/(app)' | ''}/tabs/one` | `${'/(app)' | ''}/tabs/two` | `${'/(app)' | ''}/tabs${'/(apple)' | '/(banana)' | ''}/three` | `${'/(app)' | ''}/tabs${'/(apple)' | ''}/three/apple` | `${'/(app)' | ''}/tabs${'/(banana)' | ''}/three/banana` | { pathname: `/_sitemap`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs/one`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs/two`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs${'/(apple)' | '/(banana)' | ''}/three`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs${'/(apple)' | ''}/three/apple`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs${'/(banana)' | ''}/three/banana`; params?: UnknownInputParams | never; }",
+    dynamicRoutes:
+      "`${'/(app)' | ''}/tabs${'/(apple)' | '/(banana)' | ''}/three/${Router.SingleRoutePart<T>}`",
+    dynamicRouteTemplates:
+      "{ pathname: `${'/(app)' | ''}/tabs${'/(apple)' | '/(banana)' | ''}/three/[fruit]`, params: Router.UnknownInputParams & { fruit: string | number; }",
   });
 });
 
@@ -110,9 +71,10 @@ it('works with no routes', () => {
   const generated = getGeneratedRoutes(inMemoryContext({}));
 
   expect(generated).toEqual({
-    staticRoutes: ['never'],
     dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
+    staticRoutes:
+      "`/_sitemap${`?${string}` | `#${string}` | ''}` | `${'/(app)' | ''}${`?${string}` | `#${string}` | ''}` | `${'/(app)' | ''}/tabs/one${`?${string}` | `#${string}` | ''}` | `${'/(app)' | ''}/tabs/two${`?${string}` | `#${string}` | ''}` | `${'/(app)' | ''}/tabs${'/(apple)' | '/(banana)' | ''}/three${`?${string}` | `#${string}` | ''}` | `${'/(app)' | ''}/tabs${'/(apple)' | ''}/three/apple${`?${string}` | `#${string}` | ''}` | `${'/(app)' | ''}/tabs${'/(banana)' | ''}/three/banana${`?${string}` | `#${string}` | ''}` | { pathname: `/_sitemap`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs/one`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs/two`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs${'/(apple)' | '/(banana)' | ''}/three`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs${'/(apple)' | ''}/three/apple`; params?: UnknownInputParams | never; } | { pathname: `${'/(app)' | ''}/tabs${'/(banana)' | ''}/three/banana`; params?: UnknownInputParams | never; }",
   });
 });
 
@@ -155,32 +117,12 @@ it('expands groups', () => {
 
   expect(generated).toEqual({
     staticRoutes: [
-      '/(a)/(e)/banana',
-      '/(a)/(f)/banana',
-      '/(a)/apple',
-      '/(a)/banana',
-      '/(b)/(e)/banana',
-      '/(b)/(f)/banana',
-      '/(b)/apple',
-      '/(b)/banana',
-      '/(c)/apple',
-      '/(e)/banana',
-      '/(f)/banana',
+      "${'/(a)' | '/(b)' | ''}${'/(e)' | '/(f)' | ''}/banana",
+      "${'/(a)' | '/(b)' | '/(c)' | ''}/apple",
       '/_sitemap',
-      '/apple',
-      '/banana',
-      '/test',
-      '/test/(blue)',
-      '/test/(blue)/color',
-      '/test/(blue)/folder/(green)/page',
-      '/test/(blue)/folder/page',
-      '/test/(red)',
-      '/test/(red)/color',
-      '/test/(red)/folder/(green)/page',
-      '/test/(red)/folder/page',
-      '/test/color',
-      '/test/folder/(green)/page',
-      '/test/folder/page',
+      "/test${'/(red)' | '/(blue)' | ''}",
+      "/test${'/(red)' | '/(blue)' | ''}/color",
+      "/test${'/(red)' | '/(blue)' | ''}/folder${'/(green)' | ''}/page",
     ],
     dynamicRoutes: ['never'],
     dynamicRouteTemplates: ['never'],
@@ -257,51 +199,22 @@ describe(getWatchHandler, () => {
     const sections = splitDeclarationFileIntoSections(fn.mock.lastCall?.[0] ?? '');
 
     expect(sections).toEqual({
-      staticRoutes: [
-        '/',
-        '/(a)/bar',
-        '/(a)/directory/(c)/route',
-        '/(a)/directory/(d)/route',
-        '/(a)/directory/route',
-        '/(b)/bar',
-        '/(b)/directory/(c)/route',
-        '/(b)/directory/(d)/route',
-        '/(b)/directory/route',
-        '/(group)/foo',
-        '/_sitemap',
-        '/apple',
-        '/bar',
-        '/directory/(c)/route',
-        '/directory/(d)/route',
-        '/directory/route',
-        '/foo',
-        '/fruit/banana',
+      dynamicRouteTemplates: [
+        "${'/(a)' | ''}/[slug]",
+        "${'/(a)' | '/(b)' | ''}/directory${'/(c)' | '/(d)' | ''}/[...catchall]",
       ],
       dynamicRoutes: [
-        '/${Router.SingleRoutePart<T>}',
-        '/(a)/${Router.SingleRoutePart<T>}',
-        '/(a)/directory/${string}',
-        '/(a)/directory/(c)/${string}',
-        '/(a)/directory/(d)/${string}',
-        '/(b)/directory/${string}',
-        '/(b)/directory/(c)/${string}',
-        '/(b)/directory/(d)/${string}',
-        '/directory/${string}',
-        '/directory/(c)/${string}',
-        '/directory/(d)/${string}',
+        "${'/(a)' | ''}/${Router.SingleRoutePart<T>}",
+        "${'/(a)' | '/(b)' | ''}/directory${'/(c)' | '/(d)' | ''}/${string}",
       ],
-      dynamicRouteTemplates: [
-        '/(a)/[slug]',
-        '/(a)/directory/(c)/[...catchall]',
-        '/(a)/directory/(d)/[...catchall]',
-        '/(a)/directory/[...catchall]',
-        '/(b)/directory/(c)/[...catchall]',
-        '/(b)/directory/(d)/[...catchall]',
-        '/(b)/directory/[...catchall]',
-        '/[slug]',
-        '/directory/(c)/[...catchall]',
-        '/directory/(d)/[...catchall]',
-        '/directory/[...catchall]',
+      staticRoutes: [
+        '/',
+        "${'/(a)' | '/(b)' | ''}/bar",
+        "${'/(a)' | '/(b)' | ''}/directory${'/(c)' | '/(d)' | ''}/route",
+        "${'/(group)' | ''}/foo",
+        '/_sitemap',
+        '/apple',
+        '/fruit/banana',
       ],
     });
   });

@@ -33,6 +33,7 @@ export interface SetupTypedRoutesOptions {
   projectRoot: string;
   /** Absolute expo router routes directory. */
   routerDirectory: string;
+  routerConfig: Record<string, any>;
 }
 
 export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
