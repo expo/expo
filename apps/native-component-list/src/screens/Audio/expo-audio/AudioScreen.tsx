@@ -55,6 +55,12 @@ export default function AudioScreen(props: any) {
         source={getAudioSource()}
         style={styles.player}
         enableLockScreenControls={enableLockScreenControls}
+        metadata={{
+          title: 'Polonez May',
+          artist: 'Wojciech Kilar',
+          album: 'Kilar',
+          artwork: 'https://picsum.photos/200/300',
+        }}
       />
     </ScrollView>
   );

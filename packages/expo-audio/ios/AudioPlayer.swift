@@ -35,11 +35,15 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
   }
 
-  init(_ ref: AVPlayer, interval: Double, enableLockScreenControls: Bool) {
+  private var metadata: [String: Any]
+
+  init(_ ref: AVPlayer, interval: Double, enableLockScreenControls: Bool, metadata: [String: Any]?)
+  {
     self.interval = interval
     self.enableLockScreenControls = enableLockScreenControls
     self.nowPlayingInfoController = NowPlayingInfoController()
     self.remoteCommandController = RemoteCommandController()
+    self.metadata = metadata ?? [:]
 
     super.init(ref)
     self.remoteCommandController.audioPlayer = self
@@ -93,9 +97,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     guard let item = ref.currentItem else { return }
 
     let duration = item.duration.isNumeric ? item.duration.seconds : 0
-    let title = "Your Audio Title"  // Replace with actual title
-    let artist = "Artist Name"  // Replace with actual artist name
-    let albumTitle = "Album Name"  // Replace with actual album name
+    let title = metadata["title"] as? String ?? "Unknown Title"
+    let artist = metadata["artist"] as? String ?? "Unknown Artist"
+    let albumTitle = metadata["album"] as? String ?? "Unknown Album"
 
     nowPlayingInfoController.set(keyValues: [
       MediaItemProperty.artist(artist),
@@ -106,10 +110,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       NowPlayingInfoProperty.elapsedPlaybackTime(item.currentTime().seconds),
     ])
 
-    // You can add artwork here if available
-    // if let artwork = MPMediaItemArtwork(/* your artwork */) {
-    //     nowPlayingInfoController.set(keyValue: MediaItemProperty.artwork(artwork))
-    // }
+    if let artworkUrl = metadata["artwork"] as? String, let url = URL(string: artworkUrl) {
+      DispatchQueue.global().async {
+        if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+          let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+          DispatchQueue.main.async {
+            self.nowPlayingInfoController.set(keyValue: MediaItemProperty.artwork(artwork))
+          }
+        }
+      }
+    }
   }
 
   private func setupRemoteTransportControls() {
@@ -334,5 +344,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     let cmTime = CMTime(seconds: time, preferredTimescale: 1000)
     ref.seek(to: cmTime)
     updateNowPlayingInfo()
+  }
+
+  func updateMetadata(_ newMetadata: [String: Any]) {
+    metadata = newMetadata
+    loadNowPlayingMetaValues()
   }
 }

@@ -15,18 +15,34 @@ import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
+// Add a new type for metadata
+type AudioMetadata = {
+  title?: string;
+  artist?: string;
+  album?: string;
+  artwork?: string;
+};
+
+// Update the useAudioPlayer hook to accept metadata
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null,
   updateInterval: number = 500,
-  enableLockScreenControls: boolean = false
+  enableLockScreenControls: boolean = false,
+  metadata?: AudioMetadata
 ): AudioPlayer {
   const parsedSource = resolveSource(source);
   const player = useReleasingSharedObject(
-    () => new AudioModule.AudioPlayer(parsedSource, updateInterval, enableLockScreenControls),
-    [JSON.stringify(parsedSource), enableLockScreenControls]
+    () =>
+      new AudioModule.AudioPlayer(parsedSource, updateInterval, enableLockScreenControls, metadata),
+    [JSON.stringify(parsedSource), enableLockScreenControls, JSON.stringify(metadata)]
   );
 
   return player;
+}
+
+// Add a method to update metadata
+export function updateAudioPlayerMetadata(player: AudioPlayer, metadata: AudioMetadata): void {
+  player.updateMetadata(metadata);
 }
 
 export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {

@@ -46,11 +46,15 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
       Constructor {
-        (source: AudioSource?, updateInterval: Double, enableLockScreenControls: Bool)
+        (
+          source: AudioSource?, updateInterval: Double, enableLockScreenControls: Bool,
+          metadata: [String: Any]?
+        )
           -> AudioPlayer in
         let avPlayer = AudioUtils.createAVPlayer(source: source)
         let player = AudioPlayer(
-          avPlayer, interval: updateInterval, enableLockScreenControls: enableLockScreenControls)
+          avPlayer, interval: updateInterval, enableLockScreenControls: enableLockScreenControls,
+          metadata: metadata)
         AudioComponentRegistry.shared.add(player)
         return player
       }
@@ -158,6 +162,10 @@ public class AudioModule: Module {
 
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
         player.seekTo(seconds)
+      }
+
+      Function("updateMetadata") { (player: AudioPlayer, metadata: [String: Any]) in
+        player.updateMetadata(metadata)
       }
     }
 
