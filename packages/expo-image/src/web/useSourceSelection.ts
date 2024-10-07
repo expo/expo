@@ -12,11 +12,19 @@ function findBestSourceForSize(
   if (sources?.length === 1) {
     return sources[0];
   }
+
+  const pixelRatio = window?.devicePixelRatio ?? 1;
+
+  const scaledSize = size ?  {
+    width:  size.width * pixelRatio,
+    height: size.height * pixelRatio
+  } : null
+
   return (
     [...(sources || [])]
       // look for the smallest image that's still larger then a container
       ?.map((source) => {
-        if (!size) {
+        if (!scaledSize) {
           return { source, penalty: 0, covers: false };
         }
         const { width, height } =
@@ -24,10 +32,10 @@ function findBestSourceForSize(
         if (width == null || height == null) {
           return { source, penalty: 0, covers: false };
         }
-        if (width < size.width || height < size.height) {
+        if (width < scaledSize.width || height < scaledSize.height) {
           return {
             source,
-            penalty: Math.max(size.width - width, size.height - height),
+            penalty: Math.max(scaledSize.width - width, scaledSize.height - height),
             covers: false,
           };
         }
