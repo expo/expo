@@ -568,6 +568,8 @@ describe('JS API tests', () => {
     jestExpect(isEmbedded).toEqual('true');
     const checkAutomatically = await testElementValueAsync('checkAutomatically');
     jestExpect(checkAutomatically).toEqual('ON_LOAD');
+    const launchDuration = await testElementValueAsync('launchDuration');
+    jestExpect(parseInt(launchDuration, 10)).toBeGreaterThan(0);
 
     // Test extra params
     await pressTestButtonAsync('setExtraParams');

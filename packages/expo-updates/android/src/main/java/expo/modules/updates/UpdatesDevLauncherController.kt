@@ -316,6 +316,7 @@ class UpdatesDevLauncherController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
+      launchDuration = null,
       embeddedUpdate = null, // no embedded update in debug builds
       emergencyLaunchException = updatesDirectoryException,
       isEnabled = true,

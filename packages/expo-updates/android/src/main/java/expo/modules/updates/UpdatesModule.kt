@@ -38,39 +38,7 @@ class UpdatesModule : Module() {
 
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
-      mutableMapOf<String, Any?>().apply {
-        val constantsForModule = UpdatesController.instance.getConstantsForModule()
-        val launchedUpdate = constantsForModule.launchedUpdate
-        val embeddedUpdate = constantsForModule.embeddedUpdate
-        val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
-
-        // keep these keys in sync with ExpoGoUpdatesModule
-        this["isEmergencyLaunch"] = constantsForModule.emergencyLaunchException != null
-        this["emergencyLaunchReason"] = constantsForModule.emergencyLaunchException?.message
-        this["isEmbeddedLaunch"] = isEmbeddedLaunch
-        this["isEnabled"] = constantsForModule.isEnabled
-        this["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
-        this["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
-        this["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
-        this["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
-        this["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
-
-        if (launchedUpdate != null) {
-          this["updateId"] = launchedUpdate.id.toString()
-          this["commitTime"] = launchedUpdate.commitTime.time
-          this["manifestString"] = launchedUpdate.manifest.toString()
-        }
-        val localAssetFiles = constantsForModule.localAssetFiles
-        if (localAssetFiles != null) {
-          val localAssets = mutableMapOf<String, String>()
-          for (asset in localAssetFiles.keys) {
-            if (asset.key != null) {
-              localAssets[asset.key!!] = localAssetFiles[asset]!!
-            }
-          }
-          this["localAssets"] = localAssets
-        }
-      }
+      UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
 
     OnCreate {

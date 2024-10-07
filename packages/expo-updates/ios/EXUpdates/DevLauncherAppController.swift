@@ -65,7 +65,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   private var launcher: AppLauncher?
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
   public let isActiveController = false
-  public private(set) var isStarted: Bool = false
 
   private var _selectionPolicy: SelectionPolicy?
   private var defaultSelectionPolicy: SelectionPolicy
@@ -100,7 +99,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   public func reset() {
     self.launcher = nil
-    self.isStarted = true
   }
 
   public func fetchUpdate(
@@ -297,7 +295,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
         return
       }
 
-      self.isStarted = true
       self.launcher = launcher
       successBlock(launcher.launchedUpdate?.manifest.rawManifestJSON())
       self.runReaper()
@@ -321,6 +318,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   public func getConstantsForModule() -> UpdatesModuleConstants {
     return UpdatesModuleConstants(
       launchedUpdate: launcher?.launchedUpdate,
+      launchDuration: nil,
       embeddedUpdate: nil, // no embedded update in debug builds
       emergencyLaunchException: self.directoryDatabaseException,
       isEnabled: true,

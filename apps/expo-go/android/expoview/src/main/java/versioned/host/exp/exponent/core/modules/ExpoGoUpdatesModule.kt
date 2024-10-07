@@ -7,6 +7,7 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.updates.IUpdatesController
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.statemachine.UpdatesStateContext
@@ -26,43 +27,21 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
     Name("ExpoUpdates")
 
     Constants {
-      val appLoaderLocal = appLoader
-      if (appLoaderLocal == null) {
-        mapOf()
-      } else {
-        val constants = mutableMapOf<String, Any?>()
-        val configuration = appLoaderLocal.updatesConfiguration
-
-        // keep these keys in sync with UpdatesModule
-        constants["isEmergencyLaunch"] = false
-        constants["emergencyLaunchReason"] = null
-        constants["isEmbeddedLaunch"] = false
-        constants["isEnabled"] = true
-        constants["isUsingEmbeddedAssets"] = false
-        constants["runtimeVersion"] = configuration.runtimeVersionRaw ?: ""
-        constants["checkAutomatically"] = configuration.checkOnLaunch.toJSString()
-        constants["channel"] = configuration.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = false
-        constants["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = true
-
-        val launchedUpdate = appLoaderLocal.launcher.launchedUpdate
-        if (launchedUpdate != null) {
-          constants["updateId"] = launchedUpdate.id.toString()
-          constants["commitTime"] = launchedUpdate.commitTime.time
-          constants["manifestString"] = launchedUpdate.manifest.toString()
-        }
-        val localAssetFiles = appLoaderLocal.launcher.localAssetFiles
-        if (localAssetFiles != null) {
-          val localAssets = mutableMapOf<String, String>()
-          for (asset in localAssetFiles.keys) {
-            if (asset.key != null) {
-              localAssets[asset.key!!] = localAssetFiles[asset]!!
-            }
-          }
-          constants["localAssets"] = localAssets
-        }
-        constants
-      }
+      appLoader?.let { appLoaderLocal ->
+        IUpdatesController.UpdatesModuleConstants(
+          emergencyLaunchException = null,
+          embeddedUpdate = null,
+          isEnabled = true,
+          isUsingEmbeddedAssets = false,
+          runtimeVersion = appLoaderLocal.updatesConfiguration.runtimeVersionRaw ?: "",
+          checkOnLaunch = appLoaderLocal.updatesConfiguration.checkOnLaunch,
+          requestHeaders = appLoaderLocal.updatesConfiguration.requestHeaders,
+          shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true,
+          launchedUpdate = appLoaderLocal.launcher.launchedUpdate,
+          localAssetFiles = appLoaderLocal.launcher.localAssetFiles,
+          launchDuration = appLoaderLocal.launchDuration
+        ).toModuleConstantsMap()
+      } ?: mapOf()
     }
 
     AsyncFunction("reload") { promise: Promise ->
