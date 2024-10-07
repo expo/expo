@@ -49,7 +49,7 @@ function ExpoRouterLink(
     rel,
     target,
     download,
-    initial,
+    withAnchor,
     ...rest
   }: LinkProps<any>,
   ref: ForwardedRef<Text>
@@ -71,7 +71,12 @@ function ExpoRouterLink(
   if (push) event = 'PUSH';
   if (replace) event = 'REPLACE';
 
-  const props = useLinkToPathProps({ href: resolvedHref, event, relativeToDirectory, initial });
+  const props = useLinkToPathProps({
+    href: resolvedHref,
+    event,
+    relativeToDirectory,
+    withAnchor,
+  });
 
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
     if ('onPress' in rest) {

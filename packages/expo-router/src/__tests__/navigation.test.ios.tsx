@@ -71,10 +71,17 @@ it('can skip initialRouteName', () => {
   act(() => router.back());
   expect(screen.getByTestId('index')).toBeVisible();
 
-  act(() => router.push('/banana', { initial: false }));
+  act(() => router.push('/banana', { withAnchor: true }));
   expect(screen.getByTestId('banana')).toBeVisible();
   act(() => router.back());
   expect(screen.getByTestId('apple')).toBeVisible();
+
+  act(() => router.replace('/'));
+
+  act(() => router.push('/banana', { withAnchor: false }));
+  expect(screen.getByTestId('banana')).toBeVisible();
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeVisible();
 });
 
 describe('hooks only', () => {

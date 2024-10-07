@@ -92,13 +92,13 @@ export type LinkToOptions = {
   /**
    *
    */
-  initial?: boolean;
+  withAnchor?: boolean;
 };
 
 export function linkTo(
   this: RouterStore,
   href: string,
-  { event, relativeToDirectory, initial }: LinkToOptions = {}
+  { event, relativeToDirectory, withAnchor }: LinkToOptions = {}
 ) {
   if (shouldLinkExternally(href)) {
     Linking.openURL(href);
@@ -134,14 +134,14 @@ export function linkTo(
     return;
   }
 
-  return navigationRef.dispatch(getNavigateAction(state, rootState, event, initial));
+  return navigationRef.dispatch(getNavigateAction(state, rootState, event, withAnchor));
 }
 
 function getNavigateAction(
   actionState: ResultState,
   navigationState: NavigationState,
   type = 'NAVIGATE',
-  initial?: boolean
+  withAnchor?: boolean
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -242,13 +242,22 @@ function getNavigateAction(
     type = 'JUMP_TO';
   }
 
-  if (initial !== undefined) {
+  if (withAnchor !== undefined) {
     if (rootPayload.params.initial) {
       if (process.env.NODE_ENV !== 'production') {
         console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
       }
     }
-    rootPayload.params.initial = initial;
+    /*
+     * The logic for initial can seen backwards depending on your perspective
+     *   True: The initialRouteName is not loaded. The incoming screen is the initial screen (default)
+     *   False: The initialRouteName is loaded. THe incoming screen is placed after the initialRouteName
+     *
+     * withAnchor flips the perspective.
+     *   True: You want the initialRouteName to load.
+     *   False: You do not want the initialRouteName to load.
+     */
+    rootPayload.params.initial = !withAnchor;
   }
 
   return {

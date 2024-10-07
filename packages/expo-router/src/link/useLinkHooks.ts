@@ -99,7 +99,7 @@ export interface LinkProps<T extends string | object>
   relativeToDirectory?: boolean;
 
   /** Should this route replace the initial screen */
-  initial?: boolean;
+  withAnchor?: boolean;
 }
 
 // Mutate the style prop to add the className on web.
