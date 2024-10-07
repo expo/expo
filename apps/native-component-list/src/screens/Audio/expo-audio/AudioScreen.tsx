@@ -1,3 +1,4 @@
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { setIsAudioActiveAsync } from 'expo-audio';
 import React, { useState } from 'react';
 import { PixelRatio, ScrollView, StyleSheet, Switch, Text, View, Image } from 'react-native';
@@ -66,11 +67,14 @@ export default function AudioScreen(props: any) {
       </View>
       <View style={styles.controlsContainer}>
         <Text>Audio Source:</Text>
-        <Switch
-          value={selectedSource === 'http'}
-          onValueChange={(value) => setSelectedSource(value ? 'http' : 'local')}
+        <SegmentedControl
+          values={['HTTP', 'Local']}
+          selectedIndex={selectedSource === 'http' ? 0 : 1}
+          onChange={(event) => {
+            setSelectedSource(event.nativeEvent.selectedSegmentIndex === 0 ? 'http' : 'local');
+          }}
+          style={styles.segmentedControl}
         />
-        <Text>{selectedSource === 'http' ? 'HTTP' : 'Local'}</Text>
       </View>
       <AudioPlayer
         source={getAudioSource()}
@@ -95,5 +99,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 10,
+  },
+  segmentedControl: {
+    width: 200,
   },
 });

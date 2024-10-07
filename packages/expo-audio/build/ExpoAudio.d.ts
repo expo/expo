@@ -1,14 +1,7 @@
 import { AudioMode, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
-type AudioMetadata = {
-    title?: string;
-    artist?: string;
-    album?: string;
-    artwork?: string;
-};
+import { AudioMetadata, AudioPlayer, AudioRecorder } from './AudioModule.types';
 export declare function useAudioPlayer(source?: AudioSource | string | number | null, updateInterval?: number, enableLockScreenControls?: boolean, metadata?: AudioMetadata): AudioPlayer;
-export declare function updateAudioPlayerMetadata(player: AudioPlayer, metadata: AudioMetadata): void;
 export declare function useAudioPlayerStatus(player: AudioPlayer): AudioStatus;
 export declare function useAudioSampleListener(player: AudioPlayer, listener: (data: {
     channels: {

@@ -11,17 +11,9 @@ import {
   RecordingStatus,
 } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { AudioMetadata, AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
-
-// Add a new type for metadata
-type AudioMetadata = {
-  title?: string;
-  artist?: string;
-  album?: string;
-  artwork?: string;
-};
 
 // Update the useAudioPlayer hook to accept metadata
 export function useAudioPlayer(
@@ -39,12 +31,6 @@ export function useAudioPlayer(
 
   return player;
 }
-
-// Add a method to update metadata
-export function updateAudioPlayerMetadata(player: AudioPlayer, metadata: AudioMetadata): void {
-  player.updateMetadata(metadata);
-}
-
 export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
   const currentStatus = useMemo(() => player.currentStatus, [player.id]);
   return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);

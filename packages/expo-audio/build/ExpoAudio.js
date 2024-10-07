@@ -11,10 +11,6 @@ export function useAudioPlayer(source = null, updateInterval = 500, enableLockSc
     const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval, enableLockScreenControls, metadata), [JSON.stringify(parsedSource), enableLockScreenControls, JSON.stringify(metadata)]);
     return player;
 }
-// Add a method to update metadata
-export function updateAudioPlayerMetadata(player, metadata) {
-    player.updateMetadata(metadata);
-}
 export function useAudioPlayerStatus(player) {
     const currentStatus = useMemo(() => player.currentStatus, [player.id]);
     return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);

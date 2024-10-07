@@ -23,12 +23,25 @@ export interface AudioModule {
 
 export type RecordingPermissionResponse = PermissionResponse;
 
+// Add a new type for metadata
+export type AudioMetadata = {
+  title?: string;
+  artist?: string;
+  album?: string;
+  artwork?: string;
+};
+
 export declare class AudioPlayer extends SharedObject<AudioEvents> {
   /**
    * Initializes a new audio player instance with the given source.
    * @hidden
    */
-  constructor(source: AudioSource, updateInterval: number, enableLockScreenControls: boolean);
+  constructor(
+    source: AudioSource,
+    updateInterval: number,
+    enableLockScreenControls: boolean,
+    metadata?: AudioMetadata
+  );
 
   /**
    * Unique identifier for the player object.
