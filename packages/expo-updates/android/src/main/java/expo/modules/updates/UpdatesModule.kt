@@ -9,6 +9,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.updates.events.UpdatesJSEvent
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
@@ -33,7 +34,7 @@ class UpdatesModule : Module() {
     Name("ExpoUpdates")
 
     Events(
-      UPDATES_STATE_CHANGE_EVENT_NAME
+      UpdatesJSEvent.StateChange.eventName
     )
 
     Constants {

@@ -2,7 +2,10 @@ package expo.modules.updates
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
-import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
+import com.facebook.react.bridge.WritableMap
+import expo.modules.kotlin.events.EventEmitter
+import expo.modules.updates.events.IUpdatesEventManager
+import expo.modules.updates.events.UpdatesJSEvent
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateEventType
@@ -39,10 +42,13 @@ class UpdatesStateMachineInstrumentationTest {
   private val androidContext = InstrumentationRegistry.getInstrumentation().context
 
   // Test classes
-  class TestStateChangeEventSender : UpdatesStateChangeEventSender {
+  class TestStateChangeEventManager : IUpdatesEventManager {
     var lastEventType: UpdatesStateEventType? = null
 
-    override fun sendUpdateStateChangeEventToAppContext(
+    override var eventEmitter: EventEmitter? = null
+    override var shouldEmitJsEvents: Boolean = false
+
+    override fun sendStateChangeEvent(
       eventType: UpdatesStateEventType,
       context: UpdatesStateContext
     ) {
@@ -52,20 +58,20 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_defaultState() {
-    val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventManager, UpdatesStateValue.values().toSet())
     Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
   }
 
   @Test
   fun test_handleCheckAndCheckCompleteAvailable() {
-    val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventManager, UpdatesStateValue.values().toSet())
 
     machine.processEventTest(UpdatesStateEvent.Check())
 
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
-    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventSender.lastEventType)
+    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventManager.lastEventType)
 
     machine.processEventTest(
       UpdatesStateEvent.CheckCompleteWithUpdate(
@@ -77,18 +83,18 @@ class UpdatesStateMachineInstrumentationTest {
     Assert.assertTrue(machine.context.isUpdateAvailable)
     Assert.assertFalse(machine.context.isUpdatePending)
     Assert.assertEquals("0000-xxxx", machine.context.latestManifest?.get("updateId"))
-    Assert.assertEquals(UpdatesStateEventType.CheckCompleteAvailable, testStateChangeEventSender.lastEventType)
+    Assert.assertEquals(UpdatesStateEventType.CheckCompleteAvailable, testStateChangeEventManager.lastEventType)
   }
 
   @Test
   fun test_handleCheckCompleteUnavailable() {
-    val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventManager, UpdatesStateValue.values().toSet())
 
     machine.processEventTest(UpdatesStateEvent.Check())
 
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
-    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventSender.lastEventType)
+    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventManager.lastEventType)
 
     machine.processEventTest(UpdatesStateEvent.CheckCompleteUnavailable())
 
@@ -97,18 +103,18 @@ class UpdatesStateMachineInstrumentationTest {
     Assert.assertFalse(machine.context.isUpdateAvailable)
     Assert.assertFalse(machine.context.isUpdatePending)
     Assert.assertNull(machine.context.latestManifest)
-    Assert.assertEquals(UpdatesStateEventType.CheckCompleteUnavailable, testStateChangeEventSender.lastEventType)
+    Assert.assertEquals(UpdatesStateEventType.CheckCompleteUnavailable, testStateChangeEventManager.lastEventType)
   }
 
   @Test
   fun test_handleDownloadAndDownloadComplete() {
-    val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventManager, UpdatesStateValue.values().toSet())
 
     machine.processEventTest(UpdatesStateEvent.Download())
 
     Assert.assertEquals(UpdatesStateValue.Downloading, machine.getState())
-    Assert.assertEquals(UpdatesStateEventType.Download, testStateChangeEventSender.lastEventType)
+    Assert.assertEquals(UpdatesStateEventType.Download, testStateChangeEventManager.lastEventType)
 
     machine.processEventTest(
       UpdatesStateEvent.DownloadCompleteWithUpdate(
@@ -122,18 +128,18 @@ class UpdatesStateMachineInstrumentationTest {
     Assert.assertEquals("0000-xxxx", machine.context.downloadedManifest?.get("updateId"))
     Assert.assertTrue(machine.context.isUpdateAvailable)
     Assert.assertTrue(machine.context.isUpdatePending)
-    Assert.assertEquals(UpdatesStateEventType.DownloadComplete, testStateChangeEventSender.lastEventType)
+    Assert.assertEquals(UpdatesStateEventType.DownloadComplete, testStateChangeEventManager.lastEventType)
   }
 
   @Test
   fun test_handleRollback() {
-    val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventManager, UpdatesStateValue.values().toSet())
     val commitTime = Date()
     machine.processEventTest(UpdatesStateEvent.Check())
 
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
-    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventSender.lastEventType)
+    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventManager.lastEventType)
 
     machine.processEventTest(UpdatesStateEvent.CheckCompleteWithRollback(commitTime))
     Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
@@ -146,13 +152,13 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_checkError() {
-    val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventManager, UpdatesStateValue.values().toSet())
 
     machine.processEventTest(UpdatesStateEvent.Check())
 
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
-    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventSender.lastEventType)
+    Assert.assertEquals(UpdatesStateEventType.Check, testStateChangeEventManager.lastEventType)
 
     machine.processEventTest(
       UpdatesStateEvent.CheckError("A serious error has occurred")
@@ -167,8 +173,8 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_invalidTransitions() {
-    val testStateChangeEventSender = TestStateChangeEventSender()
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, UpdatesStateValue.values().toSet())
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventManager, UpdatesStateValue.values().toSet())
     machine.processEventTest(UpdatesStateEvent.Check())
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
 
@@ -186,9 +192,9 @@ class UpdatesStateMachineInstrumentationTest {
 
   @Test
   fun test_invalidStateValues() {
-    val testStateChangeEventSender = TestStateChangeEventSender()
+    val testStateChangeEventManager = TestStateChangeEventManager()
     // can only be idle
-    val machine = UpdatesStateMachine(androidContext, testStateChangeEventSender, setOf(UpdatesStateValue.Idle))
+    val machine = UpdatesStateMachine(androidContext, testStateChangeEventManager, setOf(UpdatesStateValue.Idle))
 
     // Test invalid value and ensure that state does not change
     Assert.assertThrows(AssertionError::class.java) {
