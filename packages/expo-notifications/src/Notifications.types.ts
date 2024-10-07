@@ -482,9 +482,9 @@ export type NotificationContentIos = {
    * The value your app uses to determine which scene to display to handle the notification.
    */
   targetContentIdentifier?: string;
-  /*
+  /**
    * The notification’s importance and required delivery timing.
-   * Posible values:
+   * Possible values:
    * - 'passive' - the system adds the notification to the notification list without lighting up the screen or playing a sound
    * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
    * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
