@@ -2,30 +2,29 @@ import {
   BaseNavigationContainer,
   DefaultTheme,
   DocumentTitleOptions,
-  getActionFromState,
-  getPathFromState,
-  getStateFromPath,
   LinkingContext,
   LinkingOptions,
+  LocaleDirContext,
   LocaleDirection,
   NavigationContainerProps,
   NavigationContainerRef,
   NavigationState,
   ParamListBase,
   ThemeProvider,
+  UnhandledLinkingContext,
+  getActionFromState,
+  getPathFromState,
+  getStateFromPath,
   validatePathConfig,
 } from '@react-navigation/native';
 import React from 'react';
 import { I18nManager } from 'react-native';
 import useLatestCallback from 'use-latest-callback';
 
+import { useBackButton } from './useBackButton';
+import { useDocumentTitle } from './useDocumentTitle';
 import { useLinking } from './useLinking';
-
-const { LocaleDirContext } = require('@react-navigation/native/src/LocaleDirContext');
-const { UnhandledLinkingContext } = require('@react-navigation/native/src/UnhandledLinkingContext');
-const { useBackButton } = require('@react-navigation/native/src/useBackButton');
-const { useDocumentTitle } = require('@react-navigation/native/src/useDocumentTitle');
-const { useThenable } = require('@react-navigation/native/src/useThenable');
+import { useThenable } from './useThenable';
 
 declare global {
   // eslint-disable-next-line no-var
