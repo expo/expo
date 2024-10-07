@@ -34,7 +34,7 @@ open class ExpoNotificationBuilder(
   private val store: SharedPreferencesNotificationCategoriesStore
 ) : BaseNotificationBuilder(context, notification) {
 
-  protected fun addActionsToBuilder(
+  open fun addActionsToBuilder(
     builder: NotificationCompat.Builder,
     categoryIdentifier: String
   ) {

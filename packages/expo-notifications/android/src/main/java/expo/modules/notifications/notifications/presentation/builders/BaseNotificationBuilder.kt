@@ -78,7 +78,7 @@ abstract class BaseNotificationBuilder protected constructor(protected val conte
       return channelForRequestedId.id
     }
 
-  private val notificationsChannelManager: NotificationsChannelManager
+  open val notificationsChannelManager: NotificationsChannelManager
     get() = AndroidXNotificationsChannelManager(
       context,
       AndroidXNotificationsChannelGroupManager(context)
