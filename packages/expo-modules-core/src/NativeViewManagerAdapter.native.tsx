@@ -71,7 +71,7 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
     );
   }
 
-  const appIdentifier = globalThis.expo?.['__expo_appIdentifier__'] ?? '';
+  const appIdentifier = globalThis.expo?.['__expo_app_identifier__'] ?? '';
   const viewNameSuffix = appIdentifier ? `_${appIdentifier}` : '';
   // Set up the React Native native component, which is an adapter to the universal module's view
   // manager

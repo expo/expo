@@ -423,7 +423,7 @@ public final class AppContext: NSObject {
     let runtime = try runtime
     let coreObject = runtime.createObject()
 
-    coreObject.defineProperty("__expo_appIdentifier__", value: appIdentifier, options: [])
+    coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier, options: [])
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
