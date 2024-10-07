@@ -95,8 +95,8 @@ On iOS, values are stored using the [keychain services](https://developer.apple.
 
 ## Data persistence
 
-`expo-secure-store` is designed to provide a persistent data storage solution across app restarts and updates. However, it is important not to rely on it for storing irreplaceable critical data. Data saved using expo-secure-store will not be preserved upon app uninstallation.
-Additionally, any data protected with the `requireAuthentication` option set to `true` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint
+`expo-secure-store` is designed to provide a persistent data storage solution across app restarts and updates. However, it is important not to rely on it as a single source of truth for irreplaceable, critical data. Data saved using `expo-secure-store` will not be preserved upon app uninstallation.
+Additionally, any data protected with the `requireAuthentication` option set to `true` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint.
 
 #### Exempting encryption prompt
 
