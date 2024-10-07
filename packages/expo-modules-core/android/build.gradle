@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
@@ -50,6 +52,8 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 // END HERMES
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
+
+def shouldTurnWarningsIntoErrors = findProperty("EXPO_WERROR") == "true"
 
 android {
   if (rootProject.hasProperty("ndkPath")) {
@@ -189,5 +193,14 @@ dependencies {
     } else {
       compileOnly "org.webkit:android-jsc:+"
     }
+  }
+}
+
+if (shouldTurnWarningsIntoErrors) {
+  tasks.withType(JavaCompile) configureEach {
+    options.compilerArgs << "-Werror" << "-Xlint:all"
+  }
+  tasks.withType(KotlinCompile) configureEach {
+    compilerOptions.allWarningsAsErrors = true
   }
 }
