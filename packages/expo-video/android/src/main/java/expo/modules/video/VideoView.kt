@@ -14,6 +14,9 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
+import androidx.media3.common.Format
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.Tracks
 import androidx.media3.ui.PlayerView
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.modules.i18nmanager.I18nUtil
@@ -31,7 +34,7 @@ import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext), VideoPlayerListener {
   val id: String = UUID.randomUUID().toString()
   val playerView: PlayerView = PlayerView(context.applicationContext)
   val onPictureInPictureStart by EventDispatcher<Unit>()
@@ -41,6 +44,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   var willEnterPiP: Boolean = false
   var isInFullscreen: Boolean = false
+    private set
+  var showsSubtitlesButton = false
     private set
 
   private val currentActivity = appContext.throwingActivity
@@ -95,13 +100,15 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
 
   var videoPlayer: VideoPlayer? = null
-    set(videoPlayer) {
+    set(newPlayer) {
       field?.let {
         VideoManager.onVideoPlayerDetachedFromView(it, this)
       }
-      playerView.player = videoPlayer?.player
-      field = videoPlayer
-      videoPlayer?.let {
+      videoPlayer?.removeListener(this)
+      newPlayer?.addListener(this)
+      playerView.player = newPlayer?.player
+      field = newPlayer
+      newPlayer?.let {
         VideoManager.onVideoPlayerAttachedToView(it, this)
       }
     }
@@ -236,6 +243,25 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
     rootViewChildrenOriginalVisibility.clear()
     this.addView(playerView)
+  }
+
+  override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
+    showsSubtitlesButton = hasSubtitles(tracks)
+    playerView.setShowSubtitleButton(showsSubtitlesButton)
+    super.onTracksChanged(player, tracks)
+  }
+
+  private fun hasSubtitles(tracks: Tracks): Boolean {
+    for (group in tracks.groups) {
+      for (i in 0..<group.length) {
+        val format: Format = group.getTrackFormat(i)
+
+        if (MimeTypes.isText(format.sampleMimeType)) {
+          return true
+        }
+      }
+    }
+    return false
   }
 
   private fun calculateRectHint() {
