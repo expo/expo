@@ -2365,7 +2365,7 @@ PODS:
     - Yoga
   - RNCMaskedView (0.3.1):
     - React-Core
-  - RNCPicker (2.7.5):
+  - RNCPicker (2.8.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3336,7 +3336,7 @@ SPEC CHECKSUMS:
   ReactCommon: 6ef348087d250257c44c0204461c03f036650e9b
   RNCAsyncStorage: a927b768986f83467b635cf6d7559e6edb46db7a
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
-  RNCPicker: 7973f617de8809ab9e7577b93ce23d3449fb1ec7
+  RNCPicker: 6ad936eee086dbe2aeb658994021770b46897d62
   RNDateTimePicker: 6008d74df8122d6af6d9d08096bff19a8c6ba647
   RNFlashList: 6f169ad83e52579b7754cbbcec1b004c27d82c93
   RNGestureHandler: c374c750a0a9bacd95f5c740d146ab9428549d6b
