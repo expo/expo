@@ -28,6 +28,9 @@ fun interface JSAssertion {
 
   class IntEqual(expectedValue: Int) :
     Equal<Int>(expectedValue, JavaScriptValue::getInt)
+
+  class DoubleEqual(expectedValue: Double) :
+    Equal<Double>(expectedValue, JavaScriptValue::getDouble)
 }
 
 internal class TestCase<T, R>(
@@ -86,6 +89,19 @@ internal inline fun <reified T, reified R> conversionTest(
     TestCase(jsValue, nativeAssertion, map, jsAssertion)
   )
 }
+
+@JvmName("conversionTestT")
+internal inline fun <reified T> conversionTest(
+  jsValue: String,
+  noinline nativeAssertion: (T) -> Unit = {},
+  noinline map: (T) -> T = { it },
+  jsAssertion: JSAssertion
+) = conversionTest<T, T>(
+  jsValue,
+  nativeAssertion,
+  map,
+  jsAssertion
+)
 
 @JvmName("conversionTestT")
 internal inline fun <reified T> conversionTest(

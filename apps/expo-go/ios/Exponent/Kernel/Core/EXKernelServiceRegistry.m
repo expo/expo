@@ -6,7 +6,6 @@
 #import "EXHomeModuleManager.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
-#import "EXKernelService.h"
 #import "EXSensorManager.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
@@ -138,26 +137,6 @@
     _allServices = result;
   }
   return _allServices;
-}
-
-#pragma mark - app registry delegate
-
-- (void)appRegistry:(EXKernelAppRegistry *)registry didRegisterAppRecord:(EXKernelAppRecord *)appRecord
-{
-  [self.allServices enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull className, id  _Nonnull service, BOOL * _Nonnull stop) {
-    if ([service respondsToSelector:@selector(kernelDidRegisterAppWithRecord:)]) {
-      [service kernelDidRegisterAppWithRecord:appRecord];
-    }
-  }];
-}
-
-- (void)appRegistry:(EXKernelAppRegistry *)registry willUnregisterAppRecord:(EXKernelAppRecord *)appRecord
-{
-  [self.allServices enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull className, id  _Nonnull service, BOOL * _Nonnull stop) {
-    if ([service respondsToSelector:@selector(kernelWillUnregisterAppWithRecord:)]) {
-      [service kernelWillUnregisterAppWithRecord:appRecord];
-    }
-  }];
 }
 
 @end

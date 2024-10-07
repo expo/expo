@@ -115,7 +115,7 @@ export default function App() {
   const [request, result, promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: 'native.code',
-      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../guides/linking/">linking here</a>. */
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../linking/overview/">linking here</a>. */
       redirectUri,
       /* @end */
       scopes: ['openid', 'profile', 'email', 'offline_access'],
@@ -1308,7 +1308,7 @@ export default function App() {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'YOUR_CLIENT_NAME',
-      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../guides/linking/">linking here</a>. */
+      /* @info After a user finishes authenticating, the server will redirect them to this URI. Learn more about <a href="../../linking/overview/">linking here</a>. */
       redirectUri: makeRedirectUri({
         scheme: 'YOUR_SCHEME'
       }),

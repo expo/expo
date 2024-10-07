@@ -1,5 +1,6 @@
+import type { SharedRef } from 'expo/types';
 import { Asset } from 'expo-asset';
-import { Image, ImageRef } from 'expo-image';
+import { Image } from 'expo-image';
 import { FlipType, useImageManipulator } from 'expo-image-manipulator';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -10,7 +11,7 @@ import HeadingText from '../../components/HeadingText';
 const DEFAULT_IMAGE = Asset.fromModule(require('../../../assets/images/example2.jpg'));
 
 export default function ImageSharedRefFromManipulator() {
-  const [image, setImage] = useState<ImageRef | null>(null);
+  const [image, setImage] = useState<SharedRef<'image'> | null>(null);
   const context = useImageManipulator(DEFAULT_IMAGE.uri);
 
   const transformImage = useCallback(async () => {
@@ -26,8 +27,6 @@ export default function ImageSharedRefFromManipulator() {
       .renderAsync();
     context.reset();
 
-    // TODO(@lukmccall): Figure out a way to fix types
-    //@ts-ignore
     setImage(image);
   }, [context]);
 

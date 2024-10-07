@@ -29,6 +29,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import expo.modules.video.drawing.OutlineProvider
 import expo.modules.video.enums.ContentFit
+import expo.modules.video.player.VideoPlayer
 import expo.modules.video.utils.ifYogaDefinedUse
 import java.util.UUID
 

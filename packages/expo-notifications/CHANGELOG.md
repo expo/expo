@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - Add clearLastNotificationResponseAsync to API. ([#31607](https://github.com/expo/expo/pull/31607) by [@douglowder](https://github.com/douglowder))
+- New monthly trigger type for scheduled notifications. ([#31823](https://github.com/expo/expo/pull/31823) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 

@@ -9,7 +9,7 @@
 @class EXUpdatesDatabaseManager;
 @class EXUpdatesManager;
 
-@interface EXKernelServiceRegistry : NSObject <EXKernelAppRegistryDelegate>
+@interface EXKernelServiceRegistry : NSObject
 
 // TODO: roll these into a macro in the respective classes instead of defining explicitly here.
 @property (nonatomic, readonly) EXErrorRecoveryManager *errorRecoveryManager;

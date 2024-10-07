@@ -136,13 +136,23 @@ const general = [
   makeSection('Development process', [
     makePage('workflow/overview.mdx'),
     makePage('workflow/configuration.mdx'),
-    makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
     makePage('guides/apple-privacy.mdx'),
     makePage('guides/permissions.mdx'),
     makePage('guides/environment-variables.mdx'),
-    makePage('guides/linking.mdx'),
-    makePage('guides/deep-linking.mdx'),
+    makeGroup(
+      'Linking',
+      [
+        makePage('linking/overview.mdx'),
+        makePage('linking/into-other-apps.mdx'),
+        makePage('linking/into-your-app.mdx'),
+        makePage('linking/android-app-links.mdx'),
+        makePage('linking/ios-universal-links.mdx'),
+      ],
+      {
+        expanded: false,
+      }
+    ),
     makeGroup(
       'Custom native code',
       [
@@ -152,6 +162,13 @@ const general = [
         makePage('guides/adopting-prebuild.mdx'),
       ],
       { expanded: false }
+    ),
+    makeGroup(
+      'Local app',
+      [makePage('guides/local-app-development.mdx'), makePage('guides/local-app-production.mdx')],
+      {
+        expanded: false,
+      }
     ),
     makeGroup(
       'Web',
@@ -477,10 +494,11 @@ const general = [
 const learn = [
   makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
-    'Get started',
+    'Universal app',
     [
       makePage('tutorial/introduction.mdx'),
       makePage('tutorial/create-your-first-app.mdx'),
+      makePage('tutorial/add-navigation.mdx'),
       makePage('tutorial/build-a-screen.mdx'),
       makePage('tutorial/image-picker.mdx'),
       makePage('tutorial/create-a-modal.mdx'),

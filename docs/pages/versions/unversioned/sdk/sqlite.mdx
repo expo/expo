@@ -10,6 +10,7 @@ platforms: ['android', 'ios']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import { Step } from '~/ui/components/Step';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
 
@@ -357,6 +358,61 @@ export default function App() {
   );
 }
 ```
+
+### Sharing a database between apps/extensions (iOS)
+
+To share a database with other apps/extensions in the same App Group, you can use shared containers by following the steps below:
+
+<Step label="1">
+
+Configure the App Group in app config:
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "com.myapp",
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.myapp"]
+      }
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+
+Use [`Paths.appleSharedContainers`](filesystem-next/#applesharedcontainers) from the [`expo-file-system`](filesystem-next/) library to retrieve the path to the shared container:
+
+```tsx Using Shared Container for SQLite Database on iOS
+import { SQLiteProvider, defaultDatabaseDirectory } from 'expo-sqlite';
+import { Paths } from 'expo-file-system/next';
+import { useMemo } from 'react';
+import { Platform, View } from 'react-native';
+
+export default function App() {
+  const dbDirectory = useMemo(() => {
+    if (Platform.OS === 'ios') {
+      return Object.values(Paths.appleSharedContainers)?.[0]?.uri;
+      // or `Paths.appleSharedContainers['group.com.myapp']?.uri` to choose specific container
+    }
+    return defaultDatabaseDirectory;
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <SQLiteProvider databaseName="test.db" directory={dbDirectory}>
+        <Header />
+        <Content />
+      </SQLiteProvider>
+    </View>
+  );
+}
+```
+
+</Step>
 
 ### Passing binary data
 

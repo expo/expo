@@ -31,8 +31,6 @@ end
 
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
-  :generate_multiple_pod_projects => true,
-  :incremental_installation => true,
   :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
 if ENV['CI']
