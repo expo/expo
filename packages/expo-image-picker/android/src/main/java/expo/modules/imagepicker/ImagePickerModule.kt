@@ -250,10 +250,7 @@ class ImagePickerModule : Module() {
 
   private fun getMediaLibraryPermissions(writeOnly: Boolean): Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      listOfNotNull(
-        READ_MEDIA_IMAGES,
-        READ_MEDIA_VIDEO
-      ).toTypedArray()
+      emptyArray<String>()
     } else {
       listOfNotNull(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
