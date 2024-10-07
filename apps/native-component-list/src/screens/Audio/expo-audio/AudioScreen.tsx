@@ -1,6 +1,6 @@
 import { setIsAudioActiveAsync } from 'expo-audio';
 import React, { useState } from 'react';
-import { PixelRatio, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { PixelRatio, ScrollView, StyleSheet, Switch, Text, View, Image } from 'react-native';
 
 import AudioModeSelector from './AudioModeSelector';
 import AudioPlayer from './AudioPlayer';
@@ -31,6 +31,27 @@ export default function AudioScreen(props: any) {
     }
   };
 
+  const getMetadata = () => {
+    const baseMetadata = {
+      title: 'Polonez May',
+      artist: 'Wojciech Kilar',
+      album: 'Kilar',
+    };
+
+    if (selectedSource === 'http') {
+      return {
+        ...baseMetadata,
+        artwork: 'https://picsum.photos/200/300',
+      };
+    } else {
+      // For local audio, use require for artwork
+      return {
+        ...baseMetadata,
+        artwork: Image.resolveAssetSource(require('../../../../assets/images/example2.jpg')).uri,
+      };
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
       <HeadingText>Audio state</HeadingText>
@@ -55,12 +76,7 @@ export default function AudioScreen(props: any) {
         source={getAudioSource()}
         style={styles.player}
         enableLockScreenControls={enableLockScreenControls}
-        metadata={{
-          title: 'Polonez May',
-          artist: 'Wojciech Kilar',
-          album: 'Kilar',
-          artwork: 'https://picsum.photos/200/300',
-        }}
+        metadata={getMetadata()}
       />
     </ScrollView>
   );
