@@ -25,7 +25,15 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private let nowPlayingInfoController: NowPlayingInfoControllerProtocol
   private let remoteCommandController: RemoteCommandController
 
-  var enableLockScreenControls: Bool = false
+  var enableLockScreenControls: Bool {
+    didSet {
+      if enableLockScreenControls {
+        initNotificationCenter()
+      } else {
+        removeLockScreenControls()
+      }
+    }
+  }
 
   init(_ ref: AVPlayer, interval: Double, enableLockScreenControls: Bool) {
     self.interval = interval
@@ -292,6 +300,11 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     ])
   }
 
+  private func removeLockScreenControls() {
+    removeRemoteTransportControls()
+    MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+  }
+
   public override func sharedObjectWillRelease() {
     AudioComponentRegistry.shared.remove(self)
     setSamplingEnabled(enabled: false)
@@ -301,8 +314,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     NotificationCenter.default.removeObserver(endObserver as Any)
     ref.pause()
     if enableLockScreenControls {
-      removeRemoteTransportControls()
-      MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+      removeLockScreenControls()
     }
   }
 }
