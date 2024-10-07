@@ -10,7 +10,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var startTimestamp = 0
   private var previousRecordingDuration = 0
   private var isPrepared = false
-  private var recordingSession = AVAudioSession.sharedInstance()
+  private lazy var recordingSession = AVAudioSession.sharedInstance()
   
   override init(_ pointer: AVAudioRecorder) {
     super.init(pointer)
