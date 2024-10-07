@@ -2,14 +2,12 @@ package expo.modules.notifications.notifications.presentation
 
 import android.content.Context
 import android.os.Bundle
-import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.ResultReceiverBody
 import expo.modules.notifications.createDefaultResultReceiver
-import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder
 import expo.modules.notifications.notifications.NotificationSerializer
 import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
@@ -19,7 +17,6 @@ import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.NotificationsService.Companion.dismiss
 import expo.modules.notifications.service.NotificationsService.Companion.dismissAll
 import expo.modules.notifications.service.NotificationsService.Companion.getAllPresented
-import expo.modules.notifications.service.NotificationsService.Companion.present
 
 open class ExpoNotificationPresentationModule : Module() {
   private val context: Context
@@ -30,25 +27,6 @@ open class ExpoNotificationPresentationModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationPresenter")
-
-    AsyncFunction("presentNotificationAsync") { identifier: String, payload: ReadableArguments, promise: Promise ->
-      val content = ArgumentsNotificationContentBuilder(context).setPayload(payload).build()
-      val request = createNotificationRequest(identifier, content, null)
-      val notification = Notification(request)
-      present(
-        context,
-        notification,
-        null,
-        createResultReceiver { resultCode: Int, resultData: Bundle? ->
-          if (resultCode == NotificationsService.SUCCESS_CODE) {
-            promise.resolve(identifier)
-          } else {
-            val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
-            promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification could not be presented.", e)
-          }
-        }
-      )
-    }
 
     AsyncFunction("getPresentedNotificationsAsync") { promise: Promise ->
       getAllPresented(

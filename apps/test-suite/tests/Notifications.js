@@ -292,27 +292,6 @@ export async function test(t) {
       });
     });
 
-    t.describe('presentNotificationAsync', () => {
-      t.it('presents a simple notification', async () => {
-        await Notifications.presentNotificationAsync({
-          title: 'Sample title',
-          subtitle: 'What an event!',
-          body: 'An interesting event has just happened',
-          badge: 1,
-        });
-      });
-
-      t.it('presents a notification with attachments', async () => {
-        const fileUri = FileSystem.documentDirectory + 'expo-notifications-test-image.jpg';
-        await FileSystem.downloadAsync('https://placekitten.com/200/300', fileUri);
-        await Notifications.presentNotificationAsync({
-          title: 'Look at that kitten! ➡️',
-          body: 'What a cutie!',
-          attachments: [{ uri: fileUri }],
-        });
-      });
-    });
-
     t.describe('Notification channels', () => {
       // Implementation detail!
       const fallbackChannelId = 'expo_notifications_fallback_notification_channel';

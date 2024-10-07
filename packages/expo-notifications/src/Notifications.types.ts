@@ -544,7 +544,7 @@ export interface NotificationRequest {
 
 // TODO(simek): asses if we can base this type on `NotificationContent`, since most of the fields looks like repetition
 /**
- * An object represents notification content that you pass in to `presentNotificationAsync` or as a part of `NotificationRequestInput`.
+ * An object represents notification content that you pass as part of `NotificationRequestInput`.
  */
 export type NotificationContentInput = {
   /**

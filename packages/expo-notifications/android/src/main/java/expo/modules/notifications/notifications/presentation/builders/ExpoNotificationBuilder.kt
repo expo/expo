@@ -207,7 +207,7 @@ open class ExpoNotificationBuilder(context: Context?) : ChannelAwareNotification
         val requestPriorityValue =
           requestPriority?.nativeValue ?: NotificationPriority.DEFAULT.nativeValue
 
-        // TODO (barthap): This is going to be a dead code upon removing presentNotificationAsync()
+        // TODO (barthap, vonovak): This is going to be a dead code upon removing presentNotificationAsync()
         // shouldShowAlert() will always be false here.
         return if (notificationBehavior.shouldShowAlert()) {
           // Display as a heads-up notification, as per the behavior
