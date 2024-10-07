@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.video.player.VideoPlayer
 
 // Helper class used to keep track of all existing VideoViews and VideoPlayers
