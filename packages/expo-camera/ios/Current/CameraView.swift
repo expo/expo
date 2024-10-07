@@ -84,7 +84,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   var mode = CameraMode.picture {
     didSet {
       Task {
-       await setCameraMode()
+        await setCameraMode()
       }
     }
   }
@@ -92,7 +92,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   var isMuted = false {
     didSet {
       Task {
-       await updateSessionAudioIsMuted()
+        await updateSessionAudioIsMuted()
       }
     }
   }
@@ -300,14 +300,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   private func addErrorNotification() {
     Task {
       for await error in NotificationCenter.default.notifications(named: .AVCaptureSessionRuntimeError, object: self.session)
-        .compactMap({ $0.userInfo?[AVCaptureSessionErrorKey] as? AVError }) {
-        if error.code == .mediaServicesWereReset {
-          if !session.isRunning {
-            session.startRunning()
-          }
-          await updateSessionAudioIsMuted()
-          onCameraReady()
+        .compactMap({ $0.userInfo?[AVCaptureSessionErrorKey] as? AVError }) where error.code == .mediaServicesWereReset {
+        if !session.isRunning {
+          session.startRunning()
         }
+        await updateSessionAudioIsMuted()
+        onCameraReady()
       }
     }
   }
