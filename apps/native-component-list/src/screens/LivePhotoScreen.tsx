@@ -13,7 +13,6 @@ export default function LivePhotoScreen() {
   const [contentFit, setContentFit] = useState<ContentFit>('contain');
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [useDefaultGestureRecognizer, setUseDefaultGestureRecognizer] = useState<boolean>(true);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -46,13 +45,12 @@ export default function LivePhotoScreen() {
         source={livePhoto}
         contentFit={contentFit}
         useDefaultGestureRecognizer={useDefaultGestureRecognizer}
-        style={[styles.livePhotoView, { display: isLoaded ? 'flex' : 'none' }]}
+        style={[styles.livePhotoView, { display: livePhoto ? 'flex' : 'none' }]}
         isMuted={isMuted}
         onLoadStart={() => {
           console.log('Loading');
         }}
         onLoadComplete={() => {
-          setIsLoaded(true);
           console.log('Live Photo loaded');
         }}
         onPlaybackStart={() => {
@@ -62,7 +60,6 @@ export default function LivePhotoScreen() {
           console.log('Preview photo loaded');
         }}
         onLoadError={(error) => {
-          setIsLoaded(false);
           console.log('Error: ', error.message);
         }}
         onPlaybackStop={() => {
@@ -70,9 +67,9 @@ export default function LivePhotoScreen() {
         }}
       />
       <Button
-        title={isLoaded ? 'Change Image' : 'Pick an image'}
+        title={livePhoto ? 'Change Image' : 'Pick an image'}
         onPress={pickImage}
-        style={isLoaded ? styles.pickImageCollapsed : styles.pickImageExpanded}
+        style={livePhoto ? styles.pickImageCollapsed : styles.pickImageExpanded}
       />
       <Button
         title="Start Playback Hint"

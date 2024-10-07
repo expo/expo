@@ -29,7 +29,6 @@ import { View, StyleSheet, Text, Button } from 'react-native';
 export default function LivePhotoScreen() {
   const viewRef = useRef<LivePhotoViewType>(null);
   const [livePhoto, setLivePhoto] = useState<LivePhotoAsset | null>(null);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -59,17 +58,16 @@ export default function LivePhotoScreen() {
       <LivePhotoView
         ref={viewRef}
         source={livePhoto}
-        style={[styles.livePhotoView, { display: isLoaded ? 'flex' : 'none' }]}
+        style={[styles.livePhotoView, { display: livePhoto ? 'flex' : 'none' }]}
         onLoadComplete={() => {
-          setIsLoaded(true);
+          console.log('Live photo loaded successfully!');
         }}
         onLoadError={error => {
-          setIsLoaded(false);
           console.error('Failed to load the live photo: ', error.message);
         }}
       />
-      <View style={isLoaded ? styles.pickImageCollapsed : styles.pickImageExpanded}>
-        <Button title={isLoaded ? 'Change Image' : 'Pick an image'} onPress={pickImage} />
+      <View style={livePhoto ? styles.pickImageCollapsed : styles.pickImageExpanded}>
+        <Button title={livePhoto ? 'Change Image' : 'Pick an image'} onPress={pickImage} />
       </View>
       <Button title="Start Playback Hint" onPress={() => viewRef.current?.startPlayback('hint')} />
       <Button title="Start Playback" onPress={() => viewRef.current?.startPlayback('full')} />
