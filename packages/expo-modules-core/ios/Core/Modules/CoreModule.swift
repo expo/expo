@@ -21,7 +21,13 @@ internal final class CoreModule: Module {
     Function("getViewConfig") { (viewName: String) -> [String: Any]? in
       var validAttributes: [String: Any] = [:]
       var directEventTypes: [String: Any] = [:]
-      let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: viewName)
+      let parsedViewName: String
+      if let appIdentifier = appContext?.appIdentifier, viewName.hasSuffix("_\(appIdentifier)") {
+        parsedViewName = String(viewName.dropLast("_\(appIdentifier)".count))
+      } else {
+        parsedViewName = viewName
+      }
+      let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: parsedViewName)
 
       guard let viewDefinition = moduleHolder?.definition.view else {
         return nil
