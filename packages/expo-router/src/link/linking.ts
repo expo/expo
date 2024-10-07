@@ -72,7 +72,7 @@ export function addEventListener(nativeLinking?: NativeIntent) {
   return (listener: (url: string) => void) => {
     let callback: (({ url }: { url: string }) => void) | undefined;
 
-    const unstableSubscription = nativeLinking?.unstable_subscribe?.(listener);
+    const legacySubscription = nativeLinking?.legacy_subscribe?.(listener);
 
     if (isExpoGo) {
       // This extra work is only done in the Expo Go app.
@@ -99,7 +99,7 @@ export function addEventListener(nativeLinking?: NativeIntent) {
     return () => {
       // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
       subscription?.remove?.();
-      unstableSubscription?.();
+      legacySubscription?.();
     };
   };
 }

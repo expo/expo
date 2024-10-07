@@ -151,8 +151,10 @@ This approach is effective for directing users to external websites or Universal
 <Link href="https://my-website.com/router/introduction" />
 ```
 
-## `unstable_subscribe`
+## `legacy_subscribe`
 
-> `unstable_subscribe` is experimentally available in SDK 52.
+> `legacy_subscribe` is experimentally available in SDK 52.
 
-If you're using a third-party provider that doesn't support Expo Router but does support React Navigation via the `Linking.subscribe` function for existing projects, you can use `unstable_subscribe` as an alternative API. However, using this API for new projects or integrations is not recommended.
+If you're using a third-party provider that doesn't support Expo Router but does support React Navigation via the `Linking.subscribe` function for existing projects, you can use `legacy_subscribe` as an alternative API.
+
+Using this API is not recommended for new projects or integrations. Its usage is incompatible with Server Side Routing and [Static Rendering](/router/reference/static-rendering/), and can be challenging to manage while offline or in a low network connectivity environment.

@@ -45,14 +45,14 @@ it('can use async redirectSystemPath', async () => {
   expect(screen.getByTestId('page')).toBeVisible();
 });
 
-it('unstable_subscribe', () => {
+it('legacy_subscribe', () => {
   let listener: (url: string) => void = () => {};
 
   renderRouter({
     index: () => <View testID="index" />,
     apple: () => <View testID="apple" />,
     '+native-intent': {
-      unstable_subscribe(listenerFn) {
+      legacy_subscribe(listenerFn) {
         listener = listenerFn;
         return () => {};
       },
