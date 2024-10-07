@@ -53,7 +53,7 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
-def shouldTurnWarningsIntoErrors = findProperty("EXPO_WERROR") == "true"
+def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
 android {
   if (rootProject.hasProperty("ndkPath")) {
