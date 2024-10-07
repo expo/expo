@@ -87,18 +87,18 @@ public final class AppContext: NSObject {
 
   /**
    The application identifier that is used to distinguish between different `RCTHost`.
-   It might be equal to `0`, meaning we couldn't obtain the Id for the current app.
-   It shouldn't be used on the Paper.
+   It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
+   It shouldn't be used on the old architecture.
    */
   @objc
-  public var appIdentifier: Int {
+  public var appIdentifier: String? {
     #if RCT_NEW_ARCH_ENABLED
     guard let moduleRegistry = reactBridge?.moduleRegistry else {
-      return 0
+      return nil
     }
-    return abs(ObjectIdentifier(moduleRegistry).hashValue)
+    return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
     #else
-    return 0
+    return nil
     #endif
   }
 
@@ -423,7 +423,7 @@ public final class AppContext: NSObject {
     let runtime = try runtime
     let coreObject = runtime.createObject()
 
-    coreObject.defineProperty("__expo_appIdentifier", value: appIdentifier == 0 ? "" : "\(appIdentifier)", options: [])
+    coreObject.defineProperty("__expo_appIdentifier__", value: appIdentifier, options: [])
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 

@@ -98,13 +98,12 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    Creates a subclass of `ViewModuleWrapper` in runtime. The new class overrides `moduleName` stub.
    */
   @objc
-  public static func createViewModuleWrapperClass(module: ViewModuleWrapper, appId: Int) -> ViewModuleWrapper.Type? {
+  public static func createViewModuleWrapperClass(module: ViewModuleWrapper, appId: String?) -> ViewModuleWrapper.Type? {
     // We're namespacing the view name so we know it uses our architecture.
-    let prefixedViewName: String
-    if appId == 0 {
-      prefixedViewName = "\(viewManagerAdapterPrefix)\(module.name())"
+    let prefixedViewName = if let appId = appId {
+      "\(viewManagerAdapterPrefix)\(module.name())_\((appId))"
     } else {
-      prefixedViewName = "\(viewManagerAdapterPrefix)\(module.name())_\((appId))"
+      "\(viewManagerAdapterPrefix)\(module.name())"
     }
 
     return prefixedViewName.withCString { viewNamePtr in
