@@ -101,12 +101,12 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
   public static func createViewModuleWrapperClass(module: ViewModuleWrapper, appId: Int) -> ViewModuleWrapper.Type? {
     // We're namespacing the view name so we know it uses our architecture.
     let prefixedViewName: String
-    if (appId == 0) {
+    if appId == 0 {
       prefixedViewName = "\(viewManagerAdapterPrefix)\(module.name())"
     } else {
       prefixedViewName = "\(viewManagerAdapterPrefix)\(module.name())_\((appId))"
     }
-    
+
     return prefixedViewName.withCString { viewNamePtr in
       // Create a new class that inherits from `ViewModuleWrapper`. The class name passed here, doesn't work for Swift classes,
       // so we also have to override `moduleName` class method.

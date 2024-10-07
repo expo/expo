@@ -84,7 +84,7 @@ public final class AppContext: NSObject {
       throw Exceptions.RuntimeLost()
     }
   }
-  
+
   /**
    The application identifier that is used to distinguish between different `RCTHost`.
    It might be equal to `0`, meaning we couldn't obtain the Id for the current app.
@@ -423,9 +423,8 @@ public final class AppContext: NSObject {
     let runtime = try runtime
     let coreObject = runtime.createObject()
 
-    
     coreObject.defineProperty("__expo_appIdentifier", value: appIdentifier == 0 ? "" : "\(appIdentifier)", options: [])
-    
+
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
     // Initialize `global.expo`.
