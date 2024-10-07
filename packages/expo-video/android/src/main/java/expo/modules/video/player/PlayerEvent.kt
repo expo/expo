@@ -1,6 +1,7 @@
 package expo.modules.video.player
 
 import androidx.annotation.OptIn
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.records.PlaybackError
@@ -12,6 +13,7 @@ import expo.modules.video.records.VolumeEvent
 sealed class PlayerEvent {
   open val name: String = ""
   open val arguments: Array<out Any?> = arrayOf()
+  open val emitToJS: Boolean = true
 
   data class StatusChanged(val status: PlayerStatus, val oldStatus: PlayerStatus?, val error: PlaybackError?) : PlayerEvent() {
     override val name = "statusChange"
@@ -38,6 +40,12 @@ sealed class PlayerEvent {
     override val arguments = arrayOf(rate, oldRate)
   }
 
+  data class TracksChanged(val tracks: Tracks) : PlayerEvent() {
+    override val name = "tracksChange"
+    override val arguments = arrayOf(tracks)
+    override val emitToJS = false
+  }
+
   data class TimeUpdated(val timeUpdate: TimeUpdate) : PlayerEvent() {
     override val name = "timeUpdate"
     override val arguments = arrayOf(timeUpdate)
@@ -54,6 +62,7 @@ sealed class PlayerEvent {
       is VolumeChanged -> listeners.forEach { it.onVolumeChanged(player, newValue, oldValue) }
       is SourceChanged -> listeners.forEach { it.onSourceChanged(player, source, oldSource) }
       is PlaybackRateChanged -> listeners.forEach { it.onPlaybackRateChanged(player, rate, oldRate) }
+      is TracksChanged -> listeners.forEach { it.onTracksChanged(player, tracks) }
       is TimeUpdated -> listeners.forEach { it.onTimeUpdate(player, timeUpdate) }
       is PlayedToEnd -> listeners.forEach { it.onPlayedToEnd(player) }
     }

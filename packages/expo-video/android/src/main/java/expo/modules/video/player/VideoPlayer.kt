@@ -9,6 +9,7 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.STATE_BUFFERING
 import androidx.media3.common.Timeline
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
@@ -140,6 +141,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
+    }
+
+    override fun onTracksChanged(tracks: Tracks) {
+      sendEvent(PlayerEvent.TracksChanged(tracks))
+      super.onTracksChanged(tracks)
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
@@ -285,9 +291,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     // Emits to the native listeners
     event.emit(this, listeners.mapNotNull { it.get() })
     // Emits to the JS side
-    emit(event.name, *event.arguments)
+    if (event.emitToJS) {
+      emit(event.name, *event.arguments)
+    }
   }
-
   // MARK: IntervalUpdateEmitter
 
   override fun emitTimeUpdate() {

@@ -11,6 +11,7 @@
 - [Android][iOS] Add support for controlling the buffering behavior. ([#30602](https://github.com/expo/expo/pull/30602) by [@behenate](https://github.com/behenate))
 - [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
 - [iOS] Fixed `player.currentTime` being `NaN` when source is not provided and `player.duration` being `NaN` inside the hook callback when the source is updated. ([#31011](https://github.com/expo/expo/pull/31011) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
+- [Android] Fix not being able to select subtitles in the player. ([#31829](https://github.com/expo/expo/pull/31829) by [@fobos531](https://github.com/fobos531))
 
 ### 🐛 Bug fixes
 
