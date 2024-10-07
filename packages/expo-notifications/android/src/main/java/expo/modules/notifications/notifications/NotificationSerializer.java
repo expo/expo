@@ -102,7 +102,7 @@ public class NotificationSerializer {
   public static Bundle toBundle(INotificationContent content) {
     Bundle serializedContent = new Bundle();
     serializedContent.putString("title", content.getTitle());
-    serializedContent.putString("subtitle", content.getSubtitle());
+    serializedContent.putString("subtitle", content.getSubText());
     serializedContent.putString("body", content.getText());
     if (content.getColor() != null) {
       serializedContent.putString("color", String.format("#%08X", content.getColor().intValue()));
