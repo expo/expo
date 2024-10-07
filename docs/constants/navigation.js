@@ -422,7 +422,6 @@ const general = [
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
-    makePage('distribution/runtime-versions.mdx'),
     makePage('distribution/app-transfers.mdx'),
   ]),
   makeSection(

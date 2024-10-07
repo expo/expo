@@ -355,6 +355,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
   '/eas-update/custom-updates-server/': '/versions/latest/sdk/updates/',
   '/distribution/custom-updates-server/': '/versions/latest/sdk/updates/',
+  '/distribution/runtime-versions/': '/eas-update/runtime-versions/',
   '/bare/error-recovery/': '/eas-update/error-recovery/',
   '/deploy/instant-updates/': '/deploy/send-over-the-air-updates/',
 
