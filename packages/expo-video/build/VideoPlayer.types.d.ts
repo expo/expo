@@ -109,13 +109,13 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      * Float value indicating how far the player has buffered the video in seconds.
      *
      * This value is 0 when the player has not buffered up to the current playback time.
-     * When it's impossible to determine the buffer state (e.g. when the player isn't playing any media), this value is -1.
+     * When it's impossible to determine the buffer state (for example, when the player isn't playing any media), this value is -1.
      */
     readonly bufferedPosition: number;
     /**
      * Specifies buffer options which will be used by the player when buffering the video.
      *
-     * > You should provide a BufferOptions object when setting this property. Setting individual buffer properties is not supported.
+     * > You should provide a `BufferOptions` object when setting this property. Setting individual buffer properties is not supported.
      * @platform android
      * @platform ios
      */
