@@ -24,6 +24,8 @@ import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
+import expo.modules.video.VideoManager.isPictureInPictureSupported
+import expo.modules.video.VideoManager.runWithPiPMisconfigurationSoftHandling
 import expo.modules.video.drawing.OutlineProvider
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
@@ -404,29 +406,6 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     if (shouldInvalided) {
       shouldInvalided = false
       invalidate()
-    }
-  }
-
-  // We can't check if AndroidManifest.xml is configured properly, so we have to handle the exceptions ourselves to prevent crashes
-  internal fun runWithPiPMisconfigurationSoftHandling(shouldThrow: Boolean = false, ignore: Boolean = false, block: () -> Any?) {
-    try {
-      block()
-    } catch (e: IllegalStateException) {
-      if (ignore) {
-        return
-      }
-      Log.e("ExpoVideo", "Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
-      if (shouldThrow) {
-        throw PictureInPictureConfigurationException()
-      }
-    }
-  }
-
-  companion object {
-    fun isPictureInPictureSupported(currentActivity: Activity): Boolean {
-      return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && currentActivity.packageManager.hasSystemFeature(
-        android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE
-      )
     }
   }
 }
