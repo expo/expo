@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [cli] Disable console during runtime and fingeprint evaluation ([#31874](https://github.com/expo/expo/pull/31874) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.25.26 — 2024-10-02
