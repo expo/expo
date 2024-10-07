@@ -134,6 +134,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       return .success
     }
 
+    commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
+      guard let self = self,
+        let event = event as? MPChangePlaybackPositionCommandEvent
+      else {
+        return .commandFailed
+      }
+      self.seekTo(event.positionTime)
+      return .success
+    }
+
     // Add more commands as needed (e.g., skip, seek)
   }
 
@@ -143,6 +153,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     commandCenter.playCommand.removeTarget(self)
     commandCenter.pauseCommand.removeTarget(self)
     commandCenter.togglePlayPauseCommand.removeTarget(self)
+    commandCenter.changePlaybackPositionCommand.removeTarget(self)
 
     // Remove other commands if added
   }
@@ -297,6 +308,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     nowPlayingInfoController.set(keyValues: [
       NowPlayingInfoProperty.playbackRate(Double(ref.rate)),
       NowPlayingInfoProperty.elapsedPlaybackTime(item.currentTime().seconds),
+      MediaItemProperty.duration(item.duration.seconds),  // Add this line
     ])
   }
 
@@ -316,5 +328,11 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     if enableLockScreenControls {
       removeLockScreenControls()
     }
+  }
+
+  func seekTo(_ time: TimeInterval) {
+    let cmTime = CMTime(seconds: time, preferredTimescale: 1000)
+    ref.seek(to: cmTime)
+    updateNowPlayingInfo()
   }
 }
