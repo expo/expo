@@ -12,19 +12,19 @@ import { Step } from '~/ui/components/Step';
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. This guide will walk you through the process of setting up EAS Update in a new or existing project.
 
-> **info** If you plan to use EAS Update with EAS Build, we recommend following the [EAS Build setup guide](/build/setup/) before proceeding here. That said, [you can use EAS Update without any other EAS services](/eas-update/standalone-service/) if you prefer.
+> **info** If you plan to use EAS Update with EAS Build, we recommend following the [EAS Build setup guide](/build/setup/) before proceeding here. That said, [you can use EAS Update without any other EAS services](/eas-update/standalone-service/).
 
 ## Prerequisites
 
 <Collapsible summary="An Expo user account">
 
-EAS Update is available to anyone with an Expo account, regardless of whether you pay for EAS or use our Free plan. You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
+EAS Update is available to anyone with an Expo account, regardless of whether you pay for EAS or use the Free plan. You can sign up at [expo.dev/signup](https://expo.dev/signup).
 
 Paid subscribers can publish updates to more users and use more bandwidth and storage. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
 
 </Collapsible>
 
-<Collapsible summary="A React Native Android and/or iOS project">
+<Collapsible summary="A React Native project">
 
 Don't have a project yet? No problem. It's quick and easy to create a "Hello world" app that you can use with this guide.
 
@@ -40,11 +40,11 @@ EAS Update also works well with projects created by `npx create-react-native-app
 
 If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`) then you're all set.
 
-If you don't have the `expo` package in your project yet, then you'll need to install it and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios). Run the command:
+If you don't have the `expo` package in your project yet, then install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
 
 <Terminal cmd={['$ npx install-expo-modules@latest']} />
 
-If the command fails, refer to the ["Installing Expo modules" guide](/bare/installing-expo-modules/#manual-installation).
+If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
 
 </Collapsible>
 
@@ -89,16 +89,19 @@ When you run `eas update:configure` in a project that doesn't use [CNG](/workflo
 
 #### Android
 
+Inside the **android/app/src/main/AndroidManifest.xml** file, you'll see the following additions:
+
 ```xml android/app/src/main/AndroidManifest.xml
 <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/your-project-id"/>
 <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="@string/expo_runtime_version"/>
 ```
 
+The `EXPO_UPDATE_URL` value should contain your project's ID.
+
 Inside **android/app/src/main/res/values/strings.xml**, you'll see the `expo_runtime_version` string entry in the `resources` object:
 
 <DiffBlock source="/static/diffs/expo-update-strings-xml.diff" />
 
-The `EXPO_UPDATE_URL` value should contain your project's ID.
 
 #### iOS
 
@@ -119,7 +122,8 @@ The `EXUpdatesURL` value should contain your project's ID.
 
 <Step label="4">
 ## Configure the update channel
-The channel property on a build allows us to point updates at specific types of builds. This allows you to publish updates to a preview build without impacting your production deployment, for example.
+
+The channel property on a build allows you to point updates at specific types of builds. For example, it allows you to publish updates to a preview build without impacting your production deployment.
 
 **If you are using EAS Build**, `eas update:configure` will set the update `channel` property on the `preview` and `production` profiles in **eas.json**. Set them manually if you use different profile names.
 
@@ -144,11 +148,11 @@ The channel property on a build allows us to point updates at specific types of 
 
 <br />
 
-**If you are not using EAS Build**, then you will need to configure the channel in **app.json** or in your native projects, depending on whether you use [CNG](/workflow/continuous-native-generation/). When you create a build for a different environment, you will need to modify the channel to ensure your build pulls updates from the correct channel. [Learn more using EAS Update as a standalone service](/eas-update/standalone-service/).
+**If you are not using EAS Build**, then you will need to configure the channel in **app.json** or in your native projects, depending on whether you use [CNG](/workflow/continuous-native-generation/). When you create a build for a different environment, you will need to modify the channel to ensure your build pulls updates from the correct channel. Learn more using [EAS Update as a standalone service](/eas-update/standalone-service/).
 
-<Collapsible summary="Configuring update channels in app.json">
+<Collapsible summary="Configure update channels in app.json">
 
-If you use Continuous Native Generation (CNG) then you can configure the channel with the `updates.requestHeaders` property in your **app.json**:
+If you use Continuous Native Generation (CNG), then you can configure the channel with the `updates.requestHeaders` property in your **app.json**:
 
 {/* prettier-ignore */}
 ```json app.json
@@ -171,9 +175,9 @@ The configuration will be applied the next time you run `npx expo prebuild`.
 
 </Collapsible>
 
-<Collapsible summary="Configuring update channels in an Android native project">
+<Collapsible summary="Configure update channels in an Android native project">
 
-In **AndroidManifest.xml**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
+In **AndroidManifest.xml**, you will need to add replace `your-channel-name` with the channel that matches your project:
 
 ```xml android/app/src/main/AndroidManifest.xml
 <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;your-channel-name&quot;}"/>
@@ -181,7 +185,7 @@ In **AndroidManifest.xml**, you'll need to add the following, replacing `your-ch
 
 </Collapsible>
 
-<Collapsible summary="Configuring update channels in an iOS native project">
+<Collapsible summary="Configure update channels in an iOS native project">
 
 In **Expo.plist**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
 
