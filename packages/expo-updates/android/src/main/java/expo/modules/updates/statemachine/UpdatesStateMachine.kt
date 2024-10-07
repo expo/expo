@@ -2,7 +2,6 @@ package expo.modules.updates.statemachine
 
 import android.content.Context
 import expo.modules.updates.events.IUpdatesEventManager
-import expo.modules.updates.events.UpdatesJSEvent
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.StateMachineProcedure
 import expo.modules.updates.procedures.StateMachineSerialExecutorQueue

@@ -2,10 +2,8 @@ package expo.modules.updates
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
-import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.events.IUpdatesEventManager
-import expo.modules.updates.events.UpdatesJSEvent
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateEventType
