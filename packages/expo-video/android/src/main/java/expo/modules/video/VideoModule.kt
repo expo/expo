@@ -16,6 +16,8 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
 import expo.modules.video.enums.ContentFit
+import expo.modules.video.player.VideoPlayer
+import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.ifYogaDefinedUse
 import expo.modules.video.utils.makeYogaUndefinedIfNegative
@@ -275,6 +277,22 @@ class VideoModule : Module() {
               REPEAT_MODE_OFF
             }
           }
+        }
+
+      Property("bufferedPosition")
+        .get { ref: VideoPlayer ->
+          // Same as currentTime
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.bufferedPosition
+          }
+        }
+
+      Property("bufferOptions")
+        .get { ref: VideoPlayer ->
+          ref.bufferOptions
+        }
+        .set { ref: VideoPlayer, bufferOptions: BufferOptions ->
+          ref.bufferOptions = bufferOptions
         }
 
       Function("play") { ref: VideoPlayer ->

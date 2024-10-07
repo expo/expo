@@ -7,5 +7,6 @@ import java.io.Serializable
 class TimeUpdate(
   @Field var currentTime: Double = .0,
   @Field var currentOffsetFromLive: Float? = null,
-  @Field var currentLiveTimestamp: Long? = null
+  @Field var currentLiveTimestamp: Long? = null,
+  @Field var bufferedPosition: Double = .0
 ) : Record, Serializable

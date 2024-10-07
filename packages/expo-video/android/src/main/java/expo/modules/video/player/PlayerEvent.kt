@@ -1,4 +1,4 @@
-package expo.modules.video
+package expo.modules.video.player
 
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi

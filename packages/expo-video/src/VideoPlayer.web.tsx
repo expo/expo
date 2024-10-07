@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import type {
+  BufferOptions,
   PlayerError,
   VideoPlayer,
   VideoPlayerEvents,
@@ -65,6 +66,7 @@ export default class VideoPlayerWeb
   currentLiveTimestamp: number | null = null; // Not supported on web. Dummy to match the interface.
   currentOffsetFromLive: number | null = null; // Not supported on web. Dummy to match the interface.
   targetOffsetFromLive: number = 0; // Not supported on web. Dummy to match the interface.
+  bufferOptions: BufferOptions = {} as BufferOptions; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
@@ -154,6 +156,7 @@ export default class VideoPlayerWeb
         currentTime: this.currentTime,
         currentLiveTimestamp: null,
         currentOffsetFromLive: null,
+        bufferedPosition: this.bufferedPosition,
       });
 
       this._timeUpdateLoop = setInterval(() => {
@@ -161,6 +164,7 @@ export default class VideoPlayerWeb
           currentTime: this.currentTime,
           currentLiveTimestamp: null,
           currentOffsetFromLive: null,
+          bufferedPosition: this.bufferedPosition,
         });
       }, value * 1000);
     }
@@ -168,6 +172,19 @@ export default class VideoPlayerWeb
 
   get status(): VideoPlayerStatus {
     return this._status;
+  }
+
+  get bufferedPosition(): number {
+    if (this._mountedVideos.size === 0 || this.status === 'error') {
+      return -1;
+    }
+    const buffered = [...this._mountedVideos][0]?.buffered;
+    for (let i = 0; i < buffered.length; i++) {
+      if (buffered.start(i) <= this.currentTime && buffered.end(i) >= this.currentTime) {
+        return buffered.end(i);
+      }
+    }
+    return 0;
   }
 
   private set status(value: VideoPlayerStatus) {
