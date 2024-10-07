@@ -15,5 +15,10 @@ internal class DestinationDoesNotExistException :
 
 internal class UnableToDownloadException(reason: String) :
   CodedException(
-    "Unable to download a file: '$reason'"
+    "Unable to download a file: $reason"
+  )
+
+internal class UnableToDeleteException(reason: String) :
+  CodedException(
+    "Unable to delete file or directory: $reason"
   )

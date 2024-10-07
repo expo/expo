@@ -10,7 +10,14 @@ internal class FileSystemPath: SharedObject {
   }
 
   func delete() throws {
-    try FileManager.default.removeItem(at: url)
+    guard FileManager.default.fileExists(atPath: url.path) else {
+      throw UnableToDeleteException("path does not exist")
+    }
+    do {
+      try FileManager.default.removeItem(at: url)
+    } catch {
+      throw UnableToDeleteException(error.localizedDescription)
+    }
   }
 
   func getMoveOrCopyPath(to destination: FileSystemPath) throws -> URL {
