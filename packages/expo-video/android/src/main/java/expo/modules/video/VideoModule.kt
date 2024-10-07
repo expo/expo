@@ -15,8 +15,6 @@ import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
-import expo.modules.video.VideoManager.isPictureInPictureSupported
-import expo.modules.video.VideoManager.runWithPiPMisconfigurationSoftHandling
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
@@ -38,7 +36,7 @@ class VideoModule : Module() {
     }
 
     Function("isPictureInPictureSupported") {
-      return@Function isPictureInPictureSupported(appContext.throwingActivity)
+      return@Function VideoView.isPictureInPictureSupported(appContext.throwingActivity)
     }
 
     View(VideoView::class) {
@@ -135,7 +133,7 @@ class VideoModule : Module() {
       }
 
       AsyncFunction("startPictureInPicture") { view: VideoView ->
-        runWithPiPMisconfigurationSoftHandling(true) {
+        view.runWithPiPMisconfigurationSoftHandling(true) {
           view.enterPictureInPicture()
         }
       }
@@ -145,7 +143,7 @@ class VideoModule : Module() {
       }
 
       OnViewDestroys {
-        VideoManager.unregisterVideoView(it, appContext)
+        VideoManager.unregisterVideoView(it)
       }
     }
 
