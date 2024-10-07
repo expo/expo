@@ -1,6 +1,7 @@
 package expo.modules.video
 
 import androidx.annotation.OptIn
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.records.PlaybackError
@@ -15,6 +16,7 @@ interface VideoPlayerListener {
   fun onVolumeChanged(player: VideoPlayer, newValue: VolumeEvent, oldVolume: VolumeEvent?) {}
   fun onSourceChanged(player: VideoPlayer, source: VideoSource?, oldSource: VideoSource?) {}
   fun onPlaybackRateChanged(player: VideoPlayer, rate: Float, oldRate: Float?) {}
+  fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {}
   fun onTimeUpdate(player: VideoPlayer, timeUpdate: TimeUpdate) {}
   fun onPlayedToEnd(player: VideoPlayer) {}
 }
