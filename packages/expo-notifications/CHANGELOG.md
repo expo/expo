@@ -17,6 +17,7 @@
 - throw improved error on invalid subscription in removeNotificationSubscription ([#31842](https://github.com/expo/expo/pull/31842) by [@vonovak](https://github.com/vonovak))
 - [android] fix notifications actions not being presented ([#31795](https://github.com/expo/expo/pull/31795) by [@vonovak](https://github.com/vonovak))
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30478](https://github.com/expo/expo/pull/30478) by [@byCedric](https://github.com/byCedric))
+- [iOS] do not overwrite existing aps entitlement. ([#31892](https://github.com/expo/expo/pull/31892) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
