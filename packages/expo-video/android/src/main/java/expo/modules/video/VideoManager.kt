@@ -1,9 +1,5 @@
 package expo.modules.video
 
-import android.app.Activity
-import android.app.PictureInPictureParams
-import android.os.Build
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext

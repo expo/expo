@@ -80,7 +80,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val borderDrawable
     get() = borderDrawableLazyHolder.value
 
-  var autoEnterPiP: Boolean by IgnoreSameSet(false) {new, _ ->
+  var autoEnterPiP: Boolean by IgnoreSameSet(false) { new, _ ->
     applyAutoEnterPiP(new)
   }
 
@@ -317,7 +317,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .add(fragment, fragment.id)
         .commitAllowingStateLoss()
     }
-    applyAutoEnterPiP(autoEnterPiP);
+    applyAutoEnterPiP(autoEnterPiP)
   }
 
   override fun onDetachedFromWindow() {
@@ -329,7 +329,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .remove(fragment)
         .commitAllowingStateLoss()
     }
-    applyAutoEnterPiP(false);
+    applyAutoEnterPiP(false)
   }
 
   @UnstableReactNativeAPI
