@@ -51,6 +51,10 @@ export declare const isEmergencyLaunch: boolean;
  */
 export declare const emergencyLaunchReason: string | null;
 /**
+ * Number of milliseconds it took to launch.
+ */
+export declare const launchDuration: number | null;
+/**
  * This will be true if the currently running update is the one embedded in the build,
  * and not one downloaded from the updates server.
  */

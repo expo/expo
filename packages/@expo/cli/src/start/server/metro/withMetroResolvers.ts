@@ -278,6 +278,8 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
       };
       printRecursive(inverseTree);
 
+      debug('inverse graph message:', extraMessage);
+
       // @ts-expect-error
       error._expoImportStack = extraMessage;
     } else {

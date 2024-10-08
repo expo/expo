@@ -1,0 +1,25 @@
+---
+title: Using EAS Update without other EAS services
+sidebar_title: Using without other EAS services
+description: Learn how to use EAS Update independently of other EAS services, such as Build.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+
+EAS Update works great as a standalone service, so you can use it with or without EAS Build and other EAS services. All of its main features are designed to be agnostic of the build pipeline, and its used in production by large organizations that do not use other EAS services.
+
+<Collapsible summary="What are the downsides of using EAS Update without other EAS services?">
+
+EAS Update and Build work closely together to provide an experience that is greater than the sum of its parts. For example, when you create a build with EAS Build we will help with the bookkeeping for various aspects related to updates, such as the runtime version and channel.
+
+Builds that use the same channel and runtime version are grouped into a **Deployments** section on [expo.dev](https://expo.dev/accounts/[account-name/projects/[project-name]/deployments). These sorts of bookkeeping and insights features that depend on knowledge of builds or other aspects of your app won't be available if you use EAS Update independently of other EAS services.
+
+That said, many organizations are already heavily invested in their CI/CD infrastructure or may have other reasons for wanting to use another build pipeline, and the benefits offered by deeper integration across EAS services may not be worth the switching costs of migrating to a different CI/CD provider.
+
+</Collapsible>
+
+## Using EAS Update without EAS Build
+
+Most of the [installation and configuration steps](/eas-update/getting-started) are identical whether you are using EAS Build or not. The primary difference is that you will need to configure the update [channel](/eas-update/eas-cli/) manually.
+
+A build of your app points to a single EAS Update channel that it will pull updates from, such as `preview` or `production`. Before you create a build, you'll need to configure the channel name. If you create a build with EAS Build, the channel name from **eas.json** will automatically be added to our build's **AndroidManifest.xml** and **Expo.plist** at build time. The primary difference between using EAS Update without EAS Build is that you will need to configure this field manually.

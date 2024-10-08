@@ -808,8 +808,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
     const { exp } = config;
     // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
-    const isReactServerComponentsEnabled =
-      !!exp.experiments?.reactCanary && !!exp.experiments?.reactServerComponents;
+    const isReactServerComponentsEnabled = !!exp.experiments?.reactServerComponents;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const baseUrl = getBaseUrlFromExpoConfig(exp);

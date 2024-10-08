@@ -67,11 +67,11 @@ export async function renderRscWithImportsAsync(
   return renderRsc(
     {
       body: body ?? undefined,
-      searchParams,
       context,
       config,
       input,
       contentType,
+      decodedBody: searchParams.get('x-expo-params'),
     },
     {
       isExporting: true,

@@ -157,6 +157,7 @@ redirects[guides/setting-up-continuous-integration]=build/building-on-ci
 redirects[distribution/release-channels]=archive/classic-updates/release-channels
 redirects[distribution/advanced-release-channels]=archive/classic-updates/advanced-release-channels
 redirects[distribution/optimizing-updates]=archive/classic-updates/optimizing-updates
+redirects[distribution/runtime-versions]=eas-update/runtime-versions
 redirects[guides/offline-support]=archive/classic-updates/offline-support
 redirects[guides/preloading-and-caching-assets]=archive/classic-updates/preloading-and-caching-assets
 redirects[guides/configuring-updates]=archive/classic-updates/configuring-updates
@@ -280,6 +281,10 @@ redirects[guides/react-compiler]=preview/react-compiler
 
 # Troubleshooting section
 redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
+
+# After adding "Linking" (/linking/**) section
+redirects[guides/linking]=linking/overview
+redirects[guides/deep-linking]=/linking/into-your-app
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

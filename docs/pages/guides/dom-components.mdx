@@ -156,6 +156,60 @@ getDeviceName(): Promise<string> {
 
 Think of these functions like React Server Actions, but instead of residing on the server, they live locally in the native app and communicate with the DOM component. This approach provides a powerful way to add truly native functionality to your DOM components.
 
+## Passing refs
+
+You can use the `useDOMImperativeHandle` hook inside a DOM component to accept ref calls from the native side. This hook is similar to React's [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle) hook, but it does not need a ref object to be passed to it.
+
+```tsx App.tsx (native)
+import { useRef } from 'react';
+import { Button, View } from 'react-native';
+
+import MyComponent, { type MyRef } from './my-componenet';
+
+export default function App() {
+  const ref = useRef<MyRef>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <MyComponent ref={ref} />
+      <Button
+        title="focus"
+        onPress={() => {
+          ref.current?.focus();
+        }}
+      />
+    </View>
+  );
+}
+```
+
+```tsx my-component.tsx (web)
+'use dom';
+
+import { useDOMImperativeHandle, type DOMImperativeFactory } from 'expo/dom';
+import { forwardRef, useRef } from 'react';
+
+export interface MyRef extends DOMImperativeFactory {
+  focus: () => void;
+}
+
+export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useDOMImperativeHandle(
+    ref,
+    () => ({
+      focus: () => {
+        inputRef.current?.focus();
+      },
+    }),
+    []
+  );
+
+  return <input ref={inputRef} />;
+});
+```
+
 ## Feature detection
 
 Since DOM components are used to run websites, you might need extra qualifiers to better support certain libraries. You can detect if a component is running in a DOM component with the following code:
@@ -194,17 +248,17 @@ export default function App() {
 
 ## Measuring DOM components
 
-You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a `autoSize` prop or a manual native action:
+You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a `matchContents` prop or a manual native action:
 
-### Automatically with `autoSize` prop
+### Automatically with `matchContents` prop
 
-You need to use the `dom={{ autoSize: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
+You need to use the `dom={{ matchContents: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
 
 export default function Route() {
-  return <DOMComponent dom={{ autoSize: true }} />;
+  return <DOMComponent dom={{ matchContents: true }} />;
 }
 ```
 

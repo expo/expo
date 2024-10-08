@@ -61,6 +61,10 @@ export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch;
  */
 export const emergencyLaunchReason = ExpoUpdates.emergencyLaunchReason;
 /**
+ * Number of milliseconds it took to launch.
+ */
+export const launchDuration = ExpoUpdates.launchDuration;
+/**
  * This will be true if the currently running update is the one embedded in the build,
  * and not one downloaded from the updates server.
  */

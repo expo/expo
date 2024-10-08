@@ -8,13 +8,13 @@ import android.net.Uri
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.events.NoOpUpdatesEventManager
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
@@ -50,8 +50,7 @@ class UpdatesDevLauncherController(
   private val updatesDirectoryException: Exception?
 ) : IUpdatesController, UpdatesInterface {
   override var appContext: WeakReference<AppContext>? = null
-  override var eventEmitter: EventEmitter? = null
-  override var shouldEmitJsEvents = false
+  override val eventManager = NoOpUpdatesEventManager()
   override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
 
   private var launcher: Launcher? = null
@@ -316,6 +315,7 @@ class UpdatesDevLauncherController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
+      launchDuration = null,
       embeddedUpdate = null, // no embedded update in debug builds
       emergencyLaunchException = updatesDirectoryException,
       isEnabled = true,

@@ -23,6 +23,7 @@ const screens = [
   'HTML',
   'Image',
   'LinearGradient',
+  'LivePhoto',
   'Lottie',
   'Maps',
   'MaskedView',

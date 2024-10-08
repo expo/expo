@@ -1,7 +1,6 @@
 package expo.modules.kotlin
 
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
@@ -9,6 +8,7 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.MethodNotFoundException
 import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.functions.AsyncFunction
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.Module
@@ -115,24 +115,29 @@ class ModuleHolder<T : Module>(val module: T) {
   /**
    * Invokes a function with promise. Is used in the bridge implementation of the Sweet API.
    */
-  fun call(methodName: String, args: ReadableArray, promise: Promise) = exceptionDecorator({
+  fun call(methodName: String, args: Array<Any?>, promise: Promise) = exceptionDecorator({
     FunctionCallException(methodName, definition.name, it)
   }) {
     val method = definition.asyncFunctions[methodName]
       ?: throw MethodNotFoundException()
 
-    method.call(this, args, promise)
+    if (method is AsyncFunction) {
+      method.callUserImplementation(args, promise, module.appContext)
+      return@exceptionDecorator
+    }
+
+    throw IllegalStateException("Cannot call a $method method in test context")
   }
 
   /**
    * Invokes a function without promise.
    * `callSync` was added only for test purpose and shouldn't be used anywhere else.
    */
-  fun callSync(methodName: String, args: ReadableArray): Any? {
+  fun callSync(methodName: String, args: Array<Any?>): Any? {
     val method = definition.syncFunctions[methodName]
       ?: throw MethodNotFoundException()
 
-    return method.call(args)
+    return method.callUserImplementation(args)
   }
 
   fun post(eventName: EventName) {

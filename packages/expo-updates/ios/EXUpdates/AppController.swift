@@ -9,7 +9,22 @@ import ExpoModulesCore
 import EXUpdatesInterface
 
 public struct UpdatesModuleConstants {
+  public init(launchedUpdate: Update?, launchDuration: Double?, embeddedUpdate: Update?, emergencyLaunchException: Error?, isEnabled: Bool, isUsingEmbeddedAssets: Bool, runtimeVersion: String?, checkOnLaunch: CheckAutomaticallyConfig, requestHeaders: [String: String], assetFilesMap: [String: Any]?, shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool) {
+    self.launchedUpdate = launchedUpdate
+    self.launchDuration = launchDuration
+    self.embeddedUpdate = embeddedUpdate
+    self.emergencyLaunchException = emergencyLaunchException
+    self.isEnabled = isEnabled
+    self.isUsingEmbeddedAssets = isUsingEmbeddedAssets
+    self.runtimeVersion = runtimeVersion
+    self.checkOnLaunch = checkOnLaunch
+    self.requestHeaders = requestHeaders
+    self.assetFilesMap = assetFilesMap
+    self.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
+  }
+
   let launchedUpdate: Update?
+  let launchDuration: Double?
   let embeddedUpdate: Update?
   let emergencyLaunchException: Error?
   let isEnabled: Bool
@@ -34,6 +49,34 @@ public struct UpdatesModuleConstants {
    calls to go through.
    */
   let shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool
+
+  public func toModuleConstantsMap() -> [String: Any?] {
+    var mutableMap: [String: Any?] = [
+      "isEmergencyLaunch": emergencyLaunchException != nil,
+      "emergencyLaunchReason": emergencyLaunchException?.localizedDescription,
+      "isEmbeddedLaunch": embeddedUpdate != nil && embeddedUpdate?.updateId == launchedUpdate?.updateId,
+      "isEnabled": isEnabled,
+      "launchDuration": launchDuration,
+      "isUsingEmbeddedAssets": isUsingEmbeddedAssets,
+      "runtimeVersion": runtimeVersion ?? "",
+      "checkAutomatically": checkOnLaunch.asString,
+      "channel": requestHeaders["expo-channel-name"] ?? "",
+      "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment":
+        shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled()
+    ]
+
+    if let launchedUpdate = launchedUpdate {
+      mutableMap["updateId"] = launchedUpdate.updateId.uuidString
+      mutableMap["commitTime"] = UInt64(floor(launchedUpdate.commitTime.timeIntervalSince1970 * 1000))
+      mutableMap["manifest"] = launchedUpdate.manifest.rawManifestJSON()
+    }
+
+    if let assetFilesMap = assetFilesMap {
+      mutableMap["localAssets"] = assetFilesMap
+    }
+
+    return mutableMap
+  }
 }
 
 public enum CheckForUpdateResult {
@@ -70,8 +113,6 @@ public protocol AppControllerInterface {
    Currently it's only active for `EnabledAppController`.
    */
   @objc var isActiveController: Bool { get }
-
-  @objc var isStarted: Bool { get }
 
   /**
    Starts the update process to launch a previously-loaded update and (if configured to do so)

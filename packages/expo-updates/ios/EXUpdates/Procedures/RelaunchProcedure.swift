@@ -64,29 +64,31 @@ final class RelaunchProcedure: StateMachineProcedure {
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEventRestart())
     launcherWithDatabase.launchUpdate(withSelectionPolicy: selectionPolicy) { error, success in
-      if success {
-        self.setLauncher(self.launcherWithDatabase)
-        self.requestStartErrorMonitoring()
-        RCTReloadCommandSetBundleURL(self.launcherWithDatabase.launchAssetUrl)
-        RCTTriggerReloadCommandListeners(self.triggerReloadCommandListenersReason)
-
-        // TODO(wschurman): this was moved to after the RCT calls to unify reload
-        // code between JS API call and error recovery handler. double check that
-        // this is okay
-        self.successBlock()
-
-        if self.shouldRunReaper {
-          self.runReaper()
+      DispatchQueue.main.async {
+        if success {
+          self.setLauncher(self.launcherWithDatabase)
+          self.requestStartErrorMonitoring()
+          RCTReloadCommandSetBundleURL(self.launcherWithDatabase.launchAssetUrl)
+          RCTTriggerReloadCommandListeners(self.triggerReloadCommandListenersReason)
+          
+          // TODO(wschurman): this was moved to after the RCT calls to unify reload
+          // code between JS API call and error recovery handler. double check that
+          // this is okay
+          self.successBlock()
+          
+          if self.shouldRunReaper {
+            self.runReaper()
+          }
+          
+          // Reset the state machine
+          procedureContext.resetState()
+          procedureContext.onComplete()
+        } else {
+          // swiftlint:disable:next force_unwrapping
+          NSLog("Failed to relaunch: %@", error!.localizedDescription)
+          self.errorBlock(UpdatesReloadException())
+          procedureContext.onComplete()
         }
-
-        // Reset the state machine
-        procedureContext.resetState()
-        procedureContext.onComplete()
-      } else {
-        // swiftlint:disable:next force_unwrapping
-        NSLog("Failed to relaunch: %@", error!.localizedDescription)
-        self.errorBlock(UpdatesReloadException())
-        procedureContext.onComplete()
       }
     }
   }

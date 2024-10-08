@@ -11,6 +11,8 @@ import expo.modules.notifications.ResultReceiverBody
 import expo.modules.notifications.createDefaultResultReceiver
 import expo.modules.notifications.notifications.ArgumentsNotificationContentBuilder
 import expo.modules.notifications.notifications.NotificationSerializer
+import expo.modules.notifications.notifications.interfaces.INotificationContent
+import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.service.NotificationsService
@@ -31,7 +33,7 @@ open class ExpoNotificationPresentationModule : Module() {
 
     AsyncFunction("presentNotificationAsync") { identifier: String, payload: ReadableArguments, promise: Promise ->
       val content = ArgumentsNotificationContentBuilder(context).setPayload(payload).build()
-      val request = NotificationRequest(identifier, content, null)
+      val request = createNotificationRequest(identifier, content, null)
       val notification = Notification(request)
       present(
         context,
@@ -54,7 +56,7 @@ open class ExpoNotificationPresentationModule : Module() {
         createResultReceiver { resultCode: Int, resultData: Bundle? ->
           val notifications = resultData?.getParcelableArrayList<Notification>(NotificationsService.NOTIFICATIONS_KEY)
           if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
-            promise.resolve(notifications.map(NotificationSerializer::toBundle))
+            promise.resolve(serializeNotifications(notifications))
           } else {
             val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
             promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e)
@@ -95,5 +97,17 @@ open class ExpoNotificationPresentationModule : Module() {
         }
       }
     )
+  }
+
+  protected open fun createNotificationRequest(
+    identifier: String,
+    content: INotificationContent,
+    trigger: NotificationTrigger?
+  ): NotificationRequest {
+    return NotificationRequest(identifier, content, null)
+  }
+
+  protected open fun serializeNotifications(notifications: Collection<Notification>): List<Bundle> {
+    return notifications.map(NotificationSerializer::toBundle)
   }
 }

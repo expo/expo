@@ -9,7 +9,16 @@ import { vol } from 'memfs';
 import { getXcodeCompilerErrorMessage } from '../xcodeCompilerLogger';
 
 jest.mock('fs');
+
 describe(getXcodeCompilerErrorMessage, () => {
+  const originalEnv = process.env;
+  beforeAll(() => {
+    process.env.BUILT_PRODUCTS_DIR = '/foo/bar';
+  });
+  afterAll(() => {
+    process.env = originalEnv;
+  });
+
   beforeEach(() => {
     vol.reset();
   });

@@ -47,6 +47,7 @@ export async function loadConfigAsync(
     'extraSources',
     'sourceSkips',
     'enableReactImportsPatcher',
+    'useRNCoreAutolinkingFromExpo',
     'debug',
   ];
   const config: NormalizedConfig = {};

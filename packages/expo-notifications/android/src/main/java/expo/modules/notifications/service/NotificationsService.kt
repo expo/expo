@@ -24,7 +24,7 @@ import expo.modules.notifications.service.interfaces.SchedulingDelegate
 import kotlin.concurrent.thread
 
 /**
- * Subclass of FirebaseMessagingService, central dispatcher for all the notifications-related actions.
+ * Central dispatcher for all the notifications-related actions.
  */
 open class NotificationsService : BroadcastReceiver() {
   companion object {
@@ -586,21 +586,26 @@ open class NotificationsService : BroadcastReceiver() {
   protected open fun getSchedulingDelegate(context: Context): SchedulingDelegate =
     ExpoSchedulingDelegate(context)
 
+  /*
+   * All of the doWork calls are dispatched to this method.
+   * Pretty much everything from presenting a notification to handling a response
+   * to a notification button press is handled through here.
+   * */
   override fun onReceive(context: Context, intent: Intent?) {
     val pendingIntent = goAsync()
     thread {
       try {
-        handleIntent(context, intent)
+        intent?.run { handleIntent(context, intent) }
       } finally {
         pendingIntent.finish()
       }
     }
   }
 
-  open fun handleIntent(context: Context, intent: Intent?) {
-    if (intent != null && SETUP_ACTIONS.contains(intent.action)) {
+  open fun handleIntent(context: Context, intent: Intent) {
+    if (SETUP_ACTIONS.contains(intent.action)) {
       onSetupScheduledNotifications(context, intent)
-    } else if (intent?.action === NOTIFICATION_EVENT_ACTION) {
+    } else if (intent.action === NOTIFICATION_EVENT_ACTION) {
       val receiver: ResultReceiver? = intent.extras?.get(RECEIVER_KEY) as? ResultReceiver
       try {
         var resultData: Bundle? = null
@@ -660,7 +665,7 @@ open class NotificationsService : BroadcastReceiver() {
         receiver?.send(ERROR_CODE, Bundle().also { it.putSerializable(EXCEPTION_KEY, e) })
       }
     } else {
-      throw IllegalArgumentException("Received intent of unrecognized action: ${intent?.action}. Ignoring.")
+      throw IllegalArgumentException("Received intent of unrecognized action: ${intent.action}. Ignoring.")
     }
   }
 

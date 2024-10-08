@@ -31,8 +31,6 @@ end
 
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
-  :generate_multiple_pod_projects => true,
-  :incremental_installation => true,
   :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
 if ENV['CI']
@@ -71,14 +69,6 @@ abstract_target 'BareExpoMain' do
           config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         end
       end
-    end
-  end
-
-  post_integrate do |installer|
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
     end
   end
 

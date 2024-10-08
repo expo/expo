@@ -17,6 +17,12 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 This is especially important on Android since the [`android.media.projection`](https://developer.android.com/about/versions/android-5.0.html#ScreenCapture) API allows third-party apps to perform screen capture or screen sharing (even if the app is in the background).
 
+On Android, the screen capture callback works without additional permissions only for Android 14+. **You don't need to request or check permissions for blocking screen capture or using the callback on Android 14+.**
+
+If you want to use the screen capture callback on Android 13 or lower, you need to add the `READ_MEDIA_IMAGES` permission to your `AndroidManifest.xml` file. You can use the `android.permissions` key in your app config. See [Android permissions](/guides/permissions/#android) for more information.
+
+> **warning** The `READ_MEDIA_IMAGES` permission can be added only for apps needing broad access to photos. See [Details on Google Play's Photo and Video Permissions policy](https://support.google.com/googleplay/android-developer/answer/14115180).
+
 > **warning** Currently, taking screenshots on iOS cannot be prevented. This is due to underlying OS limitations.
 
 ## Installation
@@ -46,9 +52,9 @@ export default function ScreenCaptureExample() {
 
 </SnackInline>
 
-### Example: functions
+### Example: Blocking screen capture imperatively
 
-<SnackInline label="Screen Capture functions" dependencies={["expo-screen-capture", "expo-media-library"]}>
+<SnackInline label="Blocking screen capture" dependencies={["expo-screen-capture", "expo-media-library"]}>
 
 ```jsx
 import * as ScreenCapture from 'expo-screen-capture';
@@ -56,30 +62,6 @@ import { useEffect } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 
 export default function ScreenCaptureExample() {
-  const hasPermissions = async () => {
-    const { status } = await ScreenCapture.requestPermissionsAsync();
-    return status === 'granted';
-  };
-
-  useEffect(() => {
-    let subscription;
-
-    const addListenerAsync = async () => {
-      if (await hasPermissions()) {
-        subscription = ScreenCapture.addScreenshotListener(() => {
-          alert('Thanks for screenshotting my beautiful app 😊');
-        });
-      } else {
-        console.error('Permissions needed to subscribe to screenshot events are missing!');
-      }
-    };
-    addListenerAsync();
-
-    return () => {
-      subscription?.remove();
-    };
-  }, []);
-
   const activate = async () => {
     await ScreenCapture.preventScreenCaptureAsync();
   };
@@ -103,6 +85,45 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+```
+
+</SnackInline>
+
+### Example: Callback for screen capture
+
+<SnackInline label="Callback for screen capture" dependencies={["expo-screen-capture", "expo-media-library"]}>
+
+```jsx
+import * as ScreenCapture from 'expo-screen-capture';
+import { useEffect } from 'react';
+import { Button, StyleSheet, View } from 'react-native';
+
+export default function useScreenCaptureCallback() {
+  // Only use this if you add the READ_MEDIA_IMAGES permission to your AndroidManifest.xml
+  const hasPermissions = async () => {
+    const { status } = await ScreenCapture.requestPermissionsAsync();
+    return status === 'granted';
+  };
+
+  useEffect(() => {
+    let subscription;
+
+    const addListenerAsync = async () => {
+      if (await hasPermissions()) {
+        subscription = ScreenCapture.addScreenshotListener(() => {
+          alert('Thanks for screenshotting my beautiful app 😊');
+        });
+      } else {
+        console.error('Permissions needed to subscribe to screenshot events are missing!');
+      }
+    };
+    addListenerAsync();
+
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
+}
 ```
 
 </SnackInline>

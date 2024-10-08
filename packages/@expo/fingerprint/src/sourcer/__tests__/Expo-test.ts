@@ -23,9 +23,12 @@ jest.mock('find-up');
 jest.mock('fs/promises');
 jest.mock('resolve-from');
 jest.mock('/app/package.json', () => {}, { virtual: true });
+jest.mock('../../ExpoVersions');
 
 // NOTE(cedric): this is a workaround to also mock `node:fs`
 jest.mock('node:fs', () => require('memfs').fs);
+
+const expoAutolinkingVersion = '1.11.2';
 
 describe(getEasBuildSourcesAsync, () => {
   afterEach(() => {
@@ -106,7 +109,8 @@ describe('getExpoAutolinkingSourcesAsync', () => {
   it('should contain expo autolinking projects', async () => {
     let sources = await getExpoAutolinkingAndroidSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app')
+      await normalizeOptionsAsync('/app'),
+      expoAutolinkingVersion
     );
     expect(sources).toContainEqual(
       expect.objectContaining({
@@ -116,7 +120,11 @@ describe('getExpoAutolinkingSourcesAsync', () => {
     );
     expect(sources).toMatchSnapshot();
 
-    sources = await getExpoAutolinkingIosSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    sources = await getExpoAutolinkingIosSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app'),
+      expoAutolinkingVersion
+    );
     expect(sources).toContainEqual(
       expect.objectContaining({ type: 'dir', filePath: 'node_modules/expo-modules-core' })
     );
@@ -126,7 +134,8 @@ describe('getExpoAutolinkingSourcesAsync', () => {
   it('should not containt absolute path in contents', async () => {
     let sources = await getExpoAutolinkingAndroidSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app')
+      await normalizeOptionsAsync('/app'),
+      expoAutolinkingVersion
     );
     for (const source of sources) {
       if (source.type === 'contents') {
@@ -134,7 +143,11 @@ describe('getExpoAutolinkingSourcesAsync', () => {
       }
     }
 
-    sources = await getExpoAutolinkingIosSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    sources = await getExpoAutolinkingIosSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app'),
+      expoAutolinkingVersion
+    );
     for (const source of sources) {
       if (source.type === 'contents') {
         expect(source.contents.indexOf('/app/')).toBe(-1);

@@ -10,14 +10,13 @@ import MetroHmrServer from 'metro/src/HmrServer';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
-import { URL } from 'url';
 
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
-import { createMetroDevMiddleware } from './dev-server/createMetroDevMiddleware';
+import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { Log } from '../../../log';
@@ -26,7 +25,6 @@ import { CommandError } from '../../../utils/errors';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { getPlatformBundlers } from '../platformBundlers';
 
 // From expo/dev-server but with ability to use custom logger.
@@ -184,11 +182,11 @@ export async function instantiateMetroAsync(
 
   // Create the core middleware stack for Metro, including websocket listeners
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
-    createMetroDevMiddleware(metroConfig);
+    createMetroMiddleware(metroConfig);
 
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
-    middleware.use(createCorsMiddleware(exp));
+    prependMiddleware(middleware, createCorsMiddleware(exp));
 
     // Enable debug middleware for CDP-related debugging
     const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
@@ -196,7 +194,9 @@ export async function instantiateMetroAsync(
     middleware.use(debugMiddleware);
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());
 
-    // TODO: We can probably drop this now.
+    // TODO(cedric): `enhanceMiddleware` is deprecated, but is currently used to unify the middleware stacks
+    // See: https://github.com/facebook/metro/commit/22e85fde85ec454792a1b70eba4253747a2587a9
+    // See: https://github.com/facebook/metro/commit/d0d554381f119bb80ab09dbd6a1d310b54737e52
     const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
     // @ts-expect-error: can't mutate readonly config
     metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
@@ -261,19 +261,6 @@ export async function instantiateMetroAsync(
       fileBuffer
     );
   };
-
-  prependMiddleware(middleware, (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-    // If the URL is a Metro asset request, then we need to skip all other middleware to prevent
-    // the community CLI's serve-static from hosting `/assets/index.html` in place of all assets if it exists.
-    // /assets/?unstable_path=.
-    if (req.url) {
-      const url = new URL(req.url!, 'http://localhost:8000');
-      if (url.pathname.match(/^\/assets\/?/) && url.searchParams.get('unstable_path') != null) {
-        return metro.processRequest(req, res, next);
-      }
-    }
-    return next();
-  });
 
   setEventReporter(eventsSocket.reportMetroEvent);
 

@@ -99,7 +99,7 @@ open class NotificationsHandler : Module(), NotificationListener {
       ?: throw NotificationWasAlreadyHandledException(identifier)
 
     with(behavior) {
-      task.handleResponse(
+      task.processNotificationWithBehavior(
         NotificationBehavior(shouldShowAlert, shouldPlaySound, shouldSetBadge, priority),
         promise
       )
@@ -109,6 +109,8 @@ open class NotificationsHandler : Module(), NotificationListener {
   /**
    * Callback called by [NotificationManager] to inform its listeners of new messages.
    * Starts up a new [SingleNotificationHandlerTask] which will take it on from here.
+   *
+   * SingleNotificationHandlerTask.processNotificationWithBehavior can then present it
    *
    * @param notification Notification received
    */

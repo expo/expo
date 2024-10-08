@@ -13,6 +13,10 @@ type EventsSocketOptions = {
   broadcast: ReturnType<typeof createMessagesSocket>['broadcast'];
 };
 
+/**
+ * Metro events server that dispatches all Metro events to connected clients.
+ * This includes logs, errors, bundling progression, etc.
+ */
 export function createEventsSocket(options: EventsSocketOptions) {
   const clients = createSocketMap();
   const broadcast = createBroadcaster(clients.map);
@@ -51,7 +55,14 @@ export function createEventsSocket(options: EventsSocketOptions) {
   return {
     endpoint: '/events' as const,
     server: new WebSocketServer({ noServer: true }),
-    reportMetroEvent: (event: any) => broadcast(null, serializeMetroEvent(event)),
+    reportMetroEvent: (event: any) => {
+      // Avoid serializing data if there are no clients
+      if (!clients.map.size) {
+        return;
+      }
+
+      return broadcast(null, serializeMetroEvent(event));
+    },
   };
 }
 

@@ -1,6 +1,7 @@
 package expo.modules.updates.statemachine
 
 import android.content.Context
+import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.StateMachineProcedure
 import expo.modules.updates.procedures.StateMachineSerialExecutorQueue
@@ -12,7 +13,7 @@ import java.util.Date
  */
 class UpdatesStateMachine(
   androidContext: Context,
-  private val changeEventSender: UpdatesStateChangeEventSender,
+  private val eventManager: IUpdatesEventManager,
   private val validUpdatesStateValues: Set<UpdatesStateValue>
 ) {
   private val logger = UpdatesLogger(androidContext)
@@ -94,10 +95,7 @@ class UpdatesStateMachine(
   }
 
   private fun sendChangeEventToJS(event: UpdatesStateEvent) {
-    changeEventSender.sendUpdateStateChangeEventToAppContext(
-      event.type,
-      context.copy()
-    )
+    eventManager.sendStateChangeEvent(event.type, context)
   }
 
   companion object {

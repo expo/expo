@@ -73,6 +73,11 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
   return [self _appLoaderWithScopeKey:scopeKey].appLauncher.launchedUpdate;
 }
 
+- (nullable NSNumber *)launchDurationForScopeKey:(NSString *)scopeKey
+{
+  return [self _appLoaderWithScopeKey:scopeKey].launchDuration;
+}
+
 - (nullable NSDictionary *)assetFilesMapForScopeKey:(NSString *)scopeKey
 {
   return [self _appLoaderWithScopeKey:scopeKey].appLauncher.assetFilesMap;

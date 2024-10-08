@@ -9,6 +9,7 @@ type UpdatesEvents = {
 export declare class ExpoUpdatesModule extends NativeModule<UpdatesEvents> {
     isEmergencyLaunch: boolean;
     emergencyLaunchReason: string | null;
+    launchDuration: number | null;
     isEmbeddedLaunch: boolean;
     isEnabled: boolean;
     isUsingEmbeddedAssets?: boolean;
