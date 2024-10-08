@@ -45,10 +45,10 @@ class DailyTrigger(override val channelId: String?, val hour: Int, val minute: I
  * A schedulable trigger representing notification to be scheduled only once at a given moment of time.
  */
 @Parcelize
-class DateTrigger(override val channelId: String?, timestamp: Long) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+class DateTrigger(override val channelId: String?, val timestamp: Long) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
   val triggerDate = Date(timestamp)
 
-  private constructor(parcel: Parcel) : this(parcel.readString(), parcel.readLong())
+  constructor(parcel: Parcel) : this(parcel.readString(), parcel.readLong())
 
   override fun nextTriggerDate(): Date? {
     val now = Date()
@@ -103,12 +103,9 @@ class MonthlyTrigger(override val channelId: String?, val day: Int, val hour: In
  * * trigger around …000 timestamp.*
  */
 @Parcelize
-class TimeIntervalTrigger(override val channelId: String?, val timeInterval: Long, repeats: Boolean) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+class TimeIntervalTrigger(override val channelId: String?, val timeInterval: Long, val isRepeating: Boolean) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
   @IgnoredOnParcel
   private var triggerDate = Date(Date().time + timeInterval * 1000)
-  var isRepeating = repeats
-
-  private constructor(parcel: Parcel) : this(parcel.readString(), parcel.readLong(), parcel.readByte().toInt() == 1)
 
   override fun nextTriggerDate(): Date? {
     val now = Date()
@@ -124,18 +121,6 @@ class TimeIntervalTrigger(override val channelId: String?, val timeInterval: Lon
     }
 
     return triggerDate
-  }
-
-  companion object : Parceler<TimeIntervalTrigger> {
-    override fun TimeIntervalTrigger.write(parcel: Parcel, flags: Int) {
-      parcel.writeString(channelId)
-      parcel.writeLong(timeInterval)
-      parcel.writeByte((if (isRepeating) 1 else 0).toByte())
-    }
-
-    override fun create(parcel: Parcel): TimeIntervalTrigger {
-      return TimeIntervalTrigger(parcel)
-    }
   }
 }
 

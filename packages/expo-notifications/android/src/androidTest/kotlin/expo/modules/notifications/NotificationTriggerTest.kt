@@ -2,6 +2,7 @@
 
 package expo.modules.notifications
 
+import android.os.Parcel
 import androidx.test.filters.SmallTest
 import expo.modules.notifications.notifications.triggers.DailyTrigger
 import expo.modules.notifications.notifications.triggers.DateTrigger
@@ -9,6 +10,7 @@ import expo.modules.notifications.notifications.triggers.MonthlyTrigger
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger
 import expo.modules.notifications.notifications.triggers.WeeklyTrigger
 import expo.modules.notifications.notifications.triggers.YearlyTrigger
+import kotlinx.parcelize.parcelableCreator
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -20,8 +22,8 @@ import java.util.Calendar
 @Suppress("DEPRECATION")
 @SmallTest
 class NotificationTriggerTest {
-  var calendarNow: Calendar = Calendar.getInstance()
-  var calendar5MinutesFromNow: Calendar = Calendar.getInstance()
+  private var calendarNow: Calendar = Calendar.getInstance()
+  private var calendar5MinutesFromNow: Calendar = Calendar.getInstance()
 
   @Before
   fun setup() {
@@ -37,7 +39,7 @@ class NotificationTriggerTest {
     assertEquals(/* expected = */ calendarNow.get(Calendar.SECOND), /* actual = */ nextTriggerDate?.seconds)
     assertNull(dateTrigger.channelId)
 
-    val dateTriggerWithChannel = DateTrigger("myChannel", date5MinutesFromNow!!.time)
+    val dateTriggerWithChannel = DateTrigger("myChannel", date5MinutesFromNow.time)
     assertEquals(/* expected = */ "myChannel", /* actual = */ dateTriggerWithChannel.channelId)
   }
 
@@ -89,5 +91,31 @@ class NotificationTriggerTest {
     assertEquals(15, nextTriggerDateCalendar.get(Calendar.DAY_OF_MONTH))
     assertEquals(4, nextTriggerDateCalendar.get(Calendar.MONTH))
     assertTrue(nextTriggerDateCalendar.after(calendarNow))
+  }
+
+  @Test
+  fun testDateTriggerParcel() {
+    // Date trigger
+    val dateTrigger = DateTrigger("myChannel", calendar5MinutesFromNow.time.time)
+    val parcel = Parcel.obtain()
+    dateTrigger.writeToParcel(parcel, 0)
+    parcel.setDataPosition(0)
+    val dateTriggerFromParcel = DateTrigger(parcel)
+    assertEquals(dateTrigger.channelId, dateTriggerFromParcel.channelId)
+    assertEquals(dateTrigger.triggerDate, dateTriggerFromParcel.triggerDate)
+    assertEquals(calendar5MinutesFromNow.time.time, dateTriggerFromParcel.triggerDate.time)
+  }
+
+  @Test
+  fun testTimeIntervalTriggerParcel() {
+    // Time interval trigger
+    val timeIntervalTrigger = TimeIntervalTrigger(null, 2, false)
+    val parcel = Parcel.obtain()
+    timeIntervalTrigger.writeToParcel(parcel, 0)
+    parcel.setDataPosition(0)
+    val timeIntervalTriggerFromParcel = parcelableCreator<TimeIntervalTrigger>().createFromParcel(parcel)
+    assertNull(timeIntervalTriggerFromParcel.channelId)
+    assertFalse(timeIntervalTriggerFromParcel.isRepeating)
+    assertEquals(timeIntervalTriggerFromParcel.timeInterval, 2)
   }
 }
