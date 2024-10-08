@@ -14,7 +14,7 @@ describe(resolveDependencyConfigImplIosAsync, () => {
   });
 
   it('should return ios config if podspec found', async () => {
-    mockGlob.mockResolvedValueOnce(['/app/node_modules/react-native-test/RNTest.podspec']);
+    mockGlob.mockResolvedValueOnce(['RNTest.podspec']);
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/RNTest.podspec': '',
@@ -34,7 +34,7 @@ describe(resolveDependencyConfigImplIosAsync, () => {
   });
 
   it('should return ios config with override reactNativeConfig', async () => {
-    mockGlob.mockResolvedValueOnce(['/app/node_modules/react-native-test/RNTest.podspec']);
+    mockGlob.mockResolvedValueOnce(['RNTest.podspec']);
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/RNTest.podspec': '',
@@ -77,5 +77,24 @@ describe(resolveDependencyConfigImplIosAsync, () => {
       undefined
     );
     expect(result).toBeNull();
+  });
+
+  it('should resolve podspec if the base name is matching the package name', async () => {
+    mockGlob.mockResolvedValueOnce([
+      'react-native-google-maps.podspec',
+      'react-native-maps.podspec',
+    ]);
+    vol.fromJSON({
+      '/app/node_modules/react-native-maps/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-maps/react-native-google-maps.podspec': '',
+      '/app/node_modules/react-native-maps/react-native-maps.podspec': '',
+    });
+    const result = await resolveDependencyConfigImplIosAsync(
+      '/app/node_modules/react-native-maps',
+      undefined
+    );
+    expect(result?.podspecPath).toBe(
+      '/app/node_modules/react-native-maps/react-native-maps.podspec'
+    );
   });
 });

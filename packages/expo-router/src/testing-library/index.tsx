@@ -19,7 +19,7 @@ afterAll(() => {
   store.cleanup();
 });
 
-type RenderRouterOptions = Parameters<typeof render>[1] & {
+export type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
   linking?: Partial<ExpoLinkingOptions>;
 };

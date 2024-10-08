@@ -14,6 +14,10 @@
 
 - Export missing types. ([#29401](https://github.com/expo/expo/pull/29401) by [@Simek](https://github.com/Simek))
 
+## 0.12.5 - 2024-08-07
+
+_This version does not introduce any user-facing changes._
+
 ## 0.12.4 - 2024-07-30
 
 ### 🎉 New features

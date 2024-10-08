@@ -442,6 +442,12 @@ export const Screens: ScreenConfig[] = [
     },
     name: 'ClipboardPasteButton',
   },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/LivePhotoScreen'));
+    },
+    name: 'LivePhoto',
+  },
   ...ImageScreens,
 ];
 

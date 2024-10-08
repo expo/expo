@@ -31,6 +31,9 @@ if (!Fingerprint) {
 
   const options = {
     debug: !!process.env.DEBUG,
+    useRNCoreAutolinkingFromExpo: process.env.USE_RNCORE_AUTOLINKING_FROM_EXPO
+      ? ['1', 'true'].includes(process.env.USE_RNCORE_AUTOLINKING_FROM_EXPO)
+      : undefined,
   }
   try {
     if (comparatorFingerprint) {

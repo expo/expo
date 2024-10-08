@@ -53,31 +53,8 @@ function convertError(error: any) {
   return new Error(String(error));
 }
 
-export function registerDOMComponent(importer: () => Promise<any>, moduleId: string) {
+export function registerDOMComponent(AppModule: any) {
   function DOMComponentRoot(props) {
-    const AppModule = React.useMemo(() => {
-      return React.lazy(async () => {
-        const AppModule = await importer();
-
-        if (!AppModule) {
-          throw new Error('No exports from DOM Component module: ' + moduleId);
-        }
-
-        if (!AppModule.default) {
-          return {
-            default: () =>
-              React.createElement(
-                'div',
-                undefined,
-                'Missing default export in module: ' + moduleId
-              ),
-          };
-        }
-
-        return AppModule;
-      });
-    }, []);
-
     // Props listeners
     const [marshalledProps, setProps] = React.useState(() => {
       if (typeof window.$$EXPO_INITIAL_PROPS === 'undefined') {
@@ -109,11 +86,7 @@ export function registerDOMComponent(importer: () => Promise<any>, moduleId: str
       );
     }, [marshalledProps.names]);
 
-    return (
-      <React.Suspense fallback={null}>
-        <AppModule {...props} {...(marshalledProps.props || {})} {...proxyActions} />
-      </React.Suspense>
-    );
+    return <AppModule {...props} {...(marshalledProps.props || {})} {...proxyActions} />;
   }
 
   try {

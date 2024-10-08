@@ -1,8 +1,5 @@
 import { Button, ButtonProps } from '@expo/styleguide';
 
-export const EXPAND_SNIPPET_BOUND = 408;
-export const EXPAND_SNIPPET_BOUND_CLASSNAME = 'max-h-[408px]';
-
 type Props = {
   onClick?: ButtonProps['onClick'];
 };

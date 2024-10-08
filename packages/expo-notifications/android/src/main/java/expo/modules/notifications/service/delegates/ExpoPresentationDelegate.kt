@@ -4,28 +4,35 @@ import android.app.NotificationManager
 import android.content.Context
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.provider.Settings
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import android.util.Pair
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import expo.modules.notifications.notifications.SoundResolver
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
-import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
 import expo.modules.notifications.service.interfaces.PresentationDelegate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
+import java.util.Date
 
 open class ExpoPresentationDelegate(
-  protected val context: Context
+  protected val context: Context,
+  private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 ) : PresentationDelegate {
+
   companion object {
     protected const val ANDROID_NOTIFICATION_ID = 0
 
@@ -85,20 +92,36 @@ open class ExpoPresentationDelegate(
    * set badge count without showing a notification.
    */
   override fun presentNotification(notification: Notification, behavior: NotificationBehavior?) {
-    if (behavior != null && !behavior.shouldShowAlert()) {
+    if (behavior?.shouldShowAlert() == false) {
       if (behavior.shouldPlaySound()) {
+        val sound = getNotificationSoundUri(notification) ?: Settings.System.DEFAULT_NOTIFICATION_URI
         RingtoneManager.getRingtone(
           context,
-          notification.notificationRequest.content.sound ?: Settings.System.DEFAULT_NOTIFICATION_URI
+          sound
         ).play()
       }
       return
     }
-    NotificationManagerCompat.from(context).notify(
-      notification.notificationRequest.identifier,
-      getNotifyId(notification.notificationRequest),
-      createNotification(notification, behavior)
-    )
+    CoroutineScope(Dispatchers.IO).launch {
+      val androidNotification = createNotification(notification, behavior)
+
+      NotificationManagerCompat.from(context).notify(
+        notification.notificationRequest.identifier,
+        getNotifyId(notification.notificationRequest),
+        androidNotification
+      )
+    }
+  }
+
+  private fun getNotificationSoundUri(notification: Notification): Uri? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      notification.notificationRequest.trigger.notificationChannel?.let {
+        notificationManager.getNotificationChannel(it)?.sound
+      }
+    } else {
+      val name = notification.notificationRequest.content.soundName
+      SoundResolver(context).resolve(name)
+    }
   }
 
   protected open fun getNotifyId(request: NotificationRequest?): Int {
@@ -133,10 +156,9 @@ open class ExpoPresentationDelegate(
 
   override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
-  protected open fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
-    CategoryAwareNotificationBuilder(context, SharedPreferencesNotificationCategoriesStore(context)).also {
-      it.setNotification(notification)
-      it.setAllowedBehavior(notificationBehavior)
+  protected open suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
+    ExpoNotificationBuilder(context, notification, SharedPreferencesNotificationCategoriesStore(context)).apply {
+      setAllowedBehavior(notificationBehavior)
     }.build()
 
   protected open fun getNotification(statusBarNotification: StatusBarNotification): Notification? {
@@ -164,14 +186,14 @@ open class ExpoPresentationDelegate(
     // it's either not our notification or we couldn't have unmarshaled it from
     // the byte array. Let's do what we can.
     val content = NotificationContent.Builder()
-      .setTitle(notification.extras.getString(android.app.Notification.EXTRA_TITLE))
-      .setText(notification.extras.getString(android.app.Notification.EXTRA_TEXT))
-      .setSubtitle(notification.extras.getString(android.app.Notification.EXTRA_SUB_TEXT)) // using deprecated field
+      .setTitle(NotificationCompat.getContentTitle(notification)?.toString())
+      .setText(NotificationCompat.getContentText(notification)?.toString())
+      .setSubtitle(NotificationCompat.getSubText(notification)?.toString())
+      .setAutoDismiss(NotificationCompat.getAutoCancel(notification))
+      .setSticky(NotificationCompat.getOngoing(notification))
       .setPriority(NotificationPriority.fromNativeValue(notification.priority)) // using deprecated field
       .setVibrationPattern(notification.vibrate) // using deprecated field
       .setSound(notification.sound)
-      .setAutoDismiss(notification.flags and android.app.Notification.FLAG_AUTO_CANCEL != 0)
-      .setSticky(notification.flags and android.app.Notification.FLAG_ONGOING_EVENT != 0)
       .setBody(fromBundle(notification.extras))
       .build()
     val request = NotificationRequest(getInternalIdentifierKey(statusBarNotification), content, null)

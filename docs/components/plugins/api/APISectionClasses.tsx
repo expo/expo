@@ -23,6 +23,7 @@ import {
   getCommentContent,
   BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
+  extractDefaultPropValue,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
@@ -47,14 +48,15 @@ const CLASSES_TO_IGNORE_INHERITED_PROPS = [
 ] as const;
 
 const isProp = (child: PropData) =>
-  child.kind === TypeDocKind.Property &&
+  child.kind &&
+  [TypeDocKind.Property, TypeDocKind.Accessor].includes(child.kind) &&
   !child.overwrites &&
   !child.name.startsWith('_') &&
   !child.implementationOf;
 
 const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   child.kind &&
-  [TypeDocKind.Method, TypeDocKind.Function, TypeDocKind.Accessor].includes(child.kind) &&
+  [TypeDocKind.Method, TypeDocKind.Function].includes(child.kind) &&
   (allowOverwrites || !child.overwrites) &&
   !child.name.startsWith('_') &&
   !child?.implementationOf;
@@ -163,10 +165,15 @@ const renderClass = (
           />
           <div>
             {properties.map(property =>
-              renderProp(property, sdkVersion, property?.defaultValue, {
-                exposeInSidebar: true,
-                baseNestingLevel: linksNestingLevel,
-              })
+              renderProp(
+                property,
+                sdkVersion,
+                extractDefaultPropValue(property) ?? property?.defaultValue,
+                {
+                  exposeInSidebar: true,
+                  baseNestingLevel: linksNestingLevel,
+                }
+              )
             )}
           </div>
         </>

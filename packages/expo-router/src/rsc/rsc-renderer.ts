@@ -17,8 +17,9 @@ import {
   registerServerReference,
 } from 'react-server-dom-webpack/server';
 
+import { fileURLToFilePath } from './path';
+import { filePathToFileURL, decodeActionId } from './router/utils';
 import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
-import { getServerReference, getDebugDescription } from '../server-actions';
 
 // Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
 // @ts-ignore: HACK type for server actions
@@ -37,17 +38,17 @@ export type RenderRscArgs = {
 
   // Done
   input: string;
-  searchParams: URLSearchParams;
-  method: 'GET' | 'POST';
   context: Record<string, unknown> | undefined;
   body?: ReadableStream | undefined;
   contentType?: string | undefined;
+  decodedBody?: unknown;
   moduleIdCallback?: (module: {
     id: string;
     chunks: string[];
     name: string;
     async: boolean;
   }) => void;
+  onError?: (err: unknown) => void;
 };
 
 type ResolveClientEntry = (id: string) => { id: string; chunks: string[] };
@@ -56,10 +57,11 @@ type RenderRscOpts = {
   isExporting: boolean;
   entries: EntriesDev;
   resolveClientEntry: ResolveClientEntry;
+  loadServerModuleRsc: (url: string) => Promise<any>;
 };
 
 export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream> {
-  const { searchParams, method, input, body, contentType, context } = args;
+  const { input, body, contentType, context, onError } = args;
   const { resolveClientEntry, entries } = opts;
 
   const {
@@ -82,7 +84,8 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
 
         // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
         if (encodedId.match(/[0-9a-z]{40}#/i)) {
-          return { id: encodedId, chunks: [encodedId], name, async: true };
+          // TODO: Rework server actions to use some ES Modules like system instead of the globals.
+          return { id: encodedId, chunks: [encodedId], name: '*', async: true };
         }
 
         const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
@@ -108,7 +111,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   const renderWithContext = async (
     context: Record<string, unknown> | undefined,
     input: string,
-    searchParams: URLSearchParams
+    params: unknown
   ) => {
     const renderStore = {
       context: context || {},
@@ -118,7 +121,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     };
     return runWithRenderStore(renderStore, async () => {
       const elements = await renderEntries(input, {
-        searchParams,
+        params,
         buildConfig,
       });
       if (elements === null) {
@@ -129,7 +132,9 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       if (Object.keys(elements).some((key) => key.startsWith('_'))) {
         throw new Error('"_" prefix is reserved');
       }
-      return renderToReadableStream(elements, bundlerConfig);
+      return renderToReadableStream(elements, bundlerConfig, {
+        onError,
+      });
     });
   };
 
@@ -142,13 +147,13 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     let rendered = false;
     const renderStore = {
       context: context || {},
-      rerender: async (input: string, searchParams = new URLSearchParams()) => {
+      rerender: async (input: string, params?: unknown) => {
         if (rendered) {
           throw new Error('already rendered');
         }
         elementsPromise = Promise.all([
           elementsPromise,
-          renderEntries(input, { searchParams, buildConfig }),
+          renderEntries(input, { params, buildConfig }),
         ]).then(([oldElements, newElements]) => ({
           ...oldElements,
           // FIXME we should actually check if newElements is null and send an error
@@ -163,38 +168,43 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       if (Object.keys(elements).some((key) => key.startsWith('_'))) {
         throw new Error('"_" prefix is reserved');
       }
-      return renderToReadableStream({ ...elements, _value: actionValue }, bundlerConfig);
+      return renderToReadableStream({ ...elements, _value: actionValue }, bundlerConfig, {
+        onError,
+      });
     });
   };
 
-  if (method === 'POST') {
-    // TODO(Bacon): Fix Server action ID generation
-    const rsfId = decodeURIComponent(input);
-    let args: unknown[] = [];
-    let bodyStr = '';
-    if (body) {
-      bodyStr = await streamToString(body);
-    }
+  let decodedBody: unknown | undefined = args.decodedBody;
+  if (body) {
+    const bodyStr = await streamToString(body);
     if (typeof contentType === 'string' && contentType.startsWith('multipart/form-data')) {
       // XXX This doesn't support streaming unlike busboy
       const formData = parseFormData(bodyStr, contentType);
-      args = await decodeReply(formData, bundlerConfig);
+      decodedBody = await decodeReply(
+        formData,
+        // TODO: add server action config
+        bundlerConfig
+      );
     } else if (bodyStr) {
-      args = await decodeReply(bodyStr, bundlerConfig);
+      decodedBody = await decodeReply(
+        bodyStr,
+        // TODO: add server action config
+        bundlerConfig
+      );
     }
-    const [, name] = rsfId.split('#') as [string, string];
-    // xxxx#greet
-    if (!getServerReference(rsfId)) {
-      throw new Error(`Server action not found: "${rsfId}". ${getDebugDescription()}`);
-    }
-    const mod: any = getServerReference(rsfId);
+  }
 
-    const fn = name ? mod[name] || mod : mod;
+  const actionId = decodeActionId(input);
+  if (actionId) {
+    const args = Array.isArray(decodedBody) ? decodedBody : [];
+    const [fileId, name] = actionId.split('#') as [string, string];
+    const mod = await opts.loadServerModuleRsc(filePathToFileURL(fileId));
+    const fn = name === '*' ? name : mod[name] || mod;
     return renderWithContextWithAction(context, fn, args);
   }
 
   // method === 'GET'
-  return renderWithContext(context, input, searchParams);
+  return renderWithContext(context, input, decodedBody);
 }
 
 // TODO is this correct? better to use a library?
@@ -229,13 +239,6 @@ const parseFormData = (body: string, contentType: string) => {
     }
   }
   return formData;
-};
-
-const fileURLToFilePath = (fileURL: string) => {
-  if (!fileURL.startsWith('file://')) {
-    throw new Error('Not a file URL');
-  }
-  return decodeURI(fileURL.slice('file://'.length));
 };
 
 const streamToString = async (stream: ReadableStream): Promise<string> => {

@@ -15,6 +15,7 @@ type RoutePropsForLayout = Omit<RouteProps, 'searchParams'> & {
 };
 type ShouldSkipValue = ShouldSkip[number][1];
 export declare function unstable_defineRouter(getPathConfig: () => Promise<Iterable<{
+    pattern: string;
     path: PathSpec;
     isStatic?: boolean;
     noSsr?: boolean;

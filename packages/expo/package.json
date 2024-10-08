@@ -35,7 +35,8 @@
     "fetch.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
-    "tsconfig.base.json"
+    "tsconfig.base.json",
+    "types"
   ],
   "scripts": {
     "build": "expo-module build",
@@ -90,12 +91,16 @@
     "react-native": "0.75.2"
   },
   "peerDependencies": {
+    "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
     "react": "*",
     "react-native": "*",
     "react-native-webview": "*"
   },
   "peerDependenciesMeta": {
+    "@expo/dom-webview": {
+      "optional": true
+    },
     "@expo/metro-runtime": {
       "optional": true
     },

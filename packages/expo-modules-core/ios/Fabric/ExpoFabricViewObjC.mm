@@ -10,9 +10,7 @@
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/Swift.h>
 
-#import <React/RCTSurfacePresenter.h>
-#import <React/RCTMountingManager.h>
-#import <React/RCTComponentViewRegistry.h>
+#import <React/React-Core-umbrella.h>
 
 #import <string.h>
 

@@ -18,6 +18,5 @@ export default function StyledRefreshControl(props: Props) {
   const theme = useTheme();
   const color = theme.dark ? Colors.dark.refreshControl : Colors.light.refreshControl;
 
-  // @ts-expect-error until react-native-gesture-handler fixes the type
   return <RefreshControl tintColor={color} {...props} />;
 }

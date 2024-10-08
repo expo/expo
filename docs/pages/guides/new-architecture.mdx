@@ -72,7 +72,7 @@ Then run `npx expo-doctor` to check your dependencies against the data in React 
 <Collapsible summary="See all available options">
 
 - **enabled**: By default, the check will warn if any packages are missing from React Native Directory. Set this to false to disable this behavior.
-- **exclude**: List any packages you want to exclude from the check. Supports exact package names and regex patterns, eg: `["exact-package", "/or-a-regex-.*/"]`.
+- **exclude**: List any packages you want to exclude from the check. Supports exact package names and regex patterns. For example, `["exact-package", "/or-a-regex-.*/"]`.
 - **listUnknownPackages**: By default, the check will warn if any packages are missing from React Native Directory. Set this to false to disable this behavior.
 
 </Collapsible>
@@ -192,14 +192,12 @@ In React Native 0.74, there are various Interop Layers enabled by default which 
 
 Refer to [React Native Directory](https://reactnative.directory/) a more complete list of libraries and their compatibility with the New Architecture. The following libraries were found to popular among Expo apps and are known to be incompatible:
 
-- **React Native Firebase**: this suite of libraries does not yet support the New Architecture.
 - **@react-native-community/masked-view**: use `@react-native-masked-view/masked-view` instead.
 - **@react-native-community/clipboard**: use `@react-native-clipboard/clipboard` instead.
 - **rn-fetch-blob**: use `react-native-blob-util` instead.
 - **react-native-fs**: use `expo-file-system` or [a fork of react-native-fs](https://github.com/birdofpreyru/react-native-fs) instead.
 - **react-native-geolocation-service**: use `expo-location` instead.
 - **react-native-datepicker**: use `react-native-date-picker` or `@react-native-community/datetimepicker` instead.
-- **@shopify/flash-list**: may have not correctly in some cases. Be sure to test it thoroughly when migrating your app, and consider temporarily moving back to `FlatList` if you encounter issues.
 
 </Collapsible>
 

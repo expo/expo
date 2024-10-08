@@ -4,10 +4,7 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 
-# We don't want to control the new architecture this way in bare-expo.
-# Use `install-new-arch-ios` and `install-old-arch-ios` scripts from package.json instead.
-# ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
-
+ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
 ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] = '1'
 
@@ -34,8 +31,6 @@ end
 
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
-  :generate_multiple_pod_projects => true,
-  :incremental_installation => true,
   :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
 if ENV['CI']
@@ -74,14 +69,6 @@ abstract_target 'BareExpoMain' do
           config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         end
       end
-    end
-  end
-
-  post_integrate do |installer|
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
     end
   end
 

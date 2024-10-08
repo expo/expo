@@ -60,6 +60,7 @@ it('runs `npx expo export:embed --help`', async () => {
         --asset-catalog-dest <string>          Directory to create an iOS Asset Catalog for images
         --unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default
         --reset-cache                          Removes cached files
+        --eager                                Eagerly export the bundle with default options
         -v, --verbose                          Enables debug logging
         --config <string>                      Path to the CLI configuration file
         --read-global-cache                    Try to fetch transformed JS code from the global cache, if configured.

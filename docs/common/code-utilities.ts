@@ -18,6 +18,7 @@ async function initPrism() {
 
 await initPrism();
 
+export const EXPAND_SNIPPET_BOUND = 408;
 export const LANGUAGES_REMAP: Record<string, string> = {
   'objective-c': 'objc',
   sh: 'bash',
@@ -108,6 +109,32 @@ export function replaceSlashCommentsWithAnnotations(value: string) {
     );
 }
 
+export function replaceSlashCommentsWithAnnotationsForTutorial(value: string) {
+  return value
+    .replace(
+      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @tutinfo (.*?)\*\/[\n\r\s]*<\/span>\s*/g,
+      (match, type, beforeWhitespace, content) => {
+        return content
+          ? `${beforeWhitespace}<span class="tutorial-code-annotation with-tooltip" data-tippy-content="${escapeHtml(
+              content
+            )}">`
+          : `${beforeWhitespace}<span class="tutorial-code-annotation">`;
+      }
+    )
+    .replace(
+      /<span class="token (comment|plain-text)">([\n\r\s]*)\/\* @hide (.*?)\*\/([\n\r\s]*)<\/span>\s*/g,
+      (match, type, beforeWhitespace, content, afterWhitespace) => {
+        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${beforeWhitespace}${escapeHtml(
+          content
+        )}${afterWhitespace}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+      }
+    )
+    .replace(
+      /\s*<span class="token (comment|plain-text)">[\n\r\s]*\/\* @end \*\/([\n\r\s]*)<\/span>/g,
+      (match, type, afterWhitespace) => `</span>${afterWhitespace}`
+    );
+}
+
 export function parseValue(value: string) {
   if (value.startsWith('@@@')) {
     const valueChunks = value.split('@@@');
@@ -124,7 +151,7 @@ export function parseValue(value: string) {
           const [key, value] = param.split('=');
           return { [key]: value };
         })
-      ),
+      ) as Record<string, string>,
       value: valueChunks[2],
     };
   }
@@ -173,4 +200,38 @@ export function findPropInChildren(element: ReactElement, propToFind: string): s
   }
 
   return null;
+}
+
+export function getCollapseHeight(params?: Record<string, string>) {
+  const customCollapseHeight = params?.collapseHeight;
+  return customCollapseHeight ? Number(customCollapseHeight) : EXPAND_SNIPPET_BOUND;
+}
+
+export function getCodeData(value: string, className?: string) {
+  // mdx will add the class `language-foo` to codeblocks with the tag `foo`
+  // if this class is present, we want to slice out `language-`
+  let lang = className && className.split('-').at(-1)?.toLowerCase();
+  if (!lang) {
+    return value;
+  }
+
+  if (lang in LANGUAGES_REMAP) {
+    lang = LANGUAGES_REMAP[lang];
+  }
+
+  const grammar = Prism.languages[lang as keyof typeof Prism.languages];
+  if (!grammar) {
+    throw new Error(`docs currently do not support language: ${lang}`);
+  }
+
+  const rawHtml = Prism.highlight(value, grammar, lang as Language);
+  if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
+    return replaceHashCommentsWithAnnotations(rawHtml);
+  } else if (['xml', 'html'].includes(lang)) {
+    return replaceXmlCommentsWithAnnotations(rawHtml);
+  } else if (value.includes('tut')) {
+    return replaceSlashCommentsWithAnnotationsForTutorial(rawHtml);
+  } else {
+    return replaceSlashCommentsWithAnnotations(rawHtml);
+  }
 }

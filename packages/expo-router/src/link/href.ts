@@ -1,3 +1,4 @@
+import { UrlObject } from '../LocationProvider';
 import { Href, RouteParamInput } from '../types';
 
 /** Resolve an href object into a fully qualified, relative href. */
@@ -15,6 +16,44 @@ export const resolveHref = (href: Href<any>): string => {
   const paramsString = createQueryParams(params);
   return pathname + (paramsString ? `?${paramsString}` : '');
 };
+
+export function resolveHrefStringWithSegments(
+  href: string,
+  { segments = [], params = {} }: Partial<UrlObject> = {},
+  relativeToDirectory: boolean = false
+) {
+  if (href.startsWith('.')) {
+    // Resolve base path by merging the current segments with the params
+    let base =
+      segments
+        ?.map((segment) => {
+          if (!segment.startsWith('[')) return segment;
+
+          if (segment.startsWith('[...')) {
+            segment = segment.slice(4, -1);
+            const param = params[segment];
+            if (Array.isArray(param)) {
+              return param.join('/');
+            } else {
+              return param?.split(',')?.join('/') ?? '';
+            }
+          } else {
+            segment = segment.slice(1, -1);
+            return params[segment];
+          }
+        })
+        .filter(Boolean)
+        .join('/') ?? '/';
+
+    if (relativeToDirectory) {
+      base = `${base}/`;
+    }
+
+    href = new URL(href, `http://hostname/${base}`).pathname;
+  }
+
+  return href;
+}
 
 function createQualifiedPathname(
   pathname: string,

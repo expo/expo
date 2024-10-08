@@ -38,11 +38,11 @@
     "babel-preset-expo": "~11.0.0",
     "commander": "^12.1.0",
     "eslint-config-universe": "^13.0.0",
-    "find-yarn-workspace-root": "^2.0.0",
     "glob": "^10.4.2",
     "jest-expo": "~51.0.0",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
+    "resolve-workspace-root": "^1.0.0",
     "ts-jest": "~29.0.4",
     "typescript": "^5.1.3"
   }

@@ -9,8 +9,8 @@ const path_1 = __importDefault(require("path"));
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
-const utils_1 = require("./utils");
-const utils_2 = require("../autolinking/utils");
+const utils_1 = require("../autolinking/utils");
+const fileUtils_1 = require("../fileUtils");
 /**
  * Create config for react-native core autolinking.
  */
@@ -47,10 +47,10 @@ async function findDependencyRootsAsync(projectRoot, searchPaths) {
     for (const name of dependencies) {
         for (const searchPath of searchPathSet) {
             const packageConfigPath = path_1.default.resolve(searchPath, name, 'package.json');
-            if (await (0, utils_1.fileExistsAsync)(packageConfigPath)) {
+            if (await (0, fileUtils_1.fileExistsAsync)(packageConfigPath)) {
                 const packageRoot = path_1.default.dirname(packageConfigPath);
                 results[name] = packageRoot;
-                const maybeIsolatedModulesPath = (0, utils_2.getIsolatedModulesPath)(packageRoot, name);
+                const maybeIsolatedModulesPath = (0, utils_1.getIsolatedModulesPath)(packageRoot, name);
                 if (maybeIsolatedModulesPath) {
                     searchPathSet.add(maybeIsolatedModulesPath);
                 }
@@ -70,7 +70,12 @@ async function resolveDependencyConfigAsync(platform, name, packageRoot, project
     if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
         // Package defines platforms would be a platform host package.
         // The rnc-cli will skip this package.
-        // For example, the `react-native` package.
+        return null;
+    }
+    if (name === 'react-native') {
+        // Starting from version 0.76, the `react-native` package only defines platforms
+        // when @react-native-community/cli-platform-android/ios is installed.
+        // Therefore, we need to manually filter it out.
         return null;
     }
     let platformData = null;
@@ -96,6 +101,9 @@ async function resolveAppProjectConfigAsync(projectRoot, platform) {
     if (platform === 'android') {
         const androidDir = path_1.default.join(projectRoot, 'android');
         const { gradle, manifest } = await (0, androidResolver_1.findGradleAndManifestAsync)({ androidDir, isLibrary: false });
+        if (gradle == null || manifest == null) {
+            return {};
+        }
         const packageName = await (0, androidResolver_1.parsePackageNameAsync)(path_1.default.join(androidDir, manifest), path_1.default.join(androidDir, gradle));
         return {
             android: {

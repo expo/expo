@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
-@property (nonatomic, strong) id updatesInterface;
+@property (nonatomic, strong) id<EXUpdatesExternalInterface> updatesInterface;
 @property (nonatomic, readonly, assign) BOOL isStarted;
 
 + (instancetype)sharedInstance;
@@ -58,8 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadApp:(NSURL *)url onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
 - (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL  * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
-
-- (NSDictionary *)recentlyOpenedApps;
 
 - (void)clearRecentlyOpenedApps;
 

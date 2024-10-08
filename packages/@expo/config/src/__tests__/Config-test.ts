@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { getConfig, getProjectConfigDescriptionWithPaths } from '../Config';
+import { getConfig, getProjectConfigDescriptionWithPaths, modifyConfigAsync } from '../Config';
 
 jest.mock('fs');
 
@@ -304,5 +304,257 @@ describe('hasUnusedStaticConfig', () => {
 
     const { hasUnusedStaticConfig } = getConfig('/dynamic');
     expect(hasUnusedStaticConfig).toBe(false);
+  });
+});
+
+describe(modifyConfigAsync, () => {
+  function createProject(
+    projectRoot: Parameters<typeof vol.fromJSON>[1],
+    files: Parameters<typeof vol.fromJSON>[0] = {}
+  ) {
+    const packageFile = {
+      name: 'testing123',
+      version: '0.1.0',
+      description: 'fake description',
+      main: 'index.js',
+    };
+
+    const expoPackageFile = {
+      name: 'expo',
+      version: '650.x.x',
+    };
+
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify(packageFile),
+        'node_modules/expo/package.json': JSON.stringify(expoPackageFile),
+        ...files,
+      },
+      projectRoot
+    );
+  }
+
+  const appFile = {
+    name: 'testing 123',
+    version: '0.1.0',
+    slug: 'testing-123',
+    sdkVersion: '100.0.0',
+  };
+
+  afterEach(() => vol.reset());
+
+  it('succeeds without existing config', async () => {
+    createProject('/no-config');
+
+    await expect(modifyConfigAsync('/no-config', { name: 'new name' })).resolves.toMatchObject({
+      type: 'success',
+      config: { name: 'new name' },
+    });
+  });
+
+  it('succeeds when modifying static config only', async () => {
+    createProject('/static-only', {
+      'app.json': JSON.stringify(appFile, null, 2),
+    });
+
+    await expect(modifyConfigAsync('/static-only', { name: 'new name' })).resolves.toMatchObject({
+      type: 'success',
+      config: { ...appFile, name: 'new name' },
+    });
+  });
+
+  it('warns when modifying dynamic config only', async () => {
+    createProject('/dynamic-only', {
+      'app.config.js': `module.exports = () => JSON.parse(\`${JSON.stringify({ ...appFile, version: '9.9.9' })}\`);`,
+    });
+
+    await expect(modifyConfigAsync('/dynamic-only', { name: 'new name' })).resolves.toMatchObject({
+      type: 'warn',
+      config: null,
+      message: expect.stringMatching(/dynamic config/),
+    });
+  });
+
+  it('warns when modifying static with object-like dynamic config', async () => {
+    createProject('/static-dynamic-object', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = JSON.parse(\`${JSON.stringify({ ...appFile, version: '9.9.9' })}\`);`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-object', { name: 'new name' })
+    ).resolves.toMatchObject({
+      type: 'warn',
+      config: null,
+      message: expect.stringMatching(/dynamic config/),
+    });
+
+    // Ensure the config was rolled back
+    expect(appFile).toMatchObject(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-object/app.json', { encoding: 'utf-8' }) as string
+      )
+    );
+  });
+
+  it('warns when modifying static with function-like dynamic config, without extending config', async () => {
+    createProject('/static-dynamic-function', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = () => JSON.parse(\`${JSON.stringify({ ...appFile, version: '9.9.9' })}\`);`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function', { name: 'new name' })
+    ).resolves.toMatchObject({
+      type: 'warn',
+      config: null,
+      message: expect.stringMatching(/dynamic config/),
+    });
+
+    // Ensure the config was rolled back
+    expect(appFile).toMatchObject(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-function/app.json', { encoding: 'utf-8' }) as string
+      )
+    );
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, with extending config', async () => {
+    createProject('/static-dynamic-function', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function', { name: 'new name' })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: {
+        ...appFile,
+        version: '9.9.9', // Modified by dynamic config
+        name: 'new name',
+      },
+    });
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when mutating updates.url', async () => {
+    createProject('/static-dynamic-function-updates.url', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        updates: { requestHeaders: { 'expo-channel-name': 'existing-property' } },
+      }),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-updates.url', {
+        updates: { url: 'https://u.expo.dev/test-project' },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: {
+        ...appFile,
+        version: '9.9.9', // Modified by dynamic config
+        // The combined nested object
+        updates: {
+          requestHeaders: { 'expo-channel-name': 'existing-property' },
+          url: 'https://u.expo.dev/test-project',
+        },
+      },
+    });
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when mutating and deleting updates.url properties', async () => {
+    createProject('/static-dynamic-function-updates.url', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        updates: { requestHeaders: { 'expo-channel-name': 'existing-property' } },
+      }),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-updates.url', {
+        updates: { url: 'https://u.expo.dev/test-project', requestHeaders: undefined },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: {
+        ...appFile,
+        version: '9.9.9', // Modified by dynamic config
+        // The combined nested object
+        updates: {
+          url: 'https://u.expo.dev/test-project',
+        },
+      },
+    });
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when mutating and extending extra.eas', async () => {
+    createProject('/static-dynamic-function-extra.eas', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({
+        ...config, 
+        extra: { 
+          ...config.extra, 
+          eas: { 
+            ...config.extra?.eas, 
+            someProperty: 'dynamic-property'
+          }
+        }
+      });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-extra.eas', {
+        extra: { eas: { projectId: 'test-project' } },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: {
+        ...appFile,
+        // The combined nested object
+        extra: {
+          eas: {
+            someProperty: 'dynamic-property',
+            projectId: 'test-project',
+          },
+        },
+      },
+    });
+  });
+
+  it('warns when modifying static with function-like dynamic config, when mutating but not extending extra.eas', async () => {
+    createProject('/static-dynamic-function-extra.eas-override', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({
+        ...config, 
+        extra: { 
+          ...config.extra, 
+          eas: { 
+            someProperty: 'dynamic-property'
+          }
+        }
+      });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-extra.eas-override', {
+        extra: { eas: { projectId: 'test-project' } },
+      })
+    ).resolves.toMatchObject({
+      type: 'warn',
+      config: null,
+      message: expect.stringMatching(/dynamic config/),
+    });
+
+    // Ensure the config was rolled back
+    expect(appFile).toMatchObject(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-function-extra.eas-override/app.json', {
+          encoding: 'utf-8',
+        }) as string
+      )
+    );
   });
 });

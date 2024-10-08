@@ -28,7 +28,6 @@ const CanvasWrapper = ({ pointerEvents, children, style, ...props }) => {
     const _canvasRef = React.useRef(null);
     function updateCanvasSize() {
         const canvas = _canvasRef.current;
-        // eslint-disable-next-line no-undef
         if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
             const size = getSize();
             const scale = PixelRatio.get();

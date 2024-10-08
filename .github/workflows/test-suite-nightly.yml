@@ -46,7 +46,7 @@ jobs:
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
-        run: yarn react-native config
+        run: yarn expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
       - name: 🌳 Display pod environment
         run: pod env
@@ -166,7 +166,7 @@ jobs:
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
-        run: yarn react-native config
+        run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
       - name: 🛠️ Generate dynamic macros
         run: expotools android-generate-dynamic-macros --configuration release --bare

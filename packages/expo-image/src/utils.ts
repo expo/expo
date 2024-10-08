@@ -1,13 +1,14 @@
+import { SharedRef } from 'expo';
+import type { SharedRef as SharedRefType } from 'expo/types';
+
 import {
   ImageContentFit,
   ImageContentPosition,
   ImageContentPositionObject,
   ImageContentPositionString,
   ImageProps,
-  ImageRef,
   ImageTransition,
 } from './Image.types';
-import ImageModule from './ImageModule';
 
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
@@ -111,8 +112,8 @@ export function resolveTransition(
 }
 
 /**
- * Checks whether the given value is an instance of the ImageRef class.
+ * Checks whether the given value is an instance of the `SharedRef<'image'>` class.
  */
-export function isImageRef(value: any): value is ImageRef {
-  return !!ImageModule.Image && value instanceof ImageModule.Image;
+export function isImageRef(value: any): value is SharedRefType<'image'> {
+  return value instanceof SharedRef && value.nativeRefType === 'image';
 }

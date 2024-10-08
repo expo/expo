@@ -62,8 +62,7 @@ export class GLView extends React.Component {
     nativeRef = null;
     exglCtxId;
     render() {
-        const { onContextCreate, // eslint-disable-line no-unused-vars
-        msaaSamples, enableExperimentalWorkletSupport, ...viewProps } = this.props;
+        const { onContextCreate, msaaSamples, enableExperimentalWorkletSupport, ...viewProps } = this.props;
         return (<View {...viewProps}>
         <NativeView ref={this._setNativeRef} style={{
                 flex: 1,

@@ -103,8 +103,9 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
    */
   private static func createResponseInit(response: URLResponse) -> NativeResponseInit? {
     guard let httpResponse = response as? HTTPURLResponse else {
-      log.error("Invalid response type")
-      return nil
+      return NativeResponseInit(
+        headers: [], status: 200, statusText: "", url: response.url?.absoluteString ?? ""
+      )
     }
 
     let status = httpResponse.statusCode
@@ -154,8 +155,31 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
     redirected = true
   }
 
-  func urlSession(_ session: ExpoURLSessionTask, didCompleteWithError error: (any Error)?) {
+  func urlSession(_ session: ExpoURLSessionTask, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
     if isInvalidState(.started, .responseReceived, .bodyStreamingStarted, .bodyStreamingCanceled) {
+      return
+    }
+
+    if state == .started,
+      let urlError = error as? URLError,
+      urlError.code.rawValue == CFNetworkErrors.cfurlErrorFileDoesNotExist.rawValue,
+      let url = task.currentRequest?.url,
+      url.scheme == "file" {
+      // When requesting a local file that does not exist,
+      // the `urlSession(_:didReceive:)` method will not be called.
+      // Instead of throwing an exception, we generate a 404 response.
+      responseInit = NativeResponseInit(
+        headers: [], status: 404, statusText: "File not found", url: url.absoluteString)
+
+      // First, set the state to .responseReceived, and then to .errorReceived in the next loop.
+      // This simulates the state transition similar to HTTP requests.
+      state = .responseReceived
+      dispatchQueue.async { [weak self] in
+        guard let self else {
+          return
+        }
+        self.urlSession(session, task: task, didCompleteWithError: error)
+      }
       return
     }
 

@@ -3,19 +3,21 @@ import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-cor
 import {
   ImagePickerAsset,
   ImagePickerResult,
+  MediaType,
   MediaTypeOptions,
   OpenFileBrowserOptions,
 } from './ImagePicker.types';
+import { parseMediaTypes } from './utils';
 
-const MediaTypeInput = {
-  [MediaTypeOptions.All]: 'video/mp4,video/quicktime,video/x-m4v,video/*,image/*',
-  [MediaTypeOptions.Images]: 'image/*',
-  [MediaTypeOptions.Videos]: 'video/mp4,video/quicktime,video/x-m4v,video/*',
+const MediaTypeInput: Record<MediaType, string> = {
+  images: 'image/*',
+  videos: 'video/mp4,video/quicktime,video/x-m4v,video/*',
+  livePhotos: '',
 };
 
 export default {
   async launchImageLibraryAsync({
-    mediaTypes = MediaTypeOptions.Images,
+    mediaTypes = ['images'] as MediaType[],
     allowsMultipleSelection = false,
     base64 = false,
   }): Promise<ImagePickerResult> {
@@ -84,7 +86,9 @@ function openFileBrowserAsync({
   allowsMultipleSelection = false,
   base64,
 }: OpenFileBrowserOptions): Promise<ImagePickerResult> {
-  const mediaTypeFormat = MediaTypeInput[mediaTypes];
+  const parsedMediaTypes = parseMediaTypes(mediaTypes);
+
+  const mediaTypeFormat = createMediaTypeFormat(parsedMediaTypes);
 
   const input = document.createElement('input');
   input.style.display = 'none';
@@ -132,6 +136,7 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
         resolve({
           ...data,
           ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
+          file: targetFile,
         });
       };
 
@@ -178,4 +183,19 @@ function readFile(targetFile: File, options: { base64: boolean }): Promise<Image
 
     reader.readAsDataURL(targetFile);
   });
+}
+
+function createMediaTypeFormat(mediaTypes: MediaType[]): string {
+  const filteredMediaTypes = mediaTypes.filter((mediaType) => mediaType !== 'livePhotos');
+  if (filteredMediaTypes.length === 0) {
+    return 'image/*';
+  }
+  let result = '';
+  for (const mediaType of filteredMediaTypes) {
+    // Make sure the types don't repeat
+    if (!result.includes(MediaTypeInput[mediaType])) {
+      result = result.concat(',', MediaTypeInput[mediaType]);
+    }
+  }
+  return result;
 }

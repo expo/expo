@@ -2,6 +2,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Platform, Text, View } from 'react-native';
 
+import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
 
 // Render and observe the props of the Link component.
@@ -16,6 +17,22 @@ it('renders a Link', () => {
     href: '/foo',
     onPress: expect.any(Function),
     role: 'link',
+  });
+});
+
+it('renders a Link with React Native array style prop when using asChild', () => {
+  const { getByTestId } = render(
+    <Link asChild testID="link" href="/foo" style={[{ color: 'red' }, { backgroundColor: 'blue' }]}>
+      <Pressable>
+        <Text>Foo</Text>
+      </Pressable>
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node).toBeDefined();
+  expect(node.props.style).toStrictEqual({
+    color: 'red',
+    backgroundColor: 'blue',
   });
 });
 

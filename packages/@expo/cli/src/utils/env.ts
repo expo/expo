@@ -4,8 +4,6 @@ import { boolish, int, string } from 'getenv';
 
 // TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD
 
-import { Log } from '../log';
-
 class Env {
   /** Enable profiling metrics */
   get EXPO_PROFILE() {
@@ -99,17 +97,6 @@ class Env {
   /** Higher priority `$EDIOTR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
   get EXPO_EDITOR(): string {
     return string('EXPO_EDITOR', '');
-  }
-
-  /** Disable auto server root detection for Metro. This will change the server root to the workspace root. */
-  get EXPO_NO_METRO_WORKSPACE_ROOT(): boolean {
-    if (string('EXPO_USE_METRO_WORKSPACE_ROOT', '')) {
-      Log.warn(
-        'EXPO_USE_METRO_WORKSPACE_ROOT is enabled by default, use EXPO_NO_METRO_WORKSPACE_ROOT instead to disable.'
-      );
-    }
-
-    return boolish('EXPO_NO_METRO_WORKSPACE_ROOT', false);
   }
 
   /**
@@ -221,6 +208,16 @@ class Env {
   /** Enable the use of Expo's custom metro require implementation. The custom require supports better debugging, tree shaking, and React Server Components. */
   get EXPO_USE_METRO_REQUIRE() {
     return boolish('EXPO_USE_METRO_REQUIRE', false);
+  }
+
+  /** Internal key used to pass eager bundle data from the CLI to the native run scripts during `npx expo run` commands. */
+  get __EXPO_EAGER_BUNDLE_OPTIONS() {
+    return string('__EXPO_EAGER_BUNDLE_OPTIONS', '');
+  }
+
+  /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */
+  get EXPO_NO_DEPLOY(): boolean {
+    return boolish('EXPO_NO_DEPLOY', false);
   }
 }
 

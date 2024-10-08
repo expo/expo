@@ -8,7 +8,7 @@ describe(shouldMinify, () => {
         minify: true,
         customTransformOptions: {
           __proto__: null,
-          bytecode: true,
+          bytecode: '1',
         },
       })
     ).toBe(false);
@@ -18,7 +18,7 @@ describe(shouldMinify, () => {
         minify: true,
         customTransformOptions: {
           __proto__: null,
-          bytecode: 'true',
+          bytecode: '1',
         },
       })
     ).toBe(false);

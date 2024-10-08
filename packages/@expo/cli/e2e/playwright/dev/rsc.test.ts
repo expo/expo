@@ -79,6 +79,9 @@ test.describe(inputDir, () => {
 
     await expect(page.locator('[data-testid="secret-text"]')).toHaveText('Secret: test-secret');
 
+    await expect(page.locator('[data-testid="index-path"]')).toHaveText('/');
+    await expect(page.locator('[data-testid="index-query"]')).toHaveText('');
+
     expect(errorLogs).toEqual([]);
     expect(errors).toEqual([]);
 

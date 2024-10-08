@@ -42,6 +42,7 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     'node_modules/require-from-string/.+\\.js$',
     // Block expo's metro-runtime
     '@expo/metro-runtime/.+\\.ts',
+    '@expo/server/.+\\.ts',
     // Block upstream metro-runtime
     '/metro-runtime/.+\\.js$',
     // Expo's metro-runtime require patch:
@@ -59,6 +60,9 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/react-native-web/dist/.+\\.js$',
     // React Server Components adapter (note we should probably use an Expo-Metro-specific version in the future).
     'node_modules/react-server-dom-webpack/.+\\.js$',
+
+    // Block all node modules.
+    'node_modules/.+/',
   ].join('|')
 );
 

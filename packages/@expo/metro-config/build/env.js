@@ -15,10 +15,6 @@ class Env {
     get RCT_METRO_PORT() {
         return (0, getenv_1.int)('RCT_METRO_PORT', 8081);
     }
-    /** Disable auto server root detection for Metro. This will not change the server root to the workspace root. */
-    get EXPO_NO_METRO_WORKSPACE_ROOT() {
-        return (0, getenv_1.boolish)('EXPO_NO_METRO_WORKSPACE_ROOT', false);
-    }
     /** Disable Environment Variable injection in client bundles. */
     get EXPO_NO_CLIENT_ENV_VARS() {
         return (0, getenv_1.boolish)('EXPO_NO_CLIENT_ENV_VARS', false);

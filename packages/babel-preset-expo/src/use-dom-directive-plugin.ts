@@ -64,9 +64,10 @@ export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
         const outputKey = url.pathToFileURL(filePath).href;
 
         const proxyModule: string[] = [
-          `import React from 'react';
-import { WebView } from 'expo/dom/internal';`,
+          `import React from 'react';`,
+          `import { WebView } from 'expo/dom/internal';`,
         ];
+
         if (isProduction) {
           // MUST MATCH THE EXPORT COMMAND!
           const hash = crypto.createHash('sha1').update(outputKey).digest('hex');
@@ -95,6 +96,16 @@ export default React.forwardRef((props, ref) => {
 });`
         );
 
+        // Removes all imports using babel API, that will disconnect import bindings from the program.
+        // plugin-transform-typescript TSX uses the bindings to remove type imports.
+        // If the DOM component has `import React from 'react';`,
+        // the plugin-transform-typescript treats it as an typed import and removes it.
+        // That will futher cause undefined `React` error.
+        path.traverse({
+          ImportDeclaration(path) {
+            path.remove();
+          },
+        });
         // Clear the body
         path.node.body = [];
         path.node.directives = [];

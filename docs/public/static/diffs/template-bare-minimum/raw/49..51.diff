@@ -802,14 +802,64 @@ index 53a6b238d4..7101f8e467 100644
  
  goto fail
  
+diff --git a/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts b/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts
+new file mode 100644
+index 0000000000..b4f6668e9e
+--- /dev/null
++++ b/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts
+@@ -0,0 +1,19 @@
++import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
++
++plugins {
++    kotlin("jvm") version "1.9.24"
++    id("java-gradle-plugin")
++}
++
++repositories {
++    mavenCentral()
++}
++
++gradlePlugin {
++    plugins {
++        create("reactSettingsPlugin") {
++            id = "com.facebook.react.settings"
++            implementationClass = "expo.plugins.ReactSettingsPlugin"
++        }
++    }
++}
+diff --git a/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt b/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt
+new file mode 100644
+index 0000000000..c54f6c7a6a
+--- /dev/null
++++ b/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt
+@@ -0,0 +1,10 @@
++package expo.plugins
++
++import org.gradle.api.Plugin
++import org.gradle.api.initialization.Settings
++
++class ReactSettingsPlugin : Plugin<Settings> {
++  override fun apply(settings: Settings) {
++    // Do nothing, just register the plugin.
++  }
++}
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index d172e59a6e..ffc26fa2e0 100644
+index d172e59a6e..80b1bc3267 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
-@@ -1,10 +1,42 @@
+@@ -1,10 +1,66 @@
 +pluginManagement {
++  def version = providers.exec {
++    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
++  }.standardOutput.asText.get().trim()
++  def (_, reactNativeMinor, reactNativePatch) = version.split("-")[0].tokenize('.').collect { it.toInteger() }
++
 +  includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
++  if(reactNativeMinor == 74 && reactNativePatch <= 3){
++    includeBuild("react-settings-plugin")
++  }
 +}
++
 +plugins { id("com.facebook.react.settings") }
 +
 +def getRNMinorVersion() {
@@ -824,8 +874,23 @@ index d172e59a6e..ffc26fa2e0 100644
 +}
 +
 +if (getRNMinorVersion() >= 75) {
-+  extensions.configure(com.facebook.react.ReactSettingsExtension){ ex ->
-+    ex.autolinkLibrariesFromCommand()
++  extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
++    if (System.getenv('EXPO_UNSTABLE_CORE_AUTOLINKING') == '1') {
++      println('\u001B[32mUsing expo-modules-autolinking as core autolinking source\u001B[0m')
++      def command = [
++        'node',
++        '--no-warnings',
++        '--eval',
++        'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
++        'react-native-config',
++        '--json',
++        '--platform',
++        'android'
++      ].toList()
++      ex.autolinkLibrariesFromCommand(command)
++    } else {
++      ex.autolinkLibrariesFromCommand()
++    }
 +  }
 +}
 +
@@ -999,7 +1064,7 @@ diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm 
 index f8e88bbe0c..b27f83286d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-@@ -17,6 +17,11 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+@@ -17,6 +17,11 @@
  }
  
  - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -1090,14 +1155,35 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 2402cc34b2..a5a78f3e57 100644
+index 2402cc34b2..57c1dd3834 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -7,36 +7,12 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
+@@ -7,36 +7,33 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
  ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
  ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
  
 -platform :ios, podfile_properties['ios.deploymentTarget'] || '13.0'
++use_autolinking_method_symbol = ('use' + '_native' + '_modules!').to_sym
++origin_autolinking_method = self.method(use_autolinking_method_symbol)
++self.define_singleton_method(use_autolinking_method_symbol) do |*args|
++  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
++    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
++    config_command = [
++      'node',
++      '--no-warnings',
++      '--eval',
++      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
++      'react-native-config',
++      '--json',
++      '--platform',
++      'ios'
++    ]
++    origin_autolinking_method.call(config_command)
++  else
++    origin_autolinking_method.call()
++  end
++end
++
 +platform :ios, podfile_properties['ios.deploymentTarget'] || '13.4'
  install! 'cocoapods',
    :deterministic_uuids => false
@@ -1131,7 +1217,7 @@ index 2402cc34b2..a5a78f3e57 100644
  target 'HelloWorld' do
    use_expo_modules!
    config = use_native_modules!
-@@ -44,26 +20,21 @@ target 'HelloWorld' do
+@@ -44,26 +41,21 @@ target 'HelloWorld' do
    use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
    use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
  
@@ -1162,7 +1248,7 @@ index 2402cc34b2..a5a78f3e57 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a02dbebe41..391e2df225 100644
+index a02dbebe41..563853071f 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@
@@ -1170,7 +1256,7 @@ index a02dbebe41..391e2df225 100644
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "49.0.26",
-+  "version": "51.0.51",
++  "version": "51.0.56",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -1181,7 +1267,7 @@ index a02dbebe41..391e2df225 100644
 -    "expo": "~49.0.23",
 -    "expo-splash-screen": "~0.20.5",
 -    "expo-status-bar": "~1.6.0",
-+    "expo": "~51.0.26",
++    "expo": "~51.0.28",
 +    "expo-status-bar": "~1.12.1",
      "react": "18.2.0",
 -    "react-native": "0.72.12"

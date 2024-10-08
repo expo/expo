@@ -6,6 +6,8 @@ description: Learn about rendering React DOM elements in Expo native apps.
 
 import { Terminal } from '~/ui/components/Snippet';
 
+> Experimentally available in **SDK 52 and above**. To try out the latest DOM components features, you can install the [canary release](/versions/unversioned/#canary-releases).
+
 > **warning** **Warning:** DOM components are an experimental feature. The public API (`expo/dom`, `dom` prop), prop transport system, asset handling, and export embedding system are subject to breaking changes. Use `WebViews` directly for a production-ready approach.
 
 Expo offers a novel approach to work with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app by moving on a per-component basis.
@@ -154,6 +156,60 @@ getDeviceName(): Promise<string> {
 
 Think of these functions like React Server Actions, but instead of residing on the server, they live locally in the native app and communicate with the DOM component. This approach provides a powerful way to add truly native functionality to your DOM components.
 
+## Passing refs
+
+You can use the `useDOMImperativeHandle` hook inside a DOM component to accept ref calls from the native side. This hook is similar to React's [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle) hook, but it does not need a ref object to be passed to it.
+
+```tsx App.tsx (native)
+import { useRef } from 'react';
+import { Button, View } from 'react-native';
+
+import MyComponent, { type MyRef } from './my-componenet';
+
+export default function App() {
+  const ref = useRef<MyRef>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <MyComponent ref={ref} />
+      <Button
+        title="focus"
+        onPress={() => {
+          ref.current?.focus();
+        }}
+      />
+    </View>
+  );
+}
+```
+
+```tsx my-component.tsx (web)
+'use dom';
+
+import { useDOMImperativeHandle, type DOMImperativeFactory } from 'expo/dom';
+import { forwardRef, useRef } from 'react';
+
+export interface MyRef extends DOMImperativeFactory {
+  focus: () => void;
+}
+
+export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useDOMImperativeHandle(
+    ref,
+    () => ({
+      focus: () => {
+        inputRef.current?.focus();
+      },
+    }),
+    []
+  );
+
+  return <input ref={inputRef} />;
+});
+```
+
 ## Feature detection
 
 Since DOM components are used to run websites, you might need extra qualifiers to better support certain libraries. You can detect if a component is running in a DOM component with the following code:
@@ -192,7 +248,31 @@ export default function App() {
 
 ## Measuring DOM components
 
-You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a native action:
+You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a `matchContents` prop or a manual native action:
+
+### Automatically with `matchContents` prop
+
+You need to use the `dom={{ matchContents: true }}` prop to measure the size of the DOM component automatically and resize the native view coresponsingly:
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function Route() {
+  return <DOMComponent dom={{ matchContents: true }} />;
+}
+```
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent(_: { dom?: import('expo/dom').DOMProps }) {
+  return <div style={{ width: 500, height: 500, backgroundColor: 'blue' }} />;
+}
+```
+
+### Manually by resizing native action
+
+You can also manually measure the size of a DOM component and report it back to the native side using a native action:
 
 ```tsx App.tsx (native)
 import DOMComponent from './my-component';
@@ -201,7 +281,7 @@ import { useState } from 'react';
 export default function Route() {
   const [height, setHeight] = useState(270);
   return (
-    <MyComponent
+    <DOMComponent
       updateSize={async size => {
         if (size[1] !== height) {
           setHeight(size[1]);
@@ -243,7 +323,7 @@ function useSize(callback: (size: [number, number]) => void) {
 export default function DOMComponent({
   onLayout,
 }: {
-  dom: import('expo/dom').DOMProps;
+  dom?: import('expo/dom').DOMProps;
   onLayout(size: [number, number]);
 }) {
   useSize(onLayout);
@@ -282,7 +362,7 @@ Many large apps also use some web content for auxiliary routes such as blog post
 
 ## Server Components
 
-DOM Components currently only render as single-page applications and don't support static rendering or React Server Components (RSC). When the project uses React Server Components,`"use dom"` will work the same as `"use client"` regardless of the platform. RSC Payloads can be passed as properties to DOM Components. However, they cannot be hydrated correctly on native platforms as they'll be rendered for a native runtime.
+DOM Components currently only render as single-page applications and don't support static rendering or React Server Components (RSC). When the project uses React Server Components,`'use dom'` will work the same as `'use client'` regardless of the platform. RSC Payloads can be passed as properties to DOM Components. However, they cannot be hydrated correctly on native platforms as they'll be rendered for a native runtime.
 
 ## Limitations
 

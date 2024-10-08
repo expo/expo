@@ -57,13 +57,21 @@ You can configure development client launcher using its built-in [config plugin]
       ].join('\n'),
       default: '"most-recent"',
     },
+    {
+      name: 'addGeneratedScheme',
+      description: [
+        'By default, `expo-dev-client` will register a custom URL scheme to open a project. Set this property to `false` to disable this scheme.',
+      ].join('\n'),
+      default: 'true',
+    },
   ]}
 />
 
 ## API
 
 ```js
-import * as DevClient from 'expo-dev-client';
+import { DevLauncher, DevMenu } from 'expo-dev-client';
 ```
 
-<APISection packageName={['expo-dev-menu', 'expo-dev-launcher']} apiName="DevClient" />
+<APISection packageName={['expo-dev-menu']} apiName="DevMenu" />
+<APISection packageName={['expo-dev-launcher']} apiName="DevLauncher" />

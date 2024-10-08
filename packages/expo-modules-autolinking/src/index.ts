@@ -1,9 +1,9 @@
 import commander from 'commander';
 import path from 'path';
 
-import { patchReactImportsAsync } from './ReactImportsPatcher';
 import {
   findModulesAsync,
+  generateModulesProviderAsync,
   generatePackageListAsync,
   getProjectPackageJsonPathAsync,
   mergeLinkingOptionsAsync,
@@ -59,10 +59,14 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
     )
     .option('--no-only-project-deps', 'Opposite of --only-project-deps', false)
     .action(async (searchPaths, providedOptions) => {
-      const options = await mergeLinkingOptionsAsync<OptionsType>({
-        ...providedOptions,
-        searchPaths,
-      });
+      const options = await mergeLinkingOptionsAsync<OptionsType>(
+        searchPaths.length > 0
+          ? {
+              ...providedOptions,
+              searchPaths,
+            }
+          : providedOptions
+      );
       const searchResults = await findModulesAsync(options);
       return await fn(searchResults, options);
     });
@@ -76,15 +80,6 @@ function registerResolveCommand<OptionsType extends ResolveOptions>(
   fn: (search: SearchResults, options: OptionsType) => any
 ) {
   return registerSearchCommand<OptionsType>(commandName, fn);
-}
-
-// Register for `patch-react-imports` command
-function registerPatchReactImportsCommand() {
-  return commander
-    .command('patch-react-imports [paths...]')
-    .requiredOption('--pods-root <podsRoot>', 'The path to `Pods` directory')
-    .option('--dry-run', 'Only list files without writing changes to the file system')
-    .action(patchReactImportsAsync);
 }
 
 /**
@@ -156,7 +151,7 @@ module.exports = async function (args: string[]) {
   }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);
 
   // Generates a source file listing all packages to link.
-  // It's deprecated, use `generate-modules-provider` instead.
+  // It's deprecated for apple platforms, use `generate-modules-provider` instead.
   registerResolveCommand<GenerateOptions>('generate-package-list', async (results, options) => {
     const modules = options.empty ? [] : await resolveModulesAsync(results, options);
     generatePackageListAsync(modules, options);
@@ -183,19 +178,19 @@ module.exports = async function (args: string[]) {
       const modules = await resolveModulesAsync(results, options);
       const filteredModules = modules.filter((module) => packages.includes(module.packageName));
 
-      generatePackageListAsync(filteredModules, options);
+      generateModulesProviderAsync(filteredModules, options);
     }
   )
     .option(
       '-t, --target <path>',
       'Path to the target file, where the package list should be written to.'
     )
+    .option('--entitlement <path>', 'Path to the Apple code signing entitlements file.')
     .option(
       '-p, --packages <packages...>',
       'Names of the packages to include in the generated modules provider.'
     );
 
-  registerPatchReactImportsCommand();
   registerReactNativeConfigCommand();
 
   await commander

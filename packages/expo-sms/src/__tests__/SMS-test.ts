@@ -1,12 +1,11 @@
-import { NativeModulesProxy, Platform } from 'expo-modules-core';
+import { Platform } from 'expo-modules-core';
 
+import ExpoSMS from '../ExpoSMS';
 import * as SMS from '../SMS';
 import { SMSAttachment } from '../SMS.types';
 
 it(`normalizes one phone number into an array`, async () => {
   try {
-    const { ExpoSMS } = NativeModulesProxy;
-
     await SMS.sendSMSAsync('0123456789', 'test');
     expect(ExpoSMS.sendSMSAsync).toHaveBeenLastCalledWith(['0123456789'], 'test', {});
 
@@ -21,8 +20,6 @@ it(`normalizes one phone number into an array`, async () => {
 
 it(`normalizes attachments parameter to always pass array to native`, async () => {
   try {
-    const { ExpoSMS } = NativeModulesProxy;
-
     const imageAttachment = {
       uri: 'path/myfile.png',
       filename: 'myfile.png',

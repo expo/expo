@@ -174,7 +174,9 @@ describe('exports static with bundle splitting', () => {
     // non-public env vars are injected during SSG
     expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
 
-    const script = indexHtml.querySelectorAll('script')[0];
+    const script = indexHtml
+      .querySelectorAll('script')
+      .filter((script) => !!script.attributes.src)[0];
     const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
 
     // Ensure the bundle is valid

@@ -597,6 +597,19 @@ You can optionally enable a custom Metro `require` implementation with the envir
 - Deterministic IDs that are the same between runs and across modules (required for React Server Components in development).
 - Removed support for legacy RAM bundles.
 
+## Magic import comments
+
+> Available from SDK 52 on all platforms.
+
+Server environments such as Workerd, and Node.js support importing arbitrary files at runtime, so you may want to keep `import` syntax in-tact instead of using Metro's require system. You can opt-out dynamic imports with the `/* @metro-ignore */` comment in `import()` statements.
+
+```js
+// Manually ensure `./my-module.js` is included in the correct spot relative to the module.
+const myModule = await import(/* @metro-ignore */ './my-module.js');
+```
+
+Expo CLI will skip the `./my-module.js` dependency and assume that the developer has manually added it to the output bundle. Internally, this is used for exporting custom server code that dynamically switches between files based on the request. Avoid using this syntax for native bundles as `import()` is generally not available in React Native + Hermes.
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.

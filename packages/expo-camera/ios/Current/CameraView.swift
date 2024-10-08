@@ -564,12 +564,6 @@ public class CameraView: ExpoView, EXCameraInterface, EXAppLifecycleListener,
     sessionQueue.async {
       if let videoFileOutput = self.videoFileOutput, !videoFileOutput.isRecording && self.videoRecordedPromise == nil {
         if let connection = videoFileOutput.connection(with: .video) {
-          if connection.isVideoStabilizationSupported {
-            connection.preferredVideoStabilizationMode = .auto
-          } else {
-            log.warn("\(#function): Video Stabilization is not supported on this device.")
-          }
-
           let orientation = self.responsiveWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
           connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
           self.setVideoOptions(options: options, for: connection, promise: promise)

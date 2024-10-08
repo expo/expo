@@ -1,6 +1,7 @@
+import type { SharedRef as SharedRefType } from 'expo/types';
 import React, { useState } from 'react';
 
-import { ImageProps, ImageRef, ImageSource } from '../Image.types';
+import { ImageProps, ImageSource } from '../Image.types';
 import { isImageRef } from '../utils';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 
@@ -95,11 +96,11 @@ function selectSource(
 }
 
 export default function useSourceSelection(
-  sources: ImageSource[] | ImageRef | undefined,
+  sources: ImageSource[] | SharedRefType<'image'> | undefined,
   responsivePolicy: ImageProps['responsivePolicy'] = 'static',
   containerRef: React.MutableRefObject<HTMLDivElement | null>,
   measurementCallback: ((target: HTMLElement, size: DOMRect) => void) | null = null
-): ImageSource | SrcSetSource | ImageRef | null {
+): ImageSource | SrcSetSource | SharedRefType<'image'> | null {
   const hasMoreThanOneSource = (Array.isArray(sources) ? sources.length : 0) > 1;
   const [size, setSize] = useState<null | DOMRect>(
     containerRef.current?.getBoundingClientRect() ?? null

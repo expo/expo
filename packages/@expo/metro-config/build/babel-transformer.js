@@ -8,7 +8,7 @@ const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
 const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
-    return value === true || value === 'true';
+    return String(value) === 'true';
 }
 function memoize(fn) {
     const cache = new Map();

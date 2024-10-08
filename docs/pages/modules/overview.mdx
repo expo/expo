@@ -5,76 +5,115 @@ description: An overview of the APIs and utilities provided by Expo to develop n
 ---
 
 import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
-import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
 import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 
-## What are Expo Modules
+## What is the Expo Modules API
 
-Sometimes, installing an Expo package or a third-party library is not enough when looking to extend the capabilities of your app. In that scenario, you can write custom native code to tap into native platform APIs or use available Android or iOS dependencies. Luckily, Expo has first class support for this in the form of Expo Modules.
+The Expo Modules API allows you to write Swift and Kotlin to add new capabilities to your app with native modules and views. The API is designed to take advantage of modern language features, to be as consistent as possible on both platforms, to require minimal boilerplate, and provide comparable performance characteristics to React Native's Turbo Modules API. Expo Modules all support the New Architecture and are automatically backwards compatible with existing React Native apps using the old architecture.
 
-Expo Modules allow you to write native code in a way that feels natural with minimal boilerplate that is also consistent on both platforms.
-It provides a set of APIs and utilities to improve the process of developing native modules for Expo and React Native and expand your app capabilities.
+We believe that using the Expo Modules API makes building and maintaining nearly all kinds of React Native modules about as easy as it can be, and we think that the Expo Modules API is the best choice for the vast majority of developers building native modules for their apps.
+
+### Common questions
+
+<Collapsible summary="Do I need to know the Expo Modules API to build an Expo / React Native app?">
+
+Most of the time, Expo and React Native developers don't need to write any native code &mdash; libraries are already available for a wide range of use cases, from camera to video to maps to haptics and much more.
+
+But sometimes, nothing does exactly what you need. Maybe you want to integrate an analytics service that your company mandates but that doesn't yet have a React Native library yet, so you need to build a module around their SDK. Or maybe you want to access a system feature that your app requires, but isn't commonly used, so nobody maintains a library for it.
+
+</Collapsible>
+
+<Collapsible summary="When should I use Turbo Modules and when should I use the Expo Modules API?">
+
+To summarize and paraphrase the [recommendation from the React Native team](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0759-react-native-frameworks.md#what-do-we-recommend-to-react-native-library-developers):
+
+- If you intend to use C++ in your native module, use Turbo Modules since it provides easier access to lower-level mechanisms.
+- If you are looking for a better developer experience and you are willing to depend on the `expo` package in your module, then use the Expo Modules API.
+
+</Collapsible>
+
+<Collapsible summary="Where can I find open source Expo Modules to learn from?">
+
+The [Expo SDK](https://github.com/expo/expo/tree/main/packages) is a great place to look if you want to learn how we have implemented our libraries. Another great resource is open source apps, such as [Bluesky](https://github.com/bluesky-social/social-app/tree/main/modules).
+
+The following libraries are some of our favorites from the community:
+
+- [`react-native-widget-extension`](https://github.com/bndkt/react-native-widget-extension)
+- [`burnt`](https://github.com/nandorojo/burnt)
+- [`expo-video-metadata`](https://github.com/hirbod/expo-video-metadata)
+- [`swiftui-react-native`](https://github.com/andrew-levy/swiftui-react-native)
+- [`react-native-ios-context-menu`](https://github.com/dominicstop/react-native-ios-context-menu)
+- [`react-native-mlkit`](https://github.com/infinitered/react-native-mlkit)
+- [`react-native-passkeys`](https://github.com/peterferguson/react-native-passkeys)
+- [`expo-drag-drop-content-view`](https://github.com/AlirezaHadjar/expo-drag-drop-content-view)
+
+</Collapsible>
+
+<Collapsible summary="What impact does using the Expo Modules API have on my app size?">
+
+Adding the Expo Modules API to your app has a negligible impact on your app size, it may increase the size by a few hundred kilobytes. [Learn more in this blog post](https://blog.expo.dev/embracing-expo-modules-in-your-react-native-projects-cd8ed4cbec3).
+
+</Collapsible>
+
+<Collapsible summary="What impact does using the Expo Modules API have on my app's performance?">
+
+The Expo Modules API has similar performance characteristics to React Native's Turbo Modules API. Both APIs leverage React Native's JavaScript Interface (JSI), rather than the legacy approach of using a JSON message queue ("bridge") ([learn more about JSI](https://reactnative.dev/docs/the-new-architecture/landing-page#fast-javascriptnative-interfacing)).
+
+Neither Expo Modules nor Turbo Modules are designed to be as fast as technically possible, but rather they are fast where it matters. For example, the Expo Modules API could leverage code generation and the new native Swift / C++ interop to reduce the overhead of individual method calls. However, this imposes some developer experience challenges and overhead, and we have not yet encountered any use cases where such an optimization would provide any meaningful real-world performance improvements. In reality, the time spent executing the body of a native method is often orders of magnitude greater than the overhead of the method invocation. Both Expo Modules and Turbo Modules can easily execute hundreds of thousands of native method calls per second, which is well over what you are likely to find in any app, and the overhead of the method calls is unlikely to be the bottleneck.
+
+If you encounter any performance bottlenecks with the Expo Modules API, [file an issue](https://github.com/expo/expo/issues/new/choose) and we'd be happy to discuss it with you.
+
+</Collapsible>
+
+<Collapsible summary="Does the Expo Modules API support platforms other than Android, iOS, and web?">
+
+The Expo Modules API has experimental support for macOS and tvOS. See [Additional platform support](/modules/additional-platform-support/) tutorial for more information.
+
+</Collapsible>
+
+<Collapsible summary="How can I use the Expo Modules API to make a third-party SDK available to my Expo app?">
+
+Learn more about this in the [Integrate an existing library](/modules/existing-library/) tutorial.
+
+</Collapsible>
+
+## Next steps
 
 <BoxLink
-  title="Native Modules"
+  title="Tutorial: Creating a native module"
+  description="A tutorial on creating a native module that persists settings with Expo Modules API."
+  href="/modules/native-module-tutorial/"
+  Icon={AndroidIcon}
+/>
+
+<BoxLink
+  title="Tutorial: Creating a native view"
+  description="A tutorial on creating a native view that renders a WebView with Expo Modules API."
+  href="/modules/native-view-tutorial/"
+  Icon={Grid01Icon}
+/>
+
+<BoxLink
+  title="Expo Modules API Reference"
   description="Create native modules using Swift and Kotlin."
   href="/modules/module-api/"
   Icon={Grid01Icon}
 />
+
 <BoxLink
-  title="Android Lifecycle Listeners"
-  description="Hook into Android Activity and Application lifecycle events."
-  href="/modules/android-lifecycle-listeners/"
-  Icon={AndroidIcon}
+  title="Expo Modules API: Design considerations"
+  description="An overview of the design considerations behind the Expo Modules API."
+  href="/modules/design"
+  Icon={Grid01Icon}
 />
-<BoxLink
-  title="iOS AppDelegate Subscribers"
-  description="Respond to iOS AppDelegate events."
-  href="/modules/appdelegate-subscribers/"
-  Icon={AppleIcon}
-/>
+
 <BoxLink
   title="expo-module.config.json"
-  description="Configure and opt in to features."
+  description="A reference of available configuration options."
   href="/modules/module-config/"
   Icon={Settings01Icon}
 />
-
-## Design considerations
-
-Our team needs to maintain a large set of libraries, and maintaining native modules over time and in a constantly changing environment is quite expensive.
-We found out that the existing React Native API for native modules is not scaling very well and is giving us some additional overhead on many levels, from onboarding new contributors (lack of good documentation) to writing a lot of boilerplate code.
-To make the maintenance easier and let the community iterate faster, we decided to create a module system that reduces the costs and technical debt to a minimum.
-
-### Why Swift and Kotlin?
-
-After several years of maintaining over 50 native modules in the Expo SDK, we have discovered that many issues were caused by unhandled null values or incorrect types.
-Modern language features can help developers avoid these bugs; for example, the lack of optional types combined with the dynamism of Objective-C made it tough to catch certain classes of bugs that would have been caught by the compiler in Swift.
-
-Another difficulty of writing React Native modules is context switching between the vastly different languages and paradigms for writing native modules on each platform.
-Due to the differences between these platforms, it cannot be avoided completely. We feel the need to have just one common API and documentation to simplify the development as much as possible and make it easier for a single developer to maintain a library on multiple platforms.
-
-This is one of the reasons why the Expo Modules ecosystem was designed from the ground up to be used with modern native languages: Swift and Kotlin.
-
-### Passing data between runtimes
-
-Another big pain point we have encountered is the validation of arguments passed from JavaScript to native functions.
-This is especially error-prone, time-consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime, and each property needs to be validated separately by the developer.
-A valuable feature of the Expo native modules API is its full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](/modules/module-api/#records).
-Knowing the argument types, it is also possible to [automatically convert arguments](/modules/module-api/#convertibles) to some platform-specific types (for example, `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
-
-### React Native New Architecture
-
-React Native version 0.68 introduced the [New Architecture](https://reactnative.dev/docs/the-new-architecture/landing-page), which offers developers new capabilities for building mobile apps.
-It consists of the new native modules system called [Turbo Modules](https://reactnative.dev/docs/the-new-architecture/pillars-turbomodules) and the new rendering system called [Fabric](https://reactnative.dev/architecture/fabric-renderer).
-Native libraries need to be adapted to take advantage of these new systems. For Fabric, it needs even more work as it doesn't provide any compatibility layer, which means that view managers written in the old way don't work with Fabric and the other way around — Fabric native components don't work with the old renderer.
-It basically implies that existing libraries have to provide support for both architectures for a while, increasing the technical debt.
-
-The new architecture is mostly written in C++, so you may end up writing some C++ code for your library as well.
-As we all, React Native developers, use high-level JavaScript on a daily basis, we are rather reluctant to write C++, which is on the opposite side of the spectrum.
-Moreover, including C++ code in the library has a negative impact on build times, especially on Android, and can be more difficult to debug.
-
-We took these into account when designing the Expo Modules API with the goal in mind to make it renderer-agnostic, so that the module doesn't need to know whether the app is run on the new architecture or not, significantly reducing the cost for library developers.

@@ -1,12 +1,13 @@
 import { PermissionStatus, Platform } from 'expo-modules-core';
 import { MediaTypeOptions, } from './ImagePicker.types';
+import { parseMediaTypes } from './utils';
 const MediaTypeInput = {
-    [MediaTypeOptions.All]: 'video/mp4,video/quicktime,video/x-m4v,video/*,image/*',
-    [MediaTypeOptions.Images]: 'image/*',
-    [MediaTypeOptions.Videos]: 'video/mp4,video/quicktime,video/x-m4v,video/*',
+    images: 'image/*',
+    videos: 'video/mp4,video/quicktime,video/x-m4v,video/*',
+    livePhotos: '',
 };
 export default {
-    async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, base64 = false, }) {
+    async launchImageLibraryAsync({ mediaTypes = ['images'], allowsMultipleSelection = false, base64 = false, }) {
         // SSR guard
         if (!Platform.isDOMAvailable) {
             return { canceled: true, assets: null };
@@ -58,7 +59,8 @@ function permissionGrantedResponse() {
     };
 }
 function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelection = false, base64, }) {
-    const mediaTypeFormat = MediaTypeInput[mediaTypes];
+    const parsedMediaTypes = parseMediaTypes(mediaTypes);
+    const mediaTypeFormat = createMediaTypeFormat(parsedMediaTypes);
     const input = document.createElement('input');
     input.style.display = 'none';
     input.setAttribute('type', 'file');
@@ -100,6 +102,7 @@ function readFile(targetFile, options) {
                 resolve({
                     ...data,
                     ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
+                    file: targetFile,
                 });
             };
             if (typeof uri === 'string') {
@@ -147,5 +150,19 @@ function readFile(targetFile, options) {
         };
         reader.readAsDataURL(targetFile);
     });
+}
+function createMediaTypeFormat(mediaTypes) {
+    const filteredMediaTypes = mediaTypes.filter((mediaType) => mediaType !== 'livePhotos');
+    if (filteredMediaTypes.length === 0) {
+        return 'image/*';
+    }
+    let result = '';
+    for (const mediaType of filteredMediaTypes) {
+        // Make sure the types don't repeat
+        if (!result.includes(MediaTypeInput[mediaType])) {
+            result = result.concat(',', MediaTypeInput[mediaType]);
+        }
+    }
+    return result;
 }
 //# sourceMappingURL=ExponentImagePicker.web.js.map

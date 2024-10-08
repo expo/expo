@@ -31,7 +31,12 @@
       ],
       "bundleIdentifier": "dev.expo.Payments",
       "supportsTablet": true,
-      "requireFullScreen": false
+      "requireFullScreen": false,
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.dev.expo.Payments"
+        ]
+      }
     },
     "web": {
       "bundler": "metro"
@@ -47,9 +52,6 @@
     },
     "runtimeVersion": {
       "policy": "appVersion"
-    },
-    "experiments": {
-      "edgeToEdge": false
     },
     "updates": {
       "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
@@ -83,7 +85,16 @@
           "userTrackingPermission": "Allow Expo projects to use data for tracking the user or the device"
         }
       ],
-      "./plugins/withAndroidNetworkSecurityConfig"
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true
+          }
+        }
+      ],
+      "./plugins/withAndroidNetworkSecurityConfig",
+      "./plugins/withBenchmarkModules"
     ]
   }
 }

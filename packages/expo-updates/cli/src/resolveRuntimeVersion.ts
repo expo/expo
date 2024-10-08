@@ -5,6 +5,7 @@ import { Command } from './cli';
 import { requireArg, assertArgs, getProjectRoot } from './utils/args';
 import { CommandError } from './utils/errors';
 import * as Log from './utils/log';
+import { withConsoleDisabledAsync } from './utils/withConsoleDisabledAsync';
 
 export const resolveRuntimeVersion: Command = async (argv) => {
   const args = assertArgs(
@@ -57,21 +58,23 @@ Resolve expo-updates runtime version
 
   const debug = args['--debug'];
 
-  let runtimeVersionInfo;
-  try {
-    runtimeVersionInfo = await resolveRuntimeVersionAsync(
-      getProjectRoot(args),
-      platform,
-      {
-        silent: true,
-        debug,
-      },
-      {
-        workflowOverride: workflow,
-      }
-    );
-  } catch (e: any) {
-    throw new CommandError(e.message);
-  }
+  const runtimeVersionInfo = await withConsoleDisabledAsync(async () => {
+    try {
+      return await resolveRuntimeVersionAsync(
+        getProjectRoot(args),
+        platform,
+        {
+          silent: true,
+          debug,
+        },
+        {
+          workflowOverride: workflow,
+        }
+      );
+    } catch (e: any) {
+      throw new CommandError(e.message);
+    }
+  });
+
   console.log(JSON.stringify(runtimeVersionInfo));
 };

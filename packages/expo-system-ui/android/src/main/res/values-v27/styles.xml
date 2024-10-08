@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Theme.EdgeToEdge" parent="Theme.EdgeToEdge.Common">
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:navigationBarColor">@color/systemBarLightScrim</item>
-        <item name="android:windowLightNavigationBar">true</item>
-    </style>
-</resources>

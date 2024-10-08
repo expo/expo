@@ -3,10 +3,10 @@
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
-#import <React/RCTBridgeModule.h>
+#import <React/React-Core-umbrella.h>
 
 #ifdef __cplusplus
-#import <ReactCommon/CallInvoker.h>
+#import <ReactCommon/ReactCommon-umbrella.h>
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -23,9 +23,9 @@ typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
                                      RCTPromiseResolveBlock _Nonnull resolve,
                                      RCTPromiseRejectBlock _Nonnull reject);
 
-typedef id _Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
-                                            NSArray<EXJavaScriptValue *> * _Nonnull arguments,
-                                            NSError * _Nullable __autoreleasing * _Nullable error);
+typedef EXJavaScriptValue * _Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
+                                                             NSArray<EXJavaScriptValue *> * _Nonnull arguments,
+                                                             NSError * _Nullable __autoreleasing * _Nullable error);
 
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime,
@@ -109,6 +109,11 @@ typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, N
 
 - (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
                                             constructor:(nonnull ClassConstructorBlock)constructor;
+
+#pragma mark - Shared refs
+
+- (nonnull EXJavaScriptObject *)createSharedRefClass:(nonnull NSString *)name
+                                         constructor:(nonnull ClassConstructorBlock)constructor;
 
 #pragma mark - Script evaluation
 

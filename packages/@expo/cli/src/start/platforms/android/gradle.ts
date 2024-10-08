@@ -53,12 +53,14 @@ export async function assembleAsync(
     appName,
     buildCache,
     architectures,
+    eagerBundleOptions,
   }: {
     variant: string;
     port?: number;
     appName: string;
     buildCache?: boolean;
     architectures?: string;
+    eagerBundleOptions?: string;
   }
 ): Promise<SpawnResult> {
   const task = formatGradleArguments('assemble', { variant, appName });
@@ -78,7 +80,16 @@ export async function assembleAsync(
   // Generate a profile under `/android/app/build/reports/profile`
   if (env.EXPO_PROFILE) args.push('--profile');
 
-  return await spawnGradleAsync(androidProjectPath, { port, architectures, args });
+  return await spawnGradleAsync(androidProjectPath, {
+    port,
+    architectures,
+    args,
+    env: eagerBundleOptions
+      ? {
+          __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions,
+        }
+      : {},
+  });
 }
 
 /**
@@ -108,7 +119,12 @@ export async function installAsync(
 
 export async function spawnGradleAsync(
   projectRoot: string,
-  { port, architectures, args }: { port?: number; architectures?: string; args: string[] }
+  {
+    port,
+    architectures,
+    args,
+    env,
+  }: { port?: number; architectures?: string; args: string[]; env?: Record<string, string> }
 ): Promise<SpawnResult> {
   const gradlew = resolveGradleWPath(projectRoot);
   if (port != null) args.push(getPortArg(port));
@@ -118,6 +134,10 @@ export async function spawnGradleAsync(
     return await spawnAsync(gradlew, args, {
       cwd: projectRoot,
       stdio: 'inherit',
+      env: {
+        ...process.env,
+        ...(env ?? {}),
+      },
     });
   } catch (error: any) {
     // User aborted the command with ctrl-c

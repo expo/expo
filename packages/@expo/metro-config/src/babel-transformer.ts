@@ -34,7 +34,7 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
 
 function isCustomTruthy(value: any): boolean {
-  return value === true || value === 'true';
+  return String(value) === 'true';
 }
 
 function memoize<T extends (...args: any[]) => any>(fn: T): T {

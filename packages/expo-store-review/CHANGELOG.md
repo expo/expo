@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Added availability-check and migration for SkStoreReviewController on iOS. (by [@chrfalch](https://github.com/chrfalch)) ([#31341](https://github.com/expo/expo/pull/31341) by [@chrfalch](https://github.com/chrfalch))
+
 ## 7.0.2 — 2024-05-02
 
 ### 🐛 Bug fixes

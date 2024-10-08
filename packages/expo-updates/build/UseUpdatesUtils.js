@@ -5,6 +5,7 @@ export const currentlyRunning = {
     updateId: Updates.updateId ?? undefined,
     channel: Updates.channel ?? undefined,
     createdAt: Updates.createdAt ?? undefined,
+    launchDuration: Updates.launchDuration ?? undefined,
     isEmbeddedLaunch: Updates.isEmbeddedLaunch,
     isEmergencyLaunch: Updates.isEmergencyLaunch,
     emergencyLaunchReason: Updates.emergencyLaunchReason,

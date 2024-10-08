@@ -1,0 +1,18 @@
+{
+  "name": "benchmarking-module",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A local module for benchmarking Expo, Turbo and Bridge modules",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "homepage": "https://expo.dev",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

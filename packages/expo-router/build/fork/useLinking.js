@@ -156,7 +156,7 @@ function useLinking(ref, { independent, enabled = true, config, getStateFromPath
                 return;
             }
             const { location } = window;
-            const path = location.pathname + location.search;
+            const path = location.pathname + location.search + location.hash;
             const index = history.index;
             const previousIndex = previousIndexRef.current ?? 0;
             previousIndexRef.current = index;

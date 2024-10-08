@@ -1,8 +1,5 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-
+import ExpoScreenOrientation from '../ExpoScreenOrientation';
 import * as ScreenOrientation from '../ScreenOrientation';
-
-const { ExpoScreenOrientation } = NativeModulesProxy;
 
 it(`throws when lockAsync is called with an unsupported type`, async () => {
   await expect(ScreenOrientation.lockAsync(NaN as any)).rejects.toThrowError(TypeError);

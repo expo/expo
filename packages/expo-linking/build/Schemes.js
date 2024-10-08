@@ -1,5 +1,5 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'react-native';
+import { Platform } from 'expo-modules-core';
 const LINKING_GUIDE_URL = `https://docs.expo.dev/guides/linking/`;
 // @docsMissing
 export function hasCustomScheme() {
@@ -48,8 +48,8 @@ const EXPO_CLIENT_SCHEMES = Platform.select({
  * This method is based on the `Scheme` modules from `@expo/config-plugins`
  * which are used for collecting the schemes before prebuilding a native app.
  *
- * - iOS: scheme -> ios.scheme -> ios.bundleIdentifier
- * - Android: scheme -> android.scheme -> android.package
+ * - Android: `scheme` -> `android.scheme` -> `android.package`
+ * - iOS: `scheme` -> `ios.scheme` -> `ios.bundleIdentifier`
  */
 export function collectManifestSchemes() {
     // ios.scheme, android.scheme, and scheme as an array are not yet added to the

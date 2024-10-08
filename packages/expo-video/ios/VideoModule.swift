@@ -160,6 +160,22 @@ public final class VideoModule: Module {
         player.pointer.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
       }
 
+      Property("currentLiveTimestamp") { player -> Double? in
+        return player.currentLiveTimestamp
+      }
+
+      Property("currentOffsetFromLive") { player -> Double? in
+        return player.currentOffsetFromLive
+      }
+
+      Property("targetOffsetFromLive") { player -> Double in
+        return player.pointer.currentItem?.configuredTimeOffsetFromLive.seconds ?? 0
+      }
+      .set { (player, timeOffset: Double) in
+        let timeOffset = CMTime(seconds: timeOffset, preferredTimescale: .max)
+        player.pointer.currentItem?.configuredTimeOffsetFromLive = timeOffset
+      }
+
       Property("duration") { player -> Double in
         let duration = player.pointer.currentItem?.duration.seconds ?? 0
         return duration.isNaN ? 0 : duration
@@ -183,10 +199,17 @@ public final class VideoModule: Module {
         player.preservesPitch = preservesPitch
       }
 
+      Property("timeUpdateEventInterval") { player -> Double in
+        return player.timeUpdateEventInterval
+      }
+      .set { (player, timeUpdateEventInterval: Double) in
+        player.timeUpdateEventInterval = timeUpdateEventInterval
+      }
+
       Property("showNowPlayingNotification") { player -> Bool in
         return player.showNowPlayingNotification
       }
-      .set {(player, showNowPlayingNotification: Bool) in
+      .set { (player, showNowPlayingNotification: Bool) in
         player.showNowPlayingNotification = showNowPlayingNotification
       }
 
@@ -199,6 +222,17 @@ public final class VideoModule: Module {
       }
       .set { (player, volume: Float) in
         player.volume = volume
+      }
+
+      Property("bufferedPosition") { player -> Double in
+        return player.bufferedPosition
+      }
+
+      Property("bufferOptions") { player -> [String: Any] in
+        return player.bufferOptions.toDictionary()
+      }
+      .set { (player, bufferOptions: BufferOptions) in
+        player.bufferOptions = bufferOptions
       }
 
       Function("play") { player in

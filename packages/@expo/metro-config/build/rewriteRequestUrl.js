@@ -10,7 +10,6 @@ const paths_1 = require("@expo/config/paths");
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const getModulesPaths_1 = require("./getModulesPaths");
 const debug = require('debug')('expo:metro:config:rewriteRequestUrl');
 function directoryExistsSync(file) {
     try {
@@ -76,10 +75,11 @@ function getRewriteRequestUrl(projectRoot) {
                 if (isHermesEnabled) {
                     debug('Enabling Hermes for managed project');
                     ensured.searchParams.set('transform.engine', 'hermes');
-                    ensured.searchParams.set('transform.bytecode', 'true');
+                    ensured.searchParams.set('transform.bytecode', '1');
+                    ensured.searchParams.set('unstable_transformProfile', 'hermes-stable');
                 }
             }
-            const serverRoot = (0, getModulesPaths_1.getServerRoot)(projectRoot);
+            const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
             const relativeEntry = path_1.default.relative(serverRoot, entry).replace(/\.[tj]sx?$/, '');
             debug('Resolved entry point', { entry, relativeEntry, serverRoot });
             // Only return the pathname when url is relative

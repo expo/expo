@@ -37,17 +37,10 @@ type UseLinkToPathPropsOptions = LinkToOptions & {
 export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPropsOptions) {
   const { linkTo } = useExpoRouter();
 
-  const onPress = (e?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
-    let shouldHandle = false;
-
-    if (Platform.OS !== 'web' || !e) {
-      shouldHandle = e ? !e.defaultPrevented : true;
-    } else if (eventShouldPreventDefault(e)) {
-      e.preventDefault();
-      shouldHandle = true;
-    }
-
-    if (shouldHandle) {
+  const onPress = (
+    event?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
+  ) => {
+    if (shouldHandleMouseEvent(event)) {
       linkTo(href, options);
     }
   };
@@ -58,4 +51,19 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
     role: 'link' as const,
     onPress,
   };
+}
+
+export function shouldHandleMouseEvent(
+  event?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
+) {
+  if (Platform.OS !== 'web') {
+    return !event?.defaultPrevented;
+  }
+
+  if (event && eventShouldPreventDefault(event)) {
+    event.preventDefault();
+    return true;
+  }
+
+  return false;
 }

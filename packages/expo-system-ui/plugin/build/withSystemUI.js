@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
-const withAndroidEdgeToEdgeTheme_1 = require("./withAndroidEdgeToEdgeTheme");
-const withAndroidGradleEdgeToEdgeProperty_1 = require("./withAndroidGradleEdgeToEdgeProperty");
 const withAndroidRootViewBackgroundColor_1 = require("./withAndroidRootViewBackgroundColor");
 const withAndroidUserInterfaceStyle_1 = require("./withAndroidUserInterfaceStyle");
 const withIosRootViewBackgroundColor_1 = require("./withIosRootViewBackgroundColor");
@@ -14,8 +12,6 @@ const withSystemUI = (config) => {
         withIosRootViewBackgroundColor_1.withIosRootViewBackgroundColor,
         withAndroidUserInterfaceStyle_1.withAndroidUserInterfaceStyle,
         withIosUserInterfaceStyle_1.withIosUserInterfaceStyle,
-        withAndroidEdgeToEdgeTheme_1.withAndroidEdgeToEdgeTheme,
-        withAndroidGradleEdgeToEdgeProperty_1.withAndroidGradleEdgeToEdgeProperty,
     ]);
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withSystemUI, pkg.name, pkg.version);

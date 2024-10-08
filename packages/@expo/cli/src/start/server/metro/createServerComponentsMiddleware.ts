@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getMetroServerRoot } from '@expo/config/paths';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { getRscMiddleware } from '@expo/server/build/middleware/rsc';
 import assert from 'assert';
@@ -14,7 +15,6 @@ import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { memoize } from '../../../utils/fn';
 import { streamToStringAsync } from '../../../utils/stream';
-import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import { createBundleUrlSearchParams, ExpoMetroOptions } from '../middleware/metroOptions';
 
@@ -52,6 +52,7 @@ export function createServerComponentsMiddleware(
     // Disabled in development
     baseUrl: '',
     rscPath,
+    onError: console.error,
     renderRsc: async (args) => {
       // Dev server-only implementation.
       try {
@@ -105,7 +106,7 @@ export function createServerComponentsMiddleware(
 
     // Extract the global CSS modules that are imported from the router.
     // These will be injected in the head of the HTML document for the website.
-    const cssModules = contents.artifacts.filter((a) => a.type === 'css');
+    const cssModules = contents.artifacts.filter((a) => a.type.startsWith('css'));
 
     const reactClientReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
@@ -277,6 +278,7 @@ export function createServerComponentsMiddleware(
       engine,
       contentType,
       ssrManifest,
+      decodedBody,
     }: {
       input: string;
       searchParams: URLSearchParams;
@@ -286,6 +288,7 @@ export function createServerComponentsMiddleware(
       engine?: 'hermes' | null;
       contentType?: string;
       ssrManifest?: Map<string, string>;
+      decodedBody?: unknown;
     },
     isExporting: boolean | undefined = instanceMetroOptions.isExporting
   ) {
@@ -303,10 +306,9 @@ export function createServerComponentsMiddleware(
     return renderRsc(
       {
         body,
-        searchParams,
+        decodedBody,
         context: getRscRenderContext(platform),
         config: {},
-        method,
         input,
         contentType,
       },
@@ -314,6 +316,10 @@ export function createServerComponentsMiddleware(
         isExporting,
         entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
         resolveClientEntry: getResolveClientEntry({ platform, engine, ssrManifest }),
+        loadServerModuleRsc: async (url) => {
+          // TODO: SSR load action code from Metro URL.
+          throw new Error('React server actions are not implemented yet');
+        },
       }
     );
   }
@@ -343,7 +349,11 @@ export function createServerComponentsMiddleware(
 
       await Promise.all(
         Array.from(buildConfig).map(async ({ entries }) => {
-          for (const { input } of entries || []) {
+          for (const { input, isStatic } of entries || []) {
+            if (!isStatic) {
+              debug('Skipping static export for route', { input });
+              continue;
+            }
             const destRscFile = path.join('_flight', platform, encodeInput(input));
 
             const pipe = await renderRscToReadableStream(

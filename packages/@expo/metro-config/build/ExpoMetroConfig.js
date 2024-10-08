@@ -54,7 +54,11 @@ function getAssetPlugins(projectRoot) {
     if (!hashAssetFilesPath) {
         throw new Error(`The required package \`expo-asset\` cannot be found`);
     }
-    return [hashAssetFilesPath];
+    return [
+        // Use relative path to ensure maximum cache hits.
+        // This is resolved here https://github.com/facebook/metro/blob/ec584b9cc2b8356356a4deacb7e1d5c83f243c3a/packages/metro/src/Assets.js#L271
+        'expo-asset/tools/hashAssetFiles',
+    ];
 }
 let hasWarnedAboutExotic = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
@@ -174,7 +178,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const cacheStore = new file_store_1.FileStore({
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
-    const serverRoot = (0, getModulesPaths_1.getServerRoot)(projectRoot);
+    const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
     // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
     // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
     const metroConfig = mergeConfig(metroDefaultValues, {
@@ -263,6 +267,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             customizeFrame: (0, customizeFrame_1.getDefaultCustomizeFrame)(),
         },
         transformerPath: require.resolve('./transform-worker/transform-worker'),
+        // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             // @ts-expect-error: not on type.
@@ -276,12 +281,12 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             reanimatedVersion,
             // Ensure invalidation when using identical projects in monorepos
             _expoRelativeProjectRoot: path_1.default.relative(serverRoot, projectRoot),
-            unstable_collectDependenciesPath: require.resolve('./transform-worker/collect-dependencies'),
             // `require.context` support
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
             babelTransformerPath: require.resolve('./babel-transformer'),
             // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
+            // TODO: The absolute path breaks invalidates caching across devices.
             asyncRequireModulePath: (0, resolve_from_1.default)(reactNativePath, metroDefaultValues.transformer.asyncRequireModulePath),
             assetRegistryPath: '@react-native/assets-registry/registry',
             assetPlugins: getAssetPlugins(projectRoot),

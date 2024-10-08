@@ -3,6 +3,7 @@ package expo.modules.video
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
+import expo.modules.video.player.VideoPlayer
 
 // Helper class used to keep track of all existing VideoViews and VideoPlayers
 @OptIn(UnstableApi::class)
@@ -52,7 +53,7 @@ object VideoManager {
     }
 
     if (videoPlayersToVideoViews[videoPlayer]?.size == 1) {
-      videoPlayer.serviceConnection.playbackServiceBinder?.service?.registerPlayer(videoPlayer.player)
+      videoPlayer.serviceConnection.playbackServiceBinder?.service?.registerPlayer(videoPlayer)
     }
   }
 

@@ -1,3 +1,16 @@
+import { isRunningInExpoGo } from 'expo';
+
+function areWeTestingWithJest() {
+  return process.env.JEST_WORKER_ID !== undefined || process.env.NODE_ENV === 'TEST';
+}
+
+if (isRunningInExpoGo() && !areWeTestingWithJest()) {
+  const message =
+    '`expo-notifications` functionality is not fully supported in Expo Go:\n' +
+    'We recommend you instead use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+  console.warn(message);
+}
+
 export { default as getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 export { default as unregisterForNotificationsAsync } from './unregisterForNotificationsAsync';
 export { default as getExpoPushTokenAsync } from './getExpoPushTokenAsync';

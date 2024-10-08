@@ -23,25 +23,19 @@ function getSSRManifest(distFolder, platform) {
     return $$require_external(filePath);
 }
 async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType }) {
-    if (method === 'POST') {
-        if (!body)
-            throw new Error('Server request must be provided when method is POST (server actions)');
+    if (method === 'POST' && !body) {
+        throw new Error('Server request must be provided when method is POST (server actions)');
     }
     const context = getRscRenderContext(platform);
     const entries = await imports.router();
-    if (method === 'POST') {
-        // HACK: This is some mock function to load the JS in to memory which in turn ensures the server actions are registered.
-        entries.default.getBuildConfig(async (input) => []);
-    }
     const ssrManifest = getSSRManifest(distFolder, platform);
     return (0, rsc_renderer_1.renderRsc)({
         body: body ?? undefined,
-        searchParams,
         context,
         config,
-        method,
         input,
         contentType,
+        decodedBody: searchParams.get('x-expo-params'),
     }, {
         isExporting: true,
         resolveClientEntry(file) {
@@ -52,6 +46,10 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
             };
         },
         entries: entries,
+        loadServerModuleRsc: async (url) => {
+            // TODO: SSR load action code from on disk file.
+            throw new Error('React server actions are not implemented yet');
+        },
     });
 }
 exports.renderRscWithImportsAsync = renderRscWithImportsAsync;

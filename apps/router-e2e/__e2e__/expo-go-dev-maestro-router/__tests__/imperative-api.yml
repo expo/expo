@@ -1,0 +1,18 @@
+appId: host.exp.Exponent
+name: Imperative API
+---
+# Can navigate between routes via imperative API
+- stopApp: host.exp.Exponent
+- openLink:
+    link: ${MAESTRO_APP_URL}/(imperative)
+- assertVisible:
+    id: 'e2e-screen'
+    text: 'Imperative index'
+- tapOn:
+    id: 'e2e-fruit'
+- assertVisible:
+    id: 'e2e-pathname'
+    text: '/apple'
+- assertVisible:
+    id: 'e2e-segments'
+    text: '/(imperative)/(a)/[fruit]'

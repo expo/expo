@@ -11,7 +11,18 @@ import ExpoModulesCore
  */
 public class DisabledAppController: InternalAppControllerInterface {
   public let isActiveController = false
-  public private(set) var isStarted: Bool = false
+  private var isStarted: Bool = false
+  private var startupStartTime: DispatchTime?
+  private var startupEndTime: DispatchTime?
+
+  private var launchDuration: Double? {
+    return startupStartTime.let({ start in
+      startupEndTime.let { end in
+        Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
+      }
+    })
+  }
+
   public var shouldEmitJsEvents = false
 
   public weak var appContext: AppContext?
@@ -32,12 +43,14 @@ public class DisabledAppController: InternalAppControllerInterface {
 
   public func start() {
     precondition(!isStarted, "AppController:start should only be called once per instance")
-
     isStarted = true
+    startupStartTime = DispatchTime.now()
 
     let launcherNoDatabase = AppLauncherNoDatabase()
     launcher = launcherNoDatabase
     launcherNoDatabase.launchUpdate()
+
+    startupEndTime = DispatchTime.now()
 
     delegate.let { _ in
       DispatchQueue.main.async { [weak self] in
@@ -63,6 +76,7 @@ public class DisabledAppController: InternalAppControllerInterface {
   public func getConstantsForModule() -> UpdatesModuleConstants {
     return UpdatesModuleConstants(
       launchedUpdate: launchedUpdate(),
+      launchDuration: launchDuration,
       embeddedUpdate: nil,
       emergencyLaunchException: self.initializationError,
       isEnabled: false,

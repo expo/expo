@@ -1,7 +1,7 @@
 {
   "name": "expo-sqlite",
   "version": "14.0.3",
-  "description": "Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.",
+  "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
@@ -11,13 +11,13 @@
       "default": "./build/index.js",
       "types": "./build/index.d.ts"
     },
-    "./legacy": {
-      "default": "./build/legacy/index.js",
-      "types": "./build/legacy/index.d.ts"
+    "./async-storage": {
+      "default": "./async-storage.js",
+      "types": "./async-storage.d.ts"
     },
     "./next": {
-      "default": "./build/index.js",
-      "types": "./build/index.d.ts"
+      "default": "./next.js",
+      "types": "./next.d.ts"
     }
   },
   "scripts": {
@@ -33,7 +33,6 @@
     "react-native",
     "expo",
     "sqlite",
-    "websql",
     "sql"
   ],
   "repository": {
@@ -51,7 +50,6 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/websql": "^1.0.1"
   },
   "devDependencies": {
     "@testing-library/react-native": "^12.5.2",

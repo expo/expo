@@ -8,14 +8,17 @@ export declare const NavigatorContext: React.Context<{
     descriptors: NavigatorTypes['descriptors'];
     router: RouterFactory<any, any, any>;
 } | null>;
-export type NavigatorProps = {
-    initialRouteName?: Parameters<typeof useNavigationBuilder>[1]['initialRouteName'];
-    screenOptions?: Parameters<typeof useNavigationBuilder>[1]['screenOptions'];
-    children?: Parameters<typeof useNavigationBuilder>[1]['children'];
-    router?: Parameters<typeof useNavigationBuilder>[0];
+type UseNavigationBuilderRouter = Parameters<typeof useNavigationBuilder>[0];
+type UseNavigationBuilderOptions = Parameters<typeof useNavigationBuilder>[1];
+export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
+    initialRouteName?: UseNavigationBuilderOptions['initialRouteName'];
+    screenOptions?: UseNavigationBuilderOptions['screenOptions'];
+    children?: UseNavigationBuilderOptions['children'];
+    router?: T;
+    routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
 };
 /** An unstyled custom navigator. Good for basic web layouts */
-export declare function Navigator({ initialRouteName, screenOptions, children, router }: NavigatorProps): React.JSX.Element | null;
+export declare function Navigator<T extends UseNavigationBuilderRouter>({ initialRouteName, screenOptions, children, router, routerOptions, }: NavigatorProps<T>): React.JSX.Element | null;
 export declare namespace Navigator {
     var Slot: typeof import("./Navigator").Slot;
     var useContext: typeof useNavigatorContext;
@@ -272,7 +275,7 @@ export declare function useNavigatorContext(): {
 };
 export declare function useSlot(): JSX.Element | null;
 /** Renders the currently selected content. */
-export declare function Slot(props: Omit<NavigatorProps, 'children'>): React.JSX.Element;
+export declare function Slot(props: Omit<NavigatorProps<any>, 'children'>): React.JSX.Element;
 export declare function QualifiedSlot(): JSX.Element | null;
 export declare function DefaultNavigator(): React.JSX.Element;
 export {};

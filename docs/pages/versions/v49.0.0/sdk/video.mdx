@@ -28,13 +28,13 @@ Here's a simple example of a video with a play/pause button.
 <SnackInline label='Video' dependencies={['expo-av', 'expo-asset']}>
 
 ```jsx
-import * as React from 'react';
+import { useState, useRef } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 
 export default function App() {
-  const video = React.useRef(null);
-  const [status, setStatus] = React.useState({});
+  const video = useRef(null);
+  const [status, setStatus] = useState({});
   return (
     <View style={styles.container}>
       <Video

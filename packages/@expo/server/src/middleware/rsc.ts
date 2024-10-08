@@ -19,7 +19,9 @@ export type RenderRscArgs = {
   method: 'GET' | 'POST';
   body?: ReadableStream | null;
   contentType?: string | undefined;
+  decodedBody?: unknown;
   moduleIdCallback?: ((id: string) => void) | undefined;
+  onError?: (err: unknown) => void;
 };
 
 export const decodeInput = (encodedInput: string) => {
@@ -40,6 +42,7 @@ export function getRscMiddleware(options: {
   baseUrl: string;
   rscPath: string;
   renderRsc: (args: RenderRscArgs) => Promise<ReadableStream<any>>;
+  onError?: (err: unknown) => void;
 }): {
   GET: (req: Request) => Promise<Response>;
   POST: (req: Request) => Promise<Response>;
@@ -109,6 +112,8 @@ export function getRscMiddleware(options: {
         method,
         body: req.body,
         contentType: req.headers.get('Content-Type') ?? '',
+        decodedBody: req.headers.get('X-Expo-Params'),
+        onError: options.onError,
       };
       const readable = await options.renderRsc(args);
 

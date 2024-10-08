@@ -16,10 +16,14 @@ export async function resolveDependencyConfigImplIosAsync(
     return null;
   }
 
-  const podspecPath = (await glob('*.podspec', { cwd: packageRoot, absolute: true }))?.[0];
-  if (!podspecPath) {
+  const podspecs = await glob('*.podspec', { cwd: packageRoot });
+  if (!podspecs?.length) {
     return null;
   }
+  const mainPackagePodspec = path.basename(packageRoot) + '.podspec';
+  const podspecFile = podspecs.includes(mainPackagePodspec) ? mainPackagePodspec : podspecs[0];
+  const podspecPath = path.join(packageRoot, podspecFile);
+
   const packageJson = JSON.parse(await fs.readFile(path.join(packageRoot, 'package.json'), 'utf8'));
 
   return {

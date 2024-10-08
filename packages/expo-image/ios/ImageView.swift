@@ -68,6 +68,8 @@ public final class ImageView: ExpoView {
 
   let onLoad = EventDispatcher()
 
+  let onDisplay = EventDispatcher()
+
   // MARK: - View
 
   public override var bounds: CGRect {
@@ -381,6 +383,10 @@ public final class ImageView: ExpoView {
     } else {
       sdImageView.tintColor = nil
       sdImageView.image = image
+    }
+
+    if !isPlaceholder {
+      onDisplay()
     }
 
 #if !os(tvOS)

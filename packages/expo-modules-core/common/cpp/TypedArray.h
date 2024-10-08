@@ -29,8 +29,8 @@ enum class TypedArrayKind {
 class TypedArray : public jsi::Object {
  public:
   TypedArray(jsi::Runtime &, const jsi::Object &);
-  TypedArray(TypedArray &&) = default;
-  TypedArray &operator=(TypedArray &&) = default;
+  TypedArray(TypedArray &&) noexcept = default;
+  TypedArray &operator=(TypedArray &&) noexcept = default;
 
   TypedArrayKind getKind(jsi::Runtime &runtime) const;
 
@@ -40,7 +40,7 @@ class TypedArray : public jsi::Object {
 
   jsi::ArrayBuffer getBuffer(jsi::Runtime &runtime) const;
 
-  void* getRawPointer(jsi::Runtime &runtime);
+  void* getRawPointer(jsi::Runtime &runtime) const;
 };
 
 bool isTypedArray(jsi::Runtime &runtime, const jsi::Object &jsObj);

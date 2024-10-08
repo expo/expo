@@ -1,30 +1,4 @@
 import { type RecordingOptions } from './Audio.types';
-export declare enum AndroidOutputFormat {
-    DEFAULT = 0,
-    THREE_GPP = 1,
-    MPEG_4 = 2,
-    AMR_NB = 3,
-    AMR_WB = 4,
-    AAC_ADIF = 5,
-    AAC_ADTS = 6,
-    RTP_AVP = 7,
-    MPEG2TS = 8,
-    WEBM = 9
-}
-export declare enum AndroidAudioEncoder {
-    DEFAULT = 0,
-    AMR_NB = 1,
-    AMR_WB = 2,
-    AAC = 3,
-    HE_AAC = 4,
-    AAC_ELD = 5
-}
-export declare enum IOSBitRateStrategy {
-    CONSTANT = 0,
-    LONG_TERM_AVERAGE = 1,
-    VARIABLE_CONSTRAINED = 2,
-    VARIABLE = 3
-}
 /**
  * Constant which contains definitions of the two preset examples of `RecordingOptions`, as implemented in the Audio SDK.
  *
@@ -87,5 +61,5 @@ export declare enum IOSBitRateStrategy {
  * };
  * ```
  */
-export declare const RecordingOptionsPresets: Record<string, RecordingOptions>;
+export declare const RecordingPresets: Record<string, RecordingOptions>;
 //# sourceMappingURL=RecordingConstants.d.ts.map

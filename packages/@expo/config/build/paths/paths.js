@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.convertEntryPointToRelative = convertEntryPointToRelative;
 exports.ensureSlash = ensureSlash;
 exports.getFileWithExtensions = getFileWithExtensions;
+exports.getMetroServerRoot = getMetroServerRoot;
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.resolveEntryPoint = resolveEntryPoint;
 exports.resolveRelativeEntryPoint = void 0;
@@ -30,6 +31,13 @@ function _resolveFrom() {
   };
   return data;
 }
+function _resolveWorkspaceRoot() {
+  const data = require("resolve-workspace-root");
+  _resolveWorkspaceRoot = function () {
+    return data;
+  };
+  return data;
+}
 function _env() {
   const data = require("./env");
   _env = function () {
@@ -40,13 +48,6 @@ function _env() {
 function _extensions() {
   const data = require("./extensions");
   _extensions = function () {
-    return data;
-  };
-  return data;
-}
-function _workspaces() {
-  const data = require("./workspaces");
-  _workspaces = function () {
     return data;
   };
   return data;
@@ -154,7 +155,7 @@ function getMetroServerRoot(projectRoot) {
   if (_env().env.EXPO_NO_METRO_WORKSPACE_ROOT) {
     return projectRoot;
   }
-  return (0, _workspaces().findWorkspaceRoot)(projectRoot) ?? projectRoot;
+  return (0, _resolveWorkspaceRoot().resolveWorkspaceRoot)(projectRoot) ?? projectRoot;
 }
 
 /**

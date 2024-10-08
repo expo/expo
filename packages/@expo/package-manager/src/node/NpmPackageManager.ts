@@ -4,7 +4,7 @@ import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 
 import { BasePackageManager } from './BasePackageManager';
-import { findYarnOrNpmWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeWorkspaces';
+import { resolveWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeManagers';
 import { createPendingSpawnAsync } from '../utils/spawn';
 
 export class NpmPackageManager extends BasePackageManager {
@@ -13,7 +13,7 @@ export class NpmPackageManager extends BasePackageManager {
   readonly lockFile = NPM_LOCK_FILE;
 
   workspaceRoot() {
-    const root = findYarnOrNpmWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
+    const root = resolveWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
     if (root) {
       return new NpmPackageManager({
         ...this.options,

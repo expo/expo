@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Removed old `Platform.Version` checks. ([#31557](https://github.com/expo/expo/pull/31557) by [@reichhartd](https://github.com/reichhartd))
+
 ## 4.0.2 — 2024-04-29
 
 _This version does not introduce any user-facing changes._

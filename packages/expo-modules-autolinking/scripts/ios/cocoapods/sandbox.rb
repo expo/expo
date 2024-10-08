@@ -4,14 +4,8 @@
 require 'json'
 
 REACT_DEFINE_MODULES_LIST = [
-  'ReactCommon',
-  'React-RCTAppDelegate',
   'React-hermes',
   'React-jsc',
-  'React-Fabric',
-  'React-graphics',
-  'React-utils',
-  'React-debug',
 ]
 
 module Pod
@@ -26,27 +20,8 @@ module Pod
       spec = _original_store_podspec.bind(self).(name, podspec, _external_source, json)
       patched_spec = nil
 
-      # Patch `React-Core.podspec` for clang to generate correct submodules for swift integration
-      if name == 'React-Core'
-        spec_json = JSON.parse(spec.to_pretty_json)
-
-        # clang module does not support objc++.
-        # We should put Hermes headers inside private headers directory.
-        # Otherwise, clang will throw errors in building module.
-        hermes_subspec_index = spec_json['subspecs'].index { |subspec| subspec['name'] == 'Hermes' }
-        if hermes_subspec_index
-          spec_json['subspecs'][hermes_subspec_index]['private_header_files'] ||= [
-            'ReactCommon/hermes/executor/*.h',
-            'ReactCommon/hermes/inspector/*.h',
-            'ReactCommon/hermes/inspector/chrome/*.h',
-            'ReactCommon/hermes/inspector/detail/*.h',
-          ]
-        end
-
-        patched_spec = Specification.from_json(spec_json.to_json)
-
       # Patch podspecs to define module
-      elsif REACT_DEFINE_MODULES_LIST.include? name
+      if REACT_DEFINE_MODULES_LIST.include? name
         spec_json = JSON.parse(podspec.to_pretty_json)
         spec_json['pod_target_xcconfig'] ||= {}
         spec_json['pod_target_xcconfig']['DEFINES_MODULE'] = 'YES'

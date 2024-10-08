@@ -278,11 +278,10 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (platform === 'web') {
     extraPlugins.push(require('babel-plugin-react-native-web'));
-
-    // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
-    if (bundler !== 'webpack') {
-      extraPlugins.push(expoInlineManifestPlugin);
-    }
+  }
+  // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
+  if (bundler !== 'webpack') {
+    extraPlugins.push(expoInlineManifestPlugin);
   }
 
   if (hasModule('expo-router')) {

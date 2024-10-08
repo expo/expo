@@ -704,6 +704,28 @@ describe('sanity', () => {
   });
 });
 
+it(`does not remove CSS`, async () => {
+  const [[, , graph]] = await serializeShakingAsync(
+    {
+      'index.js': `
+          import "./styles.css";
+          import styles from "./styles.module.css";
+          
+        `,
+      'styles.css': `.container {}`,
+      'styles.module.css': `.container {}`,
+    },
+    {
+      treeshake: true,
+    }
+  );
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/styles.css' }),
+    expect.objectContaining({ absolutePath: '/app/styles.module.css' }),
+  ]);
+});
+
 it(`barrel multiple`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
     'index.js': `

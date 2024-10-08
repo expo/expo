@@ -1,5 +1,9 @@
+@file:OptIn(EitherType::class)
+
 package expo.modules.image
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.view.doOnDetach
@@ -10,7 +14,6 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
-import com.github.penfeizhou.animation.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.facebook.react.uimanager.PixelUtil
@@ -18,18 +21,25 @@ import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import com.github.penfeizhou.animation.apng.APNGDrawable
+import com.github.penfeizhou.animation.gif.GifDrawable
 import com.github.penfeizhou.animation.webp.WebPDrawable
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.DecodeFormat
+import expo.modules.image.records.DecodedSource
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.EitherOfThree
+import expo.modules.kotlin.types.toKClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -134,7 +144,7 @@ class ExpoImageModule : Module() {
         }
         false
       }
-      Property("mediaType") { ->
+      Property<Any?>("mediaType") { ->
         null // not easily supported on Android https://github.com/bumptech/glide/issues/1378#issuecomment-236879983
       }
     }
@@ -173,11 +183,31 @@ class ExpoImageModule : Module() {
         "onLoadStart",
         "onProgress",
         "onError",
-        "onLoad"
+        "onLoad",
+        "onDisplay"
       )
 
-      Prop("source") { view: ExpoImageViewWrapper, sources: List<SourceMap>? ->
-        view.sources = sources ?: emptyList()
+      Prop("source") { view: ExpoImageViewWrapper, sources: EitherOfThree<List<SourceMap>, SharedRef<Drawable>, SharedRef<Bitmap>>? ->
+        if (sources == null) {
+          view.sources = emptyList()
+          return@Prop
+        }
+
+        if (sources.`is`(toKClass<List<SourceMap>>())) {
+          view.sources = sources.get(toKClass<List<SourceMap>>())
+          return@Prop
+        }
+
+        if (sources.`is`(toKClass<SharedRef<Drawable>>())) {
+          val drawable = sources.get(toKClass<SharedRef<Drawable>>()).ref
+          view.sources = listOf(DecodedSource(drawable))
+          return@Prop
+        }
+
+        val bitmap = sources.get(toKClass<SharedRef<Bitmap>>()).ref
+        val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+        val drawable = BitmapDrawable(context.resources, bitmap)
+        view.sources = listOf(DecodedSource(drawable))
       }
 
       Prop("contentFit") { view: ExpoImageViewWrapper, contentFit: ContentFit? ->

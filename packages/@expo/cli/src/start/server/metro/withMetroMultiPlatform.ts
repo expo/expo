@@ -13,7 +13,7 @@ import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { createFastResolver } from './createExpoMetroResolver';
+import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
@@ -565,6 +565,13 @@ export function withExtendedResolver(
 
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
+          // // Disallow importing confusing native modules on web
+          if (moduleName.includes('react-native/Libraries/Utilities/codegenNativeCommands')) {
+            throw new FailedToResolvePathError(
+              `Importing native-only module "${moduleName}" on web from: ${context.originModulePath}`
+            );
+          }
+
           // Replace with static shims
 
           const normalName = normalizeSlashes(result.filePath)
@@ -749,11 +756,6 @@ export async function withMetroMultiPlatformAsync(
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
-  if (['static', 'server'].includes(webOutput ?? '')) {
-    // Enable static rendering in runtime space.
-    process.env.EXPO_PUBLIC_USE_STATIC = '1';
-  }
-
   // This is used for running Expo CLI in development against projects outside the monorepo.
   if (!isDirectoryIn(__dirname, projectRoot)) {
     if (!config.watchFolders) {
@@ -768,8 +770,7 @@ export async function withMetroMultiPlatformAsync(
     }
   }
 
-  // @ts-expect-error
-  config.transformer._expoRouterWebRendering = webOutput;
+  // TODO: Remove this
   // @ts-expect-error: Invalidate the cache when the location of expo-router changes on-disk.
   config.transformer._expoRouterPath = resolveFrom.silent(projectRoot, 'expo-router');
 

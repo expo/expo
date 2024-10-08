@@ -238,7 +238,7 @@ async function transformJS(file, { config, options }) {
     file.type === 'js/module' &&
         String(options.customTransformOptions?.optimize) === 'true' &&
         // Disable tree shaking on JSON files.
-        !file.filename.endsWith('.json');
+        !file.filename.match(/\.(json|s?css|sass)$/);
     const unstable_disableModuleWrapping = optimize || config.unstable_disableModuleWrapping;
     if (optimize && !options.experimentalImportSupport) {
         // Add a warning so devs can incrementally migrate since experimentalImportSupport may cause other issues in their app.

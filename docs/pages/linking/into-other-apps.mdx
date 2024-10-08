@@ -1,0 +1,261 @@
+---
+title: Linking into other apps
+sidebar_title: Into other apps
+description: Learn how to handle and open a URL from your app based on the URL scheme of another app.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { SnackInline } from '~/ui/components/Snippet';
+
+Handling linking into other apps from your app is achieved by using the target app's URL. There are two methods you can use to open such URLs from your app:
+
+- Using the [`expo-linking`](/versions/latest/sdk/linking) API
+- Using Expo Router's [`Link` component](/develop/file-based-routing/#how-does-link-work)
+
+## Using expo-linking API
+
+The [`expo-linking`](/versions/latest/sdk/linking) API provides a universal abstraction over native linking APIs (such as `window.history` on the web) and offers utilities for your app to interact with other installed apps.
+
+The example below opens a the [common URL scheme](#common-url-schemes) in the default browser of the operating system using [`Linking.openURL`](/versions/latest/sdk/linking/#linkingopenurlurl):
+
+```tsx index.tsx|collapseHeight=240
+import { Button, View, StyleSheet } from 'react-native';
+import * as Linking from 'expo-linking';
+
+export default function Home() {
+  return (
+    <View style={styles.container}>
+      <Button title="Open a URL" onPress={() => Linking.openURL('https://expo.dev/')} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+## Using Expo Router's `Link` component
+
+If your project uses [Expo Router](/router/introduction/), use the `Link` component to open a URL. It wraps a `<Text>` component on native platforms and an `<a>` element on the web. It also uses the `expo-linking` API to handle URL schemes.
+
+The example below opens a [common URL scheme](#common-url-schemes) (HTTPS) in the default browser of the operating system:
+
+```tsx index.tsx|collapseHeight=240
+import { Button, View, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+
+export default function Home() {
+  return (
+    <View style={styles.container}>
+      <Link href="https://expo.dev">Open a URL</Link>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+## Common URL schemes
+
+There are built-in URL schemes that provide access to core functionality on all platforms. Here is a list of commonly-used schemes:
+
+| Scheme           | Description           | Example                   |
+| ---------------- | --------------------- | ------------------------- |
+| `https` / `http` | Open web browser app. | `https://expo.dev`        |
+| `mailto`         | Open mail app.        | `mailto:support@expo.dev` |
+| `tel`            | Open phone app.       | `tel:+123456789`          |
+| `sms`            | Open SMS app.         | `sms:+123456789`          |
+
+<Collapsible summary="Specify Android intents to handle common URL schemes">
+
+For Android 11 (API level 30) and above, you must specify the intents your app will handle in the **AndroidManifest.xml** file. You can accomplish this by [creating a config plugin](/config-plugins/plugins-and-mods/#create-a-plugin).
+
+The following config plugin example enables linking to email and phone apps by defining the intents:
+
+```ts my-plugin.ts|collapseHeight=300
+import { withAndroidManifest, ConfigPlugin } from 'expo/config-plugins';
+
+const withAndroidQueries: ConfigPlugin = config => {
+  return withAndroidManifest(config, config => {
+    config.modResults.manifest.queries = [
+      {
+        intent: [
+          {
+            action: [{ $: { 'android:name': 'android.intent.action.SENDTO' } }],
+            data: [{ $: { 'android:scheme': 'mailto' } }],
+          },
+          {
+            action: [{ $: { 'android:name': 'android.intent.action.DIAL' } }],
+          },
+        ],
+      },
+    ];
+
+    return config;
+  });
+};
+
+module.exports = withAndroidQueries;
+```
+
+After creating the config plugin, [import the custom config plugin](/config-plugins/plugins-and-mods/#import-a-plugin) under the `plugins` property:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      "./my-plugin.ts"
+      /* @hide ... */ /* @end */
+    ]
+  }
+}
+```
+
+> **info** **Tip**: On Android, you can use `expo-intent-launcher` to open a **specific settings screen** on the device. See [`expo-intent-launcher` API reference](/versions/latest/sdk/intent-launcher/#enums) to view the list of available intents.
+
+</Collapsible>
+
+## Custom URL schemes
+
+> If you know the custom scheme for the app you want to open, you can link to it using any of the methods: [Using `expo-linking` API](#using-expo-linking-api) or [Using `Link` from Expo Router](#using-expo-routers-link-component).
+
+Some services provide documentation on how to use their app's custom URL schemes. For example, [Uber's deep linking documentation](https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/introduction#standard-deep-links) describes how to link directly to a specific pickup location and destination:
+
+```shell
+uber://?client_id=<CLIENT_ID>&action=setPickup&pickup[latitude]=37.775818&pickup[longitude]=-122.418028&pickup[nickname]=UberHQ&pickup[formatted_address]=1455%20Market%20St%2C%20San%20Francisco%2C%20CA%2094103&dropoff[latitude]=37.802374&dropoff[longitude]=-122.405818&dropoff[nickname]=Coit%20Tower&dropoff[formatted_address]=1%20Telegraph%20Hill%20Blvd%2C%20San%20Francisco%2C%20CA%2094133&product_id=a1111c8c-c720-46c3-8534-2fcdd730040d&link_text=View%20team%20roster&partner_deeplink=partner%3A%2F%2Fteam%2F9383
+```
+
+In the example above, if the user does not have the Uber app installed on their device, your app can direct them to the Google Play Store or Apple App Store to install it. We recommend using the [`react-native-app-link`](https://github.com/FiberJW/react-native-app-link) library to handle these scenarios.
+
+<Collapsible summary="Specify custom schemes for iOS">
+
+On iOS, using [`Linking.canOpenURL`](/versions/latest/sdk/linking/#linkingcanopenurlurl) to query other apps's linking schemes requires additional configuration in **InfoPlist**. You can use the [`ios.infoPlist`](/versions/latest/config/app/#infoplist) property in your app config to specify a list of schemes your app is allowed to query. For example:
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["uber"]
+      }
+    }
+  }
+}
+```
+
+If your don't specify this list, `Linking.canOpenURL` may return `false` even if the device has the target app installed.
+
+> **info** **Tip**: To test the configuration described above from an iOS device, [use a development build](/develop/development-builds/introduction/). It cannot be tested with Expo Go.
+
+</Collapsible>
+
+## Create URLs
+
+You can use [`Linking.createURL`](/versions/latest/sdk/linking/#linkingcreateurlurl) to create a URL that can be used to open or redirect back to your app. This method resolves to the following:
+
+- **Production and development builds**: `myapp://`, where `myapp` is the [custom scheme](/linking/into-your-app/#add-a-scheme-in-app-config) defined in the app config
+- **Development in Expo Go**: `exp://127.0.0.1:8081`
+
+Using `Linking.createURL` helps you avoid hardcoding URLs. You can modify the returned URL by passing optional parameters to this method.
+
+To pass data to your app, you can append it as a path or query string to the URL. `Linking.createURL` will construct a working URL automatically. For example:
+
+```tsx Example
+const redirectUrl = Linking.createURL('path/into/app', {
+  queryParams: { hello: 'world' },
+});
+```
+
+This will resolve into the following, depending on the environment:
+
+- **Production and development builds**: `myapp://path/into/app?hello=world`
+- **Development in Expo Go**: `exp://127.0.0.1:8081/--/path/into/app?hello=world`
+
+<Collapsible summary="Using Expo Go for testing?">
+
+For apps that require a stable URL (for example, auth provider redirects), use a development build with a custom scheme instead of using Expo Go. For more details on how to create and test a custom scheme, see [Linking into your app](/linking/into-your-app/).
+
+</Collapsible>
+
+## In-app browsers
+
+The `expo-linking` API allows you to open a URL using the operating system's default web browser app. You can use the [`expo-web-browser`](/versions/latest/sdk/webbrowser) library to open URLs in an in-app browser. For example, an in-app browser is useful for secure [authentication](/guides/authentication).
+
+<Collapsible summary="Example of opening a URL in an in-app browser">
+
+The example below simulates the behavior of opening a URL in an in-app browser using `expo-web-browser` and the default or preferred web browser using `expo-linking`:
+
+<SnackInline label="WebBrowser compared to Linking" dependencies={["expo-web-browser", "expo-linking"]}>
+
+```tsx
+import { Button, View, StyleSheet } from 'react-native';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
+
+export default function Home() {
+  return (
+    <View style={styles.container}>
+      <Button
+        title="Open URL with the system browser"
+        onPress={() => Linking.openURL('https://expo.dev')}
+        style={styles.button}
+      />
+      <Button
+        title="Open URL with an in-app browser"
+        onPress={() => WebBrowser.openBrowserAsync('https://expo.dev')}
+        style={styles.button}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    marginVertical: 10,
+  },
+});
+```
+
+</SnackInline>
+
+</Collapsible>
+
+## Additional link functionality on web
+
+To provide additional link functionality on the web, such as right-click to copy or hover to preview, you can use a `Link` component from the [`expo-router`](/router/introduction/) library.
+
+```tsx index.tsx
+import { Link } from 'expo-router';
+
+export default function Home() {
+  return <Link href="https://expo.dev">Go to Expo</Link>;
+}
+```
+
+Alternatively, you can use the [`@expo/html-elements`](https://www.npmjs.com/package/@expo/html-elements) library to use a universal `<A>` element:
+
+```tsx index.tsx
+import { A } from '@expo/html-elements';
+
+export default function Home() {
+  return <A href="https://expo.dev">Go to Expo</A>;
+}
+```
+
+The `<A>` component renders an `<a>` on the web and an interactive `<Text>`that uses the `expo-linking` API on native platforms.

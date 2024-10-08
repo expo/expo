@@ -109,34 +109,7 @@ function linkTo(href, { event, relativeToDirectory } = {}) {
         return;
     }
     const rootState = navigationRef.getRootState();
-    if (href.startsWith('.')) {
-        // Resolve base path by merging the current segments with the params
-        let base = this.routeInfo?.segments
-            ?.map((segment) => {
-            if (!segment.startsWith('['))
-                return segment;
-            if (segment.startsWith('[...')) {
-                segment = segment.slice(4, -1);
-                const params = this.routeInfo?.params?.[segment];
-                if (Array.isArray(params)) {
-                    return params.join('/');
-                }
-                else {
-                    return params?.split(',')?.join('/') ?? '';
-                }
-            }
-            else {
-                segment = segment.slice(1, -1);
-                return this.routeInfo?.params?.[segment];
-            }
-        })
-            .filter(Boolean)
-            .join('/') ?? '/';
-        if (relativeToDirectory) {
-            base = `${base}/`;
-        }
-        href = new URL(href, `http://hostname/${base}`).pathname;
-    }
+    href = (0, href_1.resolveHrefStringWithSegments)(href, this.routeInfo, relativeToDirectory);
     const state = this.linking.getStateFromPath(href, this.linking.config);
     if (!state || state.routes.length === 0) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
@@ -222,7 +195,10 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
             rootPayload.key = `${rootPayload.name}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
         }
     }
-    if (type === 'REPLACE' && navigationState.type === 'tab') {
+    if (navigationState.type === 'expo-tab') {
+        type = 'JUMP_TO';
+    }
+    if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
         type = 'JUMP_TO';
     }
     return {

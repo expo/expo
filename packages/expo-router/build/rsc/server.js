@@ -68,12 +68,12 @@ const runWithRenderStore = (renderStore, fn) => {
     }
 };
 exports.runWithRenderStore = runWithRenderStore;
-function rerender(input, searchParams) {
+function rerender(input, params) {
     const renderStore = renderStorage?.getStore() ?? currentRenderStore;
     if (!renderStore) {
         throw new Error('Render store is not available');
     }
-    renderStore.rerender(input, searchParams);
+    renderStore.rerender(input, params);
 }
 exports.rerender = rerender;
 function getContext() {

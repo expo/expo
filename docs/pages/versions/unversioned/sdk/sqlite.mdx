@@ -10,6 +10,7 @@ platforms: ['android', 'ios']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import { Step } from '~/ui/components/Step';
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
 
@@ -358,6 +359,61 @@ export default function App() {
 }
 ```
 
+### Sharing a database between apps/extensions (iOS)
+
+To share a database with other apps/extensions in the same App Group, you can use shared containers by following the steps below:
+
+<Step label="1">
+
+Configure the App Group in app config:
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "com.myapp",
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.myapp"]
+      }
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+
+Use [`Paths.appleSharedContainers`](filesystem-next/#applesharedcontainers) from the [`expo-file-system`](filesystem-next/) library to retrieve the path to the shared container:
+
+```tsx Using Shared Container for SQLite Database on iOS
+import { SQLiteProvider, defaultDatabaseDirectory } from 'expo-sqlite';
+import { Paths } from 'expo-file-system/next';
+import { useMemo } from 'react';
+import { Platform, View } from 'react-native';
+
+export default function App() {
+  const dbDirectory = useMemo(() => {
+    if (Platform.OS === 'ios') {
+      return Object.values(Paths.appleSharedContainers)?.[0]?.uri;
+      // or `Paths.appleSharedContainers['group.com.myapp']?.uri` to choose specific container
+    }
+    return defaultDatabaseDirectory;
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <SQLiteProvider databaseName="test.db" directory={dbDirectory}>
+        <Header />
+        <Content />
+      </SQLiteProvider>
+    </View>
+  );
+}
+```
+
+</Step>
+
 ### Passing binary data
 
 Use [`Uint8Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) to pass binary data to the database:
@@ -378,6 +434,37 @@ expect(row.data).toEqual(blob);
 ### Browse an on-device database
 
 You can inspect a database, execute queries against it, and explore data with the [drizzle-studio-expo dev tools plugin](https://github.com/drizzle-team/drizzle-studio-expo). This plugin enables you to launch [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), connected to a database in your app, directly from Expo CLI. This plugin can be used with any `expo-sqlite` configuration. It does not require that you use [Drizzle ORM](#drizzle-orm) in your app. [Learn how to install and use the plugin](https://github.com/drizzle-team/drizzle-studio-expo).
+
+## AsyncStorage
+
+The `expo-sqlite` library provides [`AsyncStorage`](#sqliteasyncstorage) as a drop-in replacement for the [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage) library. This key-value store is backed by SQLite. If your project already uses `expo-sqlite`, you can leverage `AsyncStorage` from `expo-sqlite` without needing to add another dependency.
+
+[`AsyncStorage`](#sqliteasyncstorage) provides the same API as `@react-native-async-storage/async-storage`:
+
+```ts Using Storage
+import AsyncStorage from 'expo-sqlite/async-storage';
+
+await AsyncStorage.setItem('key', JSON.stringify({ entity: 'value' }));
+const value = await AsyncStorage.getItem('key');
+const entity = JSON.parse(value);
+console.log(entity); // { entity: 'value' }
+```
+
+A key benefit of using `AsyncStorage` from `expo-sqlite` is the addition of synchronous APIs for added convenience:
+
+```ts Using Storage with synchronous APIs
+import AsyncStorage from 'expo-sqlite/async-storage';
+
+AsyncStorage.setItemSync('key', 'value');
+const value = AsyncStorage.getItemSync('key');
+```
+
+If you're currently using `@react-native-async-storage/async-storage` in your project, switching to `expo-sqlite`'s `AsyncStorage` is as simple as changing the import statement:
+
+```diff
+- import AsyncStorage from '@react-native-async-storage/async-storage';
++ import AsyncStorage from 'expo-sqlite/async-storage';
+```
 
 ## Third-party library integrations
 

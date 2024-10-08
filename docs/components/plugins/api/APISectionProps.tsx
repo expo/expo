@@ -13,10 +13,9 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   BoxSectionHeader,
   CommentTextBlock,
-  getCommentContent,
+  extractDefaultPropValue,
   getCommentOrSignatureComment,
   getH3CodeWithBaseNestingLevel,
-  getTagData,
   getTagNamesList,
   renderTypeOrSignatureType,
   resolveTypeName,
@@ -40,20 +39,6 @@ export type RenderPropOptions = {
 };
 
 const UNKNOWN_VALUE = '...';
-
-const extractDefaultPropValue = (
-  { comment, name }: PropData,
-  defaultProps?: DefaultPropsDefinitionData
-): string | undefined => {
-  const annotationDefault = getTagData('default', comment);
-  if (annotationDefault) {
-    return getCommentContent(annotationDefault.content);
-  }
-  return defaultProps?.type?.declaration?.children?.filter(
-    (defaultProp: PropData) => defaultProp.name === name
-  )[0]?.defaultValue;
-};
-
 const renderInheritedProp = (ip: TypeDefinitionData, sdkVersion: string) => {
   return (
     <LI key={`inherited-prop-${ip.name}-${ip.type}`}>
@@ -118,11 +103,12 @@ const renderProps = (
 };
 
 export const renderProp = (
-  { comment, name, type, flags, signatures }: PropData,
+  propData: PropData,
   sdkVersion: string,
   defaultValue?: string,
   { exposeInSidebar, ...options }: RenderPropOptions = {}
 ) => {
+  const { comment, name, type, flags, signatures } = { ...propData, ...propData.getSignature };
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
   const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
   const extractedSignatures = signatures || type?.declaration?.signatures;
@@ -145,6 +131,7 @@ export const renderProp = (
       </HeaderComponent>
       <P className={mergeClasses(extractedComment && ELEMENT_SPACING)}>
         {flags?.isOptional && <span className={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
+        {flags?.isReadonly && <span className={STYLES_SECONDARY}>Read Only&emsp;&bull;&emsp;</span>}
         <span className={STYLES_SECONDARY}>Type:</span>{' '}
         {renderTypeOrSignatureType({ type, signatures: extractedSignatures, sdkVersion })}
         {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
@@ -165,8 +152,13 @@ const APISectionProps = ({
   header = 'Props',
   sdkVersion,
 }: APISectionPropsProps) => {
+  if (!data?.length) {
+    return null;
+  }
+
   const baseProp = data.find(prop => prop.name === header);
-  return data?.length > 0 ? (
+
+  return (
     <>
       {header === 'Props' ? (
         <H2 key="props-header">{header}</H2>
@@ -179,14 +171,14 @@ const APISectionProps = ({
             exposeInSidebar
             baseNestingLevel={99}
           />
-          {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : null}
+          {baseProp && baseProp.comment && <CommentTextBlock comment={baseProp.comment} />}
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
         renderProps(propsDefinition, sdkVersion, defaultProps, header === 'Props')
       )}
     </>
-  ) : null;
+  );
 };
 
 export default APISectionProps;

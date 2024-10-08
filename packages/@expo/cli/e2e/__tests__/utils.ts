@@ -23,7 +23,12 @@ export function getTemporaryPath() {
 }
 
 export function execute(...args: string[]) {
-  return execa('node', [bin, ...args], { cwd: projectRoot });
+  return execaLog('node', [bin, ...args], { cwd: projectRoot });
+}
+
+export function execaLog(command: string, args: string[], options: execa.Options) {
+  //   console.log(`Running: ${command} ${args.join(' ')}`);
+  return execa(command, args, options);
 }
 
 export function getRoot(...args: string[]) {
@@ -249,11 +254,15 @@ export function getRouterE2ERoot(): string {
 
 export function getHtmlHelpers(outputDir: string) {
   async function getScriptTagsAsync(name: string) {
-    const tags = (await getPageHtml(outputDir, name)).querySelectorAll('script').map((script) => {
-      expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+    const tags = (await getPageHtml(outputDir, name))
+      .querySelectorAll('script')
+      // Remove scripts without a src attribute
+      .filter((script) => !!script.attributes.src)
+      .map((script) => {
+        expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
 
-      return script.attributes.src;
-    });
+        return script.attributes.src;
+      });
 
     ensureEntryChunk(tags[0]);
 

@@ -60,9 +60,8 @@ function withLayoutContext(Nav, processor) {
         if (!sorted.length) {
             return null;
         }
-        return (
         // @ts-expect-error
-        <Nav {...props} id={contextKey} ref={ref} children={sorted}/>);
+        return <Nav {...props} id={contextKey} ref={ref} children={sorted}/>;
     });
     // @ts-expect-error
     Navigator.Screen = Screen_1.Screen;

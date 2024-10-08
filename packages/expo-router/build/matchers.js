@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isTypedRoute = exports.stripInvisibleSegmentsFromPath = exports.stripGroupSegmentsFromPath = exports.removeFileSystemDots = exports.removeSupportedExtensions = exports.getContextKey = exports.getNameFromFilePath = exports.matchArrayGroupName = exports.matchGroupName = exports.testNotFound = exports.matchDeepDynamicRouteName = exports.matchDynamicName = void 0;
+exports.isTypedRoute = exports.stripInvisibleSegmentsFromPath = exports.stripGroupSegmentsFromPath = exports.removeFileSystemDots = exports.removeSupportedExtensions = exports.getContextKey = exports.getNameFromFilePath = exports.matchArrayGroupName = exports.matchLastGroupName = exports.matchGroupName = exports.testNotFound = exports.matchDeepDynamicRouteName = exports.matchDynamicName = void 0;
 /** Match `[page]` -> `page` */
 function matchDynamicName(name) {
     // Don't match `...` or `[` or `]` inside the brackets
@@ -23,6 +23,11 @@ function matchGroupName(name) {
     return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 exports.matchGroupName = matchGroupName;
+/** Match `(app)/(page)` -> `page` */
+function matchLastGroupName(name) {
+    return name.match(/.*(?<=\/|^)\(([^\\/\s]+)\)[^\s]*$/)?.[1];
+}
+exports.matchLastGroupName = matchLastGroupName;
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
 function matchArrayGroupName(name) {
     return name.match(/(?:[^\\(\\)])*?\(([^\\/]+,[^\\/]+)\).*?$/)?.[1];

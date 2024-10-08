@@ -8,11 +8,11 @@ export type Date = {
     /**
      * Day.
      */
-    day?: number;
+    day: number;
     /**
      * Month - adjusted for JavaScript `Date` which starts at `0`.
      */
-    month?: number;
+    month: number;
     /**
      * Year.
      */
@@ -24,9 +24,9 @@ export type Date = {
     /**
      * Localized display name.
      */
-    label: string;
+    label?: string;
     /**
-     * Format for the input date.
+     * Format for the date. This is provided by the OS, do not set this manually.
      */
     format?: CalendarFormatType;
 };

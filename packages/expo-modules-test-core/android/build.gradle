@@ -16,19 +16,40 @@ android {
     versionCode 3
     versionName '0.18.0'
   }
-  packaging {
-    exclude 'META-INF/LICENSE-notice.md'
-    exclude 'META-INF/LICENSE.md'
+  packagingOptions {
+    resources {
+      excludes += [
+              'META-INF/LICENSE.md',
+              'META-INF/LICENSE-notice.md',
+      ]
+    }
   }
 }
 
 dependencies {
-  api 'androidx.test:core:1.5.0'
+  api 'androidx.test:core:1.6.1'
   api 'junit:junit:4.13.2'
-  api 'io.mockk:mockk:1.13.5'
-  api "org.robolectric:robolectric:4.10"
+  api('io.mockk:mockk:1.13.5') {
+    // jupiter is junit 5 which we don't use
+    exclude group: 'org.junit.jupiter'
+  }
+  api ("org.robolectric:robolectric:4.11.1") {
+    // Duplicate class bcprov-jdk15to18-1.78.1.jar and bcprov-jdk18on-1.78.1.jar
+    // Exclude the conflicting jdk18on version, so that jdk15to18 is used
+    exclude group: 'org.bouncycastle', module: 'bcprov-jdk18on'
+  }
+  // specify a version of Bouncy Castle - used in robolectric and androidx.room (expo-updates)
+  implementation 'org.bouncycastle:bcprov-jdk15to18:1.78.1'
+  testImplementation 'org.bouncycastle:bcprov-jdk15to18:1.78.1'
 
   implementation 'com.facebook.react:react-android'
 
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+
+  // instrumented testing dependencies
+  api 'androidx.test.ext:junit:1.2.1'
+  api 'androidx.test:runner:1.6.2'
+  api 'androidx.test:rules:1.6.1'
+  api "com.google.truth:truth:1.1.2"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 }

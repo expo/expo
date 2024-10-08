@@ -120,7 +120,8 @@ final class VersionManager: EXVersionManagerObjC {
     }
     return AppContextConfig(
       documentDirectory: URL(fileURLWithPath: documentDirectory),
-      cacheDirectory: URL(fileURLWithPath: cacheDirectory)
+      cacheDirectory: URL(fileURLWithPath: cacheDirectory),
+      appGroups: nil
     )
   }
 }

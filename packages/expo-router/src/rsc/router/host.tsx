@@ -11,7 +11,6 @@
 //// <reference types="react/canary" />
 'use client';
 
-import * as FS from 'expo-file-system';
 import {
   createContext,
   createElement,
@@ -21,12 +20,14 @@ import {
   startTransition,
   // @ts-expect-error
   use,
+  useEffect,
 } from 'react';
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
 import { MetroServerError, ReactServerError } from './errors';
 import { fetch } from './fetch';
+import { encodeInput, encodeActionId } from './utils';
 import { getDevServer } from '../../getDevServer';
 
 const { createFromFetch, encodeReply } = RSDWClient;
@@ -51,6 +52,39 @@ if (BASE_PATH === '/') {
     }`
   );
 }
+
+type OnFetchData = (data: unknown) => void;
+type SetElements = (updater: Elements | ((prev: Elements) => Elements)) => void;
+
+const RSC_CONTENT_TYPE = 'text/x-component';
+
+const ENTRY = 'e';
+const SET_ELEMENTS = 's';
+const ON_FETCH_DATA = 'o';
+
+type FetchCache = {
+  [ENTRY]?: [input: string, params: unknown, elements: Elements];
+  [SET_ELEMENTS]?: SetElements;
+  [ON_FETCH_DATA]?: OnFetchData | undefined;
+};
+
+const defaultFetchCache: FetchCache = {};
+
+const NO_CACHE_HEADERS: Record<string, string> =
+  process.env.EXPO_OS === 'web'
+    ? {}
+    : // These are needed for iOS + Prod to get updates after the first request.
+      {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: '0',
+      };
+
+const ACTION_HEADERS = {
+  ...NO_CACHE_HEADERS,
+  accept: RSC_CONTENT_TYPE,
+  'expo-platform': process.env.EXPO_OS!,
+};
 
 const checkStatus = async (responsePromise: Promise<Response>): Promise<Response> => {
   // TODO: Combine with metro async fetch logic.
@@ -78,56 +112,107 @@ const checkStatus = async (responsePromise: Promise<Response>): Promise<Response
     }
     throw new ReactServerError(responseText, response.url, response.status);
   }
-  console.log('[Router] Fetched', response.url, response.status);
-
   return response;
 };
 
-type Elements = Promise<Record<string, ReactNode>>;
-
+type Elements = Promise<Record<string, ReactNode>> & {
+  prev?: Record<string, ReactNode> | undefined;
+};
 function getCached<T>(c: () => T, m: WeakMap<object, T>, k: object): T {
   return (m.has(k) ? m : m.set(k, c())).get(k) as T;
 }
 
 const cache1 = new WeakMap();
-const mergeElements = (a: Elements, b: Elements | Awaited<Elements>): Elements => {
-  const getResult = async () => {
-    const nextElements = { ...(await a), ...(await b) };
-    delete nextElements._value;
-    return nextElements;
+const mergeElements = (a: Elements, b: Elements): Elements => {
+  const getResult = () => {
+    const promise: Elements = new Promise((resolve, reject) => {
+      Promise.all([a, b])
+        .then(([a, b]) => {
+          const nextElements = { ...a, ...b };
+          delete nextElements._value;
+          promise.prev = a;
+          resolve(nextElements);
+        })
+        .catch((e) => {
+          a.then(
+            (a) => {
+              promise.prev = a;
+              reject(e);
+            },
+            () => {
+              promise.prev = a.prev;
+              reject(e);
+            }
+          );
+        });
+    });
+    return promise;
   };
   const cache2 = getCached(() => new WeakMap(), cache1, a);
   return getCached(getResult, cache2, b);
 };
 
-type SetElements = (updater: Elements | ((prev: Elements) => Elements)) => void;
-type CacheEntry = [
-  input: string,
-  searchParamsString: string,
-  setElements: SetElements,
-  elements: Elements,
-];
+/**
+ * callServer callback
+ * This is not a public API.
+ */
+export const callServerRSC = async (
+  actionId: string,
+  args?: unknown[],
+  fetchCache = defaultFetchCache
+) => {
+  const url = getAdjustedRemoteFilePath(BASE_PATH + encodeInput(encodeActionId(actionId)));
+  const response =
+    args === undefined
+      ? fetch(url, { headers: ACTION_HEADERS })
+      : encodeReply(args).then((body) =>
+          fetch(url, { method: 'POST', body, headers: ACTION_HEADERS })
+        );
+  const data = createFromFetch<Awaited<Elements>>(checkStatus(response), {
+    callServer: (actionId: string, args: unknown[]) => callServerRSC(actionId, args, fetchCache),
+  });
+  fetchCache[ON_FETCH_DATA]?.(data);
+  startTransition(() => {
+    // FIXME this causes rerenders even if data is empty
+    fetchCache[SET_ELEMENTS]?.((prev) => mergeElements(prev, data));
+  });
+  return (await data)._value;
+};
 
-const fetchCache: [CacheEntry?] = [];
+const prefetchedParams = new WeakMap<Promise<unknown>, unknown>();
 
-const RSC_CONTENT_TYPE = 'text/x-component';
+const fetchRSCInternal = (url: string, params: unknown) =>
+  params === undefined
+    ? fetch(url, {
+        // Disable caching
+        headers: {
+          ...NO_CACHE_HEADERS,
+          'expo-platform': process.env.EXPO_OS!,
+        },
+      })
+    : typeof params === 'string'
+      ? fetch(url, {
+          headers: {
+            ...NO_CACHE_HEADERS,
+            'expo-platform': process.env.EXPO_OS!,
+            'X-Expo-Params': params,
+          },
+        })
+      : encodeReply(params).then((body) =>
+          fetch(url, { method: 'POST', headers: ACTION_HEADERS, body })
+        );
 
 export const fetchRSC = (
   input: string,
-  searchParamsString: string,
-  setElements: SetElements,
-  cache = fetchCache,
-  unstable_onFetchData?: (data: unknown) => void,
-  fetchOptions?: { remote: boolean }
+  params?: unknown,
+  fetchCache = defaultFetchCache
 ): Elements => {
   // TODO: strip when "is exporting".
   if (process.env.NODE_ENV === 'development') {
     const refetchRsc = () => {
-      cache.splice(0);
-      const data = fetchRSC(input, searchParamsString, setElements, cache, unstable_onFetchData, {
-        remote: true,
-      });
-      setElements(data);
+      delete fetchCache[ENTRY];
+      const data = fetchRSC(input, params, fetchCache);
+      fetchCache[SET_ELEMENTS]?.(() => data);
     };
     globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
     const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(globalThis.__EXPO_REFETCH_RSC__);
@@ -139,75 +224,29 @@ export const fetchRSC = (
     globalThis.__EXPO_REFETCH_RSC__ = refetchRsc;
   }
 
-  let entry: CacheEntry | undefined = cache[0];
-  if (entry && entry[0] === input && entry[1] === searchParamsString) {
-    entry[2] = setElements;
-    return entry[3];
+  const entry = fetchCache[ENTRY];
+  if (entry && entry[0] === input && entry[1] === params) {
+    return entry[2];
   }
-  const options = {
-    async callServer(actionId: string, args: unknown[]) {
-      console.log('[Router] Server Action invoked:', actionId);
-      const reqPath = getAdjustedRemoteFilePath(
-        BASE_PATH + encodeInput(encodeURIComponent(actionId))
-      );
 
-      let requestOpts: Pick<RequestInit, 'headers' | 'body'>;
-      if (!Array.isArray(args) || args.some((a) => a instanceof FormData)) {
-        requestOpts = {
-          headers: { accept: RSC_CONTENT_TYPE },
-          body: await encodeReply(args),
-        };
-      } else {
-        requestOpts = {
-          headers: {
-            accept: RSC_CONTENT_TYPE,
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify(args),
-        };
-      }
-
-      const response = fetch(reqPath, {
-        method: 'POST',
-        // @ts-expect-error: non-standard feature for streaming.
-        duplex: 'half',
-        ...requestOpts,
-        headers: {
-          ...requestOpts.headers,
-          'expo-platform': process.env.EXPO_OS!,
-        },
-      });
-      const data = createFromFetch<Awaited<Elements>>(checkStatus(response), options);
-      const setElements = entry![2];
-      startTransition(() => {
-        // FIXME this causes rerenders even if data is empty
-        setElements((prev) => mergeElements(prev, data));
-      });
-
-      const fullRes = await data;
-      console.log('[Router] Server Action resolved:', fullRes._value);
-
-      return fullRes._value;
-    },
-  };
   // eslint-disable-next-line no-multi-assign
   const prefetched = ((globalThis as any).__EXPO_PREFETCHED__ ||= {});
-  const url = BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : '');
-  const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
-  console.log('fetch', reqPath);
-  const response =
-    prefetched[url] ||
-    fetch(reqPath, {
-      headers: {
-        'expo-platform': process.env.EXPO_OS!,
-      },
-    });
+  // TODO: Load from on-disk on native when indicated.
+  // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
+  const url = getAdjustedFilePath(BASE_PATH + encodeInput(input));
+  const hasValidPrefetchedResponse =
+    !!prefetched[url] &&
+    // HACK .has() is for the initial hydration
+    // It's limited and may result in a wrong result. FIXME
+    (!prefetchedParams.has(prefetched[url]) || prefetchedParams.get(prefetched[url]) === params);
+  const response = hasValidPrefetchedResponse ? prefetched[url] : fetchRSCInternal(url, params);
   delete prefetched[url];
-  const data = createFromFetch<Awaited<Elements>>(checkStatus(response), options);
-  unstable_onFetchData?.(data);
-
-  // eslint-disable-next-line no-multi-assign
-  cache[0] = entry = [input, searchParamsString, setElements, data];
+  const data = createFromFetch<Awaited<Elements>>(checkStatus(response), {
+    callServer: (actionId: string, args: unknown[]) => callServerRSC(actionId, args, fetchCache),
+  });
+  fetchCache[ON_FETCH_DATA]?.(data);
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  fetchCache[ENTRY] = [input, params, data];
   return data;
 };
 
@@ -229,29 +268,16 @@ function getAdjustedFilePath(path: string): string {
     return getAdjustedRemoteFilePath(path);
   }
 
-  if (getDevServer().bundleLoadedFromServer) {
-    return getAdjustedRemoteFilePath(path);
-  }
-
-  if (process.env.EXPO_OS === 'android') {
-    return 'file:///android_asset' + path;
-  }
-
-  return 'file://' + FS.bundleDirectory + path;
+  return getAdjustedRemoteFilePath(path);
 }
 
-export const prefetchRSC = (input: string, searchParamsString: string): void => {
+export const prefetchRSC = (input: string, params?: unknown): void => {
   // eslint-disable-next-line no-multi-assign
   const prefetched = ((globalThis as any).__EXPO_PREFETCHED__ ||= {});
-  const url = getAdjustedFilePath(
-    BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : '')
-  );
+  const url = getAdjustedFilePath(BASE_PATH + encodeInput(input));
   if (!(url in prefetched)) {
-    prefetched[url] = fetch(url, {
-      headers: {
-        'expo-platform': process.env.EXPO_OS!,
-      },
-    });
+    prefetched[url] = fetchRSCInternal(url, params);
+    prefetchedParams.set(prefetched[url], params);
   }
 };
 
@@ -264,40 +290,35 @@ const ElementsContext = createContext<Elements | null>(null);
 
 export const Root = ({
   initialInput,
-  initialSearchParamsString,
-  cache,
+  initialParams,
+  fetchCache = defaultFetchCache,
+
   unstable_onFetchData,
   children,
 }: {
   initialInput?: string;
-  initialSearchParamsString?: string;
-  cache?: typeof fetchCache;
+  initialParams?: unknown;
+  fetchCache?: FetchCache;
   unstable_onFetchData?: (data: unknown) => void;
   children: ReactNode;
 }) => {
+  fetchCache[ON_FETCH_DATA] = unstable_onFetchData;
   const [elements, setElements] = useState(() =>
-    fetchRSC(
-      initialInput || '',
-      initialSearchParamsString || '',
-      (fn) => setElements(fn),
-      cache,
-      unstable_onFetchData
-    )
+    fetchRSC(initialInput || '', initialParams, fetchCache)
   );
+  useEffect(() => {
+    fetchCache[SET_ELEMENTS] = setElements;
+  }, [fetchCache, setElements]);
   const refetch = useCallback(
-    (input: string, searchParams?: URLSearchParams) => {
-      (cache || fetchCache).splice(0); // clear cache before fetching
-      const data = fetchRSC(
-        input,
-        searchParams?.toString() || '',
-        setElements,
-        cache,
-        unstable_onFetchData,
-        { remote: true }
-      );
-      setElements((prev) => mergeElements(prev, data));
+    (input: string, params?: unknown) => {
+      // clear cache entry before fetching
+      delete fetchCache[ENTRY];
+      const data = fetchRSC(input, params, fetchCache);
+      startTransition(() => {
+        setElements((prev) => mergeElements(prev, data));
+      });
     },
-    [cache, unstable_onFetchData]
+    [fetchCache]
   );
   return createElement(
     RefetchContext.Provider,
@@ -342,19 +363,3 @@ export const Children = () => use(ChildrenContext);
  */
 export const ServerRoot = ({ elements, children }: { elements: Elements; children: ReactNode }) =>
   createElement(ElementsContext.Provider, { value: elements }, children);
-
-const encodeInput = (input: string) => {
-  if (input === '') {
-    return 'index.txt';
-  }
-  if (input === 'index') {
-    throw new Error('Input should not be `index`');
-  }
-  if (input.startsWith('/')) {
-    throw new Error('Input should not start with `/`');
-  }
-  if (input.endsWith('/')) {
-    throw new Error('Input should not end with `/`');
-  }
-  return input + '.txt';
-};

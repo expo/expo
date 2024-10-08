@@ -74,6 +74,7 @@ describe(resolveOptionsAsync, () => {
       dumpAssetmap: true,
       sourceMaps: true,
       maxWorkers: 2,
+      skipSSG: false,
       outputDir: 'foobar',
       platforms: ['android'],
     });
@@ -88,6 +89,7 @@ describe(resolveOptionsAsync, () => {
       dumpAssetmap: false,
       sourceMaps: false,
       maxWorkers: undefined,
+      skipSSG: false,
       outputDir: 'dist',
       platforms: ['ios', 'android'],
     });

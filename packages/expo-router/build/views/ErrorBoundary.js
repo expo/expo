@@ -80,7 +80,7 @@ function ErrorBoundary({ error, retry }) {
         <react_native_1.View style={{
             marginBottom: 12,
             gap: 4,
-            flexWrap: 'wrap',
+            flexWrap: process.env.EXPO_OS === 'web' ? 'wrap' : 'nowrap',
         }}>
           <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
             Something went wrong

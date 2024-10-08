@@ -91,11 +91,25 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'Using RSCs in Expo Router',
+    event: 'PodRocket Season 4',
+    description: "Evan Bacon",
+    thumbnail: "podrocket-evan.jpg",
+    link: "https://podrocket.logrocket.com/using-rscs-expo-router-evan-bacon"
+  },
+  {
     title: 'Expo EAS and 100 Snakes',
     event: 'Rocket Ship #038',
     description: "Jon Samp",
     videoId: "JKU9JC4nX1k",
     link: "https://podcast.galaxies.dev/episodes/038-expo-eas-and-100-snakes-with-jon-samp"
+  },
+  {
+    title: 'React Native Performance in 2024',
+    event: 'React Universe On Air #36',
+    description: "Kadi Kraman",
+    videoId: "eutgpu2dgF4",
+    link: "https://www.callstack.com/podcasts/react-native-performance-in-2024-challenges-solutions-forecasts"
   },
   {
     title: 'Expo Router & Universal React Native Apps',
@@ -148,6 +162,26 @@ export const PODCASTS = [
 ] as Talk[];
 
 export const LIVE_STREAMS = [
+  {
+    title: 'How to do React Native styling with Tamagui',
+    event: 'Expo Live Stream',
+    videoId: "5ubbsSD-iXg"
+  },
+  {
+    title: 'How to do React Native styling with NativeWind',
+    event: 'Expo Live Stream',
+    videoId: "TtmWw0NfsQk"
+  },
+  {
+    title: 'An introduction to built-in styling in React Native',
+    event: 'Expo Live Stream',
+    videoId: "M1ma6Y5Ih_c"
+  },
+  {
+    title: 'What React devs need to know about React Native',
+    event: 'Expo Live Stream',
+    videoId: "iB7sc-fzpWw"
+  },
   {
     title: 'Expo SDK 51: New Architecture, Router 3.5, expo.new and more',
     event: 'Expo Live Stream',

@@ -12,7 +12,8 @@ export declare function useAudioSampleListener(player: AudioPlayer, listener: (d
 export declare function useAudioRecorder(options: RecordingOptions, statusListener?: (status: RecordingStatus) => void): AudioRecorder;
 export declare function useAudioRecorderState(recorder: AudioRecorder, interval?: number): RecorderState;
 export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;
-export declare function setAudioModeAsync(mode: AudioMode): Promise<void>;
+export declare function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void>;
 export { AudioModule, AudioPlayer, AudioRecorder };
 export * from './Audio.types';
+export * from './RecordingConstants';
 //# sourceMappingURL=ExpoAudio.d.ts.map

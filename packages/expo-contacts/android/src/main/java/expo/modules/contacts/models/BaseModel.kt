@@ -22,11 +22,16 @@ abstract class BaseModel : CommonProvider {
 
   protected fun mapValue(readableMap: Map<String, Any?>, key: String?, alias: String? = null) {
     if (readableMap.containsKey(key)) {
-      val value = readableMap[key]
-      if (value is Boolean) {
-        map.putBoolean(alias ?: key, value)
-      } else if (value is String) {
-        map.putString(alias ?: key, value)
+      when (val value = readableMap[key]) {
+        is Boolean -> {
+          map.putBoolean(alias ?: key, value)
+        }
+        is String -> {
+          map.putString(alias ?: key, value)
+        }
+        is Double -> {
+          map.putDouble(alias ?: key, value)
+        }
       }
     }
   }
@@ -73,7 +78,7 @@ abstract class BaseModel : CommonProvider {
     get() = getString(typeAlias)
 
   private val isPrimary: Int
-    get() = if (map.containsKey(isPrimaryAlias)) map.getInt(isPrimaryAlias) else 0
+    get() = if (map.containsKey(isPrimaryAlias)) if (map.getBoolean(isPrimaryAlias)) 1 else 0 else 0
 
   fun getString(key: String?): String? {
     return if (map.containsKey(key)) map.getString(key) else null
@@ -118,7 +123,7 @@ abstract class BaseModel : CommonProvider {
       return ContentValues().apply {
         put(Columns.MIMETYPE, contentType)
         put(Columns.DATA, data)
-        put(Columns.TYPE, type)
+        put(Columns.TYPE, mapStringToType(label))
         put(Columns.LABEL, label)
         put(Columns.ID, id)
         put(Columns.IS_PRIMARY, isPrimary)

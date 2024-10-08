@@ -37,7 +37,17 @@ function RootErrorBoundary(props: ErrorBoundaryProps) {
     }
   }, [props.error, props.retry]);
 
-  return <ErrorBoundary error={props.error} retry={props.retry} />;
+  return (
+    <ErrorBoundary
+      error={props.error}
+      retry={() => {
+        // TODO: Invalidate the cache automatically when the request fails.
+        // Invalidate the fetch cache so we can retry the request.
+        globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__?.();
+        return props.retry();
+      }}
+    />
+  );
 }
 
 // Must be exported or Fast Refresh won't update the context

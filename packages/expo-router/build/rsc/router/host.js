@@ -10,39 +10,16 @@
 //// <reference types="react/canary" />
 'use client';
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = exports.Root = exports.prefetchRSC = exports.fetchRSC = void 0;
-const FS = __importStar(require("expo-file-system"));
+exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = exports.Root = exports.prefetchRSC = exports.fetchRSC = exports.callServerRSC = void 0;
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
 const errors_1 = require("./errors");
 const fetch_1 = require("./fetch");
+const utils_1 = require("./utils");
 const getDevServer_1 = require("../../getDevServer");
 const { createFromFetch, encodeReply } = client_1.default;
 // NOTE: Ensured to start with `/`.
@@ -57,6 +34,24 @@ if (!BASE_PATH.endsWith('/')) {
 if (BASE_PATH === '/') {
     throw new Error(`Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${(0, getDevServer_1.getDevServer)().fullBundleUrl}`);
 }
+const RSC_CONTENT_TYPE = 'text/x-component';
+const ENTRY = 'e';
+const SET_ELEMENTS = 's';
+const ON_FETCH_DATA = 'o';
+const defaultFetchCache = {};
+const NO_CACHE_HEADERS = process.env.EXPO_OS === 'web'
+    ? {}
+    : // These are needed for iOS + Prod to get updates after the first request.
+        {
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
+            Expires: '0',
+        };
+const ACTION_HEADERS = {
+    ...NO_CACHE_HEADERS,
+    accept: RSC_CONTENT_TYPE,
+    'expo-platform': process.env.EXPO_OS,
+};
 const checkStatus = async (responsePromise) => {
     // TODO: Combine with metro async fetch logic.
     const response = await responsePromise;
@@ -84,7 +79,6 @@ const checkStatus = async (responsePromise) => {
         }
         throw new errors_1.ReactServerError(responseText, response.url, response.status);
     }
-    console.log('[Router] Fetched', response.url, response.status);
     return response;
 };
 function getCached(c, m, k) {
@@ -92,25 +86,75 @@ function getCached(c, m, k) {
 }
 const cache1 = new WeakMap();
 const mergeElements = (a, b) => {
-    const getResult = async () => {
-        const nextElements = { ...(await a), ...(await b) };
-        delete nextElements._value;
-        return nextElements;
+    const getResult = () => {
+        const promise = new Promise((resolve, reject) => {
+            Promise.all([a, b])
+                .then(([a, b]) => {
+                const nextElements = { ...a, ...b };
+                delete nextElements._value;
+                promise.prev = a;
+                resolve(nextElements);
+            })
+                .catch((e) => {
+                a.then((a) => {
+                    promise.prev = a;
+                    reject(e);
+                }, () => {
+                    promise.prev = a.prev;
+                    reject(e);
+                });
+            });
+        });
+        return promise;
     };
     const cache2 = getCached(() => new WeakMap(), cache1, a);
     return getCached(getResult, cache2, b);
 };
-const fetchCache = [];
-const RSC_CONTENT_TYPE = 'text/x-component';
-const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, unstable_onFetchData, fetchOptions) => {
+/**
+ * callServer callback
+ * This is not a public API.
+ */
+const callServerRSC = async (actionId, args, fetchCache = defaultFetchCache) => {
+    const url = getAdjustedRemoteFilePath(BASE_PATH + (0, utils_1.encodeInput)((0, utils_1.encodeActionId)(actionId)));
+    const response = args === undefined
+        ? (0, fetch_1.fetch)(url, { headers: ACTION_HEADERS })
+        : encodeReply(args).then((body) => (0, fetch_1.fetch)(url, { method: 'POST', body, headers: ACTION_HEADERS }));
+    const data = createFromFetch(checkStatus(response), {
+        callServer: (actionId, args) => (0, exports.callServerRSC)(actionId, args, fetchCache),
+    });
+    fetchCache[ON_FETCH_DATA]?.(data);
+    (0, react_1.startTransition)(() => {
+        // FIXME this causes rerenders even if data is empty
+        fetchCache[SET_ELEMENTS]?.((prev) => mergeElements(prev, data));
+    });
+    return (await data)._value;
+};
+exports.callServerRSC = callServerRSC;
+const prefetchedParams = new WeakMap();
+const fetchRSCInternal = (url, params) => params === undefined
+    ? (0, fetch_1.fetch)(url, {
+        // Disable caching
+        headers: {
+            ...NO_CACHE_HEADERS,
+            'expo-platform': process.env.EXPO_OS,
+        },
+    })
+    : typeof params === 'string'
+        ? (0, fetch_1.fetch)(url, {
+            headers: {
+                ...NO_CACHE_HEADERS,
+                'expo-platform': process.env.EXPO_OS,
+                'X-Expo-Params': params,
+            },
+        })
+        : encodeReply(params).then((body) => (0, fetch_1.fetch)(url, { method: 'POST', headers: ACTION_HEADERS, body }));
+const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
     // TODO: strip when "is exporting".
     if (process.env.NODE_ENV === 'development') {
         const refetchRsc = () => {
-            cache.splice(0);
-            const data = (0, exports.fetchRSC)(input, searchParamsString, setElements, cache, unstable_onFetchData, {
-                remote: true,
-            });
-            setElements(data);
+            delete fetchCache[ENTRY];
+            const data = (0, exports.fetchRSC)(input, params, fetchCache);
+            fetchCache[SET_ELEMENTS]?.(() => data);
         };
         globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
         const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(globalThis.__EXPO_REFETCH_RSC__);
@@ -122,68 +166,27 @@ const fetchRSC = (input, searchParamsString, setElements, cache = fetchCache, un
         }
         globalThis.__EXPO_REFETCH_RSC__ = refetchRsc;
     }
-    let entry = cache[0];
-    if (entry && entry[0] === input && entry[1] === searchParamsString) {
-        entry[2] = setElements;
-        return entry[3];
+    const entry = fetchCache[ENTRY];
+    if (entry && entry[0] === input && entry[1] === params) {
+        return entry[2];
     }
-    const options = {
-        async callServer(actionId, args) {
-            console.log('[Router] Server Action invoked:', actionId);
-            const reqPath = getAdjustedRemoteFilePath(BASE_PATH + encodeInput(encodeURIComponent(actionId)));
-            let requestOpts;
-            if (!Array.isArray(args) || args.some((a) => a instanceof FormData)) {
-                requestOpts = {
-                    headers: { accept: RSC_CONTENT_TYPE },
-                    body: await encodeReply(args),
-                };
-            }
-            else {
-                requestOpts = {
-                    headers: {
-                        accept: RSC_CONTENT_TYPE,
-                        'content-type': 'application/json',
-                    },
-                    body: JSON.stringify(args),
-                };
-            }
-            const response = (0, fetch_1.fetch)(reqPath, {
-                method: 'POST',
-                // @ts-expect-error: non-standard feature for streaming.
-                duplex: 'half',
-                ...requestOpts,
-                headers: {
-                    ...requestOpts.headers,
-                    'expo-platform': process.env.EXPO_OS,
-                },
-            });
-            const data = createFromFetch(checkStatus(response), options);
-            const setElements = entry[2];
-            (0, react_1.startTransition)(() => {
-                // FIXME this causes rerenders even if data is empty
-                setElements((prev) => mergeElements(prev, data));
-            });
-            const fullRes = await data;
-            console.log('[Router] Server Action resolved:', fullRes._value);
-            return fullRes._value;
-        },
-    };
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
-    const url = BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : '');
-    const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
-    console.log('fetch', reqPath);
-    const response = prefetched[url] ||
-        (0, fetch_1.fetch)(reqPath, {
-            headers: {
-                'expo-platform': process.env.EXPO_OS,
-            },
-        });
+    // TODO: Load from on-disk on native when indicated.
+    // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
+    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
+    const hasValidPrefetchedResponse = !!prefetched[url] &&
+        // HACK .has() is for the initial hydration
+        // It's limited and may result in a wrong result. FIXME
+        (!prefetchedParams.has(prefetched[url]) || prefetchedParams.get(prefetched[url]) === params);
+    const response = hasValidPrefetchedResponse ? prefetched[url] : fetchRSCInternal(url, params);
     delete prefetched[url];
-    const data = createFromFetch(checkStatus(response), options);
-    unstable_onFetchData?.(data);
-    // eslint-disable-next-line no-multi-assign
-    cache[0] = entry = [input, searchParamsString, setElements, data];
+    const data = createFromFetch(checkStatus(response), {
+        callServer: (actionId, args) => (0, exports.callServerRSC)(actionId, args, fetchCache),
+    });
+    fetchCache[ON_FETCH_DATA]?.(data);
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    fetchCache[ENTRY] = [input, params, data];
     return data;
 };
 exports.fetchRSC = fetchRSC;
@@ -201,24 +204,15 @@ function getAdjustedFilePath(path) {
     if (path.match(/[0-9a-z]{40}#/i)) {
         return getAdjustedRemoteFilePath(path);
     }
-    if ((0, getDevServer_1.getDevServer)().bundleLoadedFromServer) {
-        return getAdjustedRemoteFilePath(path);
-    }
-    if (process.env.EXPO_OS === 'android') {
-        return 'file:///android_asset' + path;
-    }
-    return 'file://' + FS.bundleDirectory + path;
+    return getAdjustedRemoteFilePath(path);
 }
-const prefetchRSC = (input, searchParamsString) => {
+const prefetchRSC = (input, params) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
-    const url = getAdjustedFilePath(BASE_PATH + encodeInput(input) + (searchParamsString ? '?' + searchParamsString : ''));
+    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     if (!(url in prefetched)) {
-        prefetched[url] = (0, fetch_1.fetch)(url, {
-            headers: {
-                'expo-platform': process.env.EXPO_OS,
-            },
-        });
+        prefetched[url] = fetchRSCInternal(url, params);
+        prefetchedParams.set(prefetched[url], params);
     }
 };
 exports.prefetchRSC = prefetchRSC;
@@ -226,13 +220,20 @@ const RefetchContext = (0, react_1.createContext)(() => {
     throw new Error('Missing Root component');
 });
 const ElementsContext = (0, react_1.createContext)(null);
-const Root = ({ initialInput, initialSearchParamsString, cache, unstable_onFetchData, children, }) => {
-    const [elements, setElements] = (0, react_1.useState)(() => (0, exports.fetchRSC)(initialInput || '', initialSearchParamsString || '', (fn) => setElements(fn), cache, unstable_onFetchData));
-    const refetch = (0, react_1.useCallback)((input, searchParams) => {
-        (cache || fetchCache).splice(0); // clear cache before fetching
-        const data = (0, exports.fetchRSC)(input, searchParams?.toString() || '', setElements, cache, unstable_onFetchData, { remote: true });
-        setElements((prev) => mergeElements(prev, data));
-    }, [cache, unstable_onFetchData]);
+const Root = ({ initialInput, initialParams, fetchCache = defaultFetchCache, unstable_onFetchData, children, }) => {
+    fetchCache[ON_FETCH_DATA] = unstable_onFetchData;
+    const [elements, setElements] = (0, react_1.useState)(() => (0, exports.fetchRSC)(initialInput || '', initialParams, fetchCache));
+    (0, react_1.useEffect)(() => {
+        fetchCache[SET_ELEMENTS] = setElements;
+    }, [fetchCache, setElements]);
+    const refetch = (0, react_1.useCallback)((input, params) => {
+        // clear cache entry before fetching
+        delete fetchCache[ENTRY];
+        const data = (0, exports.fetchRSC)(input, params, fetchCache);
+        (0, react_1.startTransition)(() => {
+            setElements((prev) => mergeElements(prev, data));
+        });
+    }, [fetchCache]);
     return (0, react_1.createElement)(RefetchContext.Provider, { value: refetch }, (0, react_1.createElement)(ElementsContext.Provider, { value: elements }, children));
 };
 exports.Root = Root;
@@ -263,19 +264,4 @@ exports.Children = Children;
  */
 const ServerRoot = ({ elements, children }) => (0, react_1.createElement)(ElementsContext.Provider, { value: elements }, children);
 exports.ServerRoot = ServerRoot;
-const encodeInput = (input) => {
-    if (input === '') {
-        return 'index.txt';
-    }
-    if (input === 'index') {
-        throw new Error('Input should not be `index`');
-    }
-    if (input.startsWith('/')) {
-        throw new Error('Input should not start with `/`');
-    }
-    if (input.endsWith('/')) {
-        throw new Error('Input should not end with `/`');
-    }
-    return input + '.txt';
-};
 //# sourceMappingURL=host.js.map

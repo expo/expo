@@ -7,7 +7,9 @@ const path_1 = require("path");
 const ERROR_MSG_PREFIX = 'An error occurred while configuring iOS notifications. ';
 const withNotificationsIOS = (config, { mode = 'development', sounds = [] }) => {
     config = (0, config_plugins_1.withEntitlementsPlist)(config, (config) => {
-        config.modResults['aps-environment'] = mode;
+        if (!config.modResults['aps-environment']) {
+            config.modResults['aps-environment'] = mode;
+        }
         return config;
     });
     config = (0, exports.withNotificationSounds)(config, { sounds });

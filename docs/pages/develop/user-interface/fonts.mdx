@@ -283,8 +283,12 @@ After installing the font package, map the font using the `useFonts` hook in a t
 
 ```tsx app/_layout.tsx
 // Rest of the import statements
-/* @info Import <CODE>Inter_900Black</CODE> and <CODE>useFonts</CODE> hook from <CODE>@expo-google-fonts/inter</CODE>*/ import { Inter_900Black, useFonts } from '@expo-google-fonts/inter';
-/* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
+/* @info Import <CODE>Inter_900Black</CODE> and <CODE>useFonts</CODE> hook from <CODE>@expo-google-fonts/inter</CODE>*/
+import { Inter_900Black, useFonts } from '@expo-google-fonts/inter';
+/* @end */
+/* @info Import <CODE>SplashScreen</CODE> so that when the fonts are not loaded, we can continue to show <CODE>SplashScreen</CODE>. */
+import * as SplashScreen from 'expo-splash-screen';
+/* @end */
 import {useEffect} from 'react';
 
 /* @info This prevents <CODE>SplashScreen</CODE> from auto hiding while the fonts are in loading state. */
@@ -300,7 +304,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded || error) {
+      /* @info After the custom fonts have loaded, we can hide the splash screen and display the app screen. */
       SplashScreen.hideAsync();
+      /* @end */
     }
   }, [loaded, error]);
 
@@ -384,7 +390,7 @@ export default function RootLayout() {
 }
 ```
 
-Now, you can any icon from the `Ionicons` library in a React component:
+Now, you can use any icon from the `Ionicons` library in a React component:
 
 ```tsx
 <Ionicons name="checkmark-circle" size={32} color="green" />

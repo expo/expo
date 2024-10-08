@@ -1,8 +1,8 @@
-const LEFT_BRACKETS = ['(', '{'] as const;
-const RIGHT_BRACKETS = [')', '}'] as const;
+type LeftBrackets = ['(', '{'];
+type RightBrackets = [')', '}'];
 
-type LeftBracket = (typeof LEFT_BRACKETS)[number];
-type RightBracket = (typeof RIGHT_BRACKETS)[number];
+type LeftBracket = LeftBrackets[number];
+type RightBracket = RightBrackets[number];
 type Bracket = LeftBracket | RightBracket;
 
 export function findMatchingBracketPosition(
@@ -52,7 +52,7 @@ export function findMatchingBracketPosition(
 }
 
 function isLeftBracket(bracket: Bracket): boolean {
-  const leftBracketList: readonly Bracket[] = LEFT_BRACKETS;
+  const leftBracketList: readonly Bracket[] = ['(', '{'];
   return leftBracketList.includes(bracket);
 }
 

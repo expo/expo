@@ -129,15 +129,6 @@ class KotlinInteropModuleRegistryTest {
       Triple(
         "test-2",
         "f2",
-        JavaOnlyArray().apply { pushString("string") }
-      ) to """
-        Call to function 'test-2.f2' has been rejected.
-        → Caused by: The 1st argument cannot be cast to type kotlin.Int (received String)
-        → Caused by: java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
-      """.trimIndent(),
-      Triple(
-        "test-2",
-        "f2",
         JavaOnlyArray()
       ) to """
         Call to function 'test-2.f2' has been rejected.
@@ -149,8 +140,7 @@ class KotlinInteropModuleRegistryTest {
         JavaOnlyArray().apply { pushMap(JavaOnlyMap().apply { putInt("string", 10) }) }
       ) to """
         Call to function 'test-1.f2' has been rejected.
-        → Caused by: The 1st argument cannot be cast to type expo.modules.kotlin.TestRecord (received Map)
-        → Caused by: Cannot create a record of the type: 'expo.modules.kotlin.TestRecord'.
+        → Caused by: The 1st argument cannot be cast to type expo.modules.kotlin.TestRecord (received class com.facebook.react.bridge.JavaOnlyMap)
         → Caused by: Cannot cast 'Number' for field 'string' ('kotlin.String').
         → Caused by: java.lang.ClassCastException: class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
       """.trimIndent()

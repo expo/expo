@@ -117,9 +117,9 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       picker.sourceType = .photoLibrary
     }
 
-    picker.mediaTypes = options.mediaTypes.toArray()
+    picker.mediaTypes = options.toMediaTypesArray()
 
-    if options.mediaTypes.requiresMicrophonePermission() && sourceType == .camera {
+    if options.requiresMicrophonePermission() && sourceType == .camera {
       do {
         try checkMicrophonePermissions()
       } catch {
@@ -157,7 +157,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
 
     // selection limit = 1 --> single selection, reflects the old picker behavior
     configuration.selectionLimit = options.allowsMultipleSelection ? options.selectionLimit : SINGLE_SELECTION
-    configuration.filter = options.mediaTypes.toPickerFilter()
+    configuration.filter = options.toPickerFilter()
     configuration.preferredAssetRepresentationMode = options.preferredAssetRepresentationMode.toAssetRepresentationMode()
     configuration.selection = options.orderedSelection ? .ordered : .default
 

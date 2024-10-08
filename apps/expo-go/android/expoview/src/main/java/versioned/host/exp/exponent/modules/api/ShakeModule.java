@@ -45,8 +45,8 @@ public class ShakeModule extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
     mShakeDetector.stop();
   }
 }

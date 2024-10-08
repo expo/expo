@@ -42,11 +42,11 @@
     "ansi-regex": "^5.0.0",
     "chalk": "^4.0.0",
     "find-up": "^5.0.0",
-    "find-yarn-workspace-root": "~2.0.0",
     "js-yaml": "^3.13.1",
     "micromatch": "^4.0.2",
     "npm-package-arg": "^11.0.0",
     "ora": "^3.4.0",
+    "resolve-workspace-root": "^1.0.0",
     "split": "^1.0.1",
     "sudo-prompt": "9.1.1"
   },

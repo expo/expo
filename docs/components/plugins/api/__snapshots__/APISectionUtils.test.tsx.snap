@@ -62,7 +62,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
   >
     Gets the referrer URL of the installed app with the 
     <a
-      class="emotion-5"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
       href="https://developer.android.com/google/play/installreferrer"
       rel="noopener noreferrer"
       target="_blank"
@@ -112,7 +112,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       </span>
     </p>
     <pre
-      class="relative max-h-[unset] last:mb-0 emotion-9"
+      class="relative border border-secondary p-4 my-4 bg-subtle last:mb-0 emotion-9"
       data-text="true"
     >
       <code
@@ -169,7 +169,7 @@ exports[`APISectionUtils.CommentTextBlock component no comment 1`] = `<div />`;
 exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 <div>
   <a
-    class="emotion-0"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
     target="_blank"
@@ -195,7 +195,7 @@ exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
 <div>
   <a
-    class="emotion-0"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
     target="_blank"
@@ -209,7 +209,7 @@ exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#appleauthenticationcredential"
     >
       AppleAuthenticationCredential
@@ -304,7 +304,7 @@ exports[`APISectionUtils.resolveTypeName alternative generic object notation 1`]
 exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 <div>
   <a
-    class="emotion-0"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent"
     rel="noopener noreferrer"
     target="_blank"
@@ -317,7 +317,7 @@ exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 exports[`APISectionUtils.resolveTypeName custom type array 1`] = `
 <div>
   <a
-    class="emotion-0"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="#appleauthenticationscope"
   >
     AppleAuthenticationScope
@@ -335,7 +335,7 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
 <div>
   <a
-    class="emotion-0"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys"
     rel="noopener noreferrer"
     target="_blank"
@@ -349,7 +349,7 @@ exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#fontresource"
     >
       FontResource
@@ -389,7 +389,7 @@ exports[`APISectionUtils.resolveTypeName function 1`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#speecheventcallback"
     >
       SpeechEventCallback
@@ -414,7 +414,7 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
     </span>
      
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
       target="_blank"
@@ -444,7 +444,7 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#speecheventcallback"
     >
       SpeechEventCallback
@@ -469,7 +469,7 @@ exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 
     </span>
      
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
       target="_blank"
@@ -502,7 +502,7 @@ exports[`APISectionUtils.resolveTypeName generic type 1`] = `
 exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 <div>
   <a
-    class="emotion-0"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="#pagedinfo"
   >
     PagedInfo
@@ -514,7 +514,7 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#asset"
     >
       Asset
@@ -531,7 +531,7 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
 <div>
   <a
-    class="emotion-0"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
     target="_blank"
@@ -545,7 +545,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#pagedinfo"
     >
       PagedInfo
@@ -557,7 +557,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
     </span>
     <span>
       <a
-        class="emotion-0"
+        class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
         href="#asset"
       >
         Asset
@@ -618,7 +618,7 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
       rel="noopener noreferrer"
       target="_blank"
@@ -632,7 +632,7 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
     </span>
     <span>
       <a
-        class="emotion-0"
+        class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
         href="https://reactnative.dev/docs/view-style-props"
         rel="noopener noreferrer"
         target="_blank"
@@ -696,7 +696,7 @@ exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
   [
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#sortbykey"
     >
       SortByKey
@@ -714,7 +714,7 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
 <div>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#speecheventcallback"
     >
       SpeechEventCallback
@@ -736,7 +736,7 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
   (
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#resultseterror"
     >
       ResultSetError
@@ -749,7 +749,7 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#resultset"
     >
       ResultSet
@@ -780,7 +780,7 @@ exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = 
 <div>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#assetref"
     >
       AssetRef
@@ -794,7 +794,7 @@ exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = 
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#assetref"
     >
       AssetRef

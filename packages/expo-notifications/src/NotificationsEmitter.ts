@@ -10,6 +10,7 @@ const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
+const didClearNotificationResponseEventName = 'onDidClearNotificationResponse';
 
 // @docsMissing
 export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
@@ -106,12 +107,22 @@ export function addNotificationResponseReceivedListener(
  * @header listen
  */
 export function removeNotificationSubscription(subscription: EventSubscription) {
-  subscription.remove();
+  if (typeof subscription?.remove === 'function') {
+    subscription.remove();
+  } else {
+    throw new Error(
+      `removeNotificationSubscription: Provided value is not a subscription: ${subscription}`
+    );
+  }
 }
 
-// @docsMissing
 /**
- * @header listen
+ * Gets the notification response that was received most recently
+ * (a notification response designates an interaction with a notification, such as tapping on it).
+ *
+ * - `null` - if no notification response has been received yet
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  */
 export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
   if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
@@ -120,4 +131,29 @@ export async function getLastNotificationResponseAsync(): Promise<NotificationRe
   const response = await NotificationsEmitterModule.getLastNotificationResponseAsync();
   const mappedResponse = response ? mapNotificationResponse(response) : response;
   return mappedResponse;
+}
+
+/* Clears the notification response that was received most recently. May be used
+ * when an app selects a route based on the notification response, and it is undesirable
+ * to continue selecting the route after the response has already been handled.
+ *
+ * If a component is using the [`useLastNotificationResponse`](#useLastNotificationResponse) hook,
+ * this call will also clear the value returned by the hook.
+ *
+ * @return A promise that resolves if the native call was successful.
+ */
+export async function clearLastNotificationResponseAsync(): Promise<void> {
+  if (!NotificationsEmitterModule.clearLastNotificationResponseAsync) {
+    throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
+  }
+  await NotificationsEmitterModule.clearLastNotificationResponseAsync();
+  // Emit event to clear any useLastNotificationResponse hooks, after native call succeeds
+  emitter.emit(didClearNotificationResponseEventName, []);
+}
+
+/**
+ * @hidden
+ */
+export function addNotificationResponseClearedListener(listener: () => void): EventSubscription {
+  return emitter.addListener<void>(didClearNotificationResponseEventName, listener);
 }

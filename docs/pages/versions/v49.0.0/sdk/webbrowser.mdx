@@ -24,7 +24,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label="Basic WebBrowser usage" dependencies={["expo-web-browser", "expo-constants"]}>
 
 ```jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Text, View, StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 /* @hide */
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
 
 ### Handling deep links from the WebBrowser
 
-If you use the `WebBrowser` window for authentication or another use case where you want to pass information back into your app through a deep link, add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [`dismissBrowser`](#webbrowserdismissbrowser). It will not automatically be dismissed when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. Read more about it in [Linking](/guides/linking#handling-links).
+If you use the `WebBrowser` window for authentication or another use case where you want to pass information back into your app through a deep link, add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [`dismissBrowser`](#webbrowserdismissbrowser). It will not automatically be dismissed when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. Read more about it in [Linking](/linking/into-your-app/#handle-urls).
 
 ## API
 

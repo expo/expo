@@ -30,6 +30,13 @@ function _jsonFile() {
   };
   return data;
 }
+function _deepmerge() {
+  const data = _interopRequireDefault(require("deepmerge"));
+  _deepmerge = function () {
+    return data;
+  };
+  return data;
+}
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -337,56 +344,89 @@ function getStaticConfigFilePath(projectRoot) {
  */
 async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, writeOptions = {}) {
   const config = getConfig(projectRoot, readOptions);
-  if (config.dynamicConfigPath) {
-    // We cannot automatically write to a dynamic config.
-    /* Currently we should just use the safest approach possible, informing the user that they'll need to manually modify their dynamic config.
-     if (config.staticConfigPath) {
-      // Both a dynamic and a static config exist.
-      if (config.dynamicConfigObjectType === 'function') {
-        // The dynamic config exports a function, this means it possibly extends the static config.
-      } else {
-        // Dynamic config ignores the static config, there isn't a reason to automatically write to it.
-        // Instead we should warn the user to add values to their dynamic config.
-      }
+  const isDryRun = writeOptions.dryRun;
+
+  // Create or modify the static config, when not using dynamic config
+  if (!config.dynamicConfigPath) {
+    const outputConfig = mergeConfigModifications(config, modifications);
+    if (!isDryRun) {
+      const configPath = config.staticConfigPath ?? _path().default.join(projectRoot, 'app.json');
+      await _jsonFile().default.writeAsync(configPath, outputConfig, {
+        json5: false
+      });
     }
-    */
     return {
-      type: 'warn',
-      message: `Cannot automatically write to dynamic config at: ${_path().default.relative(projectRoot, config.dynamicConfigPath)}`,
-      config: null
+      type: 'success',
+      config: outputConfig.expo ?? outputConfig
     };
-  } else if (config.staticConfigPath == null) {
-    // No config in the project, use a default location.
-    config.staticConfigPath = _path().default.join(projectRoot, 'app.json');
   }
 
-  // Static with no dynamic config, this means we can append to the config automatically.
-  let outputConfig;
-  // If the config has an expo object (app.json) then append the options to that object.
-  if (config.rootConfig.expo) {
-    outputConfig = {
-      ...config.rootConfig,
-      expo: {
-        ...config.rootConfig.expo,
-        ...modifications
-      }
-    };
-  } else {
-    // Otherwise (app.config.json) just add the config modification to the top most level.
-    outputConfig = {
-      ...config.rootConfig,
-      ...modifications
-    };
-  }
-  if (!writeOptions.dryRun) {
+  // Attempt to write to a function-like dynamic config, when used with a static config
+  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function') {
+    const outputConfig = mergeConfigModifications(config, modifications);
+    if (isDryRun) {
+      return {
+        type: 'warn',
+        message: `Cannot verify config modifications in dry-run mode for config at: ${_path().default.relative(projectRoot, config.dynamicConfigPath)}`,
+        config: null
+      };
+    }
+
+    // Attempt to write the static config with the config modifications
     await _jsonFile().default.writeAsync(config.staticConfigPath, outputConfig, {
       json5: false
     });
+
+    // Verify that the dynamic config is using the static config
+    const newConfig = getConfig(projectRoot, readOptions);
+    const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
+    if (newConfighasModifications) {
+      return {
+        type: 'success',
+        config: newConfig.exp
+      };
+    }
+
+    // Rollback the changes when the reloaded config did not include the modifications
+    await _jsonFile().default.writeAsync(config.staticConfigPath, config.rootConfig, {
+      json5: false
+    });
+  }
+
+  // We cannot automatically write to a dynamic config
+  return {
+    type: 'warn',
+    message: `Cannot automatically write to dynamic config at: ${_path().default.relative(projectRoot, config.dynamicConfigPath)}`,
+    config: null
+  };
+}
+
+/** Merge the config modifications, using an optional possible top-level `expo` object. */
+function mergeConfigModifications(config, modifications) {
+  if (!config.rootConfig.expo) {
+    return (0, _deepmerge().default)(config.rootConfig, modifications);
   }
   return {
-    type: 'success',
-    config: outputConfig
+    ...config.rootConfig,
+    expo: (0, _deepmerge().default)(config.rootConfig.expo, modifications)
   };
+}
+function isMatchingObject(expectedValues, actualValues) {
+  for (const key in expectedValues) {
+    if (!expectedValues.hasOwnProperty(key)) {
+      continue;
+    }
+    if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
+      if (!isMatchingObject(expectedValues[key], actualValues[key])) {
+        return false;
+      }
+    } else {
+      if (expectedValues[key] !== actualValues[key]) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 function ensureConfigHasDefaultValues({
   projectRoot,

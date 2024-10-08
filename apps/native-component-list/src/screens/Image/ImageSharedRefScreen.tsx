@@ -1,5 +1,5 @@
-import { Image, ImageRef } from 'expo-image';
-import { useCallback, useEffect, useState } from 'react';
+import { Image, useImage } from 'expo-image';
+import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import Button from '../../components/Button';
@@ -12,16 +12,12 @@ function getRandomImageUri(): string {
 }
 
 export default function ImageSharedRefScreen() {
-  const [imageRef, setImageRef] = useState<ImageRef | null>(null);
   const [sourceUri, setSourceUri] = useState<string>(getRandomImageUri());
-
-  useEffect(() => {
-    setImageRef(null);
-
-    Image.loadAsync({ uri: sourceUri }).then((image) => {
-      setImageRef(image);
-    });
-  }, [sourceUri]);
+  const image = useImage(sourceUri, {
+    onError(error, retry) {
+      console.error(error);
+    },
+  });
 
   const loadNewImage = useCallback(() => {
     setSourceUri(getRandomImageUri());
@@ -29,14 +25,14 @@ export default function ImageSharedRefScreen() {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.image} source={imageRef} />
-
-      <HeadingText>Loaded image:</HeadingText>
-      <MonoText>{JSON.stringify(imageRef, null, 2)}</MonoText>
+      <Image style={styles.image} source={image} />
 
       <View style={styles.buttons}>
         <Button title="Load new image" onPress={loadNewImage} />
       </View>
+
+      <HeadingText>Loaded image:</HeadingText>
+      <MonoText>{JSON.stringify(image, null, 2)}</MonoText>
     </View>
   );
 }
@@ -47,7 +43,8 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   image: {
-    height: 300,
+    height: 240,
+    margin: 10,
     borderRadius: 10,
   },
   buttons: {

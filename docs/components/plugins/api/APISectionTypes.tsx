@@ -149,7 +149,9 @@ const renderType = (
                 </SPAN>
                 {type.types
                   .filter(type =>
-                    ['reference', 'union', 'intersection', 'intrinsic'].includes(type.type)
+                    ['reference', 'union', 'intersection', 'intrinsic', 'literal'].includes(
+                      type.type
+                    )
                   )
                   .map(validType => (
                     <Fragment key={`nested-reference-type-${validType.name}`}>

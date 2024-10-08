@@ -49,9 +49,11 @@ export default function registerRootComponent<P extends InitialProps>(
         throw new Error('Required HTML element with id "root" was not found in the document HTML.');
       }
     }
+
     AppRegistry.runApplication('main', {
       rootTag,
-      hydrate: process.env.EXPO_PUBLIC_USE_STATIC === '1',
+      // Injected by SSR HTML tags.
+      hydrate: globalThis.__EXPO_ROUTER_HYDRATE__,
     });
   }
 }

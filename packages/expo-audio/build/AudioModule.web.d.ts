@@ -4,15 +4,14 @@ import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './Audi
 export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
     constructor(source: AudioSource, interval: number);
     id: number;
-    _src: AudioSource;
-    _media: HTMLAudioElement;
-    _interval: number;
-    _playing: boolean;
-    _paused: boolean;
-    _isLoaded: boolean;
     isAudioSamplingSupported: boolean;
     isBuffering: boolean;
     shouldCorrectPitch: boolean;
+    private src;
+    private media;
+    private interval;
+    private isPlaying;
+    private loaded;
     get playing(): boolean;
     get muted(): boolean;
     set muted(value: boolean);
@@ -33,31 +32,33 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     setAudioSamplingEnabled(enabled: boolean): void;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     remove(): void;
-    _createMediaElement(source: AudioSource): HTMLAudioElement;
+    _createMediaElement(): HTMLAudioElement;
 }
 export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<RecordingEvents> implements AudioRecorder {
     constructor(options: Partial<RecordingOptions>);
     setup(): Promise<void>;
     id: number;
-    _options: Partial<RecordingOptions>;
-    _mediaRecorder?: MediaRecorder;
-    _mediaRecorderUptimeOfLastStartResume: number;
-    _mediaRecorderDurationAlreadyRecorded: number;
-    _mediaRecorderIsRecording: boolean;
     currentTime: number;
-    isRecording: boolean;
     uri: string | null;
+    private options;
+    private mediaRecorder;
+    private mediaRecorderUptimeOfLastStartResume;
+    private mediaRecorderIsRecording;
+    private timeoutIds;
+    get isRecording(): boolean;
     record(): void;
     getAvailableInputs(): RecordingInput[];
     getCurrentInput(): RecordingInput;
+    prepareToRecordAsync(): Promise<void>;
     getStatus(): RecorderState;
     pause(): void;
     recordForDuration(seconds: number): void;
     setInput(input: string): void;
     startRecordingAtTime(seconds: number): void;
     stop(): Promise<void>;
-    _createMediaRecorder(options: Partial<RecordingOptions>): Promise<MediaRecorder>;
-    _getAudioRecorderDurationMillis(): number;
+    clearTimeouts(): void;
+    private createMediaRecorder;
+    private getAudioRecorderDurationMillis;
 }
 export declare function setAudioModeAsync(mode: AudioMode): Promise<void>;
 export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;

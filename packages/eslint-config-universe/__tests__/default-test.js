@@ -23,11 +23,10 @@ it(`lints with the default config`, async () => {
     {
       baseConfig: getBaseConfig(),
       overrideConfigFile: configFile,
-      fix: true,
       ignore: false,
       useEslintrc: false,
     },
-    ['__tests__/fixtures/*all*'],
+    ['fixtures/*all*'],
   );
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);

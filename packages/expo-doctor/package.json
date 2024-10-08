@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.9.1",
+  "version": "1.10.1",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
@@ -43,6 +43,7 @@
     "expo-module-scripts": "^3.3.0",
     "fast-glob": "^3.3.2",
     "getenv": "^1.0.0",
+    "ignore": "^5.3.2",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
     "semver": "7.5.4",

@@ -8,6 +8,7 @@ export declare enum Config {
     RUNTIME_VERSION = "EXUpdatesRuntimeVersion",
     UPDATE_URL = "EXUpdatesURL",
     UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = "EXUpdatesRequestHeaders",
+    UPDATES_HAS_EMBEDDED_UPDATE = "EXUpdatesHasEmbeddedUpdate",
     CODE_SIGNING_CERTIFICATE = "EXUpdatesCodeSigningCertificate",
     CODE_SIGNING_METADATA = "EXUpdatesCodeSigningMetadata"
 }

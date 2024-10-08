@@ -22,7 +22,6 @@ export function useAudioSampleListener(player, listener) {
         }
         const subscription = player.addListener('onAudioSampleUpdate', listener);
         return () => {
-            player.setAudioSamplingEnabled(false);
             subscription.remove();
         };
     }, [player.id]);
@@ -58,4 +57,5 @@ export async function setAudioModeAsync(mode) {
 }
 export { AudioModule, AudioPlayer, AudioRecorder };
 export * from './Audio.types';
+export * from './RecordingConstants';
 //# sourceMappingURL=ExpoAudio.js.map

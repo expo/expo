@@ -1100,7 +1100,7 @@ diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm 
 index 8cb5aef137..37d415b57d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-@@ -17,24 +17,19 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+@@ -17,24 +17,19 @@
  }
  
  - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

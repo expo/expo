@@ -38,9 +38,11 @@ extension ExpoSwiftUI {
 
       super.init(frame: .zero)
 
+      #if os(iOS) || os(tvOS)
       // Hosting controller has white background by default,
       // but we always want it to be transparent.
       hostingController.view.backgroundColor = .clear
+      #endif
     }
 
     @available(*, unavailable)
@@ -55,6 +57,7 @@ extension ExpoSwiftUI {
       try? props.updateRawProps(rawProps, appContext: appContext)
     }
 
+#if os(iOS) || os(tvOS)
     /**
      Setups layout constraints of the hosting controller view to match the layout set by React.
      */
@@ -87,5 +90,6 @@ extension ExpoSwiftUI {
         hostingController.removeFromParent()
       }
     }
+#endif
   }
 }
