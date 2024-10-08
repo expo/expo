@@ -14,8 +14,7 @@ internal class FileSystemPath: SharedObject {
   }
 
   func delete() throws {
-    try validatePermission(.read)
-    try destination.validatePermission(.write)
+    try validatePermission(.write)
     guard FileManager.default.fileExists(atPath: url.path) else {
       throw UnableToDeleteException("path does not exist")
     }
@@ -46,6 +45,8 @@ internal class FileSystemPath: SharedObject {
   }
 
   func copy(to destination: FileSystemPath) throws {
+    try validatePermission(.read)
+    try destination.validatePermission(.write)
     try FileManager.default.copyItem(at: url, to: getMoveOrCopyPath(to: destination))
   }
 

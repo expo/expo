@@ -19,7 +19,7 @@ internal final class FileSystemFile: FileSystemPath {
   func create() throws {
     try validatePermission(.write)
     try validateType()
-    guard !exists else {
+    guard !(try exists) else {
       throw UnableToCreateFileException("file already exists")
     }
     FileManager.default.createFile(atPath: url.path, contents: nil)

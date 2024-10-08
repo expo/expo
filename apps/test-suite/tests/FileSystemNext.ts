@@ -3,6 +3,7 @@ import * as FS from 'expo-file-system';
 import { File, Directory } from 'expo-file-system/next';
 import { Paths } from 'expo-file-system/src/next';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
 export const name = 'FileSystem@next';
 
@@ -20,6 +21,22 @@ export async function test({ describe, expect, it, ...t }) {
   });
 
   describe('FileSystem (Next)', () => {
+    if (Constants.appOwnership === 'expo') {
+      describe('managed workflow', () => {
+        it('throws out-of-scope exceptions', async () => {
+          expect(() => {
+            new File(Paths.document, '..', 'file.txt').create();
+          }).toThrow();
+          expect(() => {
+            new File(Paths.document, '..', 'file.txt').text();
+          }).toThrow();
+          expect(() => {
+            new File(Paths.document, '..', 'file.txt').copy(new File(Paths.document, 'file.txt'));
+          }).toThrow();
+        });
+      });
+    }
+
     it('Creates a lazy file reference', () => {
       const file = new File('file:///path/to/file');
       expect(file.uri).toBe('file:///path/to/file');
