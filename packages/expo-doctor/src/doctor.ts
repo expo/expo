@@ -26,14 +26,13 @@ import { logNewSection } from './utils/ora';
 import { endTimer, formatMilliseconds, startTimer } from './utils/timer';
 import { ltSdkVersion } from './utils/versions';
 import { warnUponCmdExe } from './warnings/windows';
-
-type CheckError = Error & { code?: string };
+import { isNetworkError } from './utils/errors';
 
 interface DoctorCheckRunnerJob {
   check: DoctorCheck;
   result: DoctorCheckResult;
   duration: number;
-  error?: CheckError;
+  error?: Error;
 }
 
 /**
@@ -61,8 +60,10 @@ export async function printCheckResultSummaryOnComplete(job: DoctorCheckRunnerJo
   // print unexpected errors inline with check completion
   if (job.error) {
     Log.error(`Unexpected error while running '${job.check.description}' check:`);
-    Log.exception(job.error!);
-    if (job.error?.code === 'ENOTFOUND') {
+    Log.exception(job.error);
+    const networkError = isNetworkError(job.error);
+    if (networkError) {
+      Log.error(`${job.error.cause}`);
       Log.error(
         'This check requires a connection to the Expo API. Please check your network connection.'
       );
@@ -110,8 +111,10 @@ export async function runChecksAsync(
           startTimer(check.description);
           job.result = await check.runAsync(checkParams);
           job.duration = endTimer(check.description);
-        } catch (e: any) {
-          job.error = e;
+        } catch (e) {
+          if (e instanceof Error) {
+            job.error = e;
+          }
           job.result = { isSuccessful: false } as DoctorCheckResult;
         }
         onCheckComplete(job);
