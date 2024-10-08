@@ -183,7 +183,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         try takePictureForSimulator(self.appContext, view, options, promise)
         #else // not simulator
         Task {
-         await view.takePicture(options: options, promise: promise)
+          await view.takePicture(options: options, promise: promise)
         }
         #endif
       }
