@@ -34,7 +34,7 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
 
   private fun getJavaScriptObject(): JavaScriptWeakObject? {
     return SharedObjectId(sharedObjectId.value)
-      .toWeakJavaScriptObject(
+      .toWeakJavaScriptObjectNull(
         runtimeContext ?: return null
       )
   }
