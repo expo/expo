@@ -15,7 +15,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import java.util.Calendar
 
@@ -23,11 +22,8 @@ import java.util.Calendar
 @SmallTest
 class NotificationTriggerTest {
   private var calendarNow: Calendar = Calendar.getInstance()
-  private var calendar5MinutesFromNow: Calendar = Calendar.getInstance()
-
-  @Before
-  fun setup() {
-    calendar5MinutesFromNow.add(Calendar.MINUTE, 5)
+  private var calendar5MinutesFromNow: Calendar = Calendar.getInstance().apply {
+    add(Calendar.MINUTE, 5)
   }
 
   @Test
