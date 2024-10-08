@@ -65,7 +65,7 @@
     "@expo/config-plugins": "8.0.10",
     "@expo/metro-config": "0.18.11",
     "@expo/vector-icons": "^14.0.3",
-    "babel-preset-expo": "~11.0.14",
+    "babel-preset-expo": "~11.0.15",
     "expo-asset": "~10.0.10",
     "expo-file-system": "~17.0.1",
     "expo-font": "~12.0.10",
