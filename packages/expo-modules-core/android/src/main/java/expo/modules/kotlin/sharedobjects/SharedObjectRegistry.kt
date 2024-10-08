@@ -101,7 +101,7 @@ class SharedObjectRegistry(runtimeContext: RuntimeContext) {
       pairs.remove(id)
     }?.let { (native, _) ->
       native.sharedObjectId = SharedObjectId(0)
-      native.deallocate()
+      native.wasReleased()
     }
   }
 
