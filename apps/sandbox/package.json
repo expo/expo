@@ -14,7 +14,7 @@
     "react-native": "0.74.5"
   },
   "devDependencies": {
-    "babel-preset-expo": "~11.0.0"
+    "babel-preset-expo": "~11.0.15"
   },
   "private": true
 }

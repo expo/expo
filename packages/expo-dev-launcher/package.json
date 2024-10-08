@@ -45,7 +45,7 @@
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^8.0.0",
     "babel-plugin-module-resolver": "^5.0.0",
-    "babel-preset-expo": "~11.0.0",
+    "babel-preset-expo": "~11.0.15",
     "date-fns": "^2.28.0",
     "expo-dev-client-components": "1.8.1",
     "expo-module-scripts": "^3.0.0",

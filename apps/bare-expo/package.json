@@ -75,7 +75,7 @@
     "@babel/core": "^7.20.0",
     "@types/react": "~18.0.14",
     "babel-plugin-module-resolver": "^5.0.0",
-    "babel-preset-expo": "~11.0.0",
+    "babel-preset-expo": "~11.0.15",
     "expo-module-scripts": "^3.0.0",
     "getenv": "^1.0.0",
     "jest": "^29.3.1",
