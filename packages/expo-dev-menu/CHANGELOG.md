@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.0.22 — 2024-10-08
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.21 — 2024-08-23
 
 _This version does not introduce any user-facing changes._

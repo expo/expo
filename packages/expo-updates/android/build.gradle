@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-kapt'
 
 group = 'host.exp.exponent'
-version = '0.25.26'
+version = '0.25.27'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -49,7 +49,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '0.25.26'
+    versionName '0.25.27'
     consumerProguardFiles(rnVersion >= versionToNumber(0, 75, 0) ? 'proguard-rules-75.pro' : 'proguard-rules.pro')
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

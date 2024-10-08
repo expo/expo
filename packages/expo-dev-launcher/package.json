@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "4.0.27",
+  "version": "4.0.28",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "main": "build/DevLauncher.js",
   "types": "build/DevLauncher.d.ts",
@@ -31,7 +31,7 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {
     "ajv": "8.11.0",
-    "expo-dev-menu": "5.0.21",
+    "expo-dev-menu": "5.0.22",
     "expo-manifests": "~0.14.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
