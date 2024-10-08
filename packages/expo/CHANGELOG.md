@@ -49,6 +49,7 @@
 - Added public assets support for DOM components. ([#30975](https://github.com/expo/expo/pull/30975) by [@kudo](https://github.com/kudo))
 - Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
 - Added a default `AppEntryNotFound` component and prevent the `Invariant Violation: "main" has not been registered.` error. ([#31813](https://github.com/expo/expo/pull/31813) by [@kudo](https://github.com/kudo))
+- Removed no-op font preprocessor. ([@#31719](https://github.com/expo/expo/pull/31719) by [@acoates-ms](https://github.com/acoates-ms))
 
 ### 📚 3rd party library updates
 
