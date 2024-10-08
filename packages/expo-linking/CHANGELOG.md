@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Standardized Babel configuration to use `expo-module-scripts`.
+
 ## 6.3.1 — 2024-04-23
 
 _This version does not introduce any user-facing changes._
