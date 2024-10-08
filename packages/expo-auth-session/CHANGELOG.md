@@ -16,7 +16,7 @@
 - Use getRandomValues from expo-crypto ([#22608](https://github.com/expo/expo/pull/22608) by [@LinusU](https://github.com/LinusU))
 - Add a standard main package entry point (`index.ts`). ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
 - Prefer using `type` for describing the shape of objects. ([#28970](https://github.com/expo/expo/pull/28970) by [@Simek](https://github.com/Simek))
-- Standardized Babel configuration to use `expo-module-scripts`.
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
 
 ## 5.5.2 — 2024-05-02
 
