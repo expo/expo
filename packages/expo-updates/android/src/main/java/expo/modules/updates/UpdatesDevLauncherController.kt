@@ -324,7 +324,8 @@ class UpdatesDevLauncherController(
       checkOnLaunch = updatesConfiguration?.checkOnLaunch ?: UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
       requestHeaders = updatesConfiguration?.requestHeaders ?: mapOf(),
       localAssetFiles = localAssetFiles,
-      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true,
+      initialContext = UpdatesStateContext()
     )
   }
 
@@ -333,10 +334,6 @@ class UpdatesDevLauncherController(
   ) {
     this.updatesInterfaceCallbacks?.get()?.onRequestRelaunch()
     callback.onSuccess(Unit)
-  }
-
-  override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
-    callback.onSuccess(UpdatesStateContext())
   }
 
   override fun checkForUpdate(

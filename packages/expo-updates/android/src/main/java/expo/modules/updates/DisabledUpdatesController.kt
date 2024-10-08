@@ -15,7 +15,6 @@ import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.RecreateReactContextProcedure
-import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
@@ -116,7 +115,8 @@ class DisabledUpdatesController(
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER,
       requestHeaders = mapOf(),
       localAssetFiles = launcher?.localAssetFiles,
-      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false,
+      initialContext = stateMachine.context
     )
   }
 
@@ -135,10 +135,6 @@ class DisabledUpdatesController(
       }
     )
     stateMachine.queueExecution(procedure)
-  }
-
-  override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
-    callback.onSuccess(stateMachine.context)
   }
 
   override fun checkForUpdate(

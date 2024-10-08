@@ -8,7 +8,6 @@ import {
   UpdateFetchResult,
   UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
-  UpdatesNativeStateMachineContext,
 } from './Updates.types';
 
 /**
@@ -310,43 +309,4 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
   console.warn(
     "This method is no longer necessary. `expo-updates` now automatically deletes your app's old bundle files!"
   );
-}
-
-/**
- * @hidden
- */
-export function transformNativeStateMachineContext(
-  originalNativeContext: UpdatesNativeStateMachineContext & {
-    latestManifestString?: string;
-    downloadedManifestString?: string;
-    lastCheckForUpdateTimeString?: string;
-    rollbackString?: string;
-  }
-): UpdatesNativeStateMachineContext {
-  const nativeContext = { ...originalNativeContext };
-  if (nativeContext.latestManifestString) {
-    nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
-    delete nativeContext.latestManifestString;
-  }
-  if (nativeContext.downloadedManifestString) {
-    nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
-    delete nativeContext.downloadedManifestString;
-  }
-  if (nativeContext.lastCheckForUpdateTimeString) {
-    nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
-    delete nativeContext.lastCheckForUpdateTimeString;
-  }
-  if (nativeContext.rollbackString) {
-    nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
-    delete nativeContext.rollbackString;
-  }
-  return nativeContext;
-}
-
-/**
- * @hidden
- */
-export async function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext> {
-  const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
-  return transformNativeStateMachineContext(nativeContext);
 }

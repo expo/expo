@@ -59,7 +59,7 @@ class UpdatesStateMachine(
    */
   private fun reset() {
     state = UpdatesStateValue.Idle
-    context = UpdatesStateContext()
+    context = context.resetCopyWithIncrementedSequenceNumber()
     logger.info("Updates state change: reset, context = ${context.json}")
     sendChangeEventToJS(UpdatesStateEvent.Restart())
   }
@@ -130,8 +130,10 @@ class UpdatesStateMachine(
      */
     private fun reduceContext(context: UpdatesStateContext, event: UpdatesStateEvent): UpdatesStateContext {
       return when (event) {
-        is UpdatesStateEvent.Check -> context.copy(isChecking = true)
-        is UpdatesStateEvent.CheckCompleteUnavailable -> context.copy(
+        is UpdatesStateEvent.Check -> context.copyAndIncrementSequenceNumber(
+          isChecking = true
+        )
+        is UpdatesStateEvent.CheckCompleteUnavailable -> context.copyAndIncrementSequenceNumber(
           isChecking = false,
           checkError = null,
           latestManifest = null,
@@ -139,7 +141,7 @@ class UpdatesStateMachine(
           isUpdateAvailable = false,
           lastCheckForUpdateTime = Date()
         )
-        is UpdatesStateEvent.CheckCompleteWithRollback -> context.copy(
+        is UpdatesStateEvent.CheckCompleteWithRollback -> context.copyAndIncrementSequenceNumber(
           isChecking = false,
           checkError = null,
           latestManifest = null,
@@ -147,7 +149,7 @@ class UpdatesStateMachine(
           isUpdateAvailable = true,
           lastCheckForUpdateTime = Date()
         )
-        is UpdatesStateEvent.CheckCompleteWithUpdate -> context.copy(
+        is UpdatesStateEvent.CheckCompleteWithUpdate -> context.copyAndIncrementSequenceNumber(
           isChecking = false,
           checkError = null,
           latestManifest = event.manifest,
@@ -155,23 +157,25 @@ class UpdatesStateMachine(
           isUpdateAvailable = true,
           lastCheckForUpdateTime = Date()
         )
-        is UpdatesStateEvent.CheckError -> context.copy(
+        is UpdatesStateEvent.CheckError -> context.copyAndIncrementSequenceNumber(
           isChecking = false,
           checkError = event.error,
           lastCheckForUpdateTime = Date()
         )
-        is UpdatesStateEvent.Download -> context.copy(isDownloading = true)
-        is UpdatesStateEvent.DownloadComplete -> context.copy(
+        is UpdatesStateEvent.Download -> context.copyAndIncrementSequenceNumber(
+          isDownloading = true
+        )
+        is UpdatesStateEvent.DownloadComplete -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
           isUpdatePending = true
         )
-        is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copy(
+        is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
           isUpdatePending = true
         )
-        is UpdatesStateEvent.DownloadCompleteWithUpdate -> context.copy(
+        is UpdatesStateEvent.DownloadCompleteWithUpdate -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
           latestManifest = event.manifest,
@@ -180,11 +184,11 @@ class UpdatesStateMachine(
           isUpdatePending = true,
           isUpdateAvailable = true
         )
-        is UpdatesStateEvent.DownloadError -> context.copy(
+        is UpdatesStateEvent.DownloadError -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = event.error
         )
-        is UpdatesStateEvent.Restart -> context.copy(
+        is UpdatesStateEvent.Restart -> context.copyAndIncrementSequenceNumber(
           isRestarting = true
         )
       }

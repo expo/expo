@@ -46,7 +46,8 @@ final class ExpoGoExpoUpdatesModule: Module {
         checkOnLaunch: config?.checkOnLaunch ?? CheckAutomaticallyConfig.Always,
         requestHeaders: config?.requestHeaders ?? [:],
         assetFilesMap: updatesKernelService.assetFilesMapForScopeKey(scopeKey),
-        shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: true
+        shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: true,
+        initialContext: UpdatesStateContext()
       ).toModuleConstantsMap()
     }
 
@@ -109,11 +110,6 @@ final class ExpoGoExpoUpdatesModule: Module {
         "ERR_NOT_SUPPORTED",
         "fetchUpdateAsync() is not accessible in Expo Go. A non-development build should be used to test this functionality."
       )
-    }
-
-    AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
-      // TODO: we may want to fill this with state from the current updatesKernelService for scope key
-      promise.resolve(UpdatesUtils.defaultNativeStateMachineContextJson())
     }
   }
 }

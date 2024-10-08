@@ -58,19 +58,10 @@ export const updateFromRollback: (rollback: UpdatesNativeStateRollback) => Updat
   updateId: undefined,
 });
 
-// Default useUpdates() state
-export const defaultUseUpdatesState: UseUpdatesStateType = {
-  isChecking: false,
-  isDownloading: false,
-  isUpdateAvailable: false,
-  isUpdatePending: false,
-};
-
 // Transform the useUpdates() state based on native state machine context
-export const reduceUpdatesStateFromContext: (
-  updatesState: UseUpdatesStateType,
+export const updatesStateFromContext: (
   context: UpdatesNativeStateMachineContext
-) => UseUpdatesStateType = (updatesState, context) => {
+) => UseUpdatesStateType = (context) => {
   const availableUpdate = context?.latestManifest
     ? updateFromManifest(context?.latestManifest)
     : context.rollback
@@ -82,7 +73,6 @@ export const reduceUpdatesStateFromContext: (
       ? updateFromRollback(context.rollback)
       : undefined;
   return {
-    ...updatesState,
     isUpdateAvailable: context.isUpdateAvailable,
     isUpdatePending: context.isUpdatePending,
     isChecking: context.isChecking,

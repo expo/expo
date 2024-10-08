@@ -26,7 +26,6 @@ import expo.modules.updates.procedures.FetchUpdateProcedure
 import expo.modules.updates.procedures.RelaunchProcedure
 import expo.modules.updates.procedures.StartupProcedure
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
-import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
@@ -178,7 +177,8 @@ class EnabledUpdatesController(
       checkOnLaunch = updatesConfiguration.checkOnLaunch,
       requestHeaders = updatesConfiguration.requestHeaders,
       localAssetFiles = localAssetFiles,
-      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false,
+      initialContext = stateMachine.context
     )
   }
 
@@ -200,10 +200,6 @@ class EnabledUpdatesController(
         }
       )
     }
-  }
-
-  override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
-    callback.onSuccess(stateMachine.context)
   }
 
   override fun checkForUpdate(callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>) {

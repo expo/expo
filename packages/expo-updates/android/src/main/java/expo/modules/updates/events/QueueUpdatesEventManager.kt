@@ -25,7 +25,7 @@ class QueueUpdatesEventManager(private val logger: UpdatesLogger) : IUpdatesEven
     context: UpdatesStateContext
   ) {
     val eventName = UpdatesJSEvent.StateChange.eventName
-    val params = context.copy().writableMap.apply {
+    val params = context.writableMap.apply {
       putString("type", eventType.type)
     }
 

@@ -14,7 +14,6 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.statemachine.UpdatesStateContext
 import java.lang.ref.WeakReference
 import java.util.Date
 
@@ -69,19 +68,6 @@ class UpdatesModule : Module() {
           }
         }
       )
-    }
-
-    // Used internally by useUpdates() to get its initial state
-    AsyncFunction("getNativeStateMachineContextAsync") { promise: Promise ->
-      UpdatesController.instance.getNativeStateMachineContext(object : IUpdatesController.ModuleCallback<UpdatesStateContext> {
-        override fun onSuccess(result: UpdatesStateContext) {
-          promise.resolve(result.bundle)
-        }
-
-        override fun onFailure(exception: CodedException) {
-          promise.reject(exception)
-        }
-      })
     }
 
     AsyncFunction("checkForUpdateAsync") { promise: Promise ->

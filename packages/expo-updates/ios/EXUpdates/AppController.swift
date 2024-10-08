@@ -9,7 +9,20 @@ import ExpoModulesCore
 import EXUpdatesInterface
 
 public struct UpdatesModuleConstants {
-  public init(launchedUpdate: Update?, launchDuration: Double?, embeddedUpdate: Update?, emergencyLaunchException: Error?, isEnabled: Bool, isUsingEmbeddedAssets: Bool, runtimeVersion: String?, checkOnLaunch: CheckAutomaticallyConfig, requestHeaders: [String: String], assetFilesMap: [String: Any]?, shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool) {
+  public init(
+    launchedUpdate: Update?,
+    launchDuration: Double?,
+    embeddedUpdate: Update?,
+    emergencyLaunchException: Error?,
+    isEnabled: Bool,
+    isUsingEmbeddedAssets: Bool,
+    runtimeVersion: String?,
+    checkOnLaunch: CheckAutomaticallyConfig,
+    requestHeaders: [String: String],
+    assetFilesMap: [String: Any]?,
+    shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool,
+    initialContext: UpdatesStateContext
+  ) {
     self.launchedUpdate = launchedUpdate
     self.launchDuration = launchDuration
     self.embeddedUpdate = embeddedUpdate
@@ -21,6 +34,7 @@ public struct UpdatesModuleConstants {
     self.requestHeaders = requestHeaders
     self.assetFilesMap = assetFilesMap
     self.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
+    self.initialContext = initialContext
   }
 
   let launchedUpdate: Update?
@@ -50,6 +64,8 @@ public struct UpdatesModuleConstants {
    */
   let shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool
 
+  let initialContext: UpdatesStateContext
+
   public func toModuleConstantsMap() -> [String: Any?] {
     var mutableMap: [String: Any?] = [
       "isEmergencyLaunch": emergencyLaunchException != nil,
@@ -62,7 +78,8 @@ public struct UpdatesModuleConstants {
       "checkAutomatically": checkOnLaunch.asString,
       "channel": requestHeaders["expo-channel-name"] ?? "",
       "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment":
-        shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled()
+        shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled(),
+      "initialContext": initialContext.json
     ]
 
     if let launchedUpdate = launchedUpdate {
@@ -152,10 +169,6 @@ public protocol InternalAppControllerInterface: AppControllerInterface {
     key: String,
     value: String?,
     success successBlockArg: @escaping () -> Void,
-    error errorBlockArg: @escaping (_ error: Exception) -> Void
-  )
-  func getNativeStateMachineContext(
-    success successBlockArg: @escaping (_ stateMachineContext: UpdatesStateContext) -> Void,
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   )
 }

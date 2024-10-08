@@ -34,6 +34,12 @@ export declare class ExpoUpdatesModule extends NativeModule<UpdatesEvents> {
      */
     manifest?: Manifest;
     localAssets?: Record<string, string>;
+    initialContext: UpdatesNativeStateMachineContext & {
+        latestManifestString?: string;
+        downloadedManifestString?: string;
+        lastCheckForUpdateTimeString?: string;
+        rollbackString?: string;
+    };
     reload: () => Promise<void>;
     checkForUpdateAsync: () => Promise<UpdateCheckResultRollBack | (Omit<UpdateCheckResultAvailable, 'manifest'> & ({
         manifestString: string;
@@ -49,15 +55,6 @@ export declare class ExpoUpdatesModule extends NativeModule<UpdatesEvents> {
     } | {
         manifest: Manifest;
     })) | UpdateFetchResultFailure | UpdateFetchResultRollBackToEmbedded>;
-    /**
-     * @hidden
-     */
-    getNativeStateMachineContextAsync: () => Promise<UpdatesNativeStateMachineContext & {
-        latestManifestString?: string;
-        downloadedManifestString?: string;
-        lastCheckForUpdateTimeString?: string;
-        rollbackString?: string;
-    }>;
 }
 export {};
 //# sourceMappingURL=ExpoUpdatesModule.types.d.ts.map

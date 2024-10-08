@@ -335,7 +335,8 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       checkOnLaunch: self.config?.checkOnLaunch ?? CheckAutomaticallyConfig.Always,
       requestHeaders: self.config?.requestHeaders ?? [:],
       assetFilesMap: assetFilesMap(),
-      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: true
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: true,
+      initialContext: UpdatesStateContext()
     )
   }
 
@@ -359,10 +360,6 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   public func setExtraParam(key: String, value: String?, success successBlockArg: @escaping () -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
     errorBlockArg(NotAvailableInDevClientException("Updates.setExtraParamAsync()"))
-  }
-
-  public func getNativeStateMachineContext(success successBlockArg: @escaping (UpdatesStateContext) -> Void, error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void) {
-    successBlockArg(UpdatesStateContext())
   }
 }
 
