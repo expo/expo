@@ -1,13 +1,12 @@
 /// <reference types="node" />
 import * as babylon from '@babel/parser';
 import * as t from '@babel/types';
-import type { MetroSourceMapSegmentTuple } from 'metro-source-map';
-import { JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
-import { InvalidRequireCallError as InternalInvalidRequireCallError, CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
+import type { MetroSourceMapSegmentTuple } from '@bycedric/metro/metro-source-map';
+import { JsTransformerConfig, JsTransformOptions, TransformResponse } from '@bycedric/metro/metro-transform-worker';
+import { InvalidRequireCallError as InternalInvalidRequireCallError, Options as CollectDependenciesOptions } from './collect-dependencies';
 import { ExpoJsOutput } from '../serializer/jsOutput';
 export { JsTransformOptions };
-interface TransformResponse {
-    readonly dependencies: CollectedDependencies['dependencies'];
+interface ExpoTransformResponse extends TransformResponse {
     readonly output: readonly ExpoJsOutput[];
 }
 export declare class InvalidRequireCallError extends Error {
@@ -25,7 +24,7 @@ export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { f
     importDefault: string;
     importAll: string;
 }): TFile;
-export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
+export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<ExpoTransformResponse>;
 export declare function getCacheKey(config: JsTransformerConfig): string;
 export declare function collectDependenciesForShaking(ast: babylon.ParseResult<t.File>, options: CollectDependenciesOptions): Readonly<{
     ast: babylon.ParseResult<t.File>;

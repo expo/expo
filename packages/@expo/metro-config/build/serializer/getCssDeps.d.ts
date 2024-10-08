@@ -1,4 +1,4 @@
-import type { Module } from 'metro';
+import type { Module } from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
 import { SerialAsset } from './serializerAssets';
 export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
 type Options = {

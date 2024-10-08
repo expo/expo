@@ -42,13 +42,13 @@ const generator_1 = __importDefault(require("@babel/generator"));
 const babylon = __importStar(require("@babel/parser"));
 const template_1 = __importDefault(require("@babel/template"));
 const t = __importStar(require("@babel/types"));
-const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
-const metro_cache_1 = require("metro-cache");
-const metro_cache_key_1 = __importDefault(require("metro-cache-key"));
-const metro_source_map_1 = require("metro-source-map");
-const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
-const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
+const JsFileWrapping_1 = __importDefault(require("@bycedric/metro/metro/src/ModuleGraph/worker/JsFileWrapping"));
+const generateImportNames_1 = __importDefault(require("@bycedric/metro/metro/src/ModuleGraph/worker/generateImportNames"));
+const metro_cache_1 = require("@bycedric/metro/metro-cache");
+const metro_cache_key_1 = __importDefault(require("@bycedric/metro/metro-cache-key"));
+const metro_source_map_1 = require("@bycedric/metro/metro-source-map");
+const metro_transform_plugins_1 = __importDefault(require("@bycedric/metro/metro-transform-plugins"));
+const getMinifier_1 = __importDefault(require("@bycedric/metro/metro-transform-worker/src/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
@@ -252,7 +252,6 @@ async function transformJS(file, { config, options }) {
     // Add "use strict" if the file was parsed as a module, and the directive did
     // not exist yet.
     applyUseStrictDirective(ast);
-    // @ts-expect-error: Not on types yet (Metro 0.80).
     const unstable_renameRequire = config.unstable_renameRequire;
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
     if (!optimize) {
@@ -320,7 +319,6 @@ async function transformJS(file, { config, options }) {
             // TODO: This config is optional to allow its introduction in a minor
             // release. It should be made non-optional in ConfigT or removed in
             // future.
-            // @ts-expect-error: Not on types yet (Metro 0.80.9).
             unstable_renameRequire === false));
         }
     }
@@ -384,7 +382,7 @@ async function transformJS(file, { config, options }) {
                 code,
                 lineCount,
                 map,
-                functionMap: file.functionMap,
+                functionMap: file.functionMap ?? null,
                 hasCjsExports: file.hasCjsExports,
                 reactClientReference: file.reactClientReference,
                 expoDomComponentReference: file.expoDomComponentReference,

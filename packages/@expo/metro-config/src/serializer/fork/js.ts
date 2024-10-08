@@ -9,11 +9,11 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/helpers/js.js#L1
  */
 
+import type { MixedOutput, Module } from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import addParamsToDefineCall from '@bycedric/metro/metro-transform-plugins/src/addParamsToDefineCall';
+import type { JsOutput } from '@bycedric/metro/metro-transform-worker';
 import assert from 'assert';
 import jscSafeUrl from 'jsc-safe-url';
-import type { MixedOutput, Module } from 'metro';
-import { addParamsToDefineCall } from 'metro-transform-plugins';
-import type { JsOutput } from 'metro-transform-worker';
 import path from 'path';
 
 export type Options = {

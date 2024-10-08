@@ -1,6 +1,6 @@
 import * as types from '@babel/types';
-import { MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { SerializerConfigT } from 'metro-config';
+import { MixedOutput, Module, ReadOnlyGraph } from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import { SerializerConfigT } from '@bycedric/metro/metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;

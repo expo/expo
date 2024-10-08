@@ -1,5 +1,5 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
-import { SymbolicatorConfigT } from 'metro-config';
+import type { SymbolicatorConfigT } from '@bycedric/metro/metro-config';
 import { URL } from 'url';
 
 type CustomizeFrameFunc = SymbolicatorConfigT['customizeFrame'];

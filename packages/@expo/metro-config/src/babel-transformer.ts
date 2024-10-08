@@ -7,7 +7,10 @@
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
-import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
+import type {
+  BabelTransformer,
+  BabelTransformerArgs,
+} from '@bycedric/metro/metro-babel-transformer';
 import assert from 'node:assert';
 
 import type { TransformOptions } from './babel-core';
@@ -29,6 +32,14 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   platform?: string | null;
   routerRoot?: string;
   projectRoot: string;
+};
+
+export type ExpoBabelTransformResult = ReturnType<BabelTransformer['transform']> & {
+  metadata?: ReturnType<BabelTransformer['transform']>['metadata'] & {
+    hasCjsExports?: boolean;
+    reactClientReference?: string;
+    expoDomComponentReference?: string;
+  };
 };
 
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
@@ -130,13 +141,13 @@ function stringOrUndefined(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
-const transform: BabelTransformer['transform'] = ({
+const transform = ({
   filename,
   src,
   options,
   // `plugins` is used for `functionMapBabelPlugin` from `metro-source-map`. Could make sense to move this to `babel-preset-expo` too.
   plugins,
-}: BabelTransformerArgs): ReturnType<BabelTransformer['transform']> => {
+}: BabelTransformerArgs): ExpoBabelTransformResult => {
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
 
@@ -183,6 +194,7 @@ const transform: BabelTransformer['transform'] = ({
     if (!result) {
       // BabelTransformer specifies that the `ast` can never be null but
       // the function returns here. Discovered when typing `BabelNode`.
+      // @ts-expect-error
       return { ast: null };
     }
 
@@ -195,8 +207,6 @@ const transform: BabelTransformer['transform'] = ({
   }
 };
 
-const babelTransformer: BabelTransformer = {
-  transform,
-};
+const babelTransformer = { transform } satisfies BabelTransformer;
 
-module.exports = babelTransformer;
+export default babelTransformer;

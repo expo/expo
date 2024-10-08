@@ -1,9 +1,9 @@
 // This file represents an abstraction on the metro TerminalReporter.
 // We use this abstraction to safely extend the TerminalReporter for our own custom logging.
+import UpstreamTerminalReporter from '@bycedric/metro/metro/src/lib/TerminalReporter';
+import { Terminal } from '@bycedric/metro/metro-core';
+import type { WatcherStatus } from '@bycedric/metro/metro-file-map';
 import chalk from 'chalk';
-import UpstreamTerminalReporter from 'metro/src/lib/TerminalReporter';
-import { Terminal } from 'metro-core';
-import type { WatcherStatus } from 'metro-file-map';
 import util from 'util';
 
 import {
@@ -75,11 +75,7 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
   }
 
   /** Gives subclasses an easy interface for filtering out logs. Return `true` to skip. */
-  shouldFilterClientLog(event: {
-    type: 'client_log';
-    level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug';
-    data: unknown[];
-  }): boolean {
+  shouldFilterClientLog(event: TerminalReportableEvent): boolean {
     return false;
   }
 

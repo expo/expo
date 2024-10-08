@@ -1,4 +1,4 @@
-import { Resolution } from 'metro-resolver';
+import type { Resolution } from '@bycedric/metro/metro-resolver';
 import path from 'path';
 
 import { matchTsConfigPathAlias } from './matchTsConfigPathAlias';

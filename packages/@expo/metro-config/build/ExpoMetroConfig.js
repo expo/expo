@@ -27,13 +27,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.getDefaultConfig = void 0;
-// Copyright 2023-present 650 Industries (Expo). All rights reserved.
+const metro_cache_1 = require("@bycedric/metro/metro-cache");
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
 const runtimeEnv = __importStar(require("@expo/env"));
 const json_file_1 = __importDefault(require("@expo/json-file"));
 const chalk_1 = __importDefault(require("chalk"));
-const metro_cache_1 = require("metro-cache");
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
@@ -270,8 +269,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-            // @ts-expect-error: not on type.
             unstable_renameRequire: false,
+            // @ts-expect-error: not on type.
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
             browserslistHash: pkg.browserslist
                 ? (0, metro_cache_1.stableHash)(JSON.stringify(pkg.browserslist)).toString('hex')

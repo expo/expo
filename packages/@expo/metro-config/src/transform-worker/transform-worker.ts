@@ -5,12 +5,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import countLines from 'metro/src/lib/countLines';
+import countLines from '@bycedric/metro/metro/src/lib/countLines';
 import type {
   JsTransformerConfig,
   JsTransformOptions,
   TransformResponse,
-} from 'metro-transform-worker';
+} from '@bycedric/metro/metro-transform-worker';
 
 import { wrapDevelopmentCSS } from './css';
 import {

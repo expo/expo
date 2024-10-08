@@ -5,12 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 import generate from '@babel/generator';
+import {
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  SerializerOptions,
+} from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import JsFileWrapping from '@bycedric/metro/metro/src/ModuleGraph/worker/JsFileWrapping';
+import type { SerializerConfigT } from '@bycedric/metro/metro-config';
+import { toSegmentTuple } from '@bycedric/metro/metro-source-map';
+import metroTransformPlugins from '@bycedric/metro/metro-transform-plugins';
 import assert from 'assert';
-import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import { SerializerConfigT } from 'metro-config';
-import { toSegmentTuple } from 'metro-source-map';
-import metroTransformPlugins from 'metro-transform-plugins';
 
 import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
@@ -176,7 +181,6 @@ export async function reconcileTransformSerializerPlugin(
       reconcile.importAll,
       dependencyMapName,
       reconcile.globalPrefix,
-      // @ts-expect-error: not on type yet...
       reconcile.unstable_renameRequire === false
     );
 

@@ -1,5 +1,12 @@
-import { AssetData, MetroConfig, MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { ConfigT, SerializerConfigT } from 'metro-config';
+/**
+ * Copyright © 2023 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import { AssetData } from '@bycedric/metro/metro/src/Assets';
+import { MixedOutput, Module, ReadOnlyGraph } from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import type { ConfigT, SerializerConfigT, MetroConfig } from '@bycedric/metro/metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { SerialAsset } from './serializerAssets';
 import { SerializerConfigOptions } from './withExpoSerializers';

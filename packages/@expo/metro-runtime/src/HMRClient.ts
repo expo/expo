@@ -8,27 +8,19 @@
  * Based on this but with web support:
  * https://github.com/facebook/react-native/blob/086714b02b0fb838dee5a66c5bcefe73b53cf3df/Libraries/Utilities/HMRClient.js
  */
+import MetroHMRClient from '@bycedric/metro/metro-runtime/src/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
 
 import LoadingView from './LoadingView';
 import LogBox from './error-overlay/LogBox';
 import getDevServer from './getDevServer';
 
-const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const pendingEntryPoints: string[] = [];
 
 // @ts-expect-error: Account for multiple versions of pretty-format inside of a monorepo.
 const prettyFormatFunc = typeof prettyFormat === 'function' ? prettyFormat : prettyFormat.default;
 
-type HMRClientType = {
-  send: (msg: string) => void;
-  isEnabled: () => boolean;
-  disable: () => void;
-  enable: () => void;
-  hasPendingUpdates: () => boolean;
-};
-
-let hmrClient: HMRClientType | null = null;
+let hmrClient: MetroHMRClient | null = null;
 let hmrUnavailableReason: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
@@ -265,7 +257,7 @@ function setHMRUnavailableReason(reason: string) {
   }
 }
 
-function registerBundleEntryPoints(client: HMRClientType | null) {
+function registerBundleEntryPoints(client: MetroHMRClient | null) {
   if (hmrUnavailableReason != null) {
     // "Bundle Splitting – Metro disconnected"
     window.location.reload();

@@ -1,14 +1,14 @@
+import Bundler from '@bycedric/metro/metro/src/Bundler';
+import type { TransformOptions } from '@bycedric/metro/metro/src/DeltaBundler/Worker';
+import MetroHmrServer from '@bycedric/metro/metro/src/HmrServer';
+import MetroServer from '@bycedric/metro/metro/src/Server';
+import { loadConfig, resolveConfig, type ConfigT } from '@bycedric/metro/metro-config';
+import { Terminal } from '@bycedric/metro/metro-core';
 import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
-import type Metro from 'metro';
-import Bundler from 'metro/src/Bundler';
-import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
-import MetroHmrServer from 'metro/src/HmrServer';
-import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
-import { Terminal } from 'metro-core';
 import util from 'node:util';
 
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
@@ -38,12 +38,10 @@ class LogRespectingTerminal extends Terminal {
     super(stream);
 
     const sendLog = (...args: any[]) => {
-      // @ts-expect-error
       this._logLines.push(
         // format args like console.log
         util.format(...args)
       );
-      // @ts-expect-error
       this._scheduleUpdate();
 
       // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
@@ -160,7 +158,7 @@ export async function instantiateMetroAsync(
     }).exp,
   }: { isExporting: boolean; exp?: ExpoConfig }
 ): Promise<{
-  metro: Metro.Server;
+  metro: MetroServer;
   hmrServer: MetroHmrServer | null;
   server: http.Server;
   middleware: any;
@@ -199,7 +197,7 @@ export async function instantiateMetroAsync(
     // See: https://github.com/facebook/metro/commit/d0d554381f119bb80ab09dbd6a1d310b54737e52
     const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
     // @ts-expect-error: can't mutate readonly config
-    metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
+    metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: MetroServer) => {
       if (customEnhanceMiddleware) {
         metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
       }
@@ -222,7 +220,6 @@ export async function instantiateMetroAsync(
     metroBundler,
     metroConfig,
     {
-      // @ts-expect-error: Inconsistent `websocketEndpoints` type in metro
       websocketEndpoints: {
         ...websocketEndpoints,
         ...createDevToolsPluginWebsocketEndpoint(),

@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isJsOutput = exports.isJsModule = exports.getJsOutput = exports.getModuleParams = exports.wrapModule = void 0;
+const addParamsToDefineCall_1 = __importDefault(require("@bycedric/metro/metro-transform-plugins/src/addParamsToDefineCall"));
 const assert_1 = __importDefault(require("assert"));
 const jsc_safe_url_1 = __importDefault(require("jsc-safe-url"));
-const metro_transform_plugins_1 = require("metro-transform-plugins");
 const path_1 = __importDefault(require("path"));
 function wrapModule(module, options) {
     const output = getJsOutput(module);
@@ -24,7 +24,7 @@ function wrapModule(module, options) {
         return { src: output.data.code, paths: {} };
     }
     const { params, paths } = getModuleParams(module, options);
-    const src = (0, metro_transform_plugins_1.addParamsToDefineCall)(output.data.code, ...params);
+    const src = (0, addParamsToDefineCall_1.default)(output.data.code, ...params);
     return { src, paths };
 }
 exports.wrapModule = wrapModule;

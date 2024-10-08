@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import type { AssetData } from '@bycedric/metro/metro';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
 import fs from 'fs';
-import Metro from 'metro';
 import path from 'path';
 import prettyBytes from 'pretty-bytes';
 
@@ -26,7 +26,7 @@ export type BundleOptions = {
   sourcemaps?: boolean;
 };
 
-export type BundleAssetWithFileHashes = Metro.AssetData & {
+export type BundleAssetWithFileHashes = AssetData & {
   fileHashes: string[]; // added by the hashAssets asset plugin
 };
 

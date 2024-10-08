@@ -1,5 +1,5 @@
+import { Terminal } from '@bycedric/metro/metro-core';
 import chalk from 'chalk';
-import { Terminal } from 'metro-core';
 import path from 'path';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';

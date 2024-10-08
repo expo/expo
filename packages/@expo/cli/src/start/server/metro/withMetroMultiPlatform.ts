@@ -4,12 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import type Bundler from '@bycedric/metro/metro/src/Bundler';
+import type { ConfigT } from '@bycedric/metro/metro-config';
+import type {
+  Resolution,
+  ResolutionContext,
+  CustomResolutionContext,
+} from '@bycedric/metro/metro-resolver';
+import * as metroResolver from '@bycedric/metro/metro-resolver';
 import { ExpoConfig, Platform } from '@expo/config';
 import fs from 'fs';
-import Bundler from 'metro/src/Bundler';
-import { ConfigT } from 'metro-config';
-import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
-import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -49,7 +53,7 @@ function withWebPolyfills(
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
+  const getPolyfills = (ctx: { platform?: string | null }): readonly string[] => {
     const virtualEnvVarId = `\0polyfill:environment-variables`;
 
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -187,7 +191,7 @@ export function withExtendedResolver(
         preserveSymlinks: config.resolver?.unstable_enableSymlinks ?? true,
         blockList: Array.isArray(config.resolver?.blockList)
           ? config.resolver?.blockList
-          : [config.resolver?.blockList],
+          : ([config.resolver?.blockList] as RegExp[]),
       })
     : defaultResolver;
 
@@ -372,7 +376,6 @@ export function withExtendedResolver(
     // Mock out production react imports in development.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       // This resolution is dev-only to prevent bundling the production React packages in development.
-      // @ts-expect-error: dev is not on type.
       if (!context.dev) return null;
 
       if (

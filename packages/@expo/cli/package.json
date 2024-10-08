@@ -40,6 +40,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
+    "@bycedric/metro": "0.0.1",
     "@expo/code-signing-certificates": "^0.0.5",
     "@expo/config": "~9.0.0",
     "@expo/config-plugins": "~8.0.0",

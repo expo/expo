@@ -1,7 +1,7 @@
 import * as generator from '@babel/generator';
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import { getAssetData } from 'metro/src/Assets';
+import { getAssetData } from '@bycedric/metro/metro/src/Assets';
 
 import { transform } from '../asset-transformer';
 

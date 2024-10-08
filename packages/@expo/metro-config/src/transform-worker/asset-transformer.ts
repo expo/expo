@@ -10,8 +10,8 @@
  */
 import template from '@babel/template';
 import * as t from '@babel/types';
-import { generateAssetCodeFileAst } from 'metro/src/Bundler/util';
-import { BabelTransformerArgs } from 'metro-babel-transformer';
+import { generateAssetCodeFileAst } from '@bycedric/metro/metro/src/Bundler/util';
+import { BabelTransformerArgs } from '@bycedric/metro/metro-babel-transformer';
 import path from 'node:path';
 import url from 'node:url';
 
@@ -36,7 +36,7 @@ export async function transform(
   assetRegistryPath: string,
   assetDataPlugins: readonly string[]
 ): Promise<{
-  ast: import('@babel/core').ParseResult;
+  ast: t.File | import('@babel/core').ParseResult;
   reactClientReference?: string;
 }> {
   options ??= options || {

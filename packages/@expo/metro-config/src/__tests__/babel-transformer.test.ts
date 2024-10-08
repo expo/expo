@@ -1,6 +1,6 @@
 import generate from '@babel/generator';
+import type { BabelTransformer } from '@bycedric/metro/metro-babel-transformer';
 import { vol } from 'memfs';
-import type { BabelTransformer } from 'metro-babel-transformer';
 
 import * as babel from '../babel-core';
 // eslint-disable-next-line import/namespace

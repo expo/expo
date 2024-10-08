@@ -38,6 +38,7 @@
     "@babel/generator": "^7.20.5",
     "@babel/parser": "^7.20.0",
     "@babel/types": "^7.20.0",
+    "@bycedric/metro": "0.0.1",
     "@expo/config": "~9.0.0",
     "@expo/env": "~0.3.0",
     "@expo/json-file": "~8.3.0",

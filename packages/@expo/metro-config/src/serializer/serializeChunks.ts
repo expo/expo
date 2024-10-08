@@ -4,18 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import assert from 'assert';
+import { AssetData } from '@bycedric/metro/metro/src/Assets';
+import sourceMapStringMod from '@bycedric/metro/metro/src/DeltaBundler/Serializers/sourceMapString';
 import {
-  AssetData,
-  MetroConfig,
   MixedOutput,
   Module,
   ReadOnlyGraph,
   SerializerOptions,
-} from 'metro';
-import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-import bundleToString from 'metro/src/lib/bundleToString';
-import { ConfigT, SerializerConfigT } from 'metro-config';
+} from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import bundleToString from '@bycedric/metro/metro/src/lib/bundleToString';
+import type { ConfigT, SerializerConfigT, MetroConfig } from '@bycedric/metro/metro-config';
+import assert from 'assert';
 import path from 'path';
 
 import { stringToUUID } from './debugId';

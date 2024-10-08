@@ -1,7 +1,7 @@
+import { composeSourceMaps } from '@bycedric/metro/metro-source-map';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { composeSourceMaps } from 'metro-source-map';
 import os from 'os';
 import path from 'path';
 import process from 'process';

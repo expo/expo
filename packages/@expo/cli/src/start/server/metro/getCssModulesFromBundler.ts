@@ -1,10 +1,15 @@
+import {
+  getJsOutput,
+  isJsModule,
+} from '@bycedric/metro/metro/src/DeltaBundler/Serializers/helpers/js';
+import type {
+  Module,
+  ReadOnlyDependencies,
+} from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import type IncrementalBundler from '@bycedric/metro/metro/src/IncrementalBundler';
+import splitBundleOptions from '@bycedric/metro/metro/src/lib/splitBundleOptions';
 import { MetroConfig } from '@expo/metro-config';
 import crypto from 'crypto';
-import type { Module } from 'metro';
-import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
-import type { ReadOnlyDependencies } from 'metro/src/DeltaBundler/types';
-import type IncrementalBundler from 'metro/src/IncrementalBundler';
-import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import path from 'path';
 
 type Options = {
@@ -50,7 +55,7 @@ export async function getCssModulesFromBundler(
     [entryFile],
     transformOptions,
     resolverOptions,
-    { onProgress, shallow: false }
+    { onProgress, shallow: false, lazy: true }
   );
 
   return getCssModules(dependencies, {

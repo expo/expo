@@ -1,3 +1,4 @@
-export declare function importMetroConfig(projectRoot: string): typeof import('metro-config') & {
-    getDefaultConfig: import('metro-config/src/defaults/index').default;
+import type DefaultConfig from '@bycedric/metro/metro-config/src/defaults';
+export declare function importMetroConfig(projectRoot: string): typeof import('@bycedric/metro/metro-config') & {
+    getDefaultConfig: DefaultConfig;
 };

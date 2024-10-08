@@ -1,3 +1,4 @@
+import type MetroServer from '@bycedric/metro/metro/src/Server';
 import path from 'path';
 
 import type { ServerLike } from '../BundlerDevServer';
@@ -8,7 +9,7 @@ const debug = require('debug')(
 
 export interface MetroWatchTypeScriptFilesOptions {
   projectRoot: string;
-  metro: import('metro').Server;
+  metro: MetroServer;
   server: ServerLike;
   /* Include tsconfig.json in the watcher */
   tsconfig?: boolean;

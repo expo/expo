@@ -4,16 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig, getConfig } from '@expo/config';
+import Server from '@bycedric/metro/metro/src/Server';
+import splitBundleOptions from '@bycedric/metro/metro/src/lib/splitBundleOptions';
+import * as output from '@bycedric/metro/metro/src/shared/output/bundle';
+import type { BundleOptions } from '@bycedric/metro/metro/src/shared/types.flow';
+import { type ExpoConfig, getConfig } from '@expo/config';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import crypto from 'crypto';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
-import Server from 'metro/src/Server';
-import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
-import output from 'metro/src/shared/output/bundle';
-import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -137,6 +137,7 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
 
   // Persist bundle and source maps.
   await Promise.all([
+    // @ts-expect-error: issue related to string -> utf8.. const conversion
     output.save(bundle, options, Log.log),
 
     // Write dom components proxy files.
@@ -407,6 +408,7 @@ export async function createMetroServerAndBundleRequestAsync(
   }
 
   const bundleRequest = {
+    bundleType: 'bundle',
     ...Server.DEFAULT_BUNDLE_OPTIONS,
     ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
       splitChunks: false,
@@ -428,6 +430,7 @@ export async function createMetroServerAndBundleRequestAsync(
     watch: false,
   });
 
+  // @ts-expect-error: Metro wants `entryFile`, while Expo uses `mainModuleName`
   return { server, bundleRequest };
 }
 

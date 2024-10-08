@@ -1,5 +1,5 @@
+import type { BundleOptions as MetroBundleOptions } from '@bycedric/metro/metro/src/shared/types.flow';
 import { ExpoConfig } from '@expo/config';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
 import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';
@@ -49,6 +49,7 @@ export type SerializerOptions = {
 
 export type ExpoMetroBundleOptions = MetroBundleOptions & {
   serializerOptions?: SerializerOptions;
+  runtimeBytecodeVersion?: number;
 };
 
 export function isServerEnvironment(environment?: any): boolean {

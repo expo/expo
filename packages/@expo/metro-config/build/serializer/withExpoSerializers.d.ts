@@ -1,5 +1,5 @@
-import { MetroConfig, MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { ConfigT, InputConfigT } from 'metro-config';
+import type { MixedOutput, Module, ReadOnlyGraph } from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import type { ConfigT, InputConfigT, MetroConfig } from '@bycedric/metro/metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { SerialAsset } from './serializerAssets';
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;

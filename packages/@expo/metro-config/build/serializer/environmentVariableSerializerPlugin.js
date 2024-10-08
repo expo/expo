@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getEnvVarDevString = exports.environmentVariableSerializerPlugin = exports.serverPreludeSerializerPlugin = exports.getTransformEnvironment = void 0;
-const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
+const CountingSet_1 = __importDefault(require("@bycedric/metro/metro/src/lib/CountingSet"));
+const countLines_1 = __importDefault(require("@bycedric/metro/metro/src/lib/countLines"));
 const debug = require('debug')('expo:metro-config:serializer:env-var');
 function getTransformEnvironment(url) {
     const match = url.match(/[&?]transform\.environment=([^&]+)/);
@@ -108,7 +108,6 @@ function getEnvPrelude(code) {
                 type: 'js/script/virtual',
                 data: {
                     code,
-                    // @ts-expect-error: typed incorrectly upstream
                     lineCount: 1,
                     map: [],
                 },

@@ -9,12 +9,16 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
 
+import { fromRawMappings } from '@bycedric/metro/metro-source-map';
+import type {
+  JsTransformerConfig,
+  JsTransformOptions,
+  JsOutput,
+} from '@bycedric/metro/metro-transform-worker';
 import { TraceMap, originalPositionFor, generatedPositionFor } from '@jridgewell/trace-mapping';
 import { Buffer } from 'buffer';
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import { fromRawMappings } from 'metro-source-map';
-import type { JsTransformerConfig, JsTransformOptions, JsOutput } from 'metro-transform-worker';
 import * as path from 'path';
 
 /** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */

@@ -1,7 +1,7 @@
-import type { ReportableEvent } from 'metro';
-import type { TerminalReportableEvent } from 'metro/src/lib/TerminalReporter';
-import type { Terminal } from 'metro-core';
-import type { WatcherStatus } from 'metro-file-map';
+import type { TerminalReportableEvent } from '@bycedric/metro/metro/src/lib/TerminalReporter';
+import type { ReportableEvent } from '@bycedric/metro/metro/src/lib/reporting';
+import type { Terminal } from '@bycedric/metro/metro-core';
+import type { WatcherStatus } from '@bycedric/metro/metro-file-map';
 
 import { MetroEnvironment } from '../middleware/metroOptions';
 

@@ -1,4 +1,4 @@
-import { JsTransformOptions } from 'metro-transform-worker';
+import { JsTransformOptions } from '@bycedric/metro/metro-transform-worker';
 
 function isHermesEngine(options: Pick<JsTransformOptions, 'unstable_transformProfile'>): boolean {
   // NOTE: This has multiple inputs since we also use the `customTransformOptions.engine` option to indicate the Hermes engine.

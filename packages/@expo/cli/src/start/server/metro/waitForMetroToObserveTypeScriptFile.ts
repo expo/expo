@@ -1,3 +1,4 @@
+import type MetroServer from '@bycedric/metro/metro/src/Server';
 import path from 'path';
 
 import type { ServerLike } from '../BundlerDevServer';
@@ -19,7 +20,7 @@ export type FileChangeEvent = {
 export function waitForMetroToObserveTypeScriptFile(
   projectRoot: string,
   runner: {
-    metro: import('metro').Server;
+    metro: MetroServer;
     server: ServerLike;
   },
   callback: () => Promise<void>
@@ -66,7 +67,7 @@ export function waitForMetroToObserveTypeScriptFile(
 
 export function observeFileChanges(
   runner: {
-    metro: import('metro').Server;
+    metro: MetroServer;
     server: ServerLike;
   },
   files: string[],
@@ -116,7 +117,7 @@ export function observeFileChanges(
 
 export function observeAnyFileChanges(
   runner: {
-    metro: import('metro').Server;
+    metro: MetroServer;
     server: ServerLike;
   },
   callback: (events: FileChangeEvent[]) => void | Promise<void>

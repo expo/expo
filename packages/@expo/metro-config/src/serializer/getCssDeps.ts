@@ -1,5 +1,5 @@
-import type { Module } from 'metro';
-import { isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
+import { isJsModule } from '@bycedric/metro/metro/src/DeltaBundler/Serializers/helpers/js';
+import type { Module } from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
 import path from 'path';
 
 import { CSSMetadata } from './jsOutput';

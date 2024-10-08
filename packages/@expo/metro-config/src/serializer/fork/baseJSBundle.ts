@@ -9,11 +9,16 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js#L1
  */
 
+import type {
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  SerializerOptions,
+} from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import CountingSet from '@bycedric/metro/metro/src/lib/CountingSet';
+import countLines from '@bycedric/metro/metro/src/lib/countLines';
+import getAppendScripts from '@bycedric/metro/metro/src/lib/getAppendScripts';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
-import countLines from 'metro/src/lib/countLines';
-import getAppendScripts from 'metro/src/lib/getAppendScripts';
 
 import { processModules } from './processModules';
 
@@ -124,7 +129,7 @@ export function baseJSBundleWithDependencies(
     includeAsyncPaths: options.includeAsyncPaths,
     projectRoot: options.projectRoot,
     serverRoot: options.serverRoot,
-    sourceUrl: options.sourceUrl,
+    sourceUrl: options.sourceUrl ?? undefined,
     platform: options.platform,
     baseUrl: options.baseUrl,
     splitChunks: options.splitChunks,
@@ -163,7 +168,7 @@ export function baseJSBundleWithDependencies(
     // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web and native in production.
     sourceUrl:
       options.platform === 'web' ? undefined : !options.dev ? undefined : options.sourceUrl,
-  });
+  }) as Module[];
 
   // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
   // NOTE: We may want to move this assertion up further.

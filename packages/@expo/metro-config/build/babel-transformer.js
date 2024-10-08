@@ -117,6 +117,7 @@ plugins, }) => {
         if (!result) {
             // BabelTransformer specifies that the `ast` can never be null but
             // the function returns here. Discovered when typing `BabelNode`.
+            // @ts-expect-error
             return { ast: null };
         }
         (0, node_assert_1.default)(result.ast);
@@ -128,8 +129,6 @@ plugins, }) => {
         }
     }
 };
-const babelTransformer = {
-    transform,
-};
-module.exports = babelTransformer;
+const babelTransformer = { transform };
+exports.default = babelTransformer;
 //# sourceMappingURL=babel-transformer.js.map

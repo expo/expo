@@ -4,11 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import sourceMapStringMod from '@bycedric/metro/metro/src/DeltaBundler/Serializers/sourceMapString';
+import type {
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  SerializerOptions,
+} from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import bundleToString from '@bycedric/metro/metro/src/lib/bundleToString';
+import type { ConfigT, InputConfigT, MetroConfig } from '@bycedric/metro/metro-config';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { MetroConfig, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-import bundleToString from 'metro/src/lib/bundleToString';
-import { ConfigT, InputConfigT } from 'metro-config';
 
 import { stringToUUID } from './debugId';
 import {

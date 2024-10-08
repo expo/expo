@@ -1,12 +1,17 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
+import type {
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+} from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import type { Reporter } from '@bycedric/metro/metro/src/lib/reporting';
+import { stableHash } from '@bycedric/metro/metro-cache';
+import type { ConfigT as MetroConfig, InputConfigT } from '@bycedric/metro/metro-config';
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
-import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
-import { stableHash } from 'metro-cache';
-import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -315,8 +320,8 @@ export function getDefaultConfig(
     // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-      // @ts-expect-error: not on type.
       unstable_renameRequire: false,
+      // @ts-expect-error: not on type.
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg.browserslist
         ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')

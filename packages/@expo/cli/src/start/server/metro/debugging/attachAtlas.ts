@@ -1,5 +1,5 @@
+import type { ConfigT as MetroConfig } from '@bycedric/metro/metro-config';
 import type { Server as ConnectServer } from 'connect';
-import type { ConfigT as MetroConfig } from 'metro-config';
 
 import { AtlasPrerequisite } from './AtlasPrerequisite';
 import { env } from '../../../../utils/env';
@@ -48,6 +48,7 @@ function attachAtlasToDevServer(
     return debug('Atlas is not installed in the project, skipping initialization');
   }
 
+  // @ts-expect-error: still using `metro-config` instead of `@expo/metro/metro-config`
   const instance = atlas.createExpoAtlasMiddleware(options.metroConfig);
   options.middleware.use('/_expo/atlas', instance.middleware);
   debug('Attached Atlas middleware for development on: /_expo/atlas');
@@ -80,6 +81,7 @@ async function attachAtlasToExport(
     debug('(Re)created Atlas file at:', filePath);
   }
 
+  // @ts-expect-error: still using `metro-config` instead of `@expo/metro/metro-config`
   atlas.withExpoAtlas(options.metroConfig);
   debug('Attached Atlas to Metro config for exporting');
 }

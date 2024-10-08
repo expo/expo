@@ -3,13 +3,14 @@
 //
 // Forks https://github.com/facebook/metro/blob/b80d9a0f638ee9fb82ff69cd3c8d9f4309ca1da2/packages/metro/src/index.flow.js#L57
 // and adds the ability to access the bundler instance.
+import { createConnectMiddleware, type RunServerOptions } from '@bycedric/metro/metro';
+import MetroHmrServer from '@bycedric/metro/metro/src/HmrServer';
+import type Server from '@bycedric/metro/metro/src/Server';
+import createWebsocketServer from '@bycedric/metro/metro/src/lib/createWebsocketServer';
+import { ConfigT } from '@bycedric/metro/metro-config';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
-import Metro, { RunServerOptions, Server } from 'metro';
-import MetroHmrServer from 'metro/src/HmrServer';
-import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
-import { ConfigT } from 'metro-config';
 import { parse } from 'url';
 import type { WebSocketServer } from 'ws';
 
@@ -30,7 +31,10 @@ export const runServer = async (
     waitForBundler = false,
     websocketEndpoints = {},
     watch,
-  }: RunServerOptions,
+  }: Omit<RunServerOptions, 'websocketEndpoints'> & {
+    // NOTE(cedric): Metro uses on older version of `ws`, with incorrect types
+    websocketEndpoints: Record<string, WebSocketServer>;
+  },
   {
     mockServer,
   }: {
@@ -54,7 +58,7 @@ export const runServer = async (
   //   );
   // }
 
-  const { middleware, end, metroServer } = await Metro.createConnectMiddleware(config, {
+  const { middleware, end, metroServer } = await createConnectMiddleware(config, {
     hasReducedPerformance,
     waitForBundler,
     watch,
@@ -142,7 +146,6 @@ export const runServer = async (
       );
 
       Object.assign(websocketEndpoints, {
-        // @ts-expect-error: incorrect types
         '/hot': createWebsocketServer({
           websocketServer: hmrServer,
         }),

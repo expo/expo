@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getFileName = exports.fileNameFromContents = exports.getCssSerialAssets = void 0;
-const js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js");
+const js_1 = require("@bycedric/metro/metro/src/DeltaBundler/Serializers/helpers/js");
 const path_1 = __importDefault(require("path"));
 const css_1 = require("../transform-worker/css");
 const hash_1 = require("../utils/hash");

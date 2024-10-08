@@ -34,10 +34,10 @@ exports.reconcileTransformSerializerPlugin = exports.isEnvBoolean = exports.sort
  * LICENSE file in the root directory of this source tree.
  */
 const generator_1 = __importDefault(require("@babel/generator"));
+const JsFileWrapping_1 = __importDefault(require("@bycedric/metro/metro/src/ModuleGraph/worker/JsFileWrapping"));
+const metro_source_map_1 = require("@bycedric/metro/metro-source-map");
+const metro_transform_plugins_1 = __importDefault(require("@bycedric/metro/metro-transform-plugins"));
 const assert_1 = __importDefault(require("assert"));
-const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const metro_source_map_1 = require("metro-source-map");
-const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
 const jsOutput_1 = require("./jsOutput");
 const sideEffects_1 = require("./sideEffects");
 const collect_dependencies_1 = __importStar(require("../transform-worker/collect-dependencies"));
@@ -152,9 +152,7 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
         value.dependencies =
             //
             sortDependencies(dependencies, value.dependencies);
-        const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, reconcile.importDefault, reconcile.importAll, dependencyMapName, reconcile.globalPrefix, 
-        // @ts-expect-error: not on type yet...
-        reconcile.unstable_renameRequire === false);
+        const { ast: wrappedAst } = JsFileWrapping_1.default.wrapModule(ast, reconcile.importDefault, reconcile.importAll, dependencyMapName, reconcile.globalPrefix, reconcile.unstable_renameRequire === false);
         const reserved = [];
         if (reconcile.unstable_dependencyMapReservedName != null) {
             reserved.push(reconcile.unstable_dependencyMapReservedName);

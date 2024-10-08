@@ -1,4 +1,4 @@
-import UpstreamFileStore from 'metro-cache/src/stores/FileStore';
+import UpstreamFileStore from '@bycedric/metro/metro-cache/src/stores/FileStore';
 
 const debug = require('debug')('expo:metro:cache') as typeof console.log;
 

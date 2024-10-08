@@ -1,5 +1,5 @@
-import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import { SerializerConfigT } from 'metro-config';
+import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import type { SerializerConfigT } from '@bycedric/metro/metro-config';
 import { Dependency } from '../transform-worker/collect-dependencies';
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;

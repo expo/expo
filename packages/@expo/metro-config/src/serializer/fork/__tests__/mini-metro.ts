@@ -1,5 +1,11 @@
-import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
+import {
+  Dependency,
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  SerializerOptions,
+} from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import CountingSet from '@bycedric/metro/metro/src/lib/CountingSet';
 import * as path from 'path';
 
 import { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';

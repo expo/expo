@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildHermesBundleAsync = void 0;
+const metro_source_map_1 = require("@bycedric/metro/metro-source-map");
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
-const metro_source_map_1 = require("metro-source-map");
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const process_1 = __importDefault(require("process"));

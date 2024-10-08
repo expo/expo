@@ -4,24 +4,27 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import baseJSBundle from '@bycedric/metro/metro/src/DeltaBundler/Serializers/baseJSBundle';
+import {
+  sourceMapGeneratorNonBlocking,
+  type SourceMapGeneratorOptions,
+} from '@bycedric/metro/metro/src/DeltaBundler/Serializers/sourceMapGenerator';
+import type {
+  DeltaResult,
+  TransformInputOptions,
+} from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
+import type MetroHmrServer from '@bycedric/metro/metro/src/HmrServer';
+import type { Client as MetroHmrClient } from '@bycedric/metro/metro/src/HmrServer';
+import { GraphRevision } from '@bycedric/metro/metro/src/IncrementalBundler';
+import bundleToString from '@bycedric/metro/metro/src/lib/bundleToString';
+import { TransformProfile } from '@bycedric/metro/metro-babel-transformer';
+import type { CustomResolverOptions } from '@bycedric/metro/metro-resolver/src/types';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
-import { DeltaResult, TransformInputOptions } from 'metro';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-import {
-  sourceMapGeneratorNonBlocking,
-  type SourceMapGeneratorOptions,
-} from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
-import type MetroHmrServer from 'metro/src/HmrServer';
-import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
-import { GraphRevision } from 'metro/src/IncrementalBundler';
-import bundleToString from 'metro/src/lib/bundleToString';
-import { TransformProfile } from 'metro-babel-transformer';
-import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -508,6 +511,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
       platform: expoBundleOptions.platform ?? 'web',
+      // @ts-expect-error: this doesn't exist on either objects
       runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
     };
 
@@ -1353,16 +1357,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         entryFile: resolvedEntryFilePath,
         minify: transformOptions.minify,
         platform: transformOptions.platform,
-        // @ts-expect-error: typed incorrectly upstream
         customResolverOptions: resolverOptions.customResolverOptions,
-        customTransformOptions: transformOptions.customTransformOptions,
+        customTransformOptions: transformOptions.customTransformOptions ?? {},
       },
       isPrefetch: false,
       type: 'bundle_build_started',
     });
 
     try {
-      let delta: DeltaResult<void>;
+      let delta: DeltaResult;
       let revision: GraphRevision;
 
       // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
@@ -1378,7 +1381,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           {
             onProgress,
             shallow: graphOptions.shallow,
-            // @ts-expect-error: typed incorrectly
             lazy: graphOptions.lazy,
           }
         );
@@ -1397,7 +1399,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               {
                 onProgress,
                 shallow: graphOptions.shallow,
-                // @ts-expect-error: typed incorrectly
                 lazy: graphOptions.lazy,
               }
             ));
@@ -1619,7 +1620,7 @@ function wrapBundle(str: string) {
 }
 
 async function sourceMapStringAsync(
-  modules: readonly import('metro/src/DeltaBundler/types').Module<any>[],
+  modules: readonly import('@bycedric/metro/metro/src/DeltaBundler/types.flow').Module<any>[],
   options: SourceMapGeneratorOptions
 ): Promise<string> {
   return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {

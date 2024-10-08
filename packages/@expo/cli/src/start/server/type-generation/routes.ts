@@ -1,6 +1,6 @@
+import type Server from '@bycedric/metro/metro/src/Server';
 import fs from 'fs/promises';
 import debounce from 'lodash.debounce';
-import { Server } from 'metro';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 

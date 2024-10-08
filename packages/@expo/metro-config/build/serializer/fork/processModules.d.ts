@@ -5,7 +5,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Module } from 'metro';
+import type { Module } from '@bycedric/metro/metro/src/DeltaBundler/types.flow';
 export declare function processModules(modules: readonly Module[], { filter, createModuleId, dev, includeAsyncPaths, projectRoot, serverRoot, sourceUrl, splitChunks, skipWrapping, computedAsyncModulePaths, }: {
     splitChunks: boolean;
     filter?: (module: Module) => boolean;

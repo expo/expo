@@ -34,7 +34,7 @@ exports.transform = void 0;
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
+const countLines_1 = __importDefault(require("@bycedric/metro/metro/src/lib/countLines"));
 const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));

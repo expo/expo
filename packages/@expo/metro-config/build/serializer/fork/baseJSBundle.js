@@ -14,10 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getBaseUrlOption = exports.getPlatformOption = void 0;
+const CountingSet_1 = __importDefault(require("@bycedric/metro/metro/src/lib/CountingSet"));
+const countLines_1 = __importDefault(require("@bycedric/metro/metro/src/lib/countLines"));
+const getAppendScripts_1 = __importDefault(require("@bycedric/metro/metro/src/lib/getAppendScripts"));
 const jsc_safe_url_1 = require("jsc-safe-url");
-const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
-const getAppendScripts_1 = __importDefault(require("metro/src/lib/getAppendScripts"));
 const processModules_1 = require("./processModules");
 function getPlatformOption(graph, options) {
     if (graph.transformOptions?.platform != null) {
@@ -70,7 +70,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         includeAsyncPaths: options.includeAsyncPaths,
         projectRoot: options.projectRoot,
         serverRoot: options.serverRoot,
-        sourceUrl: options.sourceUrl,
+        sourceUrl: options.sourceUrl ?? undefined,
         platform: options.platform,
         baseUrl: options.baseUrl,
         splitChunks: options.splitChunks,

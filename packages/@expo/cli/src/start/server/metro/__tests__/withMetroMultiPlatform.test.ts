@@ -1,7 +1,8 @@
+import type Bundler from '@bycedric/metro/metro/src/Bundler';
+import type { ConfigT } from '@bycedric/metro/metro-config';
+import type { CustomResolutionContext } from '@bycedric/metro/metro-resolver/src';
 import { getBareExtensions } from '@expo/config/paths';
 import { vol } from 'memfs';
-import { ConfigT } from 'metro-config';
-import { CustomResolutionContext } from 'metro-resolver/src';
 import assert from 'node:assert';
 
 import { shouldCreateVirtualCanary, shouldCreateVirtualShim } from '../externals';
@@ -35,7 +36,7 @@ function getDefaultRequestContext(): CustomResolutionContext {
   return getResolverContext();
 }
 
-function getMetroBundlerGetter() {
+function getMetroBundlerGetter(): () => Bundler {
   return jest.fn(() => {
     const transformFile = jest.fn();
     // @ts-expect-error
@@ -45,10 +46,13 @@ function getMetroBundlerGetter() {
       setVirtualModule: jest.fn(),
       transformFile,
     };
-  });
+  }) as any;
 }
 
-const expectVirtual = (result: import('metro-resolver').Resolution, name: string) => {
+const expectVirtual = (
+  result: import('@bycedric/metro/metro-resolver').Resolution,
+  name: string
+) => {
   expect(result.type).toBe('sourceFile');
   assert(result.type === 'sourceFile');
   assert(/^\0/.test(result.filePath), 'Virtual files must start with null byte: \\0');
