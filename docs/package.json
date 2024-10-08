@@ -108,7 +108,6 @@
     "postcss": "^8.4.38",
     "postcss-import": "^16.1.0",
     "prettier": "^3.3.0",
-    "puppeteer": "^22.7.0",
     "react-test-renderer": "^18.2.0",
     "rehype-slug": "^6.0.0",
     "remark-cli": "^12.0.1",
