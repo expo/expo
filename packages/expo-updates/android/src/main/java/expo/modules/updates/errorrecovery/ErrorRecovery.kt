@@ -67,7 +67,7 @@ class ErrorRecovery(
   }
 
   internal fun handleException(exception: Exception) {
-    logger.error("ErrorRecovery: exception encountered: ${exception.localizedMessage}", UpdatesErrorCode.Unknown, exception)
+    logger.error("ErrorRecovery: exception encountered: ${exception.localizedMessage}", exception, UpdatesErrorCode.Unknown)
     handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.EXCEPTION_ENCOUNTERED, exception))
   }
 
