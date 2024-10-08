@@ -19,6 +19,7 @@
 ### 💡 Others
 
 - Fix homepage link in `package.json`. ([#30163](https://github.com/expo/expo/pull/30163) by [@amandeepmittal](https://github.com/amandeepmittal))
+- Standardized Babel configuration to use `expo-module-scripts`.
 
 ## 4.0.27 - 2024-09-23
 
