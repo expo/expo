@@ -20,13 +20,13 @@ import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck'
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
 import { getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
 import { env } from './utils/env';
+import { isNetworkError } from './utils/errors';
 import { isInteractive } from './utils/interactive';
 import { Log } from './utils/log';
 import { logNewSection } from './utils/ora';
 import { endTimer, formatMilliseconds, startTimer } from './utils/timer';
 import { ltSdkVersion } from './utils/versions';
 import { warnUponCmdExe } from './warnings/windows';
-import { isNetworkError } from './utils/errors';
 
 interface DoctorCheckRunnerJob {
   check: DoctorCheck;
