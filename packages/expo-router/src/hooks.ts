@@ -107,7 +107,6 @@ export function useSegments<
  *   return <Text>Hello</Text>;
  * }
  * ```
- *
  */
 export function usePathname(): string {
   return useStoreRouteInfo().pathname;

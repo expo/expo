@@ -63,7 +63,6 @@ export declare function useSegments<TSegments extends Routes | RouteSegments<Rou
  *   return <Text>Hello</Text>;
  * }
  * ```
- *
  */
 export declare function usePathname(): string;
 /**

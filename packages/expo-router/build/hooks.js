@@ -101,7 +101,6 @@ exports.useSegments = useSegments;
  *   return <Text>Hello</Text>;
  * }
  * ```
- *
  */
 function usePathname() {
     return (0, router_store_1.useStoreRouteInfo)().pathname;
