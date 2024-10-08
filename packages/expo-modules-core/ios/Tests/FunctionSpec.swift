@@ -241,6 +241,10 @@ class FunctionSpec: ExpoSpec {
     context("JavaScript") {
       let runtime = try! appContext.runtime
 
+      struct TestRecord: Record {
+        @Field var property: String = "expo"
+      }
+
       beforeSuite {
         appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
           Name("TestModule")
@@ -276,6 +280,14 @@ class FunctionSpec: ExpoSpec {
 
           Function("withCGFloat") { (f: CGFloat) in
             return "\(f)"
+          }
+
+          Function("withRecord") { (f: TestRecord) in
+            return "\(f.property)"
+          }
+
+          Function("withOptionalRecord") { (f: TestRecord?) in
+            return "\(f?.property ?? "no value")"
           }
         })
       }
@@ -313,6 +325,18 @@ class FunctionSpec: ExpoSpec {
 
       it("accepts CGFloat argument") {
         expect(try runtime.eval("expo.modules.TestModule.withCGFloat(20.23)").asString()) == "20.23"
+      }
+
+      it("accepts record") {
+        expect(try runtime.eval("expo.modules.TestModule.withRecord({property: \"123\"})").asString()) == "123"
+      }
+
+      it("accepts no optional record") {
+        expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord()").asString()) == "no value"
+      }
+
+      it("accepts optional record") {
+        expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString()) == "123"
       }
     }
   }
