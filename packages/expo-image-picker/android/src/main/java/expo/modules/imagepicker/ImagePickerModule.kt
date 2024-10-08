@@ -1,8 +1,6 @@
 package expo.modules.imagepicker
 
 import android.Manifest
-import android.Manifest.permission.READ_MEDIA_IMAGES
-import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
