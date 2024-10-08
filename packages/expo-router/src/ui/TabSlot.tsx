@@ -4,27 +4,50 @@ import { ScreenContainer, Screen } from 'react-native-screens';
 
 import { TabContext, TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './TabContext';
 import { TabListProps } from './TabList';
-import { useNavigation } from '../useNavigation';
 
 export type UseTabSlotOptions = ComponentProps<typeof ScreenContainer> & {
+  /** Remove inactive screens */
   detachInactiveScreens?: boolean;
+  /** Override how the <Screen /> is rendered */
   renderFn?: typeof defaultTabsSlotRender;
 };
 
+/**
+ * Options provided to the UseTabSlotOptions.renderFn
+ */
 export type TabsSlotRenderOptions = {
+  /** Index of screen */
   index: number;
+  /** Whether the screen is focused */
   isFocused: boolean;
+  /** Whether the screen has been loaded */
   loaded: boolean;
+  /** Should the screen be unloaded when inactive */
   detachInactiveScreens: boolean;
 };
 
-export function useTabSlot({
-  detachInactiveScreens = Platform.OS === 'web' ||
-    Platform.OS === 'android' ||
-    Platform.OS === 'ios',
-  style,
-  renderFn = defaultTabsSlotRender,
-}: UseTabSlotOptions = {}) {
+/**
+ * Returns a ReactElement of the current tab.
+ *
+ * @see `useTabSlot`
+ *
+ * @example
+ * ```ts
+ * function MyTabSlot() {
+ *   const slot = useTabSlot()
+ *   return slot
+ * }
+ * ```
+ */
+export function useTabSlot(options: UseTabSlotOptions = {}) {
+  const {
+    detachInactiveScreens = Platform.OS === 'web' ||
+      Platform.OS === 'android' ||
+      Platform.OS === 'ios',
+    style,
+    renderFn = defaultTabsSlotRender,
+  } = options;
+
   const state = useContext(TabsStateContext);
   const descriptors = useContext(TabsDescriptorsContext);
   const focusedRouteKey = state.routes[state.index].key;
@@ -59,18 +82,23 @@ export function useTabSlot({
 
 export type TabSlotProps = UseTabSlotOptions;
 
+/**
+ * Renders the current tab.
+ *
+ * @see `useTabSlot`
+ *
+ * @example
+ * ```ts
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
 export function TabSlot(props: TabSlotProps) {
   return useTabSlot(props);
-}
-
-export function useTab() {
-  const navigation = useNavigation();
-  const options = useContext(TabContext);
-
-  return {
-    options,
-    setOptions: navigation.setOptions,
-  };
 }
 
 export function defaultTabsSlotRender(
@@ -100,6 +128,9 @@ export function defaultTabsSlotRender(
   );
 }
 
+/**
+ * @hidden
+ */
 export function isTabSlot(child: ReactElement<any>): child is ReactElement<TabListProps> {
   return child.type === TabSlot;
 }

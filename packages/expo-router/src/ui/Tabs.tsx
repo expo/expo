@@ -4,6 +4,7 @@ import {
   ParamListBase,
   TabActionHelpers,
   TabNavigationState,
+  TabRouterOptions,
   useNavigationBuilder,
 } from '@react-navigation/native';
 import {
@@ -21,6 +22,7 @@ import {
   ExpoTabsScreenOptions,
   TabNavigationEventMap,
   TabTriggerMapContext,
+  TabsContextValue,
   TabsDescriptorsContext,
   TabsNavigatorContext,
   TabsStateContext,
@@ -41,6 +43,9 @@ export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
 
+/**
+ * Options to provide to the Tab Router.
+ */
 export type UseTabsOptions = Omit<
   DefaultNavigatorOptions<
     ParamListBase,
@@ -49,15 +54,32 @@ export type UseTabsOptions = Omit<
     TabNavigationEventMap
   >,
   'children'
-> &
-  Omit<ExpoTabRouterOptions, 'initialRouteName' | 'triggerMap'>;
+> & {
+  backBehavior?: TabRouterOptions['backBehavior'];
+};
 
 export type TabsProps = ViewProps & {
+  /** Forward props to child component and removes the extra <View />. Useful for custom wrappers. */
   asChild?: boolean;
   options?: UseTabsOptions;
 };
 
-export function Tabs({ children, asChild, options, ...props }: TabsProps) {
+/**
+ * Root component for the headless tabs.
+ *
+ * @see useTabsWithChildren - The hook version of this component.
+ * @example
+ * ```ts
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
+export function Tabs(props: TabsProps) {
+  const { children, asChild, options, ...rest } = props;
   const Comp = asChild ? SafeAreaViewSlot : View;
 
   const { NavigationContent } = useTabsWithChildren({
@@ -67,7 +89,7 @@ export function Tabs({ children, asChild, options, ...props }: TabsProps) {
   });
 
   return (
-    <Comp style={styles.tabsRoot} {...props}>
+    <Comp style={styles.tabsRoot} {...rest}>
       <NavigationContent>{children}</NavigationContent>
     </Comp>
   );
@@ -81,14 +103,38 @@ export type UseTabsWithTriggersOptions<T extends string | object> = UseTabsOptio
   triggers: ScreenTrigger<T>[];
 };
 
-export function useTabsWithChildren({ children, ...options }: UseTabsWithChildrenOptions) {
-  return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...options });
+/**
+ * Hook version of `<Tabs />`. The returned NavigationContent component should be rendered
+ *
+ * @see Tabs - The component version of this hook
+ * @example
+ * ```ts
+ * export function MyTabs({ children }) {
+ *   const { NavigationContent } = useTabsWithChildren({ children })
+ * return <NavigationContent />
+ * ```
+ */
+export function useTabsWithChildren(options: UseTabsWithChildrenOptions) {
+  const { children, ...rest } = options;
+  return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...rest });
 }
 
-export function useTabsWithTriggers<T extends string | object>({
-  triggers,
-  ...options
-}: UseTabsWithTriggersOptions<T>) {
+/**
+ * Alternative hook version of `<Tabs />` that uses explicit triggers instead of `children`
+ *
+ * @see Tabs - The component version of this hook
+ * @example
+ * ```ts
+ * export function MyTabs({ children }) {
+ *   const { NavigationContent } = useTabsWithChildren({ triggers: [] })
+ *   return <NavigationContent />
+ * }
+ * ```
+ */
+export function useTabsWithTriggers<T extends string | object>(
+  options: UseTabsWithTriggersOptions<T>
+): TabsContextValue {
+  const { triggers, ...rest } = options;
   // Ensure we extend the parent triggers, so we can trigger them as well
   const parentTriggerMap = useContext(TabTriggerMapContext);
   const routeNode = useRouteNode();
@@ -125,7 +171,7 @@ export function useTabsWithTriggers<T extends string | object>({
     TabNavigationEventMap
   >(ExpoTabRouter, {
     children,
-    ...options,
+    ...rest,
     triggerMap,
     id: contextKey,
     initialRouteName,
@@ -141,7 +187,7 @@ export function useTabsWithTriggers<T extends string | object>({
         </TabsDescriptorsContext.Provider>
       </TabsNavigatorContext.Provider>
     </TabTriggerMapContext.Provider>
-  ));
+  )) as TabsContextValue['NavigationContent'];
 
   return { state, descriptors, navigation, NavigationContent };
 }

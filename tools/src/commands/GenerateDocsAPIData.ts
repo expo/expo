@@ -79,6 +79,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
+  'expo-router-ui': [['ui/Tabs.tsx', 'ui/TabContext.tsx'], 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
@@ -128,13 +129,13 @@ const executeCommand = async (
   const tsConfigPath = path.join(basePath, 'tsconfig.json');
   const jsonOutputPath = path.join(dataPath, `${jsonFileName}.json`);
 
-  const entryPoints = Array.isArray(entryPoint)
+  const absoluteEntryPoints = Array.isArray(entryPoint)
     ? entryPoint.map((entry) => path.join(entriesPath, entry))
     : [path.join(entriesPath, entryPoint)];
 
   const app = await Application.bootstrapWithPlugins(
     {
-      entryPoints,
+      entryPoints: absoluteEntryPoints,
       tsconfig: tsConfigPath,
       disableSources: true,
       hideGenerator: true,
@@ -168,11 +169,23 @@ const executeCommand = async (
     output.name = jsonFileName;
 
     if (Array.isArray(entryPoint)) {
-      const filterEntries = entryPoint.map((entry) => entry.substring(0, entry.lastIndexOf('.')));
       output.children = output.children
-        .filter((entry) => filterEntries.includes(entry.name))
-        .map((entry) => entry.children)
-        .flat()
+        .flatMap((child) => {
+          // sourceFileName is relative to the directory this command was executed in
+          const absoluteSourceFileName = path.resolve(
+            process.cwd(),
+            output.symbolIdMap[child.id].sourceFileName
+          );
+
+          if (absoluteEntryPoints.includes(absoluteSourceFileName)) {
+            // Include only the original, not any references
+            return child.children.filter(
+              (subChild) => !(subChild.variant === 'reference' && subChild.target)
+            );
+          }
+
+          return [];
+        })
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 

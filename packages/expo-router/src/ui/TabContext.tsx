@@ -24,6 +24,9 @@ export type ExpoTabsProps = DefaultNavigatorOptions<
   Omit<TabRouterOptions, 'initialRouteName'> & // Should be set through `unstable_settings`
   BottomTabNavigationConfig;
 
+/**
+ * @hidden
+ */
 export type ExpoTabsScreenOptions = Pick<
   BottomTabNavigationOptions,
   'title' | 'lazy' | 'unmountOnBlur' | 'freezeOnBlur'
@@ -33,6 +36,9 @@ export type ExpoTabsScreenOptions = Pick<
   action: NavigationAction;
 };
 
+/**
+ * @hidden
+ */
 export type TabNavigationEventMap = {
   /**
    * Event which fires on tapping on the tab in the tab bar.
@@ -44,6 +50,10 @@ export type TabNavigationEventMap = {
   tabLongPress: { data: undefined };
 };
 
+/**
+ * The React Navigation custom navigator
+ * @see https://reactnavigation.org/docs/custom-navigators/#usenavigationbuilder
+ */
 export type TabsContextValue = ReturnType<
   typeof useNavigationBuilder<
     TabNavigationState<any>,
@@ -57,9 +67,21 @@ export type TabsContextValue = ReturnType<
 export type TabContextValue = TabsDescriptor['options'];
 
 export const TabContext = createContext<TabContextValue>({});
+/**
+ * @hidden
+ */
 export const TabTriggerMapContext = createContext<TriggerMap>({});
+/**
+ * @hidden
+ */
 export const TabsDescriptorsContext = createContext<TabsContextValue['descriptors']>({});
+/**
+ * @hidden
+ */
 export const TabsNavigatorContext = createContext<TabsContextValue['navigation'] | null>(null);
+/**
+ * @hidden
+ */
 export const TabsStateContext = createContext<TabsContextValue['state']>({
   type: 'tab',
   history: [],
