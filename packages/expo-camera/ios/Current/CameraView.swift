@@ -367,7 +367,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     }
 
     if !photoSettings.availablePreviewPhotoPixelFormatTypes.isEmpty,
-       let previewFormat = photoSettings.__availablePreviewPhotoPixelFormatTypes.first {
+    let previewFormat = photoSettings.__availablePreviewPhotoPixelFormatTypes.first {
       photoSettings.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewFormat]
     }
 
