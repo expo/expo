@@ -65,7 +65,7 @@ export async function renderHtml({
   renderRscForHtml,
   scriptUrl,
 }: {
-  scriptUrl: string;
+  scriptUrl?: string;
   pathname: string;
   isExporting: boolean;
   searchParams: URLSearchParams;
@@ -196,7 +196,7 @@ export async function renderHtml({
     .pipeThrough(
       injectScript(
         config.basePath + config.rscPath + '/web/' + encodeInput(ssrConfig.input),
-        !isExporting ? scriptUrl : ''
+        !isExporting && scriptUrl != null ? scriptUrl : ''
       )
     )
     .pipeThrough(injectRSCPayload(stream2));

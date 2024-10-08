@@ -730,6 +730,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       {
         platform: options.platform,
         ssrManifest,
+        artifacts: bundle.artifacts,
       },
       files
     );

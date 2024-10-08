@@ -504,6 +504,7 @@ export function createServerComponentsMiddleware(
       contentType,
       ssrManifest,
       decodedBody,
+      moduleIdCallback,
     }: {
       input: string;
 
@@ -514,6 +515,12 @@ export function createServerComponentsMiddleware(
       contentType?: string;
       ssrManifest?: Map<string, string>;
       decodedBody?: unknown;
+      moduleIdCallback?: (module: {
+        id: string;
+        chunks: string[];
+        name: string;
+        async: boolean;
+      }) => void;
     },
     isExporting: boolean | undefined = instanceMetroOptions.isExporting
   ): Promise<ReadableStream> {
@@ -536,6 +543,7 @@ export function createServerComponentsMiddleware(
         config: {},
         input,
         contentType,
+        moduleIdCallback,
       },
       {
         isExporting,
@@ -553,41 +561,75 @@ export function createServerComponentsMiddleware(
     // Get the static client boundaries (no dead code elimination allowed) for the production export.
     getExpoRouterClientReferencesAsync,
 
-    exportHtmlFiles: async () => {
+    exportHtmlFiles: async ({
+      projectRoot,
+      buildConfig,
+      publicIndexHtml,
+      files,
+      artifacts,
+      getClientModules,
+    }: {
+      projectRoot: string;
+      buildConfig: any;
+      publicIndexHtml: string;
+      files: ExportAssetMap;
+      artifacts: SerialAsset[];
+      getClientModules: (input: string) => string[];
+    }) => {
       const platform = 'web';
 
       const { renderHtml } = await getHtmlRendererAsync(platform);
 
       const { getSsrConfig } = await getRscRendererAsync(platform);
 
-      const nonJsAssets = clientBuildOutput.output.flatMap(({ type, fileName }) =>
-        type === 'asset' && !fileName.endsWith('.js') ? [fileName] : []
-      );
-      const cssAssets = nonJsAssets.filter((asset) => asset.endsWith('.css'));
+      const config = {
+        basePath: '',
+        rscPath: '/_flight/web',
+        distDir: 'dist',
+      };
+
+      const serverRoot = getMetroServerRoot(projectRoot);
+
+      // const nonJsAssets = artifacts.filter(({ type }) =>
+      //   type === 'css' && !fileName.endsWith('.js') ? [fileName] : []
+      // );
+      // const cssAssets = nonJsAssets.filter((asset) => asset.endsWith('.css'));
       const basePrefix = config.basePath + config.rscPath + '/';
-      const publicIndexHtmlFile = joinPath(rootDir, config.distDir, DIST_PUBLIC, 'index.html');
-      const publicIndexHtml = await fs.promises.readFile(publicIndexHtmlFile, {
-        encoding: 'utf8',
-      });
-      if (await willEmitPublicIndexHtml(env, config, distEntries, buildConfig)) {
-        await unlink(publicIndexHtmlFile);
-      }
-      const publicIndexHtmlHead = publicIndexHtml.replace(/.*?<head>(.*?)<\/head>.*/s, '$1');
+      // const publicIndexHtmlFile = joinPath(projectRoot, config.distDir, DIST_PUBLIC, 'index.html');
+      // const publicIndexHtml = await fs.promises.readFile(publicIndexHtmlFile, {
+      //   encoding: 'utf8',
+      // });
+      // if (await willEmitPublicIndexHtml(env, config, distEntries, buildConfig)) {
+      //   await unlink(publicIndexHtmlFile);
+      // }
+      // const publicIndexHtmlHead = publicIndexHtml.replace(/.*?<head>(.*?)<\/head>.*/s, '$1');
       const dynamicHtmlPathMap = new Map<PathSpec, string>();
       await Promise.all(
         Array.from(buildConfig).map(
           async ({ pathname, isStatic, entries, customCode, context }) => {
             const pathSpec = typeof pathname === 'string' ? pathname2pathSpec(pathname) : pathname;
-            let htmlStr = publicIndexHtml;
+
+            let htmlStr = serializeHtmlWithAssets({
+              // Just inject css assets for now
+              resources: artifacts.filter((asset) => asset.type !== 'js'),
+              template: publicIndexHtml,
+              baseUrl: config.basePath,
+              isExporting: true,
+              hydrate: true,
+              // TODO: Ensure this matches standard router
+              route: pathSpec,
+            });
+
+            const publicIndexHtmlHead = publicIndexHtml.replace(/.*?<head>(.*?)<\/head>.*/s, '$1');
             let htmlHead = publicIndexHtmlHead;
-            if (cssAssets.length) {
-              const cssStr = cssAssets
-                .map((asset) => `<link rel="stylesheet" href="${config.basePath}${asset}">`)
-                .join('\n');
-              // HACK is this too naive to inject style code?
-              htmlStr = htmlStr.replace(/<\/head>/, cssStr);
-              htmlHead += cssStr;
-            }
+            // if (cssAssets.length) {
+            //   const cssStr = cssAssets
+            //     .map((asset) => `<link rel="stylesheet" href="${config.basePath}${asset}">`)
+            //     .join('\n');
+            //   // HACK is this too naive to inject style code?
+            //   htmlStr = htmlStr.replace(/<\/head>/, cssStr);
+            //   htmlHead += cssStr;
+            // }
             const inputsForPrefetch = new Set<string>();
             const moduleIdsForPrefetch = new Set<string>();
             for (const { input, skipPrefetch } of entries || []) {
@@ -615,27 +657,30 @@ export function createServerComponentsMiddleware(
             }
             pathname = pathSpec2pathname(pathSpec);
             const destHtmlFile = path.join(
-              rootDir,
-              config.distDir,
-              DIST_PUBLIC,
+              // projectRoot,
+              // config.distDir,
+              // DIST_PUBLIC,
               path.extname(pathname)
                 ? pathname
                 : pathname === '/404'
                   ? '404.html' // HACK special treatment for 404, better way?
                   : pathname + '/index.html'
             );
+
             // In partial mode, skip if the file already exists.
-            if (fs.existsSync(destHtmlFile)) {
-              return;
-            }
+            // if (fs.existsSync(destHtmlFile)) {
+            //   return;
+            // }
             const htmlReadable = await renderHtml({
               // config: {},
+              serverRoot,
+              resolveClientEntry: getResolveClientEntry({ platform, environment: 'node' }),
               pathname,
               searchParams: new URLSearchParams(),
               htmlHead,
               renderRscForHtml: (input, params) =>
                 renderRsc(
-                  { env, config, input, context, decodedBody: params },
+                  { config, input, context, decodedBody: params },
                   { isDev: false, entries: distEntries }
                 ),
               // getSsrConfigForHtml: async (pathname, searchParams) => {
@@ -653,17 +698,26 @@ export function createServerComponentsMiddleware(
                   { isDev: false, entries: distEntries }
                 ),
               isExporting: true,
-              loadModule: distEntries.loadModule,
+              async loadModule(id) {
+                // TODO: Implement this
+                console.warn('SSR -> loadModule not implemented', id);
+              },
             });
-            await fs.promises.mkdir(path.join(destHtmlFile, '..'), { recursive: true });
+            // await fs.promises.mkdir(path.join(destHtmlFile, '..'), { recursive: true });
             if (htmlReadable) {
-              await pipeline(
-                Readable.fromWeb(htmlReadable as any),
-                createWriteStream(destHtmlFile)
-              );
+              htmlStr = await streamToStringAsync(htmlReadable);
+              // await pipeline(
+              //   Readable.fromWeb(htmlReadable as any),
+              //   createWriteStream(destHtmlFile)
+              // );
             } else {
-              await fs.promises.writeFile(destHtmlFile, htmlStr);
+              // await fs.promises.writeFile(destHtmlFile, htmlStr);
             }
+            files.set(destHtmlFile, {
+              contents: htmlStr,
+              targetDomain: 'client',
+              rscId: pathname,
+            });
           }
         )
       );
@@ -673,9 +727,11 @@ export function createServerComponentsMiddleware(
       {
         platform,
         ssrManifest,
+        artifacts,
       }: {
         platform: string;
         ssrManifest: Map<string, string>;
+        artifacts: SerialAsset[];
       },
       files: ExportAssetMap
     ) {
@@ -703,6 +759,7 @@ export function createServerComponentsMiddleware(
                 method: 'GET',
                 platform,
                 ssrManifest,
+                moduleIdCallback: ({ id }) => addClientModule(input, id),
               },
               true
             );
@@ -718,6 +775,38 @@ export function createServerComponentsMiddleware(
           }
         })
       );
+
+      const clientModuleMap = new Map<string, Set<string>>();
+      const addClientModule = (input: string, id: string) => {
+        let idSet = clientModuleMap.get(input);
+        if (!idSet) {
+          idSet = new Set();
+          clientModuleMap.set(input, idSet);
+        }
+        idSet.add(id);
+      };
+      const getClientModules = (input: string) => {
+        const idSet = clientModuleMap.get(input);
+        return Array.from(idSet || []);
+      };
+
+      this.exportHtmlFiles({
+        buildConfig,
+        files,
+        projectRoot,
+        publicIndexHtml: `<!DOCTYPE html>
+<html lang="%LANG_ISO_CODE%">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  </head>
+  <body>
+  </body>
+</html>`,
+        artifacts,
+        getClientModules,
+      });
     },
     htmlMiddleware: htmlMiddleware.GET,
     // htmlMiddleware: createBuiltinAPIRequestHandler(
@@ -827,6 +916,7 @@ const pathSpec2pathname = (pathSpec: PathSpec): string => {
 };
 
 import fs from 'fs';
+import { serializeHtmlWithAssets } from './serializeHtml';
 
 const filePathToOsPath = (filePath: string) =>
   path.sep === '/' ? filePath : filePath.replace(/\//g, '\\');

@@ -104,7 +104,7 @@ async function renderHtml({ pathname, isExporting, htmlHead, searchParams, serve
         },
     }))
         .pipeThrough(rectifyHtml())
-        .pipeThrough(injectScript(config.basePath + config.rscPath + '/web/' + encodeInput(ssrConfig.input), !isExporting ? scriptUrl : ''))
+        .pipeThrough(injectScript(config.basePath + config.rscPath + '/web/' + encodeInput(ssrConfig.input), !isExporting && scriptUrl != null ? scriptUrl : ''))
         .pipeThrough(injectRSCPayload(stream2));
     return readable;
 }
