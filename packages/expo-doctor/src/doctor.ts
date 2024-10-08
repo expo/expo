@@ -67,6 +67,11 @@ export async function printCheckResultSummaryOnComplete(job: DoctorCheckRunnerJo
       Log.error(
         'This check requires a connection to the Expo API. Please check your network connection.'
       );
+      if (env.EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES) {
+        Log.warn(
+          'EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES is enabled. Ignoring network error for this check.'
+        );
+      }
     }
   }
 }
@@ -192,13 +197,25 @@ export async function actionAsync(projectRoot: string) {
 
   spinner.stop();
 
-  if (jobs.some((job) => !job.result.isSuccessful)) {
-    if (jobs.some((job) => job.result.issues?.length)) {
+  const failedJobs = jobs.filter((job) => !job.result.isSuccessful);
+
+  if (failedJobs.length) {
+    if (failedJobs.some((job) => job.result.issues?.length)) {
       Log.log();
       Log.log(chalk.underline('Detailed check results:'));
       Log.log();
       // actual issues will output in order of the sequence of tests, due to rules of Promise.all()
-      jobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
+      failedJobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
+    }
+    // check if all checks failed due to a network error if the flag to override network errors is enabled
+    if (env.EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES) {
+      const failedJobsDueToNetworkError = failedJobs.filter((job) => isNetworkError(job.error));
+      if (failedJobsDueToNetworkError.length === failedJobs.length) {
+        Log.warn(
+          'One or more checks failed due to network errors, but EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES is enabled. Run Doctor to retry these checks once the network is available.'
+        );
+        return;
+      }
     }
     Log.exit(chalk.red('One or more checks failed, indicating possible issues with the project.'));
   } else {
