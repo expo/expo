@@ -1,9 +1,9 @@
 'use strict';
+import Constants from 'expo-constants';
 import * as FS from 'expo-file-system';
 import { File, Directory } from 'expo-file-system/next';
 import { Paths } from 'expo-file-system/src/next';
 import { Platform } from 'react-native';
-import Constants from 'expo-constants';
 
 export const name = 'FileSystem@next';
 
