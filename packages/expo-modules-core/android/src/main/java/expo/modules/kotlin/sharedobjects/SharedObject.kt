@@ -63,12 +63,12 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
   /**
    * Called when the shared object was released.
    */
-  open fun wasReleased() = deallocate()
+  open fun sharedObjectDidRelease() = deallocate()
 
   /**
    * Called when the shared object being deallocated.
    */
-  @Deprecated("Use didRelease() instead.", ReplaceWith("didRelease()"))
+  @Deprecated("Use sharedObjectDidRelease() instead.", ReplaceWith("sharedObjectDidRelease()"))
   open fun deallocate() = Unit
 
   /**
