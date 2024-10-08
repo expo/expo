@@ -212,7 +212,7 @@ export async function actionAsync(projectRoot: string) {
       const failedJobsDueToNetworkError = failedJobs.filter((job) => isNetworkError(job.error));
       if (failedJobsDueToNetworkError.length === failedJobs.length) {
         Log.warn(
-          'One or more checks failed due to network errors, but EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES is enabled. Run Doctor to retry these checks once the network is available.'
+          'One or more checks failed due to network errors, but EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES is enabled, so these errors will not fail Doctor. Run Doctor to retry these checks once the network is available.'
         );
         return;
       }
