@@ -174,8 +174,4 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  * timeout communicating with the server. It also rejects when `expo-updates` is not enabled.
  */
 export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
-/**
- * @hidden
- */
-export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string): void;
 //# sourceMappingURL=Updates.d.ts.map

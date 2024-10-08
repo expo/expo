@@ -301,12 +301,3 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   }
   return result;
 }
-
-/**
- * @hidden
- */
-export function clearUpdateCacheExperimentalAsync(_sdkVersion?: string) {
-  console.warn(
-    "This method is no longer necessary. `expo-updates` now automatically deletes your app's old bundle files!"
-  );
-}
