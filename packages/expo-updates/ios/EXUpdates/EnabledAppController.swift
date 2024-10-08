@@ -8,11 +8,10 @@ import ExpoModulesCore
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
-public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppControllerInterface, StartupProcedureDelegate {
+public class EnabledAppController: InternalAppControllerInterface, StartupProcedureDelegate {
   private static let ErrorDomain = "EXUpdatesAppController"
 
   public weak var delegate: AppControllerDelegate?
-  public weak var appContext: AppContext?
 
   internal let config: UpdatesConfig
   private let database: UpdatesDatabase
@@ -33,21 +32,13 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
     })
   }
 
-  public var shouldEmitJsEvents = false {
-    didSet {
-      if shouldEmitJsEvents == true {
-        sendQueuedEventsToAppContext()
-      }
-    }
-  }
-
-  private var eventsToSendToJS: [[String: Any?]] = []
-
-  private let stateMachine = UpdatesStateMachine(validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+  private let stateMachine: UpdatesStateMachine
 
   private let selectionPolicy: SelectionPolicy
 
   private let logger = UpdatesLogger()
+
+  public let eventManager: UpdatesEventManager
 
   // swiftlint:disable implicitly_unwrapped_optional
   private var startupProcedure: StartupProcedure!
@@ -66,8 +57,8 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       withRuntimeVersion: self.config.runtimeVersion
     )
     self.logger.info(message: "AppController sharedInstance created")
-
-    self.stateMachine.changeEventDelegate = self
+    self.eventManager = QueueUpdatesEventManager(logger: logger)
+    self.stateMachine = UpdatesStateMachine(eventManager: self.eventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
   }
 
   public func start() {
@@ -140,7 +131,6 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       DispatchQueue.main.async { [weak self] in
         if let strongSelf = self {
           strongSelf.delegate?.appController(strongSelf, didStartWithSuccess: strongSelf.startupProcedure.launchAssetUrl() != nil)
-          strongSelf.sendQueuedEventsToAppContext()
         }
       }
     }
@@ -203,48 +193,6 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
 
   private func purgeUpdatesLogsOlderThanOneDay() {
     UpdatesUtils.purgeUpdatesLogsOlderThanOneDay()
-  }
-
-  // MARK: - Send events to JS
-
-  internal func sendUpdateStateChangeEventToAppContext(_ eventType: UpdatesStateEventType, body: [String: Any?]) {
-    logger.info(message: "sendUpdateStateChangeEventToAppContext(): type = \(eventType)")
-    sendEventToAppContext(EXUpdatesStateChangeEventName, "\(eventType)", body: body)
-  }
-
-  private func sendEventToAppContext(_ eventName: String, _ eventType: String, body: [String: Any?]) {
-    var mutableBody = body
-    mutableBody["type"] = eventType
-
-    guard let appContext = appContext,
-      let eventEmitter = appContext.eventEmitter,
-      shouldEmitJsEvents == true else {
-      eventsToSendToJS.append([
-        "eventName": eventName,
-        "mutableBody": mutableBody
-      ])
-      logger.warn(message: "EXUpdates: Could not emit event: name = \(eventName), type = \(eventType). Event will be emitted when the appContext is available", code: .jsRuntimeError)
-      return
-    }
-    logger.debug(message: "sendEventToAppContext: \(eventName), \(mutableBody)")
-    eventEmitter.sendEvent(withName: eventName, body: mutableBody)
-  }
-
-  internal func sendQueuedEventsToAppContext() {
-    guard let appContext = appContext,
-      let eventEmitter = appContext.eventEmitter,
-      shouldEmitJsEvents == true else {
-      return
-    }
-    eventsToSendToJS.forEach { event in
-      guard let eventName = event["eventName"] as? String,
-        let mutableBody = event["mutableBody"] as? [String: Any?] else {
-        return
-      }
-      logger.debug(message: "sendEventToAppContext: \(eventName), \(mutableBody)")
-      eventEmitter.sendEvent(withName: eventName, body: mutableBody)
-    }
-    eventsToSendToJS = []
   }
 
   // MARK: - JS API

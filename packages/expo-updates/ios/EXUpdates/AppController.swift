@@ -127,15 +127,9 @@ public protocol AppControllerInterface {
 }
 
 public protocol InternalAppControllerInterface: AppControllerInterface {
-  /**
-   The AppContext from expo-modules-core.
-   This is optional, but required for expo-updates module events to work.
-   */
-  var appContext: AppContext? { get set }
-
   var updatesDirectory: URL? { get }
 
-  var shouldEmitJsEvents: Bool { get set }
+  var eventManager: UpdatesEventManager { get }
 
   func getConstantsForModule() -> UpdatesModuleConstants
   func requestRelaunch(
@@ -345,15 +339,15 @@ public class AppController: NSObject {
    For `UpdatesModule` to set the `shouldEmitJsEvents` property
    */
   internal static var shouldEmitJsEvents: Bool {
-    get { _sharedInstance?.shouldEmitJsEvents ?? false }
-    set { _sharedInstance?.shouldEmitJsEvents = newValue }
+    get { _sharedInstance?.eventManager.shouldEmitJsEvents ?? false }
+    set { _sharedInstance?.eventManager.shouldEmitJsEvents = newValue }
   }
 
   /**
    Binds the `AppContext` instance from `UpdatesModule`.
    */
   internal static func bindAppContext(_ appContext: AppContext?) {
-    _sharedInstance?.appContext = appContext
+    _sharedInstance?.eventManager.appContext = appContext
   }
 }
 

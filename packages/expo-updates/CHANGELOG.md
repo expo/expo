@@ -30,7 +30,7 @@
 - [Android] Use protected methods in room dao now that ksp allows it. ([#29080](https://github.com/expo/expo/pull/29080) by [@wschurman](https://github.com/wschurman))
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Move location of assetPatternsToBeBundled config key ([#31584](https://github.com/expo/expo/pull/31584) by [@wschurman](https://github.com/wschurman))
-- Refactor JS event queueing and emitting ([#31818](https://github.com/expo/expo/pull/31818) by [@wschurman](https://github.com/wschurman))
+- Refactor JS event queueing and emitting ([#31818](https://github.com/expo/expo/pull/31818, [#31854](https://github.com/expo/expo/pull/31854) by [@wschurman](https://github.com/wschurman))
 
 ### ⚠️ Notices
 
