@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- fix conditional on iOS non-CNG check ([#31920](https://github.com/expo/expo/pull/31920) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 💡 Others
 
 ## 1.10.1 — 2024-08-28
