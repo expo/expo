@@ -657,8 +657,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // TODO: The output keys should be in production format or use a lookup manifest.
 
-    // console.log('serverActionReferencesInServer', serverActionReferencesInServer);
-
     debug('Evaluated client boundaries:', clientBoundaries);
 
     // Run metro bundler and create the JS bundles/source maps.
@@ -698,32 +696,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
       files
     );
-    // const serverActionManifest = new Map<string, string>();
-
-    // await Promise.all(
-    //   reactServerReferences.map(async (ref) => {
-    //     // TODO: Bundle server action and add to the files.
-    //     const actionBundle = await this.ssrLoadModuleContents(ref, {
-    //       isExporting: true,
-    //       ...options,
-    //       platform: options.platform,
-    //       environment: 'react-server',
-    //     });
-
-    //     // Write to a manifest so we can lookup in SSR.
-    //     serverActionManifest.set(
-    //       // NOTE: This needs to be the identifier for the server action.
-    //       ref,
-    //       actionBundle.filename
-    //     );
-    //     // Store file
-    //     files.set(actionBundle.filename, {
-    //       contents: actionBundle.src,
-    //       targetDomain: 'server',
-    //       // TODO: Add new React Server Action ID for logging.
-    //     });
-    //   })
-    // );
 
     // Inject the global CSS that was imported during the server render.
     bundle.artifacts.push(...cssModules);
@@ -789,20 +761,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           )
         ),
     });
-
-    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
-    // files.set(`_expo/rsc/${options.platform}/action-manifest.json`, {
-    //   targetDomain: 'server',
-    //   contents: JSON.stringify(
-    //     // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
-    //     Object.fromEntries(
-    //       Array.from(serverActionManifest.entries()).map(([key, value]) => [
-    //         path.join(serverRoot, key),
-    //         [key, value],
-    //       ])
-    //     )
-    //   ),
-    // });
 
     return { ...bundle, files };
   }

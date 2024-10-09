@@ -7,13 +7,12 @@
  */
 // This module is bundled with Metro in web/react-server mode and redirects to platform specific renderers.
 import type { RenderRscArgs } from '@expo/server/build/middleware/rsc';
+import { asyncServerImport } from 'expo-router/_async-server-import';
 import path from 'node:path';
-
-const debug = require('debug')('expo:server:rsc-renderer');
 
 import { renderRsc } from './rsc-renderer';
 
-import { asyncServerImport } from 'expo-router/_async-server-import';
+const debug = require('debug')('expo:server:rsc-renderer');
 
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map<string, any>();
@@ -125,7 +124,6 @@ export async function renderRscWithImportsAsync(
 
           const [id, chunk] = actionManifest[file];
           return {
-            // TODO
             id,
             chunks: chunk ? [chunk] : [],
           };
