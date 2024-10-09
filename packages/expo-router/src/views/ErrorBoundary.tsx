@@ -1,7 +1,7 @@
 'use client';
 import type { LogBoxLog } from '@expo/metro-runtime/symbolicate';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
-import React from 'react';
+import { ComponentType, useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -15,9 +15,9 @@ if (process.env.NODE_ENV === 'development') {
   const { LogBoxLog, parseErrorStack } =
     require('@expo/metro-runtime/symbolicate') as typeof import('@expo/metro-runtime/symbolicate');
   useMetroSymbolication = function (error: Error) {
-    const [logBoxLog, setLogBoxLog] = React.useState<LogBoxLog | null>(null);
+    const [logBoxLog, setLogBoxLog] = useState<LogBoxLog | null>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
       let isMounted = true;
       const stack = parseErrorStack(error.stack);
 
@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === 'development') {
         componentStack: [],
       });
 
-      log.symbolicate('stack', (symbolicatedLog) => {
+      log.symbolicate('stack', () => {
         if (isMounted) {
           setLogBoxLog(log);
         }
@@ -52,7 +52,7 @@ if (process.env.NODE_ENV === 'development') {
   };
 }
 
-let StackTrace: React.ComponentType<{ logData: LogBoxLog | null }>;
+let StackTrace: ComponentType<{ logData: LogBoxLog | null }>;
 
 if (process.env.NODE_ENV === 'development') {
   const { LogContext } = require('@expo/metro-runtime/src/error-overlay/Data/LogContext');
@@ -85,7 +85,7 @@ if (process.env.NODE_ENV === 'development') {
 
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   const logBoxLog = useMetroSymbolication(error);
-  const inTabBar = React.useContext(BottomTabBarHeightContext);
+  const inTabBar = useContext(BottomTabBarHeightContext);
   const Wrapper = inTabBar ? View : SafeAreaView;
 
   return (
@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     marginBottom: 12,
-    // textAlign: "center",
   },
   link: {
     color: 'rgba(255,255,255,0.4)',

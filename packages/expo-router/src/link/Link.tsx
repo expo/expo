@@ -1,6 +1,6 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import * as React from 'react';
+import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef } from 'react';
 import { Text, TextProps, GestureResponderEvent, Platform } from 'react-native';
 
 import { Slot } from './LinkSlot';
@@ -10,9 +10,13 @@ import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 
-export interface WebAnchorProps {
+// docsMissing
+/**
+ * @platform web
+ */
+export type WebAnchorProps = {
   /**
-   * **Web only:** Specifies where to open the `href`.
+   * Specifies where to open the `href`.
    *
    * - **_self**: the current tab.
    * - **_blank**: opens in a new tab or window.
@@ -24,12 +28,14 @@ export interface WebAnchorProps {
    * @default '_self'
    *
    * @example
+   * ```jsx
    * <Link href="https://expo.dev" target="_blank">Go to Expo in new tab</Link>
+   * ```
    */
   target?: '_self' | '_blank' | '_parent' | '_top' | (string & object);
 
   /**
-   * **Web only:** Specifies the relationship between the `href` and the current route.
+   * Specifies the relationship between the `href` and the current route.
    *
    * Common values:
    * - **nofollow**: Indicates to search engines that they should not follow the `href`. This is often used for user-generated content or links that should not influence search engine rankings.
@@ -44,12 +50,14 @@ export interface WebAnchorProps {
    * This property is passed to the underlying anchor (`<a>`) tag.
    *
    * @example
-   * <Link href="https://expo.dev" rel="nofollow">Go to Expo</Link>
+   * ```jsx
+   * <Link href="https://expo.dev" rel="nofollow">Go to Expo</Link>`
+   * ```
    */
   rel?: string;
 
   /**
-   * **Web only:** Specifies that the `href` should be downloaded when the user clicks on the link,
+   * Specifies that the `href` should be downloaded when the user clicks on the link,
    * instead of navigating to it. It is typically used for links that point to files that the user should download,
    * such as PDFs, images, documents, etc.
    *
@@ -57,11 +65,17 @@ export interface WebAnchorProps {
    * This property is passed to the underlying anchor (`<a>`) tag.
    *
    * @example
+   * ```jsx
    * <Link href="/image.jpg" download="my-image.jpg">Download image</Link>
+   * ```
    */
   download?: string;
-}
+};
 
+// @docsMissing
+/**
+ *
+ */
 export interface LinkProps<T extends string | object>
   extends Omit<TextProps, 'href'>,
     WebAnchorProps {
@@ -80,18 +94,19 @@ export interface LinkProps<T extends string | object>
   /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
   className?: string;
 
-  onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
+  onPress?: (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => void;
 
   /**
    * Relative URL references are either relative to the directory or the document. By default, relative paths are relative to the document.
-   * @see: https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references
+   *
+   * @see [Resolving relative references in Mozilla's documentation](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references)
    */
   relativeToDirectory?: boolean;
 }
 
 export interface LinkComponent {
-  <T extends string | object>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
-  /** Helper method to resolve an Href object into a string. */
+  <T extends string | object>(props: PropsWithChildren<LinkProps<T>>): JSX.Element;
+  /** Helper method to resolve a Href object into a string. */
   resolveHref: (href: Href) => string;
 }
 
@@ -111,15 +126,8 @@ export function Redirect({ href }: { href: Href }) {
 /**
  * Component to render link to another route using a path.
  * Uses an anchor tag on the web.
- *
- * @param props.href Absolute path to route (e.g. `/feeds/hot`).
- * @param props.replace Should replace the current route without adding to the history.
- * @param props.push Should push the current route, always adding to the history.
- * @param props.asChild Forward props to child component. Useful for custom buttons.
- * @param props.children Child elements to render the content.
- * @param props.className On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind.
  */
-export const Link = React.forwardRef(ExpoRouterLink) as unknown as LinkComponent;
+export const Link = forwardRef(ExpoRouterLink) as unknown as LinkComponent;
 
 Link.resolveHref = resolveHref;
 
@@ -130,7 +138,7 @@ function useInteropClassName(props: { style?: TextProps['style']; className?: st
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  return React.useMemo(() => {
+  return useMemo(() => {
     if (props.className == null) {
       return props.style;
     }
@@ -150,7 +158,7 @@ const useHrefAttrs = Platform.select<
   (props: Partial<LinkProps<any>>) => { hrefAttrs?: any } & Partial<LinkProps<any>>
 >({
   web: function useHrefAttrs({ asChild, rel, target, download }: Partial<LinkProps<any>>) {
-    return React.useMemo(() => {
+    return useMemo(() => {
       const hrefAttrs = {
         rel,
         target,
@@ -182,7 +190,7 @@ function ExpoRouterLink(
     download,
     ...rest
   }: LinkProps<any>,
-  ref: React.ForwardedRef<Text>
+  ref: ForwardedRef<Text>
 ) {
   // Mutate the style prop to add the className on web.
   const style = useInteropClassName(rest);
@@ -190,7 +198,7 @@ function ExpoRouterLink(
   // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
   const hrefAttrs = useHrefAttrs({ asChild, rel, target, download });
 
-  const resolvedHref = React.useMemo(() => {
+  const resolvedHref = useMemo(() => {
     if (href == null) {
       throw new Error('Link: href is required');
     }
@@ -203,7 +211,7 @@ function ExpoRouterLink(
 
   const props = useLinkToPathProps({ href: resolvedHref, event, relativeToDirectory });
 
-  const onPress = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => {
+  const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
     if ('onPress' in rest) {
       rest.onPress?.(e);
     }

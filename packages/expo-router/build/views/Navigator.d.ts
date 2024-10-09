@@ -17,13 +17,20 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
     router?: T;
     routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
 };
-/** An unstyled custom navigator. Good for basic web layouts */
+/**
+ * An unstyled custom navigator. Good for basic web layouts.
+ *
+ * @hidden
+ */
 export declare function Navigator<T extends UseNavigationBuilderRouter>({ initialRouteName, screenOptions, children, router, routerOptions, }: NavigatorProps<T>): React.JSX.Element | null;
 export declare namespace Navigator {
     var Slot: typeof import("./Navigator").Slot;
     var useContext: typeof useNavigatorContext;
     var Screen: typeof import("./Screen").Screen;
 }
+/**
+ * @hidden
+ */
 export declare function useNavigatorContext(): {
     contextKey: string;
     state: Readonly<{
