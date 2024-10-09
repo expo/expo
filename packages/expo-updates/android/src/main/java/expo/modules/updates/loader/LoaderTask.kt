@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -15,6 +14,7 @@ import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.Loader.LoaderCallback
+import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
@@ -162,7 +162,7 @@ class LoaderTask(
   fun start() {
     isRunning = true
 
-    val shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(configuration, context)
+    val shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(configuration, logger, context)
     val delay = configuration.launchWaitMs
     if (delay > 0 && shouldCheckForUpdate) {
       handlerThread.start()
@@ -206,7 +206,7 @@ class LoaderTask(
           } else {
             launchRemoteUpdate()
           }
-          Log.e(TAG, "Failed to launch embedded or launchable update", e)
+          logger.error("Failed to launch embedded or launchable update", e, UpdatesErrorCode.UpdateFailedToLoad)
         }
 
         override fun onSuccess() {
@@ -260,7 +260,7 @@ class LoaderTask(
       stopTimer()
     }
     if (e != null) {
-      Log.e(TAG, "Unexpected error encountered while loading this app", e)
+      logger.error("Unexpected error encountered while loading this app", e, UpdatesErrorCode.Unknown)
     }
   }
 
@@ -316,9 +316,9 @@ class LoaderTask(
       val launchableUpdate = launcher.getLaunchableUpdate(database)
       val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
       if (selectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
-        EmbeddedLoader(context, configuration, database, directory).start(object : LoaderCallback {
+        EmbeddedLoader(context, configuration, logger, database, directory).start(object : LoaderCallback {
           override fun onFailure(e: Exception) {
-            Log.e(TAG, "Unexpected error copying embedded update", e)
+            logger.error("Unexpected error copying embedded update", e, UpdatesErrorCode.Unknown)
             launcher.launch(database, launcherCallback)
           }
 
@@ -351,12 +351,12 @@ class LoaderTask(
     AsyncTask.execute {
       val database = databaseHolder.database
       callback.onRemoteCheckForUpdateStarted()
-      RemoteLoader(context, configuration, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
+      RemoteLoader(context, configuration, logger, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
         .start(object : LoaderCallback {
           override fun onFailure(e: Exception) {
             databaseHolder.releaseDatabase()
             callback.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
-            Log.e(TAG, "Failed to download remote update", e)
+            logger.error("Failed to download remote update", e, UpdatesErrorCode.UpdateFailedToLoad)
             remoteUpdateCallback.onFailure(e)
           }
 
@@ -419,6 +419,7 @@ class LoaderTask(
             RemoteLoader.processSuccessLoaderResult(
               context,
               configuration,
+              logger,
               database,
               selectionPolicy,
               directory,
@@ -439,7 +440,7 @@ class LoaderTask(
                 override fun onFailure(e: Exception) {
                   databaseHolder.releaseDatabase()
                   remoteUpdateCallback.onFailure(e)
-                  Log.e(TAG, "Loaded new update but it failed to launch", e)
+                  logger.error("Loaded new update but it failed to launch", e, UpdatesErrorCode.UpdateFailedToLoad)
                 }
 
                 override fun onSuccess() {

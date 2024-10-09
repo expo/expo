@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
@@ -17,6 +16,7 @@ import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.events.QueueUpdatesEventManager
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
+import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
@@ -58,7 +58,7 @@ class EnabledUpdatesController(
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context).purgeLogEntries {
       if (it != null) {
-        Log.e(TAG, "UpdatesLogReader: error in purgeLogEntries", it)
+        logger.error("UpdatesLogReader: error in purgeLogEntries", it, UpdatesErrorCode.Unknown)
       }
     }
   }
@@ -110,7 +110,7 @@ class EnabledUpdatesController(
         try {
           (this as java.lang.Object).wait()
         } catch (e: InterruptedException) {
-          Log.e(TAG, "Interrupted while waiting for launch asset file", e)
+          logger.error("Interrupted while waiting for launch asset file", e, UpdatesErrorCode.InitializationError)
         }
       }
       return startupProcedure.launchAssetFile
@@ -211,7 +211,7 @@ class EnabledUpdatesController(
   }
 
   override fun fetchUpdate(callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>) {
-    val procedure = FetchUpdateProcedure(context, updatesConfiguration, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate) {
+    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate) {
       callback.onSuccess(it)
     }
     stateMachine.queueExecution(procedure)

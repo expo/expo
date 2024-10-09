@@ -6,6 +6,8 @@ import android.util.Base64
 import android.util.Log
 import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import org.apache.commons.io.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
@@ -154,6 +156,7 @@ object UpdatesUtils {
 
   fun shouldCheckForUpdateOnLaunch(
     updatesConfiguration: UpdatesConfiguration,
+    logger: UpdatesLogger,
     context: Context
   ): Boolean {
     return when (updatesConfiguration.checkOnLaunch) {
@@ -163,10 +166,8 @@ object UpdatesUtils {
       CheckAutomaticallyConfiguration.WIFI_ONLY -> {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
         if (cm == null) {
-          Log.e(
-            TAG,
-            "Could not determine active network connection is metered; not checking for updates"
-          )
+          val cause = Exception("Null ConnectivityManager system service")
+          logger.error("Could not determine active network connection is metered; not checking for updates", cause, UpdatesErrorCode.Unknown)
           return false
         }
         !cm.isActiveNetworkMetered

@@ -7,6 +7,7 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.UpdatesUtils
+import expo.modules.updates.logging.UpdatesLogger
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.AssertionError
@@ -26,12 +27,14 @@ import java.util.*
 class EmbeddedLoader internal constructor(
   context: Context,
   private val configuration: UpdatesConfiguration,
+  logger: UpdatesLogger,
   database: UpdatesDatabase,
   updatesDirectory: File,
   private val loaderFiles: LoaderFiles
 ) : Loader(
   context,
   configuration,
+  logger,
   database,
   updatesDirectory,
   loaderFiles
@@ -40,9 +43,10 @@ class EmbeddedLoader internal constructor(
   constructor(
     context: Context,
     configuration: UpdatesConfiguration,
+    logger: UpdatesLogger,
     database: UpdatesDatabase,
     updatesDirectory: File
-  ) : this(context, configuration, database, updatesDirectory, LoaderFiles())
+  ) : this(context, configuration, logger, database, updatesDirectory, LoaderFiles())
 
   override fun loadRemoteUpdate(
     database: UpdatesDatabase,

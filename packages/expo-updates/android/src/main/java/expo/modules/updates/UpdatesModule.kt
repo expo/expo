@@ -240,7 +240,7 @@ class UpdatesModule : Module() {
         }
     }
 
-    internal fun clearLogEntries(context: Context, completionHandler: (_: Error?) -> Unit) {
+    internal fun clearLogEntries(context: Context, completionHandler: (_: Exception?) -> Unit) {
       val reader = UpdatesLogReader(context)
       reader.purgeLogEntries(
         olderThan = Date(),

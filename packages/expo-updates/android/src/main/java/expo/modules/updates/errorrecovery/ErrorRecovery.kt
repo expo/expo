@@ -2,7 +2,6 @@ package expo.modules.updates.errorrecovery
 
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import com.facebook.react.bridge.DefaultJSExceptionHandler
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
@@ -111,7 +110,7 @@ class ErrorRecovery(
 
   private fun registerErrorHandlerImplBridge(devSupportManager: DevSupportManager) {
     if (devSupportManager !is ReleaseDevSupportManager) {
-      Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
+      logger.debug("Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates error recovery will not behave properly.")
       return
     }
 
@@ -145,7 +144,7 @@ class ErrorRecovery(
   private fun unregisterErrorHandlerImplBridge() {
     weakDevSupportManager?.get()?.let { devSupportManager ->
       if (devSupportManager !is ReleaseDevSupportManager) {
-        Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
+        logger.debug("Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
         return
       }
       if (previousExceptionHandler == null) {

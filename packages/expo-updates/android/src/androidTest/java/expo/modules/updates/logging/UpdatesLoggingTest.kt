@@ -133,7 +133,7 @@ class UpdatesLoggingTest {
     Assert.assertEquals(0, thirdLogs.size)
 
     asyncTestUtil.asyncMethodRunning = true
-    var err: Error? = null
+    var err: Exception? = null
     reader.purgeLogEntries(
       secondTime
     ) {
