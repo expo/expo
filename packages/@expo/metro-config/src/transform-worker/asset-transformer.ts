@@ -21,6 +21,7 @@ import { getUniversalAssetData } from './getAssets';
 const buildClientReferenceRequire = template.statement(
   `module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`
 );
+const buildWebReference = template.statement(`module.exports = FILE_PATH;`);
 
 export async function transform(
   {
@@ -47,10 +48,18 @@ export async function transform(
   // Is bundling for webview.
   const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
   const isExport = options.publicPath.includes('?export_path=');
+  const isServerEnv =
+    options.customTransformOptions?.environment === 'react-server' ||
+    options.customTransformOptions?.environment === 'node';
 
   const absolutePath = path.resolve(options.projectRoot, filename);
 
-  if (options.customTransformOptions?.environment === 'react-server') {
+  if (
+    options.platform !== 'web' &&
+    // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
+    // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
+    options.customTransformOptions?.environment === 'react-server'
+  ) {
     const clientReference = url.pathToFileURL(absolutePath).href;
     return {
       ast: {
@@ -78,6 +87,22 @@ export async function transform(
         `/assets?export_path=assets`
       : options.publicPath
   );
+
+  if (isServerEnv || options.platform === 'web') {
+    const type = !data.type ? '' : `.${data.type}`;
+    const assetPath = !isExport
+      ? data.httpServerLocation + '/' + data.name + type
+      : data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+
+    // Use single string references outside of client-side React Native.
+    // module.exports = "/foo/bar.png";
+    return {
+      ast: {
+        ...t.file(t.program([buildWebReference({ FILE_PATH: JSON.stringify(assetPath) })])),
+        errors: [],
+      },
+    };
+  }
 
   return {
     ast: generateAssetCodeFileAst(assetRegistryPath, data),

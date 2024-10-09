@@ -45,6 +45,7 @@ const node_url_1 = __importDefault(require("node:url"));
 const getAssets_1 = require("./getAssets");
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = template_1.default.statement(`module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`);
+const buildWebReference = template_1.default.statement(`module.exports = FILE_PATH;`);
 async function transform({ filename, options, }, assetRegistryPath, assetDataPlugins) {
     options ??= options || {
         platform: '',
@@ -53,8 +54,13 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
     // Is bundling for webview.
     const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
     const isExport = options.publicPath.includes('?export_path=');
+    const isServerEnv = options.customTransformOptions?.environment === 'react-server' ||
+        options.customTransformOptions?.environment === 'node';
     const absolutePath = node_path_1.default.resolve(options.projectRoot, filename);
-    if (options.customTransformOptions?.environment === 'react-server') {
+    if (options.platform !== 'web' &&
+        // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
+        // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
+        options.customTransformOptions?.environment === 'react-server') {
         const clientReference = node_url_1.default.pathToFileURL(absolutePath).href;
         return {
             ast: {
@@ -73,6 +79,20 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
             // relative to the `DOM_COMPONENTS_BUNDLE_DIR`.
             `/assets?export_path=assets`
         : options.publicPath);
+    if (isServerEnv || options.platform === 'web') {
+        const type = !data.type ? '' : `.${data.type}`;
+        const assetPath = !isExport
+            ? data.httpServerLocation + '/' + data.name + type
+            : data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+        // Use single string references outside of client-side React Native.
+        // module.exports = "/foo/bar.png";
+        return {
+            ast: {
+                ...t.file(t.program([buildWebReference({ FILE_PATH: JSON.stringify(assetPath) })])),
+                errors: [],
+            },
+        };
+    }
     return {
         ast: (0, util_1.generateAssetCodeFileAst)(assetRegistryPath, data),
     };

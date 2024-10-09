@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Emit assets as strings instead of numeric lookups when bundling for web and server environments.
+
 ### 🎉 New features
 
 - add support for magic import comments to opt dynamic imports out of the dependency graph. ([#31868](https://github.com/expo/expo/pull/31868) by [@EvanBacon](https://github.com/EvanBacon))
