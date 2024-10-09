@@ -6,14 +6,13 @@ import com.facebook.react.bridge.Inspector
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
-import com.facebook.react.devsupport.InspectorPackagerConnection
-import expo.modules.devlauncher.DevLauncherController
+import com.facebook.react.devsupport.IInspectorPackagerConnection
 import expo.interfaces.devmenu.ReactHostWrapper
+import expo.modules.devlauncher.DevLauncherController
 import expo.modules.kotlin.devtools.ExpoRequestCdpInterceptor
 import java.io.Closeable
 import java.lang.ref.WeakReference
 import java.lang.reflect.Field
-import java.lang.reflect.Method
 
 internal class DevLauncherNetworkInterceptor(controller: DevLauncherController) : Closeable, ExpoRequestCdpInterceptor.Delegate {
   private val weakController = WeakReference(controller)
@@ -65,17 +64,16 @@ internal class DevLauncherNetworkInterceptor(controller: DevLauncherController) 
  * A `InspectorPackagerConnection` wrapper to expose private members with reflection
  */
 internal class InspectorPackagerConnectionWrapper constructor(reactHost: ReactHostWrapper) {
-  private var inspectorPackagerConnectionWeak: WeakReference<InspectorPackagerConnection> = WeakReference(null)
+  private var inspectorPackagerConnectionWeak: WeakReference<IInspectorPackagerConnection> = WeakReference(null)
   private val devServerHelperWeak: WeakReference<DevServerHelper>
   private val inspectorPackagerConnectionField: Field
-  private val sendWrappedEventMethod: Method
 
-  private val inspectorPackagerConnection: InspectorPackagerConnection?
+  private val inspectorPackagerConnection: IInspectorPackagerConnection?
     get() {
       var inspectorPackagerConnection = inspectorPackagerConnectionWeak.get()
       if (inspectorPackagerConnection == null) {
         val devServerHelper = devServerHelperWeak.get() ?: return null
-        inspectorPackagerConnection = inspectorPackagerConnectionField[devServerHelper] as? InspectorPackagerConnection
+        inspectorPackagerConnection = inspectorPackagerConnectionField[devServerHelper] as? IInspectorPackagerConnection
 
         if (inspectorPackagerConnection != null) {
           inspectorPackagerConnectionWeak = WeakReference(inspectorPackagerConnection)
@@ -94,9 +92,6 @@ internal class InspectorPackagerConnectionWrapper constructor(reactHost: ReactHo
 
     inspectorPackagerConnectionField = DevServerHelper::class.java.getDeclaredField("mInspectorPackagerConnection")
     inspectorPackagerConnectionField.isAccessible = true
-
-    sendWrappedEventMethod = InspectorPackagerConnection::class.java.getDeclaredMethod("sendWrappedEvent", String::class.java, String::class.java)
-    sendWrappedEventMethod.isAccessible = true
   }
 
   fun clear() {
@@ -107,7 +102,7 @@ internal class InspectorPackagerConnectionWrapper constructor(reactHost: ReactHo
     val inspectorPackagerConnection = this.inspectorPackagerConnection ?: return
     for (page in Inspector.getPages()) {
       if (!page.title.contains("Reanimated")) {
-        sendWrappedEventMethod.invoke(inspectorPackagerConnection, page.id.toString(), event)
+        inspectorPackagerConnection.sendWrappedEventToPackager(event, page.id.toString())
       }
     }
   }
