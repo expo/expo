@@ -1,6 +1,7 @@
-import { NativeModule, requireNativeModule } from 'expo-modules-core';
+import { NativeModule, requireNativeModule, requireOptionalNativeModule } from 'expo-modules-core';
 
 import type { Directory, File } from './ExpoFileSystem.types';
+import ExpoGoFileSystemNextStub from './ExpoGoFileSystemNextStub';
 
 declare class ExpoFileSystemNextModule extends NativeModule {
   FileSystemDirectory: typeof Directory;
@@ -8,4 +9,7 @@ declare class ExpoFileSystemNextModule extends NativeModule {
   downloadFileAsync(url: string, destination: File | Directory): Promise<string>;
 }
 
-export default requireNativeModule<ExpoFileSystemNextModule>('FileSystemNext');
+const isExpoGo = requireOptionalNativeModule('ExponentConstants')?.appOwnership === 'expo';
+export default isExpoGo
+  ? (ExpoGoFileSystemNextStub as any as ExpoFileSystemNextModule)
+  : requireNativeModule<ExpoFileSystemNextModule>('FileSystemNext');
