@@ -33,7 +33,11 @@ import java.util.concurrent.TimeUnit
  * Utility class that holds all the logic for downloading data and files, such as update manifests
  * and assets, using an instance of [OkHttpClient].
  */
-class FileDownloader(context: Context, private val configuration: UpdatesConfiguration) {
+class FileDownloader(
+  private val context: Context,
+  private val configuration: UpdatesConfiguration,
+  private val logger: UpdatesLogger
+) {
   // If the configured launch wait milliseconds is greater than the okhttp default (10_000)
   // we should use that as the timeout. For example, let's say launchWaitMs is 20 seconds,
   // the HTTP timeout should be at least 20 seconds.
@@ -47,11 +51,9 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
   /**
    * Constructor for tests
    */
-  constructor(context: Context, configuration: UpdatesConfiguration, client: OkHttpClient) : this(context, configuration) {
+  constructor(context: Context, configuration: UpdatesConfiguration, logger: UpdatesLogger, client: OkHttpClient) : this(context, configuration, logger) {
     this.client = client
   }
-
-  private val logger = UpdatesLogger(context)
 
   interface FileDownloadCallback {
     fun onFailure(e: Exception)
@@ -411,7 +413,6 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
 
   fun downloadRemoteUpdate(
     extraHeaders: JSONObject?,
-    context: Context,
     callback: RemoteUpdateDownloadCallback
   ) {
     try {
@@ -448,7 +449,6 @@ class FileDownloader(context: Context, private val configuration: UpdatesConfigu
   fun downloadAsset(
     asset: AssetEntity,
     destinationDirectory: File?,
-    context: Context,
     callback: AssetDownloadCallback
   ) {
     if (asset.url == null) {

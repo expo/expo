@@ -16,7 +16,7 @@ import java.io.File
  * on [UpdatesModule] should be `true` whenever this class is used.
  */
 class NoDatabaseLauncher @JvmOverloads constructor(
-  context: Context,
+  private val context: Context,
   fatalException: Exception? = null
 ) : Launcher {
   override val bundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME
@@ -25,7 +25,7 @@ class NoDatabaseLauncher @JvmOverloads constructor(
   override val localAssetFiles = null
   override val isUsingEmbeddedAssets = true
 
-  private fun writeErrorToLog(context: Context, fatalException: Exception) {
+  private fun writeErrorToLog(fatalException: Exception) {
     try {
       val errorLogFile = File(context.filesDir, ERROR_LOG_FILENAME)
       val exceptionString = fatalException.toString()
@@ -58,7 +58,7 @@ class NoDatabaseLauncher @JvmOverloads constructor(
 
   init {
     if (fatalException != null) {
-      AsyncTask.execute { writeErrorToLog(context, fatalException) }
+      AsyncTask.execute { writeErrorToLog(fatalException) }
     }
   }
 }

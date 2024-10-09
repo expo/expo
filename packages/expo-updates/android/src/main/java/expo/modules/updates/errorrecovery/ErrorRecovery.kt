@@ -1,6 +1,5 @@
 package expo.modules.updates.errorrecovery
 
-import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
@@ -29,11 +28,10 @@ import java.lang.ref.WeakReference
  * and so there is no more need to trigger the error recovery pipeline.
  */
 class ErrorRecovery(
-  private val context: Context
+  private val logger: UpdatesLogger
 ) {
   internal val handlerThread = HandlerThread("expo-updates-error-recovery")
   internal lateinit var handler: Handler
-  internal val logger = UpdatesLogger(context)
 
   private var weakDevSupportManager: WeakReference<DevSupportManager>? = null
   private var previousExceptionHandler: DefaultJSExceptionHandler? = null

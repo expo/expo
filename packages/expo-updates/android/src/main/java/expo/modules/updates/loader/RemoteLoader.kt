@@ -39,24 +39,22 @@ class RemoteLoader internal constructor(
   ) : this(context, configuration, database, fileDownloader, updatesDirectory, launchedUpdate, LoaderFiles())
 
   override fun loadRemoteUpdate(
-    context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
   ) {
     val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)?.updateEntity
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(database, configuration, launchedUpdate, embeddedUpdate)
-    mFileDownloader.downloadRemoteUpdate(extraHeaders, context, callback)
+    mFileDownloader.downloadRemoteUpdate(extraHeaders, callback)
   }
 
   override fun loadAsset(
-    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
     callback: AssetDownloadCallback
   ) {
-    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, context, callback)
+    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, callback)
   }
 
   companion object {

@@ -9,6 +9,7 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import io.mockk.every
 import io.mockk.mockk
@@ -29,10 +30,12 @@ import java.util.*
 @RunWith(AndroidJUnit4ClassRunner::class)
 class FileDownloaderTest {
   private lateinit var context: Context
+  private lateinit var logger: UpdatesLogger
 
   @Before
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
+    logger = UpdatesLogger(context)
   }
 
   @Test
@@ -233,10 +236,9 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, config, client).downloadAsset(
+    FileDownloader(context, config, logger, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
-      context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e
@@ -248,7 +250,7 @@ class FileDownloaderTest {
       }
     )
 
-    Assert.assertTrue(error!!.localizedMessageWithCauseLocalizedMessage()!!.contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
+    Assert.assertTrue(error!!.localizedMessageWithCauseLocalizedMessage().contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
     Assert.assertFalse(didSucceed)
   }
 
@@ -283,10 +285,9 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(context, config, client).downloadAsset(
+    FileDownloader(context, config, logger, client).downloadAsset(
       assetEntity,
       File(context.cacheDir, "test"),
-      context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e

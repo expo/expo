@@ -48,11 +48,11 @@ class EnabledUpdatesController(
   private val logger = UpdatesLogger(context)
   override val eventManager: IUpdatesEventManager = QueueUpdatesEventManager(logger)
 
-  private val fileDownloader = FileDownloader(context, updatesConfiguration)
+  private val fileDownloader = FileDownloader(context, updatesConfiguration, logger)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
-  private val stateMachine = UpdatesStateMachine(context, eventManager, UpdatesStateValue.entries.toSet())
+  private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
@@ -153,6 +153,7 @@ class EnabledUpdatesController(
       context,
       weakActivity,
       updatesConfiguration,
+      logger,
       databaseHolder,
       updatesDirectory,
       fileDownloader,

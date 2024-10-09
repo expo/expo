@@ -16,6 +16,7 @@ import expo.modules.updates.db.Reaper
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import java.io.File
@@ -25,6 +26,7 @@ class RelaunchProcedure(
   private val context: Context,
   private val weakActivity: WeakReference<Activity>?,
   private val updatesConfiguration: UpdatesConfiguration,
+  private val logger: UpdatesLogger,
   private val databaseHolder: DatabaseHolder,
   private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
@@ -47,14 +49,15 @@ class RelaunchProcedure(
     val oldLaunchAssetFile = getCurrentLauncher().launchAssetFile
 
     val newLauncher = DatabaseLauncher(
+      context,
       updatesConfiguration,
       updatesDirectory,
       fileDownloader,
-      selectionPolicy
+      selectionPolicy,
+      logger
     )
     newLauncher.launch(
       databaseHolder.database,
-      context,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           callback.onFailure(e)

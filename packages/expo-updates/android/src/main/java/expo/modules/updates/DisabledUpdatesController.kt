@@ -42,7 +42,7 @@ class DisabledUpdatesController(
   override val eventManager: IUpdatesEventManager = QueueUpdatesEventManager(logger)
 
   // disabled controller state machine can only be idle or restarting
-  private val stateMachine = UpdatesStateMachine(context, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
+  private val stateMachine = UpdatesStateMachine(logger, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
 
   private var isStarted = false
   private var startupStartTimeMillis: Long? = null

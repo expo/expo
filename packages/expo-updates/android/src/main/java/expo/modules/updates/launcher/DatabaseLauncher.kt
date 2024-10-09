@@ -37,10 +37,12 @@ import java.io.File
  * launched after a newer one has been launched.
  */
 class DatabaseLauncher(
+  private val context: Context,
   private val configuration: UpdatesConfiguration,
   private val updatesDirectory: File?,
   private val fileDownloader: FileDownloader,
-  private val selectionPolicy: SelectionPolicy
+  private val selectionPolicy: SelectionPolicy,
+  private val logger: UpdatesLogger
 ) : Launcher {
   private val loaderFiles: LoaderFiles = LoaderFiles()
   override var launchedUpdate: UpdateEntity? = null
@@ -58,17 +60,15 @@ class DatabaseLauncher(
   private var assetsToDownloadFinished = 0
   private var launchAssetException: Exception? = null
   private var callback: LauncherCallback? = null
-  private var logger: UpdatesLogger? = null
 
   @Synchronized
-  fun launch(database: UpdatesDatabase, context: Context, callback: LauncherCallback?) {
+  fun launch(database: UpdatesDatabase, callback: LauncherCallback?) {
     if (this.callback != null) {
       throw AssertionError("DatabaseLauncher has already started. Create a new instance in order to launch a new version.")
     }
     this.callback = callback
-    this.logger = UpdatesLogger(context)
 
-    launchedUpdate = getLaunchableUpdate(database, context)
+    launchedUpdate = getLaunchableUpdate(database)
     if (launchedUpdate == null) {
       this.callback!!.onFailure(Exception("No launchable update was found. If this is a generic app, ensure expo-updates is configured correctly."))
       return
@@ -92,14 +92,14 @@ class DatabaseLauncher(
       this.callback!!.onFailure(Exception("Launch asset relative path should not be null. Debug info: ${launchedUpdate!!.debugInfo()}"))
     }
 
-    val launchAssetFile = ensureAssetExists(launchAsset, database, context)
+    val launchAssetFile = ensureAssetExists(launchAsset, database)
     if (launchAssetFile != null) {
       this.launchAssetFile = launchAssetFile.toString()
     }
 
     val assetEntities = database.assetDao().loadAssetsForUpdate(launchedUpdate!!.id)
 
-    localAssetFiles = embeddedAssetFileMap(context).apply {
+    localAssetFiles = embeddedAssetFileMap().apply {
       for (asset in assetEntities) {
         if (asset.id == launchAsset.id) {
           // we took care of this one above
@@ -107,7 +107,7 @@ class DatabaseLauncher(
         }
         val filename = asset.relativePath
         if (filename != null) {
-          val assetFile = ensureAssetExists(asset, database, context)
+          val assetFile = ensureAssetExists(asset, database)
           if (assetFile != null) {
             this[asset] = Uri.fromFile(assetFile).toString()
           }
@@ -124,7 +124,7 @@ class DatabaseLauncher(
     }
   }
 
-  fun getLaunchableUpdate(database: UpdatesDatabase, context: Context): UpdateEntity? {
+  fun getLaunchableUpdate(database: UpdatesDatabase): UpdateEntity? {
     val launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(configuration.scopeKey)
 
     // We can only run an update marked as embedded if it's actually the update embedded in the
@@ -144,10 +144,10 @@ class DatabaseLauncher(
     return selectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters)
   }
 
-  private fun embeddedAssetFileMap(context: Context): MutableMap<AssetEntity, String> {
+  private fun embeddedAssetFileMap(): MutableMap<AssetEntity, String> {
     val embeddedManifest = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
     val embeddedAssets = embeddedManifest?.assetEntityList ?: listOf()
-    logger?.info("embeddedAssetFileMap: embeddedAssets count = ${embeddedAssets.count()}")
+    logger.info("embeddedAssetFileMap: embeddedAssets count = ${embeddedAssets.count()}")
     return mutableMapOf<AssetEntity, String>().apply {
       for (asset in embeddedAssets) {
         if (asset.isLaunchAsset) {
@@ -161,16 +161,16 @@ class DatabaseLauncher(
         }
         if (assetFile.exists()) {
           this[asset] = Uri.fromFile(assetFile).toString()
-          logger?.info("embeddedAssetFileMap: ${asset.key},${asset.type} => ${this[asset]}")
+          logger.info("embeddedAssetFileMap: ${asset.key},${asset.type} => ${this[asset]}")
         } else {
           val cause = Exception("Missing embedded asset")
-          logger?.error("embeddedAssetFileMap: no file for ${asset.key},${asset.type}", cause, UpdatesErrorCode.AssetsFailedToLoad)
+          logger.error("embeddedAssetFileMap: no file for ${asset.key},${asset.type}", cause, UpdatesErrorCode.AssetsFailedToLoad)
         }
       }
     }
   }
 
-  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
+  fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase): File? {
     val assetFile = File(updatesDirectory, asset.relativePath ?: "")
     var assetFileExists = assetFile.exists()
     if (!assetFileExists) {
@@ -195,7 +195,7 @@ class DatabaseLauncher(
             }
           } catch (e: Exception) {
             // things are really not going our way...
-            logger?.error("Failed to copy matching embedded asset", e, UpdatesErrorCode.AssetsFailedToLoad)
+            logger.error("Failed to copy matching embedded asset", e, UpdatesErrorCode.AssetsFailedToLoad)
           }
         }
       }
@@ -207,10 +207,9 @@ class DatabaseLauncher(
       fileDownloader.downloadAsset(
         asset,
         updatesDirectory,
-        context,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            logger?.error("Failed to load asset from disk or network", e, UpdatesErrorCode.AssetsFailedToLoad)
+            logger.error("Failed to load asset from disk or network", e, UpdatesErrorCode.AssetsFailedToLoad)
             if (assetEntity.isLaunchAsset) {
               launchAssetException = e
             }

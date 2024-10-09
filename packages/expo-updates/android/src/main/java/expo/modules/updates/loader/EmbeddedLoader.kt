@@ -24,7 +24,7 @@ import java.util.*
  * re-downloaded if included in future updates.
  */
 class EmbeddedLoader internal constructor(
-  private val context: Context,
+  context: Context,
   private val configuration: UpdatesConfiguration,
   database: UpdatesDatabase,
   updatesDirectory: File,
@@ -45,7 +45,6 @@ class EmbeddedLoader internal constructor(
   ) : this(context, configuration, database, updatesDirectory, LoaderFiles())
 
   override fun loadRemoteUpdate(
-    context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
@@ -65,7 +64,6 @@ class EmbeddedLoader internal constructor(
   }
 
   override fun loadAsset(
-    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
