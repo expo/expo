@@ -76,18 +76,20 @@ urlScheme:
 
 #### PaymentSheet localization on iOS
 
-Translation of PaymentSheet is automatically detected based on device's langage, at least on Android. For this to work on iOS, you must add `CFBundleAllowMixedLocalizations` and `CFBundleLocalizations` declarations in `app.json` (or `app.config.js`, `app.config.ts`). 
+On Android, the translation of `PaymentSheet` is automatically detected based on a device's language settings.
 
-```
+On iOS, you must enable  `CFBundleAllowMixedLocalizations` and add the preferred language using `CFBundleLocalizations` under [`ios.infoPlist`](/versions/latest/config/app/#infoplist) in the app config:
+
+```app.json
 {
   "expo": {
     "ios": {
       "infoPlist": {
-          "CFBundleAllowMixedLocalizations": true,
-          "CFBundleLocalizations": ['fr']
-          ...
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleLocalizations": ["fr"]
+        /* @hide ... */ /* @end */
       }
-      ...
+      /* @hide ... */ /* @end */
     }
   }
 }
