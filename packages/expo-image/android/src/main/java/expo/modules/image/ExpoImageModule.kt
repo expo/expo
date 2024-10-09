@@ -201,6 +201,7 @@ class ExpoImageModule : Module() {
         if (sources.`is`(toKClass<SharedRef<Drawable>>())) {
           val drawable = sources.get(toKClass<SharedRef<Drawable>>()).ref
           view.sources = listOf(DecodedSource(drawable))
+          return@Prop
         }
 
         val bitmap = sources.get(toKClass<SharedRef<Bitmap>>()).ref

@@ -30,6 +30,10 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
   public NotificationManager() {
     mListenerReferenceMap = new WeakHashMap<>();
 
+    // TODO @vonovak there's a chain of listeners:
+    //  ExpoHandlingDelegate -> NotificationManager -> NotificationsEmitter
+    //                                              -> NotificationsHandler
+    // it seems it could be shorter?
     // Registers this singleton instance in static ExpoHandlingDelegate listeners collection.
     // Since it doesn't hold strong reference to the object this should be safe.
     ExpoHandlingDelegate.Companion.addListener(this);
@@ -80,6 +84,10 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
    * Used by {@link expo.modules.notifications.service.delegates.ExpoSchedulingDelegate} to notify of new messages.
    * Calls {@link NotificationListener#onNotificationReceived(Notification)} on all values
    * of {@link NotificationManager#mListenerReferenceMap}.
+   *
+   * In practice, that means calling {@link NotificationsEmitter} (just emits an event to JS) and
+   * {@link NotificationsHandler} which calls `handleNotification` in JS to determine the behavior.
+   * Then `SingleNotificationHandlerTask.processNotificationWithBehavior` may present it.
    *
    * @param notification Notification received
    */

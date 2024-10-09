@@ -6,7 +6,7 @@ import ExpoModulesCore
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObserverDelegate {
   lazy var contentKeyManager = ContentKeyManager()
-  let observer: VideoPlayerObserver
+  var observer: VideoPlayerObserver?
 
   var loop = false
   private(set) var isPlaying = false
@@ -75,15 +75,54 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
+  // TODO: @behenate - Once the Player instance is available in OnStartObserving we can automatically start/stop the interval.
+  var timeUpdateEventInterval: Double = 0 {
+    didSet {
+      if timeUpdateEventInterval <= 0 {
+        observer?.stopTimeUpdates()
+        return
+      }
+      observer?.startOrUpdateTimeUpdates(forInterval: timeUpdateEventInterval)
+    }
+  }
+
+  var currentLiveTimestamp: Double? {
+    guard let currentDate = pointer.currentItem?.currentDate() else {
+      return nil
+    }
+    let timeIntervalSince = currentDate.timeIntervalSince1970
+    return Double(timeIntervalSince * 1000)
+  }
+
+  var currentOffsetFromLive: Double? {
+    guard let currentDate = pointer.currentItem?.currentDate() else {
+      return nil
+    }
+    let timeIntervalSince = currentDate.timeIntervalSince1970
+    let unixTime = Date().timeIntervalSince1970
+    return unixTime - timeIntervalSince
+  }
+
+  var bufferOptions = BufferOptions() {
+    didSet {
+      pointer.currentItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+      pointer.automaticallyWaitsToMinimizeStalling = bufferOptions.waitsToMinimizeStalling
+    }
+  }
+
+  var bufferedPosition: Double {
+    return getBufferedPosition()
+  }
+
   override init(_ pointer: AVPlayer) {
-    observer = VideoPlayerObserver(player: pointer)
     super.init(pointer)
-    observer.registerDelegate(delegate: self)
+    observer = VideoPlayerObserver(owner: self)
+    observer?.registerDelegate(delegate: self)
     VideoManager.shared.register(videoPlayer: self)
   }
 
   deinit {
-    observer.cleanup()
+    observer?.cleanup()
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
 
@@ -117,6 +156,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
 
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
+    playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
     pointer.replaceCurrentItem(with: playerItem)
   }
 
@@ -135,6 +175,22 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         track.isEnabled = enabled
       }
     })
+  }
+
+  private func getBufferedPosition() -> Double {
+    guard let currentItem = pointer.currentItem else {
+      return -1
+    }
+    let currentTime = pointer.currentTime().seconds
+
+    for timeRange in currentItem.loadedTimeRanges {
+      let start = CMTimeGetSeconds(timeRange.timeRangeValue.start)
+      let end = CMTimeGetSeconds(timeRange.timeRangeValue.end)
+      if start <= currentTime && end >= currentTime {
+        return end
+      }
+    }
+    return 0
   }
 
   // MARK: - VideoPlayerObserverDelegate
@@ -183,6 +239,11 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
     safeEmit(event: "sourceChange", arguments: newVideoPlayerItem?.videoSource, oldVideoPlayerItem?.videoSource)
+    newVideoPlayerItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+  }
+
+  func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {
+    safeEmit(event: "timeUpdate", arguments: timeUpdate)
   }
 
   func safeEmit<each A: AnyArgument>(event: String, arguments: repeat each A) {

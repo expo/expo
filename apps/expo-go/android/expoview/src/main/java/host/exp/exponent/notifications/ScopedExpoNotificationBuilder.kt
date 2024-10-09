@@ -3,11 +3,10 @@ package host.exp.exponent.notifications
 import android.content.Context
 import android.util.Log
 import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager
-import expo.modules.notifications.notifications.interfaces.NotificationBuilder
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
 import expo.modules.manifests.core.Manifest
+import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExperienceKey
@@ -21,19 +20,17 @@ import javax.inject.Inject
 
 open class ScopedExpoNotificationBuilder(
   context: Context,
-  store: SharedPreferencesNotificationCategoriesStore?
-) : CategoryAwareNotificationBuilder(context, store!!) {
+  notification: Notification,
+  store: SharedPreferencesNotificationCategoriesStore
+) : ExpoNotificationBuilder(context, notification, store) {
   @Inject
   lateinit var exponentManifest: ExponentManifest
 
   var manifest: Manifest? = null
   var experienceKey: ExperienceKey? = null
 
-  override fun setNotification(notification: Notification?): NotificationBuilder {
-    super.setNotification(notification)
-
-    // We parse manifest here to have easy access to it from other methods.
-    val requester = getNotification().notificationRequest
+  init {
+    val requester = this.notification.notificationRequest
     if (requester is ScopedNotificationRequest) {
       val experienceScopeKey = requester.experienceScopeKeyString
       try {
@@ -45,12 +42,11 @@ open class ScopedExpoNotificationBuilder(
         e.printStackTrace()
       }
     }
-    return this
   }
 
-  override fun getNotificationsChannelManager(): NotificationsChannelManager {
+  override val notificationsChannelManager: NotificationsChannelManager get() {
     return if (experienceKey == null) {
-      super.getNotificationsChannelManager()
+      super.notificationsChannelManager
     } else {
       ScopedNotificationsChannelManager(
         context,

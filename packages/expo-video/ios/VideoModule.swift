@@ -161,20 +161,11 @@ public final class VideoModule: Module {
       }
 
       Property("currentLiveTimestamp") { player -> Double? in
-        guard let currentDate = player.pointer.currentItem?.currentDate() else {
-          return nil
-        }
-        let timeIntervalSince = currentDate.timeIntervalSince1970
-        return Double(timeIntervalSince * 1000)
+        return player.currentLiveTimestamp
       }
 
       Property("currentOffsetFromLive") { player -> Double? in
-        guard let currentDate = player.pointer.currentItem?.currentDate() else {
-          return nil
-        }
-        let timeIntervalSince = currentDate.timeIntervalSince1970
-        let unixTime = Date().timeIntervalSince1970
-        return unixTime - timeIntervalSince
+        return player.currentOffsetFromLive
       }
 
       Property("targetOffsetFromLive") { player -> Double in
@@ -208,10 +199,17 @@ public final class VideoModule: Module {
         player.preservesPitch = preservesPitch
       }
 
+      Property("timeUpdateEventInterval") { player -> Double in
+        return player.timeUpdateEventInterval
+      }
+      .set { (player, timeUpdateEventInterval: Double) in
+        player.timeUpdateEventInterval = timeUpdateEventInterval
+      }
+
       Property("showNowPlayingNotification") { player -> Bool in
         return player.showNowPlayingNotification
       }
-      .set {(player, showNowPlayingNotification: Bool) in
+      .set { (player, showNowPlayingNotification: Bool) in
         player.showNowPlayingNotification = showNowPlayingNotification
       }
 
@@ -224,6 +222,17 @@ public final class VideoModule: Module {
       }
       .set { (player, volume: Float) in
         player.volume = volume
+      }
+
+      Property("bufferedPosition") { player -> Double in
+        return player.bufferedPosition
+      }
+
+      Property("bufferOptions") { player -> [String: Any] in
+        return player.bufferOptions.toDictionary()
+      }
+      .set { (player, bufferOptions: BufferOptions) in
+        player.bufferOptions = bufferOptions
       }
 
       Function("play") { player in

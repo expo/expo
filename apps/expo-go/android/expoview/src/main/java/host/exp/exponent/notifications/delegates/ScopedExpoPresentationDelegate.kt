@@ -17,8 +17,7 @@ import java.util.*
 
 class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegate(context) {
   override suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
-    ScopedCategoryAwareNotificationBuilder(context, SharedPreferencesNotificationCategoriesStore(context)).also {
-      it.setNotification(notification)
+    ScopedCategoryAwareNotificationBuilder(context, notification, SharedPreferencesNotificationCategoriesStore(context)).also {
       it.setAllowedBehavior(notificationBehavior)
     }.build()
 

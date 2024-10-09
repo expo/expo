@@ -24,7 +24,11 @@ function NoSSR({ children }: PropsWithChildren) {
   return <>{children}</>;
 }
 
-/** Default screen for unmatched routes. */
+/**
+ * Default screen for unmatched routes.
+ *
+ * @hidden
+ */
 export function Unmatched() {
   const router = useRouter();
   const navigation = useNavigation();

@@ -1,8 +1,18 @@
+/**
+ * @hidden
+ */
 type HasTypedRoutes = ExpoRouter.__routes extends { StaticRoutes: string } ? true : false;
 
+/**
+ * @hidden
+ */
 export type StaticRoutes = ExpoRouter.__routes extends { StaticRoutes: string }
   ? ExpoRouter.__routes['StaticRoutes']
   : string;
+
+/**
+ * @hidden
+ */
 export type DynamicRoutes<T extends string> =
   ExpoRouter.__routes<T> extends {
     DynamicRoutes: any;
@@ -12,6 +22,10 @@ export type DynamicRoutes<T extends string> =
       ? T
       : never
     : string;
+
+/**
+ * @hidden
+ */
 export type DynamicRouteTemplate = ExpoRouter.__routes extends { DynamicRouteTemplate: string }
   ? ExpoRouter.__routes['DynamicRouteTemplate']
   : string;
@@ -20,12 +34,16 @@ export type DynamicRouteTemplate = ExpoRouter.__routes extends { DynamicRouteTem
  * The main routing type for Expo Router.
  *
  * @internal
+ * @hidden
  */
 export namespace ExpoRouter {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export interface __routes<T extends string = string> extends Record<string, unknown> {}
 }
 
+/**
+ * @hidden
+ */
 export type Routes = DynamicRouteTemplate | AllUngroupedRoutes<StaticRoutes>;
 
 /**
@@ -33,26 +51,35 @@ export type Routes = DynamicRouteTemplate | AllUngroupedRoutes<StaticRoutes>;
  *
  * A Href can either be a string or an object.
  *
- * Href accepts an optional T parameter to correctly type dynamic routes string. For example: Without the generic the route `/folder/[slug]` will be typed as `/folder/${string}`, which is incorrect as `/folder/apple/orange` would be valid. But by passing desired route as a generic `Href<'/folder/apple'>`, it will validate against this edge case.
+ * Href accepts an optional T parameter to correctly type dynamic routes string.
+ *
+ * For example: Without the generic the route `/folder/[slug]` will be typed as `/folder/${string}`,
+ * which is incorrect as `/folder/apple/orange` would be valid. But by passing desired route as a generic `Href<'/folder/apple'>`,
+ * it will validate against this edge case.
  *
  */
-export type Href<T extends string | object = { __branded__: any }> =
+export type Href<T extends string | object = { __branded__: any }> = GeneratedHref<T>;
+
+/**
+ * @hidden
+ */
+type GeneratedHref<T extends string | object> =
   | StaticRouteToHrefString<
       AllUngroupedRoutes<StaticRoutes> | RelativePathString | ExternalPathString
     >
   | StaticRouteToHrefObject<
       AllUngroupedRoutes<StaticRoutes> | RelativePathString | ExternalPathString
     >
-  | DynamicRouteString<T, DynamicRouteTemplate>
+  | DynamicRouteString<T>
   | DynamicTemplateToHrefObject<DynamicRouteTemplate>;
 
 /**
- * Converts a static route to a Href string type
+ * Converts a static route to a Href string type.
  */
 type StaticRouteToHrefString<T extends string = string> = T | `${T}${SearchOrHash}`;
 
 /**
- * Converts a static route to a Href object
+ * Converts a static route to a Href object.
  */
 type StaticRouteToHrefObject<T extends string = string> = T extends any
   ? {
@@ -62,7 +89,7 @@ type StaticRouteToHrefObject<T extends string = string> = T extends any
   : never;
 
 /**
- * Converts a dynamic route template to a Href string type
+ * Converts a dynamic route template to a `Href` string type.
  */
 type DynamicRouteString<
   T extends string | object,
@@ -73,6 +100,9 @@ type DynamicRouteString<
     ? DynamicRoutes<T>
     : never;
 
+/**
+ * @hidden
+ */
 export type DynamicTemplateToHrefString<Path> = Path extends `${infer PartA}/${infer PartB}`
   ? // If the current segment (PartA) is dynamic, allow any string. This loop again with the next segment (PartB)
     `${PartA extends `[${string}]` ? string : PartA}/${DynamicTemplateToHrefString<PartB>}`
@@ -82,7 +112,7 @@ export type DynamicTemplateToHrefString<Path> = Path extends `${infer PartA}/${i
     : Path;
 
 /**
- * Converts a dynamic route object to a Href object
+ * Converts a dynamic route object to a `Href` object.
  */
 type DynamicTemplateToHrefObject<T extends string> = T extends string
   ? {
@@ -100,17 +130,19 @@ type SearchOrHash = `?${string}` | `#${string}`;
 type ExternalPathString = `${string}:${string}`;
 
 /**
- * Given a route. Returns a union of both that route with and without the groups
+ * Given a route. Returns a union of both that route with and without the groups.
  *
- * The type is recursive and will provide a union of all possible routes
+ * The type is recursive and will provide a union of all possible routes.
  */
 type AllUngroupedRoutes<Path> = Path extends `(${infer PartA})/${infer PartB}`
   ? `(${PartA})/${AllUngroupedRoutes<PartB>}` | AllUngroupedRoutes<PartB>
   : Path;
 
 /**
- * Routes can have known inputs (e.g query params)
- * Unlike outputs, inputs can be undefined or null
+ * Routes can have known inputs (e.g query params).
+ * Unlike outputs, inputs can be `undefined` or `null`.
+ *
+ * @hidden
  */
 export type UnknownInputParams = Record<
   string,
@@ -118,26 +150,33 @@ export type UnknownInputParams = Record<
 >;
 
 /**
- * Routes can have unknown outputs (e.g query params)
- * Unlike inputs, outputs can't be undefined or null
+ * Routes can have unknown outputs (e.g query params).
+ * Unlike inputs, outputs can't be undefined or null.
+ *
+ * @hidden
  */
 export type UnknownOutputParams = Record<string, string | string[]>;
 
 /**
  * Return the name of a route parameter
+ * @example
+ * ```
  * '[test]'    -> 'test'
  * 'test'      -> never
  * '[...test]' -> '...test'
+ * ```
  */
 type IsParameter<Part> = Part extends `[${infer ParamName}]` ? ParamName : never;
 
 /**
- * Return a union of all raw parameter names. If there are no names return never
+ * Return a union of all raw parameter names. If there are no names return never.
  *
- * This differs from ParameterNames as it returns the `...` for catch all parameters
- *
+ * This differs from ParameterNames as it returns the `...` for catch all parameters.
+ * @example
+ * ```
  * /[test]         -> 'test'
  * /[abc]/[...def] -> 'abc'|'...def'
+ * ```
  */
 type ParameterNames<Path> = Path extends `${infer PartA}/${infer PartB}`
   ? PartA extends '.' // Skip relative paths
@@ -149,13 +188,15 @@ type ParameterNames<Path> = Path extends `${infer PartA}/${infer PartB}`
  * Return only the RoutePart of a string. If the string has multiple parts return never
  *
  * string   | type
- * ---------|------
- * 123      | 123
- * /123/abc | never
- * 123?abc  | never
- * ./123    | never
- * /123     | never
- * 123/../  | never
+ *| ---------|------|
+ *| 123      | 123 |
+ *| /123/abc | never |
+ *| 123?abc  | never |
+ *| ./123    | never |
+ *| /123     | never |
+ *| 123/../  | never |
+ *
+ * @hidden
  */
 export type SingleRoutePart<S extends string> = S extends `${string}/${string}`
   ? never
@@ -175,8 +216,11 @@ export type SingleRoutePart<S extends string> = S extends `${string}/${string}`
  * There are two versions, input and output, as you can input 'string | number' but
  *  the output will always be 'string'
  *
+ * @example
+ * ```
  * /[id]/[...rest] -> { id: string, rest: string[] }
  * /no-params      -> {}
+ * ```
  */
 export type StrictRouteParamsInputs<Path> = {
   [Key in ParameterNames<Path> as Key extends `...${infer Name}`
@@ -190,10 +234,13 @@ export type StrictRouteParamsInputs<Path> = {
  * There are two versions, input and output, as you can input 'string | number' but
  *  the output will always be 'string'
  *
+ * @see {@link StrictRouteParamsInputs} for the input version
+ *
+ * @example
+ * ```
  * /[id]/[...rest] -> { id: string, rest: string[] }
  * /no-params      -> {}
- *
- * @see {@link StrictRouteParamsInputs} for the input version
+ * ```
  */
 export type StrictRouteParamsOutput<Path> = {
   [Key in ParameterNames<Path> as Key extends `...${infer Name}`
@@ -201,8 +248,14 @@ export type StrictRouteParamsOutput<Path> = {
     : Key]: Key extends `...${string}` ? string[] : string;
 };
 
+/**
+ * @hidden
+ */
 export type RouteParamInput<Path> = StrictRouteParamsInputs<Path> & UnknownInputParams;
 
+/**
+ * @hidden
+ */
 export type RouteParams<
   PathOrObject extends Routes | UnknownOutputParams,
   ExtraPathOrObject extends UnknownOutputParams = UnknownOutputParams,
@@ -211,10 +264,15 @@ export type RouteParams<
   : PathOrObject;
 
 /**
- * @deprecated Use RouteParams or StrictRouteParams instead
+ * @deprecated Use `RouteParams` or `StrictRouteParams` instead.
+ *
+ * @hidden
  */
 export type SearchParams<T extends string = never> = RouteParams<T>;
 
+/**
+ * @hidden
+ */
 export type RouteSegments<PathOrStringArray extends string | string[]> =
   PathOrStringArray extends string[]
     ? PathOrStringArray

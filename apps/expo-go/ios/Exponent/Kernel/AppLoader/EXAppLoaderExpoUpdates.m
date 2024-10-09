@@ -52,6 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, nullable) id<EXUpdatesAppLauncher> appLauncher;
 
+@property (nonatomic, nullable) NSDate *startupStartTime;
+@property (nonatomic, nullable) NSDate *startupEndTime;
+
 @end
 
 /**
@@ -104,6 +107,8 @@ NS_ASSUME_NONNULL_BEGIN
   _shouldShowRemoteUpdateStatus = YES;
   _isUpToDate = NO;
   _isLoadingDevelopmentJavaScriptResource = NO;
+  _startupStartTime = nil;
+  _startupEndTime = nil;
 }
 
 - (EXAppLoaderStatus)status
@@ -182,6 +187,15 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (nullable NSNumber *)launchDuration
+{
+  if (!_startupStartTime || !_startupEndTime) {
+    return nil;
+  }
+
+  return @([_startupEndTime timeIntervalSinceDate:_startupStartTime] * 1000);
+}
+
 #pragma mark - EXUpdatesAppLoaderTaskDelegate
 
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update
@@ -223,6 +237,8 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
 
+  _startupEndTime = [NSDate now];
+
   if (!_optimisticManifest) {
     EXManifestsManifest *processedManifest = [self _processManifest:launcher.launchedUpdate.manifest];
     if (processedManifest == nil) {
@@ -250,6 +266,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (!_error) {
     _error = error;
+    _startupEndTime = [NSDate now];
 
     // if the error payload conforms to the error protocol, we can parse it and display
     // a slightly nicer error message to the user
@@ -312,6 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_beginRequest
 {
+  _startupStartTime = [NSDate now];
   if (![self _initializeDatabase]) {
     return;
   }

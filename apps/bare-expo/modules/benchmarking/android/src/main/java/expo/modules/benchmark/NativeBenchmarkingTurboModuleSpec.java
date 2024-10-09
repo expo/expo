@@ -4,6 +4,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
@@ -30,4 +31,8 @@ public abstract class NativeBenchmarkingTurboModuleSpec extends ReactContextBase
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
   public abstract String addStrings(String a, String b);
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
+  public abstract double foldArray(ReadableArray array);
 }

@@ -155,9 +155,9 @@ class UpdatesController {
      * For [UpdatesModule] to set the [shouldEmitJsEvents] property.
      */
     internal var shouldEmitJsEvents: Boolean
-      get() = singletonInstance?.shouldEmitJsEvents ?: false
+      get() = singletonInstance?.eventManager?.shouldEmitJsEvents ?: false
       set(value) {
-        singletonInstance?.let { it.shouldEmitJsEvents = value }
+        singletonInstance?.eventManager?.shouldEmitJsEvents = value
       }
 
     /**
@@ -166,7 +166,7 @@ class UpdatesController {
     internal fun bindAppContext(appContext: WeakReference<AppContext>, eventEmitter: EventEmitter?) {
       singletonInstance?.let {
         it.appContext = appContext
-        it.eventEmitter = eventEmitter
+        it.eventManager.eventEmitter = eventEmitter
       }
     }
   }

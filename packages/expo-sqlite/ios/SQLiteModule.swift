@@ -20,6 +20,14 @@ public final class SQLiteModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
 
+    Constants {
+      let defaultDatabaseDirectory =
+        appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
+      return [
+        "defaultDatabaseDirectory": defaultDatabaseDirectory
+      ]
+    }
+
     Events("onDatabaseChange")
 
     OnStartObserving {
@@ -38,19 +46,17 @@ public final class SQLiteModule: Module {
       }
     }
 
-    AsyncFunction("deleteDatabaseAsync") { (databaseName: String) in
-      try deleteDatabase(databaseName: databaseName)
+    AsyncFunction("deleteDatabaseAsync") { (databasePath: String) in
+      try deleteDatabase(databasePath: databasePath)
     }
-    Function("deleteDatabaseSync") { (databaseName: String) in
-      try deleteDatabase(databaseName: databaseName)
+    Function("deleteDatabaseSync") { (databasePath: String) in
+      try deleteDatabase(databasePath: databasePath)
     }
 
-    AsyncFunction("importAssetDatabaseAsync") { (databaseName: String, assetDatabasePath: String, forceOverwrite: Bool) in
-      guard let path = pathForDatabaseName(name: databaseName) else {
-        throw Exceptions.FileSystemModuleNotFound()
-      }
+    AsyncFunction("importAssetDatabaseAsync") { (databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) in
+      let path = try ensureDatabasePathExists(path: databasePath)
       let fileManager = FileManager.default
-      if fileManager.fileExists(atPath: path.absoluteString) && !forceOverwrite {
+      if fileManager.fileExists(atPath: path.standardizedFileURL.path) && !forceOverwrite {
         return
       }
       guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
@@ -58,32 +64,36 @@ public final class SQLiteModule: Module {
         throw DatabaseNotFoundException(assetDatabasePath)
       }
       try? fileManager.removeItem(atPath: path.absoluteString)
-      try fileManager.copyItem(atPath: assetPath, toPath: path.absoluteString)
+      try fileManager.copyItem(atPath: assetPath, toPath: path.standardizedFileURL.path)
+    }
+
+    AsyncFunction("ensureDatabasePathExistsAsync") { (databasePath: String) in
+      try ensureDatabasePathExists(path: databasePath)
+    }
+    Function("ensureDatabasePathExistsSync") { (databasePath: String) in
+      try ensureDatabasePathExists(path: databasePath)
     }
 
     // swiftlint:disable:next closure_body_length
     Class(NativeDatabase.self) {
-      Constructor { (databaseName: String, options: OpenDatabaseOptions, serializedData: Data?) -> NativeDatabase in
+      Constructor { (databasePath: String, options: OpenDatabaseOptions, serializedData: Data?) -> NativeDatabase in
         var db: OpaquePointer?
 
         if let serializedData = serializedData {
           db = try deserializeDatabase(serializedData)
         } else {
-          guard let path = pathForDatabaseName(name: databaseName) else {
-            throw DatabaseException()
-          }
-
           // Try to find opened database for fast refresh
-          if let cachedDb = findCachedDatabase(where: { $0.databaseName == databaseName && $0.openOptions == options && !options.useNewConnection }) {
+          if let cachedDb = findCachedDatabase(where: { $0.databasePath == databasePath && $0.openOptions == options && !options.useNewConnection }) {
             return cachedDb
           }
 
-          if exsqlite3_open(path.absoluteString, &db) != SQLITE_OK {
+          let path = try ensureDatabasePathExists(path: databasePath)
+          if exsqlite3_open(path.standardizedFileURL.path, &db) != SQLITE_OK {
             throw DatabaseException()
           }
         }
 
-        let database = NativeDatabase(db, databaseName: databaseName, openOptions: options)
+        let database = NativeDatabase(db, databasePath: databasePath, openOptions: options)
         addCachedDatabase(database)
         return database
       }
@@ -189,18 +199,23 @@ public final class SQLiteModule: Module {
     }
   }
 
-  private func pathForDatabaseName(name: String) -> URL? {
-    if name == MEMORY_DB_NAME {
-      return URL(string: name)
+  private func ensureDatabasePathExists(path: String) throws -> URL {
+    if path == MEMORY_DB_NAME {
+      guard let url = URL(string: path) else {
+        throw DatabaseException()
+      }
+      return url
     }
     guard let fileSystem = appContext?.fileSystem else {
-      return nil
+      throw Exceptions.FileSystemModuleNotFound()
     }
 
-    let directory = URL(string: fileSystem.documentDirectory)?.appendingPathComponent("SQLite")
-    fileSystem.ensureDirExists(withPath: directory?.absoluteString)
+    guard let pathUrl = URL(string: path) else {
+      throw DatabaseInvalidPathException(path)
+    }
+    fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().standardizedFileURL.path)
 
-    return directory?.appendingPathComponent(name)
+    return pathUrl
   }
 
   private func deserializeDatabase(_ serializedData: Data) throws -> OpaquePointer? {
@@ -394,26 +409,24 @@ public final class SQLiteModule: Module {
     }
   }
 
-  private func deleteDatabase(databaseName: String) throws {
-    if findCachedDatabase(where: { $0.databaseName == databaseName }) != nil {
-      throw DeleteDatabaseException(databaseName)
+  private func deleteDatabase(databasePath: String) throws {
+    if findCachedDatabase(where: { $0.databasePath == databasePath }) != nil {
+      throw DeleteDatabaseException(databasePath)
     }
 
-    if databaseName == MEMORY_DB_NAME {
+    if databasePath == MEMORY_DB_NAME {
       return
     }
-    guard let path = pathForDatabaseName(name: databaseName) else {
-      throw Exceptions.FileSystemModuleNotFound()
-    }
+    let path = try ensureDatabasePathExists(path: databasePath).standardizedFileURL.path
 
-    if !FileManager.default.fileExists(atPath: path.absoluteString) {
-      throw DatabaseNotFoundException(databaseName)
+    if !FileManager.default.fileExists(atPath: path) {
+      throw DatabaseNotFoundException(path)
     }
 
     do {
-      try FileManager.default.removeItem(atPath: path.absoluteString)
+      try FileManager.default.removeItem(atPath: path)
     } catch {
-      throw DeleteDatabaseFileException(databaseName)
+      throw DeleteDatabaseFileException(path)
     }
   }
 

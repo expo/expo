@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * A class representing a collection of notification actions.
+ *
+ * TODO vonovak: no need to implement serializable, parcelable is enough for storing
  */
 public class NotificationCategory implements Parcelable, Serializable {
   private final String mIdentifier;

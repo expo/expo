@@ -39,6 +39,7 @@ class FullscreenPlayerActivity : Activity() {
       // We need to disable it to keep scrubbing off.
       playerView.setTimeBarInteractive(videoView.videoPlayer?.requiresLinearPlayback ?: true)
     }
+    playerView.setShowSubtitleButton(videoView.showsSubtitlesButton)
   }
 
   override fun finish() {
