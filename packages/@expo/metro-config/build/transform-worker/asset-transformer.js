@@ -45,7 +45,10 @@ const node_url_1 = __importDefault(require("node:url"));
 const getAssets_1 = require("./getAssets");
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = template_1.default.statement(`module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`);
-const buildWebReference = template_1.default.statement(`module.exports = FILE_PATH;`);
+const buildStringRef = template_1.default.statement(`module.exports = FILE_PATH;`);
+const buildStaticObjectRef = template_1.default.statement(
+// Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
+`module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT };`);
 async function transform({ filename, options, }, assetRegistryPath, assetDataPlugins) {
     options ??= options || {
         platform: '',
@@ -84,11 +87,26 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         const assetPath = !isExport
             ? data.httpServerLocation + '/' + data.name + type
             : data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+        // If size data is known then it should be passed back to ensure the correct dimensions are used.
+        if (data.width != null || data.height != null) {
+            return {
+                ast: {
+                    ...t.file(t.program([
+                        buildStaticObjectRef({
+                            FILE_PATH: JSON.stringify(assetPath),
+                            WIDTH: data.width != null ? t.numericLiteral(data.width) : t.buildUndefinedNode(),
+                            HEIGHT: data.height != null ? t.numericLiteral(data.height) : t.buildUndefinedNode(),
+                        }),
+                    ])),
+                    errors: [],
+                },
+            };
+        }
         // Use single string references outside of client-side React Native.
         // module.exports = "/foo/bar.png";
         return {
             ast: {
-                ...t.file(t.program([buildWebReference({ FILE_PATH: JSON.stringify(assetPath) })])),
+                ...t.file(t.program([buildStringRef({ FILE_PATH: JSON.stringify(assetPath) })])),
                 errors: [],
             },
         };
