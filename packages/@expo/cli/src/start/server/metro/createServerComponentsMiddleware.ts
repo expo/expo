@@ -112,10 +112,12 @@ export function createServerComponentsMiddleware(
         // Required
         runModule: true,
       });
+
+      // Naive check to ensure the module runtime is not included in the server action bundle.
       if (contents.src.includes('The experimental Metro feature')) {
-        console.log('contents.src', contents.src);
         throw new Error(
-          'module runtime should not be included in server action bundles: ' + entryPoint
+          'Internal error: module runtime should not be included in server action bundles: ' +
+            entryPoint
         );
       }
       // contents.artifacts.find((a) => a.type === 'js')?.filename
