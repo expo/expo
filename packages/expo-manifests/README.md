@@ -1,6 +1,6 @@
 # expo-manifests
 
-Code to parse and use Expo and Expo Updates manifests.
+Code to parse and use Expo and Expo Updates manifests. Test
 
 ## Contributing
 
