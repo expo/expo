@@ -3,7 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import format from 'date-format';
 import * as BackgroundTask from 'expo-background-task';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
 import Button from '../components/Button';
 import useAppState from '../utilities/useAppState';
@@ -11,14 +11,17 @@ import useAppState from '../utilities/useAppState';
 const BACKGROUND_TASK_IDENTIFIER = 'background-task';
 const LAST_TASK_DATE_KEY = 'background-task-date';
 
-// Register / create the task so that it is available also when the background task screen is not open
-BackgroundTask.createTask(BACKGROUND_TASK_IDENTIFIER, async () => {
-  console.log('TASK RUNNING', BACKGROUND_TASK_IDENTIFIER, 'setting', {
-    key: LAST_TASK_DATE_KEY,
-    value: Date.now().toString(),
+export const RegisterBackgroundTask = () => {
+  console.log('BackgroundTask Screen: Registering background task');
+  // Register / create the task so that it is available also when the background task screen is not open
+  BackgroundTask.createTask(BACKGROUND_TASK_IDENTIFIER, async () => {
+    console.log('TASK RUNNING', BACKGROUND_TASK_IDENTIFIER, 'setting', {
+      key: LAST_TASK_DATE_KEY,
+      value: Date.now().toString(),
+    });
+    await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
   });
-  await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
-});
+};
 
 export default function BackgroundTaskScreen() {
   const [fetchDate, setFetchDate] = React.useState<Date | null>(null);
@@ -95,14 +98,16 @@ export default function BackgroundTaskScreen() {
 
   const renderLog = () => {
     return (
-      <View style={{ alignItems: 'center', height: 80, overflow: 'scroll' }}>
+      <View style={{ maxHeight: 150 }}>
         <Text>Task log:</Text>
-        {log?.map((logItem, index) => (
-          <Text key={index}>
-            {format('yyyy-MM-dd hh:mm:ss:SSS', new Date(logItem.date))} -{' '}
-            {BackgroundTask.BackgroundTaskInfoStatus[logItem.status]}
-          </Text>
-        ))}
+        <ScrollView style={{ borderColor: 'gray', borderWidth: 1, padding: 4 }}>
+          {log?.map((logItem, index) => (
+            <Text key={index}>
+              {format('yyyy-MM-dd hh:mm:ss:SSS', new Date(logItem.date))} -{' '}
+              {BackgroundTask.BackgroundTaskInfoStatus[logItem.status]}
+            </Text>
+          ))}
+        </ScrollView>
       </View>
     );
   };

@@ -3,13 +3,17 @@ import type { NativeModule } from 'expo-modules-core';
 
 import { BackgroundTaskStatus } from './BackgroundTask.types';
 
-declare class ExpoBackgroundTaskModule extends NativeModule {
+type ExpoBackgroundTaskModuleEventMap = {
+  onPerformWork: () => void;
+};
+
+declare class ExpoBackgroundTaskModule extends NativeModule<ExpoBackgroundTaskModuleEventMap> {
   startWorkerAsync(): Promise<boolean>;
   stopWorkerAsync(): Promise<boolean>;
   getStatusAsync(): Promise<BackgroundTaskStatus>;
   isWorkerRunningAsync(): Promise<boolean>;
   workFinished(): void;
-  EVENT_NAME: string;
+  EVENT_PERFORM_WORK: string;
 }
 
-export default requireNativeModule('ExpoBackgroundTask') as ExpoBackgroundTaskModule;
+export default requireNativeModule<ExpoBackgroundTaskModule>('ExpoBackgroundTask');

@@ -1,18 +1,19 @@
+// Copyright 2024-present 650 Industries. All rights reserved.
 import ExpoModulesCore
 
-internal class TaskAlreadyRegistered: Exception {
+internal final class TaskAlreadyRegistered: Exception {
   override var reason: String {
     "The task was already registered."
   }
 }
 
-internal class TaskNotRegistered: Exception {
+internal final class TaskNotRegistered: Exception {
   override var reason: String {
     "The task was not registered."
   }
 }
 
-internal class CouldNotRegisterTask: GenericException<String> {
+internal final class CouldNotRegisterTask: GenericException<String> {
   override var reason: String {
     "The task could not be registered: \(param)"
   }

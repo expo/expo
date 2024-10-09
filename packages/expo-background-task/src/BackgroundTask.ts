@@ -18,6 +18,35 @@ export {
   BackgroundTaskRunInfo,
 } from './BackgroundTask.types';
 
+// Start worker if it's not running and we have tasks registered
+console.log('BackgroundTask: Checking if we have any scheduled tasks');
+BackgroundTaskRepositiory.getTaskIdentifiers().then((taskIdentifiers) => {
+  if (taskIdentifiers.length > 0) {
+    console.log(`BackgroundTask: ${taskIdentifiers.length} tasks scheduled`);
+    ExpoBackgroundTaskModule.isWorkerRunningAsync().then((isRunning) => {
+      if (!isRunning) {
+        console.log('BackgroundTask: Starting worker');
+        ExpoBackgroundTaskModule.startWorkerAsync().then(() => {
+          console.log('BackgroundTask: worker running');
+        });
+      } else {
+        console.log('BackgroundTask: worker running');
+      }
+    });
+  } else {
+    ExpoBackgroundTaskModule.isWorkerRunningAsync().then((isRunning) => {
+      if (isRunning) {
+        console.log('BackgroundTask: Stopping worker, we have no scheduled tasks.');
+        ExpoBackgroundTaskModule.stopWorkerAsync().then(() => {
+          console.log('BackgroundTask: worker stopped');
+        });
+      } else {
+        console.log('BackgroundTask: worker not running');
+      }
+    });
+  }
+});
+
 // @needsAudit
 /**
  * defines the list of tasks used to store background tasks
@@ -271,15 +300,26 @@ const deleteTaskAsync = async (taskIdentifier: string) => {
  */
 if (ExpoBackgroundTaskModule) {
   console.log(
-    'Setting up BackgroundTask emitter listener for event',
-    ExpoBackgroundTaskModule.EVENT_NAME
+    'BackgroundTask: Setting up event listener for',
+    ExpoBackgroundTaskModule.EVENT_PERFORM_WORK
   );
 
-  // @ts-ignore
-  ExpoBackgroundTaskModule.addListener(ExpoBackgroundTaskModule.EVENT_NAME, async () => {
+  // Ensure all events have the correct names from our types
+  if (ExpoBackgroundTaskModule.EVENT_PERFORM_WORK !== 'onPerformWork') {
+    throw new Error(
+      "Expected 'onPerformWork' got '" +
+        ExpoBackgroundTaskModule.EVENT_PERFORM_WORK +
+        "' when adding event listener."
+    );
+  }
+
+  // Listen to the onPerformWork event
+  ExpoBackgroundTaskModule.addListener('onPerformWork', async () => {
     // We are notified by our native module that we can perform some work.
     // Lets check if we have any tasks to run.
-    console.log(`BackgroundTask.${ExpoBackgroundTaskModule.EVENT_NAME}`, { taskCount: tasks.size });
+    console.log(`BackgroundTask.${ExpoBackgroundTaskModule.EVENT_PERFORM_WORK}`, {
+      taskCount: tasks.size,
+    });
 
     try {
       tasks.forEach(async (taskExecutor, taskIdentifier) => {
