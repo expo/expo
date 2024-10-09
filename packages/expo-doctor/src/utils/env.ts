@@ -31,8 +31,8 @@ class Env {
   }
 
   /** If a test makes an online check and failures due to a network error, don't count it as failing the overall doctor check */
-  get EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES() {
-    return boolish('EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES', false);
+  get EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS() {
+    return boolish('EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS', false);
   }
 }
 

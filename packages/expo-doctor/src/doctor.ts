@@ -67,9 +67,9 @@ export async function printCheckResultSummaryOnComplete(job: DoctorCheckRunnerJo
       Log.error(
         'This check requires a connection to the Expo API. Please check your network connection.'
       );
-      if (env.EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES) {
+      if (env.EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS) {
         Log.warn(
-          'EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES is enabled. Ignoring network error for this check.'
+          'EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS is enabled. Ignoring network error for this check.'
         );
       }
     }
@@ -208,11 +208,11 @@ export async function actionAsync(projectRoot: string) {
       failedJobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
     }
     // check if all checks failed due to a network error if the flag to override network errors is enabled
-    if (env.EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES) {
+    if (env.EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS) {
       const failedJobsDueToNetworkError = failedJobs.filter((job) => isNetworkError(job.error));
       if (failedJobsDueToNetworkError.length === failedJobs.length) {
         Log.warn(
-          'One or more checks failed due to network errors, but EXPO_DOCTOR_OVERRIDE_NETWORK_ERROR_FAILURES is enabled, so these errors will not fail Doctor. Run Doctor to retry these checks once the network is available.'
+          'One or more checks failed due to network errors, but EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS is enabled, so these errors will not fail Doctor. Run Doctor to retry these checks once the network is available.'
         );
         return;
       }
