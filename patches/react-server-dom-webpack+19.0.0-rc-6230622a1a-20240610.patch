@@ -26,25 +26,3 @@ index c9bc9ea..cf4eebd 100644
    };
  
    registerServerReference(proxy, metaData);
-diff --git a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.edge.development.js b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.edge.development.js
-index 6609842..c1037a5 100644
---- a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.edge.development.js
-+++ b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.edge.development.js
-@@ -2367,6 +2367,7 @@ function createServerReferenceProxy(response, metaData) {
-   var callServer = response._callServer;
- 
-   var proxy = function () {
-+    console.log('BACON: Invoking server action');
-     // $FlowFixMe[method-unbinding]
-     var args = Array.prototype.slice.call(arguments);
-     var p = metaData.bound;
-@@ -3534,6 +3535,9 @@ function noServerCall() {
-   throw new Error('Server Functions cannot be called during initial render. ' + 'This would create a fetch waterfall. Try to use a Server Component ' + 'to pass data to Client Components instead.');
- }
- 
-+console.log('BACON: loaded');
-+
-+
- function createServerReference(id, callServer) {
-   return createServerReference$1(id, noServerCall);
- }
