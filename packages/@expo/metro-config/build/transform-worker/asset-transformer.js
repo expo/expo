@@ -57,14 +57,15 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
     // Is bundling for webview.
     const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
     const isExport = options.publicPath.includes('?export_path=');
-    const isServerEnv = options.customTransformOptions?.environment === 'react-server' ||
-        options.customTransformOptions?.environment === 'node';
+    const isReactServer = options.customTransformOptions?.environment === 'react-server';
+    const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
     const absolutePath = node_path_1.default.resolve(options.projectRoot, filename);
+    const getClientReference = () => isReactServer ? node_url_1.default.pathToFileURL(absolutePath).href : undefined;
     if (options.platform !== 'web' &&
         // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
         // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
-        options.customTransformOptions?.environment === 'react-server') {
-        const clientReference = node_url_1.default.pathToFileURL(absolutePath).href;
+        isReactServer) {
+        const clientReference = getClientReference();
         return {
             ast: {
                 ...t.file(t.program([
@@ -100,6 +101,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
                     ])),
                     errors: [],
                 },
+                reactClientReference: getClientReference(),
             };
         }
         // Use single string references outside of client-side React Native.
@@ -109,6 +111,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
                 ...t.file(t.program([buildStringRef({ FILE_PATH: JSON.stringify(assetPath) })])),
                 errors: [],
             },
+            reactClientReference: getClientReference(),
         };
     }
     return {

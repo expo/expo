@@ -201,7 +201,7 @@ it(`parses asset as string in react server environment for web`, async () => {
       height: 1024
     };"
   `);
-  expect(results.reactClientReference).toBeUndefined();
+  expect(results.reactClientReference).toBe('file:///root/local/foo.png');
 });
 
 it(`parses asset as client reference in react server environment`, async () => {

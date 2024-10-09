@@ -54,19 +54,21 @@ export async function transform(
   // Is bundling for webview.
   const isDomComponent = options.platform === 'web' && options.customTransformOptions?.dom;
   const isExport = options.publicPath.includes('?export_path=');
-  const isServerEnv =
-    options.customTransformOptions?.environment === 'react-server' ||
-    options.customTransformOptions?.environment === 'node';
+  const isReactServer = options.customTransformOptions?.environment === 'react-server';
+  const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
 
   const absolutePath = path.resolve(options.projectRoot, filename);
+
+  const getClientReference = () =>
+    isReactServer ? url.pathToFileURL(absolutePath).href : undefined;
 
   if (
     options.platform !== 'web' &&
     // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
     // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
-    options.customTransformOptions?.environment === 'react-server'
+    isReactServer
   ) {
-    const clientReference = url.pathToFileURL(absolutePath).href;
+    const clientReference = getClientReference()!;
     return {
       ast: {
         ...t.file(
@@ -116,6 +118,7 @@ export async function transform(
           ),
           errors: [],
         },
+        reactClientReference: getClientReference(),
       };
     }
 
@@ -126,6 +129,7 @@ export async function transform(
         ...t.file(t.program([buildStringRef({ FILE_PATH: JSON.stringify(assetPath) })])),
         errors: [],
       },
+      reactClientReference: getClientReference(),
     };
   }
 
