@@ -186,8 +186,8 @@ class Chunk {
         const jsSplitBundle = (0, baseJSBundle_1.baseJSBundleWithDependencies)(entryFile, preModules, dependencies, {
             ...this.options,
             runBeforeMainModule: serializerConfig?.getModulesRunBeforeMainModule?.(path_1.default.relative(this.options.projectRoot, entryFile)) ?? [],
-            runModule: !this.isVendor && !this.isAsync,
-            modulesOnly: this.preModules.size === 0,
+            runModule: this.options.runModule && !this.isVendor && !this.isAsync,
+            modulesOnly: this.options.modulesOnly || this.preModules.size === 0,
             platform: this.getPlatform(),
             baseUrl: (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options),
             splitChunks: !!this.options.serializerOptions?.splitChunks,

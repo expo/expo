@@ -775,17 +775,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
-    files.set(`_expo/rsc/${options.platform}/ssr-manifest.json`, {
+    files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
       targetDomain: 'server',
-      contents: JSON.stringify(
-        // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
-        Object.fromEntries(
-          Array.from(ssrManifest.entries()).map(([key, value]) => [
-            path.join(serverRoot, key),
-            [key, value],
-          ])
-        )
-      ),
+      contents:
+        'module.exports = ' +
+        JSON.stringify(
+          // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
+          Object.fromEntries(
+            Array.from(ssrManifest.entries()).map(([key, value]) => [
+              path.join(serverRoot, key),
+              [key, value],
+            ])
+          )
+        ),
     });
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.

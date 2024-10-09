@@ -112,7 +112,24 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   };
 
   global.__webpack_require__ = (id) => {
-    return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
+    // This logic can be tested by running a production iOS build without virtual client boundaries. This will result in all split chunks being missing and
+    // errors being thrown on RSC load.
+    // @ts-expect-error: Not on type
+    const original = ErrorUtils.reportFatalError;
+    // @ts-expect-error: Not on type
+    ErrorUtils.reportFatalError = (err) => {
+      // Throw the error so the __r function exits as expected. The error will then be caught by the nearest error boundary.
+      throw err;
+    };
+
+    try {
+      return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
+    } finally {
+      // Restore the original error handling.
+
+      // @ts-expect-error: Not on type
+      ErrorUtils.reportFatalError = original;
+    }
   };
 
   const renderWithContext = async (

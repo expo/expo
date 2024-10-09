@@ -38,6 +38,9 @@ export type ExpoMetroOptions = {
   usedExports?: boolean;
   /** Enable optimized bundling (required for tree shaking). */
   optimize?: boolean;
+
+  modulesOnly?: boolean;
+  runModule?: boolean;
 };
 
 export type SerializerOptions = {
@@ -159,6 +162,8 @@ export function getMetroDirectBundleOptions(
     optimize,
     domRoot,
     clientBoundaries,
+    runModule,
+    modulesOnly,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -215,6 +220,8 @@ export function getMetroDirectBundleOptions(
     lazy: (!isExporting && lazy) || undefined,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions,
+    runModule,
+    modulesOnly,
     customResolverOptions: {
       __proto__: null,
       environment,
@@ -274,6 +281,8 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     usedExports,
     optimize,
     domRoot,
+    modulesOnly,
+    runModule,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -354,6 +363,13 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (engine === 'hermes') {
     queryParams.append('unstable_transformProfile', 'hermes-stable');
+  }
+
+  if (modulesOnly != null) {
+    queryParams.set('modulesOnly', String(modulesOnly));
+  }
+  if (runModule != null) {
+    queryParams.set('runModule', String(runModule));
   }
 
   return queryParams;

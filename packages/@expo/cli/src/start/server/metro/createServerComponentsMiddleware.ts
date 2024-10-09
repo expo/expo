@@ -107,11 +107,22 @@ export function createServerComponentsMiddleware(
       const contents = await ssrLoadModuleArtifacts(entryPoint, {
         environment: 'react-server',
         platform,
+        // Ignore the metro runtime to avoid overwriting the original in the API route.
+        modulesOnly: true,
+        // Required
+        runModule: true,
       });
+      if (contents.src.includes('The experimental Metro feature')) {
+        console.log('contents.src', contents.src);
+        throw new Error(
+          'module runtime should not be included in server action bundles: ' + entryPoint
+        );
+      }
+      // contents.artifacts.find((a) => a.type === 'js')?.filename
       const relativeName = path.relative(serverRoot, entryPoint);
-      const safeName = relativeName.replace(/\//g, '_');
+      const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!); //relativeName.replace(/\//g, '_');
 
-      const outputName = `_expo/rsc/${platform}/actions/${safeName}.js`;
+      const outputName = `_expo/rsc/${platform}/${safeName}`;
       // While we're here, export the router for the server to dynamically render RSC.
       files.set(outputName, {
         targetDomain: 'server',
@@ -123,9 +134,9 @@ export function createServerComponentsMiddleware(
     }
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
-    files.set(`_expo/rsc/${platform}/action-manifest.json`, {
+    files.set(`_expo/rsc/${platform}/action-manifest.js`, {
       targetDomain: 'server',
-      contents: JSON.stringify(manifest),
+      contents: 'module.exports = ' + JSON.stringify(manifest),
     });
 
     return { manifest };
@@ -258,11 +269,11 @@ export function createServerComponentsMiddleware(
         clientBoundaries: [],
         inlineSourceMap: false,
         environment: isServer ? 'react-server' : 'client',
+        modulesOnly: true,
+        runModule: false,
       });
 
       searchParams.set('resolver.clientboundary', String(true));
-      searchParams.set('modulesOnly', String(true));
-      searchParams.set('runModule', String(false));
 
       const clientReferenceUrl = new URL('http://a');
 

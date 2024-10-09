@@ -54,10 +54,27 @@ async function renderRsc(args, opts) {
         },
     });
     global.__webpack_chunk_load__ = async (url) => {
+        console.log('server.__webpack_chunk_load__', url);
         return await opts.loadServerModuleRsc(url);
     };
     global.__webpack_require__ = (id) => {
-        return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
+        // This logic can be tested by running a production iOS build without virtual client boundaries. This will result in all split chunks being missing and
+        // errors being thrown on RSC load.
+        // @ts-expect-error: Not on type
+        const original = ErrorUtils.reportFatalError;
+        // @ts-expect-error: Not on type
+        ErrorUtils.reportFatalError = (err) => {
+            // Throw the error so the __r function exits as expected. The error will then be caught by the nearest error boundary.
+            throw err;
+        };
+        try {
+            return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
+        }
+        finally {
+            // Restore the original error handling.
+            // @ts-expect-error: Not on type
+            ErrorUtils.reportFatalError = original;
+        }
     };
     const renderWithContext = async (context, input, params) => {
         const renderStore = {
@@ -137,6 +154,12 @@ async function renderRsc(args, opts) {
         const [, name] = actionId.split('#');
         // TODO: Add production version of this code path.
         const mod = await opts.loadServerModuleRsc(serverConfig[actionId].chunks[0]);
+        console.log('server action module:', {
+            mod,
+            name,
+            actionId,
+            chunk: serverConfig[actionId].chunks[0],
+        });
         const fn = name === '*' ? name : mod[name] || mod;
         return renderWithContextWithAction(context, fn, args);
     }

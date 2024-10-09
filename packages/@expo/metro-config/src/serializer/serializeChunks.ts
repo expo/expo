@@ -259,8 +259,8 @@ export class Chunk {
         serializerConfig?.getModulesRunBeforeMainModule?.(
           path.relative(this.options.projectRoot, entryFile)
         ) ?? [],
-      runModule: !this.isVendor && !this.isAsync,
-      modulesOnly: this.preModules.size === 0,
+      runModule: this.options.runModule && !this.isVendor && !this.isAsync,
+      modulesOnly: this.options.modulesOnly || this.preModules.size === 0,
       platform: this.getPlatform(),
       baseUrl: getBaseUrlOption(this.graph, this.options),
       splitChunks: !!this.options.serializerOptions?.splitChunks,
