@@ -95,9 +95,13 @@ it(`parses asset for dom components export`, async () => {
     []
   );
   expect(getAssetData).toHaveBeenCalledTimes(1);
-  expect(astString(results.ast)).toMatchInlineSnapshot(
-    `"module.exports = "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png";"`
-  );
+  expect(astString(results.ast)).toMatchInlineSnapshot(`
+    "module.exports = {
+      uri: "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png",
+      width: 1024,
+      height: 1024
+    };"
+  `);
   expect(results.reactClientReference).toBeUndefined();
 });
 
@@ -116,9 +120,13 @@ it(`parses asset as string in client environment for web`, async () => {
     '[MOCK_ASSET_REGISTRY]',
     []
   );
-  expect(astString(results.ast)).toMatchInlineSnapshot(
-    `"module.exports = "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png";"`
-  );
+  expect(astString(results.ast)).toMatchInlineSnapshot(`
+    "module.exports = {
+      uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
+      width: 1024,
+      height: 1024
+    };"
+  `);
   expect(results.reactClientReference).toBeUndefined();
 });
 
@@ -158,9 +166,13 @@ it(`parses asset as string in client environment for web during export`, async (
     '[MOCK_ASSET_REGISTRY]',
     []
   );
-  expect(astString(results.ast)).toMatchInlineSnapshot(
-    `"module.exports = "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png";"`
-  );
+  expect(astString(results.ast)).toMatchInlineSnapshot(`
+    "module.exports = {
+      uri: "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png",
+      width: 1024,
+      height: 1024
+    };"
+  `);
   expect(results.reactClientReference).toBeUndefined();
 });
 
@@ -182,9 +194,13 @@ it(`parses asset as string in react server environment for web`, async () => {
     []
   );
   expect(getAssetData).toHaveBeenCalledTimes(1);
-  expect(astString(results.ast)).toMatchInlineSnapshot(
-    `"module.exports = "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png";"`
-  );
+  expect(astString(results.ast)).toMatchInlineSnapshot(`
+    "module.exports = {
+      uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
+      width: 1024,
+      height: 1024
+    };"
+  `);
   expect(results.reactClientReference).toBeUndefined();
 });
 
