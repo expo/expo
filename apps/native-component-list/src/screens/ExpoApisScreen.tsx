@@ -34,6 +34,7 @@ const screens = [
   'AuthSession',
   'BackgroundFetch',
   'BackgroundLocation',
+  'BackgroundTask',
   'Battery',
   'Brightness',
   'Calendars',

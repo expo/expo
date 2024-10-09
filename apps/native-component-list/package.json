@@ -60,6 +60,7 @@
     "expo-auth-session": "~6.0.0",
     "expo-av": "~15.0.0",
     "expo-background-fetch": "~13.0.0",
+    "expo-background-task": "~0.0.1",
     "expo-barcode-scanner": "~14.0.0",
     "expo-battery": "~9.0.0",
     "expo-blur": "~14.0.0",
