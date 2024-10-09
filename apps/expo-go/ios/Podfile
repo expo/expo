@@ -51,8 +51,23 @@ target 'Expo Go' do
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
-  # React Native
-  use_native_modules!
+  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] != '0'
+    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
+    config_command = [
+      'node',
+      '--no-warnings',
+      '--eval',
+      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+      'react-native-config',
+      '--json',
+      '--platform',
+      'ios'
+    ]
+    config = use_native_modules!(config_command)
+  else
+    config = use_native_modules!
+  end
+
   use_react_native!(
     :path => '../../../react-native-lab/react-native/packages/react-native',
     :hermes_enabled => true,
