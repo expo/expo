@@ -331,6 +331,7 @@ class Kernel : KernelInterface() {
       surface.start()
       return surface
     }
+    
   private val kernelLaunchOptions = bundleOf(
     "exp" to Bundle()
   )
@@ -661,7 +662,7 @@ class Kernel : KernelInterface() {
             }
           }
 
-          override fun updateStatus(status: AppLoaderStatus) {
+          override fun updateStatus(status: AppLoaderStatus?) {
             if (optimisticActivity != null) {
               optimisticActivity!!.setLoadingProgressStatusIfEnabled(status)
             }

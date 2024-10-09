@@ -8,29 +8,21 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.common.SurfaceDelegateFactory
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
-import com.facebook.react.devsupport.BridgelessDevSupportManagerFactory
-import com.facebook.react.devsupport.DevSupportManagerBase
-import com.facebook.react.devsupport.DevSupportManagerFactory
-import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
-import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
-import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
-import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.ReactNativeConfig
-import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.runtime.BindingsInstaller
+import com.facebook.react.runtime.BridgelessDevSupportManager
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
 import expo.modules.ReactNativeHostWrapper
-import host.exp.exponent.devsupport.ExpoDevSupportManager
+import versioned.host.exp.exponent.VersionedUtils
 import java.lang.ref.WeakReference
 
 object ReactHostFactory {
@@ -105,14 +97,20 @@ object ReactHostFactory {
         true,
         useDeveloperSupport
       ) { reactHost ->
-        ExpoDevSupportManager(
-          context,
+        BridgelessDevSupportManager(
           reactHost,
+          context.applicationContext,
+          BridgelessDevSupportManager.createInstanceDevHelper(reactHost),
           reactHostDelegate.jsMainModulePath,
-          devBundleDownloadListener
+          true,
+          null,
+          devBundleDownloadListener,
+          100,
+          VersionedUtils.createPackagerCommandHelpers(),
+          null,
+          null,
+          null
         )
-      }.apply {
-        jsEngineResolutionAlgorithm = reactNativeHost.jsEngineResolutionAlgorithm
       }
 
     reactNativeHost.reactNativeHostHandlers.forEach { handler ->

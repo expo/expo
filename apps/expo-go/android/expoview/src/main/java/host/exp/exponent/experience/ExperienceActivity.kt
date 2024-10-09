@@ -211,7 +211,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
             emitUpdatesEvent(params)
           }
 
-          override fun updateStatus(status: AppLoaderStatus) {
+          override fun updateStatus(status: AppLoaderStatus?) {
             setLoadingProgressStatusIfEnabled(status)
           }
 
@@ -471,25 +471,15 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_SDK_VERSION
     // to point to the unversioned code in ReactAndroid.
-    if (Constants.TEMPORARY_SDK_VERSION == sdkVersion) {
+    if (Constants.SDK_VERSION == sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }
 
     if (RNObject.UNVERSIONED != sdkVersion) {
-      var isValidVersion = false
-      for (version in Constants.SDK_VERSIONS_LIST) {
-        if (version == sdkVersion) {
-          isValidVersion = true
-          break
-        }
-      }
+      val isValidVersion = sdkVersion == Constants.SDK_VERSION
       if (!isValidVersion) {
         KernelProvider.instance.handleError(
-          "$sdkVersion is not a valid SDK version. Options are " +
-            TextUtils.join(
-              ", ",
-              Constants.SDK_VERSIONS_LIST
-            ) + ", " + RNObject.UNVERSIONED + "."
+          sdkVersion + " is not a valid SDK version. Only ${Constants.SDK_VERSION} is supported."
         )
         return
       }

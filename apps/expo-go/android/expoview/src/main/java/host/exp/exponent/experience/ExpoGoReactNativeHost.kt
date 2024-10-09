@@ -3,6 +3,7 @@ package host.exp.exponent.experience
 import android.app.Application
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.shell.MainReactPackage
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.kernel.KernelConfig

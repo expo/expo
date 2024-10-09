@@ -2,19 +2,9 @@
 
 package host.exp.exponent;
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.text.TextUtils;
-
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
-import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.generated.ExponentBuildConstants;
 
 public class Constants {
