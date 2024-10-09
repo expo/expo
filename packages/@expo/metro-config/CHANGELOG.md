@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Emit assets as strings instead of numeric lookups when bundling for web and server environments.
+- Emit assets as strings instead of numeric lookups when bundling for web and server environments. ([#31955](https://github.com/expo/expo/pull/31955) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
