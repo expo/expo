@@ -18,5 +18,9 @@ class BenchmarkingExpoModule : Module() {
     Function("addStrings") { a: String, b: String ->
       a + b
     }
+
+    Function("foldArray") { array: List<Double> ->
+      array.sum()
+    }
   }
 }
