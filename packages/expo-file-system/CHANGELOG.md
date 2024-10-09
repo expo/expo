@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- [expo-file-system][next] Disable module in Expo Go.
+- [expo-file-system][next] Disable module in Expo Go. ([#31938](https://github.com/expo/expo/pull/31938) by [@aleqsio](https://github.com/aleqsio))
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
