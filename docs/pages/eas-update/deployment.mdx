@@ -115,7 +115,7 @@ Run `eas update --channel production` to bundle and push a new update to product
 
 **If you have already published the fix to staging and verified it there**, ensure that you are republishing from the same commit.
 
-For this release process we recommend using identical environment variables and code signing configuration on staging as on production, in order to ensure that updates verified in staging work exactly the same in production. If do this, then you can `eas update:republish --destination-channel production` to promote the update rather than generating a new one. This will ensure the exact same bundle that you tested in staging is used in production.
+For this release process we recommend using identical environment variables and code signing configuration on staging as on production, to ensure that updates verified in staging work exactly the same in production. If do this, then you can `eas update:republish --destination-channel production` to promote the update rather than generating a new one. This will ensure the exact same bundle that you tested in staging is used in production.
 
 Run `eas update --channel production` to publish an update to production. This will make your hotfix immediately available to users of production builds with the same runtime version.
 
