@@ -14,12 +14,12 @@ export function useRouteInfo() {
   return useStoreRouteInfo();
 }
 
-/** @deprecated use `useNavigationContainerRef()` instead, which returns a React ref. */
+/** @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead, which returns a React `ref`. */
 export function useRootNavigation() {
   return store.navigationRef.current;
 }
 
-/** @return the root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
+/** @return The root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
 export function useNavigationContainerRef() {
   return store.navigationRef;
 }
@@ -44,17 +44,30 @@ export function useRouter(): Router {
 
 /**
  * @private
- * @returns the current global pathname with query params attached. This may change in the future to include the hostname from a predefined universal link, i.e. `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`
+ * @returns The current global pathname with query params attached. This may change in the future to include the hostname from a predefined universal link. For example, `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`.
  */
 export function useUnstableGlobalHref(): string {
   return useStoreRouteInfo().unstable_globalHref;
 }
 
 /**
- * Get a list of selected file segments for the currently selected route. Segments are not normalized, so they will be the same as the file path. e.g. /[id]?id=normal -> ["[id]"]
+ * Get a list of selected file segments for the currently selected route. Segments are not normalized, so they will be the same as the file path. For example: `/[id]?id=normal -> ["[id]"]`.
  *
- * `useSegments` can be typed using an abstract.
- * Consider the following file structure, and strictly typed `useSegments` function:
+ * @example
+ * ```tsx app/profile/[user].tsx
+ * import { Text } from 'react-native';
+ * import { useSegments } from 'expo-router';
+ *
+ * export default function Route() {
+ *   // segments = ["profile", "[user]"]
+ *   const segments = useSegments();
+ *
+ *   return <Text>Hello</Text>;
+ * }
+ * ```
+ *
+ *
+ * `useSegments` can be typed using an abstract. Consider the following file structure, and strictly typed `useSegments` function:
  *
  * ```md
  * - app
@@ -63,6 +76,8 @@ export function useUnstableGlobalHref(): string {
  *     - followers.js
  *   - settings.js
  * ```
+ *
+ *
  * This can be strictly typed using the following abstract:
  *
  * ```ts
@@ -77,23 +92,57 @@ export function useSegments<
     : TSegments;
 }
 
-/** @returns global selected pathname without query parameters. */
+/**
+ * Global selected route location without search parameters. For example, `/acme?foo=bar` -> `/acme`. Segments will be normalized: `/[id]?id=normal` -> `/normal`.
+ *
+ * @example
+ * ```tsx app/profile/[user].tsx
+ * import { Text } from 'react-native';
+ * import { useSegments } from 'expo-router';
+ *
+ * export default function Route() {
+ *   // segments = ["profile", "[user]"]</b>
+ *   const segments = useSegments();
+ *
+ *   return <Text>Hello</Text>;
+ * }
+ * ```
+ */
 export function usePathname(): string {
   return useStoreRouteInfo().pathname;
 }
 
 /**
- * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
- * Useful for analytics or other background operations that don't draw to the screen.
- *
- * When querying search params in a stack, opt-towards using `useLocalSearchParams` as these will only
- * update when the route is focused.
- *
- * @see `useLocalSearchParams`
+ * @hidden
  */
 export function useGlobalSearchParams<
   TParams extends SearchParams = UnknownOutputParams,
 >(): RouteParams<TParams>;
+/**
+ * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
+ * Useful for analytics or other background operations that don't draw to the screen.
+ *
+ * When querying search params in a stack, opt-towards using [`useLocalSearchParams`](#uselocalsearchparams) as these will only update when the route is focused.
+ *
+ * Route URL example: `acme://profile/baconbrix?extra=info`.
+ *
+ * > **Note:** See [local versus global search parameters](/router/reference/search-parameters/#local-versus-global-search-parameters) for usage
+ * > information.
+ *
+ *
+ * @example
+ * ```tsx app/profile/[user].tsx
+ * import { Text } from 'react-native';
+ * import { useGlobalSearchParams } from 'expo-router';
+ *
+ * export default function Route() {
+ *   // user=baconbrix & extra=info
+ *   const { user, extra } = useGlobalSearchParams();
+ *   return <Text>User: {user}</Text>;
+ * }
+ * ```
+ *
+ */
 export function useGlobalSearchParams<
   TRoute extends Routes,
   TParams extends SearchParams = UnknownOutputParams,
@@ -106,17 +155,20 @@ export function useGlobalSearchParams<
 }
 
 /**
+ * @hidden
+ */
+export function useLocalSearchParams<
+  TParams extends SearchParams = UnknownOutputParams,
+>(): RouteParams<TParams>;
+/**
  * Returns the URL parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
  * For dynamic routes, both the route parameters and the search parameters are returned.
  *
  * To observe updates even when the invoking route is not focused, use `useGlobalSearchParams()`.
  *
- * @see `useGlobalSearchParams`
+ * @see [`useGlobalSearchParams`](#useglobalsearchparams)
  */
-export function useLocalSearchParams<
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams>;
 export function useLocalSearchParams<
   TRoute extends Routes,
   TParams extends SearchParams = UnknownOutputParams,

@@ -14,6 +14,13 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 const val eventName = "onScreenshot"
 
+val grantedPermissions = mapOf(
+  "canAskAgain" to true,
+  "granted" to true,
+  "expires" to "never",
+  "status" to "granted"
+)
+
 class ScreenCaptureModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
@@ -45,6 +52,10 @@ class ScreenCaptureModule : Module() {
     }
 
     AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        promise.resolve(grantedPermissions)
+        return@AsyncFunction
+      }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_MEDIA_IMAGES)
       } else {
@@ -53,6 +64,10 @@ class ScreenCaptureModule : Module() {
     }
 
     AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        promise.resolve(grantedPermissions)
+        return@AsyncFunction
+      }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_MEDIA_IMAGES)
       } else {

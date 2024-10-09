@@ -108,7 +108,6 @@ export async function lintStringAsync(str: string): Promise<LintViolation[]> {
   } catch {
     logger.error(`SwiftLint resulted with the following stderr: \n${stderr}`);
     // Return no violations in case of any errors.
-    // TODO: We should migrate to this action instead: https://github.com/marketplace/actions/github-action-for-swiftlint
     return [];
   }
 }

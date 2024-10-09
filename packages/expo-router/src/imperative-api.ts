@@ -23,6 +23,9 @@ export type Router = {
   setParams: <T extends Routes>(params: Partial<RouteParamInput<T>>) => void;
 };
 
+/**
+ * @hidden
+ */
 export const router: Router = {
   navigate: (href, options) => store.navigate(href, options),
   push: (href, options) => store.push(href, options),

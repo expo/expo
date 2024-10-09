@@ -595,17 +595,17 @@ open class NotificationsService : BroadcastReceiver() {
     val pendingIntent = goAsync()
     thread {
       try {
-        handleIntent(context, intent)
+        intent?.run { handleIntent(context, intent) }
       } finally {
         pendingIntent.finish()
       }
     }
   }
 
-  open fun handleIntent(context: Context, intent: Intent?) {
-    if (intent != null && SETUP_ACTIONS.contains(intent.action)) {
+  open fun handleIntent(context: Context, intent: Intent) {
+    if (SETUP_ACTIONS.contains(intent.action)) {
       onSetupScheduledNotifications(context, intent)
-    } else if (intent?.action === NOTIFICATION_EVENT_ACTION) {
+    } else if (intent.action === NOTIFICATION_EVENT_ACTION) {
       val receiver: ResultReceiver? = intent.extras?.get(RECEIVER_KEY) as? ResultReceiver
       try {
         var resultData: Bundle? = null
@@ -665,7 +665,7 @@ open class NotificationsService : BroadcastReceiver() {
         receiver?.send(ERROR_CODE, Bundle().also { it.putSerializable(EXCEPTION_KEY, e) })
       }
     } else {
-      throw IllegalArgumentException("Received intent of unrecognized action: ${intent?.action}. Ignoring.")
+      throw IllegalArgumentException("Received intent of unrecognized action: ${intent.action}. Ignoring.")
     }
   }
 

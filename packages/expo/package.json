@@ -91,12 +91,16 @@
     "react-native": "0.75.2"
   },
   "peerDependencies": {
+    "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
     "react": "*",
     "react-native": "*",
     "react-native-webview": "*"
   },
   "peerDependenciesMeta": {
+    "@expo/dom-webview": {
+      "optional": true
+    },
     "@expo/metro-runtime": {
       "optional": true
     },

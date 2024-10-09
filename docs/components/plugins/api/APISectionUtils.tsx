@@ -118,37 +118,51 @@ export const mdComponentsNoValidation: MDComponents = {
 
 const nonLinkableTypes = [
   'B',
+  'CodedError',
   'ColorValue',
   'Component',
   'ComponentClass',
+  'ComponentProps',
   'ComponentType',
-  'PureComponent',
   'E',
   'EventName',
   'EventSubscription',
+  'ForwardRefExoticComponent',
+  'GeneratedHref',
+  'GestureResponderEvent',
+  'GetPermissionMethod',
+  'HTMLInputElement',
   'K',
   'Listener',
   'ModuleType',
   'NativeSyntheticEvent',
+  'NavigationContainerRefWithCurrent',
+  'Options',
   'P',
   'Parameters',
+  'ParamListBase',
   'ParsedQs',
+  'PartialState',
+  'PermissionHookBehavior',
+  'PropsWithChildren',
+  'PropsWithoutRef',
+  'PureComponent',
+  'React.FC',
+  'RequestPermissionMethod',
+  'RouteParamInput',
+  'RouteParams',
+  'ScreenListeners',
   'ServiceActionResult',
+  'StyleProp',
   'T',
   'TaskOptions',
+  'TEventMap',
   'TEventsMap',
+  'TOptions',
+  'TParams',
+  'TRoute',
+  'TState',
   'Uint8Array',
-  // React & React Native
-  'React.FC',
-  'ForwardRefExoticComponent',
-  'StyleProp',
-  'HTMLInputElement',
-  // Cross-package types with no export entry
-  'CodedError',
-  'RequestPermissionMethod',
-  'GetPermissionMethod',
-  'Options',
-  'PermissionHookBehavior',
 ];
 
 /**
@@ -193,10 +207,16 @@ const hardcodedTypeLinks: Record<string, string> = {
   // Conflicts with the File class from expo-file-system@next. TODO: Fix this.
   // File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  HTMLAnchorElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement',
   IterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
+  MouseEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent',
+  NavigationContainerRef:
+    'https://reactnavigation.org/docs/typescript/#annotating-ref-on-navigationcontainer',
+  NavigationOptions: 'https://reactnavigation.org/docs/screen-options/',
+  NavigationState: 'https://reactnavigation.org/docs/navigation-state',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   PackagerAsset: 'https://github.com/facebook/react-native/blob/main/packages/assets/registry.js',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
@@ -205,13 +225,18 @@ const hardcodedTypeLinks: Record<string, string> = {
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   ReactNode: 'https://reactnative.dev/docs/react-node',
+  Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
+  RouteProp: 'https://reactnavigation.org/docs/glossary-of-terms/#route-prop',
+  RootParamList:
+    'https://reactnavigation.org/docs/typescript/#specifying-default-types-for-usenavigation-link-ref-etc',
   SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
   SpeechSynthesisUtterance:
     'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
+  TextProps: 'https://reactnative.dev/docs/text#props',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',
@@ -256,6 +281,7 @@ const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>
     NativeModule: '/versions/unversioned/sdk/expo/#nativemodule',
     SharedObject: '/versions/unversioned/sdk/expo/#sharedobject',
     SharedRef: '/versions/unversioned/sdk/expo/#sharedref',
+    Href: '/versions/unversioned/sdk/router/#href-1',
   },
 };
 
@@ -397,7 +423,13 @@ export const resolveTypeName = (
       if (type === 'array') {
         const { parameters, type: paramType } = elementType.declaration.indexSignature || {};
         if (parameters && paramType) {
-          return `{ [${listParams(parameters)}]: ${resolveTypeName(paramType, sdkVersion)} }`;
+          return (
+            <>
+              <span className="text-quaternary">{'{'}</span>
+              {` [${listParams(parameters)}]: ${resolveTypeName(paramType, sdkVersion)} `}
+              <span className="text-quaternary">{'}'}</span>
+            </>
+          );
         }
       }
       return elementType.name + type;
@@ -407,7 +439,10 @@ export const resolveTypeName = (
       const unionTypes = elementType?.types || [];
       return (
         <>
-          ({renderUnion(unionTypes, { sdkVersion })}){type === 'array' && '[]'}
+          <span className="text-quaternary">(</span>
+          {renderUnion(unionTypes, { sdkVersion })}
+          <span className="text-quaternary">)</span>
+          {type === 'array' && '[]'}
         </>
       );
     } else if (declaration?.signatures) {
@@ -653,6 +688,7 @@ export const renderTypeOrSignatureType = ({
     if (allowBlock) {
       return <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />;
     }
+
     return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type, sdkVersion)}</CODE>;
   }
   return undefined;

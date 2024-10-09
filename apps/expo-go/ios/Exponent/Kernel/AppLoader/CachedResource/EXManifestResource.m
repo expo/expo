@@ -61,7 +61,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
   if (error) {
     * error = [self formatError:[NSError errorWithDomain:EXRuntimeErrorDomain code:0 userInfo:@{
       @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
-      NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible project found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
+      NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible project found at %@. Only %@ is supported.", self.originalUrl, [EXVersions sharedInstance].sdkVersion]
     }]];
   }
   return nil;
@@ -207,24 +207,9 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
   return [[sdkVersion substringToIndex:snackSdkVersionRange.location] intValue];
 }
 
--(NSArray<NSNumber *> *)supportedSdkVersionInts {
-  NSArray *supportedSDKVersions = [EXVersions sharedInstance].versions[@"sdkVersions"];
-  NSMutableArray *supportedSDKVersionInts = [NSMutableArray arrayWithCapacity:[supportedSDKVersions count]];
-
-  [supportedSDKVersions enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-    if ([obj isKindOfClass:[NSString class]]){
-      NSString *stringObj = (NSString *) obj;
-      NSNumber *versionNumber = [NSNumber numberWithInt:[stringObj intValue]];
-      [supportedSDKVersionInts addObject:versionNumber];
-    }
-  }];
-  [supportedSDKVersionInts sortUsingSelector:@selector(compare:)];
-  return supportedSDKVersionInts;
-}
-
-- (NSString *)supportedSdkVersionsConjunctionString:(nonnull NSString *)conjunction {
-  NSArray *supportedSDKVersionInts = [self supportedSdkVersionInts];
-  return [NSString stringWithFormat:@"%d", [[supportedSDKVersionInts firstObject] intValue]];
+-(NSNumber *)supportedSdkVersionInt {
+  NSString *supportedSDKVersion = [EXVersions sharedInstance].sdkVersion;
+  return [NSNumber numberWithInt:[supportedSDKVersion intValue]];
 }
 
 - (NSError *)verifyManifestSdkVersion:(EXManifestsManifest *)maybeManifest
@@ -235,9 +220,8 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
     if (![maybeManifest.expoGoSDKVersion isEqualToString:@"UNVERSIONED"]) {
       NSInteger manifestSdkVersion = [maybeManifest.expoGoSDKVersion integerValue];
       if (manifestSdkVersion) {
-        NSInteger oldestSdkVersion = [[self _earliestSdkVersionSupported] integerValue];
-        NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
-        if (manifestSdkVersion < oldestSdkVersion) {
+        NSInteger supportedSdkVersion = [[self supportedSdkVersionInt] integerValue];
+        if (manifestSdkVersion < supportedSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
           // since we are spoofing this error, we put the SDK version of the project as the
           // "available" SDK version -- it's the only one available from the server
@@ -246,11 +230,11 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
             @"isSnackURL": [NSNumber numberWithBool:self.isSnackURL]
           };
         }
-        if (manifestSdkVersion > newestSdkVersion) {
+        if (manifestSdkVersion > supportedSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";
         }
         
-        if ([[EXVersions sharedInstance].temporarySdkVersion integerValue] == manifestSdkVersion) {
+        if ([[EXVersions sharedInstance].sdkVersion integerValue] == manifestSdkVersion) {
           // It seems there is no matching versioned SDK,
           // but version of the unversioned code matches the requested one. That's ok.
           errorCode = nil;
@@ -291,18 +275,6 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
   return [super _validateErrorData:formattedError response:response];
 }
 
-- (NSString *)_earliestSdkVersionSupported
-{
-  NSArray *clientSDKVersionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
-  return [clientSDKVersionsAvailable firstObject]; // TODO: this is bad, we can't guarantee this array will always be ordered properly.
-}
-
-- (NSString *)_latestSdkVersionSupported
-{
-  NSArray *clientSDKVersionsAvailable = [EXVersions sharedInstance].versions[@"sdkVersions"];
-  return [clientSDKVersionsAvailable lastObject]; // TODO: this is bad, we can't guarantee this array will always be ordered properly.
-}
-
 - (NSError *)formatError:(NSError *)error
 {
   NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
@@ -318,18 +290,18 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
     formattedMessage = [NSString stringWithFormat:@"No project found at %@.", self.originalUrl];
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_OUTDATED"]) {
     NSDictionary *metadata = userInfo[@"metadata"];
-    NSArray *supportedSDKVersions = [EXVersions sharedInstance].versions[@"sdkVersions"];
+    NSString *supportedSDKVersion = [EXVersions sharedInstance].sdkVersion;
     NSArray *availableSDKVersions = metadata[@"availableSDKVersions"];
     NSString *sdkVersionRequired = [availableSDKVersions firstObject];
     int requiredVersionNum = [sdkVersionRequired intValue];
     NSString * expoDevLink = [NSString stringWithFormat:@"https://expo.dev/go?sdkVersion=%d&platform=ios&device=false", requiredVersionNum];
-    NSArray *supportedSDKVersionInts = [self supportedSdkVersionInts];
+    NSNumber *supportedSDKVersionInt = [self supportedSdkVersionInt];
 
     showTryAgainButton = false;
     formattedMessage = [NSString stringWithFormat:
                           @"• The installed version of Expo Go is for **SDK %@**.\n"
                         @"• The %@ you opened uses **SDK %d**.",
-                        [self supportedSdkVersionsConjunctionString:@"and"],
+                        supportedSDKVersion,
                         self.isSnackURL ? @"Snack" : @"project",
                         requiredVersionNum
     ];
@@ -339,8 +311,8 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
                        @"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n"
                        @"[%@](Learn how to install Expo Go for SDK %d.)",
                        self.isSnackURL ? @"Snack" : @"project",
-                       [self supportedSdkVersionsConjunctionString:@"or"],
-                       [[supportedSDKVersionInts lastObject] intValue],
+                       supportedSDKVersion,
+                       [supportedSDKVersionInt intValue],
                        expoDevLink,
                        requiredVersionNum
     ];
@@ -348,13 +320,13 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
     NSString *instructions;
     if (self.isSnackURL) {
       instructions = [NSString stringWithFormat:@"Either select SDK %@ on https://snack.expo.dev, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.\n\n",
-                      [self supportedSdkVersionsConjunctionString:@"or"]
+                      supportedSDKVersion
       ];
     } else {
       instructions = [NSString stringWithFormat:@"Either upgrade this project to SDK %@, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.\n\n"
                       @"[https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/](Learn how to upgrade to SDK %d.)\n\n",
-                      [self supportedSdkVersionsConjunctionString:@"or"],
-                      [[supportedSDKVersionInts lastObject] intValue]
+                      supportedSDKVersion,
+                      [supportedSDKVersionInt intValue]
       ];
     }
     
@@ -363,8 +335,8 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
                        requiredVersionNum];
 #endif
   } else if ([errorCode isEqualToString:@"NO_SDK_VERSION_SPECIFIED"]) {
-    NSString *supportedSDKVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@", "];
-    formattedMessage = [NSString stringWithFormat:@"Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): %@", supportedSDKVersions];
+    NSString *supportedSDKVersion = [EXVersions sharedInstance].sdkVersion;
+    formattedMessage = [NSString stringWithFormat:@"Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDK (runtime): %@", supportedSDKVersion];
     fixInstructions = @"A development build must be used to load other runtimes.\n[https://docs.expo.dev/develop/development-builds/introduction/](Learn more about development builds).";
     showTryAgainButton = false;
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
@@ -385,11 +357,9 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
     NSString *fullName = metadata[@"fullName"];
     NSString *snackSdkVersion = metadata[@"sdkVersions"][0];
     NSInteger snackSdkVersionValue = [self sdkVersionStringToInt:snackSdkVersion];
-    NSArray *supportedSdkVersions = [EXVersions sharedInstance].versions[@"sdkVersions"];
-    NSInteger latestSupportedSdkVersionValue = [self sdkVersionStringToInt:supportedSdkVersions[0]];
-    NSString *maybePluralSdkString = [supportedSdkVersions count] == 1 ? @"SDK" : @"SDKs";
-
-    formattedMessage = [NSString stringWithFormat:@"The snack \"%@\" was found, but it is not compatible with your version of Expo Go. It was released for SDK %@, but your Expo Go supports only %@ %@.", fullName, snackSdkVersion, maybePluralSdkString, [self supportedSdkVersionsConjunctionString:@"and"]];
+    NSString *supportedSdkVersion = [EXVersions sharedInstance].sdkVersion;
+    NSInteger latestSupportedSdkVersionValue = [self sdkVersionStringToInt:supportedSdkVersion];
+    formattedMessage = [NSString stringWithFormat:@"The snack \"%@\" was found, but it is not compatible with your version of Expo Go. It was released for SDK %@, but your Expo Go supports only %@ %@.", fullName, snackSdkVersion, @"SDK", supportedSdkVersion];
 
     if (snackSdkVersionValue > latestSupportedSdkVersionValue) {
       fixInstructions = @"You need to update your Expo Go app in order to run this snack.";

@@ -46,6 +46,7 @@ import java.time.LocalDate
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
+import kotlin.time.Duration
 
 interface TypeConverterProvider {
   fun obtainTypeConverter(type: KType): TypeConverter<*>
@@ -280,6 +281,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       URI::class to JavaURITypeConverter(isOptional),
 
       File::class to FileTypeConverter(isOptional),
+
+      Duration::class to DurationTypeConverter(isOptional),
 
       Any::class to AnyTypeConverter(isOptional),
 

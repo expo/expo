@@ -9,6 +9,16 @@ import type { SharedObject } from './SharedObject';
  * different native modules can use them without depending on each other. In particular, this enables the `expo-image-manipulator` to pass the resulted image
  * directly to the image view from `expo-image` without any additional writes and reads from the file system.
  */
-export declare class SharedRef<TEventsMap extends EventsMap = Record<never, never>> extends SharedObject<TEventsMap> implements SharedObject<TEventsMap> {
+export declare class SharedRef<TNativeRefType extends string = 'unknown', TEventsMap extends EventsMap = Record<never, never>> extends SharedObject<TEventsMap> implements SharedObject<TEventsMap> {
+    /**
+     * A dummy private property with the given generic type. It is required for TypeScript to correctly infer this subtype.
+     * @private
+     * @deprecated
+     */
+    _TNativeRefType_DONT_USE_IT?: TNativeRefType;
+    /**
+     * The type of the native reference.
+     */
+    nativeRefType: string;
 }
 //# sourceMappingURL=SharedRef.d.ts.map

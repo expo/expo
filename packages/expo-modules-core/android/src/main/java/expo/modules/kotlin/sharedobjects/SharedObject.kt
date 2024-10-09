@@ -34,7 +34,7 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
 
   private fun getJavaScriptObject(): JavaScriptWeakObject? {
     return SharedObjectId(sharedObjectId.value)
-      .toWeakJavaScriptObject(
+      .toWeakJavaScriptObjectNull(
         runtimeContext ?: return null
       )
   }
@@ -61,9 +61,15 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
   open fun onStopListeningToEvent(eventName: String) = Unit
 
   /**
+   * Called when the shared object was released.
+   */
+  open fun sharedObjectDidRelease() = deallocate()
+
+  /**
    * Called when the shared object being deallocated.
    */
-  open fun deallocate() {}
+  @Deprecated("Use sharedObjectDidRelease() instead.", ReplaceWith("sharedObjectDidRelease()"))
+  open fun deallocate() = Unit
 
   /**
    * Override this function to inform the JavaScript runtime that there is additional

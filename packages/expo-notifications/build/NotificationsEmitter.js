@@ -88,7 +88,12 @@ export function addNotificationResponseReceivedListener(listener) {
  * @header listen
  */
 export function removeNotificationSubscription(subscription) {
-    subscription.remove();
+    if (typeof subscription?.remove === 'function') {
+        subscription.remove();
+    }
+    else {
+        throw new Error(`removeNotificationSubscription: Provided value is not a subscription: ${subscription}`);
+    }
 }
 /**
  * Gets the notification response that was received most recently
@@ -109,7 +114,6 @@ export async function getLastNotificationResponseAsync() {
 /* Clears the notification response that was received most recently. May be used
  * when an app selects a route based on the notification response, and it is undesirable
  * to continue selecting the route after the response has already been handled.
- * to continue to select the route after the response has already been handled.
  *
  * If a component is using the [`useLastNotificationResponse`](#useLastNotificationResponse) hook,
  * this call will also clear the value returned by the hook.

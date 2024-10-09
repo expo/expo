@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Actions from '../components/02-actions';
@@ -6,9 +6,12 @@ import LocalAsset from '../components/03-local-asset';
 import Tailwind from '../components/04-tailwind';
 import PublicAsset from '../components/05-public-asset';
 import NestedComponents from '../components/06-nested';
+import ForwardRef, { type ForwardedImperativeRef } from '../components/07-forward-ref';
+import NativeModuleProxy from '../components/08-native-module-proxy';
 
 export default function Page() {
   const [index, setIndex] = useState(0);
+  const forwardedRef = useRef<ForwardedImperativeRef>(null);
 
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, padding: 56 }}>
@@ -51,6 +54,26 @@ export default function Page() {
 
       <TestCase name="Nested">
         <NestedComponents dom={{ matchContents: true }} />
+      </TestCase>
+
+      <TestCase name="forwardRef">
+        <ForwardRef dom={{ matchContents: true }} ref={forwardedRef} />
+        <Button
+          title="Toggle width"
+          onPress={() => {
+            forwardedRef.current?.toggleWidth();
+          }}
+        />
+        <Button
+          title="Update text"
+          onPress={() => {
+            forwardedRef.current?.updateText(Date.now().toString());
+          }}
+        />
+      </TestCase>
+
+      <TestCase name="NativeModuleProxy">
+        <NativeModuleProxy dom={{ matchContents: true, useExpoDOMWebView: true }} />
       </TestCase>
     </ScrollView>
   );

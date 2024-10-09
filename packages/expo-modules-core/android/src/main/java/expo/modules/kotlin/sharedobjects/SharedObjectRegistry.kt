@@ -1,43 +1,31 @@
 package expo.modules.kotlin.sharedobjects
 
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.exception.InvalidSharedObjectIdException
+import expo.modules.kotlin.exception.UsingReleasedSharedObjectException
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptWeakObject
 import expo.modules.kotlin.weak
 
 @JvmInline
 value class SharedObjectId(val value: Int) {
-  @Deprecated("Use toNativeObject(runtimeContext: RuntimeContext) instead.", ReplaceWith("toNativeObject(runtimeContext: RuntimeContext)"))
-  fun toNativeObject(appContext: AppContext): SharedObject? {
-    return appContext.hostingRuntimeContext.sharedObjectRegistry.toNativeObject(this)
-  }
-
-  @Deprecated("Use toJavaScriptObject(runtimeContext: RuntimeContext) instead.", ReplaceWith("toJavaScriptObject(runtimeContext: RuntimeContext)"))
-  fun toJavaScriptObject(appContext: AppContext): JavaScriptObject? {
-    val nativeObject = toNativeObject(appContext) ?: return null
-    return appContext.hostingRuntimeContext.sharedObjectRegistry.toJavaScriptObject(nativeObject)
-  }
-
-  @Deprecated("Use toWeakJavaScriptObject(runtimeContext: RuntimeContext) instead.", ReplaceWith("toWeakJavaScriptObject(runtimeContext: RuntimeContext)"))
-  fun toWeakJavaScriptObject(appContext: AppContext): JavaScriptWeakObject? {
-    val nativeObject = toNativeObject(appContext) ?: return null
-    return appContext.hostingRuntimeContext.sharedObjectRegistry.toWeakJavaScriptObject(nativeObject)
-  }
-
-  fun toNativeObject(runtimeContext: RuntimeContext): SharedObject? {
+  fun toNativeObject(runtimeContext: RuntimeContext): SharedObject {
     return runtimeContext.sharedObjectRegistry.toNativeObject(this)
   }
 
-  fun toJavaScriptObject(runtimeContext: RuntimeContext): JavaScriptObject? {
-    val nativeObject = toNativeObject(runtimeContext) ?: return null
-    return runtimeContext.sharedObjectRegistry.toJavaScriptObject(nativeObject)
+  fun toNativeObjectOrNull(runtimeContext: RuntimeContext): SharedObject? {
+    return runtimeContext.sharedObjectRegistry.toNativeObjectOrNull(this)
   }
 
-  fun toWeakJavaScriptObject(runtimeContext: RuntimeContext): JavaScriptWeakObject? {
-    val nativeObject = toNativeObject(runtimeContext) ?: return null
-    return runtimeContext.sharedObjectRegistry.toWeakJavaScriptObject(nativeObject)
+  fun toJavaScriptObjectNull(runtimeContext: RuntimeContext): JavaScriptObject? {
+    val nativeObject = toNativeObjectOrNull(runtimeContext) ?: return null
+    return runtimeContext.sharedObjectRegistry.toJavaScriptObjectOrNull(nativeObject)
+  }
+
+  fun toWeakJavaScriptObjectNull(runtimeContext: RuntimeContext): JavaScriptWeakObject? {
+    val nativeObject = toNativeObjectOrNull(runtimeContext) ?: return null
+    return runtimeContext.sharedObjectRegistry.toWeakJavaScriptObjectOrNull(nativeObject)
   }
 }
 
@@ -80,6 +68,10 @@ class SharedObjectRegistry(runtimeContext: RuntimeContext) {
       js.setExternalMemoryPressure(size)
     }
 
+    if (native is SharedRef<*>) {
+      js.defineProperty("nativeRefType", native.nativeRefType)
+    }
+
     val jsWeakObject = js.createWeak()
     synchronized(this) {
       pairs[id] = native to jsWeakObject
@@ -97,17 +89,22 @@ class SharedObjectRegistry(runtimeContext: RuntimeContext) {
       pairs.remove(id)
     }?.let { (native, _) ->
       native.sharedObjectId = SharedObjectId(0)
-      native.deallocate()
+      native.sharedObjectDidRelease()
     }
   }
 
-  internal fun toNativeObject(id: SharedObjectId): SharedObject? {
+  internal fun toNativeObject(id: SharedObjectId): SharedObject {
+    val native = pairs[id.ensureWasNotRelease()]?.first
+    return native ?: throw InvalidSharedObjectIdException()
+  }
+
+  internal fun toNativeObjectOrNull(id: SharedObjectId): SharedObject? {
     return synchronized(this) {
       pairs[id]?.first
     }
   }
 
-  internal fun toNativeObject(js: JavaScriptObject): SharedObject? {
+  internal fun toNativeObjectOrNull(js: JavaScriptObject): SharedObject? {
     if (!js.hasProperty(sharedObjectIdPropertyName)) {
       return null
     }
@@ -116,15 +113,21 @@ class SharedObjectRegistry(runtimeContext: RuntimeContext) {
     return pairs[id]?.first
   }
 
-  internal fun toJavaScriptObject(native: SharedObject): JavaScriptObject? {
+  internal fun toJavaScriptObjectOrNull(native: SharedObject): JavaScriptObject? {
     return synchronized(this) {
       pairs[native.sharedObjectId]?.second?.lock()
     }
   }
 
-  internal fun toWeakJavaScriptObject(nativeObject: SharedObject): JavaScriptWeakObject? {
+  internal fun toWeakJavaScriptObjectOrNull(nativeObject: SharedObject): JavaScriptWeakObject? {
     return synchronized(this) {
       pairs[nativeObject.sharedObjectId]?.second
+    }
+  }
+
+  private fun SharedObjectId.ensureWasNotRelease() = apply {
+    if (!pairs.contains(this) && value != 0 && value < currentId.value) {
+      throw UsingReleasedSharedObjectException()
     }
   }
 }

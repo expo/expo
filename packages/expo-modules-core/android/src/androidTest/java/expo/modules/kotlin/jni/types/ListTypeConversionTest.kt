@@ -5,7 +5,7 @@ import org.junit.Test
 
 class ListTypeConversionTest {
   @Test
-  fun should_cast_single_argument_to_list() = conversionTest(
+  fun should_cast_single_argument_to_list() = conversionTest<List<Int>, Int>(
     jsValue = "21",
     nativeAssertion = { value: List<Int> ->
       Truth.assertThat(value).hasSize(1)
@@ -16,7 +16,7 @@ class ListTypeConversionTest {
   )
 
   @Test
-  fun should_cast_complex_single_argument_to_list() = conversionTest(
+  fun should_cast_complex_single_argument_to_list() = conversionTest<List<List<Int>>, Int>(
     jsValue = "[21]",
     nativeAssertion = { value: List<List<Int>> ->
       Truth.assertThat(value).hasSize(1)

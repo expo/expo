@@ -85,6 +85,10 @@ export function parseTrigger(userFacingTrigger) {
     if (weeklyTrigger) {
         return weeklyTrigger;
     }
+    const monthlyTrigger = parseMonthlyTrigger(userFacingTrigger);
+    if (monthlyTrigger) {
+        return monthlyTrigger;
+    }
     const yearlyTrigger = parseYearlyTrigger(userFacingTrigger);
     if (yearlyTrigger) {
         return yearlyTrigger;
@@ -181,6 +185,25 @@ function parseWeeklyTrigger(trigger) {
     }
     return undefined;
 }
+function parseMonthlyTrigger(trigger) {
+    if (trigger !== null &&
+        typeof trigger === 'object' &&
+        'type' in trigger &&
+        trigger.type === SchedulableTriggerInputTypes.MONTHLY) {
+        validateDateComponentsInTrigger(trigger, ['day', 'hour', 'minute']);
+        const result = {
+            type: 'monthly',
+            day: trigger.day ?? placeholderDateComponentValue,
+            hour: trigger.hour ?? placeholderDateComponentValue,
+            minute: trigger.minute ?? placeholderDateComponentValue,
+        };
+        if (trigger.channelId) {
+            result.channelId = trigger.channelId;
+        }
+        return result;
+    }
+    return undefined;
+}
 function parseYearlyTrigger(trigger) {
     if (trigger !== null &&
         typeof trigger === 'object' &&
@@ -240,7 +263,8 @@ function validateDateComponentsInTrigger(trigger, components) {
                 break;
             }
             case 'day': {
-                const { day, month } = anyTriggerType;
+                const day = anyTriggerType.day;
+                const month = anyTriggerType.month !== undefined ? anyTriggerType.month : new Date().getMonth();
                 const daysInGivenMonth = daysInMonth(month);
                 if (day < 1 || day > daysInGivenMonth) {
                     throw new RangeError(`The day parameter for month ${month} must be between 1 and ${daysInGivenMonth}. Found: ${day}`);

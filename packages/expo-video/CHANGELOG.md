@@ -8,14 +8,17 @@
 
 ### 🎉 New features
 
+- [Android][iOS] Add support for controlling the buffering behavior. ([#30602](https://github.com/expo/expo/pull/30602) by [@behenate](https://github.com/behenate))
 - [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
 - [iOS] Fixed `player.currentTime` being `NaN` when source is not provided and `player.duration` being `NaN` inside the hook callback when the source is updated. ([#31011](https://github.com/expo/expo/pull/31011) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
+- [Android] Fix not being able to select subtitles in the player. ([#31829](https://github.com/expo/expo/pull/31829) by [@fobos531](https://github.com/fobos531))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix support for local file playback. ([#30472](https://github.com/expo/expo/pull/30472) by [@behenate](https://github.com/behenate))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 - [Android] Fix an issue where using non-ASCII characters in the application name would cause the media to not play. ([#31659](https://github.com/expo/expo/pull/31659) by [@fobos531](https://github.com/fobos531))
+- [Android] Fix an issue where the entire app would go into picture-in-picture after unmounting the video if the `startsPictureInPictureAutomatically` prop was enabled. ([#31901](https://github.com/expo/expo/pull/31901) by [@fobos531](https://github.com/fobos531))
 
 ### 💡 Others
 

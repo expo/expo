@@ -1,4 +1,4 @@
-import type { NativeModule, SharedObject } from 'expo';
+import type { NativeModule, SharedObject, SharedRef } from 'expo';
 
 // @needsAudit
 export type ImageResult = {
@@ -192,7 +192,7 @@ export declare class Context extends SharedObject {
 /**
  * A reference to a native instance of the image.
  */
-export declare class ImageRef extends SharedObject {
+export declare class ImageRef extends SharedRef<'image'> {
   /**
    * Width of the image.
    */
