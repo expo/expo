@@ -1,0 +1,337 @@
+import { UnavailabilityError } from 'expo-modules-core';
+
+import {
+  BackgroundTaskExecutor,
+  BackgroundTaskInfoStatus,
+  BackgroundTaskOptions,
+  BackgroundTaskStatus,
+  BackgroundTaskType,
+} from './BackgroundTask.types';
+import * as BackgroundTaskRepositiory from './BackgroundTaskRepository';
+import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
+
+// Export types
+export {
+  BackgroundTaskStatus,
+  BackgroundTaskInfoStatus,
+  BackgroundTaskType,
+  BackgroundTaskRunInfo,
+} from './BackgroundTask.types';
+
+// @needsAudit
+/**
+ * defines the list of tasks used to store background tasks
+ */
+const tasks: Map<string, BackgroundTaskExecutor> = new Map<string, BackgroundTaskExecutor>();
+
+// @needsAudit
+/**
+ * Creates a new backgound task
+ * @param taskIdentifier Identifier of the task
+ * @param taskExecutor Executor for the task
+ */
+export const createTask = (taskIdentifier: string, taskExecutor: BackgroundTaskExecutor) => {
+  console.log('BackgroundTask.createTask', { taskIdentifier });
+  tasks.set(taskIdentifier, taskExecutor);
+};
+
+// @needsAudit
+/**
+ * Schedules a registered task
+ * @param taskIdentifier
+ * @param options
+ */
+export const scheduleTaskAsync = async (taskIdentifier: string, options: BackgroundTaskOptions) => {
+  console.log('BackgroundTask.scheduleTaskAsync', { taskIdentifier, options });
+
+  if (!ExpoBackgroundTaskModule.startWorkerAsync) {
+    throw new UnavailabilityError('BackgroundTask', 'scheduleTaskAsync');
+  }
+
+  if (!ExpoBackgroundTaskModule.isWorkerRunningAsync) {
+    throw new UnavailabilityError('BackgroundTask', 'isWorkerRunningAsync');
+  }
+
+  if (!taskIdentifier || typeof taskIdentifier !== 'string') {
+    console.warn(
+      `BackgroundTask.scheduleTaskAsync: 'taskIdentifier' argument must be a non-empty string.`
+    );
+    return;
+  }
+
+  if (!tasks.has(taskIdentifier)) {
+    console.warn(`BackgroundTask.scheduleTaskAsync: Task '${taskIdentifier}' is not defined.`);
+    return;
+  }
+
+  // Schedule the task! meaning that we need to save info about the task being running
+  await BackgroundTaskRepositiory.createTaskInfo(taskIdentifier, options);
+
+  // Start worker if it's not running
+  if (!(await ExpoBackgroundTaskModule.isWorkerRunningAsync())) {
+    console.log('BackgroundTask.scheduleTaskAsync: Starting native worker.');
+    await ExpoBackgroundTaskModule.startWorkerAsync();
+  }
+
+  // Add log item for the task
+  await BackgroundTaskRepositiory.addTaskInfoLog(taskIdentifier, {
+    date: Date.now(),
+    duration: 0,
+    status: BackgroundTaskInfoStatus.Enqueued,
+  });
+};
+
+// @needsAudit
+/**
+ * Cancels a scheduled task by its identifier
+ *
+ * @param taskIdentifier Identifier of task to cancel
+ */
+
+export const cancelTaskAsync = async (taskIdentifier: string) => {
+  console.log('BackgroundTask.cancelTaskAsync', { taskIdentifier });
+
+  if (!taskIdentifier || typeof taskIdentifier !== 'string') {
+    console.warn(
+      `BackgroundTask.cancelTaskAsync: 'taskIdentifier' argument must be a non-empty string.`
+    );
+    return;
+  }
+  // Get the task info
+  const taskInfo = await BackgroundTaskRepositiory.getTaskInfo(taskIdentifier);
+  if (!taskInfo) {
+    console.warn(`BackgroundTask.cancelTaskAsync: Task '${taskIdentifier}' is not scheduled.`);
+    return;
+  }
+
+  // Delete the task
+  await deleteTaskAsync(taskIdentifier);
+
+  // Add log item for the task
+  await BackgroundTaskRepositiory.addTaskInfoLog(taskIdentifier, {
+    date: Date.now(),
+    duration: 0,
+    status: BackgroundTaskInfoStatus.Cancelled,
+  });
+};
+
+// @needsAudit
+/**
+ * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
+ * while on native platforms it returns `BackgroundTaskStatus.Available`. There is
+ *
+ * @returns A BackgroundTaskStatus enum value or null if not available.
+ */
+export const getStatusAsync = async (): Promise<BackgroundTaskStatus> => {
+  if (!ExpoBackgroundTaskModule.getStatusAsync) {
+    throw new UnavailabilityError('BackgroundTask', 'getStatusAsync');
+  }
+
+  return ExpoBackgroundTaskModule.getStatusAsync();
+};
+
+// @needsAudit
+/**
+ * Checks whether the task is registered using the createTask method
+ *
+ * @param taskIdentifier Identifier of task to check
+ */
+export const isTaskRegisteredAsync = async (taskIdentifier: string): Promise<boolean> => {
+  return tasks.has(taskIdentifier);
+};
+
+// @needsAudit
+/**
+ * Returns true if the task is scheduled. By is scheduled we mean that the task is scheduled to
+ * run in the future.
+ * @param taskIdentifier Identifier of the task to check
+ * @returns True if the task is scheduled
+ */
+export const isTaskScheduled = async (taskIdentifier: string): Promise<boolean> => {
+  if (!isTaskRegisteredAsync(taskIdentifier)) {
+    console.warn(
+      `Task with identifier ${taskIdentifier} is not registered. Use createTask to register the task.`
+    );
+  }
+
+  return (await BackgroundTaskRepositiory.getTaskInfo(taskIdentifier)) != null;
+};
+
+/**
+ * Returns task log from the task repository
+ * @param taskIdentifier Identifier of the task to get log
+ * @returns Task log
+ */
+export const getTaskInfoLog = async (taskIdentifier: string) => {
+  if (!taskIdentifier || typeof taskIdentifier !== 'string') {
+    console.warn(
+      `BackgroundTask.getTaskInfoLog: 'taskIdentifier' argument must be a non-empty string.`
+    );
+    return;
+  }
+
+  return BackgroundTaskRepositiory.getTaskInfoLog(taskIdentifier);
+};
+
+/**
+ * Returns the task info from the task repository
+ * @param taskIdentifier Identifier of the task to get info for
+ * @returns Task info or null if not found
+ */
+export const getTaskInfo = async (taskIdentifier: string) => {
+  if (!taskIdentifier || typeof taskIdentifier !== 'string') {
+    console.warn(
+      `BackgroundTask.getTaskInfoLog: 'taskIdentifier' argument must be a non-empty string.`
+    );
+    return;
+  }
+
+  return BackgroundTaskRepositiory.getTaskInfoLog(taskIdentifier);
+};
+
+// @needsAudit
+/**
+ * Returns true/false if the background task worker is active.
+ *
+ * @returns True if the worker is running
+ */
+export const isWorkerRunning = (): Promise<boolean> => {
+  if (!ExpoBackgroundTaskModule.isWorkerRunningAsync) {
+    throw new UnavailabilityError('BackgroundTask', 'isWorkerRunningAsync');
+  }
+  return ExpoBackgroundTaskModule.isWorkerRunningAsync();
+};
+
+// @needsAudit
+/**
+ * Cleans up the repository of scheduled tasks with logs
+ */
+export const cleanScheduledTasks = async () => {
+  console.log('BackgroundTask.cleanScheduledTasks');
+
+  if (!ExpoBackgroundTaskModule.stopWorkerAsync) {
+    throw new UnavailabilityError('BackgroundTask', 'stopWorkerAsync');
+  }
+
+  if (!ExpoBackgroundTaskModule.isWorkerRunningAsync) {
+    throw new UnavailabilityError('BackgroundTask', 'isWorkerRunningAsync');
+  }
+
+  await BackgroundTaskRepositiory.cleanRepository();
+  if (await ExpoBackgroundTaskModule.isWorkerRunningAsync()) {
+    console.log('BackgroundTask.cleanScheduledTasks', 'stopping worker.');
+    await ExpoBackgroundTaskModule.stopWorkerAsync();
+  }
+};
+
+/**
+ * Internal method for deleting a scheduled task
+ * @param taskIdentifier Identifier of the task to stop
+ */
+const deleteTaskAsync = async (taskIdentifier: string) => {
+  console.log('BackgroundTask.deleteTaskAsync', { taskIdentifier });
+
+  if (!ExpoBackgroundTaskModule.stopWorkerAsync) {
+    throw new UnavailabilityError('BackgroundTask', 'stopWorkerAsync');
+  }
+
+  if (!ExpoBackgroundTaskModule.workFinished) {
+    throw new UnavailabilityError('BackgroundTask', 'workFinished');
+  }
+
+  if (!ExpoBackgroundTaskModule.isWorkerRunningAsync) {
+    throw new UnavailabilityError('BackgroundTask', 'isWorkerRunningAsync');
+  }
+
+  if (!taskIdentifier || typeof taskIdentifier !== 'string') {
+    console.warn(
+      `BackgroundTask.stopTaskAsync: 'taskIdentifier' argument must be a non-empty string.`
+    );
+    return;
+  }
+
+  // Remove from repository
+  const numberOfScheduledTasks = await BackgroundTaskRepositiory.deleteTaskInfo(taskIdentifier);
+
+  console.log(
+    'BackgroundTask.deleteTaskAsync',
+    'number of scheduled tasks',
+    numberOfScheduledTasks
+  );
+
+  // Stop the worker task if there are no task scheduled
+  if (numberOfScheduledTasks === 0 && (await ExpoBackgroundTaskModule.isWorkerRunningAsync())) {
+    console.log('BackgroundTask.cancelTaskAsync: Stopping worker as there are no tasks scheduled.');
+    await ExpoBackgroundTaskModule.stopWorkerAsync();
+  }
+};
+
+/**
+ * Set up event emitter for the Background Task Manager
+ */
+if (ExpoBackgroundTaskModule) {
+  console.log(
+    'Setting up BackgroundTask emitter listener for event',
+    ExpoBackgroundTaskModule.EVENT_NAME
+  );
+
+  // @ts-ignore
+  ExpoBackgroundTaskModule.addListener(ExpoBackgroundTaskModule.EVENT_NAME, async () => {
+    // We are notified by our native module that we can perform some work.
+    // Lets check if we have any tasks to run.
+    console.log(`BackgroundTask.${ExpoBackgroundTaskModule.EVENT_NAME}`, { taskCount: tasks.size });
+
+    try {
+      tasks.forEach(async (taskExecutor, taskIdentifier) => {
+        const start = Date.now();
+        let error: string | null = null;
+        try {
+          await taskExecutor();
+        } catch (e) {
+          error = JSON.stringify(e);
+        }
+
+        const end = Date.now();
+
+        // Log
+        if (error !== null) {
+          console.error(`BackgroundTask.runTask: '${taskIdentifier}' failed: ${error}`);
+          BackgroundTaskRepositiory.addTaskInfoLog(taskIdentifier, {
+            date: start,
+            duration: end - start,
+            status: BackgroundTaskInfoStatus.Failed,
+            error,
+          });
+        } else {
+          console.log(`BackgroundTask.runTask: '${taskIdentifier}' completed in ${end - start}ms`);
+          BackgroundTaskRepositiory.addTaskInfoLog(taskIdentifier, {
+            date: start,
+            duration: end - start,
+            status: BackgroundTaskInfoStatus.Success,
+          });
+
+          // Check if this is a one-time task
+          const taskInfo = await BackgroundTaskRepositiory.getTaskInfo(taskIdentifier);
+          if (taskInfo && taskInfo.type === BackgroundTaskType.OneTime) {
+            // Remove the task
+            await deleteTaskAsync(taskIdentifier);
+
+            // Add log entry
+            BackgroundTaskRepositiory.addTaskInfoLog(taskIdentifier, {
+              date: start,
+              duration: end - start,
+              status: BackgroundTaskInfoStatus.Stopped,
+            });
+          }
+        }
+      });
+    } catch (e) {
+      console.log('Expo BackgroundTask: An error occurred while running the task', e);
+    }
+
+    // Tell the native module that we are done
+    await ExpoBackgroundTaskModule.workFinished();
+  });
+} else {
+  throw new UnavailabilityError('BackgroundTask', 'ExpoBackgroundTaskModule');
+}

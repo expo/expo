@@ -1,0 +1,24 @@
+apply plugin: 'com.android.library'
+
+group = 'host.exp.exponent'
+version = '12.0.1'
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
+
+dependencies {
+   implementation 'androidx.work:work-runtime-ktx:2.9.1'
+   implementation 'com.facebook.react:react-android'
+}
+
+android {
+  namespace "expo.modules.backgroundtask"
+  defaultConfig {
+    versionCode 23
+    versionName "12.0.1"
+  }
+}

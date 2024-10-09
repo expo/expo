@@ -1,0 +1,10 @@
+{
+  "name": "expo-background-task",
+  "platforms": [ "ios", "android" ],
+  "ios": {
+    "modules": [ "BackgroundTaskModule" ]
+  },
+  "android": {
+    "modules": [ "expo.modules.backgroundtask.BackgroundTaskModule" ]
+  }
+}
