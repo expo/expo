@@ -12,11 +12,12 @@ import { Step } from '~/ui/components/Step';
 
 The `expo-updates` library supports end-to-end code signing. Code signing allows developers to cryptographically sign their updates with their own keys. The signatures are then verified on the client before the update is applied, which ensures ISPs, CDNs, cloud providers, and even EAS itself cannot tamper with updates run by apps.
 
-## Code signing with EAS Update
+The following steps will guide you through the process of generating a private key and corresponding certificate, configuring your project to use code signing, and publishing a signed update for your app.
 
 <Step label="1">
+## Generate a private key and corresponding certificate
 
-Generate a private key and corresponding code signing certificate for your app:
+In this step, we will generate a private key and corresponding code signing certificate for your app:
 
 <Terminal
   cmd={[
@@ -38,8 +39,7 @@ Generate a private key and corresponding code signing certificate for your app:
 </Step>
 
 <Step label="2">
-
-Configure your app's builds to use code signing:
+## Configure your project to use code signing
 
 <Terminal
   cmd={[
@@ -137,8 +137,7 @@ With code signing configured, create a new build with a new runtime version. The
 </Step>
 
 <Step label="3">
-
-Publish a signed update for your app:
+## Publish a signed update for your app
 
 <Terminal cmd={['$ eas update --private-key-path keys/private-key.pem']} />
 
@@ -147,6 +146,7 @@ During `eas update`, the EAS CLI automatically detects that code signing is conf
 </Step>
 
 <Step label="4">
+## Verify that the update is loaded
 
 Download the update on the client (this step is done automatically by the library). The build from
 step (2) that is configured for code signing checks if there is a new update available. The server
