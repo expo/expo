@@ -118,7 +118,7 @@ describe(withExtendedResolver, () => {
 
     const platform = 'ios';
 
-    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'expo', platform);
 
     expect(getResolveFunc()).toBeCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
@@ -131,7 +131,7 @@ describe(withExtendedResolver, () => {
         customResolverOptions: {},
         originModulePath: expect.anything(),
       }),
-      'react-native',
+      'expo',
       platform
     );
   });
@@ -912,6 +912,230 @@ describe(withExtendedResolver, () => {
         '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
         platform
       );
+    });
+  });
+
+  describe('sticky resolutions', () => {
+    const platform = 'ios';
+
+    function getModifiedConfig() {
+      return withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+        isReactCanaryEnabled: true,
+        getMetroBundler: getMetroBundlerGetter() as any,
+      });
+    }
+
+    it('resolves `react-native` as sticky module', () => {
+      const modified = getModifiedConfig();
+
+      // Ensure the sticky module can be resolved
+      getResolveFunc().mockImplementationOnce((_context, moduleImport, _platform) => {
+        assert(moduleImport === 'react-native/package.json');
+        return { type: 'sourceFile', filePath: '/node_modules/react-native/package.json' };
+      });
+
+      // Resolve the sticky module
+      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
+      // Resolution 1 - resolve sticky path of `react-native`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.any(Object),
+        'react-native/package.json',
+        platform
+      );
+      // Resolution 2 - resolve with the sticky path
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.any(Object),
+        '/node_modules/react-native',
+        platform
+      );
+      // Ensure no other calls were made
+      expect(getResolveFunc()).toHaveBeenCalledTimes(2);
+
+      // Reset the mock's call state
+      getResolveFunc().mockClear();
+      // Resolve the sticky module again
+      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
+      // Resolution 1 - resolve with the cached sticky path
+      expect(getResolveFunc()).toHaveBeenCalledWith(
+        expect.any(Object),
+        '/node_modules/react-native',
+        platform
+      );
+      // Ensure no other calls were made
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    });
+
+    it('resolves `@react-native/assets-registry` as sticky module', () => {
+      const modified = getModifiedConfig();
+
+      // Ensure the sticky module can be resolved, asset registry relies on react native
+      getResolveFunc()
+        .mockImplementationOnce((_context, moduleImport, _platform) => {
+          assert(moduleImport === 'react-native/package.json');
+          return { type: 'sourceFile', filePath: '/node_modules/react-native/package.json' };
+        })
+        .mockImplementationOnce((_context, moduleImport, _platform) => {
+          assert(moduleImport === '@react-native/assets-registry/package.json');
+          return {
+            type: 'sourceFile',
+            filePath:
+              '/node_modules/react-native/node_modules/@react-native/assets-registry/package.json',
+          };
+        });
+
+      // Resolve the sticky module
+      modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        '@react-native/assets-registry/registry',
+        platform
+      );
+      // Resolution 1 - resolve sticky path of `react-native`, which is used for `@react-native/assets-registry`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.any(Object),
+        'react-native/package.json',
+        platform
+      );
+      // Resolution 2 - resolve sticky path of `@react-native/assets-registry/registry`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ originModulePath: '/node_modules/react-native/package.json' }),
+        '@react-native/assets-registry/package.json',
+        platform
+      );
+      // Resolution 3 - resolve with the sticky path
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        3,
+        expect.any(Object),
+        '/node_modules/react-native/node_modules/@react-native/assets-registry/registry',
+        platform
+      );
+      // Ensure no other calls were made
+      expect(getResolveFunc()).toHaveBeenCalledTimes(3);
+
+      // Reset the mock's call state
+      getResolveFunc().mockClear();
+      // Resolve the sticky module again
+      modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        '@react-native/assets-registry/registry',
+        platform
+      );
+      // Resolution 1 - resolve with the cached sticky path
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.any(Object),
+        '/node_modules/react-native/node_modules/@react-native/assets-registry/registry',
+        platform
+      );
+      // Ensure no other calls were made
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    });
+
+    it('resolves `react-native-web..modules/AssetsRegistry` as `@react-native/assets-registry` sticky module', () => {
+      const modified = getModifiedConfig();
+
+      // Ensure the sticky module can be resolved, asset registry relies on react native
+      getResolveFunc()
+        .mockImplementationOnce((_context, moduleImport, _platform) => {
+          expect(moduleImport).toBe('react-native/package.json');
+          return { type: 'sourceFile', filePath: '/node_modules/react-native/package.json' };
+        })
+        .mockImplementationOnce((_context, moduleImport, _platform) => {
+          expect(moduleImport).toBe('@react-native/assets-registry/package.json');
+          return {
+            type: 'sourceFile',
+            filePath:
+              '/node_modules/react-native/node_modules/@react-native/assets-registry/package.json',
+          };
+        });
+
+      // Resolve the sticky module
+      modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        'react-native-web/dist/cjs/modules/AssetRegistry',
+        'web'
+      );
+      // Resolution 1 - resolve sticky path of `react-native`, which is used for `@react-native/assets-registry`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.any(Object),
+        'react-native/package.json',
+        'web'
+      );
+      // Resolution 2 - resolve sticky path of `@react-native/assets-registry/registry`
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ originModulePath: '/node_modules/react-native/package.json' }),
+        '@react-native/assets-registry/package.json',
+        'web'
+      );
+      // Resolution 3 - resolve with the sticky path
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        3,
+        expect.any(Object),
+        '/node_modules/react-native/node_modules/@react-native/assets-registry/registry',
+        'web'
+      );
+      // Ensure no other calls were made
+      expect(getResolveFunc()).toHaveBeenCalledTimes(3);
+    });
+
+    it('does not reuse failed sticky resolutions', () => {
+      const modified = getModifiedConfig();
+
+      // Let the first sticky resolution fail (by not returning a source file)
+      getResolveFunc().mockImplementationOnce((_context, moduleImport, _platform) => ({
+        type: 'empty',
+      }));
+      // Attempt to resolve the sticky module
+      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
+      // Resolution 1 - resolve sticky path of `react-native`, which fails
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.any(Object),
+        'react-native/package.json',
+        platform
+      );
+      // Resolution 2 - resolve normally, without the unresolved sticky path
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.any(Object),
+        'react-native',
+        platform
+      );
+      // Ensure no other calls were made
+      expect(getResolveFunc()).toHaveBeenCalledTimes(2);
+
+      // Reset the mock's call state
+      getResolveFunc().mockClear();
+      // Let the sticky resolution succeed
+      getResolveFunc().mockImplementationOnce((_context, moduleImport, _platform) => {
+        assert(moduleImport === 'react-native/package.json');
+        return { type: 'sourceFile', filePath: '/node_modules/react-native/package.json' };
+      });
+      // Attempt to resolve the sticky module again, using the same resolver instance
+      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
+      // Resolution 1 - resolve sticky path of `react-native`, which succeeds
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.any(Object),
+        'react-native/package.json',
+        platform
+      );
+      // Resolution 2 - resolve with the sticky path
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.any(Object),
+        '/node_modules/react-native',
+        platform
+      );
+      // Ensure no other calls were made
+      expect(getResolveFunc()).toHaveBeenCalledTimes(2);
     });
   });
 });
