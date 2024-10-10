@@ -41,7 +41,8 @@ export async function getUniversalAssetData(
   localPath: string,
   assetDataPlugins: readonly string[],
   platform: string | null | undefined,
-  publicPath: string
+  publicPath: string,
+  assetPrefix?: string
 ): Promise<HashedAssetData> {
   const data = await getAssetData(assetPath, localPath, assetDataPlugins, platform, publicPath);
   assertHashedAssetData(data);
@@ -52,6 +53,12 @@ export async function getUniversalAssetData(
     // TODO: Prevent one multi-res image from updating the hash in all images.
     // @ts-expect-error: name is typed as readonly.
     data.name = `${data.name}.${md5Hash(data.fileHashes)}`;
+  }
+
+  // Support assets hosted remotely on a different server
+  if (assetPrefix) {
+    // @ts-expect-error: httpServerLocation is typed as readonly.
+    data.httpServerLocation = `${assetPrefix}${data.httpServerLocation}`;
   }
 
   return data;

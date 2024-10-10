@@ -14,7 +14,7 @@ type Options = {
     projectRoot: string;
     publicPath: string;
 };
-export declare function getUniversalAssetData(assetPath: string, localPath: string, assetDataPlugins: readonly string[], platform: string | null | undefined, publicPath: string): Promise<HashedAssetData>;
+export declare function getUniversalAssetData(assetPath: string, localPath: string, assetDataPlugins: readonly string[], platform: string | null | undefined, publicPath: string, assetPrefix?: string): Promise<HashedAssetData>;
 export type HashedAssetData = AssetData & {
     fileHashes: string[];
     _name?: string;

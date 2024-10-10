@@ -80,11 +80,12 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
             reactClientReference: clientReference,
         };
     }
+    const assetPrefix = (isExport ? options.customTransformOptions?.assetPrefix : undefined);
     const data = await (0, getAssets_1.getUniversalAssetData)(absolutePath, filename, assetDataPlugins, options.platform, isDomComponent && isExport
         ? // If exporting a dom component, we need to use a public path that doesn't start with `/` to ensure that assets are loaded
             // relative to the `DOM_COMPONENTS_BUNDLE_DIR`.
             `/assets?export_path=assets`
-        : options.publicPath);
+        : options.publicPath, assetPrefix);
     if (isServerEnv || options.platform === 'web') {
         const type = !data.type ? '' : `.${data.type}`;
         const assetPath = !isExport

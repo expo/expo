@@ -86,6 +86,10 @@ export async function transform(
     };
   }
 
+  const assetPrefix = (isExport ? options.customTransformOptions?.assetPrefix : undefined) as
+    | string
+    | undefined;
+
   const data = await getUniversalAssetData(
     absolutePath,
     filename,
@@ -95,7 +99,8 @@ export async function transform(
       ? // If exporting a dom component, we need to use a public path that doesn't start with `/` to ensure that assets are loaded
         // relative to the `DOM_COMPONENTS_BUNDLE_DIR`.
         `/assets?export_path=assets`
-      : options.publicPath
+      : options.publicPath,
+    assetPrefix
   );
 
   if (isServerEnv || options.platform === 'web') {
