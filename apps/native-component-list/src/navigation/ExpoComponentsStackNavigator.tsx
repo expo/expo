@@ -10,6 +10,7 @@ import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
+import { VideoScreens } from '../screens/Video/VideoScreen';
 import { ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
@@ -449,6 +450,7 @@ export const Screens: ScreenConfig[] = [
     name: 'LivePhoto',
   },
   ...ImageScreens,
+  ...VideoScreens,
 ];
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
