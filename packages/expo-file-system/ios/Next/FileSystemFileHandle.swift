@@ -1,13 +1,14 @@
 import Foundation
 import ExpoModulesCore
 
-internal final class FileSystemFileHandle: SharedObject {
+internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   let file: FileSystemFile
   let handle: FileHandle
 
   init(file: FileSystemFile) throws {
     self.file = file
-    self.handle = try FileHandle(forUpdating: file.url)
+    handle = try FileHandle(forUpdating: file.url)
+    super.init(handle)
   }
 
   func read(_ length: Int) throws -> Data {
