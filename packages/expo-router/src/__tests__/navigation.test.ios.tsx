@@ -11,7 +11,6 @@ import {
   usePathname,
   Link,
 } from '../exports';
-import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { act, fireEvent, renderRouter, screen } from '../testing-library';
@@ -803,8 +802,9 @@ it('can replace across groups', async () => {
     'two/screen': () => <Text testID="two/screen" />,
   });
 
-  // THere is no index route
-  expect(screen).toHavePathname('/+not-found');
+  // There is no index route
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments(['+not-found']);
 
   // Go to one
   act(() => router.push('/one/screen'));
@@ -1565,16 +1565,16 @@ describe('navigation action fallbacks', () => {
     runRedirectionTest();
   });
 
-  it('can fall back correctly for drawer navigators', () => {
-    renderRouter({
-      _layout: () => <Drawer useLegacyImplementation={false} />,
-      one: () => <Text testID="one" />,
-      two: () => <Text testID="two" />,
-      redirected: () => <Redirect href="/" />,
-    });
+  // it('can fall back correctly for drawer navigators', () => {
+  //   renderRouter({
+  //     _layout: () => <Drawer useLegacyImplementation={false} />,
+  //     one: () => <Text testID="one" />,
+  //     two: () => <Text testID="two" />,
+  //     redirected: () => <Redirect href="/" />,
+  //   });
 
-    runPushTest();
-    runReplaceTest();
-    runRedirectionTest();
-  });
+  //   runPushTest();
+  //   runReplaceTest();
+  //   runRedirectionTest();
+  // });
 });

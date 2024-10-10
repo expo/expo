@@ -8,10 +8,9 @@ import '@expo/metro-runtime';
 import { Options } from '../getRoutes';
 /** Get the linking manifest from a Node.js process. */
 declare function getManifest(options?: Options): Promise<{
-    path?: string | undefined;
-    screens: import("@react-navigation/native").PathConfigMap<Record<string, unknown>>;
-    initialRouteName?: string | undefined;
-} | undefined>;
+    initialRouteName: undefined;
+    screens: Record<string, import("../getReactNavigationConfig").Screen>;
+}>;
 export declare function getStaticContent(location: URL): Promise<string>;
 export { getManifest };
 export { getBuildTimeServerManifestAsync } from './getServerManifest';

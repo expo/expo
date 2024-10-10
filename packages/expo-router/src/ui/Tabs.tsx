@@ -1,5 +1,4 @@
 import {
-  DefaultNavigatorOptions,
   LinkingContext,
   ParamListBase,
   TabActionHelpers,

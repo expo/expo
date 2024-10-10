@@ -124,6 +124,8 @@ export function getPathWithConventionsCollapsed({
           return params[name];
         } else if (route.name.startsWith('[') && route.name.endsWith(']')) {
           return '';
+        } else if (p === '*not-found') {
+          return '';
         } else {
           return route.name;
         }

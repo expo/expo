@@ -1,5 +1,4 @@
 import type { RouteNode } from './Route';
-import { ExpoLinkingOptions } from './getLinkingConfig';
 import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
 
 export type Screen =
@@ -94,11 +93,9 @@ export function getReactNavigationScreensConfig(
   );
 }
 
-export function getReactNavigationConfig(
-  routes: RouteNode,
-  metaOnly: boolean
-): ExpoLinkingOptions['config'] {
-  const config: ExpoLinkingOptions['config'] = {
+export function getReactNavigationConfig(routes: RouteNode, metaOnly: boolean) {
+  const config = {
+    initialRouteName: undefined,
     screens: getReactNavigationScreensConfig(routes.children, metaOnly),
   };
 

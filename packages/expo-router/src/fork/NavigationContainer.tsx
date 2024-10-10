@@ -11,7 +11,7 @@ import {
   NavigationState,
   ParamListBase,
   ThemeProvider,
-  UnhandledLinkingContext,
+  UNSTABLE_UnhandledLinkingContext as UnhandledLinkingContext,
   getActionFromState,
   getPathFromState,
   getStateFromPath,

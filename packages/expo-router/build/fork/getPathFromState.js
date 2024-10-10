@@ -214,11 +214,12 @@ function getPathDataFromState(state, options) {
             //     return encodeURIComponent(p);
             //   })
             //   .join('/');
-            // END FORK
+            // } else {
         }
-        else {
+        else if (!route.name.startsWith('+')) {
             path += encodeURIComponent(route.name);
         }
+        // END FORK
         if (!focusedParams) {
             focusedParams = focusedRoute.params;
         }

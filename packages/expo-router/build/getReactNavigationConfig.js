@@ -71,6 +71,7 @@ function getReactNavigationScreensConfig(nodes, metaOnly) {
 exports.getReactNavigationScreensConfig = getReactNavigationScreensConfig;
 function getReactNavigationConfig(routes, metaOnly) {
     const config = {
+        initialRouteName: undefined,
         screens: getReactNavigationScreensConfig(routes.children, metaOnly),
     };
     if (routes.initialRouteName) {
