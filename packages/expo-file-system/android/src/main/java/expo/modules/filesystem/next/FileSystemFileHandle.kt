@@ -1,6 +1,5 @@
 package expo.modules.filesystem.next
 
-import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedRef
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
