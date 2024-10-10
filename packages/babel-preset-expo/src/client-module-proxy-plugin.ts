@@ -4,6 +4,8 @@
 import { template, types } from '@babel/core';
 import url from 'url';
 
+import type { BabelPresetExpoMetadata } from '.';
+
 export function reactClientReferencesPlugin(): babel.PluginObj {
   return {
     name: 'expo-client-references',
@@ -133,9 +135,12 @@ export function reactClientReferencesPlugin(): babel.PluginObj {
   };
 }
 
-function assertExpoMetadata(
-  metadata: any
-): asserts metadata is { reactClientReference?: string; proxyExports?: string[] } {
+function assertExpoMetadata(metadata: any): asserts metadata is Pick<
+  BabelPresetExpoMetadata,
+  'reactClientReference'
+> & {
+  proxyExports?: string[];
+} {
   if (metadata && typeof metadata === 'object') {
     return;
   }

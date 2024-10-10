@@ -15,6 +15,7 @@ import * as babylon from '@babel/parser';
 import template from '@babel/template';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
+import type { BabelPresetExpoMetadata } from 'babel-preset-expo';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
@@ -578,6 +579,8 @@ async function transformJSWithBabel(
     getBabelTransformArgs(file, context, [functionMapBabelPlugin])
   );
 
+  const resultMetadata = transformResult.metadata as undefined | BabelPresetExpoMetadata;
+
   const jsFile: ExpoJSFile = {
     ...file,
     ast: transformResult.ast,
@@ -586,12 +589,9 @@ async function transformJSWithBabel(
       // Fallback to deprecated explicitly-generated `functionMap`
       transformResult.functionMap ??
       null,
-    // @ts-expect-error: defined in babel-preset-expo/src/detect-dynamic-exports.ts
-    hasCjsExports: transformResult.metadata?.hasCjsExports,
-    // @ts-expect-error: defined in babel-preset-expo/src/client-module-proxy-plugin.ts
-    reactClientReference: transformResult.metadata?.reactClientReference,
-    // @ts-expect-error: defined in babel-preset-expo/src/use-dom-directive-plugin.ts
-    expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+    hasCjsExports: resultMetadata?.hasCjsExports,
+    reactClientReference: resultMetadata?.reactClientReference,
+    expoDomComponentReference: resultMetadata?.expoDomComponentReference,
   };
 
   return await transformJS(jsFile, context);

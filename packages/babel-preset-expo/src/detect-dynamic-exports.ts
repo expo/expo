@@ -3,6 +3,8 @@
  */
 import { ConfigAPI, types } from '@babel/core';
 
+import type { BabelPresetExpoMetadata } from '.';
+
 const debug = require('debug')('expo:babel:exports');
 
 // A babel pass to detect the usage of `module.exports` or `exports` in a module for use in
@@ -97,7 +99,9 @@ export function detectDynamicExports(api: ConfigAPI & { types: typeof types }): 
   };
 }
 
-function assertExpoMetadata(metadata: any): asserts metadata is { hasCjsExports?: boolean } {
+function assertExpoMetadata(
+  metadata: any
+): asserts metadata is Pick<BabelPresetExpoMetadata, 'hasCjsExports'> {
   if (metadata && typeof metadata === 'object') {
     return;
   }

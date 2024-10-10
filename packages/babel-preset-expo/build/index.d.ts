@@ -69,5 +69,13 @@ export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
     /** Native-specific settings. */
     native?: BabelPresetExpoPlatformOptions;
 };
+export type BabelPresetExpoMetadata = {
+    /** If usage of `module.exports` or `exports` is detected within the file, this affects tree shaking. */
+    hasCjsExports?: boolean;
+    /** The file URL of a file using the client directive */
+    reactClientReference?: string;
+    /** The file URL of a file using the dom directive */
+    expoDomComponentReference?: string;
+};
 declare function babelPresetExpo(api: ConfigAPI, options?: BabelPresetExpoOptions): TransformOptions;
 export default babelPresetExpo;

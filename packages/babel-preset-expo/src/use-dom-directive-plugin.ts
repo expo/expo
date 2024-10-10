@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { basename } from 'path';
 import url from 'url';
 
+import type { BabelPresetExpoMetadata } from '.';
 import { getIsProd } from './common';
 
 export function expoUseDomDirectivePlugin(
@@ -138,7 +139,7 @@ export default React.forwardRef((props, ref) => {
 
 function assertExpoMetadata(
   metadata: any
-): asserts metadata is { expoDomComponentReference?: string } {
+): asserts metadata is Pick<BabelPresetExpoMetadata, 'expoDomComponentReference'> {
   if (metadata && typeof metadata === 'object') {
     return;
   }

@@ -439,6 +439,7 @@ async function transformJSWithBabel(file, context) {
     const transformResult = await transformer.transform(
     // functionMapBabelPlugin populates metadata.metro.functionMap
     getBabelTransformArgs(file, context, [metro_source_map_1.functionMapBabelPlugin]));
+    const resultMetadata = transformResult.metadata;
     const jsFile = {
         ...file,
         ast: transformResult.ast,
@@ -446,12 +447,9 @@ async function transformJSWithBabel(file, context) {
             // Fallback to deprecated explicitly-generated `functionMap`
             transformResult.functionMap ??
             null,
-        // @ts-expect-error: defined in babel-preset-expo/src/detect-dynamic-exports.ts
-        hasCjsExports: transformResult.metadata?.hasCjsExports,
-        // @ts-expect-error: defined in babel-preset-expo/src/client-module-proxy-plugin.ts
-        reactClientReference: transformResult.metadata?.reactClientReference,
-        // @ts-expect-error: defined in babel-preset-expo/src/use-dom-directive-plugin.ts
-        expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+        hasCjsExports: resultMetadata?.hasCjsExports,
+        reactClientReference: resultMetadata?.reactClientReference,
+        expoDomComponentReference: resultMetadata?.expoDomComponentReference,
     };
     return await transformJS(jsFile, context);
 }

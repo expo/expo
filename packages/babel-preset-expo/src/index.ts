@@ -105,6 +105,15 @@ export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
   native?: BabelPresetExpoPlatformOptions;
 };
 
+export type BabelPresetExpoMetadata = {
+  /** If usage of `module.exports` or `exports` is detected within the file, this affects tree shaking. */
+  hasCjsExports?: boolean;
+  /** The file URL of a file using the client directive */
+  reactClientReference?: string;
+  /** The file URL of a file using the dom directive */
+  expoDomComponentReference?: string;
+};
+
 function getOptions(
   options: BabelPresetExpoOptions,
   platform?: string
