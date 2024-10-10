@@ -8,22 +8,33 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
+import com.facebook.react.devsupport.BridgeDevSupportManager
+import com.facebook.react.devsupport.DevSupportManagerFactory
+import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
+import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
+import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.BridgelessDevSupportManager
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
+import com.facebook.react.runtime.internal.bolts.Task
 import expo.modules.ReactNativeHostWrapper
 import versioned.host.exp.exponent.VersionedUtils
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executors
 
 object ReactHostFactory {
 
@@ -40,7 +51,8 @@ object ReactHostFactory {
     // Keeps this `_jsBundleLoader` backing property for DevLauncher to replace its internal value
     override val jsBundleLoader: JSBundleLoader
       get() {
-        val context = weakContext.get() ?: throw IllegalStateException("Unable to get concrete Context")
+        val context =
+          weakContext.get() ?: throw IllegalStateException("Unable to get concrete Context")
         reactNativeHostWrapper.jsBundleFile?.let { jsBundleFile ->
           if (jsBundleFile.startsWith("assets://")) {
             return JSBundleLoader.createAssetLoader(context, jsBundleFile, true)
@@ -94,24 +106,12 @@ object ReactHostFactory {
         context,
         reactHostDelegate,
         componentFactory,
+        Executors.newSingleThreadExecutor(),
+        Task.UI_THREAD_EXECUTOR,
         true,
-        useDeveloperSupport
-      ) { reactHost ->
-        BridgelessDevSupportManager(
-          reactHost,
-          context.applicationContext,
-          BridgelessDevSupportManager.createInstanceDevHelper(reactHost),
-          reactHostDelegate.jsMainModulePath,
-          true,
-          null,
-          devBundleDownloadListener,
-          100,
-          VersionedUtils.createPackagerCommandHelpers(),
-          null,
-          null,
-          null
-        )
-      }
+        useDeveloperSupport,
+        ExpoGoDevSupportFactory(devBundleDownloadListener),
+      )
 
     reactNativeHost.reactNativeHostHandlers.forEach { handler ->
       handler.onDidCreateDevSupportManager(reactHostImpl.devSupportManager)
