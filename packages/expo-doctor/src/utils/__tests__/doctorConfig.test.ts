@@ -4,6 +4,12 @@ import {
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
 } from '../doctorConfig';
 
+const exp = {
+  name: 'App',
+  slug: 'app',
+  sdkVersion: '51.0.0',
+};
+
 describe('getReactNativeDirectoryCheckExcludes', () => {
   it('returns an empty array if no config is present', () => {
     expect(getReactNativeDirectoryCheckExcludes({})).toEqual([]);
@@ -38,12 +44,12 @@ describe('getReactNativeDirectoryCheckExcludes', () => {
 
 describe('getReactNativeDirectoryCheckEnabled', () => {
   it('returns false if the config is empty', () => {
-    expect(getReactNativeDirectoryCheckEnabled({ expo: { doctor: {} } })).toBe(false);
+    expect(getReactNativeDirectoryCheckEnabled(exp, { expo: { doctor: {} } })).toBe(false);
   });
 
   it('returns true if the config is enabled', () => {
     expect(
-      getReactNativeDirectoryCheckEnabled({
+      getReactNativeDirectoryCheckEnabled(exp, {
         expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } },
       })
     ).toBe(true);
@@ -51,7 +57,7 @@ describe('getReactNativeDirectoryCheckEnabled', () => {
 
   it('reads from env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK', () => {
     process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK = '1';
-    expect(getReactNativeDirectoryCheckEnabled({ expo: { doctor: {} } })).toBe(true);
+    expect(getReactNativeDirectoryCheckEnabled(exp, { expo: { doctor: {} } })).toBe(true);
     delete process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK;
   });
 
@@ -61,7 +67,7 @@ describe('getReactNativeDirectoryCheckEnabled', () => {
 
     process.env.EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK = '0';
     expect(
-      getReactNativeDirectoryCheckEnabled({
+      getReactNativeDirectoryCheckEnabled(exp, {
         expo: { doctor: { reactNativeDirectoryCheck: { enabled: true } } },
       })
     ).toBe(false);
@@ -72,6 +78,40 @@ describe('getReactNativeDirectoryCheckEnabled', () => {
     );
 
     console.warn = originalConsoleWarn;
+  });
+
+  it('defaults to disabled if sdk version is < 52.0.0', () => {
+    expect(
+      getReactNativeDirectoryCheckEnabled(
+        {
+          ...exp,
+          sdkVersion: '51.0.0',
+        },
+        { expo: { doctor: {} } }
+      )
+    ).toBe(false);
+  });
+
+  it('defaults to enabled if sdk version is >= 52.0.0', () => {
+    expect(
+      getReactNativeDirectoryCheckEnabled(
+        {
+          ...exp,
+          sdkVersion: '52.0.0',
+        },
+        { expo: { doctor: {} } }
+      )
+    ).toBe(true);
+
+    expect(
+      getReactNativeDirectoryCheckEnabled(
+        {
+          ...exp,
+          sdkVersion: 'UNVERSIONED',
+        },
+        { expo: { doctor: {} } }
+      )
+    ).toBe(true);
   });
 });
 
