@@ -16,7 +16,6 @@ import {
   type PluginObj,
   type PluginPass,
 } from '@babel/core';
-
 // @ts-expect-error: missing types
 import { addNamed as addNamedImport } from '@babel/helper-module-imports';
 import type { Scope as BabelScope } from '@babel/traverse';
