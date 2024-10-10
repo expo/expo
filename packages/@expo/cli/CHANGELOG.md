@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Mute require cycle warnings triggered from node_modules in API routes. [#27039](https://github.com/expo/expo/pull/27039) by [@hdwatts](https://github.com/hdwatts)
+
 ### 🛠 Breaking changes
 
 - Remove `debug.html` from `npx expo export --source-maps`. ([#31477](https://github.com/expo/expo/pull/31477) by [@EvanBacon](https://github.com/EvanBacon))
