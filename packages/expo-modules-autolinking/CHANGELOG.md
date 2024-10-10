@@ -23,6 +23,7 @@
 ### 💡 Others
 
 - Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
+- Exported a new `findProjectRootSync` API. ([#31966](https://github.com/expo/expo/pull/31966) by [@kudo](https://github.com/kudo))
 
 ## 1.11.2 - 2024-08-14
 

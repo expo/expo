@@ -19,6 +19,7 @@
 - Fixed build errors on iOS if other third-party libraries building with iOS system SQLite. ([#30824](https://github.com/expo/expo/pull/30824) by [@kudo](https://github.com/kudo))
 - Fixed build error when using `incremental_installation` mode in CocoaPods. ([#30918](https://github.com/expo/expo/pull/30918) by [@kudo](https://github.com/kudo))
 - Fixed prebuild error when `app.json` doesn't specify any plugin properties for `expo-sqlite`. ([#31672](https://github.com/expo/expo/pull/31672) by [@kudo](https://github.com/kudo))
+- Fixed `SQLiteDatabase -> pathUtils -> SQLiteDatabase` require cycle warning from metro. ([#31956](https://github.com/expo/expo/pull/31956) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

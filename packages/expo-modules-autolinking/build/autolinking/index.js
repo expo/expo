@@ -13,8 +13,12 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.queryAutolinkingModulesFromProjectAsync = exports.verifySearchResults = exports.generatePackageListAsync = exports.generateModulesProviderAsync = exports.resolveSearchPathsAsync = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathAsync = exports.findModulesAsync = void 0;
+exports.findProjectRootSync = exports.queryAutolinkingModulesFromProjectAsync = exports.verifySearchResults = exports.generatePackageListAsync = exports.generateModulesProviderAsync = exports.resolveSearchPathsAsync = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathAsync = exports.findModulesAsync = void 0;
+const path_1 = __importDefault(require("path"));
 const findModules_1 = require("./findModules");
 Object.defineProperty(exports, "findModulesAsync", { enumerable: true, get: function () { return findModules_1.findModulesAsync; } });
 const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
@@ -40,4 +44,11 @@ async function queryAutolinkingModulesFromProjectAsync(projectRoot, options) {
     return await (0, resolveModules_1.resolveModulesAsync)(searchResults, linkOptions);
 }
 exports.queryAutolinkingModulesFromProjectAsync = queryAutolinkingModulesFromProjectAsync;
+/**
+ * Get the project root directory from the current working directory.
+ */
+function findProjectRootSync(cwd = process.cwd()) {
+    return path_1.default.dirname((0, mergeLinkingOptions_1.getProjectPackageJsonPathSync)(cwd));
+}
+exports.findProjectRootSync = findProjectRootSync;
 //# sourceMappingURL=index.js.map

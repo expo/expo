@@ -1,4 +1,4 @@
-import { defaultDatabaseDirectory } from './SQLiteDatabase';
+import ExpoSQLite from './ExpoSQLite';
 
 /**
  * Resolves the database directory from the given directory or the default directory.
@@ -6,7 +6,7 @@ import { defaultDatabaseDirectory } from './SQLiteDatabase';
  * @hidden
  */
 function resolveDbDirectory(directory: string | undefined): string {
-  const resolvedDirectory = directory ?? defaultDatabaseDirectory;
+  const resolvedDirectory = directory ?? ExpoSQLite.defaultDatabaseDirectory;
   if (resolvedDirectory === null) {
     throw new Error('Both provided directory and defaultDatabaseDirectory are null.');
   }
