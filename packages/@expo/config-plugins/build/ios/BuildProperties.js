@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.createBuildPodfilePropsConfigPlugin = createBuildPodfilePropsConfigPlugin;
 exports.updateIosBuildPropertiesFromConfig = updateIosBuildPropertiesFromConfig;
 exports.updateIosBuildProperty = updateIosBuildProperty;
-exports.withJsEnginePodfileProps = void 0;
+exports.withNewArchEnabledPodfileProps = exports.withJsEnginePodfileProps = void 0;
 function _iosPlugins() {
   const data = require("../plugins/ios-plugins");
   _iosPlugins = function () {
@@ -49,6 +49,14 @@ const withJsEnginePodfileProps = exports.withJsEnginePodfileProps = createBuildP
   propName: 'expo.jsEngine',
   propValueGetter: config => config.ios?.jsEngine ?? config.jsEngine ?? 'hermes'
 }], 'withJsEnginePodfileProps');
+
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `newArchEnabled` in expo config
+ */
+const withNewArchEnabledPodfileProps = exports.withNewArchEnabledPodfileProps = createBuildPodfilePropsConfigPlugin([{
+  propName: 'newArchEnabled',
+  propValueGetter: config => (config.ios?.newArchEnabled ?? config.newArchEnabled ?? false).toString()
+}], 'withNewArchEnabledPodfileProps');
 function updateIosBuildPropertiesFromConfig(config, podfileProperties, configToPropertyRules) {
   for (const configToProperty of configToPropertyRules) {
     const value = configToProperty.propValueGetter(config);

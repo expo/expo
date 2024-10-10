@@ -56,7 +56,7 @@ function _iosPlugins() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const withAssociatedDomains = exports.withAssociatedDomains = (0, _iosPlugins().createEntitlementsPlugin)(setAssociatedDomains, 'withAssociatedDomains');
 function setAssociatedDomains(config, {
   'com.apple.developer.associated-domains': _,

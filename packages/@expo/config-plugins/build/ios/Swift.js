@@ -50,7 +50,7 @@ function _iosPlugins() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const templateBridgingHeader = `//
 //  Use this file to import your target's public headers that you would like to expose to Swift.
 //

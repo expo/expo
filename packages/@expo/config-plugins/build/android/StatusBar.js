@@ -37,7 +37,7 @@ function _androidPlugins() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 // https://developer.android.com/reference/android/R.attr#colorPrimaryDark
 const COLOR_PRIMARY_DARK_KEY = 'colorPrimaryDark';
 // https://developer.android.com/reference/android/R.attr#windowLightStatusBar

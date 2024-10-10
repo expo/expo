@@ -22,6 +22,10 @@ export declare function createBuildGradlePropsConfigPlugin<SourceConfigType exte
  * A config-plugin to update `android/gradle.properties` from the `jsEngine` in expo config
  */
 export declare const withJsEngineGradleProps: ConfigPlugin<void>;
+/**
+ * A config-plugin to update `android/gradle.properties` from the `newArchEnabled` in expo config
+ */
+export declare const withNewArchEnabledGradleProps: ConfigPlugin<void>;
 export declare function updateAndroidBuildPropertiesFromConfig<SourceConfigType extends BuildPropertiesConfig>(config: SourceConfigType, gradleProperties: PropertiesItem[], configToPropertyRules: ConfigToPropertyRuleType<SourceConfigType>[]): PropertiesItem[];
 export declare function updateAndroidBuildProperty(gradleProperties: PropertiesItem[], name: string, value: string | null | undefined, options?: {
     removePropWhenValueIsNull?: boolean;
