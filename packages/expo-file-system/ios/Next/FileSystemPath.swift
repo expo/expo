@@ -9,8 +9,20 @@ internal class FileSystemPath: SharedObject {
     self.url = standardizedUrl
   }
 
+  func validatePermission(_ flag: EXFileSystemPermissionFlags) throws {
+    try ensurePathPermission(appContext, path: url.path, flag: flag)
+  }
+
   func delete() throws {
-    try FileManager.default.removeItem(at: url)
+    try validatePermission(.write)
+    guard FileManager.default.fileExists(atPath: url.path) else {
+      throw UnableToDeleteException("path does not exist")
+    }
+    do {
+      try FileManager.default.removeItem(at: url)
+    } catch {
+      throw UnableToDeleteException(error.localizedDescription)
+    }
   }
 
   func getMoveOrCopyPath(to destination: FileSystemPath) throws -> URL {
@@ -33,10 +45,14 @@ internal class FileSystemPath: SharedObject {
   }
 
   func copy(to destination: FileSystemPath) throws {
+    try validatePermission(.read)
+    try destination.validatePermission(.write)
     try FileManager.default.copyItem(at: url, to: getMoveOrCopyPath(to: destination))
   }
 
   func move(to destination: FileSystemPath) throws {
+    try validatePermission(.write)
+    try destination.validatePermission(.write)
     let destinationUrl = try getMoveOrCopyPath(to: destination)
     try FileManager.default.moveItem(at: url, to: destinationUrl)
     url = destinationUrl

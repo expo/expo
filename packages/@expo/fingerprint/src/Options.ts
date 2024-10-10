@@ -4,6 +4,7 @@ import os from 'os';
 import path from 'path';
 
 import { loadConfigAsync } from './Config';
+import { satisfyExpoVersion } from './ExpoVersions';
 import type { Config, NormalizedOptions, Options } from './Fingerprint.types';
 import { SourceSkips } from './sourcer/SourceSkips';
 import { buildPathMatchObjects } from './utils/Path';
@@ -94,12 +95,16 @@ export async function normalizeOptionsAsync(
     concurrentIoLimit: os.cpus().length,
     hashAlgorithm: 'sha1',
     sourceSkips: DEFAULT_SOURCE_SKIPS,
-    enableReactImportsPatcher: true,
     // Options from config
     ...config,
     // Explicit options
     ...options,
     // These options are computed by both default and explicit options, so we put them last.
+    enableReactImportsPatcher:
+      options?.enableReactImportsPatcher ??
+      config?.enableReactImportsPatcher ??
+      satisfyExpoVersion(projectRoot, '<52.0.0') ??
+      false,
     ignorePathMatchObjects: await collectIgnorePathsAsync(
       projectRoot,
       config?.ignorePaths,

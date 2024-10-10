@@ -32,7 +32,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 
   func registerPlayer(_ player: VideoPlayer) {
     players.add(player)
-    player.observer.registerDelegate(delegate: self)
+    player.observer?.registerDelegate(delegate: self)
 
     if mostRecentInteractionPlayer == nil {
       setMostRecentInteractionPlayer(player: player.pointer)
@@ -41,7 +41,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 
   func unregisterPlayer(_ player: VideoPlayer) {
     players.remove(player)
-    player.observer.unregisterDelegate(delegate: self)
+    player.observer?.unregisterDelegate(delegate: self)
 
     if mostRecentInteractionPlayer == player.pointer {
       let newPlayer = players.allObjects.first(where: { $0.playbackRate != 0 })

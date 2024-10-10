@@ -2,6 +2,9 @@ package expo.modules.core.logging
 
 import android.util.Log
 import expo.modules.BuildConfig
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * Logging class for Expo, with options to direct logs
@@ -74,9 +77,11 @@ class Logger(
   fun startTimer(logFormatter: (duration: Long) -> String): LoggerTimer {
     val start = System.currentTimeMillis()
     return object : LoggerTimer {
-      override fun stop() {
+      override fun stop(): Duration {
         val end = System.currentTimeMillis()
-        log(LogType.Timer, logFormatter(end - start))
+        val duration = end - start
+        log(LogType.Timer, logFormatter(duration))
+        return duration.toDuration(DurationUnit.MILLISECONDS)
       }
     }
   }

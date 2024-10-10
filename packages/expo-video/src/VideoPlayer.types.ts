@@ -78,12 +78,17 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 
   /**
    * Boolean value indicating if the player should correct audio pitch when the playback speed changes.
-   * > On web, changing this property is not supported, the player will always correct the pitch.
    * @default true
-   * @platform android
-   * @platform ios
    */
   preservesPitch: boolean;
+
+  /**
+   * Float value indicating the interval in seconds at which the player will emit the [`timeUpdate`](#videoplayerevents) event.
+   * When the value is equal to `0`, the event will not be emitted.
+   *
+   * @default 0
+   */
+  timeUpdateEventInterval: number;
 
   /**
    * Float value between `0` and `16.0` indicating the current playback speed of the player.
@@ -117,6 +122,23 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * @platform android
    */
   staysActiveInBackground: boolean;
+
+  /**
+   * Float value indicating how far the player has buffered the video in seconds.
+   *
+   * This value is 0 when the player has not buffered up to the current playback time.
+   * When it's impossible to determine the buffer state (for example, when the player isn't playing any media), this value is -1.
+   */
+  readonly bufferedPosition: number;
+
+  /**
+   * Specifies buffer options which will be used by the player when buffering the video.
+   *
+   * > You should provide a `BufferOptions` object when setting this property. Setting individual buffer properties is not supported.
+   * @platform android
+   * @platform ios
+   */
+  bufferOptions: BufferOptions;
 
   /**
    * Initializes a new video player instance with the given source.
@@ -178,6 +200,10 @@ export type VideoPlayerEvents = {
    * Handler for an event emitted when the player plays to the end of the current source.
    */
   playToEnd(): void;
+  /**
+   * Handler for an event emitted in a given interval specified by the `timeUpdateEventInterval`.
+   */
+  timeUpdate(timeUpdate: TimeUpdate): void;
   /**
    * Handler for an event emitted when the current media source of the player changes.
    */
@@ -320,4 +346,92 @@ export type DRMOptions = {
    * @platform ios
    */
   base64CertificateData?: string;
+};
+
+/**
+ * Data delivered with the [`timeUpdate`](#videoplayerevents) event, contains information about the current playback progress.
+ */
+export type TimeUpdate = {
+  /**
+   * Float value indicating the current playback time in seconds. Same as the [`currentTime`](#currenttime) property.
+   */
+  currentTime: number;
+  /**
+   * The exact timestamp when the currently displayed video frame was sent from the server,
+   * based on the `EXT-X-PROGRAM-DATE-TIME` tag in the livestream metadata.
+   * Same as the [`currentLiveTimestamp`](#currentlivetimestamp) property.
+   * @platform android
+   * @platform ios
+   */
+  currentLiveTimestamp: number | null;
+  /**
+   * Float value indicating the latency of the live stream in seconds.
+   * Same as the [`currentOffsetFromLive`](#currentoffsetfromlive) property.
+   * @platform android
+   * @platform ios
+   */
+  currentOffsetFromLive: number | null;
+
+  /**
+   * Float value indicating how far the player has buffered the video in seconds
+   * Same as the [`bufferedPosition`](#bufferetPosition) property
+   * @platform android
+   * @platform ios
+   */
+  bufferedPosition: number;
+};
+
+/**
+ * Specifies buffer options which will be used by the player when buffering the video.
+ *
+ * @platform android
+ * @platform ios
+ */
+export type BufferOptions = {
+  /**
+   * The duration in seconds which determines how much media the player should buffer ahead of the current playback time.
+   *
+   * On iOS when set to 0 the player will automatically decide appropriate buffer duration.
+   *
+   * Equivalent to [`AVPlayerItem.preferredForwardBufferDuration`](https://developer.apple.com/documentation/avfoundation/avplayeritem/1643630-preferredforwardbufferduration).
+   * @default Android: 20, iOS: 0
+   * @platform android
+   * @platform ios
+   */
+  readonly preferredForwardBufferDuration?: number;
+
+  /**
+   * A Boolean value that indicates whether the player should automatically delay playback in order to minimize stalling.
+   *
+   * Equivalent to [`AVPlayer.automaticallyWaitsToMinimizeStalling`](https://developer.apple.com/documentation/avfoundation/avplayer/1643482-automaticallywaitstominimizestal).
+   * @default true
+   * @platform ios
+   */
+  readonly waitsToMinimizeStalling?: boolean;
+
+  /**
+   * Minimum duration of the buffer in seconds required to continue playing after the player has been paused or started buffering.
+   *
+   * > This property will be ignored if `preferredForwardBufferDuration` is lower.
+   * @default 2
+   * @platform android
+   */
+  readonly minBufferForPlayback?: number;
+
+  /**
+   * The maximum number of bytes that the player can buffer from the network.
+   * When 0 the player will automatically decide appropriate buffer size.
+   *
+   * @default 0
+   * @platform android
+   */
+  readonly maxBufferBytes?: number | null;
+
+  /**
+   * A Boolean value which determines whether the player should prioritize time over size when buffering media.
+   *
+   * @default false
+   * @platform android
+   */
+  readonly prioritizeTimeOverSizeThreshold?: boolean;
 };

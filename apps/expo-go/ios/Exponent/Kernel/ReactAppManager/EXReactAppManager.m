@@ -149,7 +149,7 @@
         @"executionEnvironment": [self _executionEnvironment],
         @"appOwnership": @"expo",
         @"isHeadless": @(_isHeadless),
-        @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
+        @"supportedExpoSdks": @[[EXVersions sharedInstance].sdkVersion],
     },
     @"exceptionsManagerDelegate": _exceptionHandler,
     @"initialUri": RCTNullIfNil([EXKernelLinkingManager initialUriWithManifestUrl:_appRecord.appLoader.manifestUrl]),

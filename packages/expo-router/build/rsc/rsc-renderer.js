@@ -18,7 +18,7 @@ const server_2 = require("./server");
 // @ts-ignore: HACK type for server actions
 globalThis._REACT_registerServerReference = server_1.registerServerReference;
 async function renderRsc(args, opts) {
-    const { searchParams, input, body, contentType, context, onError } = args;
+    const { input, body, contentType, context, onError } = args;
     const { resolveClientEntry, entries } = opts;
     const { default: { renderEntries }, 
     // @ts-expect-error
@@ -134,7 +134,7 @@ async function renderRsc(args, opts) {
         return renderWithContextWithAction(context, fn, args);
     }
     // method === 'GET'
-    return renderWithContext(context, input, searchParams);
+    return renderWithContext(context, input, decodedBody);
 }
 exports.renderRsc = renderRsc;
 // TODO is this correct? better to use a library?

@@ -86,6 +86,23 @@ public final class AppContext: NSObject {
   }
 
   /**
+   The application identifier that is used to distinguish between different `RCTHost`.
+   It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
+   It shouldn't be used on the old architecture.
+   */
+  @objc
+  public var appIdentifier: String? {
+    #if RCT_NEW_ARCH_ENABLED
+    guard let moduleRegistry = reactBridge?.moduleRegistry else {
+      return nil
+    }
+    return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
+    #else
+    return nil
+    #endif
+  }
+
+  /**
    Code signing entitlements for code signing
    */
   public let appCodeSignEntitlements = AppContext.modulesProvider().getAppCodeSignEntitlements()
@@ -406,6 +423,8 @@ public final class AppContext: NSObject {
     let runtime = try runtime
     let coreObject = runtime.createObject()
 
+    coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier, options: [])
+
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
     // Initialize `global.expo`.
@@ -418,6 +437,9 @@ public final class AppContext: NSObject {
     EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
       sharedObjectRegistry?.delete(objectId)
     }
+    
+    // Install `global.expo.SharedRef`.
+    EXJavaScriptRuntimeManager.installSharedRefClass(runtime)
 
     // Install `global.expo.NativeModule`.
     EXJavaScriptRuntimeManager.installNativeModuleClass(runtime)

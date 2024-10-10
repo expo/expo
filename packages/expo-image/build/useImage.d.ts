@@ -9,6 +9,26 @@ import type { ImageRef, ImageSource, UseImageHookOptions } from './Image.types';
  * @platform android
  * @platform ios
  * @platform web
+ *
+ * @example
+ * ```ts
+ * import { useImage, Image } from 'expo-image';
+ * import { Text } from 'react-native';
+ *
+ * export default function MyImage() {
+ *   const image = useImage('https://picsum.photos/800/600', {
+ *     onError(error, retry) {
+ *       console.error('Loading failed:', error.message);
+ *     }
+ *   });
+ *
+ *   if (!image) {
+ *     return <Text>Image is loading...</Text>;
+ *   }
+ *
+ *   return <Image source={image} style={{ width: image.width / 2, height: image.height / 2 }} />;
+ * }
+ * ```
  */
 export declare function useImage(source: ImageSource | string, options?: UseImageHookOptions, dependencies?: DependencyList): ImageRef | null;
 //# sourceMappingURL=useImage.d.ts.map

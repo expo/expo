@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 
 import { SQLiteStorage } from '../Storage';
 
-jest.mock('../ExpoSQLiteNext', () => require('../__mocks__/ExpoSQLiteNext'));
+jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 describe('SQLiteStorage asynchronous', () => {
   let storage: SQLiteStorage;

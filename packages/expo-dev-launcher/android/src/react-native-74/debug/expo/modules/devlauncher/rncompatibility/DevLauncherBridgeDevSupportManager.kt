@@ -47,7 +47,7 @@ class DevLauncherBridgeDevSupportManager(
 
   @Suppress("INAPPLICABLE_JVM_NAME")
   @get:JvmName("getjSBundleURLForRemoteDebugging")
-  override val jSBundleURLForRemoteDebugging: String?  = super.getJSBundleURLForRemoteDebugging()
+  override val jSBundleURLForRemoteDebugging: String? = super.getJSBundleURLForRemoteDebugging()
 
   override fun showNewJavaError(message: String?, e: Throwable?) {
     Log.e("DevLauncher", "$message", e)

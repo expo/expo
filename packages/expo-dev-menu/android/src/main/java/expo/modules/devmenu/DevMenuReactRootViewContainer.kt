@@ -2,12 +2,10 @@ package expo.modules.devmenu
 
 import android.content.Context
 import android.graphics.Rect
-import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import com.facebook.react.ReactRootView

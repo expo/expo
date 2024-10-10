@@ -24,7 +24,7 @@ function dedupSources(sources, projectRoot) {
                 };
             }
             else {
-                duplicatedItem.reasons.push(...source.reasons);
+                duplicatedItem.reasons = [...duplicatedItem.reasons, ...source.reasons];
             }
         }
         else {

@@ -3,7 +3,7 @@
 exports[`normalizeOptionsAsync should return the default options if no options are provided 1`] = `
 {
   "concurrentIoLimit": 1,
-  "enableReactImportsPatcher": true,
+  "enableReactImportsPatcher": false,
   "hashAlgorithm": "sha1",
   "ignorePathMatchObjects": [
     Minimatch {

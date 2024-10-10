@@ -1,7 +1,6 @@
 import commander from 'commander';
 import path from 'path';
 
-import { patchReactImportsAsync } from './ReactImportsPatcher';
 import {
   findModulesAsync,
   generateModulesProviderAsync,
@@ -81,15 +80,6 @@ function registerResolveCommand<OptionsType extends ResolveOptions>(
   fn: (search: SearchResults, options: OptionsType) => any
 ) {
   return registerSearchCommand<OptionsType>(commandName, fn);
-}
-
-// Register for `patch-react-imports` command
-function registerPatchReactImportsCommand() {
-  return commander
-    .command('patch-react-imports [paths...]')
-    .requiredOption('--pods-root <podsRoot>', 'The path to `Pods` directory')
-    .option('--dry-run', 'Only list files without writing changes to the file system')
-    .action(patchReactImportsAsync);
 }
 
 /**
@@ -201,7 +191,6 @@ module.exports = async function (args: string[]) {
       'Names of the packages to include in the generated modules provider.'
     );
 
-  registerPatchReactImportsCommand();
   registerReactNativeConfigCommand();
 
   await commander

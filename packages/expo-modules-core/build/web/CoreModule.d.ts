@@ -20,6 +20,7 @@ export declare class NativeModule<TEventsMap extends Record<never, never>> exten
 export declare class SharedObject<TEventsMap extends Record<never, never>> extends EventEmitter<TEventsMap> implements SharedObjectType {
     release(): void;
 }
-export declare class SharedRef<TEventsMap extends Record<never, never>> extends SharedObject<TEventsMap> implements SharedRefType {
+export declare class SharedRef<TNativeRefType extends string = 'unknown', TEventsMap extends EventsMap = Record<never, never>> extends SharedObject<TEventsMap> implements SharedRefType<TNativeRefType> {
+    nativeRefType: string;
 }
 //# sourceMappingURL=CoreModule.d.ts.map

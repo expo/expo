@@ -24,9 +24,7 @@ public:
     PROMISE
   };
 
-  JSReferencesCache() = delete;
-
-  JSReferencesCache(jsi::Runtime &runtime);
+  explicit JSReferencesCache(jsi::Runtime &runtime);
 
   /**
    * Gets a cached object.

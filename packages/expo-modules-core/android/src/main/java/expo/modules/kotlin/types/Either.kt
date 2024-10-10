@@ -2,9 +2,11 @@
 
 package expo.modules.kotlin.types
 
+import com.facebook.react.bridge.Dynamic
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.unwrap
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -77,7 +79,11 @@ open class Either<FirstType : Any, SecondType : Any>(
           convertedValue
         } catch (e: Throwable) {
           deferredValue[index] = IncompatibleValue
-          throw TypeCastException("Cannot cast '$bareValue' to '${types[index]}'")
+          if (bareValue is Dynamic) {
+            throw TypeCastException("Cannot cast '[$bareValue] ${bareValue.unwrap()}' to '${types[index]}' - ${e.message}")
+          } else {
+            throw TypeCastException("Cannot cast '$bareValue' to '${types[index]}' - ${e.message}")
+          }
         }
       }
     }

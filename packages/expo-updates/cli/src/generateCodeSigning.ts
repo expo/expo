@@ -50,7 +50,7 @@ Generate expo-updates private key, public key, and code signing certificate usin
   );
   const certificateCommonName = requireArg(args, '--certificate-common-name');
 
-  return await generateCodeSigningAsync(getProjectRoot(args), {
+  await generateCodeSigningAsync(getProjectRoot(args), {
     certificateValidityDurationYears,
     keyOutput,
     certificateOutput,

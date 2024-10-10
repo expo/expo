@@ -1,7 +1,7 @@
 import { openDatabaseAsync, SQLiteDatabase } from '../SQLiteDatabase';
 import { SQLiteStatement } from '../SQLiteStatement';
 
-jest.mock('../ExpoSQLiteNext', () => require('../__mocks__/ExpoSQLiteNext'));
+jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 interface TestEntity {
   value: string;

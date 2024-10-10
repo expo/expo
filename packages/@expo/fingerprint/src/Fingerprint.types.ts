@@ -93,9 +93,15 @@ export interface Options {
    * Enable ReactImportsPatcher to transform imports from React of the form `#import "RCTBridge.h"` to `#import <React/RCTBridge.h>`.
    * This is useful when you want to have a stable fingerprint for Expo projects,
    * since expo-modules-autolinking will change the import style on iOS.
-   * @default true
+   * @default true for Expo SDK 51 and lower.
    */
   enableReactImportsPatcher?: boolean;
+
+  /**
+   * Use the react-native core autolinking sources from expo-modules-autolinking rather than @react-native-community/cli.
+   * @default true for Expo SDK 52 and higher.
+   */
+  useRNCoreAutolinkingFromExpo?: boolean;
 
   /**
    * Whether running the functions should mute all console output. This is useful when fingerprinting is being done as
@@ -121,6 +127,7 @@ export type Config = Pick<
   | 'ignorePaths'
   | 'extraSources'
   | 'enableReactImportsPatcher'
+  | 'useRNCoreAutolinkingFromExpo'
   | 'debug'
 > & {
   sourceSkips?: SourceSkips | SourceSkipsKeys[];

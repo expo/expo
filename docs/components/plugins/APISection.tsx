@@ -49,7 +49,11 @@ const isHook = ({ name }: { name: string }) =>
 const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
 
-const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
+const isProp = ({ name }: GeneratedData) =>
+  name.includes('Props') &&
+  name !== 'ErrorRecoveryProps' &&
+  name !== 'WebAnchorProps' &&
+  name !== 'ScreenProps';
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
   if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {

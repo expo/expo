@@ -68,15 +68,6 @@ jobs:
       - name: 🔗 Lint pages links
         working-directory: docs
         run: yarn lint-links --quiet
-      - name: ✅ Test links (legacy)
-        working-directory: docs
-        run: |
-          yarn export-server &
-          while ! nc -z localhost 8000; do
-            sleep 1
-          done
-          yarn test-links http://127.0.0.1:8000
-        timeout-minutes: 3
       - name: 🚀 Deploy Docs website
         working-directory: docs
         if: ${{ github.event.ref == 'refs/heads/main' }}

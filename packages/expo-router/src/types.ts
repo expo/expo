@@ -1,4 +1,7 @@
 // TODO: Use the global type
+/**
+ * @hidden
+ */
 export interface RequireContext {
   /** Return the keys that can be resolved. */
   keys(): string[];
@@ -10,7 +13,9 @@ export interface RequireContext {
   id: string;
 }
 
-/** The list of input keys will become optional, everything else will remain the same. */
+/**
+ * The list of input keys will become optional, everything else will remain the same.
+ */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type NativeIntent = {

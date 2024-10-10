@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-parcelize'
 
 group = 'host.exp.exponent'
 version = '0.28.3'

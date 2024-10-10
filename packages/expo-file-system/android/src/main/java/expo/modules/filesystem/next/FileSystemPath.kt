@@ -1,8 +1,10 @@
 package expo.modules.filesystem.next
 
 import android.os.Build
+import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
+import java.util.EnumSet
 import kotlin.io.path.moveTo
 
 // We use the `File` class to represent a file or a directory in the file system.
@@ -11,6 +13,9 @@ import kotlin.io.path.moveTo
 // https://stackoverflow.com/questions/27845223/whats-the-difference-between-a-resource-uri-url-path-and-file-in-java
 abstract class FileSystemPath(var file: File) : SharedObject() {
   fun delete() {
+    if (!file.exists()) {
+      throw UnableToDeleteException("path does not exist")
+    }
     file.delete()
   }
 
@@ -44,9 +49,19 @@ abstract class FileSystemPath(var file: File) : SharedObject() {
     return destination.file
   }
 
+  fun validatePermission(permission: Permission): Boolean {
+    val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, file.path) ?: EnumSet.noneOf(Permission::class.java)
+    if (permissions.contains(permission)) {
+      return true
+    }
+    throw InvalidPermissionException(permission)
+  }
+
   fun copy(to: FileSystemPath) {
     validateType()
     to.validateType()
+    validatePermission(Permission.READ)
+    to.validatePermission(Permission.WRITE)
 
     file.copyRecursively(getMoveOrCopyPath(to))
   }
@@ -54,6 +69,8 @@ abstract class FileSystemPath(var file: File) : SharedObject() {
   fun move(to: FileSystemPath) {
     validateType()
     to.validateType()
+    validatePermission(Permission.WRITE)
+    to.validatePermission(Permission.WRITE)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val destination = getMoveOrCopyPath(to)

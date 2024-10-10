@@ -75,7 +75,7 @@ class RemoteNotificationContent(private val remoteMessage: RemoteMessage) : INot
   override val isSticky: Boolean
     get() = remoteMessage.data["sticky"]?.toBoolean() ?: false
 
-  override val subtitle: String?
+  override val subText: String?
     get() = remoteMessage.data["subtitle"]
 
   override val badgeCount: Number?

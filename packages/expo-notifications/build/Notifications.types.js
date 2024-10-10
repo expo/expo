@@ -7,6 +7,7 @@ export var SchedulableTriggerInputTypes;
     SchedulableTriggerInputTypes["CALENDAR"] = "calendar";
     SchedulableTriggerInputTypes["DAILY"] = "daily";
     SchedulableTriggerInputTypes["WEEKLY"] = "weekly";
+    SchedulableTriggerInputTypes["MONTHLY"] = "monthly";
     SchedulableTriggerInputTypes["YEARLY"] = "yearly";
     SchedulableTriggerInputTypes["DATE"] = "date";
     SchedulableTriggerInputTypes["TIME_INTERVAL"] = "timeInterval";

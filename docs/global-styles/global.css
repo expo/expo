@@ -33,3 +33,15 @@ input {
 .code-placeholder {
   opacity: 0.5;
 }
+
+.tutorial-code-annotation {
+  transition: 200ms ease all;
+  background-color: var(--green4);
+  color: var(--green9);
+}
+
+.tutorial-code-annotation.with-tooltip:hover {
+  cursor: pointer;
+  animation: none;
+  opacity: 0.8;
+}
