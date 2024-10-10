@@ -71,8 +71,7 @@ public final class FileSystemNextModule: Module {
       }
 
       Function("open") { file in
-        let fileHandle = try FileSystemFileHandle(file: file)
-        return fileHandle
+        return try FileSystemFileHandle(file: file)
       }
 
       Function("write") { (file, content: Either<String, TypedArray>) in
@@ -129,11 +128,13 @@ public final class FileSystemNextModule: Module {
       Function("close") { fileHandle in
         try fileHandle.close()
       }
+
       Property("offset") { fileHandle in
         fileHandle.offset
       }.set { (fileHandle, volume: UInt64) in
-         fileHandle.offset = volume
-       }
+        fileHandle.offset = volume
+      }
+
       Property("size") { fileHandle in
         fileHandle.size
       }
