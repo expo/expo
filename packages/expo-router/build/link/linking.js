@@ -88,6 +88,7 @@ function parseExpoGoUrlFromListener(url) {
 function addEventListener(nativeLinking) {
     return (listener) => {
         let callback;
+        const legacySubscription = nativeLinking?.legacy_subscribe?.(listener);
         if (isExpoGo) {
             // This extra work is only done in the Expo Go app.
             callback = async ({ url }) => {
@@ -110,6 +111,7 @@ function addEventListener(nativeLinking) {
         return () => {
             // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
             subscription?.remove?.();
+            legacySubscription?.();
         };
     };
 }

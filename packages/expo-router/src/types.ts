@@ -20,6 +20,7 @@ export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 export type NativeIntent = {
   redirectSystemPath?: (event: { path: string; initial: boolean }) => Promise<string> | string;
+  legacy_subscribe?: (listener: (url: string) => void) => undefined | void | (() => void);
 };
 
 export type * from './typed-routes/types';

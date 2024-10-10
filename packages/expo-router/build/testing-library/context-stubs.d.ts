@@ -1,13 +1,8 @@
 /// <reference types="react" />
 import requireContext from './require-context-ponyfill';
+import { NativeIntent } from '../types';
 export type ReactComponent = () => React.ReactElement<any, any> | null;
-export type NativeIntentStub = {
-    redirectSystemPath?: (event: {
-        path: string | null;
-        initial: boolean;
-    }) => Promise<string | null | undefined> | string | null | undefined;
-    subscribe?: (listener: (path: string) => void) => Promise<() => void | void> | (() => void) | void;
-};
+export type NativeIntentStub = NativeIntent;
 export type FileStub = (Record<string, unknown> & {
     default: ReactComponent;
     unstable_settings?: Record<string, any>;
@@ -16,11 +11,11 @@ export type MemoryContext = Record<string, FileStub | NativeIntentStub> & {
     '+native-intent'?: NativeIntentStub;
 };
 export { requireContext };
-export declare function inMemoryContext(context: MemoryContext): ((id: string) => NativeIntentStub | ReactComponent | (Record<string, unknown> & {
+export declare function inMemoryContext(context: MemoryContext): ((id: string) => NativeIntent | ReactComponent | (Record<string, unknown> & {
     default: ReactComponent;
     unstable_settings?: Record<string, any> | undefined;
 }) | {
-    default: NativeIntentStub | FileStub;
+    default: NativeIntent | FileStub;
 }) & {
     resolve: (key: string) => string;
     id: string;
