@@ -54,6 +54,131 @@ PODS:
     - ExpoModulesCore
   - Expo (51.0.8):
     - ExpoModulesCore
+  - expo-dev-client (4.0.14):
+    - EXManifests
+    - expo-dev-launcher
+    - expo-dev-menu
+    - expo-dev-menu-interface
+    - EXUpdatesInterface
+  - expo-dev-launcher (4.0.15):
+    - DoubleConversion
+    - EXManifests
+    - expo-dev-launcher/Main (= 4.0.15)
+    - expo-dev-menu
+    - expo-dev-menu-interface
+    - ExpoModulesCore
+    - EXUpdatesInterface
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsinspector
+    - React-NativeModulesApple
+    - React-RCTAppDelegate
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - expo-dev-launcher/Main (4.0.15):
+    - DoubleConversion
+    - EXManifests
+    - expo-dev-launcher/Unsafe
+    - expo-dev-menu
+    - expo-dev-menu-interface
+    - ExpoModulesCore
+    - EXUpdatesInterface
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsinspector
+    - React-NativeModulesApple
+    - React-RCTAppDelegate
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - expo-dev-launcher/Tests (4.0.15):
+    - DoubleConversion
+    - EXManifests
+    - expo-dev-menu
+    - expo-dev-menu-interface
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - EXUpdatesInterface
+    - glog
+    - hermes-engine
+    - Nimble
+    - OHHTTPStubs
+    - Quick
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-CoreModules
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsinspector
+    - React-NativeModulesApple
+    - React-RCTAppDelegate
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - expo-dev-launcher/Unsafe (4.0.15):
+    - DoubleConversion
+    - EXManifests
+    - expo-dev-menu
+    - expo-dev-menu-interface
+    - ExpoModulesCore
+    - EXUpdatesInterface
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsinspector
+    - React-NativeModulesApple
+    - React-RCTAppDelegate
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - expo-dev-menu (5.0.14):
     - DoubleConversion
     - expo-dev-menu/Main (= 5.0.14)
@@ -535,6 +660,19 @@ PODS:
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
   - Nimble (13.0.0)
+  - OHHTTPStubs (9.1.0):
+    - OHHTTPStubs/Default (= 9.1.0)
+  - OHHTTPStubs/Core (9.1.0)
+  - OHHTTPStubs/Default (9.1.0):
+    - OHHTTPStubs/Core
+    - OHHTTPStubs/JSON
+    - OHHTTPStubs/NSURLSession
+    - OHHTTPStubs/OHPathHelpers
+  - OHHTTPStubs/JSON (9.1.0):
+    - OHHTTPStubs/Core
+  - OHHTTPStubs/NSURLSession (9.1.0):
+    - OHHTTPStubs/Core
+  - OHHTTPStubs/OHPathHelpers (9.1.0)
   - Quick (7.3.1)
   - RCT-Folly (2024.01.01.00):
     - boost
@@ -2390,7 +2528,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (4.0.0-beta.9):
+  - RNScreens (4.0.0-beta.8):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2411,9 +2549,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.0.0-beta.9)
+    - RNScreens/common (= 4.0.0-beta.8)
     - Yoga
-  - RNScreens/common (4.0.0-beta.9):
+  - RNScreens/common (4.0.0-beta.8):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2515,6 +2653,9 @@ DEPENDENCIES:
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
+  - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
+  - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
+  - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
@@ -2660,7 +2801,7 @@ DEPENDENCIES:
   - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated`)
-  - RNScreens (from `../../../node_modules/react-native-screens`)
+  - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - Yoga (from `../../../node_modules/react-native/ReactCommon/yoga`)
@@ -2673,6 +2814,7 @@ SPEC REPOS:
     - libdav1d
     - libwebp
     - Nimble
+    - OHHTTPStubs
     - Quick
     - ReachabilitySwift
     - SDWebImage
@@ -2720,6 +2862,12 @@ EXTERNAL SOURCES:
   Expo:
     inhibit_warnings: false
     :path: "../../../packages/expo"
+  expo-dev-client:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-dev-client/ios"
+  expo-dev-launcher:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-dev-launcher"
   expo-dev-menu:
     :path: "../../../packages/expo-dev-menu"
   expo-dev-menu-interface:
@@ -3048,7 +3196,7 @@ EXTERNAL SOURCES:
   RNReanimated:
     :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../../../node_modules/react-native-screens"
+    :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../../../node_modules/react-native-svg"
   UMAppLoader:
@@ -3071,6 +3219,8 @@ SPEC CHECKSUMS:
   EXManifests: 50d7a3c95ffe2080a91462b0cb6926ecb18b20ad
   EXNotifications: 020a77554a24739af75483b054a470ebade292ab
   Expo: 453d4891e9559869c2f35ca0e31001db2d6a65a8
+  expo-dev-client: a3705a29371aa0d4aa26c86456fa605007be2c70
+  expo-dev-launcher: e3498b8374cbd72c9bd3d6adf719507dd9bb95d7
   expo-dev-menu: 1e5509690f6e32a39f5df09cc67e365003de723b
   expo-dev-menu-interface: 3d0293c6a9330f01d4601c347c7a695f8947cd30
   ExpoAppleAuthentication: c8b5a198d4145db193b23ae2bbe3fcae94c63f5d
@@ -3141,6 +3291,7 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
+  OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
   RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
   RCTDeprecation: ea1525e5eda35bb079a7ac260551c5e0468f9ee3
@@ -3213,7 +3364,7 @@ SPEC CHECKSUMS:
   RNFlashList: 6f169ad83e52579b7754cbbcec1b004c27d82c93
   RNGestureHandler: c374c750a0a9bacd95f5c740d146ab9428549d6b
   RNReanimated: f258d9ce122d59e36be8e516c40ed773ee46b687
-  RNScreens: 627c132735982175fde8ccaeec178afcbe62fb61
+  RNScreens: 0ccd7d723af776c4c0e742810aaa715f979d0c10
   RNSVG: 515aaaaef804aade0f285d7fc9514da8f7f0e11f
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
@@ -3224,6 +3375,6 @@ SPEC CHECKSUMS:
   Yoga: faaab08e21d56d9b7d5225d64fa23cdf72af2f74
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 453324bb0c65cf3972121640836c8744febbf4c7
+PODFILE CHECKSUM: 567bb58fe91a07874d34e36dc2ed989b409d33cd
 
 COCOAPODS: 1.15.2

@@ -13,8 +13,6 @@ PODS:
   - EXManifests/Tests (0.14.3):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (51.0.8):
-    - ExpoModulesCore
   - expo-dev-launcher (4.0.15):
     - DoubleConversion
     - EXManifests
@@ -1987,7 +1985,6 @@ DEPENDENCIES:
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
-  - Expo (from `../../../node_modules/expo`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
   - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
@@ -2101,8 +2098,6 @@ EXTERNAL SOURCES:
   EXManifests:
     inhibit_warnings: false
     :path: "../../../packages/expo-manifests/ios"
-  Expo:
-    :path: "../../../node_modules/expo"
   expo-dev-launcher:
     inhibit_warnings: false
     :path: "../../../packages/expo-dev-launcher"
@@ -2266,7 +2261,6 @@ SPEC CHECKSUMS:
   EASClient: 00a5bbc03a76fbcca972e7a4465f0e939d567e0d
   EXJSONUtils: 047b3da7cef41bb7b6b595bb9867563e964fb0d3
   EXManifests: 50d7a3c95ffe2080a91462b0cb6926ecb18b20ad
-  Expo: 453d4891e9559869c2f35ca0e31001db2d6a65a8
   expo-dev-launcher: e3498b8374cbd72c9bd3d6adf719507dd9bb95d7
   expo-dev-menu: 1e5509690f6e32a39f5df09cc67e365003de723b
   expo-dev-menu-interface: 3d0293c6a9330f01d4601c347c7a695f8947cd30
@@ -2351,6 +2345,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: faaab08e21d56d9b7d5225d64fa23cdf72af2f74
 
-PODFILE CHECKSUM: 5800d034d2c76238b75b11e12f63fdff2ef79594
+PODFILE CHECKSUM: ccd8b50eabcb4ae3ee16e1484faf98baa32b0b75
 
 COCOAPODS: 1.15.2
