@@ -10,7 +10,13 @@ Monorepos, or _"monolithic repositories"_, are single repositories containing mu
 
 > **warning** Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds more complexity, and often requires specific tooling configuration. You can get far with just a single repository.
 
-## Example monorepo
+## Automatic configuration
+
+Starting from Expo **SDK 48**, Expo automatically detects and configures monorepos using [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), or [yarn](https://yarnpkg.com/features/workspaces). From Expo **SDK 52**, Expo also automatically sets up monorepos using [pnpm](https://pnpm.io/workspaces). The detection is based on the workspaces configuration in your project.
+
+> **info** Expo's automatic monorepo setup adds all workspaces in your monorepo as watchFolders to Metro. This might slow Metro down for larger monorepos. You can also manually configure which folders Metro should watch by changing the `watchFolders` in your **metro.config.js**, see [Modify the Metro config](#modify-the-metro-config).
+
+## Manual configuration
 
 In this example, we will set up a monorepo using Yarn workspaces without the [nohoist](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/) option. We will assume some familiar names, but you can fully customize them. After this guide, our basic structure should look like this:
 
