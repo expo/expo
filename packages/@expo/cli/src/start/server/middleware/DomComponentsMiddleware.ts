@@ -37,8 +37,6 @@ export function createDomComponentsMiddleware(
   { metroRoot, projectRoot }: CreateDomComponentsMiddlewareOptions,
   instanceMetroOptions: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'platform' | 'bytecode'>
 ) {
-  const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
-
   return (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
     if (!req.url) return next();
 
@@ -63,6 +61,7 @@ export function createDomComponentsMiddleware(
 
     // Generate a unique entry file for the webview.
     const generatedEntry = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+    const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
     const relativeImport = './' + path.relative(path.dirname(virtualEntry), generatedEntry);
     // Create the script URL
     const requestUrlBase = `http://${req.headers.host}`;
