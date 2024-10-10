@@ -30,7 +30,7 @@
     "@expo/multipart-body-parser": "^1.1.0",
     "@expo/plist": "^0.0.20",
     "@expo/spawn-async": "^1.7.0",
-    "@expo/swiftlint": "^0.52.4",
+    "@expo/swiftlint": "^0.57.1",
     "@expo/xcodegen": "2.18.0-patch.1",
     "@expo/xdl": "^59.2.1",
     "@linear/sdk": "^2.6.0",
@@ -73,7 +73,7 @@
     "sharp": "^0.32.6",
     "strip-ansi": "^6.0.0",
     "terminal-link": "^2.1.1",
-    "typedoc": "0.25.13",
+    "typedoc": "0.26.7",
     "uuid": "^9.0.0",
     "xcode": "^3.0.1"
   },
@@ -100,6 +100,6 @@
     "eslint-plugin-lodash": "^7.4.0",
     "prettier": "^3.3.2",
     "taskr": "1.1.0",
-    "typescript": "^5.1.3"
+    "typescript": "5.4.5"
   }
 }

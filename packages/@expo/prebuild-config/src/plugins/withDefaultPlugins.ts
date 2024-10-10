@@ -12,6 +12,7 @@ import {
 import { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 
+import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';
 import { withAndroidIcons } from './icons/withAndroidIcons';
 import { withIosIcons } from './icons/withIosIcons';
 import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
@@ -24,7 +25,6 @@ import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-scree
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
 import withMaps from './unversioned/react-native-maps';
-import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';
 
 const debug = Debug('expo:prebuild-config');
 

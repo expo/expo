@@ -20,4 +20,4 @@ inline fun <T> T?.ifNull(block: () -> T): T = this ?: block()
  *   val y = (a.b as? Number)?.someMethod() // same, but needs parenthesis
  * ```
  */
-inline fun <reified T> Any?.takeIfInstanceOf(): T? = if (this is T) this else null
+inline fun <reified T> Any?.takeIfInstanceOf(): T? = this as? T

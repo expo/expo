@@ -14,6 +14,7 @@ import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactInstanceManager
@@ -58,7 +59,6 @@ import host.exp.exponent.storage.ExponentDB
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.AsyncCondition
 import host.exp.exponent.utils.AsyncCondition.AsyncConditionListener
-import host.exp.exponent.utils.BundleJSONConverter
 import host.exp.expoview.BuildConfig
 import host.exp.expoview.ExpoViewBuildConfig
 import host.exp.expoview.Exponent
@@ -341,25 +341,9 @@ class Kernel : KernelInterface() {
       )
       return reactRootView
     }
-  private val kernelLaunchOptions: Bundle
-    get() {
-      val exponentProps = JSONObject()
-      val referrer = exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.REFERRER_KEY)
-      if (referrer != null) {
-        try {
-          exponentProps.put("referrer", referrer)
-        } catch (e: JSONException) {
-          EXL.e(TAG, e)
-        }
-      }
-      val bundle = Bundle()
-      try {
-        bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps))
-      } catch (e: JSONException) {
-        throw Error("JSONObject failed to be converted to Bundle", e)
-      }
-      return bundle
-    }
+  private val kernelLaunchOptions = bundleOf(
+    "exp" to Bundle()
+  )
   private val jsExecutorFactory: JavaScriptExecutorFactory
     get() {
       val manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
@@ -705,7 +689,7 @@ class Kernel : KernelInterface() {
             }
           }
 
-          override fun updateStatus(status: AppLoaderStatus) {
+          override fun updateStatus(status: AppLoaderStatus?) {
             if (optimisticActivity != null) {
               optimisticActivity!!.setLoadingProgressStatusIfEnabled(status)
             }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { MouseEvent } from 'react';
 import { GestureResponderEvent, Platform } from 'react-native';
 
 import { appendBaseUrl } from '../fork/getPathFromState';
@@ -7,7 +7,7 @@ import { LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
 
 function eventShouldPreventDefault(
-  e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
+  e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent
 ): boolean {
   if (e?.defaultPrevented) {
     return false;
@@ -37,9 +37,7 @@ type UseLinkToPathPropsOptions = LinkToOptions & {
 export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPropsOptions) {
   const { linkTo } = useExpoRouter();
 
-  const onPress = (
-    event?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
-  ) => {
+  const onPress = (event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
     if (shouldHandleMouseEvent(event)) {
       linkTo(href, options);
     }
@@ -54,7 +52,7 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
 }
 
 export function shouldHandleMouseEvent(
-  event?: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent
+  event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent
 ) {
   if (Platform.OS !== 'web') {
     return !event?.defaultPrevented;

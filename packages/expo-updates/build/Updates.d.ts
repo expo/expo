@@ -1,4 +1,4 @@
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:
  * - enabled set to false in configuration
@@ -50,6 +50,10 @@ export declare const isEmergencyLaunch: boolean;
  * what failed during initialization.
  */
 export declare const emergencyLaunchReason: string | null;
+/**
+ * Number of milliseconds it took to launch.
+ */
+export declare const launchDuration: number | null;
 /**
  * This will be true if the currently running update is the one embedded in the build,
  * and not one downloaded from the updates server.
@@ -170,21 +174,4 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  * timeout communicating with the server. It also rejects when `expo-updates` is not enabled.
  */
 export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
-/**
- * @hidden
- */
-export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string): void;
-/**
- * @hidden
- */
-export declare function transformNativeStateMachineContext(originalNativeContext: UpdatesNativeStateMachineContext & {
-    latestManifestString?: string;
-    downloadedManifestString?: string;
-    lastCheckForUpdateTimeString?: string;
-    rollbackString?: string;
-}): UpdatesNativeStateMachineContext;
-/**
- * @hidden
- */
-export declare function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext>;
 //# sourceMappingURL=Updates.d.ts.map

@@ -41,6 +41,11 @@ open class NotificationsEmitter : Module(), NotificationListener {
     AsyncFunction<Bundle?>("getLastNotificationResponseAsync") {
       lastNotificationResponseBundle
     }
+
+    AsyncFunction("clearLastNotificationResponseAsync") {
+      lastNotificationResponseBundle = null
+      null
+    }
   }
 
   /**

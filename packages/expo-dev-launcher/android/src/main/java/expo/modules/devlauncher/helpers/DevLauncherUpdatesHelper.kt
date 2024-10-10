@@ -19,7 +19,6 @@ suspend fun UpdatesInterface.loadUpdate(
   suspendCoroutine { cont ->
     this.fetchUpdateWithConfiguration(
       configuration,
-      context,
       object : UpdatesInterface.UpdateCallback {
         override fun onSuccess(update: UpdatesInterface.Update?) {
           // if the update is null, we previously aborted the fetch, so we've already resumed

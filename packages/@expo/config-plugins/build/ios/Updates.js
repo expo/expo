@@ -63,13 +63,18 @@ async function setUpdatesConfigAsync(projectRoot, config, expoPlist, expoUpdates
     ...expoPlist,
     [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config),
     [Config.CHECK_ON_LAUNCH]: checkOnLaunch,
-    [Config.LAUNCH_WAIT_MS]: timeout,
-    // The native config name is "has embedded update", but we want to expose
-    // this to the user as "use embedded update", since this is more accurate.
-    // The field does not disable actually building and embedding the update,
-    // only whether it is actually used.
-    [Config.UPDATES_HAS_EMBEDDED_UPDATE]: useEmbeddedUpdate
+    [Config.LAUNCH_WAIT_MS]: timeout
   };
+
+  // The native config name is "has embedded update", but we want to expose
+  // this to the user as "use embedded update", since this is more accurate.
+  // The field does not disable actually building and embedding the update,
+  // only whether it is actually used.
+  if (useEmbeddedUpdate) {
+    delete newExpoPlist[Config.UPDATES_HAS_EMBEDDED_UPDATE];
+  } else {
+    newExpoPlist[Config.UPDATES_HAS_EMBEDDED_UPDATE] = false;
+  }
   const updateUrl = (0, _Updates().getUpdateUrl)(config);
   if (updateUrl) {
     newExpoPlist[Config.UPDATE_URL] = updateUrl;

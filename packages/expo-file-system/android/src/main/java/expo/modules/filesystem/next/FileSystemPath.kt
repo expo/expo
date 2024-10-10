@@ -1,8 +1,10 @@
 package expo.modules.filesystem.next
 
 import android.os.Build
+import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
+import java.util.EnumSet
 import kotlin.io.path.moveTo
 
 // We use the `File` class to represent a file or a directory in the file system.
@@ -11,74 +13,73 @@ import kotlin.io.path.moveTo
 // https://stackoverflow.com/questions/27845223/whats-the-difference-between-a-resource-uri-url-path-and-file-in-java
 abstract class FileSystemPath(var file: File) : SharedObject() {
   fun delete() {
+    if (!file.exists()) {
+      throw UnableToDeleteException("path does not exist")
+    }
     file.delete()
   }
 
   abstract fun validateType()
 
+  fun getMoveOrCopyPath(destination: FileSystemPath): File {
+    if (destination is FileSystemDirectory) {
+      if (this is FileSystemFile) {
+        if (!destination.exists) {
+          throw DestinationDoesNotExistException()
+        }
+        return File(destination.file, file.name)
+      }
+      // this if FileSystemDirectory
+      // we match unix behavior https://askubuntu.com/a/763915
+      if (destination.exists) {
+        return File(destination.file, file.name)
+      }
+      if (destination.file.parentFile?.exists() != true) {
+        throw DestinationDoesNotExistException()
+      }
+      return destination.file
+    }
+    // destination is FileSystemFile
+    if (this !is FileSystemFile) {
+      throw CopyOrMoveDirectoryToFileException()
+    }
+    if (destination.file.parentFile?.exists() != true) {
+      throw DestinationDoesNotExistException()
+    }
+    return destination.file
+  }
+
+  fun validatePermission(permission: Permission): Boolean {
+    val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, file.path) ?: EnumSet.noneOf(Permission::class.java)
+    if (permissions.contains(permission)) {
+      return true
+    }
+    throw InvalidPermissionException(permission)
+  }
+
   fun copy(to: FileSystemPath) {
     validateType()
     to.validateType()
+    validatePermission(Permission.READ)
+    to.validatePermission(Permission.WRITE)
 
-    // If the destination folder does not exist, we should throw an exception.
-    // If the file's parent folder does not exist, we should throw an exception.
-    // Does not allow copying a folder to a file.
-
-    if (to is FileSystemDirectory && !to.file.exists()) {
-      throw DestinationDoesNotExistException()
-    }
-
-    if (to is FileSystemFile && to.file.parentFile?.exists() != true) {
-      throw DestinationDoesNotExistException()
-    }
-    // The above guards can be conditional if we want to allow creating the destination folder(s).
-
-    if (this is FileSystemDirectory && to is FileSystemFile) {
-      throw CopyFolderToFileException()
-    }
-
-    // do the copying
-    if (to.file.isDirectory) {
-      file.copyRecursively(File(to.file.path, file.name))
-    } else {
-      file.copyRecursively(to.file)
-    }
+    file.copyRecursively(getMoveOrCopyPath(to))
   }
 
   fun move(to: FileSystemPath) {
     validateType()
     to.validateType()
-
-    if (to is FileSystemDirectory && !to.file.exists()) {
-      throw DestinationDoesNotExistException()
-    }
-
-    if (to is FileSystemFile && to.file.parentFile?.exists() != true) {
-      throw DestinationDoesNotExistException()
-    }
-
-    if (this is FileSystemDirectory && to is FileSystemFile) {
-      throw MoveFolderToFileException()
-    }
+    validatePermission(Permission.WRITE)
+    to.validatePermission(Permission.WRITE)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      if (to is FileSystemDirectory) {
-        file.toPath().moveTo(File(to.file.path, file.name).toPath())
-        file = File(to.file.path, file.name)
-      } else {
-        file.toPath().moveTo(to.file.toPath())
-        file = to.file
-      }
+      val destination = getMoveOrCopyPath(to)
+      file.toPath().moveTo(destination.toPath())
+      file = destination
     } else {
-      if (to is FileSystemDirectory) {
-        file.copyTo(File(to.file.path, file.name))
-        file.delete()
-        file = File(to.file.path, file.name)
-      } else {
-        file.copyTo(to.file)
-        file.delete()
-        file = to.file
-      }
+      file.copyTo(getMoveOrCopyPath(to))
+      file.delete()
+      file = getMoveOrCopyPath(to)
     }
   }
 }

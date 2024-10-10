@@ -4,8 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Emit assets as strings instead of numeric lookups when bundling for web and server environments. ([#31955](https://github.com/expo/expo/pull/31955) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
+- add support for magic import comments to opt dynamic imports out of the dependency graph. ([#31868](https://github.com/expo/expo/pull/31868) by [@EvanBacon](https://github.com/EvanBacon))
 - add support for css imports from other css files ([#31574](https://github.com/expo/expo/pull/31574) by [@EvanBacon](https://github.com/EvanBacon))
 - Add virtual entry generation for DOM components on web. ([#31259](https://github.com/expo/expo/pull/31259) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass `isDOM` to the Babel caller for changing behavior during DOM component bundling. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
@@ -25,6 +28,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix cache sharing across Expo Go and dev client. ([#31566](https://github.com/expo/expo/pull/31566) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix bundle split HBC paths for server manifest. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
 - Support global CSS in tree shaking. ([#31304](https://github.com/expo/expo/pull/31304) by [@EvanBacon](https://github.com/EvanBacon))
 - Update source map URL when config mutates modules. ([#30980](https://github.com/expo/expo/pull/30980) by [@EvanBacon](https://github.com/EvanBacon))

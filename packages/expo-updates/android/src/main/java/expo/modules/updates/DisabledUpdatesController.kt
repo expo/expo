@@ -3,25 +3,24 @@ package expo.modules.updates
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.WritableMap
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
+import expo.modules.updates.events.IUpdatesEventManager
+import expo.modules.updates.events.QueueUpdatesEventManager
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
+import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.RecreateReactContextProcedure
-import expo.modules.updates.statemachine.UpdatesStateChangeEventSender
-import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updates.statemachine.UpdatesStateEventType
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * Updates controller for applications that either disable updates explicitly or have an error
@@ -33,24 +32,31 @@ import java.lang.ref.WeakReference
 class DisabledUpdatesController(
   private val context: Context,
   private val fatalException: Exception?
-) : IUpdatesController, UpdatesStateChangeEventSender {
+) : IUpdatesController {
   override var appContext: WeakReference<AppContext>? = null
-  override var eventEmitter: EventEmitter? = null
 
   /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
-  override var shouldEmitJsEvents = false
-    set(value) {
-      field = value
-      UpdatesUtils.sendQueuedEventsToAppContext(value, appContext, logger)
-    }
 
   private val logger = UpdatesLogger(context)
+  override val eventManager: IUpdatesEventManager = QueueUpdatesEventManager(logger)
 
   // disabled controller state machine can only be idle or restarting
-  private val stateMachine = UpdatesStateMachine(context, this, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
+  private val stateMachine = UpdatesStateMachine(logger, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
 
   private var isStarted = false
+  private var startupStartTimeMillis: Long? = null
+  private var startupEndTimeMillis: Long? = null
+
+  private val launchDuration
+    get() = startupStartTimeMillis?.let { start ->
+      startupEndTimeMillis?.let { end ->
+        (end - start).toDuration(
+          DurationUnit.MILLISECONDS
+        )
+      }
+    }
+
   private var launcher: Launcher? = null
   private var isLoaderTaskFinished = false
   override var updatesDirectory: File? = null
@@ -62,7 +68,7 @@ class DisabledUpdatesController(
         try {
           (this as java.lang.Object).wait()
         } catch (e: InterruptedException) {
-          Log.e(TAG, "Interrupted while waiting for launch asset file", e)
+          logger.error("Interrupted while waiting for launch asset file", e, UpdatesErrorCode.InitializationError)
         }
       }
       return launcher?.launchAssetFile
@@ -87,10 +93,12 @@ class DisabledUpdatesController(
       return
     }
     isStarted = true
+    startupStartTimeMillis = System.currentTimeMillis()
 
-    launcher = NoDatabaseLauncher(context, fatalException)
+    launcher = NoDatabaseLauncher(context, logger, fatalException)
+
+    startupEndTimeMillis = System.currentTimeMillis()
     notifyController()
-    return
   }
 
   class UpdatesDisabledException(message: String) : CodedException(message)
@@ -98,6 +106,7 @@ class DisabledUpdatesController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launcher?.launchedUpdate,
+      launchDuration = launchDuration,
       embeddedUpdate = null,
       emergencyLaunchException = fatalException,
       isEnabled = false,
@@ -106,7 +115,8 @@ class DisabledUpdatesController(
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER,
       requestHeaders = mapOf(),
       localAssetFiles = launcher?.localAssetFiles,
-      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false,
+      initialContext = stateMachine.context
     )
   }
 
@@ -125,10 +135,6 @@ class DisabledUpdatesController(
       }
     )
     stateMachine.queueExecution(procedure)
-  }
-
-  override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
-    callback.onSuccess(stateMachine.context)
   }
 
   override fun checkForUpdate(
@@ -166,16 +172,5 @@ class DisabledUpdatesController(
 
   companion object {
     private val TAG = DisabledUpdatesController::class.java.simpleName
-  }
-
-  override fun sendUpdateStateChangeEventToAppContext(
-    eventType: UpdatesStateEventType,
-    context: UpdatesStateContext
-  ) {
-    sendEventToJS(UPDATES_STATE_CHANGE_EVENT_NAME, eventType.type, context.writableMap)
-  }
-
-  private fun sendEventToJS(eventName: String, eventType: String, params: WritableMap?) {
-    UpdatesUtils.sendEvent(eventEmitter, shouldEmitJsEvents, logger, eventName, eventType, params)
   }
 }

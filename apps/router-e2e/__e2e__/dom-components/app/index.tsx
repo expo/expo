@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Actions from '../components/02-actions';
@@ -6,15 +6,18 @@ import LocalAsset from '../components/03-local-asset';
 import Tailwind from '../components/04-tailwind';
 import PublicAsset from '../components/05-public-asset';
 import NestedComponents from '../components/06-nested';
+import ForwardRef, { type ForwardedImperativeRef } from '../components/07-forward-ref';
+import NativeModuleProxy from '../components/08-native-module-proxy';
 
 export default function Page() {
   const [index, setIndex] = useState(0);
+  const forwardedRef = useRef<ForwardedImperativeRef>(null);
 
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, padding: 56 }}>
       <TestCase name="Actions">
         <Actions
-          dom={{ autoSize: true }}
+          dom={{ matchContents: true }}
           index={index}
           setIndexAsync={async (index) => setIndex(index)}
           showAlert={(time) => {
@@ -35,21 +38,42 @@ export default function Page() {
 
       <TestCase name="Local Asset">
         <Text style={styles.testcaseHint}>
-          Large height div with a centered local asset image. Please test scrolling for autoSize.
+          Large height div with a centered local asset image. Please test scrolling for
+          matchContents.
         </Text>
-        <LocalAsset dom={{ autoSize: true }} />
+        <LocalAsset dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Public Asset">
-        <PublicAsset dom={{ autoSize: true }} />
+        <PublicAsset dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Tailwind">
-        <Tailwind dom={{ autoSize: true }} />
+        <Tailwind dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Nested">
-        <NestedComponents dom={{ autoSize: true }} />
+        <NestedComponents dom={{ matchContents: true }} />
+      </TestCase>
+
+      <TestCase name="forwardRef">
+        <ForwardRef dom={{ matchContents: true }} ref={forwardedRef} />
+        <Button
+          title="Toggle width"
+          onPress={() => {
+            forwardedRef.current?.toggleWidth();
+          }}
+        />
+        <Button
+          title="Update text"
+          onPress={() => {
+            forwardedRef.current?.updateText(Date.now().toString());
+          }}
+        />
+      </TestCase>
+
+      <TestCase name="NativeModuleProxy">
+        <NativeModuleProxy dom={{ matchContents: true, useExpoDOMWebView: true }} />
       </TestCase>
     </ScrollView>
   );

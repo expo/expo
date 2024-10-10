@@ -16,8 +16,8 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { fileExistsAsync } from './utils';
 import { getIsolatedModulesPath } from '../autolinking/utils';
+import { fileExistsAsync } from '../fileUtils';
 import type { SupportedPlatform } from '../types';
 
 /**
@@ -143,6 +143,9 @@ export async function resolveAppProjectConfigAsync(
   if (platform === 'android') {
     const androidDir = path.join(projectRoot, 'android');
     const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: false });
+    if (gradle == null || manifest == null) {
+      return {};
+    }
     const packageName = await parsePackageNameAsync(
       path.join(androidDir, manifest),
       path.join(androidDir, gradle)

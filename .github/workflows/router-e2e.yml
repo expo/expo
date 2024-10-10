@@ -3,6 +3,7 @@ name: Router Maestro E2E
 on:
   pull_request:
     paths:
+      - .github/workflows/router-e2e.yml
       - packages/@expo/cli/**
       - packages/expo-router/**
 
@@ -21,11 +22,18 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+      # Find and restore Yarn's global cache
+      # See: https://github.com/actions/cache/blob/main/examples.md#node---yarn
+      - name: 🔍 Find Yarn Cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - name: ♻️ Restore Yarn Cache
+        uses: actions/cache@v4
         with:
-          yarn-workspace: 'true'
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
 
       - name: Install dependencies
         run: YARN_IGNORE_SCRIPTS=true yarn --frozen-lockfile

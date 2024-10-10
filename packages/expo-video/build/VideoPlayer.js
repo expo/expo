@@ -1,6 +1,6 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
-import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import NativeVideoModule from './NativeVideoModule';
+import resolveAssetSource from './resolveAssetSource';
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
 const replace = NativeVideoModule.VideoPlayer.prototype.replace;
 NativeVideoModule.VideoPlayer.prototype.replace = function (source) {

@@ -8,23 +8,14 @@
 
 ### 🎉 New features
 
-- On `Android`, add support for setting the aspect ratio of the camera. ([#29822](https://github.com/expo/expo/pull/29822) by [@alanjhughes](https://github.com/alanjhughes))
-- Support mirroring the output of the front facing camera. ([#30430](https://github.com/expo/expo/pull/30430) by [@alanjhughes](https://github.com/alanjhughes))
-- On `Android`, support mirroring video when using front facing camera. Control mirroring with a prop. Deprecate `mirror` option on `takePictureAsync` and `recordAsync`. ([#30548](https://github.com/expo/expo/pull/30548) by [@alanjhughes](https://github.com/alanjhughes))
-- Support pausing and resuming the preview. ([#30666](https://github.com/expo/expo/pull/30666) by [@alanjhughes](https://github.com/alanjhughes))
-- Add `active` prop to stop and start the camera session. Useful with navigation where the camera is can still be active on a previous screen. ([#30802](https://github.com/expo/expo/pull/30802) by [@alanjhughes](https://github.com/alanjhughes))
 - Add `shutterSound` key to `CameraPictureOptions`, allowing users to disable the camera shutter sound when invoking `takePictureAsync`. ([#31038](https://github.com/expo/expo/pull/31038)) by [@yuna5566](https://github.com/yuna5566)
 
 ### 🐛 Bug fixes
 
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30462](https://github.com/expo/expo/pull/30462) by [@byCedric](https://github.com/byCedric))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
-- On `iOS`, correctly stop the session when the `CameraView` is removed. ([#30580](https://github.com/expo/expo/pull/30580) by [@alanjhughes](https://github.com/alanjhughes))
 - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
-- Fix rendering order of child views. ([#30759](https://github.com/expo/expo/pull/30759) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed issue regarding using the "back"-facing on mobile web browswer. ([#30811](https://github.com/expo/expo/pull/30811) by [@entiendoNull](https://github.com/entiendoNull))
-- Set the previews `scaleType` when the aspect ratio is set. ([#30831](https://github.com/expo/expo/pull/30831) by [@alanjhughes](https://github.com/alanjhughes))
-- On Android, fix selecting `pictureSize`. ([#31093](https://github.com/expo/expo/pull/31093) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix `takePictureAsync` `quality` option when set to 0. ([#31587](https://github.com/expo/expo/pull/31587) by [@davidavz](https://github.com/davidavz))
 
 ### 💡 Others
@@ -33,10 +24,33 @@
 - Updated docs for the `pictureSize` prop. ([#30195](https://github.com/expo/expo/pull/30195) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Migrated cameraview AAR to autolinking and removed related config-plugin about adding the maven repository. ([#30707](https://github.com/expo/expo/pull/30707) by [@kudo](https://github.com/kudo))
 - Remove the dependency on the legacy types from the newer package on web. ([#30952](https://github.com/expo/expo/pull/30952) by [@alanjhughes](https://github.com/alanjhughes))
+- Remove `preferredVideoStabilizationMode` until is is fully supported. ([#31514](https://github.com/expo/expo/pull/31514) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Migrate to Swift concurrency. ([#31900](https://github.com/expo/expo/pull/31900) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 15.0.16 - 2024-09-13
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.15 - 2024-08-24
+
+### 🎉 New features
+
+- On `Android`, add support for setting the aspect ratio of the camera. ([#29822](https://github.com/expo/expo/pull/29822) by [@alanjhughes](https://github.com/alanjhughes))
+- Support mirroring the output of the front facing camera. ([#30430](https://github.com/expo/expo/pull/30430) by [@alanjhughes](https://github.com/alanjhughes))
+- On `Android`, support mirroring video when using front facing camera. Control mirroring with a prop. Deprecate `mirror` option on `takePictureAsync` and `recordAsync`. ([#30548](https://github.com/expo/expo/pull/30548) by [@alanjhughes](https://github.com/alanjhughes))
+- Support pausing and resuming the preview. ([#30666](https://github.com/expo/expo/pull/30666) by [@alanjhughes](https://github.com/alanjhughes))
+- Add `active` prop to stop and start the camera session. Useful with navigation where the camera is can still be active on a previous screen. ([#30802](https://github.com/expo/expo/pull/30802) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- On `iOS`, correctly stop the session when the `CameraView` is removed. ([#30580](https://github.com/expo/expo/pull/30580) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix rendering order of child views. ([#30759](https://github.com/expo/expo/pull/30759) by [@alanjhughes](https://github.com/alanjhughes))
+- Set the previews `scaleType` when the aspect ratio is set. ([#30831](https://github.com/expo/expo/pull/30831) by [@alanjhughes](https://github.com/alanjhughes))
+- On Android, fix selecting `pictureSize`. ([#31093](https://github.com/expo/expo/pull/31093) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.14 - 2024-07-16
 

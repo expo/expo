@@ -25,7 +25,7 @@ export async function customizeAsync(files: string[], options: Options, extras: 
   // the query and select functions.
   const props: DestinationResolutionProps = {
     webStaticPath:
-      exp.web?.staticPath ?? getPlatformBundlers(projectRoot, exp).web === 'webpack'
+      (exp.web?.staticPath ?? getPlatformBundlers(projectRoot, exp).web === 'webpack')
         ? 'web'
         : 'public',
   };

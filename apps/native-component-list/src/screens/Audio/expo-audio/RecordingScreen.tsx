@@ -6,9 +6,6 @@ import Player from './AudioPlayer';
 import Recorder from './Recorder';
 import HeadingText from '../../../components/HeadingText';
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-
 export default function RecordingScreen() {
   const [recordingUri, setRecordingUri] = useState<string | undefined>(undefined);
 

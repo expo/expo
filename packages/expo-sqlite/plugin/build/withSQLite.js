@@ -9,9 +9,9 @@ const withSQLite = (config, props) => {
 };
 const withSQLiteAndroidProps = (config, props) => {
     return (0, config_plugins_1.withGradleProperties)(config, (config) => {
-        const customBuildFlags = props.android?.customBuildFlags ?? props.customBuildFlags;
-        const enableFTS = props.android?.enableFTS ?? props.enableFTS;
-        const useSQLCipher = props.android?.useSQLCipher ?? props.useSQLCipher;
+        const customBuildFlags = props?.android?.customBuildFlags ?? props?.customBuildFlags;
+        const enableFTS = props?.android?.enableFTS ?? props?.enableFTS;
+        const useSQLCipher = props?.android?.useSQLCipher ?? props?.useSQLCipher;
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.customBuildFlags', customBuildFlags);
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.enableFTS', enableFTS);
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useSQLCipher', useSQLCipher);
@@ -20,9 +20,9 @@ const withSQLiteAndroidProps = (config, props) => {
 };
 const withSQLiteIOSProps = (config, props) => {
     return (0, config_plugins_1.withPodfileProperties)(config, (config) => {
-        const customBuildFlags = props.ios?.customBuildFlags ?? props.customBuildFlags;
-        const enableFTS = props.ios?.enableFTS ?? props.enableFTS;
-        const useSQLCipher = props.ios?.useSQLCipher ?? props.useSQLCipher;
+        const customBuildFlags = props?.ios?.customBuildFlags ?? props?.customBuildFlags;
+        const enableFTS = props?.ios?.enableFTS ?? props?.enableFTS;
+        const useSQLCipher = props?.ios?.useSQLCipher ?? props?.useSQLCipher;
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.customBuildFlags', customBuildFlags);
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.enableFTS', enableFTS);
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useSQLCipher', useSQLCipher);

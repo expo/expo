@@ -10,11 +10,14 @@ public final class FileSystemNextModule: Module {
       return [
         "documentDirectory": appContext?.config.documentDirectory?.absoluteString,
         "cacheDirectory": appContext?.config.cacheDirectory?.absoluteString,
-        "bundleDirectory": Bundle.main.bundlePath
+        "bundleDirectory": Bundle.main.bundlePath,
+        "appleSharedContainers": getAppleSharedContainers()
       ]
     }
 
     AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, promise: Promise) in
+      try to.validatePermission(.write)
+
       let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, responseOrNil, errorOrNil in
         guard errorOrNil == nil else {
           return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
@@ -89,7 +92,7 @@ public final class FileSystemNextModule: Module {
       }
 
       Property("exists") { file in
-        return file.exists
+        return (try? file.exists) ?? false
       }
 
       Function("create") { file in
@@ -148,5 +151,18 @@ public final class FileSystemNextModule: Module {
         return directory.url.absoluteString
       }
     }
+  }
+
+  private func getAppleSharedContainers() -> [String: String] {
+    guard let appContext else {
+      return [:]
+    }
+    var result: [String: String] = [:]
+    for appGroup in appContext.appCodeSignEntitlements.appGroups ?? [] {
+      if let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+        result[appGroup] = directory.standardizedFileURL.path
+      }
+    }
+    return result
   }
 }

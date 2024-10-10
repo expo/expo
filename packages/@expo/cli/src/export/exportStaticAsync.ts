@@ -407,6 +407,7 @@ export async function exportApiRoutesStandaloneAsync(
     // NOTE(kitten): For now, we always output source maps for API route exports
     includeSourceMaps: true,
     platform,
+    apiRoutesOnly: true,
   });
 
   // Add the api routes to the files to export.
@@ -421,11 +422,13 @@ async function exportApiRoutesAsync({
   includeSourceMaps,
   server,
   platform,
+  apiRoutesOnly,
   ...props
 }: Pick<Options, 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
   manifest: ExpoRouterServerManifestV1;
   platform: string;
+  apiRoutesOnly?: boolean;
 }): Promise<ExportAssetMap> {
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     outputDir: '_expo/functions',
@@ -433,6 +436,12 @@ async function exportApiRoutesAsync({
     includeSourceMaps,
     platform,
   });
+
+  // HACK: Clear out the HTML and 404 routes if we're only exporting API routes. This is used for native apps that are using API routes but haven't implemented web support yet.
+  if (apiRoutesOnly) {
+    manifest.htmlRoutes = [];
+    manifest.notFoundRoutes = [];
+  }
 
   files.set('_expo/routes.json', {
     contents: JSON.stringify(manifest, null, 2),

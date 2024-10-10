@@ -157,7 +157,6 @@ class ExponentSharedPreferences constructor(val context: Context) {
 
     // Other
     FCM_TOKEN_KEY("fcm_token"),
-    REFERRER_KEY("referrer"),
     NUX_HAS_FINISHED_FIRST_RUN_KEY("nux_has_finished_first_run"),
     IS_ONBOARDING_FINISHED_KEY("is_onboarding_finished"),
     LAST_FATAL_ERROR_DATE_KEY("last_fatal_error_date_key"),

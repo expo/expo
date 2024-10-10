@@ -70,7 +70,7 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
 
   auto argumentArray = env->NewObjectArray(
     count,
-    JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
+    JCacheHolder::get().jObject,
     nullptr
   );
 
@@ -324,17 +324,12 @@ jsi::Function MethodMetadata::createPromiseBody(
 
       JNIEnv *env = jni::Environment::current();
 
-      auto &jPromise = JavaReferencesCache::instance()->getJClass(
-        "expo/modules/kotlin/jni/PromiseImpl");
-      jmethodID jPromiseConstructor = jPromise.getMethod(
-        "<init>",
-        "(Lexpo/modules/kotlin/jni/JavaCallback;)V"
-      );
+      auto &jPromise = JCacheHolder::get().jPromise;
 
       // Creates a promise object
       jobject promise = env->NewObject(
         jPromise.clazz,
-        jPromiseConstructor,
+        jPromise.constructor,
         javaCallback
       );
 

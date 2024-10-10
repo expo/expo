@@ -23,14 +23,14 @@
 
 ### 🐛 Bug fixes
 
+- Fix styling bug in native production error boundary. ([#31791](https://github.com/expo/expo/pull/31791) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix search params in RSC. ([#31641](https://github.com/expo/expo/pull/31641) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix reloading RSC requests in production. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
 - Use empty cache requests to support loading RSC fresh on each request in native production builds. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix RSC errors when a missing module is loaded. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix nested server actions. ([#31019](https://github.com/expo/expo/pull/31019) by [@EvanBacon](https://github.com/EvanBacon))
 - Add client boundary callback for production exports. ([#30747](https://github.com/expo/expo/pull/30747) by [@EvanBacon](https://github.com/EvanBacon))
 - Prevent duplicated `NSUserActivityTypes` strings in prebuild. ([#25114](https://github.com/expo/expo/pull/25114) by [@yjose](https://github.com/yjose))
-- Ensure navigation keeps within the closest group. ([#30266](https://github.com/expo/expo/pull/30266) by [@marklawlor](https://github.com/marklawlor))
-- Fix Typed Routes with hoisted routes and groups. ([#30810](https://github.com/expo/expo/pull/30810) by [@marklawlor](https://github.com/marklawlor))
 - Fix Fash Refresh on \_layout files that export unstable_settings ([#29977](https://github.com/expo/expo/pull/29977) by [@marklawlor](https://github.com/marklawlor))
 - Fix creating/parsing URLs with array search params. ([#30268](https://github.com/expo/expo/pull/30268) by [@marklawlor](https://github.com/marklawlor))
 - Fix incorrect routing sorting for static paths ([#30909](https://github.com/expo/expo/pull/30909) by [@marklawlor](https://github.com/marklawlor))
@@ -54,6 +54,21 @@
 - Remove debugger code ([#30686](https://github.com/expo/expo/pull/30686) by [@marklawlor](https://github.com/marklawlor))
 - Fix project linting errors ([#30687](https://github.com/expo/expo/pull/30687) by [@marklawlor](https://github.com/marklawlor))
 - Fix useGlobalSearchParams returning a string value for params ([#30415](https://github.com/expo/expo/pull/30415) by [@marklawlor](https://github.com/marklawlor))
+
+## 3.5.23 - 2024-08-14
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.22 - 2024-08-14
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.21 - 2024-08-07
+
+### 🐛 Bug fixes
+
+- Ensure navigation keeps within the closest group. ([#30266](https://github.com/expo/expo/pull/30266) by [@marklawlor](https://github.com/marklawlor))
+- Fix Typed Routes with hoisted routes and groups. ([#30810](https://github.com/expo/expo/pull/30810) by [@marklawlor](https://github.com/marklawlor))
 
 ## 3.5.19 - 2024-07-29
 

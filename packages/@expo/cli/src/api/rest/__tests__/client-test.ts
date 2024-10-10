@@ -5,11 +5,14 @@ import { CommandError } from '../../../utils/errors';
 import { fetch } from '../../../utils/fetch';
 import { getExpoApiBaseUrl } from '../../endpoint';
 import { disableNetwork } from '../../settings';
-import UserSettings from '../../user/UserSettings';
+import { getAccessToken, getSession } from '../../user/UserSettings';
 import { ApiV2Error, fetchAsync } from '../client';
 
 jest.mock('../../settings');
-jest.mock('../../user/UserSettings');
+jest.mock('../../user/UserSettings', () => ({
+  getAccessToken: jest.fn(),
+  getSession: jest.fn(),
+}));
 jest.mock('../../../utils/fetch', () => ({
   fetch: jest.fn(jest.requireActual('../../../utils/fetch').fetch),
 }));
@@ -128,7 +131,7 @@ it('makes a request using an absolute URL', async () => {
 });
 
 it('makes an authenticated request with access token', async () => {
-  jest.mocked(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
+  jest.mocked(getAccessToken).mockClear().mockReturnValue('my-access-token');
 
   nock(getExpoApiBaseUrl())
     .matchHeader('authorization', 'Bearer my-access-token')
@@ -139,13 +142,13 @@ it('makes an authenticated request with access token', async () => {
 });
 
 it('makes an authenticated request with session secret', async () => {
-  jest.mocked(UserSettings.getSession).mockClear().mockReturnValue({
+  jest.mocked(getSession).mockClear().mockReturnValue({
     sessionSecret: 'my-secret-token',
     userId: '',
     username: '',
     currentConnection: 'Username-Password-Authentication',
   });
-  jest.mocked(UserSettings.getAccessToken).mockReturnValue(null);
+  jest.mocked(getAccessToken).mockReturnValue(null);
 
   nock(getExpoApiBaseUrl())
     .matchHeader('expo-session', 'my-secret-token')
@@ -156,8 +159,8 @@ it('makes an authenticated request with session secret', async () => {
 });
 
 it('only uses access token when both authentication methods are available', async () => {
-  jest.mocked(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
-  jest.mocked(UserSettings.getSession).mockClear().mockReturnValue({
+  jest.mocked(getAccessToken).mockClear().mockReturnValue('my-access-token');
+  jest.mocked(getSession).mockClear().mockReturnValue({
     sessionSecret: 'my-secret-token',
     userId: '',
     username: '',

@@ -1,8 +1,8 @@
 import { SharedObject } from 'expo';
 
 import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
-import { crop, extent, flip, resize, rotate } from './actions/index.web';
 import { ActionCrop, ActionExtent, FlipType } from '../ImageManipulator.types';
+import { crop, extent, flip, resize, rotate } from './actions/index.web';
 
 type ContextLoader = () => HTMLCanvasElement | Promise<HTMLCanvasElement>;
 

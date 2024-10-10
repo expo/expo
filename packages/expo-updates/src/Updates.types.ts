@@ -295,6 +295,7 @@ export type UpdatesNativeStateMachineContext = {
   checkError?: Error;
   downloadError?: Error;
   lastCheckForUpdateTime?: Date;
+  sequenceNumber: number;
 };
 
 /**

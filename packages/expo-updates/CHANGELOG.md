@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Automatically write an `app.json` when attempting to modify a config and no file exists. ([#30026](https://github.com/expo/expo/pull/30026) by [@EvanBacon](https://github.com/EvanBacon))
+- Add launchDuration constant ([#31805](https://github.com/expo/expo/pull/31805) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
@@ -18,7 +19,9 @@
 - Use relative entry point from `@expo/config/paths` with support for server root. ([#30633](https://github.com/expo/expo/pull/30633) by [@byCedric](https://github.com/byCedric))
 - [iOS] Rollback to system SQLite3 and fix incompatible issue when any third-party library uses iOS system SQLite3. ([#30826](https://github.com/expo/expo/pull/30826) by [@kudo](https://github.com/kudo))
 - Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
-- [ios] Store strong references to long-lived objects created in procedures ([#31599](https://github.com/expo/expo/pull/31599) by [@wschurman](https://github.com/wschurman))
+- Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
+- [cli] Disable console during runtime and fingeprint evaluation ([#31874](https://github.com/expo/expo/pull/31874) by [@wschurman](https://github.com/wschurman))
+- Refactor state machine event emitting and initial state ([#31819](https://github.com/expo/expo/pull/31819) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
@@ -27,12 +30,30 @@
 - [Android] Upgrade dependencies and remove unused ones. Change multipart parser to okhttp. ([#29060](https://github.com/expo/expo/pull/29060) by [@wschurman](https://github.com/wschurman))
 - [Android] Use protected methods in room dao now that ksp allows it. ([#29080](https://github.com/expo/expo/pull/29080) by [@wschurman](https://github.com/wschurman))
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Re-exported `@expo/fingerprint` as `expo-updates/fingerprint`. ([#30757](https://github.com/expo/expo/pull/30757) by [@kudo](https://github.com/kudo))
 - Move location of assetPatternsToBeBundled config key ([#31584](https://github.com/expo/expo/pull/31584) by [@wschurman](https://github.com/wschurman))
+- Refactor JS event queueing and emitting ([#31818](https://github.com/expo/expo/pull/31818, [#31854](https://github.com/expo/expo/pull/31854) by [@wschurman](https://github.com/wschurman))
+- Remove clearUpdateCacheExperimentalAsync ([#31871](https://github.com/expo/expo/pull/31871) by [@wschurman](https://github.com/wschurman))
+- Refactor errors, context injection, and error logs ([#31929](https://github.com/expo/expo/pull/31929), [#31951](https://github.com/expo/expo/pull/31951), [#31953](https://github.com/expo/expo/pull/31953) by [@wschurman](https://github.com/wschurman))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.25.25 - 2024-09-20
+
+### 🐛 Bug fixes
+
+- [ios] Store strong references to long-lived objects created in procedures ([#31599](https://github.com/expo/expo/pull/31599) by [@wschurman](https://github.com/wschurman))
+
+## 0.25.24 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.25.22 - 2024-08-07
+
+### 💡 Others
+
+- Re-exported `@expo/fingerprint` as `expo-updates/fingerprint`. ([#30757](https://github.com/expo/expo/pull/30757) by [@kudo](https://github.com/kudo))
 
 ## 0.25.21 - 2024-07-22
 

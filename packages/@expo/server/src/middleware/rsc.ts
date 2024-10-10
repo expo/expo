@@ -112,7 +112,7 @@ export function getRscMiddleware(options: {
         method,
         body: req.body,
         contentType: req.headers.get('Content-Type') ?? '',
-        decodedBody: req.headers.get('x-expo-params'),
+        decodedBody: req.headers.get('X-Expo-Params'),
         onError: options.onError,
       };
       const readable = await options.renderRsc(args);

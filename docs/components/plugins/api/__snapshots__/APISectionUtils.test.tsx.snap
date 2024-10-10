@@ -297,7 +297,17 @@ exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
 
 exports[`APISectionUtils.resolveTypeName alternative generic object notation 1`] = `
 <div>
-  { [column]: any }
+  <span
+    class="text-quaternary"
+  >
+    {
+  </span>
+   [column]: any 
+  <span
+    class="text-quaternary"
+  >
+    }
+  </span>
 </div>
 `;
 
@@ -733,7 +743,11 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
 
 exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
 <div>
-  (
+  <span
+    class="text-quaternary"
+  >
+    (
+  </span>
   <span>
     <a
       class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
@@ -755,7 +769,11 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
       ResultSet
     </a>
   </span>
-  )
+  <span
+    class="text-quaternary"
+  >
+    )
+  </span>
   []
 </div>
 `;

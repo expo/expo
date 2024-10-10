@@ -157,6 +157,7 @@ redirects[guides/setting-up-continuous-integration]=build/building-on-ci
 redirects[distribution/release-channels]=archive/classic-updates/release-channels
 redirects[distribution/advanced-release-channels]=archive/classic-updates/advanced-release-channels
 redirects[distribution/optimizing-updates]=archive/classic-updates/optimizing-updates
+redirects[distribution/runtime-versions]=eas-update/runtime-versions
 redirects[guides/offline-support]=archive/classic-updates/offline-support
 redirects[guides/preloading-and-caching-assets]=archive/classic-updates/preloading-and-caching-assets
 redirects[guides/configuring-updates]=archive/classic-updates/configuring-updates
@@ -180,7 +181,7 @@ redirects[eas-update/custom-updates-server]=versions/latest/sdk/updates
 redirects[distribution/custom-updates-server]=versions/latest/sdk/updates
 redirects[bare/error-recovery]=eas-update/error-recovery
 redirects[deploy/instant-updates]=eas-update/send-over-the-air-updates
-redirects[eas-update/publish]=eas-update/get-started
+redirects[eas-update/publish]=eas-update/getting-started
 redirects[eas-update/debug-advanced]=eas-update/debug
 
 # Redirects for Expo Router docs
@@ -280,6 +281,10 @@ redirects[guides/react-compiler]=preview/react-compiler
 
 # Troubleshooting section
 redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
+
+# After adding "Linking" (/linking/**) section
+redirects[guides/linking]=linking/overview
+redirects[guides/deep-linking]=/linking/into-your-app
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

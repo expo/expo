@@ -2,6 +2,7 @@ import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
+import fs from 'fs';
 import path from 'path';
 
 import { createMetadataJson } from './createMetadataJson';
@@ -29,6 +30,7 @@ import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddl
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
+import { CommandError } from '../utils/errors';
 import { setNodeEnv } from '../utils/nodeEnv';
 
 export async function exportAppAsync(
@@ -43,6 +45,7 @@ export async function exportAppAsync(
     minify,
     bytecode,
     maxWorkers,
+    skipSSG,
   }: Pick<
     Options,
     | 'dumpAssetmap'
@@ -54,6 +57,7 @@ export async function exportAppAsync(
     | 'minify'
     | 'bytecode'
     | 'maxWorkers'
+    | 'skipSSG'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
@@ -70,6 +74,11 @@ export async function exportAppAsync(
   }
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+
+  if (skipSSG && exp.web?.output !== 'server') {
+    throw new CommandError('--no-ssg can only be used with `web.output: server`');
+  }
+
   const baseUrl = getBaseUrlFromExpoConfig(exp);
 
   if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
@@ -245,21 +254,39 @@ export async function exportAppAsync(
         await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
       }
 
-      await exportFromServerAsync(projectRoot, devServer, {
-        mode,
-        files,
-        clear: !!clear,
-        outputDir: outputPath,
-        minify,
-        baseUrl,
-        includeSourceMaps: sourceMaps,
-        routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
-        reactCompiler: !!exp.experiments?.reactCompiler,
-        exportServer,
-        maxWorkers,
-        isExporting: true,
-        exp: projectConfig.exp,
-      });
+      if (skipSSG) {
+        Log.log('Skipping static site generation');
+        await exportApiRoutesStandaloneAsync(devServer, {
+          files,
+          platform: 'web',
+        });
+
+        // Output a placeholder index.html if one doesn't exist in the public directory.
+        // This ensures native + API routes have some content at the root URL.
+        const placeholderIndex = path.resolve(outputPath, 'client/index.html');
+        if (!fs.existsSync(placeholderIndex)) {
+          files.set('index.html', {
+            contents: `<html><body></body></html>`,
+            targetDomain: 'client',
+          });
+        }
+      } else {
+        await exportFromServerAsync(projectRoot, devServer, {
+          mode,
+          files,
+          clear: !!clear,
+          outputDir: outputPath,
+          minify,
+          baseUrl,
+          includeSourceMaps: sourceMaps,
+          routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+          reactCompiler: !!exp.experiments?.reactCompiler,
+          exportServer,
+          maxWorkers,
+          isExporting: true,
+          exp: projectConfig.exp,
+        });
+      }
     }
   } finally {
     await devServerManager.stopAsync();

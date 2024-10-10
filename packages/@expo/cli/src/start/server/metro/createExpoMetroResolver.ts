@@ -122,7 +122,7 @@ export function createFastResolver({
           ...new Set([
             'default',
             ...context.unstable_conditionNames,
-            ...(platform != null ? context.unstable_conditionsByPlatform[platform] ?? [] : []),
+            ...(platform != null ? (context.unstable_conditionsByPlatform[platform] ?? []) : []),
           ]),
         ]
       : [];

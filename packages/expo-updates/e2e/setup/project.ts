@@ -6,6 +6,11 @@ import fs from 'fs/promises';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
+/*
+ * Change this to your own Expo account name
+ */
+export const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
+
 const dirName = __dirname; /* eslint-disable-line */
 
 // Package dependencies in chunks based on peer dependencies.
@@ -17,7 +22,7 @@ function getExpoDependencyChunks({
   includeTV: boolean;
 }) {
   return [
-    ['@expo/config-types', '@expo/env'],
+    ['@expo/config-types', '@expo/env', '@expo/json-file'],
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['expo-modules-core'],
@@ -806,6 +811,8 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     { appJsFileName: 'App-apitest.tsx', repoRoot, isTV: false }
   );
 
+  const projectName = path.basename(projectRoot);
+
   // disable JS debugging on Android
   const mainApplicationPath = path.join(
     projectRoot,
@@ -815,8 +822,8 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     'main',
     'java',
     'com',
-    'douglowderexpo',
-    'MyUpdateableApp',
+    EXPO_ACCOUNT_NAME,
+    projectName,
     'MainApplication.kt'
   );
   const mainApplicationText = await fs.readFile(mainApplicationPath, { encoding: 'utf-8' });

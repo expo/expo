@@ -3,12 +3,12 @@ import { XcodeProject } from 'xcode';
 
 import { InfoPlist } from './IosConfig.types';
 import { findFirstNativeTarget } from './Target';
+import { ConfigPlugin } from '../Plugin.types';
 import {
   ConfigurationSectionEntry,
   getBuildConfigurationsForListId,
   sanitizedName,
 } from './utils/Xcodeproj';
-import { ConfigPlugin } from '../Plugin.types';
 import { createInfoPlistPluginWithPropertyGuard, withXcodeProject } from '../plugins/ios-plugins';
 
 export const withDisplayName = createInfoPlistPluginWithPropertyGuard(

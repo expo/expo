@@ -41,8 +41,8 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
         settings[BARCODE_TYPES_KEY] = value
         let zxingCoveredTypes = Set(zxingBarcodeReaders.keys)
         zxingEnabled = !zxingCoveredTypes.isDisjoint(with: newTypes)
-        sessionQueue.async {
-          self.maybeStartBarcodeScanning()
+        Task {
+          await self.maybeStartBarcodeScanning()
         }
       }
     }
@@ -58,15 +58,16 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     }
 
     isScanningBarcodes = enabled
-    sessionQueue.async {
-      if self.isScanningBarcodes {
-        if self.metadataOutput != nil {
-          self.setConnection(enabled: true)
+    Task {
+      if isScanningBarcodes {
+        if metadataOutput != nil {
+          setConnection(enabled: true)
         } else {
-          self.maybeStartBarcodeScanning()
+          await maybeStartBarcodeScanning()
         }
       } else {
-        self.setConnection(enabled: false)
+        setConnection(enabled: false)
+        await stopBarcodeScanning()
       }
     }
   }
@@ -77,13 +78,13 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     }
   }
 
-  func maybeStartBarcodeScanning() {
+  func maybeStartBarcodeScanning() async {
     guard isScanningBarcodes else {
       return
     }
 
     if metadataOutput == nil || videoDataOutput == nil {
-      addOutputs()
+      await addOutputs()
       if metadataOutput == nil {
         return
       }
@@ -97,8 +98,8 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     metadataOutput?.metadataObjectTypes = requestedTypes
   }
 
-  func stopBarcodeScanning() {
-    removeOutputs()
+  func stopBarcodeScanning() async {
+    await removeOutputs()
     if isScanningBarcodes {
       onBarcodeScanned?(nil)
     }
@@ -134,8 +135,9 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     }
   }
 
-  private func addOutputs() {
+  private func addOutputs() async {
     session.beginConfiguration()
+    defer { session.commitConfiguration() }
 
     if metadataOutput == nil {
       let output = AVCaptureMetadataOutput()
@@ -156,12 +158,11 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
         videoDataOutput = output
       }
     }
-
-    session.commitConfiguration()
   }
 
-  private func removeOutputs() {
+  private func removeOutputs() async {
     session.beginConfiguration()
+    defer { session.commitConfiguration() }
 
     if let metadataOutput {
       if session.outputs.contains(metadataOutput) {
@@ -176,8 +177,6 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
         self.videoDataOutput = nil
       }
     }
-
-    session.commitConfiguration()
   }
 
   func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {

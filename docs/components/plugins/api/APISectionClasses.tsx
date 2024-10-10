@@ -48,14 +48,15 @@ const CLASSES_TO_IGNORE_INHERITED_PROPS = [
 ] as const;
 
 const isProp = (child: PropData) =>
-  child.kind === TypeDocKind.Property &&
+  child.kind &&
+  [TypeDocKind.Property, TypeDocKind.Accessor].includes(child.kind) &&
   !child.overwrites &&
   !child.name.startsWith('_') &&
   !child.implementationOf;
 
 const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   child.kind &&
-  [TypeDocKind.Method, TypeDocKind.Function, TypeDocKind.Accessor].includes(child.kind) &&
+  [TypeDocKind.Method, TypeDocKind.Function].includes(child.kind) &&
   (allowOverwrites || !child.overwrites) &&
   !child.name.startsWith('_') &&
   !child?.implementationOf;

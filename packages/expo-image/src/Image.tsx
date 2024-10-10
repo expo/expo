@@ -8,7 +8,7 @@ import ExpoImage from './ExpoImage';
 import { ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
 import ImageModule from './ImageModule';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
-import { resolveSources } from './utils/resolveSources';
+import { resolveSource, resolveSources } from './utils/resolveSources';
 
 let loggedDefaultSourceDeprecationWarning = false;
 
@@ -155,10 +155,13 @@ export class Image extends React.PureComponent<ImageProps> {
   /**
    * Loads an image from the given source to memory and resolves to
    * an object that references the native image instance.
+   * @platform android
    * @platform ios
+   * @platform web
    */
-  static loadAsync(source: ImageSource): Promise<ImageRef> {
-    return ImageModule.loadAsync(source);
+  static async loadAsync(source: ImageSource | string): Promise<ImageRef> {
+    const resolvedSource = resolveSource(source) as ImageSource;
+    return await ImageModule.loadAsync(resolvedSource);
   }
 
   render() {

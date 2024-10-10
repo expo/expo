@@ -9,9 +9,12 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.interfaces.INotificationContent
+import expo.modules.notifications.notifications.model.NotificationAction
+import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
+import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.junit.Assert.assertArrayEquals
@@ -27,10 +30,15 @@ import org.junit.Test
 class ExpoNotificationBuilderTest {
 
   private lateinit var context: Context
+  private lateinit var categoriesStore: SharedPreferencesNotificationCategoriesStore
 
   @Before
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
+    categoriesStore = SharedPreferencesNotificationCategoriesStore(context)
+    val na = NotificationAction("test-action", "Test Action", true)
+    val nc = NotificationCategory("test-category", listOf(na))
+    categoriesStore.saveNotificationCategory(nc)
   }
 
   private fun createTestNotificationBuilder(notificationContent: INotificationContent): ExpoNotificationBuilder {
@@ -38,9 +46,7 @@ class ExpoNotificationBuilderTest {
     val exNotification =
       expo.modules.notifications.notifications.model.Notification(notificationRequest)
 
-    val notificationBuilder = ExpoNotificationBuilder(context)
-    notificationBuilder.setNotification(exNotification)
-    return notificationBuilder
+    return ExpoNotificationBuilder(context, exNotification, categoriesStore)
   }
 
   @Test
@@ -56,6 +62,8 @@ class ExpoNotificationBuilderTest {
       .setBody(JSONObject("{\"key\":\"value\"}"))
       .setPriority(NotificationPriority.HIGH)
       .setVibrationPattern(longArrayOf(100, 200, 300, 400))
+      .setCategoryId("test-category")
+      .setBadgeCount(999)
       .build()
     val androidNotification = createTestNotificationBuilder(notificationContent).build()
 
@@ -63,12 +71,15 @@ class ExpoNotificationBuilderTest {
     assertNotNull(androidNotification)
 
     // Check title, text, and subtitle
-    assertEquals("Test Title", NotificationCompat.getContentTitle(androidNotification))
-    assertEquals("Test Text", NotificationCompat.getContentText(androidNotification))
-    assertEquals("Test Subtitle", NotificationCompat.getSubText(androidNotification))
-    assertEquals(Color.RED, NotificationCompat.getColor(androidNotification))
-    assertTrue(NotificationCompat.getAutoCancel(androidNotification)) // maps to autoDismiss
+    assertEquals(notificationContent.title, NotificationCompat.getContentTitle(androidNotification))
+    assertEquals(notificationContent.text, NotificationCompat.getContentText(androidNotification))
+    assertEquals(notificationContent.subText, NotificationCompat.getSubText(androidNotification))
+    assertEquals(notificationContent.color, NotificationCompat.getColor(androidNotification))
+    assertEquals(notificationContent.isAutoDismiss, NotificationCompat.getAutoCancel(androidNotification))
     assertNull(androidNotification.getLargeIcon()) // in an app this could be a bitmap
+    val action = androidNotification.actions.first()
+    assertEquals("Test Action", action.title)
+    assertEquals(notificationContent.badgeCount, androidNotification.number)
 
     // Check sticky flag
     assertTrue((androidNotification.flags and Notification.FLAG_ONGOING_EVENT) != 0)
@@ -101,5 +112,7 @@ class ExpoNotificationBuilderTest {
     assertFalse(NotificationCompat.getAutoCancel(androidNotification))
     assertNull(androidNotification.getLargeIcon())
     assertEquals(androidNotification.channelId, "expo_notifications_fallback_notification_channel")
+    assertNull(androidNotification.actions)
+    assertEquals(androidNotification.number, 0)
   }
 }

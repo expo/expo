@@ -15,7 +15,7 @@ export function isThumbhashString(str: string): boolean {
   return str.startsWith('thumbhash:/');
 }
 
-function resolveSource(source?: ImageSource | string | number | null): ImageSource | null {
+export function resolveSource(source?: ImageSource | string | number | null): ImageSource | null {
   if (typeof source === 'string') {
     if (isBlurhashString(source)) {
       return resolveBlurhashString(source);
@@ -47,7 +47,10 @@ export function resolveSources(sources?: ImageProps['source']): ImageNativeProps
   if (Array.isArray(sources)) {
     return sources.map(resolveSource).filter(Boolean) as ImageSource[];
   }
-  if (isImageRef(sources) && Platform.OS !== 'web') {
+  if (isImageRef(sources)) {
+    if (Platform.OS === 'web') {
+      return sources;
+    }
     // @ts-expect-error
     return sources.__expo_shared_object_id__;
   }

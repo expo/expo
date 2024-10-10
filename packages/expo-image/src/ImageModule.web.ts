@@ -4,7 +4,7 @@ import type { ImageNativeModule, ImageRef, ImageSource } from './Image.types';
 import ImageRefWeb from './web/ImageRef';
 
 class ImageModule extends NativeModule implements ImageNativeModule {
-  // @ts-expect-error: Overrides the built-in `Function.name` property
+  // @ts-ignore: Overrides the built-in `Function.name` property
   static name = 'ExpoImage';
 
   Image: typeof ImageRef = ImageRefWeb;

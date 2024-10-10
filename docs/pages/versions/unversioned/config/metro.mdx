@@ -597,6 +597,60 @@ You can optionally enable a custom Metro `require` implementation with the envir
 - Deterministic IDs that are the same between runs and across modules (required for React Server Components in development).
 - Removed support for legacy RAM bundles.
 
+## Magic import comments
+
+> Available from SDK 52 on all platforms.
+
+Server environments such as Workers, and Node.js support import arbitrary files at runtime, so you may want to keep `import` syntax in-tact instead of using Metro's require system. You can opt-out dynamic imports with the `/* @metro-ignore */` comment in `import()` statements.
+
+```js
+// Manually ensure `./my-module.js` is included in the correct spot relative to the module.
+const myModule = await import(/* @metro-ignore */ './my-module.js');
+```
+
+Expo CLI will skip the `./my-module.js` dependency and assume that the developer has manually added it to the output bundle. Internally, this is used for exporting custom server code that dynamically switches between files based on the request. Avoid using this syntax for native bundles since `import()` is generally not available in React Native with Hermes enabled.
+
+## Asset imports
+
+When assets are imported, a virtual module is created to represent the data required for importing the asset.
+
+On native platforms, an asset will be a numeric ID: `1`, `2`, `3`, etc. which can be looked up using `require("@react-native/assets-registry/registry").getAssetByID(<NUMBER>)`. On web and server platforms, the asset will change depending on the file type. If the file is an image, then the asset will be `{ uri: string, width?: number, height?: number }`, otherwise the asset will be a `string` representing the remote URL for the asset.
+
+The assets can be used as follows:
+
+```js
+import { Image } from 'react-native';
+
+import asset from './img.png';
+
+function Demo() {
+  return <Image source={asset} />;
+}
+```
+
+In API routes, you can always assume the type of the asset will not be a number:
+
+```js
+import asset from './img.png';
+
+export async function GET(req: Request) {
+  const ImageData = await fetch(
+    new URL(
+      // Access the asset URI.
+      asset.uri,
+      // Append to the current request URL origin.
+      req.url
+    )
+  ).then(res => res.arrayBuffer());
+
+  return new Response(ImageData, {
+    headers: {
+      'Content-Type': 'image/png',
+    },
+  });
+}
+```
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
