@@ -20,6 +20,7 @@ import { expoRouterBabelPlugin } from './expo-router-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
+import { reactServerActionsPlugin } from './server-actions-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 
 type BabelPresetExpoPlatformOptions = {
@@ -145,6 +146,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     platform = 'web';
   }
 
+  // Use the simpler babel preset for web and server environments (both web and native SSR).
+  const isModernEngine = platform === 'web' || isServerEnv;
+
   const platformOptions = getOptions(options, platform);
 
   if (platformOptions.useTransformReactJSXExperimental != null) {
@@ -214,13 +218,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
       { loose: true, useBuiltIns: true },
     ]);
-  } else {
-    if (platform !== 'web' && !isServerEnv) {
-      // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-      // JSX is used in a function body. This is technically not required in production, but we
-      // should retain the same behavior since it's hard to debug the differences.
-      extraPlugins.push(require('@babel/plugin-transform-parameters'));
-    }
+  } else if (!isModernEngine) {
+    // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
+    // JSX is used in a function body. This is technically not required in production, but we
+    // should retain the same behavior since it's hard to debug the differences.
+    extraPlugins.push(require('@babel/plugin-transform-parameters'));
   }
 
   const inlines: Record<string, null | boolean | string> = {
@@ -288,11 +290,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push(expoRouterBabelPlugin);
   }
 
+  extraPlugins.push(reactClientReferencesPlugin);
+
   // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
   // users who are bundling using the client-only system.
   if (isReactServer) {
-    extraPlugins.push(reactClientReferencesPlugin);
-
+    extraPlugins.push(reactServerActionsPlugin);
     extraPlugins.push(environmentRestrictedReactAPIsPlugin);
   } else {
     // DOM components must run after "use client" and only in client environments.
@@ -315,9 +318,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (platformOptions.disableImportExportTransform) {
     extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
   }
-
-  // Use the simpler babel preset for web and server environments (both web and native SSR).
-  const isModernEngine = platform === 'web' || isServerEnv;
 
   return {
     presets: [

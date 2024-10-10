@@ -4,6 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start",
+    "start:02-server-actions": "EXPO_UNSTABLE_SERVER_ACTIONS=1 E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=02-server-actions expo start",
+    "export:02-server-actions": "EXPO_UNSTABLE_SERVER_ACTIONS=1 E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=02-server-actions expo export",
     "start:rsc": "E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=01-rsc expo start",
     "export:rsc": "E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=01-rsc expo export",
     "start:react-native-canary": "E2E_RSC_ENABLED=1 E2E_CANARY_ENABLED=1 E2E_ROUTER_SRC=react-native-canary expo start",

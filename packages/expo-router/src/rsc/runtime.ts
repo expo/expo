@@ -9,10 +9,14 @@ declare let __METRO_GLOBAL_PREFIX__: string;
 
 // React Native's error handling is full of bugs which cause the app to crash in production.
 // We'll disable their handling in production native builds to ensure missing modules are shown to the user.
-const disableReactNativeMissingModuleHandling = !__DEV__ && process.env.EXPO_OS !== 'web';
+const disableReactNativeMissingModuleHandling =
+  !__DEV__ && (process.env.EXPO_OS !== 'web' || typeof window === 'undefined');
 
-globalThis.__webpack_chunk_load__ = global[`${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`];
-globalThis.__webpack_require__ = (id) => {
+globalThis.__webpack_chunk_load__ = (id: string) => {
+  return global[`${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`](id);
+};
+
+globalThis.__webpack_require__ = (id: string) => {
   // This logic can be tested by running a production iOS build without virtual client boundaries. This will result in all split chunks being missing and
   // errors being thrown on RSC load.
 

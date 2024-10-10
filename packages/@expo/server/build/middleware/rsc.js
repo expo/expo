@@ -95,6 +95,7 @@ function getRscMiddleware(options) {
             if (err instanceof Response) {
                 return err;
             }
+            console.error(err);
             return new Response(`Unexpected server error rendering RSC: ` + err.message, {
                 status: 'statusCode' in err ? err.statusCode : 500,
                 headers: {

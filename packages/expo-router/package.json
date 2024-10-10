@@ -15,6 +15,7 @@
     "assets",
     "build",
     "ios",
+    "rsc",
     "node",
     "plugin",
     "!src",
@@ -43,7 +44,8 @@
     "tabs.js",
     "tabs.d.ts",
     "testing-library.js",
-    "testing-library.d.ts"
+    "testing-library.d.ts",
+    "_async-server-import.js"
   ],
   "repository": {
     "url": "https://github.com/expo/expo.git",

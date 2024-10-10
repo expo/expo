@@ -615,6 +615,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -634,6 +635,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -660,6 +662,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -697,6 +700,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -719,6 +723,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -745,6 +750,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -781,6 +787,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -822,6 +829,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -849,6 +857,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -875,6 +884,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -925,6 +935,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -957,6 +968,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "math.js",
@@ -982,6 +994,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "shapes.js",
@@ -1009,6 +1022,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
     expect(artifacts[2].metadata).toEqual({
       isAsync: true,
@@ -1017,6 +1031,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
 
     // // The shared sync import is deduped and added to a common chunk.
@@ -1126,6 +1141,7 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js'],
+        reactServerReferences: [],
         requires: [],
       });
 
@@ -1179,6 +1195,76 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js', 'file:///app/second.js'],
+        reactServerReferences: [],
+        requires: [],
+      });
+    });
+  });
+  describe('server references', () => {
+    it(`collects server references from client modules when bundling in client mode`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `
+            import './server-actions.js'
+          `,
+          'server-actions.js': '"use server"; export async function foo() {}',
+        },
+        {
+          isReactServer: false,
+        }
+      );
+
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata).toEqual({
+        isAsync: false,
+        modulePaths: [
+          '/app/index.js',
+          '/app/server-actions.js',
+          '/app/react-server-dom-webpack/client',
+          '/app/expo-router/rsc/internal',
+        ],
+        paths: {},
+        expoDomComponentReferences: [],
+        reactClientReferences: [],
+        reactServerReferences: ['file:///app/server-actions.js'],
+        requires: [],
+      });
+    });
+    it(`collects server references from server action functions when bundling in react-server mode`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `
+            import './server-actions.js';
+
+            async function funky() {
+              "use server";
+
+            }
+          `,
+          'server-actions.js': '"use server"; export async function foo() {}',
+        },
+        {
+          isReactServer: true,
+        }
+      );
+
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata).toEqual({
+        isAsync: false,
+        modulePaths: [
+          '/app/index.js',
+          '/app/react-server-dom-webpack/server',
+          '/app/server-actions.js',
+        ],
+        paths: {},
+        expoDomComponentReferences: [],
+        reactClientReferences: [],
+        reactServerReferences: [
+          // This appears because we include a server action in the file.
+          'file:///app/index.js',
+          // This is here because the module is marked with "use server".
+          'file:///app/server-actions.js',
+        ],
         requires: [],
       });
     });

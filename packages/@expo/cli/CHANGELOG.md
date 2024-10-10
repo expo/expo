@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- Add experimental support for React Server Actions in Expo Router. ([#31959](https://github.com/expo/expo/pull/31959) by [@EvanBacon](https://github.com/EvanBacon))
 - Throw clear error when importing `react-native/Libraries/Utilities/codegenNativeCommands` on web. ([#31791](https://github.com/expo/expo/pull/31791) by [@EvanBacon](https://github.com/EvanBacon))
 - automatically deploy server from eager exports. ([#31707](https://github.com/expo/expo/pull/31707) by [@EvanBacon](https://github.com/EvanBacon))
 - eagerly bundle JS during `npx expo run:ios` for faster production failures. ([#31670](https://github.com/expo/expo/pull/31670) by [@EvanBacon](https://github.com/EvanBacon))
