@@ -3,6 +3,7 @@ package host.exp.exponent.experience.splashscreen
 import android.content.Context
 import android.graphics.Color
 import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +23,7 @@ class LoadingView @JvmOverloads constructor(
   defStyleAttr: Int = 0
 ) : RelativeLayout(context, attrs, defStyleAttr) {
   private val progressBar: ProgressBar
-  private val progressBarHandler = Handler()
+  private val progressBarHandler = Handler(Looper.getMainLooper())
   private var progressBarShown = false
 
   init {

@@ -10,16 +10,16 @@ import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactInstanceManagerBuilder
 import com.facebook.react.bridge.JavaScriptExecutorFactory
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.jscexecutor.JSCExecutorFactory
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.shell.MainReactPackage
+import com.swmansion.reanimated.ReanimatedPackage
 import expo.modules.jsonutils.getNullable
-import host.exp.exponent.RNObject
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.expoview.Exponent
@@ -53,7 +53,7 @@ object VersionedUtils {
       )
     }
 
-    devSupportManager.callRecursive("reloadExpoApp")
+    devSupportManager.reloadExpoApp()
   }
 
   private fun toggleElementInspector() {
@@ -70,7 +70,7 @@ object VersionedUtils {
       )
     }
 
-    devSupportManager.callRecursive("toggleElementInspector")
+    devSupportManager.toggleElementInspector()
   }
 
   private fun requestOverlayPermission(context: Context) {
@@ -107,14 +107,13 @@ object VersionedUtils {
       )
     }
 
-    val devSettings = devSupportManager.callRecursive("getDevSettings")
+    val devSettings = devSupportManager.devSettings
     if (devSettings != null) {
-      val isFpsDebugEnabled = devSettings.call("isFpsDebugEnabled") as Boolean
-      if (!isFpsDebugEnabled) {
+      if (!devSettings.isFpsDebugEnabled) {
         // Request overlay permission if needed when "Show Perf Monitor" option is selected
         requestOverlayPermission(currentActivity)
       }
-      devSettings.call("setFpsDebugEnabled", !isFpsDebugEnabled)
+      devSettings.isFpsDebugEnabled = !devSettings.isFpsDebugEnabled
     }
   }
 
@@ -132,10 +131,10 @@ object VersionedUtils {
       )
     }
 
-    val devSettings = devSupportManager.callRecursive("getDevSettings")
+    val devSettings = devSupportManager.devSettings
     if (devSettings != null) {
-      val isRemoteJSDebugEnabled = devSettings.call("isRemoteJSDebugEnabled") as Boolean
-      devSettings.call("setRemoteJSDebugEnabled", !isRemoteJSDebugEnabled)
+      val isRemoteJSDebugEnabled = devSettings.isRemoteJSDebugEnabled
+      devSettings.isRemoteJSDebugEnabled = !isRemoteJSDebugEnabled
     }
   }
 
@@ -151,7 +150,7 @@ object VersionedUtils {
     currentActivity.emitRCTNativeAppEvent("RCTDevMenuShown", null)
   }
 
-  private fun createPackagerCommandHelpers(): Map<String, RequestHandler> {
+  fun createPackagerCommandHelpers(): Map<String, RequestHandler> {
     // Attach listeners to the bundler's dev server web socket connection.
     // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
     val packagerCommandHandlers = mutableMapOf<String, RequestHandler>()
@@ -200,7 +199,7 @@ object VersionedUtils {
     var builder = ReactInstanceManager.builder()
       .setApplication(instanceManagerBuilderProperties.application)
       .addPackage(MainReactPackage())
-      .addPackage(ExpoReanimatedPackage())
+      .addPackage(ReanimatedPackage())
       .addPackage(
         ExponentPackage(
           instanceManagerBuilderProperties.experienceProperties,
@@ -228,7 +227,7 @@ object VersionedUtils {
     return builder
   }
 
-  private fun getDevSupportManager(reactApplicationContext: ReactApplicationContext): RNObject? {
+  private fun getDevSupportManager(): DevSupportManager? {
     val currentActivity = Exponent.instance.currentActivity
     return if (currentActivity != null) {
       if (currentActivity is ReactNativeActivity) {
@@ -237,15 +236,7 @@ object VersionedUtils {
         null
       }
     } else {
-      try {
-        val devSettingsModule = reactApplicationContext.catalystInstance.getNativeModule("DevSettings")
-        val devSupportManagerField = devSettingsModule!!.javaClass.getDeclaredField("mDevSupportManager")
-        devSupportManagerField.isAccessible = true
-        RNObject.wrap(devSupportManagerField[devSettingsModule]!!)
-      } catch (e: Throwable) {
-        e.printStackTrace()
-        null
-      }
+      null
     }
   }
 

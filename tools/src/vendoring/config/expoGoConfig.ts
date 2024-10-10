@@ -18,9 +18,6 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
-    'amazon-cognito-identity-js': {
-      source: 'https://github.com/aws-amplify/amplify-js.git',
-    },
     'react-native-view-shot': {
       source: 'https://github.com/gre/react-native-view-shot.git',
     },
@@ -47,7 +44,6 @@ const config: VendoringTargetConfig = {
               paths: 'RNCWKProcessPoolManager.m',
               find: '@implementation RNCWKProcessPoolManager',
               replaceWith: `@implementation RNCWKProcessPoolManager
-
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -55,7 +51,6 @@ const config: VendoringTargetConfig = {
   }
   return self;
 }
-
 - (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey
 {
   if (!scopeKey) {
@@ -93,7 +88,6 @@ const config: VendoringTargetConfig = {
               paths: 'RNCWebViewManager.mm',
               find: /RCT_EXPORT_MODULE\(RNCWebView\)/,
               replaceWith: `RCT_EXPORT_MODULE(RNCWebView)
-
 - (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                           scopeKey:(NSString *)scopeKey
                       easProjectId:(NSString *)easProjectId
@@ -109,9 +103,6 @@ const config: VendoringTargetConfig = {
           ],
         },
       },
-      android: {
-        excludeFiles: ['android/gradle{/**,**}'],
-      },
     },
     '@react-native-async-storage/async-storage': {
       source: 'https://github.com/react-native-async-storage/async-storage.git',
@@ -123,29 +114,6 @@ const config: VendoringTargetConfig = {
           const patchFile = path.join(
             EXPOTOOLS_DIR,
             'src/vendoring/config/react-native-async-storage-scoped-storage-ios.patch'
-          );
-          const patchContent = await fs.readFile(patchFile, 'utf8');
-          try {
-            await applyPatchAsync({
-              patchContent,
-              cwd: targetDirectory,
-              stripPrefixNum: 0,
-            });
-          } catch (e) {
-            logger.error(
-              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
-            );
-            throw e;
-          }
-        },
-      },
-      android: {
-        excludeFiles: 'example/**/*',
-        async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
-          // patch for scoped async storage
-          const patchFile = path.join(
-            EXPOTOOLS_DIR,
-            'src/vendoring/config/react-native-async-storage-scoped-storage-android.patch'
           );
           const patchContent = await fs.readFile(patchFile, 'utf8');
           try {

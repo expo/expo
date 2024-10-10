@@ -39,7 +39,7 @@
     "@babel/runtime": "^7.20.0",
     "@expo/dom-webview": "0.0.1",
     "@expo/styleguide-base": "^1.0.1",
-    "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-async-storage/async-storage": "2.0.0",
     "@react-native-community/datetimepicker": "8.2.0",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-community/slider": "4.5.2",
@@ -68,7 +68,7 @@
     "react-native-screens": "~3.34.0",
     "react-native-svg": "15.7.1",
     "react-native-view-shot": "3.8.0",
-    "react-native-webview": "13.8.6",
+    "react-native-webview": "13.12.0",
     "test-suite": "*"
   },
   "devDependencies": {
