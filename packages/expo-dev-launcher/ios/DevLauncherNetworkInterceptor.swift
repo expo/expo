@@ -9,7 +9,7 @@ var isHookInstalled = false
 
 @objc(EXDevLauncherNetworkInterceptor)
 public final class DevLauncherNetworkInterceptor: NSObject, ExpoRequestCdpInterceptorDelegate {
-  fileprivate static var inspectorPackagerConn: RCTInspectorPackagerConnection?
+  fileprivate static var inspectorPackagerConn: RCTInspectorPackagerConnectionProtocol?
 
   public override init() {
     super.init()
@@ -53,12 +53,12 @@ extension RCTInspectorDevServerHelper {
    */
   @objc
   static func EXDevLauncher_connect(withBundleURL bundleURL: URL)
-    -> RCTInspectorPackagerConnection? {
+    -> RCTInspectorPackagerConnectionProtocol? {
     let inspectorPackagerConn = try? EXDevLauncherUtils.invokeOriginalClassMethod(
       selector: #selector(RCTInspectorDevServerHelper.connect(withBundleURL:)),
       forClass: RCTInspectorDevServerHelper.self,
       A0: bundleURL
-    ) as? RCTInspectorPackagerConnection
+    ) as? RCTInspectorPackagerConnectionProtocol
 
     // Exclude the connections for dev-client bundles
     if !bundleURL.absoluteString.starts(with: Bundle.main.bundleURL.absoluteString) {
@@ -68,36 +68,16 @@ extension RCTInspectorDevServerHelper {
   }
 }
 
-extension RCTInspectorPackagerConnection {
-  /**
-   Indicates whether the packager connection is established and ready to send messages
-   */
-  func isReadyToSend() -> Bool {
-    guard isConnected() else {
-      return false
-    }
-    guard let webSocket = value(forKey: "_webSocket") as? AnyObject,
-      let readyState = webSocket.value(forKey: "readyState") as? Int else {
-      return false
-    }
-    // To support both RCTSRWebSocket (RN < 0.72) and SRWebSocket (RN >= 0.72)
-    // and not to introduce extra podspec dependencies,
-    // we use the internal and hardcoded value here.
-    // Given the fact that both RCTSRWebSocket and SRWebSocket has the readyState property
-    // and the open state is 1.
-    let OPEN_STATE = 1
-    return readyState == OPEN_STATE
-  }
-
+extension RCTInspectorPackagerConnectionProtocol {
   /**
    Sends message from native to inspector proxy
    */
   func sendWrappedEventToAllPages(_ event: String) {
-    guard isReadyToSend() else {
+    guard isConnected() else {
       return
     }
     for page in RCTInspector.pages() where !page.title.contains("Reanimated") {
-      perform(NSSelectorFromString("sendWrappedEvent:message:"), with: String(page.id), with: event)
+      sendWrappedEvent(toPackager: event, pageId: String(page.id))
     }
   }
 }
