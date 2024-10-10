@@ -91,6 +91,7 @@
 - Added public assets support for DOM components. ([#30975](https://github.com/expo/expo/pull/30975) by [@kudo](https://github.com/kudo))
 - Drop usage of `@react-native-community/cli-server-api` in favor of our own Metro dev middleware. ([#31570](https://github.com/expo/expo/pull/31570) by [@byCedric](https://github.com/byCedric))
 - Move location of assetPatternsToBeBundled config key ([#31584](https://github.com/expo/expo/pull/31584) by [@wschurman](https://github.com/wschurman))
+- Throwing an error for DOM components if no webview installed. ([#31974](https://github.com/expo/expo/pull/31974) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 
