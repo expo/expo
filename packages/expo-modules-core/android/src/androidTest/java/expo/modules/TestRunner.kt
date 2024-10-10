@@ -13,7 +13,7 @@ import expo.modules.kotlin.jni.JSIContext
 class TestRunner : AndroidJUnitRunner() {
   override fun newApplication(cl: ClassLoader?, className: String?, context: Context?): Application {
     // Loads libs like hermes
-    SoLoader.init(context, /* native exopackage */OpenSourceMergedSoMapping)
+    SoLoader.init(context, OpenSourceMergedSoMapping)
     // Using `JSIContext.Companion` ensures that static libs will be loaded.
     JSIContext.Companion
 
