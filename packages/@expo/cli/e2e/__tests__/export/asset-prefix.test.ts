@@ -39,7 +39,7 @@ describe('static-rendering with a custom asset prefix url', () => {
 
       // Ensure that our URL is listed as httpServerLocation in the JS
       expect(bundleContent).toMatch(
-        /httpServerLocation\:"https\:\/\/cdn\.example\.dev\/assets\/__e2e__\/asset\/assets\"\,.*name\:\"react-logo/i,
+        /uri\:"https\:\/\/cdn\.example\.dev\/assets\/__e2e__\/asset\/assets\/react-logo\.[a-z0-9]+\.png\:/i
       );
     },
     // Could take 45s depending on how fast the bundler resolves
