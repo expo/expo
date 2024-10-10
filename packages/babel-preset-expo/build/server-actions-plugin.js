@@ -37,12 +37,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactServerActionsPlugin = void 0;
 const core_1 = require("@babel/core");
-const url_1 = __importDefault(require("url"));
 // @ts-expect-error: missing types
 const helper_module_imports_1 = require("@babel/helper-module-imports");
 const t = __importStar(require("@babel/types"));
 const node_path_1 = require("node:path");
 const node_url_1 = require("node:url");
+const url_1 = __importDefault(require("url"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:server-actions');
 const LAZY_WRAPPER_VALUE_KEY = 'value';
@@ -144,10 +144,7 @@ function reactServerActionsPlugin(api) {
             };
             getActionModuleId = once(() => {
                 // Create relative file path hash.
-                // const hash = getHash(pathToFileURL(getRelativePath(projectRoot, file.opts.filename!)).href);
-                const hash = (0, node_url_1.pathToFileURL)((0, node_path_1.relative)(projectRoot, file.opts.filename)).href;
-                // Add platform to ID to prevent collisions between different platforms when running simultaneously.
-                return hash; //`${platform}_${hash}`;
+                return (0, node_url_1.pathToFileURL)((0, node_path_1.relative)(projectRoot, file.opts.filename)).href;
             });
             const defineBoundArgsWrapperHelper = once(() => {
                 const id = this.file.path.scope.generateUidIdentifier('wrapBoundArgs');
@@ -266,66 +263,6 @@ function reactServerActionsPlugin(api) {
                 if (!state.file.metadata.isModuleMarkedWithUseServerDirective) {
                     return;
                 }
-                // const declaration = path.get('declaration');
-                // // If export default is re-exporting an existing variable, bail out
-                // if (declaration.isIdentifier()) {
-                //   // TODO: Support this later
-                //   throw path.buildCodeFrameError(
-                //     `Internal error: unsupported 'export default' re-exporting an existing variable`
-                //   );
-                // }
-                // // Extract `export default function foo() {}` to `const foo = function foo() {}; export default foo; ;(() => { registerServerReference(foo, '...') })();`
-                // // Or `export default function () {}` to `const $$_GENERATED = function() {}; export default $$_GENERATED; ;(() => { registerServerReference($$_GENERATED, '...') })();`
-                // if (declaration.isFunctionDeclaration()) {
-                //   // Extract variable to top-level and register it
-                //   const { id } = declaration.node;
-                //   let functionName = id;
-                //   if (!functionName) {
-                //     // Give the function a generated name
-                //     functionName = path.scope.generateUidIdentifier('$$GENERATED');
-                //   }
-                //   const freeVariables = getFreeVariables(declaration);
-                //   console.log('freeVariables', freeVariables);
-                //   const { extractedIdentifier, getReplacement } = extractInlineActionToTopLevel(
-                //     declaration,
-                //     state,
-                //     {
-                //       freeVariables,
-                //       body: declaration.node.body,
-                //     }
-                //   );
-                //   const tlb = getTopLevelBinding(declaration);
-                //   if (tlb) {
-                //     // we're at the top level, and we might be enclosed within a `export` decl.
-                //     // we have to keep the export in place, because it might be used elsewhere,
-                //     // so we can't just remove this node.
-                //     // replace the function decl with a (hopefully) equivalent var declaration
-                //     // `var [name] = $$INLINE_ACTION_{N}`
-                //     const bindingKind = 'const';
-                //     const [inserted] = path.insertBefore(
-                //       t.variableDeclaration(bindingKind, [
-                //         t.variableDeclarator(functionName, extractedIdentifier),
-                //       ])
-                //     );
-                //     // const [inserted] = declaration.replaceWith(
-                //     //   t.variableDeclaration(bindingKind, [
-                //     //     t.variableDeclarator(functionName, extractedIdentifier),
-                //     //   ])
-                //     // );
-                //     console.log('result:', require('@babel/generator').default(inserted.node));
-                //     tlb.scope.registerBinding(bindingKind, inserted);
-                //   }
-                //   path.insertBefore(getReplacement());
-                //   // Replace the export default with the extracted function
-                //   path.replaceWith(t.exportDefaultDeclaration(functionName));
-                //   // path.insertAfter(getReplacement());
-                //   console.log('result:', require('@babel/generator').default(path.node));
-                //   state.file.metadata.extractedActions.push({
-                //     localName: tlb?.identifier.name,
-                //     exportedName: extractedIdentifier.name,
-                //   });
-                //   return;
-                // }
                 // TODO: support variable functions
                 throw path.buildCodeFrameError(`Not implemented: 'export default' declarations in "use server" files. Try using 'export { name as default }' instead.`);
             },
