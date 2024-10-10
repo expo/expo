@@ -248,7 +248,7 @@ export type VideoMetadata = {
      */
     artist?: string;
     /**
-     * The artwork of the video.
+     * The uri of the video artwork.
      */
     artwork?: string;
 };
