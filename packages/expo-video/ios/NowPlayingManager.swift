@@ -249,7 +249,7 @@ private func fetchArtwork(url: URL, completion: @escaping (MPMediaItemArtwork?) 
       return
     }
 
-    guard let data, response as? HTTPURLResponse != nil else {
+    guard let data, response is HTTPURLResponse else {
       log.warn("ExpoVideo - Couldn't display the artwork: the response was empty")
       completion(nil)
       return
