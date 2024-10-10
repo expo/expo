@@ -3,9 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWatchFolders = exports.resolveAllWorkspacePackageJsonPaths = exports.globAllPackageJsonPaths = void 0;
+exports.getWatchFolders = exports.globAllPackageJsonPaths = void 0;
 const paths_1 = require("@expo/config/paths");
-const assert_1 = __importDefault(require("assert"));
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
@@ -47,32 +46,6 @@ function globAllPackageJsonPaths(workspaceProjectRoot, linkedPackages) {
         .map((p) => path_1.default.join(p));
 }
 exports.globAllPackageJsonPaths = globAllPackageJsonPaths;
-function getWorkspacePackagesArray({ workspaces }) {
-    if (Array.isArray(workspaces)) {
-        return workspaces;
-    }
-    (0, assert_1.default)(workspaces?.packages, 'Could not find a `workspaces` object in the root package.json');
-    return workspaces.packages;
-}
-/**
- * @param workspaceProjectRoot root file path for a yarn workspace.
- * @returns list of package.json file paths that are linked to the yarn workspace.
- */
-function resolveAllWorkspacePackageJsonPaths(workspaceProjectRoot) {
-    try {
-        const rootPackageJsonFilePath = path_1.default.join(workspaceProjectRoot, 'package.json');
-        // Could throw if package.json is invalid.
-        const rootPackageJson = readJsonFile(rootPackageJsonFilePath);
-        // Extract the "packages" array or use "workspaces" as packages array (yarn workspaces spec).
-        const packages = getWorkspacePackagesArray(rootPackageJson);
-        // Glob all package.json files and return valid paths.
-        return globAllPackageJsonPaths(workspaceProjectRoot, packages);
-    }
-    catch {
-        return [];
-    }
-}
-exports.resolveAllWorkspacePackageJsonPaths = resolveAllWorkspacePackageJsonPaths;
 /**
  * @param projectRoot file path to app's project root
  * @returns list of node module paths to watch in Metro bundler, ex: `['/Users/me/app/node_modules/', '/Users/me/app/apps/my-app/', '/Users/me/app/packages/my-package/']`
@@ -84,8 +57,8 @@ function getWatchFolders(projectRoot) {
     if (workspaceRoot === resolvedProjectRoot) {
         return [];
     }
-    const packages = resolveAllWorkspacePackageJsonPaths(workspaceRoot);
-    if (!packages.length) {
+    const packages = (0, paths_1.getMetroWorkspaceGlobs)(workspaceRoot);
+    if (!packages?.length) {
         return [];
     }
     return uniqueItems([

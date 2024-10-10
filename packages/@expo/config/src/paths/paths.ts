@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
-import { resolveWorkspaceRoot } from 'resolve-workspace-root';
+import { getWorkspaceGlobs, resolveWorkspaceRoot } from 'resolve-workspace-root';
 
 import { env } from './env';
 import { getBareExtensions } from './extensions';
@@ -125,6 +125,14 @@ export function getMetroServerRoot(projectRoot: string): string {
   }
 
   return resolveWorkspaceRoot(projectRoot) ?? projectRoot;
+}
+
+/**
+ * Get the workspace globs for Metro's watchFolders.
+ * @note This does not traverse the monorepo, and should be used with `getMetroServerRoot`
+ */
+export function getMetroWorkspaceGlobs(monorepoRoot: string): string[] | null {
+  return getWorkspaceGlobs(monorepoRoot);
 }
 
 /**

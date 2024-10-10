@@ -5,11 +5,6 @@
  */
 export declare function globAllPackageJsonPaths(workspaceProjectRoot: string, linkedPackages: string[]): string[];
 /**
- * @param workspaceProjectRoot root file path for a yarn workspace.
- * @returns list of package.json file paths that are linked to the yarn workspace.
- */
-export declare function resolveAllWorkspacePackageJsonPaths(workspaceProjectRoot: string): string[];
-/**
  * @param projectRoot file path to app's project root
  * @returns list of node module paths to watch in Metro bundler, ex: `['/Users/me/app/node_modules/', '/Users/me/app/apps/my-app/', '/Users/me/app/packages/my-package/']`
  */
