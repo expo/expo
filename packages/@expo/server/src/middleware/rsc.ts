@@ -128,13 +128,13 @@ export function getRscMiddleware(options: {
         return err;
       }
       console.error(err);
-      throw err;
-      // return new Response(`Unexpected server error rendering RSC: ` + err.message, {
-      //   status: 'statusCode' in err ? err.statusCode : 500,
-      //   headers: {
-      //     'Content-Type': 'text/plain',
-      //   },
-      // });
+
+      return new Response(`Unexpected server error rendering RSC: ` + err.message, {
+        status: 'statusCode' in err ? err.statusCode : 500,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
     }
   }
 
