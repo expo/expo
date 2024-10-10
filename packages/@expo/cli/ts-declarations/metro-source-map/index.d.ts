@@ -34,10 +34,10 @@ declare module 'metro-source-map/src/B64Builder' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/BundleBuilder.js
 declare module 'metro-source-map/src/BundleBuilder' {
-  import type { IndexMap, IndexMapSection, MixedSourceMap } from "metro-source-map/src/source-map";
+  import type { IndexMap, IndexMapSection, MixedSourceMap } from 'metro-source-map/src/source-map';
   export class BundleBuilder {
     _file: string;
-    _sections: Array<IndexMapSection>;
+    _sections: IndexMapSection[];
     _line: number;
     _column: number;
     _code: string;
@@ -49,26 +49,30 @@ declare module 'metro-source-map/src/BundleBuilder' {
     getMap(): MixedSourceMap;
     getCode(): string;
   }
-  export function createIndexMap(file: string, sections: Array<IndexMapSection>): IndexMap;
+  export function createIndexMap(file: string, sections: IndexMapSection[]): IndexMap;
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/composeSourceMaps.js
 declare module 'metro-source-map/src/composeSourceMaps' {
-  import type { MixedSourceMap } from "metro-source-map/src/source-map";
-  function composeSourceMaps(maps: ReadonlyArray<MixedSourceMap>): MixedSourceMap;
+  import type { MixedSourceMap } from 'metro-source-map/src/source-map';
+  function composeSourceMaps(maps: readonly MixedSourceMap[]): MixedSourceMap;
   export default composeSourceMaps;
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/AbstractConsumer.js
 declare module 'metro-source-map/src/Consumer/AbstractConsumer' {
-  import type { GeneratedPositionLookup, IConsumer, IterationOrder, Mapping, SourcePosition } from "metro-source-map/src/Consumer/types.flow";
+  import type {
+    GeneratedPositionLookup,
+    IConsumer,
+    IterationOrder,
+    Mapping,
+    SourcePosition,
+  } from 'metro-source-map/src/Consumer/types.flow';
   class AbstractConsumer implements IConsumer {
     _sourceMap: {
       readonly file?: string;
     };
-    constructor(sourceMap: {
-      readonly file?: string;
-    });
+    constructor(sourceMap: { readonly file?: string });
     originalPositionFor(generatedPosition: GeneratedPositionLookup): SourcePosition;
     generatedMappings(): Iterable<Mapping>;
     eachMapping(callback: (mapping: Mapping) => any, context?: any, order?: IterationOrder): void;
@@ -80,7 +84,7 @@ declare module 'metro-source-map/src/Consumer/AbstractConsumer' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/constants.js
 declare module 'metro-source-map/src/Consumer/constants' {
-  import type { Number0, Number1 } from "ob1";
+  import type { Number0, Number1 } from 'ob1';
   export type IterationOrder = unknown;
   export type LookupBias = unknown;
   export const FIRST_COLUMN: Number0;
@@ -96,17 +100,23 @@ declare module 'metro-source-map/src/Consumer/constants' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/createConsumer.js
 declare module 'metro-source-map/src/Consumer/createConsumer' {
-  import type { MixedSourceMap } from "metro-source-map/src/source-map";
-  import type { IConsumer } from "metro-source-map/src/Consumer/types.flow";
+  import type { MixedSourceMap } from 'metro-source-map/src/source-map';
+  import type { IConsumer } from 'metro-source-map/src/Consumer/types.flow';
   function createConsumer(sourceMap: MixedSourceMap): IConsumer;
   export default createConsumer;
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/DelegatingConsumer.js
 declare module 'metro-source-map/src/Consumer/DelegatingConsumer' {
-  import type { MixedSourceMap } from "metro-source-map/src/source-map";
-  import type { LookupBias } from "metro-source-map/src/Consumer/constants";
-  import type { GeneratedPositionLookup, IConsumer, IterationOrder, Mapping, SourcePosition } from "metro-source-map/src/Consumer/types.flow";
+  import type { MixedSourceMap } from 'metro-source-map/src/source-map';
+  import type { LookupBias } from 'metro-source-map/src/Consumer/constants';
+  import type {
+    GeneratedPositionLookup,
+    IConsumer,
+    IterationOrder,
+    Mapping,
+    SourcePosition,
+  } from 'metro-source-map/src/Consumer/types.flow';
   /**
    * A source map consumer that supports both "basic" and "indexed" source maps.
    * Uses `MappingsConsumer` and `SectionsConsumer` under the hood (via
@@ -130,28 +140,33 @@ declare module 'metro-source-map/src/Consumer/DelegatingConsumer' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/index.js
 declare module 'metro-source-map/src/Consumer/index' {
-  export { default as DelegatingConsumer } from "metro-source-map/src/Consumer/DelegatingConsumer";
+  export { default as DelegatingConsumer } from 'metro-source-map/src/Consumer/DelegatingConsumer';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/MappingsConsumer.js
 declare module 'metro-source-map/src/Consumer/MappingsConsumer' {
-  import type { BasicSourceMap } from "metro-source-map/src/source-map";
-  import type { GeneratedPositionLookup, IConsumer, Mapping, SourcePosition } from "metro-source-map/src/Consumer/types.flow";
-  import type { Number0 } from "ob1";
-  import AbstractConsumer from "metro-source-map/src/Consumer/AbstractConsumer";
+  import type { BasicSourceMap } from 'metro-source-map/src/source-map';
+  import type {
+    GeneratedPositionLookup,
+    IConsumer,
+    Mapping,
+    SourcePosition,
+  } from 'metro-source-map/src/Consumer/types.flow';
+  import type { Number0 } from 'ob1';
+  import AbstractConsumer from 'metro-source-map/src/Consumer/AbstractConsumer';
   /**
    * A source map consumer that supports "basic" source maps (that have a
    * `mappings` field and no sections).
    */
   class MappingsConsumer extends AbstractConsumer implements IConsumer {
     _sourceMap: BasicSourceMap;
-    _decodedMappings: null | undefined | ReadonlyArray<Mapping>;
-    _normalizedSources: null | undefined | ReadonlyArray<string>;
+    _decodedMappings: null | undefined | readonly Mapping[];
+    _normalizedSources: null | undefined | readonly string[];
     constructor(sourceMap: BasicSourceMap);
     originalPositionFor(generatedPosition: GeneratedPositionLookup): SourcePosition;
     _decodeMappings(): Generator<Mapping, void, void>;
-    _normalizeAndCacheSources(): ReadonlyArray<string>;
-    _decodeAndCacheMappings(): ReadonlyArray<Mapping>;
+    _normalizeAndCacheSources(): readonly string[];
+    _decodeAndCacheMappings(): readonly Mapping[];
     generatedMappings(): Iterable<Mapping>;
     _indexOfSource(source: string): null | undefined | Number0;
     sourceContentFor(source: string, nullOnMissing: true): null | undefined | string;
@@ -161,46 +176,65 @@ declare module 'metro-source-map/src/Consumer/MappingsConsumer' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/normalizeSourcePath.js
 declare module 'metro-source-map/src/Consumer/normalizeSourcePath' {
-  function normalizeSourcePath(sourceInput: string, map: {
-    readonly sourceRoot?: null | undefined | string;
-  }): string;
+  function normalizeSourcePath(
+    sourceInput: string,
+    map: {
+      readonly sourceRoot?: null | undefined | string;
+    }
+  ): string;
   export default normalizeSourcePath;
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/positionMath.js
 declare module 'metro-source-map/src/Consumer/positionMath' {
-  import type { GeneratedOffset } from "metro-source-map/src/Consumer/types.flow";
-  import type { Number0, Number1 } from "ob1";
-  export function shiftPositionByOffset<T extends {
-    readonly line?: null | Number1;
-    readonly column?: null | Number0;
-  }>(pos: T, offset: GeneratedOffset): T;
-  export function subtractOffsetFromPosition<T extends {
-    readonly line?: null | Number1;
-    readonly column?: null | Number0;
-  }>(pos: T, offset: GeneratedOffset): T;
+  import type { GeneratedOffset } from 'metro-source-map/src/Consumer/types.flow';
+  import type { Number0, Number1 } from 'ob1';
+  export function shiftPositionByOffset<
+    T extends {
+      readonly line?: null | Number1;
+      readonly column?: null | Number0;
+    },
+  >(pos: T, offset: GeneratedOffset): T;
+  export function subtractOffsetFromPosition<
+    T extends {
+      readonly line?: null | Number1;
+      readonly column?: null | Number0;
+    },
+  >(pos: T, offset: GeneratedOffset): T;
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/search.js
 declare module 'metro-source-map/src/Consumer/search' {
-  export function greatestLowerBound<T, U>(elements: ReadonlyArray<T>, target: U, comparator: ($$PARAM_0$$: U, $$PARAM_1$$: T) => number): null | undefined | number;
+  export function greatestLowerBound<T, U>(
+    elements: readonly T[],
+    target: U,
+    comparator: ($$PARAM_0$$: U, $$PARAM_1$$: T) => number
+  ): null | undefined | number;
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/SectionsConsumer.js
 declare module 'metro-source-map/src/Consumer/SectionsConsumer' {
-  import type { IndexMap } from "metro-source-map/src/source-map";
-  import type { GeneratedOffset, GeneratedPositionLookup, IConsumer, Mapping, SourcePosition } from "metro-source-map/src/Consumer/types.flow";
-  import AbstractConsumer from "metro-source-map/src/Consumer/AbstractConsumer";
+  import type { IndexMap } from 'metro-source-map/src/source-map';
+  import type {
+    GeneratedOffset,
+    GeneratedPositionLookup,
+    IConsumer,
+    Mapping,
+    SourcePosition,
+  } from 'metro-source-map/src/Consumer/types.flow';
+  import AbstractConsumer from 'metro-source-map/src/Consumer/AbstractConsumer';
   /**
    * A source map consumer that supports "indexed" source maps (that have a
    * `sections` field and no top-level mappings).
    */
   class SectionsConsumer extends AbstractConsumer implements IConsumer {
-    _consumers: ReadonlyArray<[GeneratedOffset, IConsumer]>;
+    _consumers: readonly [GeneratedOffset, IConsumer][];
     constructor(sourceMap: IndexMap);
     originalPositionFor(generatedPosition: GeneratedPositionLookup): SourcePosition;
     generatedMappings(): Iterable<Mapping>;
-    _consumerForPosition(generatedPosition: GeneratedPositionLookup): null | undefined | [GeneratedOffset, IConsumer];
+    _consumerForPosition(
+      generatedPosition: GeneratedPositionLookup
+    ): null | undefined | [GeneratedOffset, IConsumer];
     sourceContentFor(source: string, nullOnMissing: true): null | undefined | string;
   }
   export default SectionsConsumer;
@@ -208,8 +242,8 @@ declare module 'metro-source-map/src/Consumer/SectionsConsumer' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/types.flow.js
 declare module 'metro-source-map/src/Consumer/types.flow' {
-  import type { IterationOrder, LookupBias } from "metro-source-map/src/Consumer/constants";
-  import type { Number0, Number1 } from "ob1";
+  import type { IterationOrder, LookupBias } from 'metro-source-map/src/Consumer/constants';
+  import type { Number0, Number1 } from 'ob1';
   export type { IterationOrder, LookupBias };
   export type GeneratedOffset = {
     readonly lines: Number0;
@@ -264,9 +298,9 @@ declare module 'metro-source-map/src/encode' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/generateFunctionMap.js
 declare module 'metro-source-map/src/generateFunctionMap' {
-  import type * as _babel_types from "@babel/types";
-  import type { FBSourceFunctionMap } from "metro-source-map/src/source-map";
-  import type { PluginObj } from "@babel/core";
+  import type * as _babel_types from '@babel/types';
+  import type { FBSourceFunctionMap } from 'metro-source-map/src/source-map';
+  import type { PluginObj } from '@babel/core';
   type Position = {
     line: number;
     column: number;
@@ -279,14 +313,24 @@ declare module 'metro-source-map/src/generateFunctionMap' {
     filename?: null | undefined | string;
   };
   export function functionMapBabelPlugin(): PluginObj;
-  export function generateFunctionMap(ast: _babel_types.Node, context?: Context): FBSourceFunctionMap;
-  export function generateFunctionMappingsArray(ast: _babel_types.Node, context?: Context): ReadonlyArray<RangeMapping>;
+  export function generateFunctionMap(
+    ast: _babel_types.Node,
+    context?: Context
+  ): FBSourceFunctionMap;
+  export function generateFunctionMappingsArray(
+    ast: _babel_types.Node,
+    context?: Context
+  ): readonly RangeMapping[];
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Generator.js
 declare module 'metro-source-map/src/Generator' {
-  import type { BasicSourceMap, FBSourceFunctionMap, FBSourceMetadata } from "metro-source-map/src/source-map";
-  import B64Builder from "metro-source-map/src/B64Builder";
+  import type {
+    BasicSourceMap,
+    FBSourceFunctionMap,
+    FBSourceMetadata,
+  } from 'metro-source-map/src/source-map';
+  import B64Builder from 'metro-source-map/src/B64Builder';
   type FileFlags = Readonly<{
     addToIgnoreList?: boolean;
   }>;
@@ -313,22 +357,44 @@ declare module 'metro-source-map/src/Generator' {
     };
     names: IndexedSet;
     source: number;
-    sources: Array<string>;
-    sourcesContent: Array<null | undefined | string>;
-    x_facebook_sources: Array<null | undefined | FBSourceMetadata>;
-    x_google_ignoreList: Array<number>;
+    sources: string[];
+    sourcesContent: (null | undefined | string)[];
+    x_facebook_sources: (null | undefined | FBSourceMetadata)[];
+    x_google_ignoreList: number[];
     constructor();
-    startFile(file: string, code: string, functionMap: null | undefined | FBSourceFunctionMap, flags?: FileFlags): void;
+    startFile(
+      file: string,
+      code: string,
+      functionMap: null | undefined | FBSourceFunctionMap,
+      flags?: FileFlags
+    ): void;
     endFile(): void;
     addSimpleMapping(generatedLine: number, generatedColumn: number): void;
-    addSourceMapping(generatedLine: number, generatedColumn: number, sourceLine: number, sourceColumn: number): void;
-    addNamedSourceMapping(generatedLine: number, generatedColumn: number, sourceLine: number, sourceColumn: number, name: string): void;
-    toMap(file?: string, options?: {
-      excludeSource?: boolean;
-    }): BasicSourceMap;
-    toString(file?: string, options?: {
-      excludeSource?: boolean;
-    }): string;
+    addSourceMapping(
+      generatedLine: number,
+      generatedColumn: number,
+      sourceLine: number,
+      sourceColumn: number
+    ): void;
+    addNamedSourceMapping(
+      generatedLine: number,
+      generatedColumn: number,
+      sourceLine: number,
+      sourceColumn: number,
+      name: string
+    ): void;
+    toMap(
+      file?: string,
+      options?: {
+        excludeSource?: boolean;
+      }
+    ): BasicSourceMap;
+    toString(
+      file?: string,
+      options?: {
+        excludeSource?: boolean;
+      }
+    ): string;
     hasSourcesMetadata(): boolean;
   }
   class IndexedSet {
@@ -336,27 +402,30 @@ declare module 'metro-source-map/src/Generator' {
     nextIndex: number;
     constructor();
     indexFor(x: string): number;
-    items(): Array<string>;
+    items(): string[];
   }
   export default Generator;
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/source-map.js
 declare module 'metro-source-map/src/source-map' {
-  import type { IConsumer } from "metro-source-map/src/Consumer/types.flow";
-  import Generator from "metro-source-map/src/Generator";
+  import type { IConsumer } from 'metro-source-map/src/Consumer/types.flow';
+  import Generator from 'metro-source-map/src/Generator';
   export type { IConsumer };
   type GeneratedCodeMapping = [number, number];
   type SourceMapping = [number, number, number, number];
   type SourceMappingWithName = [number, number, number, number, string];
-  export type MetroSourceMapSegmentTuple = SourceMappingWithName | SourceMapping | GeneratedCodeMapping;
+  export type MetroSourceMapSegmentTuple =
+    | SourceMappingWithName
+    | SourceMapping
+    | GeneratedCodeMapping;
   export type HermesFunctionOffsets = {
-    [$$Key$$: number]: ReadonlyArray<number>;
+    [$$Key$$: number]: readonly number[];
   };
-  export type FBSourcesArray = ReadonlyArray<null | undefined | FBSourceMetadata>;
+  export type FBSourcesArray = readonly (null | undefined | FBSourceMetadata)[];
   export type FBSourceMetadata = [null | undefined | FBSourceFunctionMap];
   export type FBSourceFunctionMap = {
-    readonly names: ReadonlyArray<string>;
+    readonly names: readonly string[];
     readonly mappings: string;
   };
   export type FBSegmentMap = {
@@ -365,17 +434,17 @@ declare module 'metro-source-map/src/source-map' {
   export type BasicSourceMap = {
     readonly file?: string;
     readonly mappings: string;
-    readonly names: Array<string>;
+    readonly names: string[];
     readonly sourceRoot?: string;
-    readonly sources: Array<string>;
-    readonly sourcesContent?: Array<null | undefined | string>;
+    readonly sources: string[];
+    readonly sourcesContent?: (null | undefined | string)[];
     readonly version: number;
-    readonly x_facebook_offsets?: Array<number>;
-    readonly x_metro_module_paths?: Array<string>;
+    readonly x_facebook_offsets?: number[];
+    readonly x_metro_module_paths?: string[];
     readonly x_facebook_sources?: FBSourcesArray;
     readonly x_facebook_segments?: FBSegmentMap;
     readonly x_hermes_function_offsets?: HermesFunctionOffsets;
-    readonly x_google_ignoreList?: Array<number>;
+    readonly x_google_ignoreList?: number[];
   };
   export type IndexMapSection = {
     map?: IndexMap | BasicSourceMap;
@@ -388,48 +457,54 @@ declare module 'metro-source-map/src/source-map' {
     readonly file?: string;
     readonly mappings?: void;
     readonly sourcesContent?: void;
-    readonly sections: Array<IndexMapSection>;
+    readonly sections: IndexMapSection[];
     readonly version: number;
-    readonly x_facebook_offsets?: Array<number>;
-    readonly x_metro_module_paths?: Array<string>;
+    readonly x_facebook_offsets?: number[];
+    readonly x_metro_module_paths?: string[];
     readonly x_facebook_sources?: void;
     readonly x_facebook_segments?: FBSegmentMap;
     readonly x_hermes_function_offsets?: HermesFunctionOffsets;
     readonly x_google_ignoreList?: void;
   };
   export type MixedSourceMap = IndexMap | BasicSourceMap;
-  export { BundleBuilder } from "metro-source-map/src/BundleBuilder";
-  export { default as composeSourceMaps } from "metro-source-map/src/composeSourceMaps";
-  export { default as Consumer } from "metro-source-map/src/Consumer";
-  export { createIndexMap } from "metro-source-map/src/BundleBuilder";
-  export { generateFunctionMap } from "metro-source-map/src/generateFunctionMap";
-  export function fromRawMappings(modules: ReadonlyArray<{
-    readonly map?: null | Array<MetroSourceMapSegmentTuple>;
-    readonly functionMap?: null | FBSourceFunctionMap;
-    readonly path: string;
-    readonly source: string;
-    readonly code: string;
-    readonly isIgnored: boolean;
-    readonly lineCount?: number;
-  }>, offsetLines?: number): Generator;
-  export function fromRawMappingsNonBlocking(modules: ReadonlyArray<{
-    readonly map?: null | Array<MetroSourceMapSegmentTuple>;
-    readonly functionMap?: null | FBSourceFunctionMap;
-    readonly path: string;
-    readonly source: string;
-    readonly code: string;
-    readonly isIgnored: boolean;
-    readonly lineCount?: number;
-  }>, offsetLines?: number): Promise<Generator>;
-  export { functionMapBabelPlugin } from "metro-source-map/src/generateFunctionMap";
-  export { default as normalizeSourcePath } from "metro-source-map/src/Consumer/normalizeSourcePath";
+  export { BundleBuilder } from 'metro-source-map/src/BundleBuilder';
+  export { default as composeSourceMaps } from 'metro-source-map/src/composeSourceMaps';
+  export { default as Consumer } from 'metro-source-map/src/Consumer';
+  export { createIndexMap } from 'metro-source-map/src/BundleBuilder';
+  export { generateFunctionMap } from 'metro-source-map/src/generateFunctionMap';
+  export function fromRawMappings(
+    modules: readonly {
+      readonly map?: null | MetroSourceMapSegmentTuple[];
+      readonly functionMap?: null | FBSourceFunctionMap;
+      readonly path: string;
+      readonly source: string;
+      readonly code: string;
+      readonly isIgnored: boolean;
+      readonly lineCount?: number;
+    }[],
+    offsetLines?: number
+  ): Generator;
+  export function fromRawMappingsNonBlocking(
+    modules: readonly {
+      readonly map?: null | MetroSourceMapSegmentTuple[];
+      readonly functionMap?: null | FBSourceFunctionMap;
+      readonly path: string;
+      readonly source: string;
+      readonly code: string;
+      readonly isIgnored: boolean;
+      readonly lineCount?: number;
+    }[],
+    offsetLines?: number
+  ): Promise<Generator>;
+  export { functionMapBabelPlugin } from 'metro-source-map/src/generateFunctionMap';
+  export { default as normalizeSourcePath } from 'metro-source-map/src/Consumer/normalizeSourcePath';
   // NOTE(cedric): see https://github.com/facebook/metro/blob/a36e992ac74c5497e58b91d99c2bab21c7fa1451/flow-typed/npm/babel_v7.x.x.js#L23
   export type BabelSourceMapSegment = {
     name?: null | string;
     source?: null | string;
-    generated: { line: number; column: number },
-    original?: { line: number; column: number }
+    generated: { line: number; column: number };
+    original?: { line: number; column: number };
   } & Record<string, any>;
-  export function toBabelSegments(sourceMap: BasicSourceMap): Array<BabelSourceMapSegment>;
+  export function toBabelSegments(sourceMap: BasicSourceMap): BabelSourceMapSegment[];
   export function toSegmentTuple(mapping: BabelSourceMapSegment): MetroSourceMapSegmentTuple;
 }

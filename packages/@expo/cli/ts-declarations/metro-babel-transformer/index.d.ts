@@ -6,12 +6,12 @@ declare module 'metro-babel-transformer' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-babel-transformer/src/index.js
 declare module 'metro-babel-transformer/src/index' {
-  import type * as _babel_types from "@babel/types";
-  import type { BabelFileMetadata, TransformOptions } from "@babel/core";
+  import type * as _babel_types from '@babel/types';
+  import type { BabelFileMetadata, TransformOptions } from '@babel/core';
   export type CustomTransformOptions = {
     [$$Key$$: string]: any;
   };
-  export type TransformProfile = "default" | "hermes-stable" | "hermes-canary";
+  export type TransformProfile = 'default' | 'hermes-stable' | 'hermes-canary';
   type BabelTransformerOptions = Readonly<{
     customTransformOptions?: CustomTransformOptions;
     dev: boolean;
@@ -33,17 +33,20 @@ declare module 'metro-babel-transformer/src/index' {
   export type BabelTransformerArgs = Readonly<{
     filename: string;
     options: BabelTransformerOptions;
-    plugins?: TransformOptions["plugins"];
+    plugins?: TransformOptions['plugins'];
     src: string;
   }>;
   export type BabelFileFunctionMapMetadata = Readonly<{
-    names: ReadonlyArray<string>;
+    names: readonly string[];
     mappings: string;
   }>;
   export type MetroBabelFileMetadata = {
-    metro?: null | undefined | {
-      functionMap?: null | undefined | BabelFileFunctionMapMetadata;
-    };
+    metro?:
+      | null
+      | undefined
+      | {
+          functionMap?: null | undefined | BabelFileFunctionMapMetadata;
+        };
   } & BabelFileMetadata;
   export type BabelTransformer = {
     transform: ($$PARAM_0$$: BabelTransformerArgs) => {

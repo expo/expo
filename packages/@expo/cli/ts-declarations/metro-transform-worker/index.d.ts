@@ -5,12 +5,16 @@ declare module 'metro-transform-worker' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-worker/src/index.js
 declare module 'metro-transform-worker/src/index' {
-  import type * as _babel_types from "@babel/types";
-  import type { CustomTransformOptions, TransformProfile } from "metro-babel-transformer";
-  import type { BasicSourceMap, FBSourceFunctionMap, MetroSourceMapSegmentTuple } from "metro-source-map";
-  import type { TransformResultDependency } from "metro/src/DeltaBundler";
-  import type { AllowOptionalDependencies } from "metro/src/DeltaBundler/types.flow.js";
-  import type { DynamicRequiresBehavior } from "metro/src/ModuleGraph/worker/collectDependencies";
+  import type * as _babel_types from '@babel/types';
+  import type { CustomTransformOptions, TransformProfile } from 'metro-babel-transformer';
+  import type {
+    BasicSourceMap,
+    FBSourceFunctionMap,
+    MetroSourceMapSegmentTuple,
+  } from 'metro-source-map';
+  import type { TransformResultDependency } from 'metro/src/DeltaBundler';
+  import type { AllowOptionalDependencies } from 'metro/src/DeltaBundler/types.flow.js';
+  import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/collectDependencies';
   export type MinifierConfig = Readonly<{
     [$$Key$$: string]: any;
   }>;
@@ -18,7 +22,7 @@ declare module 'metro-transform-worker/src/index' {
     code: string;
     map?: null | BasicSourceMap;
     filename: string;
-    reserved: ReadonlyArray<string>;
+    reserved: readonly string[];
     config: MinifierConfig;
   };
   export type MinifierResult = {
@@ -26,9 +30,9 @@ declare module 'metro-transform-worker/src/index' {
     map?: BasicSourceMap;
   };
   export type Minifier = ($$PARAM_0$$: MinifierOptions) => MinifierResult | Promise<MinifierResult>;
-  export type Type = "script" | "module" | "asset";
+  export type Type = 'script' | 'module' | 'asset';
   export type JsTransformerConfig = Readonly<{
-    assetPlugins: ReadonlyArray<string>;
+    assetPlugins: readonly string[];
     assetRegistryPath: string;
     asyncRequireModulePath: string;
     babelTransformerPath: string;
@@ -51,7 +55,7 @@ declare module 'metro-transform-worker/src/index' {
     /** Whether to rename scoped `require` functions to `_$$_REQUIRE`, usually an extraneous operation when serializing to iife (default). */
     unstable_renameRequire?: boolean;
   }>;
-  export type { CustomTransformOptions } from "metro-babel-transformer";
+  export type { CustomTransformOptions } from 'metro-babel-transformer';
   export type JsTransformOptions = Readonly<{
     customTransformOptions?: CustomTransformOptions;
     dev: boolean;
@@ -60,7 +64,7 @@ declare module 'metro-transform-worker/src/index' {
     inlinePlatform: boolean;
     inlineRequires: boolean;
     minify: boolean;
-    nonInlinedRequires?: ReadonlyArray<string>;
+    nonInlinedRequires?: readonly string[];
     platform?: null | string;
     type: Type;
     unstable_disableES6Transforms?: boolean;
@@ -72,15 +76,19 @@ declare module 'metro-transform-worker/src/index' {
     filename: Path;
     inputFileSize: number;
   }>;
-  export type AssetFile = Readonly<{
-    type: "asset";
-  } & BaseFile>;
-  export type JSFileType = "js/script" | "js/module" | "js/module/asset";
-  export type JSFile = Readonly<{
-    ast?: null | undefined | _babel_types.File;
-    type: JSFileType;
-    functionMap?: FBSourceFunctionMap | null;
-  } & BaseFile>;
+  export type AssetFile = Readonly<
+    {
+      type: 'asset';
+    } & BaseFile
+  >;
+  export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
+  export type JSFile = Readonly<
+    {
+      ast?: null | undefined | _babel_types.File;
+      type: JSFileType;
+      functionMap?: FBSourceFunctionMap | null;
+    } & BaseFile
+  >;
   export type JSONFile = {
     type: Type;
   } & BaseFile;
@@ -93,30 +101,34 @@ declare module 'metro-transform-worker/src/index' {
     data: Readonly<{
       code: string;
       lineCount: number;
-      map: Array<MetroSourceMapSegmentTuple>;
+      map: MetroSourceMapSegmentTuple[];
       functionMap?: null | FBSourceFunctionMap;
     }>;
     type: JSFileType;
   }>;
   export type TransformResponse = Readonly<{
-    dependencies: ReadonlyArray<TransformResultDependency>;
-    output: ReadonlyArray<JsOutput>;
+    dependencies: readonly TransformResultDependency[];
+    output: readonly JsOutput[];
   }>;
-  export { default as getCacheKey } from "metro-cache-key";
+  export { default as getCacheKey } from 'metro-cache-key';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-worker/src/utils/assetTransformer.js
 declare module 'metro-transform-worker/src/utils/assetTransformer' {
-  import type { File } from "@babel/types";
-  import type { BabelTransformerArgs } from "metro-babel-transformer";
-  export function transform($$PARAM_0$$: BabelTransformerArgs, assetRegistryPath: string, assetDataPlugins: ReadonlyArray<string>): Promise<{
+  import type { File } from '@babel/types';
+  import type { BabelTransformerArgs } from 'metro-babel-transformer';
+  export function transform(
+    $$PARAM_0$$: BabelTransformerArgs,
+    assetRegistryPath: string,
+    assetDataPlugins: readonly string[]
+  ): Promise<{
     ast: File;
   }>;
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-worker/src/utils/getMinifier.js
 declare module 'metro-transform-worker/src/utils/getMinifier' {
-  import type { Minifier } from "metro-transform-worker/src/index";
+  import type { Minifier } from 'metro-transform-worker/src/index';
   function getMinifier(minifierPath: string): Minifier;
   export default getMinifier;
 }
