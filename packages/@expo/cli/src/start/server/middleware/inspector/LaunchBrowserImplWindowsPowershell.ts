@@ -9,12 +9,9 @@ import {
   LaunchBrowserTypesEnum,
 } from './LaunchBrowser.types';
 
-const IS_WSL = require('is-wsl') && !require('is-docker')();
-
 /**
- * Browser implementation for Windows and WSL
+ * Browser implementation for Windows (PowerShell)
  *
- * To minimize the difference between Windows and WSL, the implementation wraps all spawn calls through powershell.
  */
 export default class LaunchBrowserImplWindows implements LaunchBrowser, LaunchBrowserInstance {
   private _appId: string | undefined;
@@ -52,16 +49,8 @@ export default class LaunchBrowserImplWindows implements LaunchBrowser, LaunchBr
   }
 
   async createTempBrowserDir(baseDirName: string) {
-    let tmpDir;
-    if (IS_WSL) {
-      // On WSL, the browser is actually launched in host, the `temp-dir` returns the linux /tmp path where host browsers cannot reach into.
-      // We should get the temp path through the `$TEMP` windows environment variable.
-      tmpDir = (await spawnAsync('powershell.exe', ['-c', 'echo "$Env:TEMP"'])).stdout.trim();
-      return `${tmpDir}\\${baseDirName}`;
-    } else {
-      tmpDir = require('temp-dir');
-      return path.join(tmpDir, baseDirName);
-    }
+    const tmpDir = require('temp-dir');
+    return path.join(tmpDir, baseDirName);
   }
 
   async launchAsync(
@@ -110,6 +99,7 @@ export default class LaunchBrowserImplWindows implements LaunchBrowser, LaunchBr
     const PSModulePath = (
       await spawnAsync('powershell.exe', ['-c', 'echo "$PSHOME\\Modules"'])
     ).stdout.trim();
+    console.log(PSModulePath);
     this._powershellEnv = {
       PSModulePath,
     };
