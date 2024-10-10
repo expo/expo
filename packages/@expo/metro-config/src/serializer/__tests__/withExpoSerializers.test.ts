@@ -615,6 +615,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -634,6 +635,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -660,6 +662,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -697,6 +700,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -719,6 +723,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -745,6 +750,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -781,6 +787,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -822,6 +829,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -849,6 +857,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "foo.js",
@@ -875,6 +884,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
   });
 
@@ -925,6 +935,7 @@ describe('serializes', () => {
               },
             },
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "index.js",
@@ -957,6 +968,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "math.js",
@@ -982,6 +994,7 @@ describe('serializes', () => {
             ],
             "paths": {},
             "reactClientReferences": [],
+            "reactServerReferences": [],
             "requires": [],
           },
           "originFilename": "shapes.js",
@@ -1009,6 +1022,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
     expect(artifacts[2].metadata).toEqual({
       isAsync: true,
@@ -1017,6 +1031,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactServerReferences: [],
     });
 
     // // The shared sync import is deduped and added to a common chunk.
@@ -1126,6 +1141,7 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js'],
+        reactServerReferences: [],
         requires: [],
       });
 
@@ -1179,6 +1195,7 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js', 'file:///app/second.js'],
+        reactServerReferences: [],
         requires: [],
       });
     });
