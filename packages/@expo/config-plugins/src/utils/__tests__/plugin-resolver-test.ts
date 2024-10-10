@@ -88,6 +88,17 @@ describe('plugin resolver', () => {
           isPluginFile: true,
         });
       });
+
+      it('test-lib library name with file path', () => {
+        expect(resolvePluginForModule(projectRoot, 'test-lib/app.plugin.js')).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-lib/app.plugin.js`,
+          isPluginFile: true,
+        });
+        expect(resolvePluginForModule(projectRoot, 'test-lib/not.app.plugin.js')).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-lib/not.app.plugin.js`,
+          isPluginFile: false,
+        });
+      });
     });
   });
 });
