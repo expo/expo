@@ -546,23 +546,6 @@ export function withExtendedResolver(
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       const doResolve = getStrictResolver(context, platform);
 
-      if (
-        moduleName === '@react-native/assets-registry/registry' ||
-        context.originModulePath.match(
-          /node_modules[\\/]@react-native[\\/]assets-registry[\\/]registry/
-        )
-      ) {
-        const virtualModuleId = `\0polyfill:asset-registry`;
-        getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
-          virtualModuleId,
-          ASSET_REGISTRY_SRC
-        );
-        return {
-          type: 'sourceFile',
-          filePath: virtualModuleId,
-        };
-      }
-
       const result = doResolve(moduleName);
 
       if (result.type !== 'sourceFile') {
