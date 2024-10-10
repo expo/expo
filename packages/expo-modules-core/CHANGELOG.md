@@ -35,7 +35,7 @@
 - Added `nativeRefType` to `SharedRef`. ([#31776](https://github.com/expo/expo/pull/31776) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Added `kotlin.time.Duration` support. ([#31858](https://github.com/expo/expo/pull/31858) by [@lukmccall](https://github.com/lukmccall))
 - Return duration from logger timer block methods. ([#31805](https://github.com/expo/expo/pull/31805) by [@wschurman](https://github.com/wschurman))
-- [iOS] Made `CMTime` from `CoreMedia` a convertible type.
+- [iOS] Made `CMTime` from `CoreMedia` a convertible type. ([#31967](https://github.com/expo/expo/pull/31967) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
