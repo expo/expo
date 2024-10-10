@@ -8,7 +8,7 @@ import { videoLabels, videoSources } from './videoSources';
 import { styles } from './videoStyles';
 import TitledSwitch from '../../components/TitledSwitch';
 
-export default function DefaultScreen() {
+export default function VideoSourcesScreen() {
   const ref = useRef<VideoView>(null);
   const [useReplaceFunction, setUseReplaceFunction] = useState(true);
   const [statefulSource, setStatefulSource] = useState<VideoSource>(videoSources[0]);

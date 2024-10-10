@@ -5,7 +5,7 @@ import { View, Text } from 'react-native';
 import { androidDrmSource } from './videoSources';
 import { styles } from './videoStyles';
 
-export default function FullscreenScreen() {
+export default function VideoDRMScreen() {
   const source = Platform.OS === 'android' ? androidDrmSource : null;
   const player = useVideoPlayer(source, (player) => {
     player.loop = true;

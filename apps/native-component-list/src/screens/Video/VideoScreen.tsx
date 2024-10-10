@@ -9,7 +9,7 @@ export const VideoScreens = [
     route: 'video/drm',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./DRMScreen'));
+      return optionalRequire(() => require('./VideoDRMScreen'));
     },
   },
   {
@@ -17,7 +17,7 @@ export const VideoScreens = [
     route: 'video/fullscreen',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./FullscreenScreen'));
+      return optionalRequire(() => require('./VideoFullscreenScreen'));
     },
   },
   {
@@ -25,7 +25,7 @@ export const VideoScreens = [
     route: 'video/now-playing',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./NowPlayingScreen'));
+      return optionalRequire(() => require('./VideoNowPlayingScreen'));
     },
   },
   {
@@ -33,7 +33,7 @@ export const VideoScreens = [
     route: 'video/pip',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./PictureInPictureScreen'));
+      return optionalRequire(() => require('./VideoPictureInPictureScreen'));
     },
   },
   {
@@ -41,7 +41,7 @@ export const VideoScreens = [
     route: 'video/playback',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./PlaybackControlsScreen'));
+      return optionalRequire(() => require('./VideoPlaybackControlsScreen'));
     },
   },
   {
@@ -49,7 +49,7 @@ export const VideoScreens = [
     route: 'video/sources',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SourcesScreen'));
+      return optionalRequire(() => require('./VideoSourcesScreen'));
     },
   },
   {
@@ -58,7 +58,7 @@ export const VideoScreens = [
     route: 'video/events',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./EventsScreen'));
+      return optionalRequire(() => require('./VideoEventsScreen'));
     },
   },
 ];
@@ -70,12 +70,12 @@ if (Platform.OS === 'ios') {
     route: 'video/live-text-interaction',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./LiveTextInteractionScreen'));
+      return optionalRequire(() => require('./VideoLiveTextInteractionScreen'));
     },
   });
 }
 
-export default function ImageScreen() {
+export default function VideoScreen() {
   const apis: ListElement[] = VideoScreens.map((screen) => {
     return {
       name: screen.name,

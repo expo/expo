@@ -10,7 +10,7 @@ import Button from '../../components/Button';
 const MediumText = (props: TextProps) => {
   return <Text style={styles.mediumText} {...props} />;
 };
-export default function EventsScreen() {
+export default function VideoEventsScreen() {
   const ref = useRef<VideoView>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentSource, setCurrentSource] = useState(bigBuckBunnySource);

@@ -6,7 +6,7 @@ import { forBiggerBlazesSource } from './videoSources';
 import { styles } from './videoStyles';
 import TitledSwitch from '../../components/TitledSwitch';
 
-export default function LiveTextInteractionScreen() {
+export default function VideoLiveTextInteractionScreen() {
   const [allowLiveTextInteraction, setAllowLiveTextInteraction] = useState(false);
   const player = useVideoPlayer(forBiggerBlazesSource, (player) => {
     player.loop = true;

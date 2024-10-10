@@ -7,7 +7,7 @@ import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
 
-export default function PictureInPictureScreen() {
+export default function VideoPictureInPictureScreen() {
   const ref = useRef<VideoView>(null);
   const [isInPiP, setIsInPiP] = useState(false);
   const [allowPiP, setAllowPiP] = useState(true);

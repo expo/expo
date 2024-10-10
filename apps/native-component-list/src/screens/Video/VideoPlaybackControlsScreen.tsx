@@ -11,7 +11,7 @@ import TitledSwitch from '../../components/TitledSwitch';
 
 const playbackRates: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
 
-export default function PlaybackControlsScreen() {
+export default function VideoPlaybackControlsScreen() {
   const [loop, setLoop] = React.useState(false);
   const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
   const [preservePitch, setPreservePitch] = React.useState(true);

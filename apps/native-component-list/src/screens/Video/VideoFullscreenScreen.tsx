@@ -7,7 +7,7 @@ import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
 
-export default function FullscreenScreen() {
+export default function VideoFullscreenScreen() {
   const ref = useRef<VideoView>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [allowFullscreen, setAllowFullscreen] = useState(true);

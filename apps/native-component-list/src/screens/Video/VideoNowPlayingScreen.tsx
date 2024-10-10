@@ -7,7 +7,7 @@ import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
 
-export default function NowPlayingScreen() {
+export default function VideoNowPlayingScreen() {
   const [showNowPlaying, setShowNowPlaying] = useState(true);
   const [currentSource, setCurrentSource] = useState(bigBuckBunnySource);
 
