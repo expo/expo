@@ -120,9 +120,8 @@ export function createServerComponentsMiddleware(
             entryPoint
         );
       }
-      // contents.artifacts.find((a) => a.type === 'js')?.filename
       const relativeName = path.relative(serverRoot, entryPoint);
-      const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!); //relativeName.replace(/\//g, '_');
+      const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;
       // While we're here, export the router for the server to dynamically render RSC.

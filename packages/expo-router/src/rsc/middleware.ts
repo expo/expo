@@ -56,7 +56,6 @@ async function getServerActionManifest(
   >
 > {
   const filePath = `../../rsc/${platform}/action-manifest.js`;
-  // const filePath = path.join(distFolder, `_expo/rsc/${platform}/action-manifest.json`);
   return interopDefault(await asyncServerImport(filePath));
 }
 
@@ -76,7 +75,6 @@ async function getSSRManifest(
   >
 > {
   const filePath = `../../rsc/${platform}/ssr-manifest.js`;
-  // const filePath = path.join(distFolder, `_expo/rsc/${platform}/ssr-manifest.json`);
   return interopDefault(await asyncServerImport(filePath));
 }
 
@@ -142,7 +140,6 @@ export async function renderRscWithImportsAsync(
       async loadServerModuleRsc(file) {
         debug('loadServerModuleRsc', file);
         const filePath = path.join('../../../', file);
-        // const filePath = path.join(distFolder, file);
         const m = await asyncServerImport(filePath);
 
         // TODO: This is a hack to workaround a cloudflare/metro issue where there's an extra `default` wrapper.
