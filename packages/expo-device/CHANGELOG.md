@@ -8,11 +8,11 @@
 
 ### 🎉 New features
 
+- [iOS] Added some missing entries for 2024 Apple devices. ([#31970](https://github.com/expo/expo/pull/31970) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
-
-- [iOS] Added some missing entries for 2024 Apple devices. ([#31970](https://github.com/expo/expo/pull/31970) by [@fobos531](https://github.com/fobos531))
 
 ## 6.0.2 — 2024-05-01
 
