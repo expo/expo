@@ -57,9 +57,7 @@ object DevLauncherReactHost {
       useDeveloperSupport,
       useDeveloperSupport
     )
-      .apply {
-        jsEngineResolutionAlgorithm = jsResolutionAlgorithm
-      }
+
     if (useDeveloperSupport) {
       injectDebugServerHost(application.applicationContext, reactHost, launcherIp!!, jsMainModuleName)
     }
