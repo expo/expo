@@ -1,4 +1,4 @@
-import type { WebView as RNWebView, WebViewProps as RNWebViewProps } from 'react-native-webview';
+import type { RNWebView, RNWebViewProps } from './webview/RNWebView';
 
 export type JSONValue = boolean | number | string | null | JSONArray | JSONObject;
 
