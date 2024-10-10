@@ -159,12 +159,27 @@ export declare class File {
 }
 
 export declare class FileHandle {
+  /*
+   * Closes the file handle. This allows the file to be deleted, moved or read by a different process. Subsequent calls to `readBytes` or `writeBytes` will throw an error.
+   */
   close(): void;
   /*
    * Reads the specified amount of bytes from the file at the current offset.
+   * @param length - The number of bytes to read.
    */
   readBytes(length: number): Uint8Array;
+  /*
+   * Writes the specified bytes to the file at the current offset.
+   * @param bytes - A Uint8Array array containing bytes to write.
+   */
   writeBytes(bytes: Uint8Array): void;
+  /*
+   * A property that indicates the current byte offset in the file. Calling `readBytes` or `writeBytes` will read or write a specified amount of bytes starting from this offset. The offset is incremented by the number of bytes read or written.
+   * The offset can be set to any value within the file size. If the offset is set to a value greater than the file size, the next write operation will append data to the end of the file.
+   */
   offset: number;
+  /*
+   * A size of the file in bytes.
+   */
   size: number;
 }
