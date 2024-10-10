@@ -181,7 +181,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   private var borderRadius = FloatArray(9) { YogaConstants.UNDEFINED }
   private var borderWidth = FloatArray(9) { YogaConstants.UNDEFINED }
-  private var borderColor = Array(9) { YogaConstants.UNDEFINED to YogaConstants.UNDEFINED }
+  private var borderColor = Array(9) { YogaConstants.UNDEFINED.toInt() to YogaConstants.UNDEFINED }
 
   fun setBorderRadius(index: Int, radius: Float) {
     borderRadius[index] = radius
@@ -193,9 +193,9 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     activeView.setBorderWidth(index, width)
   }
 
-  fun setBorderColor(index: Int, rgb: Float, alpha: Float) {
+  fun setBorderColor(index: Int, rgb: Int, alpha: Float) {
     borderColor[index] = rgb to alpha
-    activeView.setBorderColor(index, rgb, alpha)
+    activeView.setBorderColor(index, rgb)
   }
 
   fun setIsAnimating(setAnimating: Boolean) {
@@ -243,7 +243,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     view.isFocusable = isFocusableProp
     view.contentDescription = accessibilityLabel
     borderColor.forEachIndexed { index, (rgb, alpha) ->
-      view.setBorderColor(index, rgb, alpha)
+      view.setBorderColor(index, rgb)
     }
     borderRadius.forEachIndexed { index, value ->
       view.setBorderRadius(index, value)

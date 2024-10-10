@@ -16,7 +16,7 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
     logger: createLogger(chalk.bold('Debug:')),
     unstable_customInspectorMessageHandler: createHandlersFactory(metroBundler),
     unstable_experiments: {
-      enableNewDebugger: true,
+      enableOpenDebuggerRedirect: true,
     },
   });
 

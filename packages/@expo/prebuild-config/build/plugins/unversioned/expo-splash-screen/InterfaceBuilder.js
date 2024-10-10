@@ -25,7 +25,7 @@ function _xml2js() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = require('debug')('expo:prebuild-config:expo-splash-screen:ios:InterfaceBuilder');
 
 /** @example `<color key="textColor" systemColor="linkColor"/>` */

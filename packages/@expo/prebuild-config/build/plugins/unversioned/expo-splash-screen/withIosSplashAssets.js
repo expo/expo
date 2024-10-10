@@ -47,7 +47,7 @@ function _AssetContents() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:assets');
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreen.imageset';

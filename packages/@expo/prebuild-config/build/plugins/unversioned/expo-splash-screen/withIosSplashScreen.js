@@ -60,7 +60,7 @@ function _wtihIosSplashScreenStoryboardImage() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios');
 const withIosSplashScreen = (config, splash) => {
   // If the user didn't specify a splash object, infer the splash object from the Expo config.

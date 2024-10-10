@@ -1,4 +1,4 @@
-import { View as NativeView } from 'react-native';
+import { View as NativeView, } from 'react-native';
 import { createDevView } from './createDevView';
 import { createSafeStyledView } from '../css/createSafeStyledView';
 let View = NativeView;

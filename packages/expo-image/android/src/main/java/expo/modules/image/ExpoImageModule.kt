@@ -268,7 +268,7 @@ class ExpoImageModule : Module() {
         ViewProps.BORDER_START_COLOR to Spacing.START,
         ViewProps.BORDER_END_COLOR to Spacing.END
       ) { view: ExpoImageViewWrapper, index: Int, color: Int? ->
-        val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
+        val rgbComponent = if (color == null) YogaConstants.UNDEFINED.toInt() else (color and 0x00FFFFFF)
         val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
         view.setBorderColor(index, rgbComponent, alphaComponent)
       }

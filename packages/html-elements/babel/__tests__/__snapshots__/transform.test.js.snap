@@ -8,7 +8,7 @@ function App() {
 `;
 
 exports[`Converts fixture 1`] = `
-"import { Main, Article, P, Code, Div } from "@expo/html-elements";import { Image } from 'react-native';import { jsx as _jsx } from "react/jsx-runtime";import { jsxs as _jsxs } from "react/jsx-runtime";
+"import { Main, Article, P, Code, Div } from "@expo/html-elements";import { Image } from 'react-native';import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 
 export default function App() {
   return (

@@ -113,7 +113,7 @@ function _reactNativeMaps() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * These are the versioned first-party plugins with some of the future third-party plugins mixed in for legacy support.
  */

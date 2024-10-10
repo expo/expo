@@ -33,9 +33,9 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   // state holders for asking for writing permissions
   private var mWriteSettingsPermissionBeingAsked = false // change this directly before calling corresponding startActivity
   private var mAskAsyncListener: PermissionsResponseListener? = null
-  private var mAskAsyncRequestedPermissions: Array<out String>? = null
+  private var mAskAsyncRequestedPermissions: Array<String>? = null
 
-  private val mPendingPermissionCalls: Queue<Pair<Array<out String>, PermissionsResponseListener>> = LinkedList()
+  private val mPendingPermissionCalls: Queue<Pair<Array<String>, PermissionsResponseListener>> = LinkedList()
   private var mCurrentPermissionListener: PermissionsResponseListener? = null
 
   private lateinit var mAskedPermissionsCache: SharedPreferences
@@ -162,7 +162,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   override fun isPermissionPresentInManifest(permission: String): Boolean {
     try {
       context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)?.run {
-        return requestedPermissions.contains(permission)
+        return requestedPermissions!!.contains(permission)
       }
       return false
     } catch (e: PackageManager.NameNotFoundException) {
@@ -234,7 +234,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   }
 
   protected open fun askForManifestPermissions(permissions: Array<out String>, listener: PermissionsResponseListener) {
-    delegateRequestToActivity(permissions, listener)
+    delegateRequestToActivity(permissions as Array<String>, listener)
   }
 
   /**
@@ -243,7 +243,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
    *
    * @param permissions [android.Manifest.permission]
    */
-  protected fun delegateRequestToActivity(permissions: Array<out String>, listener: PermissionsResponseListener) {
+  protected fun delegateRequestToActivity(permissions: Array<String>, listener: PermissionsResponseListener) {
     addToAskedPermissionsCache(permissions)
 
     val currentActivity = mActivityProvider?.currentActivity

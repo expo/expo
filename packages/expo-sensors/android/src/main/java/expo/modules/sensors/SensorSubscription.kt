@@ -53,7 +53,7 @@ class SensorSubscription(
 
     return try {
       context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)?.run {
-        requestedPermissions.contains(Manifest.permission.HIGH_SAMPLING_RATE_SENSORS)
+        requestedPermissions?.contains(Manifest.permission.HIGH_SAMPLING_RATE_SENSORS)
       } ?: false
     } catch (e: PackageManager.NameNotFoundException) {
       false

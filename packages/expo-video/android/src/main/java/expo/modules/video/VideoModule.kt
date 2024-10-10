@@ -110,10 +110,8 @@ class VideoModule : Module() {
         ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
         ViewProps.BORDER_START_COLOR to Spacing.START,
         ViewProps.BORDER_END_COLOR to Spacing.END
-      ) { view: VideoView, index: Int, color: Int? ->
-        val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
-        val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.setBorderColor(index, rgbComponent, alphaComponent)
+      ) { view: VideoView, index: Int, color: Int ->
+        view.setBorderColor(index, color)
       }
 
       Prop("borderStyle") { view: VideoView, borderStyle: String? ->

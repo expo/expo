@@ -11,6 +11,7 @@ import com.facebook.react.common.LifecycleState
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.runtime.ReactHostImpl
+import java.lang.reflect.Field
 
 /**
  * An abstract wrapper to host [ReactNativeHost] and [ReactHost],
@@ -76,7 +77,12 @@ class ReactHostWrapper(reactNativeHost: ReactNativeHost, reactHost: ReactHost?) 
   val jsExecutorName: String
     get() {
       if (isBridgelessMode) {
-        return if (reactHost.jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
+        // Access private field using reflection
+        val jsEngineResolutionAlgorithmField: Field = reactHost::class.java.getDeclaredField("mJSEngineResolutionAlgorithm")
+        jsEngineResolutionAlgorithmField.isAccessible = true
+        val jsEngineResolutionAlgorithm = jsEngineResolutionAlgorithmField.get(reactHost) as? JSEngineResolutionAlgorithm
+
+        return if (jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
           "JSC"
         } else {
           "Hermes"
