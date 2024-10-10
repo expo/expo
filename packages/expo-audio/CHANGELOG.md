@@ -5,8 +5,11 @@
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+  
 
 ### 🎉 New features
+
+- [ios] lock screen controls ([#31894](https://github.com/expo/expo/pull/31894) by [@danieloi](https://github.com/danieloi))
 
 ### 🐛 Bug fixes
 

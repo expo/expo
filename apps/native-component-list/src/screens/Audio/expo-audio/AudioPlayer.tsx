@@ -7,10 +7,22 @@ import Player from './Player';
 type AudioPlayerProps = {
   source: AudioSource | string | number;
   style?: StyleProp<ViewStyle>;
+  enableLockScreenControls?: boolean;
+  metadata?: {
+    title?: string;
+    artist?: string;
+    album?: string;
+    artwork?: string;
+  };
 };
 
-export default function AudioPlayer({ source, style }: AudioPlayerProps) {
-  const player = useAudioPlayer(source, 500);
+export default function AudioPlayer({
+  source,
+  style,
+  enableLockScreenControls = true,
+  metadata,
+}: AudioPlayerProps) {
+  const player = useAudioPlayer(source, 500, enableLockScreenControls, metadata);
   const status = useAudioPlayerStatus(player);
   const setVolume = (volume: number) => {
     player.volume = volume;
