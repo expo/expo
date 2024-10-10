@@ -202,14 +202,22 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     }
 
     const args = Array.isArray(decodedBody) ? decodedBody : [];
-    const [, name] = actionId.split('#') as [string, string];
 
-    // @ts-ignore
-    const moduleId = serverConfig[actionId].chunks[0];
+    const chunkInfo = serverConfig[actionId];
 
-    // TODO: Add production version of this code path.
-    const mod: any = await opts.loadServerModuleRsc(moduleId);
-    const fn = name === '*' ? name : mod[name] || mod;
+    // Load module into memory.
+    await Promise.all(chunkInfo.chunks.map((chunk) => globalThis.__webpack_chunk_load__(chunk)));
+
+    // Import module.
+    const mod: any = globalThis.__webpack_require__(chunkInfo.id);
+    const fn = chunkInfo.name === '*' ? chunkInfo.name : mod[chunkInfo.name] || mod;
+
+    if (!fn) {
+      throw new Error(
+        `Could not find server action: ${actionId}. Module: ${JSON.stringify(chunkInfo, null, 2)}`
+      );
+    }
+
     return renderWithContextWithAction(context, fn, args);
   }
 

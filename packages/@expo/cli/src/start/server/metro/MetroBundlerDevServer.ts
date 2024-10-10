@@ -687,8 +687,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     debug('React server action boundaries from client:', reactServerReferences);
 
-    // TODO: export server actions that are imported from client modules and create a manifest for the server renderer.
-
     await this.rscRenderer!.exportServerActionsAsync(
       {
         platform: options.platform,

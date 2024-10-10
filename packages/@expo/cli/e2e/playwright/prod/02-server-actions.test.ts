@@ -122,14 +122,6 @@ test.describe(inputDir, () => {
     expect(errorLogs).toEqual([]);
     expect(errors).toEqual([]);
 
-    // // NOTE: I had issues splitting up the tests, so consider this the next test:
-    // // it 'hydrates the client component'
-
-    // // Wait for the app to load
-    // await page.waitForSelector('[data-testid="client-button"]');
-
-    // await expect(page.locator('[data-testid="index-server-counter"]')).toHaveText('');
-
     // Get text of `index-server-date-rendered`
     const dateRendered = await page
       .locator('[data-testid="index-server-date-rendered"]')
@@ -144,9 +136,6 @@ test.describe(inputDir, () => {
     await expect(page.locator('[data-testid="index-server-date-rendered"]')).toHaveText(
       dateRendered
     );
-
-    // // Click button
-    // await page.locator('[data-testid="client-button"]').click();
   });
 
   test('calls a server action', async ({ page }) => {
@@ -213,52 +202,4 @@ test.describe(inputDir, () => {
     // The new props should be represented in the server action
     await expect(page.locator('[data-testid="server-action-props"]')).toHaveText('c=1');
   });
-
-  // test('increments server state', async ({ page }) => {
-  //   await page.goto(serveCmd.url);
-  //   // Wait for the app to load
-  //   await page.waitForSelector('[data-testid="index-text"]');
-
-  //   // Get text of `index-server-date-rendered`
-  //   const dateRendered = await page
-  //     .locator('[data-testid="index-server-date-rendered"]')
-  //     .textContent();
-
-  //   // Observe network request
-  //   // http://localhost:3000/_flight/web_6eecbdf6288d8a80fbc45a1bd012adc456f393ab%23increment.txt
-  //   const serverActionRequest = page.waitForRequest((request) => {
-  //     const headers = request.headers();
-  //     return (
-  //       // Server Actions can only be POST requests
-  //       request.method() === 'POST' &&
-  //       // When the server action returns JSX we use this header.
-  //       headers['accept'] === 'text/x-component' &&
-  //       // Framework headers
-  //       headers['expo-platform'] === 'web' &&
-  //       // Expected URL location
-  //       new URL(request.url()).pathname.startsWith('/_flight/web/ACTION_')
-  //     );
-  //     // request.url() === 'https://example.com' && request.method() === 'GET'
-  //   });
-
-  //   const serverResponsePromise = page.waitForResponse((response) => {
-  //     return new URL(response.url()).pathname.startsWith('/_flight/web/ACTION_');
-  //   });
-
-  //   // Call the server action
-  //   await page.locator('[data-testid="button-server-action"]').click();
-
-  //   await serverActionRequest;
-  //   const response = await serverResponsePromise;
-  //   // This will be the full page RSC
-  //   // const rscPayload = new TextDecoder().decode(await response.body());
-
-  //   // expect(rscPayload)
-  //   //   .toBe(``);
-
-  //   // The server date will now be updated with the new server state...
-  //   await expect(page.locator('[data-testid="index-server-date-rendered"]')).not.toHaveText(
-  //     dateRendered
-  //   );
-  // });
 });
