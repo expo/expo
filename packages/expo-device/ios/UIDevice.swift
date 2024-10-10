@@ -276,7 +276,7 @@ private struct JailbreakHelper {
       "/Applications/MxTube.app",
       "/Applications/RockApp.app",
       "/Applications/SBSettings.app",
-      "/Applications/WinterBoard.app",
+      "/Applications/WinterBoard.app"
     ]
   }
 
@@ -297,7 +297,7 @@ private struct JailbreakHelper {
       "/usr/sbin/sshd",
       "/etc/apt",
       "/bin/bash",
-      "/Library/MobileSubstrate/MobileSubstrate.dylib",
+      "/Library/MobileSubstrate/MobileSubstrate.dylib"
     ]
   }
 }
