@@ -1,54 +1,58 @@
+// #region metro-babel-transformer
 declare module 'metro-babel-transformer' {
-  import type { FBSourceFunctionMap } from 'metro-source-map';
-  import type { Ast, PluginItem, BabelFileMetadata } from '@babel/core';
+  export * from 'metro-babel-transformer/src/index';
+  export { default } from 'metro-babel-transformer/src/index';
+}
 
+// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-babel-transformer/src/index.js
+declare module 'metro-babel-transformer/src/index' {
+  import type * as _babel_types from "@babel/types";
+  import type { BabelFileMetadata, TransformOptions } from "@babel/core";
   export type CustomTransformOptions = {
-    [key: string]: unknown;
-    __proto__: null;
+    [$$Key$$: string]: any;
   };
-
-  export type TransformProfile = 'default' | 'hermes-stable' | 'hermes-canary';
-
-  export type BabelTransformerOptions = {
+  export type TransformProfile = "default" | "hermes-stable" | "hermes-canary";
+  type BabelTransformerOptions = Readonly<{
     customTransformOptions?: CustomTransformOptions;
     dev: boolean;
-    disableFlowStripTypesTransform?: boolean;
     enableBabelRCLookup?: boolean;
-    enableBabelRuntime: boolean;
+    enableBabelRuntime?: boolean | string;
+    extendsBabelConfigPath?: string;
     experimentalImportSupport?: boolean;
+    hermesParser?: boolean;
     hot: boolean;
-    inlineRequires?: boolean;
     minify: boolean;
     unstable_disableES6Transforms?: boolean;
-    platform: string | null;
+    platform?: null | string;
     projectRoot: string;
     publicPath: string;
-    extendsBabelConfigPath?: string;
-    hermesParser?: boolean;
-    globalPrefix?: string;
-  };
-
-  export type BabelTransformerArgs = {
+    unstable_transformProfile?: TransformProfile;
+    globalPrefix: string;
+    inlineRequires?: void;
+  }>;
+  export type BabelTransformerArgs = Readonly<{
     filename: string;
     options: BabelTransformerOptions;
-    plugins?: PluginItem[];
+    plugins?: TransformOptions["plugins"];
     src: string;
-  };
-
+  }>;
+  export type BabelFileFunctionMapMetadata = Readonly<{
+    names: ReadonlyArray<string>;
+    mappings: string;
+  }>;
+  export type MetroBabelFileMetadata = {
+    metro?: null | undefined | {
+      functionMap?: null | undefined | BabelFileFunctionMapMetadata;
+    };
+  } & BabelFileMetadata;
   export type BabelTransformer = {
-    transform: (args: BabelTransformerArgs) => {
-      ast: Ast;
-      metadata?: BabelFileMetadata & {
-        reactClientReference?: string;
-        expoDomComponentReference?: string;
-        hasCjsExports?: boolean;
-        metro?: {
-          functionMap?: FBSourceFunctionMap | null;
-        };
-      };
-      code?: string | null;
-      functionMap?: FBSourceFunctionMap | null;
+    transform: ($$PARAM_0$$: BabelTransformerArgs) => {
+      ast: _babel_types.File;
+      functionMap?: BabelFileFunctionMapMetadata;
+      metadata?: MetroBabelFileMetadata;
     };
     getCacheKey?: () => string;
   };
+  const $$EXPORT_DEFAULT_DECLARATION$$: BabelTransformer;
+  export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
