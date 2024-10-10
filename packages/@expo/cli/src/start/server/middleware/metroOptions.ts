@@ -38,6 +38,8 @@ export type ExpoMetroOptions = {
   usedExports?: boolean;
   /** Enable optimized bundling (required for tree shaking). */
   optimize?: boolean;
+  /** Fully qualified URL to use for all assets, if any. This is only applied when exporting. */
+  assetPrefix?: string;
 
   modulesOnly?: boolean;
   runModule?: boolean;
@@ -107,6 +109,10 @@ export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
 
+export function getAssetPrefixFromExpoConfig(exp: ExpoConfig) {
+  return exp.experiments?.assetPrefix?.trim().replace(/\/+$/, '') ?? '';
+}
+
 export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
   let asyncRoutesSetting;
 
@@ -162,6 +168,7 @@ export function getMetroDirectBundleOptions(
     optimize,
     domRoot,
     clientBoundaries,
+    assetPrefix,
     runModule,
     modulesOnly,
   } = withDefaults(options);
@@ -202,6 +209,7 @@ export function getMetroDirectBundleOptions(
     bytecode: bytecode ? '1' : undefined,
     reactCompiler: reactCompiler || undefined,
     dom: domRoot,
+    assetPrefix: assetPrefix || undefined,
   };
 
   // Iterate and delete undefined values
@@ -250,6 +258,7 @@ export function createBundleUrlPathFromExpoConfig(
     reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+    assetPrefix: getAssetPrefixFromExpoConfig(exp),
   });
 }
 
@@ -281,6 +290,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     usedExports,
     optimize,
     domRoot,
+    assetPrefix,
     modulesOnly,
     runModule,
   } = withDefaults(options);
@@ -323,6 +333,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (baseUrl) {
     queryParams.append('transform.baseUrl', baseUrl);
+  }
+  if (assetPrefix) {
+    queryParams.append('transform.assetUrl', assetPrefix);
   }
   if (clientBoundaries?.length) {
     queryParams.append('transform.clientBoundaries', JSON.stringify(clientBoundaries));

@@ -70,6 +70,7 @@ import {
   convertPathToModuleSpecifier,
   createBundleUrlPath,
   ExpoMetroOptions,
+  getAssetPrefixFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
@@ -886,6 +887,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       reactCompiler,
       minify: options.minify,
       asyncRoutes,
+      assetPrefix: getAssetPrefixFromExpoConfig(exp),
       // Options that are changing between platforms like engine, platform, and environment aren't set here.
     };
     this.instanceMetroOptions = instanceMetroOptions;
