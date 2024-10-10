@@ -349,6 +349,74 @@ describe('_getForce', () => {
   });
 });
 
+describe('load', () => {
+  const originalError = console.error;
+  let runtimeEnv: ReturnType<typeof createControlledEnvironment>;
+  beforeEach(() => {
+    mockEnv();
+    runtimeEnv = createControlledEnvironment();
+    console.error = jest.fn();
+  });
+  afterEach(() => {
+    console.error = originalError;
+  });
+
+  it('loads', () => {
+    expect(process.env.FOO).toBe(undefined);
+    vol.fromJSON(
+      {
+        '.env': 'FOO=bar',
+      },
+      '/'
+    );
+    runtimeEnv.load('/');
+    expect(process.env.FOO).toBe('bar');
+  });
+
+  it('correctly updates vars on env change', () => {
+    expect(process.env.FOO).toBe(undefined);
+    vol.fromJSON(
+      {
+        '.env': 'FOO=bar',
+      },
+      '/'
+    );
+    runtimeEnv.load('/', { force: true });
+    expect(process.env.FOO).toBe('bar');
+
+    vol.fromJSON(
+      {
+        '.env': 'FOO=foo',
+      },
+      '/'
+    );
+
+    runtimeEnv.load('/', { force: true });
+    expect(process.env.FOO).toBe('foo');
+  });
+
+  it("removes variable if it's no longer exist", () => {
+    vol.fromJSON(
+      {
+        '.env': 'OMIT_ME=1',
+      },
+      '/'
+    );
+
+    runtimeEnv.load('/', { force: true });
+    expect(process.env.OMIT_ME).toBe('1');
+    vol.fromJSON(
+      {
+        '.env': '',
+      },
+      '/'
+    );
+
+    runtimeEnv.load('/', { force: true });
+    expect(process.env.OMIT_ME).toBe(undefined);
+  });
+});
+
 it('does not leak environment variables between tests', () => {
   // If this test fails, it means that the test environment is not set-up properly.
   // Environment variables are leaking between "originalEnv" and "process.env", causing unexpected test failures/passes.
