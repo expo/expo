@@ -10,6 +10,9 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRsc = void 0;
+// This file must remain platform agnostic for production exports.
+// Import the runtime to support polyfills for webpack to load modules in the server using Metro.
+require("./runtime");
 const server_1 = require("react-server-dom-webpack/server");
 const path_1 = require("./path");
 const utils_1 = require("./router/utils");
@@ -53,29 +56,8 @@ async function renderRsc(args, opts) {
             return resolveRequest(true, encodedId);
         },
     });
-    global.__webpack_chunk_load__ = async (url) => {
-        console.log('server.__webpack_chunk_load__', url);
-        return await opts.loadServerModuleRsc(url);
-    };
-    global.__webpack_require__ = (id) => {
-        // This logic can be tested by running a production iOS build without virtual client boundaries. This will result in all split chunks being missing and
-        // errors being thrown on RSC load.
-        // @ts-expect-error: Not on type
-        const original = ErrorUtils.reportFatalError;
-        // @ts-expect-error: Not on type
-        ErrorUtils.reportFatalError = (err) => {
-            // Throw the error so the __r function exits as expected. The error will then be caught by the nearest error boundary.
-            throw err;
-        };
-        try {
-            return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
-        }
-        finally {
-            // Restore the original error handling.
-            // @ts-expect-error: Not on type
-            ErrorUtils.reportFatalError = original;
-        }
-    };
+    // @ts-ignore: Not part of global types. This is added to support server actions loading more actions.
+    global[`${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`] = opts.loadServerModuleRsc;
     const renderWithContext = async (context, input, params) => {
         const renderStore = {
             context: context || {},
@@ -146,20 +128,17 @@ async function renderRsc(args, opts) {
     }
     const actionId = (0, utils_1.decodeActionId)(input);
     if (actionId) {
-        // @ts-expect-error
-        if (!opts.isExporting && !process.env.EXPO_UNSTABLE_SERVER_ACTIONS) {
+        if (!opts.isExporting &&
+            // @ts-ignore
+            !process.env.EXPO_UNSTABLE_SERVER_ACTIONS) {
             throw new Error('Experimental support for React Server Actions is not enabled');
         }
         const args = Array.isArray(decodedBody) ? decodedBody : [];
         const [, name] = actionId.split('#');
+        // @ts-ignore
+        const moduleId = serverConfig[actionId].chunks[0];
         // TODO: Add production version of this code path.
-        const mod = await opts.loadServerModuleRsc(serverConfig[actionId].chunks[0]);
-        console.log('server action module:', {
-            mod,
-            name,
-            actionId,
-            chunk: serverConfig[actionId].chunks[0],
-        });
+        const mod = await opts.loadServerModuleRsc(moduleId);
         const fn = name === '*' ? name : mod[name] || mod;
         return renderWithContextWithAction(context, fn, args);
     }

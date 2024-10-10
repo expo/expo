@@ -16,7 +16,11 @@ import { stripAnsi } from '../../../utils/ansi';
 import { memoize } from '../../../utils/fn';
 import { streamToStringAsync } from '../../../utils/stream';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
-import { createBundleUrlSearchParams, ExpoMetroOptions } from '../middleware/metroOptions';
+import {
+  createBundleUrlSearchParams,
+  ExpoMetroOptions,
+  getMetroOptionsFromUrl,
+} from '../middleware/metroOptions';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
 
@@ -300,7 +304,7 @@ export function createServerComponentsMiddleware(
     };
   }
 
-  const rscRendererCache = new Map<string, typeof import('expo-router/src/rsc/rsc-renderer')>();
+  const rscRendererCache = new Map<string, typeof import('expo-router/build/rsc/rsc-renderer')>();
 
   async function getRscRendererAsync(platform: string) {
     // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
@@ -309,7 +313,7 @@ export function createServerComponentsMiddleware(
     }
 
     // TODO: Extract CSS Modules / Assets from the bundler process
-    const renderer = await ssrLoadModule<typeof import('expo-router/src/rsc/rsc-renderer')>(
+    const renderer = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
       'expo-router/build/rsc/rsc-renderer',
       {
         environment: 'react-server',
@@ -383,38 +387,14 @@ export function createServerComponentsMiddleware(
         isExporting,
         entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
         resolveClientEntry: getResolveClientEntry({ platform, engine, ssrManifest }),
-        async loadServerModuleRsc(chunk) {
-          // id = metro URL
-
+        async loadServerModuleRsc(urlFragment) {
           const serverRoot = getMetroServerRootMemo(projectRoot);
 
-          debug('[SSR] loadServerModuleRsc:', chunk);
+          debug('[SSR] loadServerModuleRsc:', urlFragment);
 
-          const url = new URL(chunk, 'http://localhost:0');
-          const getStringParam = (key: string) => {
-            const param = url.searchParams.get(key);
-            if (Array.isArray(param)) {
-              throw new Error(`Expected single value for ${key}`);
-            }
-            return param;
-          };
+          const options = getMetroOptionsFromUrl(urlFragment);
 
-          let pathname = url.pathname;
-          if (pathname.endsWith('.bundle')) {
-            pathname = pathname.slice(0, -'.bundle'.length);
-          }
-
-          const options = {
-            mode: (getStringParam('dev') ?? 'true') === 'true' ? 'development' : 'production',
-            minify: (getStringParam('minify') ?? 'false') === 'true',
-            lazy: (getStringParam('lazy') ?? 'false') === 'true',
-            routerRoot: getStringParam('transform.routerRoot') ?? 'app',
-            isExporting: (getStringParam('resolver.exporting') ?? 'false') === 'true',
-            environment: getStringParam('transform.environment') ?? 'node',
-            platform: url.searchParams.get('platform') ?? 'web',
-          };
-
-          return await ssrLoadModule(path.join(serverRoot, pathname), options);
+          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options);
         },
       }
     );

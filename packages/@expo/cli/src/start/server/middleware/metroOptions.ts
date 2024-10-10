@@ -386,3 +386,63 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
 export function convertPathToModuleSpecifier(pathLike: string) {
   return pathLike.replaceAll('\\', '/');
 }
+
+export function getMetroOptionsFromUrl(urlFragment: string) {
+  const url = new URL(urlFragment, 'http://localhost:0');
+  const getStringParam = (key: string) => {
+    const param = url.searchParams.get(key);
+    if (Array.isArray(param)) {
+      throw new Error(`Expected single value for ${key}`);
+    }
+    return param;
+  };
+
+  let pathname = url.pathname;
+  if (pathname.endsWith('.bundle')) {
+    pathname = pathname.slice(0, -'.bundle'.length);
+  }
+
+  const options: ExpoMetroOptions = {
+    mode: isTruthy(getStringParam('dev') ?? 'true') ? 'development' : 'production',
+    minify: isTruthy(getStringParam('minify') ?? 'false'),
+    lazy: isTruthy(getStringParam('lazy') ?? 'false'),
+    routerRoot: getStringParam('transform.routerRoot') ?? 'app',
+    isExporting: isTruthy(getStringParam('resolver.exporting') ?? 'false'),
+    environment: assertEnvironment(getStringParam('transform.environment') ?? 'node'),
+    platform: url.searchParams.get('platform') ?? 'web',
+    bytecode: isTruthy(getStringParam('transform.bytecode') ?? 'false'),
+    mainModuleName: convertPathToModuleSpecifier(pathname),
+    reactCompiler: isTruthy(getStringParam('transform.reactCompiler') ?? 'false'),
+    asyncRoutes: isTruthy(getStringParam('transform.asyncRoutes') ?? 'false'),
+    baseUrl: getStringParam('transform.baseUrl') ?? undefined,
+    // clientBoundaries: JSON.parse(getStringParam('transform.clientBoundaries') ?? '[]'),
+    engine: assertEngine(getStringParam('transform.engine')),
+    runModule: isTruthy(getStringParam('runModule') ?? 'true'),
+    modulesOnly: isTruthy(getStringParam('modulesOnly') ?? 'false'),
+  };
+
+  return options;
+}
+
+function isTruthy(value: string | null): boolean {
+  return value === 'true' || value === '1';
+}
+
+function assertEnvironment(environment: string | undefined): MetroEnvironment | undefined {
+  if (!environment) {
+    return undefined;
+  }
+  if (!['node', 'react-server', 'client'].includes(environment)) {
+    throw new Error(`Expected transform.environment to be one of: node, react-server, client`);
+  }
+  return environment as MetroEnvironment;
+}
+function assertEngine(engine: string | undefined | null): 'hermes' | undefined {
+  if (!engine) {
+    return undefined;
+  }
+  if (!['hermes'].includes(engine)) {
+    throw new Error(`Expected transform.engine to be one of: hermes`);
+  }
+  return engine as 'hermes';
+}

@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRscAsync = exports.renderRscWithImportsAsync = void 0;
-const node_path_1 = __importDefault(require("node:path"));
-const debug = require('debug')('expo:server:rsc-renderer');
-const rsc_renderer_1 = require("./rsc-renderer");
 const _async_server_import_1 = require("expo-router/_async-server-import");
+const node_path_1 = __importDefault(require("node:path"));
+const rsc_renderer_1 = require("./rsc-renderer");
+const debug = require('debug')('expo:server:rsc-renderer');
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map();
 function getRscRenderContext(platform) {
@@ -31,12 +31,10 @@ function interopDefault(mod) {
 }
 async function getServerActionManifest(distFolder, platform) {
     const filePath = `../../rsc/${platform}/action-manifest.js`;
-    // const filePath = path.join(distFolder, `_expo/rsc/${platform}/action-manifest.json`);
     return interopDefault(await (0, _async_server_import_1.asyncServerImport)(filePath));
 }
 async function getSSRManifest(distFolder, platform) {
     const filePath = `../../rsc/${platform}/ssr-manifest.js`;
-    // const filePath = path.join(distFolder, `_expo/rsc/${platform}/ssr-manifest.json`);
     return interopDefault(await (0, _async_server_import_1.asyncServerImport)(filePath));
 }
 async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType }) {
@@ -64,7 +62,6 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
                 }
                 const [id, chunk] = actionManifest[file];
                 return {
-                    // TODO
                     id,
                     chunks: chunk ? [chunk] : [],
                 };
@@ -81,7 +78,6 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         async loadServerModuleRsc(file) {
             debug('loadServerModuleRsc', file);
             const filePath = node_path_1.default.join('../../../', file);
-            // const filePath = path.join(distFolder, file);
             const m = await (0, _async_server_import_1.asyncServerImport)(filePath);
             // TODO: This is a hack to workaround a cloudflare/metro issue where there's an extra `default` wrapper.
             if (typeof caches !== 'undefined') {

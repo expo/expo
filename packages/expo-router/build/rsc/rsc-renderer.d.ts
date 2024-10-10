@@ -7,6 +7,7 @@
  *
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
+import './runtime';
 import { type EntriesDev } from './server';
 export interface RenderContext<T = unknown> {
     rerender: (input: string, searchParams?: URLSearchParams) => void;

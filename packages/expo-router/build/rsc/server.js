@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getContext = exports.rerender = exports.runWithRenderStore = exports.defineEntries = void 0;
 /**
  * Copyright © 2024 650 Industries.
  * Copyright © 2024 2023 Daishi Kato
@@ -6,8 +8,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getContext = exports.rerender = exports.runWithRenderStore = exports.defineEntries = void 0;
+require("./global.d.ts");
 function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
     return { renderEntries, getBuildConfig, getSsrConfig };
 }

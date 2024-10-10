@@ -5,15 +5,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import './global.d.ts';
 
 import { type AsyncLocalStorage } from 'node:async_hooks';
 import type { ReactNode } from 'react';
 
 import type { PathSpec } from './path';
-
-declare let globalThis: {
-  __EXPO_RSC_CACHE__?: Map<string, any>;
-};
 
 type Config = any;
 
