@@ -24,7 +24,7 @@ import java.util.*
  * application package. These correspond to the two loader subclasses.
  */
 abstract class Loader protected constructor(
-  private val context: Context,
+  protected val context: Context,
   private val configuration: UpdatesConfiguration,
   private val database: UpdatesDatabase,
   private val updatesDirectory: File,
@@ -75,14 +75,12 @@ abstract class Loader protected constructor(
   }
 
   protected abstract fun loadRemoteUpdate(
-    context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
   )
 
   protected abstract fun loadAsset(
-    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
@@ -98,7 +96,6 @@ abstract class Loader protected constructor(
     this.callback = callback
 
     loadRemoteUpdate(
-      context,
       database,
       configuration,
       object : RemoteUpdateDownloadCallback {
@@ -249,7 +246,6 @@ abstract class Loader protected constructor(
       }
 
       loadAsset(
-        context,
         assetEntity,
         updatesDirectory,
         configuration,

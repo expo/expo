@@ -42,7 +42,6 @@ class CheckForUpdateProcedure(
       databaseHolder.releaseDatabase()
       fileDownloader.downloadRemoteUpdate(
         extraHeaders,
-        context,
         object : FileDownloader.RemoteUpdateDownloadCallback {
           override fun onFailure(e: Exception) {
             procedureContext.processStateEvent(UpdatesStateEvent.CheckError(e.localizedMessageWithCauseLocalizedMessage()))

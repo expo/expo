@@ -64,7 +64,7 @@ class StartupProcedure(
 
   var emergencyLaunchException: Exception? = null
     private set
-  private val errorRecovery = ErrorRecovery(context)
+  private val errorRecovery = ErrorRecovery(logger)
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
   // TODO: move away from DatabaseHolder pattern to Handler thread
@@ -78,11 +78,13 @@ class StartupProcedure(
   }
 
   private val loaderTask = LoaderTask(
+    context,
     updatesConfiguration,
     databaseHolder,
     updatesDirectory,
     fileDownloader,
     selectionPolicy,
+    logger,
     object : LoaderTask.LoaderTaskCallback {
       override fun onFailure(e: Exception) {
         logger.error("UpdatesController loaderTask onFailure", e, UpdatesErrorCode.None)
@@ -208,7 +210,7 @@ class StartupProcedure(
     this.procedureContext = procedureContext
     initializeDatabaseHandler()
     initializeErrorRecovery()
-    loaderTask.start(context)
+    loaderTask.start()
   }
 
   @Synchronized

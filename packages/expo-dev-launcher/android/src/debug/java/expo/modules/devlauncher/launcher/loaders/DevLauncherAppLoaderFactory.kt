@@ -40,12 +40,12 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
     }
 
     val validConfiguration = updatesInterface?.let {
-      val runtimeVersion = it.getRuntimeVersion(context)
+      val runtimeVersion = it.runtimeVersion
       if (runtimeVersion == null) {
         null
       } else {
         val configurationCandidate = createUpdatesConfigurationWithUrl(url, projectUrl, runtimeVersion, installationIDHelper.getOrCreateInstallationID(context))
-        if (it.isValidUpdatesConfiguration(configurationCandidate, context)) {
+        if (it.isValidUpdatesConfiguration(configurationCandidate)) {
           configurationCandidate
         } else {
           null
