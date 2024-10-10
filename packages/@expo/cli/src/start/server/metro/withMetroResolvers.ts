@@ -30,9 +30,11 @@ export function getDefaultMetroResolver(projectRoot: string): MetroResolver {
 }
 
 function optionsKeyForContext(context: ResolutionContext) {
-  const canonicalize = require('metro-core/src/canonicalize');
+  const canonicalize =
+    require('metro-core/src/canonicalize') as typeof import('metro-core/src/canonicalize');
 
   // Compound key for the resolver cache
+  // @ts-expect-error: cedric - this causes an issue due to typescript expecting `this: any` in the function signature
   return JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';
 }
 

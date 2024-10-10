@@ -90,7 +90,7 @@ function getNodeResolverContext({
   } as any;
 }
 
-function getResolveFunc() {
+function getResolveFunc(): typeof import('metro-resolver').resolve {
   return require('metro-resolver').resolve;
 }
 

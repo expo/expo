@@ -1,6 +1,7 @@
 import { resolveEntryPoint } from '@expo/config/paths';
 import arg from 'arg';
 import type { OutputOptions as MetroOutputOptions } from 'metro/src/shared/types.flow';
+import canonicalize from 'metro-core/src/canonicalize';
 import os from 'os';
 import path from 'path';
 
@@ -8,8 +9,6 @@ import { isAndroidUsingHermes, isIosUsingHermes } from './guessHermes';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
-
-const canonicalize = require('metro-core/src/canonicalize');
 
 export interface Options {
   assetsDest?: string;
