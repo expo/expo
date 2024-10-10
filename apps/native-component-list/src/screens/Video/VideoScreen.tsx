@@ -61,6 +61,14 @@ export const VideoScreens = [
       return optionalRequire(() => require('./VideoEventsScreen'));
     },
   },
+  {
+    name: 'Generating video thumbnails',
+    route: 'video/thumbnails',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoThumbnailsScreen'));
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {
