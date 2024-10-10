@@ -4,37 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
-import { JsTransformerConfig } from 'metro-transform-worker';
+import { JsOutput, JsTransformerConfig } from 'metro-transform-worker';
 
 import { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
-
-export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
-
-export type JsOutput = {
-  data: {
-    code: string;
-    lineCount: number;
-    map: MetroSourceMapSegmentTuple[];
-    functionMap: FBSourceFunctionMap | null;
-
-    css?: {
-      code: string;
-      lineCount: number;
-      map: MetroSourceMapSegmentTuple[];
-      functionMap: FBSourceFunctionMap | null;
-    };
-
-    ast?: import('@babel/types').File;
-
-    hasCjsExports?: boolean;
-
-    readonly reconcile?: ReconcileTransformSettings;
-    readonly reactClientReference?: string;
-    readonly expoDomComponentReference?: string;
-  };
-  type: JSFileType;
-};
 
 export type CSSMetadata = {
   code: string;
@@ -52,7 +24,15 @@ export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
       end: number;
       duration: number;
     };
+    readonly reconcile?: ReconcileTransformSettings;
+
+    ast?: import('@babel/types').File;
+
     css?: CSSMetadata;
+
+    hasCjsExports?: boolean;
+    readonly reactClientReference?: string;
+    readonly expoDomComponentReference?: string;
   };
 };
 

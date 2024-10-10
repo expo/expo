@@ -70,7 +70,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         includeAsyncPaths: options.includeAsyncPaths,
         projectRoot: options.projectRoot,
         serverRoot: options.serverRoot,
-        sourceUrl: options.sourceUrl,
+        sourceUrl: options.sourceUrl ?? undefined,
         platform: options.platform,
         baseUrl: options.baseUrl,
         splitChunks: options.splitChunks,
@@ -99,7 +99,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
         // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web and native in production.
         sourceUrl: options.platform === 'web' ? undefined : !options.dev ? undefined : options.sourceUrl,
-    });
+    }); // NOTE(cedric): `getAppendScript` returns a mutable array, but the types say otherwise
     // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
     // NOTE: We may want to move this assertion up further.
     const hasExternalMaps = !options.inlineSourceMap && !!sourceMapUrl;

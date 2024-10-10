@@ -181,8 +181,8 @@ const transform: BabelTransformer['transform'] = ({
 
     // The result from `transformFromAstSync` can be null (if the file is ignored)
     if (!result) {
-      // BabelTransformer specifies that the `ast` can never be null but
-      // the function returns here. Discovered when typing `BabelNode`.
+      // BabelTransformer specifies that the `ast` can never be null but the function returns here.
+      // @ts-expect-error: see https://github.com/facebook/react-native/blob/ff698f542eb7a564746866c814c47104fa716dd7/packages/react-native-babel-transformer/src/index.js#L219-L224
       return { ast: null };
     }
 

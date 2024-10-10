@@ -9,7 +9,7 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
 import { transformFromAstSync } from '@babel/core';
-import type { ParseResult, PluginItem } from '@babel/core';
+import type { PluginItem } from '@babel/core';
 import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
 import template from '@babel/template';
@@ -26,9 +26,18 @@ import {
   toBabelSegments,
   toSegmentTuple,
 } from 'metro-source-map';
-import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
+import type { MetroSourceMapSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
-import { JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
+import type {
+  AssetFile,
+  JSFile,
+  JSFileType,
+  JSONFile,
+  JsTransformerConfig,
+  JsTransformOptions,
+  TransformationContext,
+  TransformResponse,
+} from 'metro-transform-worker';
 import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
 import assert from 'node:assert';
 
@@ -38,7 +47,6 @@ import collectDependencies, {
   Dependency,
   DependencyTransformer,
   DynamicRequiresBehavior,
-  CollectedDependencies,
   Options as CollectDependenciesOptions,
   State,
 } from './collect-dependencies';
@@ -48,39 +56,13 @@ import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput
 
 export { JsTransformOptions };
 
-interface BaseFile {
-  readonly code: string;
-  readonly filename: string;
-  readonly inputFileSize: number;
-}
-
-interface AssetFile extends BaseFile {
-  readonly type: 'asset';
-}
-
-type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
-
-interface JSFile extends BaseFile {
-  readonly ast?: ParseResult | null;
-  readonly type: JSFileType;
-  readonly functionMap: FBSourceFunctionMap | null;
+export interface ExpoJSFile extends JSFile {
   readonly reactClientReference?: string;
   readonly expoDomComponentReference?: string;
   readonly hasCjsExports?: boolean;
 }
 
-interface JSONFile extends BaseFile {
-  readonly type: Type;
-}
-
-interface TransformationContext {
-  readonly config: JsTransformerConfig;
-  readonly projectRoot: string;
-  readonly options: JsTransformOptions;
-}
-
-interface TransformResponse {
-  readonly dependencies: CollectedDependencies['dependencies'];
+export interface ExpoTransformResponse extends TransformResponse {
   readonly output: readonly ExpoJsOutput[];
 }
 
@@ -176,7 +158,7 @@ function renameTopLevelModuleVariables() {
   };
 }
 
-function applyUseStrictDirective(ast: babylon.ParseResult<t.File>) {
+function applyUseStrictDirective(ast: t.File | babylon.ParseResult<t.File>) {
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
   const { directives } = ast.program;
@@ -274,7 +256,7 @@ export function applyImportSupport<TFile extends t.File>(
 }
 
 function performConstantFolding(
-  ast: babylon.ParseResult<t.File>,
+  ast: t.File | babylon.ParseResult<t.File>,
   { filename }: { filename: string }
 ) {
   // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
@@ -316,9 +298,9 @@ function performConstantFolding(
 }
 
 async function transformJS(
-  file: JSFile,
+  file: ExpoJSFile,
   { config, options }: TransformationContext
-): Promise<TransformResponse> {
+): Promise<ExpoTransformResponse> {
   const targetEnv = options.customTransformOptions?.environment;
   const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
 
@@ -340,7 +322,7 @@ async function transformJS(
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
-  let ast: babylon.ParseResult<t.File> =
+  let ast: t.File | babylon.ParseResult<t.File> =
     file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
 
   // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
@@ -350,7 +332,6 @@ async function transformJS(
   // not exist yet.
   applyUseStrictDirective(ast);
 
-  // @ts-expect-error: Not on types yet (Metro 0.80).
   const unstable_renameRequire = config.unstable_renameRequire;
 
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
@@ -429,7 +410,6 @@ async function transformJS(
         // TODO: This config is optional to allow its introduction in a minor
         // release. It should be made non-optional in ConfigT or removed in
         // future.
-        // @ts-expect-error: Not on types yet (Metro 0.80.9).
         unstable_renameRequire === false
       ));
     }
@@ -504,7 +484,8 @@ async function transformJS(
                 minifierConfig: config.minifierConfig,
               }
             : undefined,
-          unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+          unstable_dependencyMapReservedName:
+            config.unstable_dependencyMapReservedName ?? undefined,
           optimizationSizeLimit: config.optimizationSizeLimit,
           unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
           unstable_renameRequire,
@@ -520,7 +501,7 @@ async function transformJS(
         code,
         lineCount,
         map,
-        functionMap: file.functionMap,
+        functionMap: file.functionMap ?? null,
         hasCjsExports: file.hasCjsExports,
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
@@ -547,7 +528,7 @@ async function transformJS(
 async function transformAsset(
   file: AssetFile,
   context: TransformationContext
-): Promise<TransformResponse> {
+): Promise<ExpoTransformResponse> {
   const { assetRegistryPath, assetPlugins } = context.config;
 
   // TODO: Add web asset hashing in production.
@@ -557,7 +538,7 @@ async function transformAsset(
     assetPlugins
   );
 
-  const jsFile: JSFile = {
+  const jsFile: ExpoJSFile = {
     ...file,
     type: 'js/module/asset',
     ast: result.ast,
@@ -574,9 +555,9 @@ async function transformAsset(
  * the generic JavaScript transformation.
  */
 async function transformJSWithBabel(
-  file: JSFile,
+  file: ExpoJSFile,
   context: TransformationContext
-): Promise<TransformResponse> {
+): Promise<ExpoTransformResponse> {
   const { babelTransformerPath } = context.config;
   const transformer: BabelTransformer = require(babelTransformerPath);
 
@@ -597,7 +578,7 @@ async function transformJSWithBabel(
     getBabelTransformArgs(file, context, [functionMapBabelPlugin])
   );
 
-  const jsFile: JSFile = {
+  const jsFile: ExpoJSFile = {
     ...file,
     ast: transformResult.ast,
     functionMap:
@@ -605,8 +586,11 @@ async function transformJSWithBabel(
       // Fallback to deprecated explicitly-generated `functionMap`
       transformResult.functionMap ??
       null,
+    // @ts-expect-error: defined in babel-preset-expo/src/detect-dynamic-exports.ts
     hasCjsExports: transformResult.metadata?.hasCjsExports,
+    // @ts-expect-error: defined in babel-preset-expo/src/client-module-proxy-plugin.ts
     reactClientReference: transformResult.metadata?.reactClientReference,
+    // @ts-expect-error: defined in babel-preset-expo/src/use-dom-directive-plugin.ts
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
   };
 
@@ -616,7 +600,7 @@ async function transformJSWithBabel(
 async function transformJSON(
   file: JSONFile,
   { options, config }: TransformationContext
-): Promise<TransformResponse> {
+): Promise<ExpoTransformResponse> {
   let code =
     config.unstable_disableModuleWrapping === true
       ? JsFileWrapping.jsonToCommonJS(file.code)
@@ -684,7 +668,7 @@ export async function transform(
   filename: string,
   data: Buffer,
   options: JsTransformOptions
-): Promise<TransformResponse> {
+): Promise<ExpoTransformResponse> {
   const context: TransformationContext = {
     config,
     projectRoot,
@@ -727,7 +711,7 @@ export async function transform(
     return transformAsset(file, context);
   }
 
-  const file: JSFile = {
+  const file: ExpoJSFile = {
     filename,
     inputFileSize: data.length,
     code: sourceCode,

@@ -252,7 +252,6 @@ async function transformJS(file, { config, options }) {
     // Add "use strict" if the file was parsed as a module, and the directive did
     // not exist yet.
     applyUseStrictDirective(ast);
-    // @ts-expect-error: Not on types yet (Metro 0.80).
     const unstable_renameRequire = config.unstable_renameRequire;
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
     if (!optimize) {
@@ -320,7 +319,6 @@ async function transformJS(file, { config, options }) {
             // TODO: This config is optional to allow its introduction in a minor
             // release. It should be made non-optional in ConfigT or removed in
             // future.
-            // @ts-expect-error: Not on types yet (Metro 0.80.9).
             unstable_renameRequire === false));
         }
     }
@@ -370,7 +368,7 @@ async function transformJS(file, { config, options }) {
                     minifierConfig: config.minifierConfig,
                 }
                 : undefined,
-            unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName,
+            unstable_dependencyMapReservedName: config.unstable_dependencyMapReservedName ?? undefined,
             optimizationSizeLimit: config.optimizationSizeLimit,
             unstable_disableNormalizePseudoGlobals: config.unstable_disableNormalizePseudoGlobals,
             unstable_renameRequire,
@@ -384,7 +382,7 @@ async function transformJS(file, { config, options }) {
                 code,
                 lineCount,
                 map,
-                functionMap: file.functionMap,
+                functionMap: file.functionMap ?? null,
                 hasCjsExports: file.hasCjsExports,
                 reactClientReference: file.reactClientReference,
                 expoDomComponentReference: file.expoDomComponentReference,
@@ -448,8 +446,11 @@ async function transformJSWithBabel(file, context) {
             // Fallback to deprecated explicitly-generated `functionMap`
             transformResult.functionMap ??
             null,
+        // @ts-expect-error: defined in babel-preset-expo/src/detect-dynamic-exports.ts
         hasCjsExports: transformResult.metadata?.hasCjsExports,
+        // @ts-expect-error: defined in babel-preset-expo/src/client-module-proxy-plugin.ts
         reactClientReference: transformResult.metadata?.reactClientReference,
+        // @ts-expect-error: defined in babel-preset-expo/src/use-dom-directive-plugin.ts
         expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
     };
     return await transformJS(jsFile, context);

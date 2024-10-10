@@ -6,11 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import countLines from 'metro/src/lib/countLines';
-import type {
-  JsTransformerConfig,
-  JsTransformOptions,
-  TransformResponse,
-} from 'metro-transform-worker';
+import type { JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
 
 import { wrapDevelopmentCSS } from './css';
 import {
@@ -47,7 +43,7 @@ export async function transform(
   filename: string,
   data: Buffer,
   options: JsTransformOptions
-): Promise<TransformResponse> {
+): Promise<worker.ExpoTransformResponse> {
   const reactServer = options.customTransformOptions?.environment === 'react-server';
   if (
     typeof options.customTransformOptions?.dom === 'string' &&
