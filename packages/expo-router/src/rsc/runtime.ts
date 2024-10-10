@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import './global.d.ts';
+declare let __METRO_GLOBAL_PREFIX__: string;
 
 // React Native's error handling is full of bugs which cause the app to crash in production.
 // We'll disable their handling in production native builds to ensure missing modules are shown to the user.

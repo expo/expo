@@ -3,17 +3,11 @@
 
 import { useState } from 'react';
 import { Text } from 'react-native';
-import { greet } from './test-actions';
 
-export const Counter = ({ onPress }) => {
+export const Counter = () => {
   const [count, setCount] = useState(0);
-
   return (
-    <Text
-      onPress={async () => {
-        onPress().then((value) => setCount(value.join(', ')));
-      }}
-      testID="client-button">
+    <Text onPress={() => setCount((c) => c + 1)} testID="client-button">
       Count: {count}
     </Text>
   );

@@ -1,12 +1,9 @@
-"use strict";
 /**
  * Copyright © 2024 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-require("./global.d.ts");
 // React Native's error handling is full of bugs which cause the app to crash in production.
 // We'll disable their handling in production native builds to ensure missing modules are shown to the user.
 const disableReactNativeMissingModuleHandling = !__DEV__ && (process.env.EXPO_OS !== 'web' || typeof window === 'undefined');
