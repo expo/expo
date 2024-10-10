@@ -23,7 +23,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Resolves a list of plugins.
  *
  * @param config exported config
- * @param plugins list of config config plugins to apply to the exported config
+ * @param plugins list of config plugins to apply to the exported config
  */
 const withPlugins = (config, plugins) => {
   (0, _assert().default)(Array.isArray(plugins), 'withPlugins expected a valid array of plugins or plugin module paths');
