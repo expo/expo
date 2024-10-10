@@ -40,6 +40,7 @@
 - Added support to download template from npm when running prebuild. ([#31195](https://github.com/expo/expo/pull/31195) by [@kudo](https://github.com/kudo))
 - Add an optional New Architecture compatibility check for dependencies added via `install` command. ([#31222](https://github.com/expo/expo/pull/31222) by [@Simek](https://github.com/Simek))
 - Add support in `expo run android` for product flavors with custom app ids. ([#31756](https://github.com/expo/expo/pull/31756) by [@byCedric](https://github.com/byCedric))
+- Add experimental support for external asset source with `assetPrefix`. ([#31976](https://github.com/expo/expo/pull/31976) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
