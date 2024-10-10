@@ -428,6 +428,7 @@ export async function createMetroServerAndBundleRequestAsync(
     watch: false,
   });
 
+  // @ts-expect-error Type 'BundleType | undefined' is not assignable to type 'BundleType'.
   return { server, bundleRequest };
 }
 
@@ -438,6 +439,7 @@ export async function exportEmbedAssetsAsync(
   options: Pick<Options, 'platform'>
 ) {
   try {
+    // @ts-expect-error Property 'sourcePaths' is missing in type, but required in type 'BundleOptions'.
     const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions({
       ...bundleRequest,
       bundleType: 'todo',

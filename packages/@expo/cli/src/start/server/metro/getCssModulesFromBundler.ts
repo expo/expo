@@ -2,7 +2,7 @@ import { MetroConfig } from '@expo/metro-config';
 import crypto from 'crypto';
 import type { Module } from 'metro';
 import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
-import type { ReadOnlyDependencies } from 'metro/src/DeltaBundler/types';
+import type { ReadOnlyDependencies } from 'metro/src/DeltaBundler/types.flow';
 import type IncrementalBundler from 'metro/src/IncrementalBundler';
 import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import path from 'path';
@@ -50,6 +50,7 @@ export async function getCssModulesFromBundler(
     [entryFile],
     transformOptions,
     resolverOptions,
+    // @ts-expect-error - `lazy: boolean` is missing here
     { onProgress, shallow: false }
   );
 

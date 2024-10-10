@@ -78,7 +78,7 @@ export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
 >;
 type MetroOnProgress = NonNullable<
-  import('metro/src/DeltaBundler/types').Options<void>['onProgress']
+  import('metro/src/DeltaBundler/types.flow').Options<void>['onProgress']
 >;
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
   filePath: string,
@@ -508,6 +508,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
       platform: expoBundleOptions.platform ?? 'web',
+      // @ts-expect-error: cedric - this property doesn't exist on either objects
       runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
     };
 
@@ -1353,16 +1354,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         entryFile: resolvedEntryFilePath,
         minify: transformOptions.minify,
         platform: transformOptions.platform,
-        // @ts-expect-error: typed incorrectly upstream
         customResolverOptions: resolverOptions.customResolverOptions,
-        customTransformOptions: transformOptions.customTransformOptions,
+        customTransformOptions: transformOptions.customTransformOptions ?? {},
       },
       isPrefetch: false,
       type: 'bundle_build_started',
     });
 
     try {
-      let delta: DeltaResult<void>;
+      let delta: DeltaResult;
       let revision: GraphRevision;
 
       // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
@@ -1378,7 +1378,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           {
             onProgress,
             shallow: graphOptions.shallow,
-            // @ts-expect-error: typed incorrectly
             lazy: graphOptions.lazy,
           }
         );
@@ -1397,7 +1396,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               {
                 onProgress,
                 shallow: graphOptions.shallow,
-                // @ts-expect-error: typed incorrectly
                 lazy: graphOptions.lazy,
               }
             ));
@@ -1452,7 +1450,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
           shouldAddToIgnoreList,
 
-          // @ts-expect-error: passed to our serializer to enable non-serial return values.
+          // passed to our serializer to enable non-serial return values.
           serializerOptions,
         }
       );
@@ -1534,8 +1532,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           : delta.added.size + delta.modified.size + delta.deleted.size,
         lastModifiedDate: revision.date,
         nextRevId: revision.id,
-        bundle: bundleCode,
-        map: bundleMap,
+        bundle: bundleCode ?? '',
+        map: bundleMap ?? '',
       };
     } catch (error) {
       this.metro._reporter.update({
@@ -1619,7 +1617,7 @@ function wrapBundle(str: string) {
 }
 
 async function sourceMapStringAsync(
-  modules: readonly import('metro/src/DeltaBundler/types').Module<any>[],
+  modules: readonly import('metro/src/DeltaBundler/types.flow').Module<any>[],
   options: SourceMapGeneratorOptions
 ): Promise<string> {
   return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {

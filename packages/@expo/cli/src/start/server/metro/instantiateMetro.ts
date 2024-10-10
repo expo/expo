@@ -222,7 +222,6 @@ export async function instantiateMetroAsync(
     metroBundler,
     metroConfig,
     {
-      // @ts-expect-error: Inconsistent `websocketEndpoints` type in metro
       websocketEndpoints: {
         ...websocketEndpoints,
         ...createDevToolsPluginWebsocketEndpoint(),

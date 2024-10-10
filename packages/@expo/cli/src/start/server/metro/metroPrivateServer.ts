@@ -16,7 +16,7 @@ export type MetroPrivateServer = import('metro').Server & {
   getNewBuildNumber(): number;
   _getSortedModules(
     graph: import('metro/src/IncrementalBundler').OutputGraph
-  ): import('metro/src/DeltaBundler/types').Module[];
+  ): import('metro/src/DeltaBundler/types.flow').Module[];
 
   _resolveRelativePath(
     filePath: string,
@@ -31,7 +31,9 @@ export type MetroPrivateServer = import('metro').Server & {
     }
   ): Promise<string>;
 
-  _shouldAddModuleToIgnoreList(module: import('metro/src/DeltaBundler/types').Module<any>): boolean;
+  _shouldAddModuleToIgnoreList(
+    module: import('metro/src/DeltaBundler/types.flow').Module<any>
+  ): boolean;
 };
 
 export function assertMetroPrivateServer(metro: Metro.Server): asserts metro is MetroPrivateServer {

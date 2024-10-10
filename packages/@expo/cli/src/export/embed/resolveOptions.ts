@@ -1,5 +1,6 @@
 import { resolveEntryPoint } from '@expo/config/paths';
 import arg from 'arg';
+import type { OutputOptions as MetroOutputOptions } from 'metro/src/shared/types.flow';
 import os from 'os';
 import path from 'path';
 
@@ -21,7 +22,7 @@ export interface Options {
   platform: string;
   dev: boolean;
   bundleOutput: string;
-  bundleEncoding?: string;
+  bundleEncoding?: MetroOutputOptions['bundleEncoding'];
   maxWorkers?: number;
   sourcemapOutput?: string;
   sourcemapSourcesRoot?: string;
@@ -60,7 +61,7 @@ export function resolveOptions(
     // TODO: Support `--dev false`
     //   dev: false,
     bundleOutput,
-    bundleEncoding: args['--bundle-encoding'] ?? 'utf8',
+    bundleEncoding: (args['--bundle-encoding'] ?? 'utf8') as Options['bundleEncoding'],
     maxWorkers: args['--max-workers'],
     sourcemapOutput: args['--sourcemap-output'],
     sourcemapSourcesRoot: args['--sourcemap-sources-root'],
