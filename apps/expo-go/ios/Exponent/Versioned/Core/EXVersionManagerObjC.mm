@@ -45,7 +45,7 @@
 #endif
 
 // Import 3rd party modules that need to be scoped.
-#import <RNCAsyncStorage/RNCAsyncStorage.h>
+#import "RNCAsyncStorage/RNCAsyncStorage.h"
 #import "RNCWebViewManager.h"
 
 #import "EXScopedModuleRegistry.h"
