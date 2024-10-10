@@ -2,6 +2,7 @@ package expo.modules.updates.procedures
 
 import android.content.Context
 import android.os.AsyncTask
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
@@ -43,9 +44,9 @@ class CheckForUpdateProcedure(
         extraHeaders,
         context,
         object : FileDownloader.RemoteUpdateDownloadCallback {
-          override fun onFailure(message: String, e: Exception) {
-            procedureContext.processStateEvent(UpdatesStateEvent.CheckError(message))
-            callback(IUpdatesController.CheckForUpdateResult.ErrorResult(e, message))
+          override fun onFailure(e: Exception) {
+            procedureContext.processStateEvent(UpdatesStateEvent.CheckError(e.localizedMessageWithCauseLocalizedMessage()))
+            callback(IUpdatesController.CheckForUpdateResult.ErrorResult(e))
             procedureContext.onComplete()
           }
 

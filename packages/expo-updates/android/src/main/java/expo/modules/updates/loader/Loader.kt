@@ -13,6 +13,7 @@ import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 /**
@@ -101,8 +102,8 @@ abstract class Loader protected constructor(
       database,
       configuration,
       object : RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
-          finishWithError(message, e)
+        override fun onFailure(e: Exception) {
+          finishWithException(e)
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
@@ -157,8 +158,8 @@ abstract class Loader protected constructor(
     reset()
   }
 
-  private fun finishWithError(message: String, e: Exception) {
-    Log.e(TAG, message, e)
+  private fun finishWithException(e: Exception) {
+    Log.e(TAG, e.message!!)
     if (callback == null) {
       Log.e(
         TAG,
@@ -317,12 +318,12 @@ abstract class Loader protected constructor(
           database.updateDao().markUpdateFinished(updateEntity!!)
         }
       } catch (e: Exception) {
-        finishWithError("Error while adding new update to database", e)
+        finishWithException(IOException("Error while adding new update to database", e))
         return
       }
 
       if (erroredAssetList.size > 0) {
-        finishWithError("Failed to load all assets", Exception("Failed to load all assets"))
+        finishWithException(Exception("Failed to load all assets"))
       } else {
         finishWithSuccess()
       }

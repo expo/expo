@@ -3,6 +3,7 @@ package expo.modules.updates.loader
 import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.TestUtils.asJSONResponse
 import expo.modules.updates.TestUtils.asResponse
 import expo.modules.updates.UpdatesConfiguration
@@ -45,7 +46,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -90,7 +91,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -136,7 +137,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -181,7 +182,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = e
         }
 
@@ -191,7 +192,7 @@ class FileDownloaderManifestParsingTest {
       }
     )
 
-    Assert.assertEquals("Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive.", errorOccurred!!.message)
+    Assert.assertEquals("Invalid update response: Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the response being for a different protocol version.", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
     Assert.assertNull(resultUpdate)
   }
 
@@ -219,7 +220,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -262,7 +263,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -305,7 +306,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -348,7 +349,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -390,7 +391,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = e
         }
 
@@ -400,7 +401,7 @@ class FileDownloaderManifestParsingTest {
       }
     )
 
-    Assert.assertEquals("Missing body in remote update", errorOccurred!!.message)
+    Assert.assertEquals("Invalid update response: Empty body", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
     Assert.assertNull(resultUpdate)
   }
 
@@ -432,7 +433,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -499,7 +500,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -545,7 +546,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = e
         }
 
@@ -555,7 +556,7 @@ class FileDownloaderManifestParsingTest {
       }
     )
 
-    Assert.assertEquals("No expo-signature header specified", errorOccurred!!.message)
+    Assert.assertEquals("Code signing verification failed for manifest: No expo-signature header specified", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
     Assert.assertNull(resultUpdate)
   }
 
@@ -618,7 +619,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 
@@ -688,7 +689,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = e
         }
 
@@ -698,7 +699,7 @@ class FileDownloaderManifestParsingTest {
       }
     )
 
-    Assert.assertEquals("Invalid certificate for manifest project ID or scope key", errorOccurred!!.message)
+    Assert.assertEquals("Code signing verification failed for manifest: Code signing certificate project ID or scope key does not match project ID or scope key in response", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
     Assert.assertNull(resultUpdate)
   }
 
@@ -751,7 +752,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = e
         }
 
@@ -761,7 +762,7 @@ class FileDownloaderManifestParsingTest {
       }
     )
 
-    Assert.assertEquals("Invalid certificate for directive project ID or scope key", errorOccurred!!.message)
+    Assert.assertEquals("Code signing verification failed for directive: Code signing certificate project ID or scope key does not match project ID or scope key in response part", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
     Assert.assertNull(resultUpdateResponse)
   }
 
@@ -792,7 +793,7 @@ class FileDownloaderManifestParsingTest {
     FileDownloader(context, configuration).parseRemoteUpdateResponse(
       response,
       object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
+        override fun onFailure(e: Exception) {
           errorOccurred = true
         }
 

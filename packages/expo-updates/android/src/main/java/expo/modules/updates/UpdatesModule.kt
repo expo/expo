@@ -3,7 +3,6 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
@@ -76,8 +75,7 @@ class UpdatesModule : Module() {
           override fun onSuccess(result: IUpdatesController.CheckForUpdateResult) {
             when (result) {
               is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
-                promise.reject("ERR_UPDATES_CHECK", result.message, result.error)
-                Log.e(TAG, result.message, result.error)
+                promise.reject("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
               }
               is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
                 promise.resolve(

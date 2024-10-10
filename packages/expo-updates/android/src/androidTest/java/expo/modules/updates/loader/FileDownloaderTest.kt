@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
@@ -247,7 +248,7 @@ class FileDownloaderTest {
       }
     )
 
-    Assert.assertTrue(error!!.message!!.contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
+    Assert.assertTrue(error!!.localizedMessageWithCauseLocalizedMessage()!!.contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
     Assert.assertFalse(didSucceed)
   }
 

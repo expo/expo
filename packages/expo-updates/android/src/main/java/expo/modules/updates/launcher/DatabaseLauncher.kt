@@ -163,7 +163,8 @@ class DatabaseLauncher(
           this[asset] = Uri.fromFile(assetFile).toString()
           logger?.info("embeddedAssetFileMap: ${asset.key},${asset.type} => ${this[asset]}")
         } else {
-          logger?.error("embeddedAssetFileMap: no file for ${asset.key},${asset.type}", UpdatesErrorCode.AssetsFailedToLoad)
+          val cause = Exception("Missing embedded asset")
+          logger?.error("embeddedAssetFileMap: no file for ${asset.key},${asset.type}", cause, UpdatesErrorCode.AssetsFailedToLoad)
         }
       }
     }
@@ -194,7 +195,7 @@ class DatabaseLauncher(
             }
           } catch (e: Exception) {
             // things are really not going our way...
-            logger?.error("Failed to copy matching embedded asset", UpdatesErrorCode.AssetsFailedToLoad, e)
+            logger?.error("Failed to copy matching embedded asset", e, UpdatesErrorCode.AssetsFailedToLoad)
           }
         }
       }
@@ -209,7 +210,7 @@ class DatabaseLauncher(
         context,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            logger?.error("Failed to load asset from disk or network", UpdatesErrorCode.AssetsFailedToLoad, e)
+            logger?.error("Failed to load asset from disk or network", e, UpdatesErrorCode.AssetsFailedToLoad)
             if (assetEntity.isLaunchAsset) {
               launchAssetException = e
             }
@@ -233,12 +234,7 @@ class DatabaseLauncher(
   private fun maybeFinish(asset: AssetEntity, assetFile: File?) {
     assetsToDownloadFinished++
     if (asset.isLaunchAsset) {
-      launchAssetFile = if (assetFile == null) {
-        logger?.error("Could not launch; failed to load update from disk or network", UpdatesErrorCode.UpdateFailedToLoad)
-        null
-      } else {
-        assetFile.toString()
-      }
+      launchAssetFile = assetFile?.toString()
     } else {
       if (assetFile != null) {
         localAssetFiles!![asset] = assetFile.toString()
@@ -247,7 +243,7 @@ class DatabaseLauncher(
     if (assetsToDownloadFinished == assetsToDownload) {
       if (launchAssetFile == null) {
         if (launchAssetException == null) {
-          launchAssetException = Exception("Launcher mLaunchAssetFile is unexpectedly null")
+          launchAssetException = Exception("Launcher launch asset file is unexpectedly null")
         }
         callback!!.onFailure(launchAssetException!!)
       } else {

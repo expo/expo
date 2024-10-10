@@ -85,7 +85,7 @@ class StartupProcedure(
     selectionPolicy,
     object : LoaderTask.LoaderTaskCallback {
       override fun onFailure(e: Exception) {
-        logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
+        logger.error("UpdatesController loaderTask onFailure", e, UpdatesErrorCode.None)
         launcher = NoDatabaseLauncher(context, e)
         emergencyLaunchException = e
         notifyController()
@@ -155,7 +155,7 @@ class StartupProcedure(
             if (exception == null) {
               throw AssertionError("Background update with error status must have a nonnull exception object")
             }
-            logger.error("UpdatesController onBackgroundUpdateFinished: Error: ${exception.localizedMessage}", UpdatesErrorCode.Unknown, exception)
+            logger.error("UpdatesController onBackgroundUpdateFinished", exception, UpdatesErrorCode.Unknown)
             remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
             // Since errors can happen through a number of paths, we do these checks
@@ -192,7 +192,7 @@ class StartupProcedure(
           }
           LoaderTask.RemoteUpdateStatus.NO_UPDATE_AVAILABLE -> {
             remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
-            logger.error("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
+            logger.info("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
             // TODO: handle rollbacks properly, but this works for now
             if (procedureContext.getCurrentState() == UpdatesStateValue.Downloading) {
               procedureContext.processStateEvent(UpdatesStateEvent.DownloadComplete())
@@ -246,7 +246,7 @@ class StartupProcedure(
         val remoteLoader = RemoteLoader(context, updatesConfiguration, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate)
         remoteLoader.start(object : Loader.LoaderCallback {
           override fun onFailure(e: Exception) {
-            logger.error("UpdatesController loadRemoteUpdate onFailure: ${e.localizedMessage}", UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
+            logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
             databaseHolder.releaseDatabase()
           }

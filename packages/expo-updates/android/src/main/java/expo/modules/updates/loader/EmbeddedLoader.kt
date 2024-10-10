@@ -60,8 +60,7 @@ class EmbeddedLoader internal constructor(
         )
       )
     } else {
-      val message = "Embedded manifest is null"
-      callback.onFailure(message, Exception(message))
+      callback.onFailure(Exception("Embedded manifest is null"))
     }
   }
 
