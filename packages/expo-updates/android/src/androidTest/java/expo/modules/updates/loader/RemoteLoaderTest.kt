@@ -13,6 +13,7 @@ import expo.modules.updates.codesigning.*
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.Loader.LoaderCallback
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ExpoUpdatesUpdate
 import expo.modules.updates.manifest.Update
 import io.mockk.every
@@ -32,6 +33,7 @@ import java.util.*
 class RemoteLoaderTest {
   private lateinit var db: UpdatesDatabase
   private lateinit var configuration: UpdatesConfiguration
+  private lateinit var logger: UpdatesLogger
   private lateinit var manifest: Update
   private lateinit var loader: RemoteLoader
   private lateinit var mockLoaderFiles: LoaderFiles
@@ -47,12 +49,14 @@ class RemoteLoaderTest {
     )
     configuration = UpdatesConfiguration(null, configMap)
     val context = InstrumentationRegistry.getInstrumentation().targetContext
+    logger = UpdatesLogger(context)
     db = Room.inMemoryDatabaseBuilder(context, UpdatesDatabase::class.java).build()
     mockLoaderFiles = mockk(relaxed = true)
     mockFileDownloader = mockk()
     loader = RemoteLoader(
       context,
       configuration,
+      logger,
       db,
       mockFileDownloader,
       File("testDirectory"),

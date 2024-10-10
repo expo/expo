@@ -88,7 +88,7 @@ class StartupProcedure(
     object : LoaderTask.LoaderTaskCallback {
       override fun onFailure(e: Exception) {
         logger.error("UpdatesController loaderTask onFailure", e, UpdatesErrorCode.None)
-        launcher = NoDatabaseLauncher(context, e)
+        launcher = NoDatabaseLauncher(context, logger, e)
         emergencyLaunchException = e
         notifyController()
       }
@@ -245,7 +245,7 @@ class StartupProcedure(
           return
         }
         remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
-        val remoteLoader = RemoteLoader(context, updatesConfiguration, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate)
+        val remoteLoader = RemoteLoader(context, updatesConfiguration, logger, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate)
         remoteLoader.start(object : Loader.LoaderCallback {
           override fun onFailure(e: Exception) {
             logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)

@@ -3,7 +3,6 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import android.net.Uri
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -22,6 +21,7 @@ import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
+import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
@@ -144,6 +144,7 @@ class UpdatesDevLauncherController(
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,
+      logger,
       databaseHolder.database,
       fileDownloader,
       updatesDirectory,
@@ -198,7 +199,7 @@ class UpdatesDevLauncherController(
       createUpdatesConfiguration(configuration)
       true
     } catch (e: Exception) {
-      Log.e(TAG, "Invalid updates configuration: ${e.localizedMessage}")
+      logger.error("Invalid updates configuration", e, UpdatesErrorCode.InitializationError)
       false
     }
   }

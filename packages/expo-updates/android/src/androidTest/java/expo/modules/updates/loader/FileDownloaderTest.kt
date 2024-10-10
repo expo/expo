@@ -45,7 +45,7 @@ class FileDownloaderTest {
       "runtimeVersion" to "1.0"
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForRemoteUpdate(null, config, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(null, config, logger, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -66,7 +66,7 @@ class FileDownloaderTest {
     }
 
     // manifest extraHeaders should have their values coerced to strings
-    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, logger, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -90,7 +90,7 @@ class FileDownloaderTest {
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
 
-    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, logger, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }

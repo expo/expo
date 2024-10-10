@@ -417,7 +417,7 @@ class FileDownloader(
   ) {
     try {
       downloadData(
-        createRequestForRemoteUpdate(extraHeaders, configuration, context),
+        createRequestForRemoteUpdate(extraHeaders, configuration, logger, context),
         object : Callback {
           override fun onFailure(call: Call, e: IOException) {
             val message = "Failed to download remote update"
@@ -616,6 +616,7 @@ class FileDownloader(
     internal fun createRequestForRemoteUpdate(
       extraHeaders: JSONObject?,
       configuration: UpdatesConfiguration,
+      logger: UpdatesLogger,
       context: Context
     ): Request {
       return Request.Builder()
@@ -635,7 +636,7 @@ class FileDownloader(
           }
         }
         .apply {
-          val previousFatalError = NoDatabaseLauncher.consumeErrorLog(context)
+          val previousFatalError = NoDatabaseLauncher.consumeErrorLog(context, logger)
           if (previousFatalError != null) {
             // some servers can have max length restrictions for headers,
             // so we restrict the length of the string to 1024 characters --

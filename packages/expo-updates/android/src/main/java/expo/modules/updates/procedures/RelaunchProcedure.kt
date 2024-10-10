@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.config.ReactFeatureFlags
@@ -16,6 +15,7 @@ import expo.modules.updates.db.Reaper
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
+import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
@@ -73,7 +73,7 @@ class RelaunchProcedure(
             try {
               replaceLaunchAssetFileIfNeeded(reactApplication, newLaunchAssetFile)
             } catch (e: Exception) {
-              Log.e(TAG, "Could not reset launchAssetFile for the ReactApplication", e)
+              logger.error("Could not reset launchAssetFile for the ReactApplication", e, UpdatesErrorCode.Unknown)
             }
           }
           callback.onSuccess()
