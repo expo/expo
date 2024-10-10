@@ -84,7 +84,10 @@ declare module 'metro-source-map/src/Consumer/AbstractConsumer' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/constants.js
 declare module 'metro-source-map/src/Consumer/constants' {
-  import type { Number0, Number1 } from 'ob1';
+  // import type { Number0, Number1 } from 'ob1';
+  // NOTE(cedric): ob1 is not typed
+  type Number0 = number;
+  type Number1 = number;
   export type IterationOrder = unknown;
   export type LookupBias = unknown;
   export const FIRST_COLUMN: Number0;
@@ -152,7 +155,9 @@ declare module 'metro-source-map/src/Consumer/MappingsConsumer' {
     Mapping,
     SourcePosition,
   } from 'metro-source-map/src/Consumer/types.flow';
-  import type { Number0 } from 'ob1';
+  // import type { Number0 } from 'ob1';
+  // NOTE(cedric): ob1 is not typed
+  type Number0 = number;
   import AbstractConsumer from 'metro-source-map/src/Consumer/AbstractConsumer';
   /**
    * A source map consumer that supports "basic" source maps (that have a
@@ -188,7 +193,10 @@ declare module 'metro-source-map/src/Consumer/normalizeSourcePath' {
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/positionMath.js
 declare module 'metro-source-map/src/Consumer/positionMath' {
   import type { GeneratedOffset } from 'metro-source-map/src/Consumer/types.flow';
-  import type { Number0, Number1 } from 'ob1';
+  // import type { Number0, Number1 } from 'ob1';
+  // NOTE(cedric): ob1 is not typed
+  type Number0 = number;
+  type Number1 = number;
   export function shiftPositionByOffset<
     T extends {
       readonly line?: null | Number1;
@@ -243,7 +251,10 @@ declare module 'metro-source-map/src/Consumer/SectionsConsumer' {
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-source-map/src/Consumer/types.flow.js
 declare module 'metro-source-map/src/Consumer/types.flow' {
   import type { IterationOrder, LookupBias } from 'metro-source-map/src/Consumer/constants';
-  import type { Number0, Number1 } from 'ob1';
+  // import type { Number0, Number1 } from 'ob1';
+  // NOTE(cedric): ob1 is not typed
+  type Number0 = number;
+  type Number1 = number;
   export type { IterationOrder, LookupBias };
   export type GeneratedOffset = {
     readonly lines: Number0;

@@ -251,9 +251,9 @@ declare module 'metro-runtime/src/polyfills/require' {
     metroImportDefault: RequireFn,
     metroImportAll: RequireFn,
     moduleObject: {
-      exports: {};
+      exports: object;
     },
-    exports: {},
+    exports: object,
     dependencyMap: null | undefined | DependencyMap
   ) => void;
   type ModuleID = number;

@@ -1245,8 +1245,8 @@ declare module 'metro/src/index.flow' {
     customResolverOptions?: CustomResolverOptions;
     customTransformOptions?: CustomTransformOptions;
   };
-  type BuildCommandOptions = {} | null;
-  type ServeCommandOptions = {} | null;
+  type BuildCommandOptions = object | null;
+  type ServeCommandOptions = object | null;
   export type { MetroConfig };
   type AttachMetroCLIOptions = {
     build?: BuildCommandOptions;
@@ -1966,9 +1966,14 @@ declare module 'metro/src/lib/transformHelpers' {
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro/src/ModuleGraph/worker/collectDependencies.js
 declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
-  import type * as _babel_types from '@babel/types';
   import type { NodePath } from '@babel/traverse';
-  import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
+  import type {
+    CallExpression,
+    File,
+    Identifier,
+    StringLiteral,
+    SourceLocation,
+  } from '@babel/types';
   import type {
     AllowOptionalDependencies,
     AsyncDependencyType,
@@ -1991,11 +1996,11 @@ declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
     key: string;
     asyncType?: AsyncDependencyType | null;
     isOptional?: boolean;
-    locs: readonly _babel_types.SourceLocation[];
+    locs: readonly SourceLocation[];
     contextParams?: RequireContextParams;
   }>;
   export type MutableInternalDependency = {
-    locs: _babel_types.SourceLocation[];
+    locs: SourceLocation[];
     index: number;
     name: string;
   } & DependencyData;
@@ -2042,7 +2047,7 @@ declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
     transformIllegalDynamicRequire(path: NodePath, state: State): void;
   }
   export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
-  function collectDependencies(ast: _babel_types.File, options: Options): CollectedDependencies;
+  function collectDependencies(ast: File, options: Options): CollectedDependencies;
   export type ImportQualifier = Readonly<{
     name: string;
     asyncType?: AsyncDependencyType | null;
