@@ -3,8 +3,8 @@ import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
 import { parsePathAndParamsFromExpoGoLink } from '../fork/extractPathFromURL';
-import getPathFromState from '../fork/getPathFromState';
-import getStateFromPath from '../fork/getStateFromPath';
+import { getPathFromState } from '../fork/getPathFromState';
+import { getStateFromPath } from '../fork/getStateFromPath';
 import { NativeIntent } from '../types';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;

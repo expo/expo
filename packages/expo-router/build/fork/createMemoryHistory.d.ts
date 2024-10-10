@@ -4,7 +4,7 @@ type HistoryRecord = {
     state: NavigationState;
     path: string;
 };
-export default function createMemoryHistory(): {
+export declare function createMemoryHistory(): {
     readonly index: number;
     get(index: number): HistoryRecord;
     backIndex({ path }: {

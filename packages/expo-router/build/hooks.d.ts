@@ -1,7 +1,7 @@
 import { Router } from './imperative-api';
 import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
 type SearchParams = Record<string, string | string[]>;
-export declare function useRootNavigationState(): import("./exports").ResultState;
+export declare function useRootNavigationState(): any;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
 /** @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead, which returns a React `ref`. */
 export declare function useRootNavigation(): import("@react-navigation/core").NavigationContainerRef<ReactNavigation.RootParamList> | null;

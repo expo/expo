@@ -85,21 +85,24 @@ export default function SearchScreenStack() {
       <Stack.Screen
         name="search"
         component={SearchScreen}
-        options={({ navigation, route }) => ({
-          header: () => (
-            <Header
-              navigation={navigation}
-              tintColor={theme.icon.info}
-              backButton={Platform.OS === 'android'}>
-              <SearchBar
-                initialValue={route?.params?.q ?? ''}
-                onChangeQuery={(q) => navigation.setParams({ q })}
-                underlineColorAndroid="#fff"
-                tintColor={theme.text.info}
-              />
-            </Header>
-          ),
-        })}
+        options={({ navigation, route }: any) => {
+          // TODO @marklawlor: Fix `screen` & style after release of React Navigation 7
+          return {
+            header: () => (
+              <Header
+                navigation={navigation}
+                tintColor={theme.icon.info}
+                backButton={Platform.OS === 'android'}>
+                <SearchBar
+                  initialValue={route?.params?.q ?? ''}
+                  onChangeQuery={(q) => navigation.setParams({ q })}
+                  underlineColorAndroid="#fff"
+                  tintColor={theme.text.info}
+                />
+              </Header>
+            ),
+          };
+        }}
       />
     </Stack.Navigator>
   );

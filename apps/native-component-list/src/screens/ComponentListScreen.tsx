@@ -29,12 +29,13 @@ interface Props {
 }
 
 function LinkButton({
-  to,
+  screen,
+  params,
   action,
   children,
   ...rest
 }: React.ComponentProps<typeof Link> & { disabled?: boolean; children?: React.ReactNode }) {
-  const { onPress, ...props } = useLinkProps({ to, action });
+  const { onPress, ...props } = useLinkProps({ screen, params, action });
 
   const [isPressed, setIsPressed] = React.useState(false);
 
@@ -82,8 +83,13 @@ export default function ComponentListScreen(props: Props) {
 
   const renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
+    // TODO @marklawlor: Fix `screen` & style after release of React Navigation 7
     return (
-      <LinkButton disabled={!isAvailable} to={route ?? exampleName} style={[styles.rowTouchable]}>
+      <LinkButton
+        disabled={!isAvailable}
+        action={undefined as any}
+        screen={(route ?? exampleName) as any}
+        style={[styles.rowTouchable]}>
         <View
           pointerEvents="none"
           style={[styles.row, !isAvailable && styles.disabledRow, { paddingRight: 10 + right }]}>

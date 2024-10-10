@@ -90,7 +90,8 @@ const App = () => (
     <Stack.Screen
       name="Details"
       component={DetailsScreen}
-      options={({ route }) => {
+      options={({ route }: any) => {
+        // TODO @marklawlor: Remove `any` after release of React Navigation v7
         return {
           title: 'Details screen #' + ((route.params as any)?.index ?? '0'),
         };

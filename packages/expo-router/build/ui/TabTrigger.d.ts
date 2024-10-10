@@ -45,43 +45,7 @@ export declare function useTabTrigger({ name, reset, onPress, onLongPress }: Tab
         };
         index: number;
         isFocused: boolean;
-        route: Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<any> | undefined;
-        }> & {
-            state?: Readonly<{
-                key: string;
-                index: number;
-                routeNames: string[];
-                history?: unknown[] | undefined;
-                routes: (Readonly<{
-                    key: string;
-                    name: string;
-                    path?: string | undefined;
-                }> & Readonly<{
-                    params?: Readonly<object | undefined>;
-                }> & any)[];
-                type: string;
-                stale: false;
-            }> | import("@react-navigation/routers").PartialState<Readonly<{
-                key: string;
-                index: number;
-                routeNames: string[];
-                history?: unknown[] | undefined;
-                routes: (Readonly<{
-                    key: string;
-                    name: string;
-                    path?: string | undefined;
-                }> & Readonly<{
-                    params?: Readonly<object | undefined>;
-                }> & any)[];
-                type: string;
-                stale: false;
-            }>> | undefined;
-        };
+        route: import("@react-navigation/routers").NavigationRoute<any, string | number | symbol>;
         resolvedHref: string;
     } | {
         type: "external";
@@ -89,43 +53,7 @@ export declare function useTabTrigger({ name, reset, onPress, onLongPress }: Tab
         href: string;
         index: number;
         isFocused: boolean;
-        route: Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<any> | undefined;
-        }> & {
-            state?: Readonly<{
-                key: string;
-                index: number;
-                routeNames: string[];
-                history?: unknown[] | undefined;
-                routes: (Readonly<{
-                    key: string;
-                    name: string;
-                    path?: string | undefined;
-                }> & Readonly<{
-                    params?: Readonly<object | undefined>;
-                }> & any)[];
-                type: string;
-                stale: false;
-            }> | import("@react-navigation/routers").PartialState<Readonly<{
-                key: string;
-                index: number;
-                routeNames: string[];
-                history?: unknown[] | undefined;
-                routes: (Readonly<{
-                    key: string;
-                    name: string;
-                    path?: string | undefined;
-                }> & Readonly<{
-                    params?: Readonly<object | undefined>;
-                }> & any)[];
-                type: string;
-                stale: false;
-            }>> | undefined;
-        };
+        route: import("@react-navigation/routers").NavigationRoute<any, string | number | symbol>;
         resolvedHref: string;
     } | undefined;
     trigger: {
@@ -145,43 +73,7 @@ export declare function useTabTrigger({ name, reset, onPress, onLongPress }: Tab
         };
         index: number;
         isFocused: boolean;
-        route: Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<any> | undefined;
-        }> & {
-            state?: Readonly<{
-                key: string;
-                index: number;
-                routeNames: string[];
-                history?: unknown[] | undefined;
-                routes: (Readonly<{
-                    key: string;
-                    name: string;
-                    path?: string | undefined;
-                }> & Readonly<{
-                    params?: Readonly<object | undefined>;
-                }> & any)[];
-                type: string;
-                stale: false;
-            }> | import("@react-navigation/routers").PartialState<Readonly<{
-                key: string;
-                index: number;
-                routeNames: string[];
-                history?: unknown[] | undefined;
-                routes: (Readonly<{
-                    key: string;
-                    name: string;
-                    path?: string | undefined;
-                }> & Readonly<{
-                    params?: Readonly<object | undefined>;
-                }> & any)[];
-                type: string;
-                stale: false;
-            }>> | undefined;
-        };
+        route: import("@react-navigation/routers").NavigationRoute<any, string | number | symbol>;
         resolvedHref: string;
     } | {
         type: "external";
@@ -189,43 +81,7 @@ export declare function useTabTrigger({ name, reset, onPress, onLongPress }: Tab
         href: string;
         index: number;
         isFocused: boolean;
-        route: Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<any> | undefined;
-        }> & {
-            state?: Readonly<{
-                key: string;
-                index: number;
-                routeNames: string[];
-                history?: unknown[] | undefined;
-                routes: (Readonly<{
-                    key: string;
-                    name: string;
-                    path?: string | undefined;
-                }> & Readonly<{
-                    params?: Readonly<object | undefined>;
-                }> & any)[];
-                type: string;
-                stale: false;
-            }> | import("@react-navigation/routers").PartialState<Readonly<{
-                key: string;
-                index: number;
-                routeNames: string[];
-                history?: unknown[] | undefined;
-                routes: (Readonly<{
-                    key: string;
-                    name: string;
-                    path?: string | undefined;
-                }> & Readonly<{
-                    params?: Readonly<object | undefined>;
-                }> & any)[];
-                type: string;
-                stale: false;
-            }>> | undefined;
-        };
+        route: import("@react-navigation/routers").NavigationRoute<any, string | number | symbol>;
         resolvedHref: string;
     } | undefined;
     triggerProps: {

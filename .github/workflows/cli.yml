@@ -69,8 +69,8 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
-      
+        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile && npx patch-package
+
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
 
@@ -114,11 +114,11 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
-      
+        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile && npx patch-package
+
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
-        
+
       - name: 🎭 Get installed Playwright version for cache key
         run: echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
       - name: 🎭 Cache Playwright browser binaries

@@ -8,6 +8,4 @@ export type ServerContextType = {
   };
 };
 
-const ServerContext = createContext<ServerContextType | undefined>(undefined);
-
-export default ServerContext;
+export const ServerContext = createContext<ServerContextType | undefined>(undefined);

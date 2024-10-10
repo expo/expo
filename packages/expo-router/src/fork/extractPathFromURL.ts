@@ -109,7 +109,7 @@ function fromDeepLink(url: string): string {
   return results;
 }
 
-export function extractExpoPathFromURL(url: string = '') {
+export function extractExpoPathFromURL(_prefixes: string[], url: string = '') {
   return (
     extractExactPathFromURL(url)
       // TODO: We should get rid of this, dropping specificities is not good

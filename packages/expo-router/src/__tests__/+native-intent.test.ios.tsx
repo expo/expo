@@ -40,7 +40,7 @@ it('can use async redirectSystemPath', async () => {
 
   expect(screen.toJSON()).toBeNull();
 
-  await act(() => resolve('/page'));
+  await act(async () => resolve('/page'));
 
   expect(screen.getByTestId('page')).toBeVisible();
 });

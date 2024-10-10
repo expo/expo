@@ -14,5 +14,6 @@ exports.TabsStateContext = (0, react_1.createContext)({
     stale: false,
     routeNames: [],
     routes: [],
+    preloadedRouteKeys: [],
 });
 //# sourceMappingURL=TabContext.js.map

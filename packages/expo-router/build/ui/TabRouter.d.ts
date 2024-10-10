@@ -21,16 +21,18 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
 } | {
     type: "NAVIGATE";
     payload: {
-        key: string;
-        name?: undefined;
+        name: string;
         params?: object | undefined;
         path?: string | undefined;
         merge?: boolean | undefined;
-    } | {
+    };
+    source?: string | undefined;
+    target?: string | undefined;
+} | {
+    type: "NAVIGATE_DEPRECATED";
+    payload: {
         name: string;
-        key?: string | undefined;
         params?: object | undefined;
-        path?: string | undefined;
         merge?: boolean | undefined;
     };
     source?: string | undefined;
@@ -42,15 +44,7 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }> | import("@react-navigation/native").PartialState<Readonly<{
@@ -58,15 +52,7 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>> | (Omit<Readonly<{
@@ -74,15 +60,7 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "routes"> & {
@@ -93,6 +71,14 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
 } | {
     type: "SET_PARAMS";
     payload: {
+        params?: object | undefined;
+    };
+    source?: string | undefined;
+    target?: string | undefined;
+} | {
+    type: "PRELOAD";
+    payload: {
+        name: string;
         params?: object | undefined;
     };
     source?: string | undefined;

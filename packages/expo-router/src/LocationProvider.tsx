@@ -1,5 +1,5 @@
-import { decodeParams, type State } from './fork/getPathFromState';
-import { stripBaseUrl } from './fork/getStateFromPath';
+import { type State } from './fork/getPathFromState';
+import { stripBaseUrl } from './fork/getStateFromPath-forks';
 
 type SearchParams = Record<string, string | string[]>;
 
@@ -70,4 +70,24 @@ export function getNormalizedStatePath(
     // of converting to string then back to object
     params: decodeParams(params),
   };
+}
+
+function decodeParams(params: Record<string, string>) {
+  const parsed: Record<string, any> = {};
+
+  for (const [key, value] of Object.entries(params)) {
+    try {
+      if (key === 'params' && typeof value === 'object') {
+        parsed[key] = decodeParams(value);
+      } else if (Array.isArray(value)) {
+        parsed[key] = value.map((v) => decodeURIComponent(v));
+      } else {
+        parsed[key] = decodeURIComponent(value);
+      }
+    } catch {
+      parsed[key] = value;
+    }
+  }
+
+  return parsed;
 }

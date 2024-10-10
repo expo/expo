@@ -244,14 +244,12 @@ describe(useGlobalSearchParams, () => {
 
     expect(results1).toEqual([{ id: '1' }]);
     act(() => router.push('/2'));
-    expect(results1).toEqual([{ id: '1' }, { id: '2', screen: 'index', params: { id: '2' } }]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
 
     act(() => router.push('/3/apple'));
     // The first screen has not rerendered
-    expect(results1).toEqual([{ id: '1' }, { id: '2', screen: 'index', params: { id: '2' } }]);
-    expect(results2).toEqual([
-      { id: '3', fruit: 'apple', screen: 'index', params: { id: '3', fruit: 'apple' } },
-    ]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
+    expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
 });
 

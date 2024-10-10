@@ -14,8 +14,10 @@ import { Href } from '../types';
 // This is the only way to access the navigator.
 const BottomTabNavigator = createBottomTabNavigator().Navigator;
 
+type TabsProps = BottomTabNavigationOptions & { href?: Href | null };
+
 export const Tabs = withLayoutContext<
-  BottomTabNavigationOptions & { href?: Href | null },
+  TabsProps,
   typeof BottomTabNavigator,
   TabNavigationState<ParamListBase>,
   BottomTabNavigationEventMap
@@ -37,10 +39,12 @@ export const Tabs = withLayoutContext<
             }
             const children =
               Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
+            // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>
+            //       While Link expects a TextStyle. We need to reconcile these types.
             return (
               <Link
-                {...props}
-                style={[{ display: 'flex' }, props.style]}
+                {...(props as any)}
+                style={[{ display: 'flex' }, props.style as any]}
                 href={href}
                 asChild={Platform.OS !== 'web'}
                 children={children}
@@ -52,6 +56,6 @@ export const Tabs = withLayoutContext<
     }
     return screen;
   });
-});
+}) as React.FC<TabsProps>;
 
 export default Tabs;

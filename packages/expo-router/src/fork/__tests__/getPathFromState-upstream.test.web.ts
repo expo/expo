@@ -1,456 +1,45 @@
-// Ensure all the upstream tests from @react-navigation/core pass.
-
+import { expect, test } from '@jest/globals';
 import type { NavigationState, PartialState } from '@react-navigation/routers';
 
-import getPathFromState from '../getPathFromState';
-import getStateFromPath from '../getStateFromPath';
-
-beforeEach(() => {
-  delete process.env.EXPO_BASE_URL;
-});
-afterAll(() => {
-  delete process.env.EXPO_BASE_URL;
-});
+import { getPathFromState } from '../getPathFromState';
+import { getStateFromPath } from '../getStateFromPath';
 
 type State = PartialState<NavigationState>;
 
-[
-  [
-    {
-      stale: false,
-      type: 'stack',
-      key: 'stack-My6VVqpqe-qaR8yuSpqY_',
-      index: 1,
-      routeNames: ['index', '_sitemap', '[...blog]'],
-      routes: [
-        {
-          name: 'index',
-          path: '/',
-          key: 'index-T5frP65vdKFCNT4aJr3r_',
-        },
-        {
-          key: '[...blog]-HCj6P0JDBIoBwswJpNfpF',
-          name: '[...blog]',
-          params: {
-            blog: ['1', '2'],
-          },
-        },
-      ],
-    },
-    {
-      screens: {
-        '[...blog]': '*blog',
-        index: '',
-        _sitemap: '_sitemap',
-      },
-    },
-    '/1/2',
-  ],
-  [
-    {
-      index: 0,
-      routes: [
-        {
-          name: '(app)',
-          params: {
-            user: 'evanbacon',
-            initial: true,
-            screen: '(explore)',
-            params: {
-              user: 'evanbacon',
-              initial: false,
-              screen: '[user]/index',
-              params: {
-                user: 'evanbacon',
-              },
-              path: '/evanbacon',
-            },
-          },
-          state: {
-            index: 0,
-            routes: [
-              {
-                name: '(explore)',
-                params: {
-                  user: 'evanbacon',
-                  initial: false,
-                  screen: '[user]/index',
-                  params: {
-                    user: 'evanbacon',
-                  },
-                  path: '/evanbacon',
-                },
-              },
-            ],
-          },
-          key: '(app)-xxx',
-        },
-      ],
-    },
-    {
-      screens: {
-        '(app)': {
-          path: '(app)',
-          screens: {
-            '(explore)': {
-              path: '(explore)',
-              screens: {
-                '[user]/index': ':user',
-                explore: 'explore',
-              },
-              initialRouteName: 'explore',
-            },
-            '([user])': {
-              path: '([user])',
-              screens: {
-                '[user]/index': ':user',
-                explore: 'explore',
-              },
-              initialRouteName: '[user]/index',
-            },
-          },
-        },
-
-        '[...not-found]': '*not-found',
-      },
-    },
-    '/evanbacon',
-  ],
-
-  [
-    {
-      index: 0,
-      routes: [
-        {
-          name: '(app)',
-          params: {
-            initial: true,
-            screen: '(explore)',
-            params: {
-              initial: false,
-              screen: 'compose',
-              path: '/compose',
-            },
-          },
-          state: {
-            index: 0,
-            routes: [
-              {
-                name: '([user])',
-                params: {
-                  user: 'evanbacon',
-                },
-              },
-            ],
-          },
-          key: '(app)-xxx',
-        },
-      ],
-    },
-    {
-      screens: {
-        '(app)': {
-          path: '(app)',
-          screens: {
-            '(feed)': {
-              path: '(feed)',
-              screens: {
-                '[user]/index': ':user',
-                compose: 'compose',
-                explore: 'explore',
-                feed: 'feed',
-              },
-              initialRouteName: 'feed',
-            },
-            '(explore)': {
-              path: '(explore)',
-              screens: {
-                '[user]/index': ':user',
-                compose: 'compose',
-                explore: 'explore',
-                feed: 'feed',
-              },
-              initialRouteName: 'explore',
-            },
-            '([user])': {
-              path: '([user])',
-              screens: {
-                '[user]/index': ':user',
-                compose: 'compose',
-                explore: 'explore',
-                feed: 'feed',
-              },
-              initialRouteName: '[user]/index',
-            },
-          },
-        },
-        '[...not-found]': '*not-found',
-      },
-    },
-    '/evanbacon',
-  ],
-].forEach(([state, config, expected], index) => {
-  it(`matches required assumptions: ${index}`, () => {
-    // @ts-expect-error
-    expect(getPathFromState(state, config)).toBe(expected);
-  });
-});
-
-it('appends baseUrl', () => {
-  process.env.EXPO_BASE_URL = '/expo-prefix/';
-
-  const path = '/expo-prefix/bar';
-  const config = {
-    screens: {
-      Foo: {
-        path: '',
-        screens: {
-          Foe: 'foe',
-        },
-      },
-      Bar: 'bar',
-    },
-  };
-
+test('converts state to path string', () => {
   const state = {
     routes: [
       {
-        name: 'Foo',
+        name: 'foo',
         state: {
-          routes: [{ name: 'Bar' }],
-        },
-      },
-    ],
-  };
-
-  expect(getPathFromState<object>(state, config)).toBe(path);
-});
-
-it('appends multi-level baseUrl', () => {
-  process.env.EXPO_BASE_URL = '/expo/prefix/';
-
-  const path = '/expo/prefix/bar';
-  const config = {
-    screens: {
-      Foo: {
-        path: '',
-        screens: {
-          Foe: 'foe',
-        },
-      },
-      Bar: 'bar',
-    },
-  };
-
-  const state = {
-    routes: [
-      {
-        name: 'Foo',
-        state: {
-          routes: [{ name: 'Bar' }],
-        },
-      },
-    ],
-  };
-
-  expect(getPathFromState<object>(state, config)).toBe(path);
-});
-
-it(`does not mutate incomplete state during invocation`, () => {
-  const inputState = {
-    stale: false,
-    type: 'stack',
-    key: 'stack-xxx',
-    index: 1,
-    routeNames: ['(tabs)', 'address'],
-    routes: [
-      {
-        name: '(tabs)',
-        state: {
-          stale: false,
-          type: 'stack',
-          key: 'stack-zzz',
-          index: 0,
-          routeNames: ['index'],
-          routes: [{ name: 'index', path: '', key: 'index-xxx' }],
-        },
-        key: '(tabs)-xxx',
-      },
-      {
-        key: 'address-xxx',
-        name: 'address',
-        params: { initial: true, screen: 'index', path: '/address' },
-      },
-    ],
-  };
-
-  const staticCopy = JSON.parse(JSON.stringify(inputState));
-  getPathFromState(
-    // @ts-expect-error
-    inputState,
-    {
-      screens: {
-        '(tabs)': { path: '(tabs)', screens: { index: '' } },
-        address: {
-          path: 'address',
-          screens: { index: '', other: 'other' },
-          initialRouteName: 'index',
-        },
-        _sitemap: '_sitemap',
-        '[...not-found]': '*not-found',
-      },
-      preserveDynamicRoutes: false,
-      preserveGroups: false,
-    }
-  );
-
-  expect(inputState).toEqual(staticCopy);
-  expect(JSON.stringify(inputState)).not.toMatch(/UNKNOWN/);
-});
-
-it(`supports resolving nonexistent, nested synthetic states into paths that cannot be resolved`, () => {
-  expect(
-    getPathFromState(
-      {
-        index: 0,
-        routes: [
-          {
-            name: '(root)',
-            state: {
-              index: 0,
-              routes: [
-                {
-                  name: 'modal',
-                  path: '/modal',
-                  key: 'modal-qhPtAt8RdiCEcxrLJtxG1',
-                  state: {
-                    index: 0,
-                    routes: [
-                      {
-                        name: 'index',
-                      },
-                    ],
+          index: 1,
+          routes: [
+            { name: 'boo' },
+            {
+              name: 'bar',
+              params: { fruit: 'apple' },
+              state: {
+                routes: [
+                  {
+                    name: 'baz qux',
+                    params: { author: 'jane', valid: true },
                   },
-                },
-              ],
-            },
-            key: '(root)-teRKULujwLUHDOUPQ8g2Z',
-          },
-        ],
-      },
-      {
-        screens: {
-          '(root)': {
-            path: '(root)',
-            screens: {
-              '(tabs)': {
-                path: '(tabs)',
-                screens: {
-                  index: '',
-                  two: 'two',
-                },
-              },
-              '[...missing]': '*missing',
-              modal: 'modal',
-            },
-            initialRouteName: '(tabs)',
-          },
-          _sitemap: '_sitemap',
-        },
-      } as any
-    )
-  ).toEqual('/modal');
-});
-
-it('does not collapse conventions', () => {
-  expect(
-    getPathFromState(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'stack-As9iX2L8B1j6ZjV3xN8aQ',
-        index: 0,
-        routeNames: ['(app)'],
-        routes: [
-          {
-            name: '(app)',
-            params: {
-              user: 'bacon',
-            },
-            state: {
-              stale: false,
-              type: 'stack',
-              key: 'stack-TihHf0Ci6SaO_avdb9IAz',
-              index: 0,
-              routeNames: ['[user]'],
-              routes: [
-                {
-                  name: '[user]',
-                  params: {
-                    user: 'bacon',
-                  },
-                  state: {
-                    stale: false,
-                    type: 'tab',
-                    key: 'tab-n3xlu2kPlKh1VOAQWJbEb',
-                    index: 1,
-                    routeNames: ['index', 'related'],
-                    history: [
-                      {
-                        type: 'route',
-                        key: 'index-z-ZR1oYFE3kHksOXi4L9j',
-                      },
-                      {
-                        type: 'route',
-                        key: 'related-WWyKJe4_3X-PyqW5MIzN4',
-                      },
-                    ],
-                    routes: [
-                      {
-                        name: 'index',
-                        key: 'index-z-ZR1oYFE3kHksOXi4L9j',
-                      },
-                      {
-                        name: 'related',
-                        params: {
-                          user: 'bacon',
-                        },
-                        path: '/bacon/related',
-                        key: 'related-WWyKJe4_3X-PyqW5MIzN4',
-                      },
-                    ],
-                  },
-                  key: '[user]-9qb40LvrbVOw4HArHBQQN',
-                },
-              ],
-            },
-            key: '(app)-eHHi2MUdVaFK_IshK8Y2J',
-          },
-        ],
-      },
-      {
-        screens: {
-          '(app)': {
-            path: '(app)',
-            screens: {
-              '[user]': {
-                path: ':user',
-                screens: {
-                  index: '',
-                  related: 'related',
-                },
+                ],
               },
             },
-          },
+          ],
         },
-        preserveDynamicRoutes: true,
-        preserveGroups: true,
-      } as any
-    )
-  ).toBe('/(app)/[user]/related?user=bacon');
+      },
+    ],
+  };
+
+  const path = '/foo/bar/baz%20qux?author=jane&valid=true';
+
+  expect(getPathFromState<object>(state)).toBe(path);
+  expect(getPathFromState<object>(getStateFromPath<object>(path) as State)).toBe(path);
 });
 
-it('converts state to path string with config', () => {
+test('converts state to path string with config', () => {
   const path = '/few/bar/sweet/apple/baz/jane?id=x10&valid=true';
   const config = {
     screens: {
@@ -515,7 +104,39 @@ it('converts state to path string with config', () => {
   );
 });
 
-it('handles state with config with nested screens', () => {
+test('handles route without param', () => {
+  const path = '/foo/bar';
+  const state = {
+    routes: [
+      {
+        name: 'foo',
+        state: {
+          routes: [{ name: 'bar' }],
+        },
+      },
+    ],
+  };
+
+  expect(getPathFromState<object>(state)).toBe(path);
+  expect(getPathFromState<object>(getStateFromPath<object>(path) as State)).toBe(path);
+});
+
+test("doesn't add query param for empty params", () => {
+  const path = '/foo';
+  const state = {
+    routes: [
+      {
+        name: 'foo',
+        params: {},
+      },
+    ],
+  };
+
+  expect(getPathFromState<object>(state)).toBe(path);
+  expect(getPathFromState<object>(getStateFromPath<object>(path) as State)).toBe(path);
+});
+
+test('handles state with config with nested screens', () => {
   const path = '/foo/foe/bar/sweet/apple/baz/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
@@ -592,7 +213,7 @@ it('handles state with config with nested screens', () => {
   );
 });
 
-it('handles state with config with nested screens and exact', () => {
+test('handles state with config with nested screens and exact', () => {
   const path = '/foe/bar/sweet/apple/baz/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
@@ -670,7 +291,7 @@ it('handles state with config with nested screens and exact', () => {
   );
 });
 
-it('handles state with config with nested screens and unused configs', () => {
+test('handles state with config with nested screens and unused configs', () => {
   const path = '/foo/foe/baz/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
@@ -733,7 +354,7 @@ it('handles state with config with nested screens and unused configs', () => {
   );
 });
 
-it('handles state with config with nested screens and unused configs with exact', () => {
+test('handles state with config with nested screens and unused configs with exact', () => {
   const path = '/foe/baz/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
@@ -797,7 +418,7 @@ it('handles state with config with nested screens and unused configs with exact'
   );
 });
 
-it('handles nested object with stringify in it', () => {
+test('handles nested object with stringify in it', () => {
   const path = '/bar/sweet/apple/foo/bis/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
@@ -875,7 +496,7 @@ it('handles nested object with stringify in it', () => {
   );
 });
 
-it('handles nested object with stringify in it with exact', () => {
+test('handles nested object with stringify in it with exact', () => {
   const path = '/bis/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
@@ -955,7 +576,7 @@ it('handles nested object with stringify in it with exact', () => {
   );
 });
 
-it('handles nested object for second route depth', () => {
+test('handles nested object for second route depth', () => {
   const path = '/foo/bar/baz';
   const config = {
     screens: {
@@ -998,7 +619,7 @@ it('handles nested object for second route depth', () => {
   );
 });
 
-it('handles nested object for second route depth with exact', () => {
+test('handles nested object for second route depth with exact', () => {
   const path = '/baz';
   const config = {
     screens: {
@@ -1044,7 +665,7 @@ it('handles nested object for second route depth with exact', () => {
   );
 });
 
-it('handles nested object for second route depth and path and stringify in roots', () => {
+test('handles nested object for second route depth and path and stringify in roots', () => {
   const path = '/foo/dathomir/bar/42/baz';
   const config = {
     screens: {
@@ -1094,7 +715,7 @@ it('handles nested object for second route depth and path and stringify in roots
   );
 });
 
-it('handles nested object for second route depth and path and stringify in roots with exact', () => {
+test('handles nested object for second route depth and path and stringify in roots with exact', () => {
   const path = '/baz';
   const config = {
     screens: {
@@ -1149,7 +770,7 @@ it('handles nested object for second route depth and path and stringify in roots
   );
 });
 
-it('ignores empty string paths', () => {
+test('ignores empty string paths', () => {
   const path = '/bar';
   const config = {
     screens: {
@@ -1180,7 +801,7 @@ it('ignores empty string paths', () => {
   );
 });
 
-it('keeps query params if path is empty', () => {
+test('keeps query params if path is empty', () => {
   const path = '/?foo=42';
   const config = {
     screens: {
@@ -1225,7 +846,7 @@ it('keeps query params if path is empty', () => {
   );
 });
 
-it('does not use Object.prototype properties as parsing functions', () => {
+test('does not use Object.prototype properties as parsing functions', () => {
   const path = '/?toString=42';
   const config = {
     screens: {
@@ -1270,7 +891,7 @@ it('does not use Object.prototype properties as parsing functions', () => {
   );
 });
 
-it('cuts nested configs too', () => {
+test('cuts nested configs too', () => {
   const path = '/foo/baz';
   const config = {
     screens: {
@@ -1314,7 +935,7 @@ it('cuts nested configs too', () => {
   );
 });
 
-it('cuts nested configs too with exact', () => {
+test('cuts nested configs too with exact', () => {
   const path = '/baz';
   const config = {
     screens: {
@@ -1359,7 +980,7 @@ it('cuts nested configs too with exact', () => {
   );
 });
 
-it('handles empty path at the end', () => {
+test('handles empty path at the end', () => {
   const path = '/foo/bar';
   const config = {
     screens: {
@@ -1397,7 +1018,7 @@ it('handles empty path at the end', () => {
   );
 });
 
-it('returns "/" for empty path', () => {
+test('returns "/" for empty path', () => {
   const path = '/';
 
   const config = {
@@ -1432,7 +1053,7 @@ it('returns "/" for empty path', () => {
   );
 });
 
-it('parses no path specified', () => {
+test('parses no path specified', () => {
   const path = '/bar';
   const config = {
     screens: {
@@ -1462,7 +1083,7 @@ it('parses no path specified', () => {
   );
 });
 
-it('strips undefined query params', () => {
+test('strips undefined query params', () => {
   const path = '/bar/sweet/apple/foo/bis/jane?count=10&valid=true';
   const config = {
     screens: {
@@ -1539,7 +1160,7 @@ it('strips undefined query params', () => {
   );
 });
 
-it('strips undefined query params with exact', () => {
+test('strips undefined query params with exact', () => {
   const path = '/bis/jane?count=10&valid=true';
   const config = {
     screens: {
@@ -1617,7 +1238,7 @@ it('strips undefined query params with exact', () => {
   );
 });
 
-it('handles stripping all query params', () => {
+test('handles stripping all query params', () => {
   const path = '/bar/sweet/apple/foo/bis/jane';
   const config = {
     screens: {
@@ -1692,7 +1313,7 @@ it('handles stripping all query params', () => {
   );
 });
 
-it('handles stripping all query params with exact', () => {
+test('handles stripping all query params with exact', () => {
   const path = '/bis/jane';
   const config = {
     screens: {
@@ -1769,7 +1390,7 @@ it('handles stripping all query params with exact', () => {
   );
 });
 
-it('replaces undefined query params', () => {
+test('replaces undefined query params', () => {
   const path = '/bar/undefined/apple';
   const config = {
     screens: {
@@ -1786,18 +1407,17 @@ it('replaces undefined query params', () => {
     ],
   };
 
-  // TODO(EvanBacon): Investigate why getStateFromPath isn't matching
-  expect(getPathFromState<object>(state, config)).toBe('/bar/apple');
+  expect(getPathFromState<object>(state, config)).toBe(path);
   expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
     path
   );
 });
 
-it('matches wildcard patterns at root', () => {
+test('matches wildcard patterns at root', () => {
   const path = '/test/bar/42/whatever';
   const config = {
     screens: {
-      'not-found': '*not-found',
+      404: '*',
       Foo: {
         screens: {
           Bar: {
@@ -1809,17 +1429,16 @@ it('matches wildcard patterns at root', () => {
   };
 
   const state = {
-    routes: [{ name: 'not-found' }],
+    routes: [{ name: '404' }],
   };
 
-  // NOTE(EvanBacon): This is custom behavior for our router
-  expect(getPathFromState<object>(state, config)).toBe('/');
+  expect(getPathFromState<object>(state, config)).toBe('/404');
   expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
-    '/test/bar/42/whatever'
+    '/404'
   );
 });
 
-it('matches wildcard patterns at nested level', () => {
+test('matches wildcard patterns at nested level', () => {
   const path = '/bar/42/whatever/baz/initt';
   const config = {
     screens: {
@@ -1828,7 +1447,7 @@ it('matches wildcard patterns at nested level', () => {
           Bar: {
             path: '/bar/:id/',
             screens: {
-              'not-found': '*not-found',
+              404: '*',
             },
           },
         },
@@ -1846,7 +1465,7 @@ it('matches wildcard patterns at nested level', () => {
               name: 'Bar',
               params: { id: '42' },
               state: {
-                routes: [{ name: 'NOT-FOUND' }],
+                routes: [{ name: '404' }],
               },
             },
           ],
@@ -1855,14 +1474,13 @@ it('matches wildcard patterns at nested level', () => {
     ],
   };
 
-  // NOTE(EvanBacon): This is custom behavior for our router
-  expect(getPathFromState<object>(state, config)).toBe('/bar/42');
+  expect(getPathFromState<object>(state, config)).toBe('/bar/42/404');
   expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
-    path
+    '/bar/42/404'
   );
 });
 
-it('matches wildcard patterns at nested level with exact', () => {
+test('matches wildcard patterns at nested level with exact', () => {
   const path = '/whatever';
   const config = {
     screens: {
@@ -1871,8 +1489,8 @@ it('matches wildcard patterns at nested level with exact', () => {
           Bar: {
             path: '/bar/:id/',
             screens: {
-              'not-found': {
-                path: '*not-found',
+              404: {
+                path: '*',
                 exact: true,
               },
             },
@@ -1892,7 +1510,7 @@ it('matches wildcard patterns at nested level with exact', () => {
             {
               name: 'Bar',
               state: {
-                routes: [{ name: 'not-found' }],
+                routes: [{ name: '404' }],
               },
             },
           ],
@@ -1901,14 +1519,13 @@ it('matches wildcard patterns at nested level with exact', () => {
     ],
   };
 
-  // NOTE(EvanBacon): This is custom behavior for our router
-  expect(getPathFromState<object>(state, config)).toBe('/');
+  expect(getPathFromState<object>(state, config)).toBe('/404');
   expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
-    path
+    '/404'
   );
 });
 
-it('tries to match wildcard patterns at the end', () => {
+test('tries to match wildcard patterns at the end', () => {
   const path = '/bar/42/test';
   const config = {
     screens: {
@@ -1917,7 +1534,7 @@ it('tries to match wildcard patterns at the end', () => {
           Bar: {
             path: '/bar/:id/',
             screens: {
-              'not-found': '*not-found',
+              404: '*',
               Test: 'test',
             },
           },
@@ -1951,7 +1568,7 @@ it('tries to match wildcard patterns at the end', () => {
   );
 });
 
-it('uses nearest parent wildcard match for unmatched paths', () => {
+test('uses nearest parent wildcard match for unmatched paths', () => {
   const path = '/bar/42/baz/test';
   const config = {
     screens: {
@@ -1963,7 +1580,7 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
               Baz: 'baz',
             },
           },
-          '+not-found': '*not-found',
+          404: '*',
         },
       },
     },
@@ -1973,11 +1590,41 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
     routes: [
       {
         name: 'Foo',
+        state: {
+          routes: [{ name: '404' }],
+        },
+      },
+    ],
+  };
 
+  expect(getPathFromState<object>(state, config)).toBe('/404');
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
+    '/404'
+  );
+});
+
+test('handles path at top level', () => {
+  const path = 'foo/fruits/apple';
+  const config = {
+    path: 'foo',
+    screens: {
+      Foo: {
+        screens: {
+          Fruits: 'fruits/:fruit',
+        },
+      },
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
         state: {
           routes: [
             {
-              name: '+not-found',
+              name: 'Fruits',
+              params: { fruit: 'apple' },
             },
           ],
         },
@@ -1985,9 +1632,6 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
     ],
   };
 
-  // NOTE(EvanBacon): This is custom behavior for our router
-  expect(getPathFromState<object>(state, config)).toBe('/');
-  expect(getPathFromState<object>(getStateFromPath<object>(path, config) as State, config)).toBe(
-    '/bar/42/baz/test'
-  );
+  expect(getPathFromState<object>(state, config)).toEqual(path);
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config)!, config)).toEqual(path);
 });

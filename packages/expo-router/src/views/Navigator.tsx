@@ -82,7 +82,7 @@ function QualifiedNavigator<T extends UseNavigationBuilderRouter>({
   children,
   screens,
   contextKey,
-  router = StackRouter as T,
+  router = StackRouter as unknown as T,
   routerOptions,
 }: NavigatorProps<T> & { contextKey: string; screens: React.ReactNode[] }) {
   const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(router, {

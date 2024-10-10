@@ -146,6 +146,11 @@ function createGetIdForRoute(route) {
         }
     }
     return ({ params = {} } = {}) => {
+        if (params.__EXPO_ROUTER_key) {
+            const key = params.__EXPO_ROUTER_key;
+            delete params.__EXPO_ROUTER_key;
+            return key;
+        }
         const segments = [];
         for (const dynamic of include.values()) {
             const value = params?.[dynamic.name];

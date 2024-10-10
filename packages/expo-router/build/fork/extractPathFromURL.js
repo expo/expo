@@ -89,7 +89,7 @@ function fromDeepLink(url) {
     }
     return results;
 }
-function extractExpoPathFromURL(url = '') {
+function extractExpoPathFromURL(_prefixes, url = '') {
     return (extractExactPathFromURL(url)
         // TODO: We should get rid of this, dropping specificities is not good
         .replace(/^\//, ''));

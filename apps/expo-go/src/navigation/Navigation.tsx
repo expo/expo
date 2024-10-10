@@ -208,15 +208,18 @@ export default (props: { theme: ColorTheme }) => {
       <ModalStack.Navigator
         initialRouteName="RootStack"
         detachInactiveScreens={shouldDetachInactiveScreens}
-        screenOptions={({ route, navigation }) => ({
-          headerShown: false,
-          gestureEnabled: true,
-          cardOverlayEnabled: true,
-          cardStyle: { backgroundColor: 'transparent' },
-          presentation: 'modal',
-          headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
-          ...TransitionPresets.ModalPresentationIOS,
-        })}>
+        screenOptions={
+          /* TODO: @marklawlor Remove the any after React Navigation v7 upgrade */
+          ({ route, navigation }: any) => ({
+            headerShown: false,
+            gestureEnabled: true,
+            cardOverlayEnabled: true,
+            cardStyle: { backgroundColor: 'transparent' },
+            presentation: 'modal',
+            headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
+            ...TransitionPresets.ModalPresentationIOS,
+          })
+        }>
         <ModalStack.Screen name="RootStack">
           {() => (
             <RootStack.Navigator
@@ -229,20 +232,23 @@ export default (props: { theme: ColorTheme }) => {
               <RootStack.Screen
                 name="Account"
                 component={AccountModal}
-                options={({ route, navigation }) => ({
-                  headerShown: false,
-                  ...(Platform.OS === 'ios' && {
-                    gestureEnabled: true,
-                    cardOverlayEnabled: true,
-                    headerStatusBarHeight:
-                      navigation
-                        .getState()
-                        .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
-                        ? 0
-                        : undefined,
-                    ...TransitionPresets.ModalPresentationIOS,
-                  }),
-                })}
+                options={
+                  /* TODO: @marklawlor Remove the any after React Navigation v7 upgrade */
+                  ({ route, navigation }: any) => ({
+                    headerShown: false,
+                    ...(Platform.OS === 'ios' && {
+                      gestureEnabled: true,
+                      cardOverlayEnabled: true,
+                      headerStatusBarHeight:
+                        navigation
+                          .getState()
+                          .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
+                          ? 0
+                          : undefined,
+                      ...TransitionPresets.ModalPresentationIOS,
+                    }),
+                  })
+                }
               />
             </RootStack.Navigator>
           )}

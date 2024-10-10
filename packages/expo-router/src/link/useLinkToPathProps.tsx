@@ -1,7 +1,7 @@
 import { MouseEvent } from 'react';
 import { GestureResponderEvent, Platform } from 'react-native';
 
-import { appendBaseUrl } from '../fork/getPathFromState';
+import * as expo from '../fork/getPathFromState-forks';
 import { useExpoRouter } from '../global-state/router-store';
 import { LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
@@ -45,7 +45,7 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
 
   return {
     // Ensure there's always a value for href. Manually append the baseUrl to the href prop that shows in the static HTML.
-    href: appendBaseUrl(stripGroupSegmentsFromPath(href) || '/'),
+    href: expo.appendBaseUrl(stripGroupSegmentsFromPath(href) || '/'),
     role: 'link' as const,
     onPress,
   };

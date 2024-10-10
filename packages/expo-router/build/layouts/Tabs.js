@@ -28,6 +28,8 @@ exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (s
                             return null;
                         }
                         const children = react_native_1.Platform.OS === 'web' ? props.children : <react_native_1.Pressable>{props.children}</react_native_1.Pressable>;
+                        // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>
+                        //       While Link expects a TextStyle. We need to reconcile these types.
                         return (<Link_1.Link {...props} style={[{ display: 'flex' }, props.style]} href={href} asChild={react_native_1.Platform.OS !== 'web'} children={children}/>);
                     },
                 },
