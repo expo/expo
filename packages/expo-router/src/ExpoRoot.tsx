@@ -37,6 +37,9 @@ const INITIAL_METRICS =
       }
     : undefined;
 
+/**
+ * @hidden
+ */
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
   /*
    * Due to static rendering we need to wrap these top level views in second wrapper

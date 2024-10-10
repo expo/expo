@@ -111,8 +111,9 @@ public class Logger {
     let startTime = DispatchTime.now()
     return LoggerTimer {
       let endTime = DispatchTime.now()
-      let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
-      self.log(type: .timer, formatterBlock(diff))
+      let diffMs = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
+      self.log(type: .timer, formatterBlock(diffMs))
+      return diffMs
     }
   }
 

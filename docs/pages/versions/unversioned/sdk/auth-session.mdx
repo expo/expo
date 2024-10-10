@@ -13,6 +13,8 @@ import { Terminal } from '~/ui/components/Snippet';
 
 `AuthSession` enables web browser-based authentication (for example, browser-based OAuth flows) in your app by utilizing [WebBrowser](webbrowser.mdx) and [Crypto](crypto.mdx). For implementation details, refer to this reference, and for usage, see the [Authentication](/guides/authentication/) guide.
 
+> **Note:** `AuthSession` enables general-purpose OAuth and OpenID Connect browser-based auth workflows. Where available, we recommend using a library supplied by your identity provider, as it will handle implementation details specific to that provider. For example, use [`@react-native-google-signin/google-signin`](/guides/google-authentication/) for Google authentication and [`react-native-fbsdk-next`](/guides/facebook-authentication/) for Facebook. For more information, see [Authentication](/develop/authentication/) overview.
+
 ## Installation
 
 > `expo-crypto` is a peer dependency and must be installed alongside `expo-auth-session`.

@@ -27,6 +27,7 @@ import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
+import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.drawing.OutlineProvider
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
@@ -85,15 +86,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val borderDrawable
     get() = borderDrawableLazyHolder.value
 
-  var autoEnterPiP: Boolean = false
-    set(value) {
-      if (Build.VERSION.SDK_INT >= 31 && isPictureInPictureSupported(currentActivity) && field != value) {
-        runWithPiPMisconfigurationSoftHandling {
-          currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(value).build())
-        }
-      }
-      field = value
-    }
+  var autoEnterPiP: Boolean by IgnoreSameSet(false) { new, _ ->
+    applyAutoEnterPiP(new)
+  }
 
   var contentFit: ContentFit = ContentFit.CONTAIN
     set(value) {
@@ -350,6 +345,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .add(fragment, fragment.id)
         .commitAllowingStateLoss()
     }
+    applyAutoEnterPiP(autoEnterPiP)
   }
 
   override fun onDetachedFromWindow() {
@@ -361,6 +357,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .remove(fragment)
         .commitAllowingStateLoss()
     }
+    applyAutoEnterPiP(false)
   }
 
   @UnstableReactNativeAPI
@@ -446,6 +443,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       Log.e("ExpoVideo", "Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
       if (shouldThrow) {
         throw PictureInPictureConfigurationException()
+      }
+    }
+  }
+
+  private fun applyAutoEnterPiP(autoEnterPiP: Boolean) {
+    if (Build.VERSION.SDK_INT >= 31 && isPictureInPictureSupported(currentActivity)) {
+      runWithPiPMisconfigurationSoftHandling {
+        currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(autoEnterPiP).build())
       }
     }
   }

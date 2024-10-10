@@ -30,6 +30,9 @@ Object.defineProperty(exports, "Unmatched", { enumerable: true, get: function ()
 var ErrorBoundary_1 = require("./views/ErrorBoundary");
 Object.defineProperty(exports, "ErrorBoundary", { enumerable: true, get: function () { return ErrorBoundary_1.ErrorBoundary; } });
 // Platform
+/**
+ * @hidden
+ */
 var Splash_1 = require("./views/Splash");
 Object.defineProperty(exports, "SplashScreen", { enumerable: true, get: function () { return Splash_1.SplashScreen; } });
 // React Navigation
