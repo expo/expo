@@ -1,4 +1,5 @@
 import type { BufferOptions, PlayerError, VideoPlayer, VideoPlayerEvents, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
+import { VideoThumbnail } from './VideoThumbnail';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 export declare function getSourceUri(source: VideoSource): string | null;
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
@@ -52,6 +53,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     replace(source: VideoSource): void;
     seekBy(seconds: number): void;
     replay(): void;
+    generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
     _synchronizeWithFirstVideo(video: HTMLVideoElement): void;
     /**
      * If there are multiple mounted videos, all of them will emit an event, as they are synchronised.
