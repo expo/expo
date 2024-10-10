@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+
 ## 1.8.1 — 2024-04-29
 
 _This version does not introduce any user-facing changes._
