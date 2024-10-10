@@ -555,7 +555,6 @@ module.exports = {
           { name: 'requestPermissionsAsync', argumentsCount: 1, key: 1 },
         ],
         ExpoNotificationPresenter: [
-          { name: 'presentNotificationAsync', argumentsCount: 2, key: 0 },
           { name: 'dismissNotificationAsync', argumentsCount: 1, key: 1 },
           { name: 'getPresentedNotificationsAsync', argumentsCount: 0, key: 2 },
           { name: 'dismissAllNotificationsAsync', argumentsCount: 0, key: 3 },

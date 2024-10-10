@@ -1,0 +1,6 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "podspecPath": "./ios/ExpoModulesTestCore.podspec"
+  }
+}
