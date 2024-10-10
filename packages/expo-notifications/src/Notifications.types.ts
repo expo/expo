@@ -1,10 +1,3 @@
-import type {
-  PermissionExpiration,
-  PermissionResponse,
-  PermissionStatus,
-  EventSubscription,
-} from 'expo-modules-core';
-
 /**
  * An object represents a notification delivered by a push notification system.
  *
@@ -776,9 +769,9 @@ export type NotificationCategoryOptions = {
   allowAnnouncement?: boolean;
 };
 
-export type {
-  EventSubscription as Subscription,
-  PermissionResponse,
-  PermissionStatus,
+export {
   PermissionExpiration,
-};
+  PermissionResponse,
+  EventSubscription,
+  PermissionStatus,
+} from 'expo-modules-core';
