@@ -16,6 +16,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
   private var players = NSHashTable<VideoPlayer>.weakObjects()
+  private var artworkDataTask: URLSessionDataTask?
 
   private var playTarget: Any?
   private var pauseTarget: Any?
@@ -171,7 +172,18 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
       nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = await player.rate
       nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
-      nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      if let artworkUrlString = userMetadata?.artwork, let url = URL(string: artworkUrlString), artworkDataTask?.originalRequest?.url != url {
+        artworkDataTask?.cancel()
+        artworkDataTask = fetchArtwork(url: url) { image in
+          // We can't reuse the `nowPlayingInfo` as the actual nowPlayingInfo might've changed while the image was being fetched
+          var currentNowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+          currentNowPlayingInfo[MPMediaItemPropertyArtwork] = image
+          MPNowPlayingInfoCenter.default().nowPlayingInfo = currentNowPlayingInfo
+        }
+      } else if userMetadata?.artwork == nil {
+        self.artworkDataTask = nil
+        nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      }
 
       MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
@@ -227,4 +239,32 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       updateNowPlayingInfo()
     }
   }
+}
+
+private func fetchArtwork(url: URL, completion: @escaping (MPMediaItemArtwork?) -> Void) -> URLSessionDataTask {
+  let task = URLSession.shared.dataTask(with: url) { data, response, error in
+    if let error = error {
+      log.warn("ExpoVideo - Couldn't fetch the artwork: \(error.localizedDescription)")
+      completion(nil)
+      return
+    }
+
+    guard let data, response is HTTPURLResponse else {
+      log.warn("ExpoVideo - Couldn't display the artwork: the response was empty")
+      completion(nil)
+      return
+    }
+
+    if let image = UIImage(data: data) {
+      let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in
+        return image
+      }
+      completion(artwork)
+    } else {
+      completion(nil)
+    }
+  }
+
+  task.resume()
+  return task
 }
