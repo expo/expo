@@ -29,13 +29,15 @@ exports.withIosSplashScreenImage = withIosSplashScreenImage;
 function applySplashScreenStoryboard(obj, splash) {
   const resizeMode = splash?.resizeMode;
   const splashScreenImagePresent = Boolean(splash?.image);
-  const imageName = 'SplashScreen';
+  const imageName = 'SplashScreenLogo';
   // Only get the resize mode when the image is present.
   if (splashScreenImagePresent) {
     const contentMode = getImageContentMode(resizeMode || 'contain');
     return (0, _InterfaceBuilder().applyImageToSplashScreenXML)(obj, {
       contentMode,
-      imageName
+      imageName,
+      backgroundColor: splash.backgroundColor,
+      logoWidth: splash.logoWidth
     });
   }
   return (0, _InterfaceBuilder().removeImageFromSplashScreen)(obj, {

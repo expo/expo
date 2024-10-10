@@ -1,7 +1,7 @@
 import { ConfigPlugin } from '@expo/config-plugins';
-import { IOSSplashConfig } from './getIosSplashConfig';
+import { IOSPluginConfig } from './getIosSplashConfig';
 import { ContentsJsonImage } from '../../icons/AssetContents';
-export declare const withIosSplashAssets: ConfigPlugin<IOSSplashConfig>;
+export declare const withIosSplashAssets: ConfigPlugin<IOSPluginConfig>;
 export declare function buildContentsJsonImages({ image, darkImage, tabletImage, darkTabletImage, }: {
     image: string;
     tabletImage: string | null;

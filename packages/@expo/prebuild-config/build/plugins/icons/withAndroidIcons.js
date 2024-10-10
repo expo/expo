@@ -32,6 +32,13 @@ function _fsExtra() {
   };
   return data;
 }
+function _jimpCompact() {
+  const data = _interopRequireDefault(require("jimp-compact"));
+  _jimpCompact = function () {
+    return data;
+  };
+  return data;
+}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -47,6 +54,8 @@ function _withAndroidManifestIcons() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// @ts-ignore
+
 const {
   Colors
 } = _configPlugins().AndroidConfig;
@@ -72,15 +81,16 @@ const dpiValues = exports.dpiValues = {
     scale: 4
   }
 };
-const BASELINE_PIXEL_SIZE = 108;
+const ICON_BASELINE_PIXEL_SIZE = 48;
+const FOREGROUND_BASELINE_PIXEL_SIZE = 108;
 const ANDROID_RES_PATH = exports.ANDROID_RES_PATH = 'android/app/src/main/res/';
 const MIPMAP_ANYDPI_V26 = 'mipmap-anydpi-v26';
 const ICON_BACKGROUND = 'iconBackground';
-const IC_LAUNCHER_PNG = 'ic_launcher.png';
-const IC_LAUNCHER_ROUND_PNG = 'ic_launcher_round.png';
-const IC_LAUNCHER_BACKGROUND_PNG = 'ic_launcher_background.png';
-const IC_LAUNCHER_FOREGROUND_PNG = 'ic_launcher_foreground.png';
-const IC_LAUNCHER_MONOCHROME_PNG = 'ic_launcher_monochrome.png';
+const IC_LAUNCHER_WEBP = 'ic_launcher.webp';
+const IC_LAUNCHER_ROUND_WEBP = 'ic_launcher_round.webp';
+const IC_LAUNCHER_BACKGROUND_WEBP = 'ic_launcher_background.webp';
+const IC_LAUNCHER_FOREGROUND_WEBP = 'ic_launcher_foreground.webp';
+const IC_LAUNCHER_MONOCHROME_WEBP = 'ic_launcher_monochrome.webp';
 const IC_LAUNCHER_XML = 'ic_launcher.xml';
 const IC_LAUNCHER_ROUND_XML = 'ic_launcher_round.xml';
 const withAndroidIcons = config => {
@@ -156,9 +166,9 @@ async function setIconAsync(projectRoot, {
   if (isAdaptive) {
     await generateRoundIconAsync(projectRoot, icon, backgroundImage, backgroundColor);
   } else {
-    await deleteIconNamedAsync(projectRoot, IC_LAUNCHER_ROUND_PNG);
+    await deleteIconNamedAsync(projectRoot, IC_LAUNCHER_ROUND_WEBP);
   }
-  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, monochromeImage, isAdaptive);
+  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, backgroundColor, monochromeImage, isAdaptive);
   return true;
 }
 
@@ -173,7 +183,7 @@ async function configureLegacyIconAsync(projectRoot, icon, backgroundImage, back
     icon,
     backgroundImage,
     backgroundColor,
-    outputImageFileName: IC_LAUNCHER_PNG,
+    outputImageFileName: IC_LAUNCHER_WEBP,
     imageCacheFolder: 'android-standard-square',
     backgroundImageCacheFolder: 'android-standard-square-background'
   });
@@ -182,7 +192,7 @@ async function generateRoundIconAsync(projectRoot, icon, backgroundImage, backgr
   return generateMultiLayerImageAsync(projectRoot, {
     icon,
     borderRadiusRatio: 0.5,
-    outputImageFileName: IC_LAUNCHER_ROUND_PNG,
+    outputImageFileName: IC_LAUNCHER_ROUND_WEBP,
     backgroundImage,
     backgroundColor,
     imageCacheFolder: 'android-standard-circle',
@@ -196,22 +206,22 @@ async function generateRoundIconAsync(projectRoot, icon, backgroundImage, backgr
  * - A backgroundImage is provided, or
  * - A backgroundColor was specified
  */
-async function configureAdaptiveIconAsync(projectRoot, foregroundImage, backgroundImage, monochromeImage, isAdaptive) {
+async function configureAdaptiveIconAsync(projectRoot, foregroundImage, backgroundImage, backgroundColor, monochromeImage, isAdaptive) {
   if (monochromeImage) {
     await generateMonochromeImageAsync(projectRoot, {
       icon: monochromeImage,
       imageCacheFolder: 'android-adaptive-monochrome',
-      outputImageFileName: IC_LAUNCHER_MONOCHROME_PNG
+      outputImageFileName: IC_LAUNCHER_MONOCHROME_WEBP
     });
   }
   await generateMultiLayerImageAsync(projectRoot, {
-    backgroundColor: 'transparent',
+    backgroundColor,
     backgroundImage,
     backgroundImageCacheFolder: 'android-adaptive-background',
-    outputImageFileName: IC_LAUNCHER_FOREGROUND_PNG,
+    outputImageFileName: IC_LAUNCHER_FOREGROUND_WEBP,
     icon: foregroundImage,
     imageCacheFolder: 'android-adaptive-foreground',
-    backgroundImageFileName: IC_LAUNCHER_BACKGROUND_PNG
+    backgroundImageFileName: IC_LAUNCHER_BACKGROUND_WEBP
   });
 
   // create ic_launcher.xml and ic_launcher_round.xml
@@ -228,7 +238,7 @@ function setBackgroundColor(backgroundColor, colors) {
   });
 }
 const createAdaptiveIconXmlString = (backgroundImage, monochromeImage) => {
-  const background = backgroundImage ? `@mipmap/ic_launcher_background` : `@color/iconBackground`;
+  const background = backgroundImage ? `@drawable/ic_launcher_background` : `@color/iconBackground`;
   const iconElements = [`<background android:drawable="${background}"/>`, '<foreground android:drawable="@mipmap/ic_launcher_foreground"/>'];
   if (monochromeImage) {
     iconElements.push('<monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>');
@@ -273,16 +283,16 @@ async function generateMultiLayerImageAsync(projectRoot, {
       cacheType: imageCacheFolder,
       src: icon,
       scale,
-      // backgroundImage overrides backgroundColor
-      backgroundColor: backgroundImage ? 'transparent' : backgroundColor ?? 'transparent',
-      borderRadiusRatio
+      backgroundColor: backgroundColor ?? 'transparent',
+      borderRadiusRatio,
+      foreground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP
     });
     if (backgroundImage) {
       const backgroundLayer = await generateIconAsync(projectRoot, {
         cacheType: backgroundImageCacheFolder,
         src: backgroundImage,
         scale,
-        backgroundColor: 'transparent',
+        backgroundColor: backgroundColor ?? 'transparent',
         borderRadiusRatio
       });
       if (backgroundImageFileName) {
@@ -338,19 +348,21 @@ async function generateIconAsync(projectRoot, {
   src,
   scale,
   backgroundColor,
-  borderRadiusRatio
+  borderRadiusRatio,
+  foreground
 }) {
-  const iconSizePx = BASELINE_PIXEL_SIZE * scale;
-  return (await (0, _imageUtils().generateImageAsync)({
-    projectRoot,
-    cacheType
-  }, {
-    src,
-    width: iconSizePx,
-    height: iconSizePx,
-    resizeMode: 'cover',
-    backgroundColor,
-    borderRadius: borderRadiusRatio ? iconSizePx * borderRadiusRatio : undefined
-  })).source;
+  const baseline = foreground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
+  const iconSizePx = baseline * scale;
+  const image = await _jimpCompact().default.read(src);
+  const newSize = iconSizePx * 0.4;
+  image.scaleToFit(newSize, newSize);
+  let background = await _jimpCompact().default.create(iconSizePx, iconSizePx, foreground ? 'transparent' : backgroundColor);
+  const x = (iconSizePx - image.bitmap.width) / 2;
+  const y = (iconSizePx - image.bitmap.height) / 2;
+  if (borderRadiusRatio) {
+    background = background.circle(() => {});
+  }
+  const output = background.composite(image, x, y);
+  return output.getBufferAsync(_jimpCompact().default.MIME_PNG);
 }
 //# sourceMappingURL=withAndroidIcons.js.map

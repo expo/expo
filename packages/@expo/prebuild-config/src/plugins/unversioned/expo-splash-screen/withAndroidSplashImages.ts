@@ -1,10 +1,12 @@
 import { ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-import { generateImageAsync } from '@expo/image-utils';
 import fs from 'fs-extra';
+// @ts-ignore
+import Jimp from 'jimp-compact';
 import path from 'path';
 
 import {
+  AndroidPluginConfig,
   getAndroidDarkSplashConfig,
   getAndroidSplashConfig,
   SplashScreenConfig,
@@ -13,8 +15,7 @@ import {
 type DRAWABLE_SIZE = 'default' | 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 type THEME = 'light' | 'dark';
 
-const IMAGE_CACHE_NAME = 'splash-android';
-const SPLASH_SCREEN_FILENAME = 'splashscreen_image.png';
+const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
 const DRAWABLES_CONFIGS: {
   [key in DRAWABLE_SIZE]: {
     modes: {
@@ -93,11 +94,15 @@ const DRAWABLES_CONFIGS: {
   },
 };
 
-export const withAndroidSplashImages: ConfigPlugin = (config) => {
+export const withAndroidSplashImages: ConfigPlugin<AndroidPluginConfig> = (config, props) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot);
+      await setSplashImageDrawablesAsync(
+        config,
+        config.modRequest.projectRoot,
+        props?.logoWidth ?? 100
+      );
       return config;
     },
   ]);
@@ -112,7 +117,8 @@ export const withAndroidSplashImages: ConfigPlugin = (config) => {
  */
 export async function setSplashImageDrawablesAsync(
   config: Pick<ExpoConfig, 'android' | 'splash'>,
-  projectRoot: string
+  projectRoot: string,
+  logoWidth: number
 ) {
   await clearAllExistingSplashImagesAsync(projectRoot);
 
@@ -120,8 +126,8 @@ export async function setSplashImageDrawablesAsync(
   const darkSplash = getAndroidDarkSplashConfig(config);
 
   await Promise.all([
-    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot),
-    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot),
+    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, logoWidth),
+    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, logoWidth),
   ]);
 }
 
@@ -144,33 +150,45 @@ async function clearAllExistingSplashImagesAsync(projectRoot: string) {
 export async function setSplashImageDrawablesForThemeAsync(
   config: SplashScreenConfig | null,
   theme: 'dark' | 'light',
-  projectRoot: string
+  projectRoot: string,
+  logoWidth: number
 ) {
   if (!config) return;
   const androidMainPath = path.join(projectRoot, 'android/app/src/main');
 
+  const sizes: DRAWABLE_SIZE[] = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
+
   await Promise.all(
-    ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'].map(async (imageKey) => {
+    sizes.map(async (imageKey) => {
       // @ts-ignore
-      const image = config[imageKey];
+      const url = config[imageKey];
+      const image = await Jimp.read(url).catch(() => null);
+
       if (image) {
-        // Using this method will cache the images in `.expo` based on the properties used to generate them.
-        // this method also supports remote URLs and using the global sharp instance.
-        const { source } = await generateImageAsync({ projectRoot, cacheType: IMAGE_CACHE_NAME }, {
-          src: image,
-        } as any);
+        const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
+        const width = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
+        const height = Math.ceil(width * (image.bitmap.height / image.bitmap.width)); // compute the height according to the width and image ratio
+
+        // https://developer.android.com/develop/ui/views/launch/splash-screen#dimensions
+        const canvasSize = 288 * multiplier;
+        const canvas = await Jimp.create(canvasSize, canvasSize, 0xffffff00);
+        const input = image.clone().resize(width, height);
+
+        const x = (canvasSize - width) / 2;
+        const y = (canvasSize - height) / 2;
+
+        const output = canvas.blit(input, x, y).quality(100);
 
         // Get output path for drawable.
         const outputPath = path.join(
           androidMainPath,
-          // @ts-ignore
           DRAWABLES_CONFIGS[imageKey].modes[theme].path
         );
-        // Ensure directory exists.
+
         const folder = path.dirname(outputPath);
+        // Ensure directory exists.
         await fs.ensureDir(folder);
-        // Write image buffer to the file system.
-        await fs.writeFile(outputPath, source);
+        await output.writeAsync(outputPath);
       }
       return null;
     })

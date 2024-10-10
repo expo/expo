@@ -32,7 +32,7 @@ function _getAndroidSplashConfig() {
 }
 const styleResourceGroup = {
   name: 'Theme.App.SplashScreen',
-  parent: 'AppTheme'
+  parent: 'Theme.SplashScreen'
 };
 const SPLASH_COLOR_NAME = 'splashscreen_background';
 const withAndroidSplashStyles = config => {
@@ -54,14 +54,49 @@ const withAndroidSplashStyles = config => {
   });
   config = (0, _configPlugins().withAndroidStyles)(config, config => {
     config.modResults = removeOldSplashStyleGroup(config.modResults);
-    config.modResults = setSplashStylesForTheme(config.modResults);
+    config.modResults = addSplashScreenStyle(config.modResults);
     return config;
   });
   return config;
 };
 
-// Remove the old style group which didn't extend the base theme properly.
+// Add the style that extends Theme.SplashScreen
 exports.withAndroidSplashStyles = withAndroidSplashStyles;
+function addSplashScreenStyle(styles) {
+  const {
+    resources
+  } = styles;
+  const {
+    style = []
+  } = resources;
+  const item = [{
+    $: {
+      name: 'windowSplashScreenBackground'
+    },
+    _: '@color/splashscreen_background'
+  }, {
+    $: {
+      name: 'windowSplashScreenAnimatedIcon'
+    },
+    _: '@drawable/splashscreen_logo'
+  }, {
+    $: {
+      name: 'postSplashScreenTheme'
+    },
+    _: '@style/AppTheme'
+  }];
+  styles.resources.style = [...style.filter(({
+    $
+  }) => $.name !== 'Theme.App.SplashScreen'), {
+    $: {
+      ...styleResourceGroup
+    },
+    item
+  }];
+  return styles;
+}
+
+// Remove the old style group which didn't extend the base theme properly.
 function removeOldSplashStyleGroup(styles) {
   const group = {
     name: 'Theme.App.SplashScreen',
