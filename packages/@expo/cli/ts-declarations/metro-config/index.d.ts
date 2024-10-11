@@ -4,7 +4,7 @@ declare module 'metro-config' {
   export { default } from 'metro-config/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-config/src/configTypes.flow.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/configTypes.flow.js
 declare module 'metro-config/src/configTypes.flow' {
   import type { IntermediateStackFrame } from 'metro/src/Server/symbolicate';
   import type { HandleFunction, Server } from 'connect';
@@ -23,26 +23,28 @@ declare module 'metro-config/src/configTypes.flow' {
   } from 'metro/src/DeltaBundler/types.flow';
   import type { Reporter } from 'metro/src/lib/reporting';
   import type MetroServer from 'metro/src/Server';
-  export type ExtraTransformOptions = {
-    readonly preloadedModules?:
-      | {
+  export type ExtraTransformOptions = Readonly<{
+    preloadedModules?:
+      | Readonly<{
           [path: string]: true;
-        }
+        }>
       | false;
-    readonly ramGroups?: string[];
-    readonly transform?: {
-      readonly experimentalImportSupport?: boolean;
-      readonly inlineRequires?:
-        | {
-            readonly blockList: {
+    ramGroups?: readonly string[];
+    transform?: Readonly<{
+      experimentalImportSupport?: boolean;
+      inlineRequires?:
+        | Readonly<{
+            blockList: Readonly<{
               [$$Key$$: string]: true;
-            };
-          }
+            }>;
+          }>
         | boolean;
-      readonly nonInlinedRequires?: readonly string[];
-      readonly unstable_disableES6Transforms?: boolean;
-    };
-  };
+      nonInlinedRequires?: readonly string[];
+      unstable_disableES6Transforms?: boolean;
+      unstable_memoizeInlineRequires?: boolean;
+      unstable_nonMemoizedInlineRequires?: readonly string[];
+    }>;
+  }>;
   export type GetTransformOptionsOpts = {
     dev: boolean;
     hot: boolean;
@@ -108,7 +110,6 @@ declare module 'metro-config/src/configTypes.flow' {
     dependencyExtractor?: null | string;
     emptyModulePath: string;
     enableGlobalPackages: boolean;
-    unstable_enableSymlinks: boolean;
     extraNodeModules: {
       [name: string]: string;
     };
@@ -216,36 +217,38 @@ declare module 'metro-config/src/configTypes.flow' {
   };
   type WatcherConfigT = {
     additionalExts: readonly string[];
-    healthCheck: {
+    healthCheck: Readonly<{
       enabled: boolean;
       interval: number;
       timeout: number;
       filePrefix: string;
-    };
+    }>;
     unstable_workerThreads: boolean;
-    watchman: {
+    watchman: Readonly<{
       deferStates: readonly string[];
-    };
+    }>;
   };
-  export type InputConfigT = Partial<
-    {} & MetalConfigT &
-      Readonly<{
-        cacheStores?:
-          | readonly CacheStore<TransformResult>[]
-          | (($$PARAM_0$$: MetroCache) => readonly CacheStore<TransformResult>[]);
-        resolver: Readonly<Partial<ResolverConfigT>>;
-        server: Readonly<Partial<ServerConfigT>>;
-        serializer: Readonly<Partial<SerializerConfigT>>;
-        symbolicator: Readonly<Partial<SymbolicatorConfigT>>;
-        transformer: Readonly<Partial<TransformerConfigT>>;
-        watcher: Readonly<
-          Partial<
-            {
-              healthCheck?: Readonly<Partial<WatcherConfigT['healthCheck']>>;
-            } & WatcherConfigT
-          >
-        >;
-      }>
+  export type InputConfigT = Readonly<
+    Partial<
+      {} & MetalConfigT &
+        Readonly<{
+          cacheStores?:
+            | readonly CacheStore<TransformResult>[]
+            | (($$PARAM_0$$: MetroCache) => readonly CacheStore<TransformResult>[]);
+          resolver: Readonly<Partial<ResolverConfigT>>;
+          server: Readonly<Partial<ServerConfigT>>;
+          serializer: Readonly<Partial<SerializerConfigT>>;
+          symbolicator: Readonly<Partial<SymbolicatorConfigT>>;
+          transformer: Readonly<Partial<TransformerConfigT>>;
+          watcher: Readonly<
+            Partial<
+              {
+                healthCheck?: Readonly<Partial<WatcherConfigT['healthCheck']>>;
+              } & WatcherConfigT
+            >
+          >;
+        }>
+    >
   >;
   export type MetroConfig = InputConfigT;
   export type IntermediateConfigT = {} & MetalConfigT & {
@@ -286,7 +289,7 @@ declare module 'metro-config/src/configTypes.flow' {
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-config/src/defaults/defaults.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/defaults/defaults.js
 declare module 'metro-config/src/defaults/defaults' {
   import type { RootPerfLogger } from 'metro-config/src/configTypes.flow';
   export const assetExts: any;
@@ -300,9 +303,9 @@ declare module 'metro-config/src/defaults/defaults' {
   export const noopPerfLoggerFactory: () => RootPerfLogger;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-config/src/defaults/index.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/defaults/index.js
 declare module 'metro-config/src/defaults/index' {
-  // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-config/src/defaults/index.js
+  // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/defaults/index.js
 
   // NOTE(cedric): This file can't be typed properly due to complex CJS structures
 
@@ -313,15 +316,15 @@ declare module 'metro-config/src/defaults/index' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-config/src/defaults/validConfig.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/defaults/validConfig.js
 declare module 'metro-config/src/defaults/validConfig' {
   const $$EXPORT_DEFAULT_DECLARATION$$: () => any;
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-config/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/index.js
 declare module 'metro-config/src/index' {
-  // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-config/src/index.js
+  // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/index.js
 
   // NOTE(cedric): Metro uses this weird Flow syntax /*:: */ to override the exported types...
   export type * from 'metro-config/src/configTypes.flow';
@@ -329,7 +332,7 @@ declare module 'metro-config/src/index' {
   export { loadConfig, mergeConfig, resolveConfig } from 'metro-config/src/loadConfig';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-config/src/loadConfig.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/loadConfig.js
 declare module 'metro-config/src/loadConfig' {
   import type { ConfigT, InputConfigT, YargArguments } from 'metro-config/src/configTypes.flow';
   type CosmiConfigResult = {
