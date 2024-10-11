@@ -511,6 +511,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
       platform: expoBundleOptions.platform ?? 'web',
+      // @ts-expect-error: `runtimeBytecodeVersion` does not exist in `expoBundleOptions` or `TransformInputOptions`
       runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
     };
 
@@ -1390,16 +1391,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         entryFile: resolvedEntryFilePath,
         minify: transformOptions.minify,
         platform: transformOptions.platform,
-        // @ts-expect-error: typed incorrectly upstream
         customResolverOptions: resolverOptions.customResolverOptions,
-        customTransformOptions: transformOptions.customTransformOptions,
+        customTransformOptions: transformOptions.customTransformOptions ?? {},
       },
       isPrefetch: false,
       type: 'bundle_build_started',
     });
 
     try {
-      let delta: DeltaResult<void>;
+      let delta: DeltaResult;
       let revision: GraphRevision;
 
       // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
@@ -1415,7 +1415,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           {
             onProgress,
             shallow: graphOptions.shallow,
-            // @ts-expect-error: typed incorrectly
             lazy: graphOptions.lazy,
           }
         );
@@ -1434,7 +1433,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               {
                 onProgress,
                 shallow: graphOptions.shallow,
-                // @ts-expect-error: typed incorrectly
                 lazy: graphOptions.lazy,
               }
             ));
@@ -1489,7 +1487,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
           shouldAddToIgnoreList,
 
-          // @ts-expect-error: passed to our serializer to enable non-serial return values.
+          // passed to our serializer to enable non-serial return values.
           serializerOptions,
         }
       );

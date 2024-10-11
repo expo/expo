@@ -703,6 +703,11 @@ declare module 'metro/src/DeltaBundler/Transformer' {
   export default Transformer;
 }
 
+// NOTE(cedric): this is a manual change, to avoid having to import `../types.flow`
+declare module 'metro/src/DeltaBundler/types' {
+  export * from 'metro/src/DeltaBundler/types.flow';
+}
+
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro/src/DeltaBundler/types.flow.js
 declare module 'metro/src/DeltaBundler/types.flow' {
   import type * as _babel_types from '@babel/types';
@@ -2615,7 +2620,7 @@ declare module 'metro/src/Server' {
       shallow: false;
       sourceMapUrl: null;
       sourceUrl: null;
-      sourcePaths: SourcePathsMode;
+      sourcePaths: SourcePathsMode.Absolute;
     } & typeof Server.DEFAULT_GRAPH_OPTIONS;
     _getServerRootDir(): string;
     _getEntryPointAbsolutePath(entryFile: string): string;
@@ -2836,6 +2841,11 @@ declare module 'metro/src/shared/output/writeFile' {
   ) => Promise<any>;
   const writeFile: WriteFn;
   export default writeFile;
+}
+
+// NOTE(cedric): this is a manual change, to avoid having to import `../types.flow`
+declare module 'metro/src/shared/types' {
+  export * from 'metro/src/shared/types.flow';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro/src/shared/types.flow.js

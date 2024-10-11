@@ -49,7 +49,7 @@ function withWebPolyfills(
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
+  const getPolyfills = (ctx: { platform?: string | null }): readonly string[] => {
     const virtualEnvVarId = `\0polyfill:environment-variables`;
 
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -185,9 +185,11 @@ export function withExtendedResolver(
   const resolver = isFastResolverEnabled
     ? createFastResolver({
         preserveSymlinks: true,
-        blockList: Array.isArray(config.resolver?.blockList)
-          ? config.resolver?.blockList
-          : [config.resolver?.blockList],
+        blockList: !config.resolver?.blockList
+          ? []
+          : Array.isArray(config.resolver?.blockList)
+            ? config.resolver?.blockList
+            : [config.resolver?.blockList],
       })
     : defaultResolver;
 
