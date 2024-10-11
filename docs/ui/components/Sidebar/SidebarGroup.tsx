@@ -119,7 +119,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   }
 
   // @ts-ignore
-  if (route.children?.[0]?.section === 'Universal app') {
+  if (route.children?.[0]?.section === 'Expo tutorial') {
     return (
       <div className="mb-5">
         {!shouldSkipTitle(route, parentRoute) && title && (
@@ -231,7 +231,7 @@ function getIconElement(iconName?: string) {
       return PlanEnterpriseIcon;
     case 'Get started':
       return HandWaveIcon;
-    case 'Universal app':
+    case 'Expo tutorial':
       return HandWaveIcon;
     case 'EAS tutorial':
       return PlanEnterpriseIcon;
