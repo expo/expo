@@ -164,7 +164,7 @@ import { StyleSheet, View } from 'react-native';
 
 /* @tutinfo */import ImageViewer from "@/components/ImageViewer"; /* @end */
 
-const PlaceholderImage = require('./assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   return (
@@ -266,7 +266,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <ImageViewer placeholderImageSource={PlaceholderImage} />
+        <ImageViewer imgSource={PlaceholderImage} />
       </View>
       /* @tutinfo Use the reusable <CODE>Button</CODE> component to create two buttons and encapsulate them inside a <CODE>View</CODE> component. */
       <View style={styles.footerContainer}>
@@ -274,7 +274,6 @@ export default function Index() {
         <Button label="Use this photo" />
       </View>
       /* @end */
-      <StatusBar style="auto" />
     </View>
   );
 }
