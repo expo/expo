@@ -73,7 +73,7 @@ error: ReferenceError: SHA-1 for file /Users/vojta/_dev/expo/react-native-lab/re
 
 run `rm -rf ./react-native-lab/react-native/node_modules`
 
-- If you're seeing C++ related errors, run `find . -name ".cxx" -type d -prune -exec rm -rf '{}' +` which clears `.cxx` build artifacts.
+- If you're seeing C++ related errors, run `find . -name ".cxx" -type d -prune -exec rm -rf '{}' +` which clears `.cxx` build artifacts. Alternatively, use the "nuke" approach below.
 - If you get `A valid Firebase Project ID is required to communicate with Firebase server APIs.`, make sure you Metro is running in the `apps/expo-go` directory and run `et android-generate-dynamic-macros`.
 - You might need clean the project before building it. Run `./gradlew clean` in the `apps/expo-go/android` directory.
-- As a "nuke" option, there's `git submodule foreach --recursive git clean -xfd` which removes all untracked files.
+- the "nuke" option is `git submodule foreach --recursive git clean -xfd` which removes all untracked files so you need to run `yarn` again and building then takes a bit longer - but this approach appears to be effective.
