@@ -7,8 +7,10 @@ import { withAndroidSplashMainActivity } from './withAndroidSplashMainActivity';
 import { withAndroidSplashStrings } from './withAndroidSplashStrings';
 import { withAndroidSplashStyles } from './withAndroidSplashStyles';
 
-export const withAndroidSplashScreen: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
-  const splashConfig = getAndroidSplashConfig(config, props);
+export const withAndroidSplashScreen: ConfigPlugin<
+  AndroidSplashConfig | undefined | null | void
+> = (config, props) => {
+  const splashConfig = getAndroidSplashConfig(config, props ?? null);
 
   // Update the android status bar to match the splash screen
   // androidStatusBar applies info to the app activity style.

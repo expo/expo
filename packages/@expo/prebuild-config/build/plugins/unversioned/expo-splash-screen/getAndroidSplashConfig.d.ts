@@ -22,5 +22,5 @@ export type SplashScreenConfig = {
 export type AndroidSplashConfig = {
     logoWidth?: number;
 } & SplashScreenConfig;
-export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>, props: AndroidSplashConfig | null): SplashScreenConfig | null;
+export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>, props?: AndroidSplashConfig | null): SplashScreenConfig | null;
 export declare function getAndroidDarkSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>, props: AndroidSplashConfig | null): SplashScreenConfig | null;

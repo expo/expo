@@ -401,14 +401,10 @@ async function generateIconAsync(
   const iconSizePx = baseline * scale;
 
   const image = await Jimp.read(src);
-  const newSize = iconSizePx * 0.4;
+  const newSize = iconSizePx * 0.5;
   image.scaleToFit(newSize, newSize);
 
-  let background = await Jimp.create(
-    iconSizePx,
-    iconSizePx,
-    foreground ? 'transparent' : backgroundColor
-  );
+  let background = await Jimp.create(iconSizePx, iconSizePx, backgroundColor);
 
   const x = (iconSizePx - image.bitmap.width) / 2;
   const y = (iconSizePx - image.bitmap.height) / 2;
