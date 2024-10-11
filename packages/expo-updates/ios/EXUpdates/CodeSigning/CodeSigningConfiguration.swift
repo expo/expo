@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+// swiftlint:disable identifier_name
+
 import Foundation
 import CommonCrypto
 
@@ -57,6 +59,7 @@ public final class CodeSigningConfiguration: NSObject {
   }
 
   internal func validateSignature(
+    logger: UpdatesLogger,
     signature: String?,
     signedData: Data,
     manifestResponseCertificateChain: String?
@@ -71,6 +74,7 @@ public final class CodeSigningConfiguration: NSObject {
     }
 
     return try validateSignatureInternal(
+      logger: logger,
       signatureHeaderInfo: try SignatureHeaderInfo.parseSignatureHeader(signatureHeader: signature),
       signedData: signedData,
       manifestResponseCertificateChain: manifestResponseCertificateChain
@@ -78,6 +82,7 @@ public final class CodeSigningConfiguration: NSObject {
   }
 
   private func validateSignatureInternal(
+    logger: UpdatesLogger,
     signatureHeaderInfo: SignatureHeaderInfo,
     signedData: Data,
     manifestResponseCertificateChain: String?
@@ -98,7 +103,7 @@ public final class CodeSigningConfiguration: NSObject {
       // note that a mismatched algorithm doesn't fail early. it still tries to verify the signature with the
       // algorithm specified in the configuration
       if signatureHeaderInfo.algorithm != self.algorithmFromMetadata {
-        NSLog("Key with alg=\(signatureHeaderInfo.algorithm) from signature does not match client configuration algorithm, continuing")
+        logger.warn(message: "Key with alg=\(signatureHeaderInfo.algorithm) from signature does not match client configuration algorithm, continuing")
       }
 
       certificateChain = try CertificateChain(certificateStrings: [embeddedCertificateString])
@@ -133,13 +138,11 @@ public final class CodeSigningConfiguration: NSObject {
     var error: Unmanaged<CFError>?
     if SecKeyVerifySignature(publicKey, .rsaSignatureDigestPKCS1v15SHA256, hashBytes as CFData, signatureData as CFData, &error) {
       return true
-    } else {
-      if let error = error, (error.takeRetainedValue() as Error as NSError).code != errSecVerifyFailed {
-        NSLog("Sec key signature verification error: %@", error.takeRetainedValue().localizedDescription)
-        throw CodeSigningError.SecurityFrameworkError
-      }
-      return false
     }
+    if let error = error, (error.takeRetainedValue() as Error as NSError).code != errSecVerifyFailed {
+      throw CodeSigningError.SecurityFrameworkSecKeyVerificationError(cause: error.takeRetainedValue())
+    }
+    return false
   }
 
   internal static func separateCertificateChain(certificateChainInManifestResponse: String) -> [String] {
@@ -194,3 +197,5 @@ private extension String {
     return self[startingAt...].range(of: of)?.lowerBound
   }
 }
+
+// swiftlint:enable identifier_name

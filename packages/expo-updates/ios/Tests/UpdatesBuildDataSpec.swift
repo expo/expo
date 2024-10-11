@@ -12,6 +12,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
 
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
+    var logger: UpdatesLogger!
     var manifest: ExpoUpdatesManifest!
     var configChannelTestDictionary: [String: Any]!
     var configChannelTest: UpdatesConfig!
@@ -32,7 +33,9 @@ class UpdatesBuildDataSpec : ExpoSpec {
       db.databaseQueue.sync {
         try! db.openDatabase(inDirectory: testDatabaseDir)
       }
-      
+
+      logger = UpdatesLogger()
+
       manifest = ExpoUpdatesManifest(rawManifestJSON: [
         "runtimeVersion": "1",
         "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -83,7 +86,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
         }
         
         db.databaseQueue.async {
-          UpdatesBuildData.clearAllUpdatesAndSetStaticBuildData(database: db, config: configChannelTest, scopeKey: scopeKey)
+          UpdatesBuildData.clearAllUpdatesAndSetStaticBuildData(database: db, config: configChannelTest, logger: logger, scopeKey: scopeKey)
         }
         
         db.databaseQueue.sync {
@@ -99,8 +102,8 @@ class UpdatesBuildDataSpec : ExpoSpec {
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
         }
         
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest)
-        
+        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest, logger: logger)
+
         db.databaseQueue.sync {
           expect(try! db.staticBuildData(withScopeKey: scopeKey)).toNot(beNil())
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
@@ -113,8 +116,8 @@ class UpdatesBuildDataSpec : ExpoSpec {
           try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
         }
         
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest)
-        
+        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest, logger: logger)
+
         db.databaseQueue.sync {
           let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
           expect(
@@ -130,7 +133,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
           try! db.setStaticBuildData(UpdatesBuildData.getBuildDataFromConfig(configChannelTest), withScopeKey: configChannelTest.scopeKey)
         }
         
-        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTestTwo)
+        UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTestTwo, logger: logger)
         
         db.databaseQueue.sync {
           let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)

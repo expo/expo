@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import Foundation
+// swiftlint:disable force_unwrapping
+// swiftlint:disable identifier_name
 
 internal typealias Certificate = (SecCertificate, X509Certificate)
 
@@ -179,8 +180,7 @@ private extension SecTrust {
     var optionalTrust: SecTrust?
     let status = SecTrustCreateWithCertificates(certificates as AnyObject, policy, &optionalTrust)
     guard let trust = optionalTrust, status.isSuccess else {
-      NSLog("Could not create sec trust with certificates (OSStatus: %@)", status)
-      throw CodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError(reason: .couldNotCreateSecTrust(osStatus: status))
     }
     return trust
   }
@@ -188,22 +188,19 @@ private extension SecTrust {
   func setAnchorCertificates(_ anchorCertificates: [SecCertificate]) throws {
     let status = SecTrustSetAnchorCertificates(self, anchorCertificates as CFArray)
     guard status.isSuccess else {
-      NSLog("Could not set anchor certificates on sec trust (OSStatus: %@)", status)
-      throw CodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError(reason: .couldNotSetAnchorOnSecTrust(osStatus: status))
     }
 
     let status2 = SecTrustSetAnchorCertificatesOnly(self, true)
     guard status2.isSuccess else {
-      NSLog("Could not set anchor certificates only setting on sec trust (OSStatus: %@)", status)
-      throw CodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError(reason: .couldNotSetAnchorOnlySettingOnSecTrust(osStatus: status2))
     }
   }
 
   func disableNetwork() throws {
     let status = SecTrustSetNetworkFetchAllowed(self, false)
     guard status.isSuccess else {
-      NSLog("Could not disable network fetch on sec trust (OSStatus: %@)", status)
-      throw CodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError(reason: .couldNotDisableNetworkFetchOnSecTrust(osStatus: status))
     }
   }
 
@@ -211,10 +208,10 @@ private extension SecTrust {
     var error: CFError?
     let success = SecTrustEvaluateWithError(self, &error)
     if !success {
-      if let error = error {
-        NSLog("Sec trust evaluation error: %@", error.localizedDescription)
-      }
-      throw CodeSigningError.CertificateChainError
+      throw CodeSigningError.CertificateChainError(reason: .secTrustEvaluationError(cause: error))
     }
   }
 }
+
+// swiftlint:enable force_unwrapping
+// swiftlint:enable identifier_name

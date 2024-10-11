@@ -40,6 +40,7 @@ final class FetchUpdateProcedure: StateMachineProcedure {
 
     self.remoteAppLoader = RemoteAppLoader(
       config: self.config,
+      logger: self.logger,
       database: self.database,
       directory: self.updatesDirectory,
       launchedUpdate: self.getLaunchedUpdate(),
@@ -95,6 +96,7 @@ final class FetchUpdateProcedure: StateMachineProcedure {
     } success: { updateResponse in
       RemoteAppLoader.processSuccessLoaderResult(
         config: self.config,
+        logger: self.logger,
         database: self.database,
         selectionPolicy: self.selectionPolicy,
         launchedUpdate: self.getLaunchedUpdate(),
