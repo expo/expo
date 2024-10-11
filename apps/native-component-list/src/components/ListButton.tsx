@@ -18,11 +18,11 @@ const ListButton = ({ disabled, onPress, style, title }: Props) => {
   const buttonStyles = [styles.button, disabled && styles.disabledButton];
   const labelStyles = [styles.label, disabled && styles.disabledLabel];
   return (
-    <View style={[buttonStyles]}>
-      <TouchableHighlight style={style} disabled={disabled} onPress={onPress} underlayColor="#ddd">
+    <TouchableHighlight style={style} disabled={disabled} onPress={onPress} underlayColor="#ddd">
+      <View style={buttonStyles}>
         <Text style={labelStyles}>{title}</Text>
-      </TouchableHighlight>
-    </View>
+      </View>
+    </TouchableHighlight>
   );
 };
 
