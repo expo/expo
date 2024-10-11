@@ -60,7 +60,7 @@ const markdownStyles: Record<string, Config | null> = {
     css: typography.utility.hr,
     style: {
       margin: `2ch 0`,
-      marginTop: `3rem`,
+      marginTop: '3rem',
     },
   },
   blockquote: {
