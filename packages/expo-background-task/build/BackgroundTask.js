@@ -4,37 +4,45 @@ import * as BackgroundTaskRepositiory from './BackgroundTaskRepository';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 // Export types
 export { BackgroundTaskStatus, BackgroundTaskInfoStatus, BackgroundTaskType, } from './BackgroundTask.types';
-// Start worker if it's not running and we have tasks registered
-console.log('BackgroundTask: Checking if we have any scheduled tasks');
-BackgroundTaskRepositiory.getTaskIdentifiers().then((taskIdentifiers) => {
-    if (taskIdentifiers.length > 0) {
-        console.log(`BackgroundTask: ${taskIdentifiers.length} tasks scheduled`);
-        ExpoBackgroundTaskModule.isWorkerRunningAsync().then((isRunning) => {
-            if (!isRunning) {
-                console.log('BackgroundTask: Starting worker');
-                ExpoBackgroundTaskModule.startWorkerAsync().then(() => {
+const initialize = async () => {
+    // Tell the native module we're ready to receive events
+    if (!ExpoBackgroundTaskModule.initialiseFromJS) {
+        throw new UnavailabilityError('BackgroundTask', 'initialiseFromJS');
+    }
+    console.log('BackgroundTask: Initializing from JS');
+    ExpoBackgroundTaskModule.initialiseFromJS();
+    // Start worker if it's not running and we have tasks registered
+    console.log('BackgroundTask: Checking if we have any scheduled tasks');
+    BackgroundTaskRepositiory.getTaskIdentifiers().then((taskIdentifiers) => {
+        if (taskIdentifiers.length > 0) {
+            console.log(`BackgroundTask: ${taskIdentifiers.length} tasks scheduled`);
+            ExpoBackgroundTaskModule.isWorkerRunningAsync().then((isRunning) => {
+                if (!isRunning) {
+                    console.log('BackgroundTask: Starting worker');
+                    ExpoBackgroundTaskModule.startWorkerAsync().then(() => {
+                        console.log('BackgroundTask: worker running');
+                    });
+                }
+                else {
                     console.log('BackgroundTask: worker running');
-                });
-            }
-            else {
-                console.log('BackgroundTask: worker running');
-            }
-        });
-    }
-    else {
-        ExpoBackgroundTaskModule.isWorkerRunningAsync().then((isRunning) => {
-            if (isRunning) {
-                console.log('BackgroundTask: Stopping worker, we have no scheduled tasks.');
-                ExpoBackgroundTaskModule.stopWorkerAsync().then(() => {
-                    console.log('BackgroundTask: worker stopped');
-                });
-            }
-            else {
-                console.log('BackgroundTask: worker not running');
-            }
-        });
-    }
-});
+                }
+            });
+        }
+        else {
+            ExpoBackgroundTaskModule.isWorkerRunningAsync().then((isRunning) => {
+                if (isRunning) {
+                    console.log('BackgroundTask: Stopping worker, we have no scheduled tasks.');
+                    ExpoBackgroundTaskModule.stopWorkerAsync().then(() => {
+                        console.log('BackgroundTask: worker stopped');
+                    });
+                }
+                else {
+                    console.log('BackgroundTask: worker not running');
+                }
+            });
+        }
+    });
+};
 // @needsAudit
 /**
  * defines the list of tasks used to store background tasks
@@ -301,4 +309,6 @@ if (ExpoBackgroundTaskModule) {
 else {
     throw new UnavailabilityError('BackgroundTask', 'ExpoBackgroundTaskModule');
 }
+// Initialise the module
+initialize();
 //# sourceMappingURL=BackgroundTask.js.map

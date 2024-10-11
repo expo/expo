@@ -12,7 +12,7 @@ const BACKGROUND_TASK_IDENTIFIER = 'background-task';
 const LAST_TASK_DATE_KEY = 'background-task-date';
 
 export const RegisterBackgroundTask = () => {
-  console.log('BackgroundTask Screen: Registering background task');
+  console.log('App: Registering background task');
   // Register / create the task so that it is available also when the background task screen is not open
   BackgroundTask.createTask(BACKGROUND_TASK_IDENTIFIER, async () => {
     console.log('TASK RUNNING', BACKGROUND_TASK_IDENTIFIER, 'setting', {

@@ -10,6 +10,12 @@ try {
   // do nothing
 }
 
+const {
+  RegisterBackgroundTask,
+} = require('native-component-list/src/screens/BackgroundTaskScreen');
+
+RegisterBackgroundTask();
+
 const loadAssetsAsync =
   optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ??
   (async () => null);

@@ -9,6 +9,7 @@ declare class ExpoBackgroundTaskModule extends NativeModule<ExpoBackgroundTaskMo
     getStatusAsync(): Promise<BackgroundTaskStatus>;
     isWorkerRunningAsync(): Promise<boolean>;
     workFinished(): void;
+    initialiseFromJS(): void;
     EVENT_PERFORM_WORK: string;
 }
 declare const _default: ExpoBackgroundTaskModule;

@@ -2,11 +2,14 @@ import { ThemeProvider } from 'ThemeProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
+import { RegisterBackgroundTask } from 'src/screens/BackgroundTaskScreen';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
 SplashScreen.preventAutoHideAsync();
+
+RegisterBackgroundTask();
 
 function useSplashScreen(loadingFunction: () => void) {
   const [isLoadingCompleted, setLoadingComplete] = React.useState(false);
