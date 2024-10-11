@@ -18,7 +18,7 @@ export const withIosSplashScreen: ConfigPlugin<IOSSplashConfig | undefined | nul
   if (!splash) {
     splash = getIosSplashConfig(config);
   } else {
-    debug(`custom splash config provided`);
+    splash = { ...getIosSplashConfig(config), ...splash };
   }
 
   debug(`config:`, splash);

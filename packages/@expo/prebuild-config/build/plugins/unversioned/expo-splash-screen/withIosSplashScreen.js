@@ -67,7 +67,10 @@ const withIosSplashScreen = (config, splash) => {
   if (!splash) {
     splash = (0, _getIosSplashConfig().getIosSplashConfig)(config);
   } else {
-    debug(`custom splash config provided`);
+    splash = {
+      ...(0, _getIosSplashConfig().getIosSplashConfig)(config),
+      ...splash
+    };
   }
   debug(`config:`, splash);
   return (0, _configPlugins().withPlugins)(config, [[_withIosSplashInfoPlist().withIosSplashInfoPlist, splash], [_withIosSplashAssets().withIosSplashAssets, splash],

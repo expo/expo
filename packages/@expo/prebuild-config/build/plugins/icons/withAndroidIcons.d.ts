@@ -34,6 +34,6 @@ export declare function setIconAsync(projectRoot: string, { icon, backgroundColo
  * - A backgroundImage is provided, or
  * - A backgroundColor was specified
  */
-export declare function configureAdaptiveIconAsync(projectRoot: string, foregroundImage: string, backgroundImage: string | null, monochromeImage: string | null, isAdaptive: boolean): Promise<void>;
+export declare function configureAdaptiveIconAsync(projectRoot: string, foregroundImage: string, backgroundImage: string | null, backgroundColor: string | null, monochromeImage: string | null, isAdaptive: boolean): Promise<void>;
 export declare const createAdaptiveIconXmlString: (backgroundImage: string | null, monochromeImage: string | null) => string;
 export {};

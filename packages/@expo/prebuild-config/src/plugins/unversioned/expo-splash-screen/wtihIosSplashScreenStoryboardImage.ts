@@ -19,13 +19,15 @@ export const withIosSplashScreenImage: ConfigPlugin<IOSSplashConfig> = (config, 
 export function applySplashScreenStoryboard(obj: IBSplashScreenDocument, splash: IOSSplashConfig) {
   const resizeMode = splash?.resizeMode;
   const splashScreenImagePresent = Boolean(splash?.image);
-  const imageName = 'SplashScreen';
+  const imageName = 'SplashScreenLogo';
   // Only get the resize mode when the image is present.
   if (splashScreenImagePresent) {
     const contentMode = getImageContentMode(resizeMode || 'contain');
     return applyImageToSplashScreenXML(obj, {
       contentMode,
       imageName,
+      backgroundColor: splash.backgroundColor,
+      logoWidth: splash.logoWidth,
     });
   }
 
