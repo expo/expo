@@ -12,7 +12,7 @@ index ad2a1ae..7846906 100644
    }
  
 diff --git a/node_modules/react-native-svg/android/src/transformRn73/java/com/horcrux/svg/SvgViewManager.java b/node_modules/react-native-svg/android/src/transformRn73/java/com/horcrux/svg/SvgViewManager.java
-index 2f21dec..1bdabc7 100644
+index 2f21dec..38c4c8b 100644
 --- a/node_modules/react-native-svg/android/src/transformRn73/java/com/horcrux/svg/SvgViewManager.java
 +++ b/node_modules/react-native-svg/android/src/transformRn73/java/com/horcrux/svg/SvgViewManager.java
 @@ -12,6 +12,7 @@ import android.graphics.Rect;
@@ -109,6 +109,6 @@ index 2f21dec..1bdabc7 100644
    @Override
    public void setBorderStartStartRadius(SvgView view, double value) {
 -    super.setBorderRadius(view, 12, (float) value);
-+    super.setBorderRadius(view, 12,  new DynamicFromObject(value));
++    super.setBorderRadius(view, 12, new DynamicFromObject(value));
    }
  }
