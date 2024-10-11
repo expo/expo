@@ -1477,7 +1477,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
           shouldAddToIgnoreList,
 
-          // passed to our serializer to enable non-serial return values.
+          // @ts-expect-error: passed to our serializer to enable non-serial return values.
           serializerOptions,
         }
       );
