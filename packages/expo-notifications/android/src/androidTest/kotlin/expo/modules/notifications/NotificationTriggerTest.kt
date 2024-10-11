@@ -1,4 +1,3 @@
-@file:Suppress("DEPRECATION")
 
 package expo.modules.notifications
 
@@ -18,7 +17,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Calendar
 
-@Suppress("DEPRECATION")
 @SmallTest
 class NotificationTriggerTest {
   private var calendarNow: Calendar = Calendar.getInstance()
@@ -96,10 +94,10 @@ class NotificationTriggerTest {
     val parcel = Parcel.obtain()
     dateTrigger.writeToParcel(parcel, 0)
     parcel.setDataPosition(0)
-    val dateTriggerFromParcel = DateTrigger(parcel)
+    val dateTriggerFromParcel = parcelableCreator<DateTrigger>().createFromParcel(parcel)
     assertEquals(dateTrigger.channelId, dateTriggerFromParcel.channelId)
-    assertEquals(dateTrigger.triggerDate, dateTriggerFromParcel.triggerDate)
-    assertEquals(calendar5MinutesFromNow.time.time, dateTriggerFromParcel.triggerDate.time)
+    assertEquals(dateTrigger.timestamp, dateTriggerFromParcel.timestamp)
+    assertEquals(calendar5MinutesFromNow.time.time, dateTriggerFromParcel.timestamp)
   }
 
   @Test

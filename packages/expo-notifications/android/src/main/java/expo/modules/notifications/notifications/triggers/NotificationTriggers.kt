@@ -1,10 +1,8 @@
 package expo.modules.notifications.notifications.triggers
 
-import android.os.Parcel
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
 import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 import java.util.Calendar
@@ -46,29 +44,16 @@ class DailyTrigger(override val channelId: String?, val hour: Int, val minute: I
  */
 @Parcelize
 class DateTrigger(override val channelId: String?, val timestamp: Long) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
-  val triggerDate = Date(timestamp)
-
-  constructor(parcel: Parcel) : this(parcel.readString(), parcel.readLong())
 
   override fun nextTriggerDate(): Date? {
     val now = Date()
+    val triggerDate = Date(timestamp)
 
     if (triggerDate.before(now)) {
       return null
     }
 
     return triggerDate
-  }
-
-  companion object : Parceler<DateTrigger> {
-    override fun DateTrigger.write(parcel: Parcel, flags: Int) {
-      parcel.writeString(channelId)
-      parcel.writeLong(triggerDate.time)
-    }
-
-    override fun create(parcel: Parcel): DateTrigger {
-      return DateTrigger(parcel)
-    }
   }
 }
 
