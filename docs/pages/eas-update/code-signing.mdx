@@ -121,16 +121,16 @@ Before doing that, we need to generate an XML-escaped version of your certificat
   ]}
 />
 
-Now add the following two fields, and replace the certificate value with the XML-escaped certificate. You do not need to update the EXUpdatesCodeSigningMetadata field.
+Now add the following two fields, and replace the certificate value with the XML-escaped certificate. You do not need to update the `EXUpdatesCodeSigningMetadata` field.
 
 ```xml ios/project-name/Supporting/Expo.plist
-  <key>EXUpdatesCodeSigningCertificate</key>
+    <key>EXUpdatesCodeSigningCertificate</key>
     <string>-----BEGIN CERTIFICATE-----&#xD;
 (insert XML-escaped certificate, it should look something like this)&#xD;
 (spanning multiple lines with \r escaped but \n not escaped)&#xD;
------END CERTIFICATE-----&#xD;
-  </string>
-  <key>EXUpdatesCodeSigningMetadata</key>
++-----END CERTIFICATE-----&#xD;
+</string>
+    <key>EXUpdatesCodeSigningMetadata</key>
     <dict>
       <key>keyid</key>
       <string>main</string>
