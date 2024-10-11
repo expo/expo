@@ -3,10 +3,16 @@ title: App version management
 description: Learn about different version types and how to manage them remotely or locally.
 ---
 
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Android and iOS each expose two values to identify the version of an app: the version visible in stores (user-facing version) and the version visible only to developers (developer-facing build version). This guide explains how you can manage those versions remotely or locally.
+
+<VideoBoxLink
+  videoId="Gk7RHDWsLsQ"
+  title="Automatic App Version Management"
+  description="In this Expo feature focus video you'll learn about automatic app version management in Expo EAS Build."
+/>
 
 ## App versions
 
@@ -71,10 +77,6 @@ EAS servers can store and manage your app's developer-facing build version (`and
 The remote version is initialized with the value from the local project. For example, if you have `android.versionCode` set to `1` in app config, when you create a new build using the remote version source, it will auto increment to `2`. However, if you do not have build versions set in your app config, the remote version will initialize with `1` when the first build is created.
 
 When the `remote` version property is enabled inside **eas.json**, the build version values stored in app config are ignored and not updated when the version is incremented remotely. The remote version source values are set on the native project when running a build, which is considered the source of truth for these values. You can safely remove these values from your app config.
-
-### Video walkthrough
-
-<ContentSpotlight url="https://www.youtube.com/embed/Gk7RHDWsLsQ" />
 
 ### Syncing already defined versions to remote
 
