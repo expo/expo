@@ -1,4 +1,6 @@
-import type { SharedObject } from 'expo-modules-core';
+import { SharedObject } from 'expo';
+
+import { VideoThumbnail } from './VideoThumbnail';
 
 /**
  * A class that represents an instance of the video player.
@@ -170,6 +172,13 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * Seeks the playback to the beginning.
    */
   replay(): void;
+
+  /**
+   * Generates thumbnails from the currently played asset. The thumbnails are references to native images,
+   * thus they can be used as a source of the `Image` component from `expo-image`.
+   * @platform ios
+   */
+  generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
 }
 
 /**
