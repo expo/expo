@@ -21,6 +21,10 @@ interface Promise {
 
   fun resolve(result: String) = resolve(result as Any?)
 
+  fun resolve(result: Collection<Any?>) = resolve(result as Any?)
+
+  fun resolve(result: Map<String, Any?>) = resolve(result as Any?)
+
   fun reject(code: String, message: String?, cause: Throwable?)
 
   fun reject(exception: CodedException) {
