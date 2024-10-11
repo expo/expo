@@ -1,3 +1,3 @@
 import { ConfigPlugin } from '@expo/config-plugins';
-import { AndroidPluginConfig } from './getAndroidSplashConfig';
-export declare const withAndroidSplashScreen: ConfigPlugin<AndroidPluginConfig | undefined | null | void>;
+import { AndroidSplashConfig } from './getAndroidSplashConfig';
+export declare const withAndroidSplashScreen: ConfigPlugin<AndroidSplashConfig | undefined | null | void>;

@@ -35,9 +35,9 @@ const styleResourceGroup = {
   parent: 'Theme.SplashScreen'
 };
 const SPLASH_COLOR_NAME = 'splashscreen_background';
-const withAndroidSplashStyles = config => {
+const withAndroidSplashStyles = (config, props) => {
   config = (0, _configPlugins().withAndroidColors)(config, config => {
-    const backgroundColor = getSplashBackgroundColor(config);
+    const backgroundColor = getSplashBackgroundColor(config, props);
     if (!backgroundColor) {
       return config;
     }
@@ -45,7 +45,7 @@ const withAndroidSplashStyles = config => {
     return config;
   });
   config = (0, _configPlugins().withAndroidColorsNight)(config, config => {
-    const backgroundColor = getSplashDarkBackgroundColor(config);
+    const backgroundColor = getSplashDarkBackgroundColor(config, props);
     if (!backgroundColor) {
       return config;
     }
@@ -113,11 +113,11 @@ function removeOldSplashStyleGroup(styles) {
   });
   return styles;
 }
-function getSplashBackgroundColor(config) {
-  return (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config)?.backgroundColor ?? null;
+function getSplashBackgroundColor(config, props) {
+  return (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config, props)?.backgroundColor ?? null;
 }
-function getSplashDarkBackgroundColor(config) {
-  return (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config)?.backgroundColor ?? null;
+function getSplashDarkBackgroundColor(config, props) {
+  return (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config, props)?.backgroundColor ?? null;
 }
 function setSplashStylesForTheme(styles) {
   // Add splash screen image

@@ -115,7 +115,7 @@ const DRAWABLES_CONFIGS = {
 };
 const withAndroidSplashImages = (config, props) => {
   return (0, _configPlugins().withDangerousMod)(config, ['android', async config => {
-    await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot, props?.logoWidth ?? 100);
+    await setSplashImageDrawablesAsync(config, props, config.modRequest.projectRoot, props?.logoWidth ?? 100);
     return config;
   }]);
 };
@@ -128,10 +128,10 @@ const withAndroidSplashImages = (config, props) => {
  * @param androidMainPath Absolute path to the main directory containing code and resources in Android project. In general that would be `android/app/src/main`.
  */
 exports.withAndroidSplashImages = withAndroidSplashImages;
-async function setSplashImageDrawablesAsync(config, projectRoot, logoWidth) {
+async function setSplashImageDrawablesAsync(config, props, projectRoot, logoWidth) {
   await clearAllExistingSplashImagesAsync(projectRoot);
-  const splash = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
-  const darkSplash = (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config);
+  const splash = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config, props);
+  const darkSplash = (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config, props);
   await Promise.all([setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, logoWidth), setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, logoWidth)]);
 }
 async function clearAllExistingSplashImagesAsync(projectRoot) {

@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 import Jimp from 'jimp-compact';
 import path from 'path';
 
-import { IOSPluginConfig } from './getIosSplashConfig';
+import { IOSSplashConfig } from './getIosSplashConfig';
 import {
   ContentsJsonImage,
   ContentsJsonImageAppearance,
@@ -23,7 +23,7 @@ const DARK_PNG_FILENAME = 'dark_image';
 const TABLET_PNG_FILENAME = 'tablet_image';
 const DARK_TABLET_PNG_FILENAME = 'dark_tablet_image';
 
-export const withIosSplashAssets: ConfigPlugin<IOSPluginConfig> = (config, splash) => {
+export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
   if (!splash) {
     return config;
   }

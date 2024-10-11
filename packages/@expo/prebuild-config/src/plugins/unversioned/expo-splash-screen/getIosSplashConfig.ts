@@ -5,11 +5,8 @@ type ExpoConfigIosSplash = NonNullable<NonNullable<ExpoConfig['ios']>['splash']>
 const defaultResizeMode = 'contain';
 const defaultBackgroundColor = '#ffffff';
 
-export type IOSPluginConfig = {
-  logoWidth?: number;
-} & IOSSplashConfig;
-
 export interface IOSSplashConfig {
+  logoWidth?: number;
   image?: string | null;
   // tabletImage: string | null;
   backgroundColor: string;

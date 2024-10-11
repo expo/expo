@@ -8,7 +8,11 @@ import {
 import { Colors } from '@expo/config-plugins/build/android';
 import { ExpoConfig } from '@expo/config-types';
 
-import { getAndroidDarkSplashConfig, getAndroidSplashConfig } from './getAndroidSplashConfig';
+import {
+  AndroidSplashConfig,
+  getAndroidDarkSplashConfig,
+  getAndroidSplashConfig,
+} from './getAndroidSplashConfig';
 
 const styleResourceGroup = {
   name: 'Theme.App.SplashScreen',
@@ -17,9 +21,9 @@ const styleResourceGroup = {
 
 const SPLASH_COLOR_NAME = 'splashscreen_background';
 
-export const withAndroidSplashStyles: ConfigPlugin = (config) => {
+export const withAndroidSplashStyles: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
   config = withAndroidColors(config, (config) => {
-    const backgroundColor = getSplashBackgroundColor(config);
+    const backgroundColor = getSplashBackgroundColor(config, props);
     if (!backgroundColor) {
       return config;
     }
@@ -27,7 +31,7 @@ export const withAndroidSplashStyles: ConfigPlugin = (config) => {
     return config;
   });
   config = withAndroidColorsNight(config, (config) => {
-    const backgroundColor = getSplashDarkBackgroundColor(config);
+    const backgroundColor = getSplashDarkBackgroundColor(config, props);
     if (!backgroundColor) {
       return config;
     }
@@ -93,12 +97,18 @@ export function removeOldSplashStyleGroup(styles: AndroidConfig.Resources.Resour
   return styles;
 }
 
-export function getSplashBackgroundColor(config: ExpoConfig): string | null {
-  return getAndroidSplashConfig(config)?.backgroundColor ?? null;
+export function getSplashBackgroundColor(
+  config: ExpoConfig,
+  props: AndroidSplashConfig | null
+): string | null {
+  return getAndroidSplashConfig(config, props)?.backgroundColor ?? null;
 }
 
-export function getSplashDarkBackgroundColor(config: ExpoConfig): string | null {
-  return getAndroidDarkSplashConfig(config)?.backgroundColor ?? null;
+export function getSplashDarkBackgroundColor(
+  config: ExpoConfig,
+  props: AndroidSplashConfig | null
+): string | null {
+  return getAndroidDarkSplashConfig(config, props)?.backgroundColor ?? null;
 }
 
 export function setSplashStylesForTheme(styles: AndroidConfig.Resources.ResourceXML) {

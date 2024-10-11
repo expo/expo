@@ -6,7 +6,7 @@ import Jimp from 'jimp-compact';
 import path from 'path';
 
 import {
-  AndroidPluginConfig,
+  AndroidSplashConfig,
   getAndroidDarkSplashConfig,
   getAndroidSplashConfig,
   SplashScreenConfig,
@@ -94,12 +94,13 @@ const DRAWABLES_CONFIGS: {
   },
 };
 
-export const withAndroidSplashImages: ConfigPlugin<AndroidPluginConfig> = (config, props) => {
+export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
       await setSplashImageDrawablesAsync(
         config,
+        props,
         config.modRequest.projectRoot,
         props?.logoWidth ?? 100
       );
@@ -117,13 +118,14 @@ export const withAndroidSplashImages: ConfigPlugin<AndroidPluginConfig> = (confi
  */
 export async function setSplashImageDrawablesAsync(
   config: Pick<ExpoConfig, 'android' | 'splash'>,
+  props: AndroidSplashConfig | null,
   projectRoot: string,
   logoWidth: number
 ) {
   await clearAllExistingSplashImagesAsync(projectRoot);
 
-  const splash = getAndroidSplashConfig(config);
-  const darkSplash = getAndroidDarkSplashConfig(config);
+  const splash = getAndroidSplashConfig(config, props);
+  const darkSplash = getAndroidDarkSplashConfig(config, props);
 
   await Promise.all([
     setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, logoWidth),

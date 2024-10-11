@@ -2,11 +2,10 @@ import { ConfigPlugin, withMainActivity } from '@expo/config-plugins';
 import { addImports } from '@expo/config-plugins/build/android/codeMod';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 
-export const withAndroidSplashMainActivity: ConfigPlugin<{ v2: boolean }> = (
-  config,
-  { v2 = false }
-) => {
-  if (!v2) {
+import { AndroidSplashConfig } from './getAndroidSplashConfig';
+
+export const withAndroidSplashMainActivity: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
+  if (!props) {
     return config;
   }
   return withMainActivity(config, (config) => {
