@@ -16,6 +16,7 @@
   "expo-apple-authentication": "~6.4.1",
   "expo-application": "~5.9.1",
   "expo-asset": "~10.0.6",
+  "expo-audio": "0.1.0",
   "expo-auth-session": "~5.5.2",
   "expo-av": "~14.0.5",
   "expo-background-fetch": "~12.0.1",
