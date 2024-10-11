@@ -1,7 +1,21 @@
 package expo.modules.backgroundtask
 
-import kotlinx.coroutines.CompletableDeferred
+import android.content.Context
+import android.os.Build
+import android.util.Log
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import expo.modules.kotlin.AppContext
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.time.Duration
 import java.util.UUID
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class BackgroundTaskScheduler {
   companion object {
@@ -17,22 +31,128 @@ class BackgroundTaskScheduler {
     /**
     Tries to schedule the worker task to run
      */
-    fun tryScheduleWorker() {
+    suspend fun tryScheduleWorker(context: Context): Boolean {
+      // Ensure we have the react context
+      Log.i(TAG, "Enqueuing worker with identifier $WORKER_IDENTIFIER")
 
+      // Create the work request
+      val builder = PeriodicWorkRequestBuilder<BackgroundTaskWork>(
+        repeatIntervalTimeUnit = TimeUnit.MINUTES,
+        repeatInterval = 15
+      )
+        .setId(WORKER_IDENTIFIER)
+        .setConstraints(
+          Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        )
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // TODO: We should add more time here - like 15 minutes, 60 minutes etc.
+        // Maybe even be configurable on the API side.
+        builder.setInitialDelay(Duration.ofSeconds(5))
+      }
+
+      // Create work request
+      val workRequest = builder.build()
+
+      // Get Work manager
+      val workManager = WorkManager.getInstance(context)
+
+      // Prune existing
+      workManager.pruneWork()
+
+      // Enqueue the work
+      return suspendCancellableCoroutine { continuation ->
+        val operation = workManager.enqueue(workRequest)
+        val future = operation.result
+        future.addListener(kotlinx.coroutines.Runnable {
+          try {
+            // This blocks until the result is available
+            future.get()
+            // Operation succeeded
+            Log.i(TAG, "Worker enqueued successfully")
+            continuation.resume(true)
+          } catch (e: Exception) {
+            Log.e(TAG, "Worker failed to start with error " + e.message)
+            continuation.resumeWithException(e)
+          }
+        }, Executors.newSingleThreadExecutor())
+
+        continuation.invokeOnCancellation {
+          // Clean up if coroutine gets cancelled
+          Log.w(TAG, "Starting worker was cancelled")
+          future.cancel(true)
+        }
+      }
     }
 
     /**
     Cancels the worker task
      */
-    fun stopWorker () {
+    suspend fun stopWorker (context: Context): Boolean {
+      Log.i(TAG, "Cancelling worker with identifier $WORKER_IDENTIFIER")
 
+      // Stop our main worker
+      val workManager = WorkManager.getInstance(context)
+      return suspendCancellableCoroutine { continuation ->
+        val operation = workManager.cancelWorkById(WORKER_IDENTIFIER)
+        val future = operation.result
+        future.addListener(kotlinx.coroutines.Runnable {
+          try {
+            // This blocks until the result is available
+            future.get()
+            Log.i(TAG, "Worker cancelled successfully")
+            continuation.resume(true)   // Worker is still running
+          } catch (e: Exception) {
+            Log.i(TAG, "Stopping worker failed with error " + e.message)
+            continuation.resumeWithException(e)
+          }
+        }, Executors.newSingleThreadExecutor())
+
+        continuation.invokeOnCancellation {
+          // Clean up if coroutine gets cancelled
+          Log.w(TAG, "Stopping worker was cancelled.")
+          future.cancel(true)
+        }
+      }
     }
 
     /**
     Returns true if the worker task is pending
      */
-    fun isWorkerRunning() {
+    suspend fun isWorkerRunning(context: AppContext ): Boolean {
+      val workInfo = context.reactContext?.let { getWorkerInfo(it) }
+      return workInfo?.state == WorkInfo.State.RUNNING ||
+             workInfo?.state == WorkInfo.State.ENQUEUED
+    }
 
+    /**
+     * Returns the worker info object from the WorkManager if the worker has been
+     * registered, otherwise returns null
+     */
+    private suspend fun getWorkerInfo(context: Context): WorkInfo? {
+      // Get work manager
+      val workManager = WorkManager.getInstance(context)
+
+      return suspendCancellableCoroutine<WorkInfo?> { continuation ->
+        val workInfoFuture = workManager.getWorkInfoById(WORKER_IDENTIFIER)
+        workInfoFuture.addListener(kotlinx.coroutines.Runnable {
+          try {
+            // This blocks until the result is available
+            val workInfo = workInfoFuture.get()
+            continuation.resume(workInfo)
+          } catch (e: Exception) {
+            continuation.resumeWithException(e)
+          }
+        }, Executors.newSingleThreadExecutor())
+
+        continuation.invokeOnCancellation {
+          // Clean up if coroutine gets cancelled
+          workInfoFuture.cancel(true)
+        }
+      }
     }
   }
 }
