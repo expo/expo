@@ -247,6 +247,10 @@ export type VideoMetadata = {
      * Secondary text that will be displayed under the title.
      */
     artist?: string;
+    /**
+     * The uri of the video artwork.
+     */
+    artwork?: string;
 };
 /**
  * Specifies which type of DRM to use:
