@@ -13,7 +13,7 @@ declare module 'metro-transform-worker/src/index' {
     MetroSourceMapSegmentTuple,
   } from 'metro-source-map';
   import type { TransformResultDependency } from 'metro/src/DeltaBundler';
-  import type { AllowOptionalDependencies } from 'metro/src/DeltaBundler/types.flow.js';
+  import type { AllowOptionalDependencies } from 'metro/src/DeltaBundler/types.flow';
   import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/collectDependencies';
   export type MinifierConfig = Readonly<{
     [$$Key$$: string]: any;

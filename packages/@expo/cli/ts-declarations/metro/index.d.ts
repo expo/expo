@@ -506,7 +506,7 @@ declare module 'metro/src/DeltaBundler/Serializers/getRamBundleInfo' {
   import type { ModuleTransportLike } from 'metro/src/shared/types.flow';
   import type { Module, ReadOnlyGraph, SerializerOptions } from 'metro/src/DeltaBundler/types.flow';
   import type { SourceMapGeneratorOptions } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
-  import type { GetTransformOptions } from 'metro-config/src/configTypes.flow.js';
+  import type { GetTransformOptions } from 'metro-config/src/configTypes.flow';
   type Options = Readonly<
     {
       getTransformOptions?: null | GetTransformOptions;
@@ -1161,7 +1161,7 @@ declare module 'metro/src/index.flow' {
   import type * as _ws from 'ws';
   import type { ReadOnlyGraph } from 'metro/src/DeltaBundler';
   import type { ServerOptions } from 'metro/src/Server';
-  import type { OutputOptions, RequestOptions } from 'metro/src/shared/types.flow.js';
+  import type { OutputOptions, RequestOptions } from 'metro/src/shared/types.flow';
   import type { HandleFunction } from 'connect';
   import type { Server as HttpServer } from 'http';
   import type { Server as HttpsServer } from 'https';
@@ -1977,7 +1977,7 @@ declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
   import type {
     AllowOptionalDependencies,
     AsyncDependencyType,
-  } from 'metro/src/DeltaBundler/types.flow.js';
+  } from 'metro/src/DeltaBundler/types.flow';
   export type Dependency = Readonly<{
     data: DependencyData;
     name: string;
@@ -2027,7 +2027,7 @@ declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
     unstable_allowRequireContext: boolean;
   }>;
   export type CollectedDependencies = Readonly<{
-    ast: _babel_types.File;
+    ast: File;
     dependencyMapName: string;
     dependencies: readonly Dependency[];
   }>;

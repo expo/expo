@@ -20,7 +20,7 @@ declare module 'metro-config/src/configTypes.flow' {
     Module,
     ReadOnlyGraph,
     SerializerOptions,
-  } from 'metro/src/DeltaBundler/types.flow.js';
+  } from 'metro/src/DeltaBundler/types.flow';
   import type { Reporter } from 'metro/src/lib/reporting';
   import type MetroServer from 'metro/src/Server';
   export type ExtraTransformOptions = {
