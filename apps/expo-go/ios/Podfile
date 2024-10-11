@@ -51,7 +51,6 @@ target 'Expo Go' do
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
-  Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
   config_command = [
     'node',
     '--no-warnings',
