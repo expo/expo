@@ -13703,10 +13703,10 @@ react-native-scrollable-mixin@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha512-haw7VtcK0Vg1p7CTE8vzhltICPhfuzLUNR1m9Rh55VYEGkD3o765Y5YTu88iA32uV/hMhJUopP5Tex/SvNidoA==
 
-react-native-svg@15.7.1:
-  version "15.7.1"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-15.7.1.tgz#299bf5ff21fb355a0f4bedd4cb8f9f520725c4fe"
-  integrity sha512-Xc11L4t6/DtmUwrQqHR7S45Qy3cIWpcfGlmEatVeZ9c1N8eAK79heJmGRgCOVrXESrrLEHfP/AYGf0BGyrvV6A==
+react-native-svg@15.8.0-rc.1:
+  version "15.8.0-rc.1"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-15.8.0-rc.1.tgz#01b607711855c22bfd449ca979c2b3ee40f9fa8d"
+  integrity sha512-d3CuNNeWuMqzej8hF+GsAUl45PNYfRsn8I56dTmFdbLBWgdCXkUV+1N97i8Fi/hsKDhDW/Ki+G5gMJn0qa6PQg==
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"

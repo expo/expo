@@ -2528,7 +2528,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (4.0.0-beta.8):
+  - RNScreens (4.0.0-beta.9):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2549,9 +2549,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.0.0-beta.8)
+    - RNScreens/common (= 4.0.0-beta.9)
     - Yoga
-  - RNScreens/common (4.0.0-beta.8):
+  - RNScreens/common (4.0.0-beta.9):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2573,7 +2573,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.7.1):
+  - RNSVG (15.8.0-rc.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2593,9 +2593,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.7.1)
+    - RNSVG/common (= 15.8.0-rc.1)
     - Yoga
-  - RNSVG/common (15.7.1):
+  - RNSVG/common (15.8.0-rc.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2801,7 +2801,7 @@ DEPENDENCIES:
   - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated`)
-  - RNScreens (from `../node_modules/react-native-screens`)
+  - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - Yoga (from `../../../node_modules/react-native/ReactCommon/yoga`)
@@ -3196,7 +3196,7 @@ EXTERNAL SOURCES:
   RNReanimated:
     :path: "../../../node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../node_modules/react-native-screens"
+    :path: "../../../node_modules/react-native-screens"
   RNSVG:
     :path: "../../../node_modules/react-native-svg"
   UMAppLoader:
@@ -3364,8 +3364,8 @@ SPEC CHECKSUMS:
   RNFlashList: 6f169ad83e52579b7754cbbcec1b004c27d82c93
   RNGestureHandler: c374c750a0a9bacd95f5c740d146ab9428549d6b
   RNReanimated: f258d9ce122d59e36be8e516c40ed773ee46b687
-  RNScreens: 0ccd7d723af776c4c0e742810aaa715f979d0c10
-  RNSVG: 515aaaaef804aade0f285d7fc9514da8f7f0e11f
+  RNScreens: 627c132735982175fde8ccaeec178afcbe62fb61
+  RNSVG: 08750404f92a36162a92522cc77dee437be1d257
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c

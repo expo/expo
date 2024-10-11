@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-@import UIKit;
+#import <UIKit/UIKit.h>
 
 #import "EXAbstractLoader.h"
 #import "EXAppViewController.h"
@@ -30,11 +30,6 @@
 
 #import <RNScreens/RNSScreenWindowTraits.h>
 
-#import "Expo_Go-Swift.h"
-
-@import EXManifests;
-
-@import ExpoScreenOrientation;
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
