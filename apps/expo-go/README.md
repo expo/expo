@@ -42,9 +42,9 @@ If you need to make native code changes to your Expo project, such as adding cus
 
 You can build the React Native Android dep using `./gradlew :packages:react-native:ReactAndroid:buildCMakeDebug` in `react-native-lab/react-native` directory. This is optional because React Native will be built anyway when you build Expo Go, but can help to narrow down a potential issue surface area.
 
-2. Start Metro in `apps/expo-go` directory
+2. Run `yarn start` in `apps/expo-go` directory to start Metro 
 
-Metro needs to run prior running the build. This is because `et android-generate-dynamic-macros` / `et ios-generate-dynamic-macros` is run during the build and needs Metro to be running.
+Metro needs to run prior running the build. Verify it runs on port 80. This is because `et android-generate-dynamic-macros` / `et ios-generate-dynamic-macros` is run during the build and needs Metro on port 80 to be running.
 
 3. Build Expo Go
 
