@@ -52,7 +52,7 @@
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
     "react": "18.3.1",
-    "react-native": "0.75.2",
+    "react-native": "0.76.0-rc.4",
     "react-query": "^3.34.16",
     "url": "^0.11.0"
   },
