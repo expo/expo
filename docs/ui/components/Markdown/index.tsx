@@ -58,7 +58,10 @@ const markdownStyles: Record<string, Config | null> = {
   hr: {
     Component: 'hr',
     css: typography.utility.hr,
-    style: { margin: `2ch 0` },
+    style: {
+      margin: `2ch 0`,
+      marginTop: `3rem`,
+    },
   },
   blockquote: {
     Component: Callout,
