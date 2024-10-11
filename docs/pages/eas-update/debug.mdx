@@ -6,8 +6,17 @@ description: Learn how to use basic debugging techniques to fix an update issue.
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 This guide shows how to verify our configuration so that we can find the source of problems like an app not showing a published update. It's important to tell the current state of our app at any given time, so EAS Update was built with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect.
+
+<VideoBoxLink
+  videoId="m9PLTr3t3S4"
+  title="How to debug EAS Update"
+  description="In this Expo debugging tutorial, you'll learn how to debug a situation where your build isn't getting an update."
+/>
+
+<br />
 
 > If we are not using EAS Build, our Deployments page will be empty. Follow the guide on [debugging configuration without EAS Build](/eas-update/debug-advanced/#configuration-without-eas-build) instead.
 
@@ -154,10 +163,6 @@ To create and publish an update, we can run the following command:
 <Terminal cmd={['$ eas update']} />
 
 After publishing, the output will display the branch and the runtime version. This information can help us verify that we're creating an update with the configuration we expect.
-
-## Video walkthrough
-
-<ContentSpotlight url="https://www.youtube.com/embed/m9PLTr3t3S4" />
 
 ## General strategies
 
