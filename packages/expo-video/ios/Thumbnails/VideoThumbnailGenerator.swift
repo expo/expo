@@ -24,7 +24,7 @@ internal func generateThumbnails(asset: AVAsset, times: [CMTime]) async throws -
  Generates an array of thumbnails using the given image generator. It uses two different ways to generate the images, based on the platform version.
  */
 private func generateThumbnails(generator: AVAssetImageGenerator, times: [CMTime]) async throws -> [VideoThumbnail] {
-  if #available(iOS 16, *) {
+  if #available(iOS 16, tvOS 16, *) {
     return try await generator
       .images(for: times)
       .reduce(into: [VideoThumbnail]()) { thumbnails, result in
