@@ -3,7 +3,7 @@
 import { DependencyList, useEffect, useRef, useState } from 'react';
 
 import { Image } from './Image';
-import type { ImageRef, ImageSource, UseImageHookOptions } from './Image.types';
+import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';
 import { resolveSource } from './utils/resolveSources';
 
 /**
@@ -38,7 +38,7 @@ import { resolveSource } from './utils/resolveSources';
  */
 export function useImage(
   source: ImageSource | string,
-  options: UseImageHookOptions = {},
+  options: ImageLoadOptions = {},
   dependencies: DependencyList = []
 ): ImageRef | null {
   const resolvedSource = resolveSource(source) as ImageSource;
@@ -47,7 +47,7 @@ export function useImage(
   // Since options are not dependencies of the below effect, we store them in a ref.
   // Once the image is asynchronously loaded, the effect will use the most recent options,
   // instead of the captured ones (especially important for callbacks that may change in subsequent renders).
-  const optionsRef = useRef<UseImageHookOptions>(options);
+  const optionsRef = useRef<ImageLoadOptions>(options);
   optionsRef.current = options;
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export function useImage(
     let isEffectValid = true;
 
     function loadImage() {
-      Image.loadAsync(resolvedSource)
+      Image.loadAsync(resolvedSource, options)
         .then((image) => {
           if (isEffectValid) {
             setImage(image);

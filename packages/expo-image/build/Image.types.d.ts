@@ -467,12 +467,22 @@ export declare class ImageRef extends SharedRef<'image'> {
  */
 export declare class ImageNativeModule extends NativeModule {
     Image: typeof ImageRef;
-    loadAsync(source: ImageSource): Promise<ImageRef>;
+    loadAsync(source: ImageSource, options?: ImageLoadOptions): Promise<ImageRef>;
 }
 /**
  * An object with options for the [`useImage`](#useimage) hook.
  */
-export type UseImageHookOptions = {
+export type ImageLoadOptions = {
+    /**
+     * If provided, the image will be automatically resized to not exceed this width in pixels, preserving its aspect ratio.
+     * @platform ios
+     */
+    maxWidth?: number;
+    /**
+     * If provided, the image will be automatically resized to not exceed this height in pixels, preserving its aspect ratio.
+     * @platform ios
+     */
+    maxHeight?: number;
     /**
      * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
      */
