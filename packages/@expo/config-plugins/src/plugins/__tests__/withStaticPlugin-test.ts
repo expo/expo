@@ -44,10 +44,13 @@ describe(withStaticPlugin, () => {
     ).toThrow('Plugin is an unexpected type: boolean');
     expect(() =>
       withStaticPlugin(config, {
-        // @ts-ignore -- invalid type
-        plugin: {},
+        plugin: {
+          // @ts-ignore -- invalid type
+          key: 'value',
+          key2: 'value2',
+        },
       })
-    ).toThrow('Plugin is an unexpected type: object');
+    ).toThrow('Plugin is an unexpected type. Saw an object with keys: "key, key2"');
   });
   it(`asserts wrong number of arguments`, () => {
     const config = withInternal(
