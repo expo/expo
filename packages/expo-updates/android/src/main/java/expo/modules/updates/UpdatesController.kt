@@ -51,7 +51,8 @@ class UpdatesController {
         UpdatesUtils.getOrCreateUpdatesDirectory(context)
       } catch (e: Exception) {
         logger.error(
-          "The expo-updates system is disabled due to a storage access error: ${e.message}",
+          "The expo-updates system is disabled due to a storage access error",
+          e,
           UpdatesErrorCode.InitializationError
         )
         singletonInstance = DisabledUpdatesController(context, e)

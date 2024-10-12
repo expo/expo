@@ -48,12 +48,12 @@ internal class DevLauncherUpdatesHelperTest {
     val updatesInterface = mockk<UpdatesInterface>()
     val slot = slot<UpdatesInterface.UpdateCallback>()
     every {
-      updatesInterface.isValidUpdatesConfiguration(any(), any())
+      updatesInterface.isValidUpdatesConfiguration(any())
     } answers {
       true
     }
     every {
-      updatesInterface.fetchUpdateWithConfiguration(any(), any(), capture(slot))
+      updatesInterface.fetchUpdateWithConfiguration(any(), capture(slot))
     } answers {
       val callback = slot.captured
       val onManifestLoadedCallbackValue = callback.onManifestLoaded(mockManifest)

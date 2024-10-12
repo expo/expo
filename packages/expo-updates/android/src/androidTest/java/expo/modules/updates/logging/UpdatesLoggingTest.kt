@@ -114,7 +114,8 @@ class UpdatesLoggingTest {
     logger.info("Message 1", UpdatesErrorCode.None)
     asyncTestUtil.waitForTimeout(500)
     val secondTime = Date()
-    logger.error("Message 2", UpdatesErrorCode.NoUpdatesAvailable)
+    val cause = Exception("test")
+    logger.error("Message 2", cause, UpdatesErrorCode.NoUpdatesAvailable)
     asyncTestUtil.waitForTimeout(500)
     val thirdTime = Date()
 
@@ -132,7 +133,7 @@ class UpdatesLoggingTest {
     Assert.assertEquals(0, thirdLogs.size)
 
     asyncTestUtil.asyncMethodRunning = true
-    var err: Error? = null
+    var err: Exception? = null
     reader.purgeLogEntries(
       secondTime
     ) {

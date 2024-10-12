@@ -9,12 +9,10 @@ const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false });
 
 const PLAYER_WIDTH = '100%' as const;
 const PLAYER_HEIGHT = '100%' as const;
-const YOUTUBE_DOMAINS = ['youtube.com', 'youtu.be'] as const;
 
 type ContentSpotlightProps = {
   alt?: string;
   src?: string;
-  url?: string;
   file?: string;
   caption?: string;
   controls?: any;
@@ -26,7 +24,6 @@ type ContentSpotlightProps = {
 export function ContentSpotlight({
   alt,
   src,
-  url,
   file,
   caption,
   controls,
@@ -34,11 +31,8 @@ export function ContentSpotlight({
   className,
   containerClassName,
 }: ContentSpotlightProps) {
-  const isYouTubeDomain = (url?: string) => {
-    return url ? YOUTUBE_DOMAINS.some(domain => url.includes(domain)) : false;
-  };
-  const [forceShowControls, setForceShowControls] = useState(isYouTubeDomain(url));
-  const isVideo = !!(url || file);
+  const [forceShowControls, setForceShowControls] = useState<boolean>();
+  const isVideo = !!file;
 
   return (
     <figure
@@ -66,7 +60,7 @@ export function ContentSpotlight({
           {({ isVisible }: { isVisible: boolean }) => (
             <div className="relative aspect-video bg-palette-black rounded-lg overflow-hidden">
               <ReactPlayer
-                url={isVisible ? url || `/static/videos/${file}` : undefined}
+                url={`/static/videos/${file}`}
                 className="react-player"
                 width={PLAYER_WIDTH}
                 height={PLAYER_HEIGHT}

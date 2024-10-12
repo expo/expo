@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.AsyncTask
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -15,6 +14,8 @@ import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.Loader.LoaderCallback
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
@@ -43,11 +44,13 @@ import java.util.Date
  *   be sent to JS.
  */
 class LoaderTask(
+  private val context: Context,
   private val configuration: UpdatesConfiguration,
   private val databaseHolder: DatabaseHolder,
   private val directory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
+  private val logger: UpdatesLogger,
   private val callback: LoaderTaskCallback
 ) {
   enum class RemoteUpdateStatus {
@@ -156,10 +159,10 @@ class LoaderTask(
   private var candidateLauncher: Launcher? = null
   private var finalizedLauncher: Launcher? = null
 
-  fun start(context: Context) {
+  fun start() {
     isRunning = true
 
-    val shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(configuration, context)
+    val shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(configuration, logger, context)
     val delay = configuration.launchWaitMs
     if (delay > 0 && shouldCheckForUpdate) {
       handlerThread.start()
@@ -169,11 +172,9 @@ class LoaderTask(
     }
 
     launchFallbackUpdateFromDisk(
-      context,
       object : LaunchUpdateCallback {
         private fun launchRemoteUpdate() {
           launchRemoteUpdateInBackground(
-            context,
             object : LaunchUpdateCallback {
               override fun onFailure(e: Exception) {
                 finish(e)
@@ -205,7 +206,7 @@ class LoaderTask(
           } else {
             launchRemoteUpdate()
           }
-          Log.e(TAG, "Failed to launch embedded or launchable update", e)
+          logger.error("Failed to launch embedded or launchable update", e, UpdatesErrorCode.UpdateFailedToLoad)
         }
 
         override fun onSuccess() {
@@ -259,7 +260,7 @@ class LoaderTask(
       stopTimer()
     }
     if (e != null) {
-      Log.e(TAG, "Unexpected error encountered while loading this app", e)
+      logger.error("Unexpected error encountered while loading this app", e, UpdatesErrorCode.Unknown)
     }
   }
 
@@ -292,9 +293,9 @@ class LoaderTask(
     stopTimer()
   }
 
-  private fun launchFallbackUpdateFromDisk(context: Context, diskUpdateCallback: LaunchUpdateCallback) {
+  private fun launchFallbackUpdateFromDisk(diskUpdateCallback: LaunchUpdateCallback) {
     val database = databaseHolder.database
-    val launcher = DatabaseLauncher(configuration, directory, fileDownloader, selectionPolicy)
+    val launcher = DatabaseLauncher(context, configuration, directory, fileDownloader, selectionPolicy, logger)
     candidateLauncher = launcher
     val launcherCallback: LauncherCallback = object : LauncherCallback {
       override fun onFailure(e: Exception) {
@@ -312,17 +313,17 @@ class LoaderTask(
       // in the database, which can happen if the app binary is updated), load it into the database
       // so we can launch it
       val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)!!.updateEntity
-      val launchableUpdate = launcher.getLaunchableUpdate(database, context)
+      val launchableUpdate = launcher.getLaunchableUpdate(database)
       val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
       if (selectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
-        EmbeddedLoader(context, configuration, database, directory).start(object : LoaderCallback {
+        EmbeddedLoader(context, configuration, logger, database, directory).start(object : LoaderCallback {
           override fun onFailure(e: Exception) {
-            Log.e(TAG, "Unexpected error copying embedded update", e)
-            launcher.launch(database, context, launcherCallback)
+            logger.error("Unexpected error copying embedded update", e, UpdatesErrorCode.Unknown)
+            launcher.launch(database, launcherCallback)
           }
 
           override fun onSuccess(loaderResult: Loader.LoaderResult) {
-            launcher.launch(database, context, launcherCallback)
+            launcher.launch(database, launcherCallback)
           }
 
           override fun onAssetLoaded(
@@ -339,23 +340,23 @@ class LoaderTask(
           }
         })
       } else {
-        launcher.launch(database, context, launcherCallback)
+        launcher.launch(database, launcherCallback)
       }
     } else {
-      launcher.launch(database, context, launcherCallback)
+      launcher.launch(database, launcherCallback)
     }
   }
 
-  private fun launchRemoteUpdateInBackground(context: Context, remoteUpdateCallback: LaunchUpdateCallback) {
+  private fun launchRemoteUpdateInBackground(remoteUpdateCallback: LaunchUpdateCallback) {
     AsyncTask.execute {
       val database = databaseHolder.database
       callback.onRemoteCheckForUpdateStarted()
-      RemoteLoader(context, configuration, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
+      RemoteLoader(context, configuration, logger, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
         .start(object : LoaderCallback {
           override fun onFailure(e: Exception) {
             databaseHolder.releaseDatabase()
             callback.onRemoteUpdateFinished(RemoteUpdateStatus.ERROR, null, e)
-            Log.e(TAG, "Failed to download remote update", e)
+            logger.error("Failed to download remote update", e, UpdatesErrorCode.UpdateFailedToLoad)
             remoteUpdateCallback.onFailure(e)
           }
 
@@ -418,6 +419,7 @@ class LoaderTask(
             RemoteLoader.processSuccessLoaderResult(
               context,
               configuration,
+              logger,
               database,
               selectionPolicy,
               directory,
@@ -431,15 +433,14 @@ class LoaderTask(
           private fun launchUpdate(availableUpdate: UpdateEntity?) {
             // a new update (or null update because onUpdateResponseLoaded returned false or it was just a directive) has loaded successfully;
             // we need to launch it with a new Launcher and replace the old Launcher so that the callback fires with the new one
-            val newLauncher = DatabaseLauncher(configuration, directory, fileDownloader, selectionPolicy)
+            val newLauncher = DatabaseLauncher(context, configuration, directory, fileDownloader, selectionPolicy, logger)
             newLauncher.launch(
               database,
-              context,
               object : LauncherCallback {
                 override fun onFailure(e: Exception) {
                   databaseHolder.releaseDatabase()
                   remoteUpdateCallback.onFailure(e)
-                  Log.e(TAG, "Loaded new update but it failed to launch", e)
+                  logger.error("Loaded new update but it failed to launch", e, UpdatesErrorCode.UpdateFailedToLoad)
                 }
 
                 override fun onSuccess() {

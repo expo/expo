@@ -20,11 +20,11 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk52-0.75.2",
+          "key": "sdk52-0.76.0",
           "customPaths": ["../expo-go/ios/Pods"]
         },
-        "image": "macos-ventura-13.6-xcode-15.0",
-        "cocoapods": "1.14.2",
+        "image": "macos-sonoma-14.6-xcode-16.0",
+        "cocoapods": "1.15.2",
         "resourceClass": "medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",

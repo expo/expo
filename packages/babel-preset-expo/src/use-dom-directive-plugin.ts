@@ -1,14 +1,18 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import { ConfigAPI, template } from '@babel/core';
+import { ConfigAPI, template, types } from '@babel/core';
 import crypto from 'crypto';
 import { basename } from 'path';
 import url from 'url';
 
 import { getIsProd } from './common';
 
-export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
+export function expoUseDomDirectivePlugin(
+  api: ConfigAPI & { types: typeof types }
+): babel.PluginObj {
+  const { types: t } = api;
+
   // TODO: Is exporting
   const isProduction = api.caller(getIsProd);
   const platform = api.caller((caller) => (caller as any)?.platform);
@@ -46,6 +50,17 @@ export function expoUseDomDirectivePlugin(api: ConfigAPI): babel.PluginObj {
         // Collect all of the exports
         path.traverse({
           ExportNamedDeclaration(path) {
+            const declaration = path.node.declaration;
+            if (
+              t.isTypeAlias(declaration) ||
+              t.isInterfaceDeclaration(declaration) ||
+              t.isTSTypeAliasDeclaration(declaration) ||
+              t.isTSInterfaceDeclaration(declaration)
+            ) {
+              // Allows type exports
+              return;
+            }
+
             throw path.buildCodeFrameError(
               'Modules with the "use dom" directive only support a single default export.'
             );

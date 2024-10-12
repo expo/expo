@@ -18,6 +18,7 @@ import expo.modules.manifests.core.Manifest
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_ALGORITHM_KEY
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
 import expo.modules.updates.codesigning.CodeSigningAlgorithm
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -158,8 +159,9 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       callback.onError(e)
       return
     }
-    val fileDownloader = FileDownloader(context, configuration)
-    startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context)
+    val logger = UpdatesLogger(context)
+    val fileDownloader = FileDownloader(context, configuration, logger)
+    startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
   }
 
   private fun startLoaderTask(
@@ -167,15 +169,18 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     fileDownloader: FileDownloader,
     directory: File,
     selectionPolicy: SelectionPolicy,
-    context: Context
+    context: Context,
+    logger: UpdatesLogger
   ) {
     updatesConfiguration = configuration
     LoaderTask(
+      context,
       configuration,
       databaseHolder,
       directory,
       fileDownloader,
       selectionPolicy,
+      logger,
       object : LoaderTaskCallback {
         private var didAbort = false
         override fun onFailure(e: Exception) {
@@ -288,7 +293,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           }
         }
       }
-    ).start(context)
+    ).start()
   }
 
   private fun setShouldShowAppLoaderStatus(manifest: Manifest) {

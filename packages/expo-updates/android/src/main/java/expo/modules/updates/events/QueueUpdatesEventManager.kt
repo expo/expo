@@ -31,7 +31,7 @@ class QueueUpdatesEventManager(private val logger: UpdatesLogger) : IUpdatesEven
 
     if (!shouldEmitJsEvents) {
       eventsToSendToJS.add(Pair(eventName, params))
-      logger.error(
+      logger.warn(
         "Could not emit $eventName ${eventType.type} event; no subscribers registered.",
         UpdatesErrorCode.JSRuntimeError
       )
@@ -41,7 +41,7 @@ class QueueUpdatesEventManager(private val logger: UpdatesLogger) : IUpdatesEven
     val eventEmitter = eventEmitter
     if (eventEmitter == null) {
       eventsToSendToJS.add(Pair(eventName, params))
-      logger.error(
+      logger.warn(
         "Could not emit $eventName ${eventType.type} event; no event emitter was found.",
         UpdatesErrorCode.JSRuntimeError
       )
@@ -54,7 +54,8 @@ class QueueUpdatesEventManager(private val logger: UpdatesLogger) : IUpdatesEven
     } catch (e: Exception) {
       eventsToSendToJS.add(Pair(eventName, params))
       logger.error(
-        "Could not emit $eventName $eventType event; ${e.message}",
+        "Could not emit $eventName $eventType event",
+        e,
         UpdatesErrorCode.JSRuntimeError
       )
     }
@@ -64,7 +65,8 @@ class QueueUpdatesEventManager(private val logger: UpdatesLogger) : IUpdatesEven
   private fun sendQueuedEventsToEventEmitter() {
     val eventEmitter = eventEmitter
     if (eventEmitter == null) {
-      logger.error("Could not emit events; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
+      val cause = Exception("Null emitter")
+      logger.error("Could not emit events; no event emitter was found.", cause, UpdatesErrorCode.JSRuntimeError)
       return
     }
 

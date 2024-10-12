@@ -13,6 +13,7 @@ const path_1 = require("path");
 const url_1 = __importDefault(require("url"));
 const common_1 = require("./common");
 function expoUseDomDirectivePlugin(api) {
+    const { types: t } = api;
     // TODO: Is exporting
     const isProduction = api.caller(common_1.getIsProd);
     const platform = api.caller((caller) => caller?.platform);
@@ -41,6 +42,14 @@ function expoUseDomDirectivePlugin(api) {
                 // Collect all of the exports
                 path.traverse({
                     ExportNamedDeclaration(path) {
+                        const declaration = path.node.declaration;
+                        if (t.isTypeAlias(declaration) ||
+                            t.isInterfaceDeclaration(declaration) ||
+                            t.isTSTypeAliasDeclaration(declaration) ||
+                            t.isTSInterfaceDeclaration(declaration)) {
+                            // Allows type exports
+                            return;
+                        }
                         throw path.buildCodeFrameError('Modules with the "use dom" directive only support a single default export.');
                     },
                     ExportDefaultDeclaration() {

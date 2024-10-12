@@ -3,7 +3,6 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import android.net.Uri
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -22,6 +21,8 @@ import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -54,6 +55,8 @@ class UpdatesDevLauncherController(
   override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
 
   private var launcher: Launcher? = null
+
+  private val logger = UpdatesLogger(context)
 
   private var previousUpdatesConfiguration: UpdatesConfiguration? = null
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
@@ -108,13 +111,11 @@ class UpdatesDevLauncherController(
     launcher = null
   }
 
-  override fun getRuntimeVersion(context: Context): String? {
-    return updatesConfiguration?.getRuntimeVersion()
-  }
+  override val runtimeVersion: String?
+    get() = updatesConfiguration?.getRuntimeVersion()
 
-  override fun getUpdateUrl(context: Context): Uri? {
-    return updatesConfiguration?.updateUrl
-  }
+  override val updateUrl: Uri?
+    get() = updatesConfiguration?.updateUrl
 
   /**
    * Fetch an update using a dynamically generated configuration object (including a potentially
@@ -122,12 +123,11 @@ class UpdatesDevLauncherController(
    */
   override fun fetchUpdateWithConfiguration(
     configuration: HashMap<String, Any>,
-    context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {
     val newUpdatesConfiguration: UpdatesConfiguration
     try {
-      newUpdatesConfiguration = createUpdatesConfiguration(configuration, context)
+      newUpdatesConfiguration = createUpdatesConfiguration(configuration)
     } catch (e: Exception) {
       callback.onFailure(e)
       return
@@ -140,10 +140,11 @@ class UpdatesDevLauncherController(
 
     setDevelopmentSelectionPolicy()
 
-    val fileDownloader = FileDownloader(context, updatesConfiguration!!)
+    val fileDownloader = FileDownloader(context, updatesConfiguration!!, logger)
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,
+      logger,
       databaseHolder.database,
       fileDownloader,
       updatesDirectory,
@@ -164,7 +165,7 @@ class UpdatesDevLauncherController(
           callback.onSuccess(null)
           return
         }
-        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, context, callback)
+        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, callback)
       }
 
       override fun onAssetLoaded(
@@ -193,18 +194,18 @@ class UpdatesDevLauncherController(
     })
   }
 
-  override fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): Boolean {
+  override fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>): Boolean {
     return try {
-      createUpdatesConfiguration(configuration, context)
+      createUpdatesConfiguration(configuration)
       true
     } catch (e: Exception) {
-      Log.e(TAG, "Invalid updates configuration: ${e.localizedMessage}")
+      logger.error("Invalid updates configuration", e, UpdatesErrorCode.InitializationError)
       false
     }
   }
 
   @Throws(Exception::class)
-  private fun createUpdatesConfiguration(configuration: HashMap<String, Any>, context: Context): UpdatesConfiguration {
+  private fun createUpdatesConfiguration(configuration: HashMap<String, Any>): UpdatesConfiguration {
     if (updatesDirectory == null) {
       throw updatesDirectoryException!!
     }
@@ -240,7 +241,6 @@ class UpdatesDevLauncherController(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
     fileDownloader: FileDownloader,
-    context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {
     // ensure that we launch the update we want, even if it isn't the latest one
@@ -258,14 +258,15 @@ class UpdatesDevLauncherController(
     )
 
     val launcher = DatabaseLauncher(
+      context,
       configuration,
       updatesDirectory!!,
       fileDownloader,
-      selectionPolicy
+      selectionPolicy,
+      logger
     )
     launcher.launch(
       databaseHolder.database,
-      context,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           databaseHolder.releaseDatabase()

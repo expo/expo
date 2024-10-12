@@ -492,7 +492,7 @@ const general = [
 const learn = [
   makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
-    'Universal app',
+    'Expo tutorial',
     [
       makePage('tutorial/introduction.mdx'),
       makePage('tutorial/create-your-first-app.mdx'),

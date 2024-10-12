@@ -148,7 +148,7 @@ interface IUpdatesController {
     class NoUpdateAvailable(val reason: LoaderTask.RemoteCheckResultNotAvailableReason) : CheckForUpdateResult(Status.NO_UPDATE_AVAILABLE)
     class UpdateAvailable(val update: Update) : CheckForUpdateResult(Status.UPDATE_AVAILABLE)
     class RollBackToEmbedded(val commitTime: Date) : CheckForUpdateResult(Status.ROLL_BACK_TO_EMBEDDED)
-    class ErrorResult(val error: Exception, val message: String) : CheckForUpdateResult(Status.ERROR)
+    class ErrorResult(val error: Exception) : CheckForUpdateResult(Status.ERROR)
   }
   fun checkForUpdate(callback: ModuleCallback<CheckForUpdateResult>)
 
