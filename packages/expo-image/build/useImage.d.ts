@@ -16,7 +16,8 @@ import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';
  * import { Text } from 'react-native';
  *
  * export default function MyImage() {
- *   const image = useImage('https://picsum.photos/800/600', {
+ *   const image = useImage('https://picsum.photos/1000/800', {
+ *     maxWidth: 800,
  *     onError(error, retry) {
  *       console.error('Loading failed:', error.message);
  *     }
