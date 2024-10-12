@@ -59,8 +59,9 @@ function resolvePluginForModule(projectRoot, pluginReference) {
     // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
     const pluginScriptFile = _resolveFrom().default.silent(projectRoot, pluginReference);
     if (pluginScriptFile) {
+      const lastPathComponent = pluginScriptFile.substring(pluginScriptFile.lastIndexOf(path().sep) + 1);
       return {
-        isPluginFile: false,
+        isPluginFile: lastPathComponent === pluginFileName,
         filePath: pluginScriptFile
       };
     }
