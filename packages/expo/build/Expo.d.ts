@@ -3,5 +3,5 @@ export { disableErrorHandling } from './errors/ExpoErrorManager';
 export { default as registerRootComponent } from './launch/registerRootComponent';
 export { isRunningInExpoGo, getExpoGoProjectConfig } from './environment/ExpoGo';
 export { EventEmitter, SharedObject, SharedRef, NativeModule, requireNativeModule, requireOptionalNativeModule, reloadAppAsync, } from 'expo-modules-core';
-export { useEvent } from './hooks/useEvent';
+export { useEvent, useEventListener } from './hooks/useEvent';
 //# sourceMappingURL=Expo.d.ts.map

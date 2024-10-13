@@ -32,5 +32,27 @@ type InferEventParameter<TEventListener extends AnyEventListener, TInitialValue>
  * ```
  */
 export declare function useEvent<TEventsMap extends Record<string, AnyEventListener>, TEventName extends InferEventName<TEventsMap>, TEventListener extends InferEventListener<TEventsMap, TEventName>, TInitialValue extends Parameters<TEventListener>[0] | null>(eventEmitter: EventEmitter<TEventsMap>, eventName: TEventName, initialValue?: TInitialValue | null): InferEventParameter<TEventListener, TInitialValue>;
+/**
+ * React hook that listens to events emitted by the given object and calls the listener function whenever a new event is dispatched.
+ * @param eventEmitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
+ * @param eventName Name of the event to listen to.
+ * @param listener A function to call when the event is dispatched.
+ * @example
+ * ```tsx
+ * import { useEventListener } from 'expo';
+ * import { useVideoPlayer, VideoView } from 'expo-video';
+ *
+ * export function VideoPlayerView() {
+ *   const player = useVideoPlayer(videoSource);
+ *
+ *   useEventListener(player, 'playingChange', isPlaying => {
+ *     console.log('Player is playing:', isPlaying);
+ *   });
+ *
+ *   return <VideoView player={player} />;
+ * }
+ * ```
+ */
+export declare function useEventListener<TEventsMap extends Record<string, AnyEventListener>, TEventName extends InferEventName<TEventsMap>, TEventListener extends InferEventListener<TEventsMap, TEventName>>(eventEmitter: EventEmitter<TEventsMap>, eventName: TEventName, listener: TEventListener): void;
 export {};
 //# sourceMappingURL=useEvent.d.ts.map

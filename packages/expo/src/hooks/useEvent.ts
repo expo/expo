@@ -1,5 +1,5 @@
 import type { EventEmitter } from 'expo-modules-core/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type AnyEventListener = (...args: any[]) => any;
 
@@ -58,19 +58,54 @@ export function useEvent<
   eventName: TEventName,
   initialValue: TInitialValue | null = null
 ): InferEventParameter<TEventListener, TInitialValue> {
-  const [eventParams, setEventParams] = useState<
-    Parameters<TEventListener>[0] | TInitialValue | null
-  >(initialValue);
+  const [event, setEvent] = useState<Parameters<TEventListener>[0] | TInitialValue | null>(
+    initialValue
+  );
+  const listener = (event: Parameters<TEventListener>[0]) => setEvent(event);
+
+  useEventListener(eventEmitter, eventName, listener as InferEventListener<TEventsMap, TEventName>);
+
+  return event as InferEventParameter<TEventListener, TInitialValue>;
+}
+
+/**
+ * React hook that listens to events emitted by the given object and calls the listener function whenever a new event is dispatched.
+ * @param eventEmitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
+ * @param eventName Name of the event to listen to.
+ * @param listener A function to call when the event is dispatched.
+ * @example
+ * ```tsx
+ * import { useEventListener } from 'expo';
+ * import { useVideoPlayer, VideoView } from 'expo-video';
+ *
+ * export function VideoPlayerView() {
+ *   const player = useVideoPlayer(videoSource);
+ *
+ *   useEventListener(player, 'playingChange', isPlaying => {
+ *     console.log('Player is playing:', isPlaying);
+ *   });
+ *
+ *   return <VideoView player={player} />;
+ * }
+ * ```
+ */
+export function useEventListener<
+  TEventsMap extends Record<string, AnyEventListener>,
+  TEventName extends InferEventName<TEventsMap>,
+  TEventListener extends InferEventListener<TEventsMap, TEventName>,
+>(eventEmitter: EventEmitter<TEventsMap>, eventName: TEventName, listener: TEventListener): void {
+  // Always use the most recent version of the listener inside the effect,
+  // without memoization so the listeners don't have to be swapped with every render.
+  const listenerRef = useRef<TEventListener>(listener);
+  listenerRef.current = listener;
 
   useEffect(() => {
-    const listener = (event: Parameters<TEventListener>[0]) => setEventParams(event);
+    const callback = (...args) => listenerRef.current(...args);
     const subscription = eventEmitter.addListener<TEventName>(
       eventName,
-      listener as TEventsMap[TEventName]
+      callback as TEventsMap[TEventName]
     );
 
     return () => subscription.remove();
-  }, [eventEmitter, eventName]);
-
-  return eventParams as InferEventParameter<TEventListener, TInitialValue>;
+  }, [eventEmitter, eventName, listenerRef]);
 }
