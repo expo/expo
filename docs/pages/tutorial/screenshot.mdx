@@ -84,7 +84,7 @@ export default function Index() {
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
         /* @tutinfo Add a View component to wrap the ImageViewer and EmojiSticker inside it. */<View ref={imageRef} collapsable={false}>/* @end */
-          <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
+          <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
           {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
         /* @tutinfo */</View>/* @end */
       </View>
@@ -125,7 +125,7 @@ import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
 import EmojiSticker from '@/components/EmojiSticker';
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
