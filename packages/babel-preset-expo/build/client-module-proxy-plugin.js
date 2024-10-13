@@ -32,6 +32,13 @@ function reactClientReferencesPlugin() {
                     // Do nothing for code that isn't marked as a client component.
                     return;
                 }
+                // HACK: Mock out the polyfill that doesn't run through the normal bundler pipeline.
+                if (filePath.endsWith('@react-native/js-polyfills/console.js')) {
+                    // Clear the body
+                    path.node.body = [];
+                    path.node.directives = [];
+                    return;
+                }
                 const outputKey = url_1.default.pathToFileURL(filePath).href;
                 // We need to add all of the exports to support `export * from './module'` which iterates the keys of the module.
                 const proxyModule = [
