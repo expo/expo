@@ -240,6 +240,9 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         });
         this.playing = true;
     }
+    generateThumbnailsAsync(times) {
+        throw new Error('Generating video thumbnails is not supported on Web yet');
+    }
     _synchronizeWithFirstVideo(video) {
         const firstVideo = [...this._mountedVideos][0];
         if (!firstVideo)

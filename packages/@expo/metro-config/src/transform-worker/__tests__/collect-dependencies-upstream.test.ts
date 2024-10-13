@@ -813,7 +813,7 @@ it('respects magic comments when collecting', () => {
   ]);
   expect(codeFromAst(ast)).toEqual(
     comparableCode(`
-      import( /* @metro-ignore */"some/async/module").then(foo => {});
+      import(/* @metro-ignore */"some/async/module").then(foo => {});
     `)
   );
 });

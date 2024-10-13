@@ -1,0 +1,65 @@
+diff --git a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/AuBECSDebitFormView.kt b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/AuBECSDebitFormView.kt
+index c951778..a8881b2 100644
+--- a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/AuBECSDebitFormView.kt
++++ b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/AuBECSDebitFormView.kt
+@@ -19,7 +19,7 @@ import com.stripe.android.view.StripeEditText
+ 
+ class AuBECSDebitFormView(private val context: ThemedReactContext) : FrameLayout(context) {
+   private lateinit var becsDebitWidget: BecsDebitWidget
+-  private var mEventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher
++  private var mEventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.getEventDispatcher()
+   private var formStyle: ReadableMap? = null
+ 
+   fun setCompanyName(name: String?) {
+diff --git a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/CardFieldView.kt b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/CardFieldView.kt
+index f15d123..dfec5ae 100644
+--- a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/CardFieldView.kt
++++ b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/CardFieldView.kt
+@@ -37,7 +37,7 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
+   val cardDetails: MutableMap<String, Any?> = mutableMapOf("brand" to "", "last4" to "", "expiryMonth" to null, "expiryYear" to null, "postalCode" to "", "validNumber" to "Unknown", "validCVC" to "Unknown", "validExpiryDate" to "Unknown")
+   var cardParams: PaymentMethodCreateParams.Card? = null
+   var cardAddress: Address? = null
+-  private var mEventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher
++  private var mEventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.getEventDispatcher()
+   private var dangerouslyGetFullCardDetails: Boolean = false
+   private var currentFocusedField: String? = null
+   private var isCardValid = false
+diff --git a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/CardFormView.kt b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/CardFormView.kt
+index e7a2394..62fbafb 100644
+--- a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/CardFormView.kt
++++ b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/CardFormView.kt
+@@ -30,7 +30,7 @@ import com.stripe.android.view.CardInputListener
+ 
+ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
+   private var cardForm: CardFormView = CardFormView(context, null, com.stripe.android.R.style.StripeCardFormView_Borderless)
+-  private var mEventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher
++  private var mEventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.getEventDispatcher()
+   private var dangerouslyGetFullCardDetails: Boolean = false
+   private var currentFocusedField: String? = null
+   var cardParams: PaymentMethodCreateParams.Card? = null
+diff --git a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/addresssheet/AddressSheetView.kt b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/addresssheet/AddressSheetView.kt
+index ac5b03d..d4d9cae 100644
+--- a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/addresssheet/AddressSheetView.kt
++++ b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/addresssheet/AddressSheetView.kt
+@@ -21,7 +21,7 @@ import com.stripe.android.paymentsheet.addresselement.AddressLauncher
+ import com.stripe.android.paymentsheet.addresselement.AddressLauncherResult
+ 
+ class AddressSheetView(private val context: ThemedReactContext) : FrameLayout(context) {
+-  private var eventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher
++  private var eventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.getEventDispatcher()
+   private var isVisible = false
+   private var appearanceParams: ReadableMap? = null
+   private var defaultAddress: AddressDetails? = null
+diff --git a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/pushprovisioning/AddToWalletButtonView.kt b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/pushprovisioning/AddToWalletButtonView.kt
+index 653c29f..75790f2 100644
+--- a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/pushprovisioning/AddToWalletButtonView.kt
++++ b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/pushprovisioning/AddToWalletButtonView.kt
+@@ -27,7 +27,7 @@ class AddToWalletButtonView(private val context: ThemedReactContext, private val
+   private var sourceMap: ReadableMap? = null
+   private var token: ReadableMap? = null
+ 
+-  private var eventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher
++  private var eventDispatcher: EventDispatcher? = context.getNativeModule(UIManagerModule::class.java)?.getEventDispatcher()
+   private var loadedSource: Any? = null
+   private var heightOverride: Int = 0
+   private var widthOverride: Int = 0

@@ -2,8 +2,6 @@ import { cleanup } from '@testing-library/react-native';
 
 afterEach(cleanup);
 
-jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
-
 jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
   const View = require('react-native/Libraries/Components/View/View');
   const React = require('react');

@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] `createNotificationChannel` could return incorrect channel information ([#32000](https://github.com/expo/expo/pull/32000) by [@vonovak](https://github.com/vonovak))
+- [android] fix notifications with `ChannelAwareTrigger` not being presented ([#31999](https://github.com/expo/expo/pull/31999) by [@vonovak](https://github.com/vonovak))
 - export `PermissionStatus` as value, not as type ([#31968](https://github.com/expo/expo/pull/31968) by [@vonovak](https://github.com/vonovak))
 - throw improved error on invalid subscription in removeNotificationSubscription ([#31842](https://github.com/expo/expo/pull/31842) by [@vonovak](https://github.com/vonovak))
 - [android] fix notifications actions not being presented ([#31795](https://github.com/expo/expo/pull/31795) by [@vonovak](https://github.com/vonovak))
