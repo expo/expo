@@ -26,7 +26,7 @@ function _withIosSplashScreenStoryboard() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = require('debug')('expo:prebuild-config:expo-splash-screen:ios:xcodeproj');
 const withIosSplashXcodeProject = config => {
   return (0, _configPlugins().withXcodeProject)(config, async config => {

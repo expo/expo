@@ -65,7 +65,7 @@ function _iosPlugins() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const withGoogle = config => {
   return (0, _iosPlugins().withInfoPlist)(config, config => {
     config.modResults = setGoogleConfig(config, config.modResults, config.modRequest);

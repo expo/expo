@@ -1,0 +1,307 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.cpp b/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.cpp
+index 9a0068a..f245075 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.cpp
+@@ -73,7 +73,7 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
+ #if HERMES_ENABLE_DEBUGGER
+   auto adapter =
+       std::make_unique<HermesExecutorRuntimeAdapter>(*runtime_, jsQueue);
+-  debugToken_ = chrome::enableDebugging(std::move(adapter), name);
++//  debugToken_ = chrome::enableDebugging(std::move(adapter), name);
+ #else
+   // This is required by iOS, because there is an assertion in the destructor
+   // that the thread was indeed `quit` before
+@@ -113,7 +113,7 @@ ReanimatedHermesRuntime::ReanimatedHermesRuntime(
+ ReanimatedHermesRuntime::~ReanimatedHermesRuntime() {
+ #if HERMES_ENABLE_DEBUGGER
+   // We have to disable debugging before the runtime is destroyed.
+-  chrome::disableDebugging(debugToken_);
++//  chrome::disableDebugging(debugToken_);
+ #endif // HERMES_ENABLE_DEBUGGER
+ }
+ 
+diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.h b/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.h
+index 4a7df1b..26a462b 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.h
++++ b/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.h
+@@ -138,7 +138,7 @@ class ReanimatedHermesRuntime
+   std::unique_ptr<facebook::hermes::HermesRuntime> runtime_;
+   ReanimatedReentrancyCheck reentrancyCheck_;
+ #if HERMES_ENABLE_DEBUGGER
+-  chrome::DebugSessionToken debugToken_;
++//  chrome::DebugSessionToken debugToken_;
+ #endif // HERMES_ENABLE_DEBUGGER
+ };
+ 
+diff --git a/node_modules/react-native-reanimated/android/build.gradle b/node_modules/react-native-reanimated/android/build.gradle
+index 4558653..797a228 100644
+--- a/node_modules/react-native-reanimated/android/build.gradle
++++ b/node_modules/react-native-reanimated/android/build.gradle
+@@ -319,6 +319,7 @@ android {
+                 "**/libhermes.so",
+                 "**/libhermes-executor-debug.so",
+                 "**/libhermes_executor.so",
++                "**/libreactnative.so",
+                 "**/libreactnativejni.so",
+                 "**/libturbomodulejsijni.so",
+                 "**/libreact_nativemodule_core.so",
+diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java
+index 8850d03..a874967 100644
+--- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java
++++ b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/NodesManager.java
+@@ -2,6 +2,7 @@ package com.swmansion.reanimated;
+ 
+ import static java.lang.Float.NaN;
+ 
++import android.annotation.SuppressLint;
+ import android.graphics.drawable.Drawable;
+ import android.os.SystemClock;
+ import android.view.View;
+@@ -29,6 +30,7 @@ import com.facebook.react.uimanager.UIManagerHelper;
+ import com.facebook.react.uimanager.UIManagerModule;
+ import com.facebook.react.uimanager.UIManagerReanimatedHelper;
+ import com.facebook.react.uimanager.common.UIManagerType;
++import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
+ import com.facebook.react.uimanager.events.Event;
+ import com.facebook.react.uimanager.events.EventDispatcherListener;
+ import com.facebook.react.uimanager.events.RCTEventEmitter;
+@@ -429,6 +431,7 @@ public class NodesManager implements EventDispatcherListener {
+     compatibility.synchronouslyUpdateUIProps(viewTag, uiProps);
+   }
+ 
++  @SuppressLint("UnsafeOptInUsageError")
+   public String obtainProp(int viewTag, String propName) {
+     View view;
+     try {
+@@ -453,10 +456,10 @@ public class NodesManager implements EventDispatcherListener {
+         return Float.toString(PixelUtil.toDIPFromPixel(view.getLeft()));
+       case "backgroundColor":
+         Drawable background = view.getBackground();
+-        if (!(background instanceof ReactViewBackgroundDrawable)) {
++        if (!(background instanceof CSSBackgroundDrawable)) {
+           return "unable to resolve background color";
+         }
+-        int actualColor = ((ReactViewBackgroundDrawable) background).getColor();
++        int actualColor = ((CSSBackgroundDrawable) background).getColor();
+         String invertedColor = String.format("%08x", (0xFFFFFFFF & actualColor));
+         // By default transparency is first, color second
+         return "#" + invertedColor.substring(2, 8) + invertedColor.substring(0, 2);
+diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReactNativeUtils.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReactNativeUtils.java
+index ca0e29e..1953bdb 100644
+--- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReactNativeUtils.java
++++ b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReactNativeUtils.java
+@@ -27,33 +27,6 @@ public class ReactNativeUtils {
+   public static BorderRadii getBorderRadii(View view) {
+     if (view.getBackground() != null) {
+       return BorderRadiiDrawableUtils.getBorderRadii(view);
+-    } else if (view instanceof ReactImageView) {
+-      try {
+-        if (mBorderRadiusField == null) {
+-          mBorderRadiusField = ReactImageView.class.getDeclaredField("mBorderRadius");
+-          mBorderRadiusField.setAccessible(true);
+-        }
+-        float fullBorderRadius = mBorderRadiusField.getFloat(view);
+-        if (getCornerRadiiMethod == null) {
+-          getCornerRadiiMethod =
+-              ReactImageView.class.getDeclaredMethod("getCornerRadii", float[].class);
+-          getCornerRadiiMethod.setAccessible(true);
+-        }
+-        if (Float.isNaN(fullBorderRadius)) {
+-          fullBorderRadius = 0;
+-        }
+-        float[] cornerRadii = new float[4];
+-        getCornerRadiiMethod.invoke(view, (Object) cornerRadii);
+-        return new BorderRadii(
+-            fullBorderRadius, cornerRadii[0], cornerRadii[1], cornerRadii[2], cornerRadii[3]);
+-      } catch (NullPointerException
+-          | NoSuchFieldException
+-          | NoSuchMethodException
+-          | IllegalAccessException
+-          | InvocationTargetException ignored) {
+-        // In case of non-standard view is better to not support the border animation
+-        // instead of throwing exception
+-      }
+     }
+     return new BorderRadii(0, 0, 0, 0, 0);
+   }
+diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedNativeHierarchyManager.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedNativeHierarchyManager.java
+index ab0e79b..ee161c1 100644
+--- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedNativeHierarchyManager.java
++++ b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedNativeHierarchyManager.java
+@@ -282,7 +282,7 @@ public class ReanimatedNativeHierarchyManager extends NativeViewHierarchyManager
+ 
+   public synchronized void updateLayout(
+       int parentTag, int tag, int x, int y, int width, int height) {
+-    super.updateLayout(parentTag, tag, x, y, width, height);
++    super.updateLayout(tag, x, y, width, height);
+     if (isLayoutAnimationDisabled()) {
+       return;
+     }
+diff --git a/node_modules/react-native-reanimated/android/src/main/worklets/CMakeLists.txt b/node_modules/react-native-reanimated/android/src/main/worklets/CMakeLists.txt
+index a962a50..1af5619 100644
+--- a/node_modules/react-native-reanimated/android/src/main/worklets/CMakeLists.txt
++++ b/node_modules/react-native-reanimated/android/src/main/worklets/CMakeLists.txt
+@@ -59,14 +59,21 @@ if(${IS_NEW_ARCHITECTURE_ENABLED})
+         "${REACT_NATIVE_DIR}/ReactCommon/react/renderer/graphics/platform/cxx"
+     )
+ 
+-    target_link_libraries(
+-        worklets
+-        ReactAndroid::fabricjni
+-        ReactAndroid::react_debug
+-        ReactAndroid::react_render_core
+-        ReactAndroid::react_render_componentregistry
+-        ReactAndroid::rrc_view
+-    )
++    if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 76)
++        target_link_libraries(
++            worklets
++            ReactAndroid::reactnative
++        )
++    else()
++        target_link_libraries(
++            worklets
++            ReactAndroid::fabricjni
++            ReactAndroid::react_debug
++            ReactAndroid::react_render_core
++            ReactAndroid::react_render_componentregistry
++            ReactAndroid::rrc_view
++        )
++    endif()
+ endif()
+ 
+ # build shared lib
+@@ -77,50 +84,62 @@ set_target_properties(
+     CXX
+ )
+ 
+-target_link_libraries(
+-    worklets
+-    log
+-    ReactAndroid::folly_runtime
+-    ReactAndroid::glog
+-    ReactAndroid::jsi
+-    ReactAndroid::reactnativejni
+-    fbjni::fbjni
+-)
+ 
+-if(${JS_RUNTIME} STREQUAL "hermes")
++if(${REACT_NATIVE_MINOR_VERSION} GREATER_EQUAL 76)
++    target_link_libraries(
++        worklets
++        log
++        ReactAndroid::reactnative
++        fbjni::fbjni
++    )
++else()
+     target_link_libraries(
+         worklets
+-        hermes-engine::libhermes
++        log
++        ReactAndroid::folly_runtime
++        ReactAndroid::glog
++        ReactAndroid::reactnativejni
++        fbjni::fbjni
++    )
++endif()
++target_link_libraries(worklets ReactAndroid::jsi)
++
++if(${JS_RUNTIME} STREQUAL "hermes")
++target_link_libraries(
++    worklets
++    hermes-engine::libhermes
+     )
++endif()
+ 
++if(${REACT_NATIVE_MINOR_VERSION} VERSION_LESS 76)
+     if(${HERMES_ENABLE_DEBUGGER})
+         target_link_libraries(
+             worklets
+             ReactAndroid::hermes_executor
+         )
++    elseif(${JS_RUNTIME} STREQUAL "jsc")
++        target_link_libraries(
++            worklets
++            ReactAndroid::jscexecutor
++        )
++    elseif(${JS_RUNTIME} STREQUAL "v8")
++        # TODO: Refactor this when adding support for newest V8
++        target_include_directories(
++            worklets
++            PRIVATE
++            "${JS_RUNTIME_DIR}/src"
++        )
++        file(GLOB V8_SO_DIR "${JS_RUNTIME_DIR}/android/build/intermediates/library_jni/*/jni/${ANDROID_ABI}")
++        find_library(
++            V8EXECUTOR_LIB
++            v8executor
++            PATHS ${V8_SO_DIR}
++            NO_DEFAULT_PATH
++            NO_CMAKE_FIND_ROOT_PATH
++        )
++        target_link_libraries(
++            worklets
++            ${V8EXECUTOR_LIB}
++        )
+     endif()
+-elseif(${JS_RUNTIME} STREQUAL "jsc")
+-    target_link_libraries(
+-        worklets
+-        ReactAndroid::jscexecutor
+-    )
+-elseif(${JS_RUNTIME} STREQUAL "v8")
+-    # TODO: Refactor this when adding support for newest V8
+-    target_include_directories(
+-        worklets
+-        PRIVATE
+-        "${JS_RUNTIME_DIR}/src"
+-    )
+-    file(GLOB V8_SO_DIR "${JS_RUNTIME_DIR}/android/build/intermediates/library_jni/*/jni/${ANDROID_ABI}")
+-    find_library(
+-        V8EXECUTOR_LIB
+-        v8executor
+-        PATHS ${V8_SO_DIR}
+-        NO_DEFAULT_PATH
+-        NO_CMAKE_FIND_ROOT_PATH
+-    )
+-    target_link_libraries(
+-        worklets
+-        ${V8EXECUTOR_LIB}
+-    )
+ endif()
+diff --git a/node_modules/react-native-reanimated/android/src/reactNativeVersionPatch/BorderRadiiDrawableUtils/latest/com/swmansion/reanimated/BorderRadiiDrawableUtils.java b/node_modules/react-native-reanimated/android/src/reactNativeVersionPatch/BorderRadiiDrawableUtils/latest/com/swmansion/reanimated/BorderRadiiDrawableUtils.java
+index 2f4cd13..e03ae88 100644
+--- a/node_modules/react-native-reanimated/android/src/reactNativeVersionPatch/BorderRadiiDrawableUtils/latest/com/swmansion/reanimated/BorderRadiiDrawableUtils.java
++++ b/node_modules/react-native-reanimated/android/src/reactNativeVersionPatch/BorderRadiiDrawableUtils/latest/com/swmansion/reanimated/BorderRadiiDrawableUtils.java
+@@ -1,25 +1,23 @@
+ package com.swmansion.reanimated;
+ 
++import android.annotation.SuppressLint;
+ import android.graphics.drawable.Drawable;
+ import android.view.View;
+ import com.facebook.react.uimanager.LengthPercentage;
+ import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
++import com.facebook.react.uimanager.style.BorderRadiusStyle;
+ import com.facebook.react.uimanager.style.ComputedBorderRadius;
+ 
+ public class BorderRadiiDrawableUtils {
++  @SuppressLint("UnsafeOptInUsageError")
+   public static ReactNativeUtils.BorderRadii getBorderRadii(View view) {
+     Drawable background = view.getBackground();
+     if (background instanceof CSSBackgroundDrawable) {
+       CSSBackgroundDrawable drawable = (CSSBackgroundDrawable) background;
+       LengthPercentage uniform = drawable.getBorderRadius().getUniform();
+-      float full = uniform != null ? uniform.resolve(view.getWidth(), view.getHeight()) : Float.NaN;
+-      ComputedBorderRadius computedBorderRadius = drawable.getComputedBorderRadius();
+-      return new ReactNativeUtils.BorderRadii(
+-          full,
+-          computedBorderRadius.getTopLeft(),
+-          computedBorderRadius.getTopRight(),
+-          computedBorderRadius.getBottomLeft(),
+-          computedBorderRadius.getBottomRight());
++      Object full = uniform != null ? uniform.resolve(view.getWidth(), view.getHeight()) : Float.NaN;
++      BorderRadiusStyle computedBorderRadius = drawable.getBorderRadius();
++      return new ReactNativeUtils.BorderRadii(0, 0, 0, 0, 0);
+     } else {
+       return new ReactNativeUtils.BorderRadii(0, 0, 0, 0, 0);
+     }

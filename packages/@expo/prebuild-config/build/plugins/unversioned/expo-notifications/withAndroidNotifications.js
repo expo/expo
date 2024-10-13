@@ -45,7 +45,7 @@ function _withAndroidIcons() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const {
   Colors
 } = _configPlugins().AndroidConfig;

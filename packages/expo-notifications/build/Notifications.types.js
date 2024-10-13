@@ -23,4 +23,5 @@ export var AndroidNotificationPriority;
     AndroidNotificationPriority["HIGH"] = "high";
     AndroidNotificationPriority["MAX"] = "max";
 })(AndroidNotificationPriority || (AndroidNotificationPriority = {}));
+export { PermissionStatus, } from 'expo-modules-core';
 //# sourceMappingURL=Notifications.types.js.map

@@ -21,6 +21,7 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
         'flex overflow-hidden items-stretch relative border border-default rounded-lg bg-default transition shadow-xs',
         'hocus:shadow-sm',
         'max-sm-gutters:flex-col',
+        '[&+hr]:!mt-6',
         className
       )}
       isStyled>

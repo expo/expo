@@ -15,6 +15,17 @@ const warnUnstable = memoize(() =>
   Log.warn('Using experimental DOM Components API. Production exports may not work as expected.')
 );
 
+const checkWebViewInstalled = memoize((projectRoot: string) => {
+  const webViewInstalled =
+    resolveFrom.silent(projectRoot, 'react-native-webview') ||
+    resolveFrom.silent(projectRoot, '@expo/dom-webview');
+  if (!webViewInstalled) {
+    throw new Error(
+      `To use DOM Components, you must install the 'react-native-webview' package. Run 'npx expo install react-native-webview' to install it.`
+    );
+  }
+});
+
 type CreateDomComponentsMiddlewareOptions = {
   /** The absolute metro or server root, used to calculate the relative dom entry path */
   metroRoot: string;
@@ -26,7 +37,7 @@ export function createDomComponentsMiddleware(
   { metroRoot, projectRoot }: CreateDomComponentsMiddlewareOptions,
   instanceMetroOptions: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'platform' | 'bytecode'>
 ) {
-  return async (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
+  return (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
     if (!req.url) return next();
 
     const url = coerceUrl(req.url);
@@ -45,6 +56,7 @@ export function createDomComponentsMiddleware(
       return res.end();
     }
 
+    checkWebViewInstalled(projectRoot);
     warnUnstable();
 
     // Generate a unique entry file for the webview.

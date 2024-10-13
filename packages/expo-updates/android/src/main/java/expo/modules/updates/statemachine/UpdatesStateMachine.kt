@@ -1,6 +1,5 @@
 package expo.modules.updates.statemachine
 
-import android.content.Context
 import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.StateMachineProcedure
@@ -12,12 +11,10 @@ import java.util.Date
  * in a production app, instantiated as a property of UpdatesController.
  */
 class UpdatesStateMachine(
-  androidContext: Context,
+  private val logger: UpdatesLogger,
   private val eventManager: IUpdatesEventManager,
   private val validUpdatesStateValues: Set<UpdatesStateValue>
 ) {
-  private val logger = UpdatesLogger(androidContext)
-
   private val serialExecutorQueue = StateMachineSerialExecutorQueue(
     logger,
     object : StateMachineProcedure.StateMachineProcedureContext {

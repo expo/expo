@@ -80,9 +80,7 @@ static NSString *normalizeEventName(NSString *eventName)
  */
 static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _componentFlavorsCache;
 
-@implementation ExpoFabricViewObjC {
-  ExpoViewEventEmitter::Shared _eventEmitter;
-}
+@implementation ExpoFabricViewObjC
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -118,36 +116,35 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   };
 }
 
-- (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
-  const auto &newViewProps = *std::static_pointer_cast<ExpoViewProps const>(props);
-  NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
+  [super finalizeUpdates:updateMask];
 
-  for (const auto &item : newViewProps.propsMap) {
-    NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
+  if (updateMask & RNComponentViewUpdateMaskProps) {
+    const auto &newProps = static_cast<const ExpoViewProps &>(*_props);
+    NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
 
-    // Ignore props inherited from the base view and Yoga.
-    if ([self supportsPropWithName:propName]) {
-      propsMap[propName] = convertFollyDynamicToId(item.second);
+    for (const auto &item : newProps.propsMap) {
+      NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
+
+      // Ignore props inherited from the base view and Yoga.
+      if ([self supportsPropWithName:propName]) {
+        propsMap[propName] = convertFollyDynamicToId(item.second);
+      }
     }
+
+    [self updateProps:propsMap];
+    [self viewDidUpdateProps];
   }
-
-  [self updateProps:propsMap];
-  [super updateProps:props oldProps:oldProps];
-  [self viewDidUpdateProps];
-}
-
-- (void)updateEventEmitter:(const react::EventEmitter::Shared &)eventEmitter
-{
-  [super updateEventEmitter:eventEmitter];
-  _eventEmitter = std::static_pointer_cast<const ExpoViewEventEmitter>(eventEmitter);
 }
 
 #pragma mark - Events
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
 {
-  _eventEmitter->dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
+  const auto &eventEmitter = static_cast<const ExpoViewEventEmitter &>(*_eventEmitter);
+
+  eventEmitter.dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
     return jsi::Value(runtime, expo::convertObjCObjectToJSIValue(runtime, payload));
   });
 }

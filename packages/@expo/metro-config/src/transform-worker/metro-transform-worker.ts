@@ -351,7 +351,6 @@ async function transformJS(
   // not exist yet.
   applyUseStrictDirective(ast);
 
-  // @ts-expect-error: Not on types yet (Metro 0.80).
   const unstable_renameRequire = config.unstable_renameRequire;
 
   // Disable all Metro single-file optimizations when full-graph optimization will be used.

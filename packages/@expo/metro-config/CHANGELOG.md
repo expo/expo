@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Emit assets as strings instead of numeric lookups when bundling for web and server environments. ([#31955](https://github.com/expo/expo/pull/31955) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Add experimental support for React Server Actions in Expo Router. ([#31959](https://github.com/expo/expo/pull/31959) by [@EvanBacon](https://github.com/EvanBacon))
@@ -51,6 +53,10 @@
 - Rework mini-metro tests to support full transformation. ([#29980](https://github.com/expo/expo/pull/29980) by [@EvanBacon](https://github.com/EvanBacon))
 - Downgrade routerRoot warning to a debug log. ([#29812](https://github.com/expo/expo/pull/29812) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade `glob@7` to `glob@10`. ([#29929](https://github.com/expo/expo/pull/29929) by [@byCedric](https://github.com/byCedric))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.18.4 — 2024-05-16
 

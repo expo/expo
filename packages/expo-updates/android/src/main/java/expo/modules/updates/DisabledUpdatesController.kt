@@ -3,7 +3,6 @@ package expo.modules.updates
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.AppContext
@@ -13,6 +12,7 @@ import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.events.QueueUpdatesEventManager
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
+import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.RecreateReactContextProcedure
 import expo.modules.updates.statemachine.UpdatesStateMachine
@@ -42,7 +42,7 @@ class DisabledUpdatesController(
   override val eventManager: IUpdatesEventManager = QueueUpdatesEventManager(logger)
 
   // disabled controller state machine can only be idle or restarting
-  private val stateMachine = UpdatesStateMachine(context, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
+  private val stateMachine = UpdatesStateMachine(logger, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
 
   private var isStarted = false
   private var startupStartTimeMillis: Long? = null
@@ -68,7 +68,7 @@ class DisabledUpdatesController(
         try {
           (this as java.lang.Object).wait()
         } catch (e: InterruptedException) {
-          Log.e(TAG, "Interrupted while waiting for launch asset file", e)
+          logger.error("Interrupted while waiting for launch asset file", e, UpdatesErrorCode.InitializationError)
         }
       }
       return launcher?.launchAssetFile
@@ -95,7 +95,7 @@ class DisabledUpdatesController(
     isStarted = true
     startupStartTimeMillis = System.currentTimeMillis()
 
-    launcher = NoDatabaseLauncher(context, fatalException)
+    launcher = NoDatabaseLauncher(context, logger, fatalException)
 
     startupEndTimeMillis = System.currentTimeMillis()
     notifyController()
