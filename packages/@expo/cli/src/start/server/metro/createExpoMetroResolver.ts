@@ -102,11 +102,7 @@ export function createFastResolver({
       | 'resolveAsset'
       | 'unstable_conditionNames'
       | 'unstable_conditionsByPlatform'
-    > & {
-      unstable_fileSystemLookup?: (
-        filePath: string
-      ) => { exists: false } | { exists: true; type: 'f' | 'd'; realPath: string };
-    },
+    >,
     moduleName: string,
     platform: string | null
   ): Resolution {
@@ -130,7 +126,11 @@ export function createFastResolver({
           ]),
         ]
       : [];
-    const { unstable_fileSystemLookup } = context;
+    const { unstable_fileSystemLookup } = context as {
+      unstable_fileSystemLookup?: (
+        filePath: string
+      ) => { exists: false } | { exists: true; type: 'f' | 'd'; realPath: string };
+    };
     if (!unstable_fileSystemLookup) {
       throw new Error('Metro API unstable_fileSystemLookup is required for fast resolver');
     }

@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getMetroServerRoot } from '@expo/config/paths';
 import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -17,7 +18,6 @@ import { Log } from '../../../log';
 import { stripAnsi } from '../../../utils/ansi';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
-import { getMetroServerRoot } from '@expo/config/paths';
 
 function fill(width: number): string {
   return Array(width).join(' ');
@@ -311,11 +311,7 @@ function parseErrorStack(
 
       if (frame.file) {
         // SSR will sometimes have absolute paths followed by `.bundle?...`, we need to try and make them relative paths and append a dev server URL.
-        if (
-          frame.file.startsWith('/') &&
-          frame.file.includes('bundle?') &&
-          !URL.canParse(frame.file)
-        ) {
+        if (frame.file.startsWith('/') && frame.file.includes('bundle?') && !canParse(frame.file)) {
           // Malformed stack file from SSR. Attempt to repair.
           frame.file = 'https://localhost:8081/' + path.relative(serverRoot, frame.file);
         }
@@ -327,4 +323,14 @@ function parseErrorStack(
       };
     })
     .filter((frame) => frame.file && !frame.file.includes('node_modules'));
+}
+
+function canParse(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }
