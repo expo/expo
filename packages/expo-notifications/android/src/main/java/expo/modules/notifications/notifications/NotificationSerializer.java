@@ -202,7 +202,7 @@ public class NotificationSerializer {
     } else if (trigger instanceof DateTrigger) {
       bundle.putString("type", "date");
       bundle.putBoolean("repeats", false);
-      bundle.putLong("value", ((DateTrigger) trigger).getTriggerDate().getTime());
+      bundle.putLong("value", ((DateTrigger) trigger).getTimestamp());
     } else if (trigger instanceof DailyTrigger) {
       bundle.putString("type", "daily");
       bundle.putInt("hour", ((DailyTrigger) trigger).getHour());
