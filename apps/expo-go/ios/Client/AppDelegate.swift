@@ -12,7 +12,7 @@ class AppDelegate: ExpoAppDelegate {
       // App launched in foreground
       setUpUserInterfaceForApplication(application, withLaunchOptions: launchOptions)
     }
-    
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
