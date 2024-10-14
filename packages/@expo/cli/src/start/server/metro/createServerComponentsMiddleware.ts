@@ -108,13 +108,6 @@ export function createServerComponentsMiddleware(
     });
   };
 
-  // globalThis.__webpack_require__ = (id) => {
-  //   console.log('[SSR]__webpack_require__:', id);
-
-  //   //   return null;
-  //   return globalThis[`${__METRO_GLOBAL_PREFIX__}__r`](id);
-  // };
-
   const htmlMiddleware = {
     async GET(req: Request): Promise<Response> {
       // TODO: Add this from prod branch
