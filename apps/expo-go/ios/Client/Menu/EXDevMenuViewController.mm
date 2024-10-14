@@ -32,13 +32,6 @@
 
 # pragma mark - UIViewController
 
-- (void)viewDidLoad
-{
-  [super viewDidLoad];
-  [self _rebuildRootView];
-  [self.view addSubview:_reactRootView];
-}
-
 - (UIRectEdge)edgesForExtendedLayout
 {
   return UIRectEdgeNone;

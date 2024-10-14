@@ -37,7 +37,7 @@ typedef enum EXReactAppManagerStatus {
 - (void)appLoaderFailedWithError:(NSError *)error;
 
 @property (nonatomic, assign) BOOL isHeadless;
-@property (nonatomic, readonly) BOOL isHostRunning;
+@property (nonatomic, readonly) BOOL isReactHostRunning;
 @property (nonatomic, readonly) EXReactAppManagerStatus status;
 @property (nonatomic, readonly) UIView *rootView;
 @property (nonatomic, readonly) NSString *scopedDocumentDirectory;

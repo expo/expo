@@ -92,7 +92,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   if (_loadCallback) {
     return kEXReactAppManagerStatusBridgeLoading;
   }
-  if (_isHostRunning) {
+  if (_isReactHostRunning) {
     return kEXReactAppManagerStatusRunning;
   }
   return kEXReactAppManagerStatusNew;
@@ -125,6 +125,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
                                                   logThreshold:[self logLevel]];
     
     [self _createAppInstance];
+    [self _startObservingNotificationsForHost];
     
     if (!_isHeadless) {
       // We don't want to run the whole JS app if app launches in the background,
@@ -132,7 +133,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
       _reactRootView = [self.reactAppInstance.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
     }
 
-    [self _startObservingBridgeNotificationsForHost];
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
   }
@@ -148,10 +148,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   
   appInstance.rootViewFactory = [appInstance createRCTRootViewFactory];
   _reactAppInstance = appInstance;
-}
-
-- (void)hostDidStart:(RCTHost *)host {
-  [_versionManager hostDidStart:self.reactAppInstance];
 }
 
 - (NSDictionary *)extraParams
@@ -192,7 +188,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (void)_invalidateAndClearDelegate:(BOOL)clearDelegate
 {
-  [self _stopObservingBridgeNotifications];
+  [self _stopObservingNotifications];
   if (_viewTestTimer) {
     [_viewTestTimer invalidate];
     _viewTestTimer = nil;
@@ -214,7 +210,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
       }
     }
   }
-  _isHostRunning = NO;
+  _isReactHostRunning = NO;
 }
 
 - (BOOL)isReadyToLoad
@@ -301,17 +297,11 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 #pragma mark - JavaScript loading
 
-- (void)_startObservingBridgeNotificationsForHost
+- (void)_startObservingNotificationsForHost
 {
-
-  
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:RCTInstanceDidLoadBundle
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleJavaScriptLoadEvent:)
-                                               name:RCTJavaScriptDidLoadNotification
                                              object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
@@ -323,10 +313,9 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
                                              object:nil];
 }
 
-- (void)_stopObservingBridgeNotifications
+- (void)_stopObservingNotifications
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTInstanceDidLoadBundle object:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
 }
@@ -345,13 +334,17 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 - (void)_handleJavaScriptLoadEvent:(NSNotification *)notification
 {
   if ([notification.name isEqualToString:RCTInstanceDidLoadBundle]) {
-    _isHostRunning = YES;
+    _isReactHostRunning = YES;
     _hasBridgeEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {
-      [_appRecord.viewController hideLoadingProgressWindow];
+      EX_WEAKIFY(self);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        EX_ENSURE_STRONGIFY(self);
+        [self->_appRecord.viewController hideLoadingProgressWindow];
+      });
     }
   } else if ([notification.name isEqualToString:RCTJavaScriptDidFailToLoadNotification]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;

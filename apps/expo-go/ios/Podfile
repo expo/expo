@@ -19,7 +19,7 @@ prepare_react_native_project!
 
 target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
-  pod 'GoogleMaps', '~> 7.4.0'
+  pod 'GoogleMaps', '~> 9.0'
   pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/googlemaps/google-maps-ios-utils.git'
   pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
@@ -58,7 +58,6 @@ target 'Expo Go' do
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
-<<<<<<< HEAD
   config_command = [
     'node',
     '--no-warnings',
@@ -71,13 +70,6 @@ target 'Expo Go' do
   ]
   config = use_native_modules!(config_command)
 
-||||||| parent of a77ad1bea1 (wip)
-  # React Native
-  use_native_modules!
-=======
-  # React Native
-  config = use_native_modules!
->>>>>>> a77ad1bea1 (wip)
   use_react_native!(
     :path => '../../../react-native-lab/react-native/packages/react-native',
     :hermes_enabled => true,

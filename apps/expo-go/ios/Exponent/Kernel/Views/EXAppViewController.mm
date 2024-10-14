@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
   <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate, EXAppLoadingCancelViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
-@property (atomic, assign) BOOL isBridgeAlreadyLoading;
+@property (atomic, assign) BOOL isHostAlreadyLoading;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 @property (nonatomic, strong) EXErrorView *errorView;
 @property (nonatomic, strong) NSTimer *tmrAutoReloadDebounce;
@@ -234,7 +234,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)refresh
 {
   self.isLoading = YES;
-  self.isBridgeAlreadyLoading = NO;
+  self.isHostAlreadyLoading = NO;
   [self _invalidateRecoveryTimer];
   [_appRecord.appLoader request];
 }
@@ -242,7 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reloadFromCache
 {
   self.isLoading = YES;
-  self.isBridgeAlreadyLoading = NO;
+  self.isHostAlreadyLoading = NO;
   [self _invalidateRecoveryTimer];
   [_appRecord.appLoader requestFromCache];
 }
@@ -276,10 +276,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
 }
 
-- (void)_rebuildBridge
+- (void)_rebuildHost
 {
-  if (!self.isBridgeAlreadyLoading) {
-    self.isBridgeAlreadyLoading = YES;
+  if (!self.isHostAlreadyLoading) {
+    self.isHostAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _overrideUserInterfaceStyleOf:self];
       [self _overrideAppearanceModuleBehaviour];
@@ -418,7 +418,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIView *rootView = self.view;
     UIView *splashScreenView = [provider createSplashScreenView];
     self.managedSplashScreenController = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
-                                                                                                 splashScreenView:splashScreenView];
+                                                                                splashScreenView:splashScreenView];
     [splashScreenService showSplashScreenFor:self
                                      options:EXSplashScreenDefault
                       splashScreenController:self.managedSplashScreenController
@@ -453,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
-  [self _rebuildBridge];
+  [self _rebuildHost];
 }
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
@@ -471,7 +471,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
     [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
   }
-  [self _rebuildBridge];
+  [self _rebuildHost];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
   }

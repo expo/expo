@@ -2,8 +2,6 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RCTHost.h>
 
-//@interface ExpoAppInstance () <RCTTurboModuleManagerDelegate, RCTHostDelegate>
-//@end
 
 @implementation ExpoAppInstance
 
