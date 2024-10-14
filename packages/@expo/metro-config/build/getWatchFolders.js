@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWatchFolders = exports.globAllPackageJsonPaths = void 0;
+exports.getWatchFolders = exports.resolveAllWorkspacePackageJsonPaths = exports.globAllPackageJsonPaths = void 0;
 const paths_1 = require("@expo/config/paths");
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = require("glob");
@@ -47,6 +47,24 @@ function globAllPackageJsonPaths(workspaceProjectRoot, linkedPackages) {
 }
 exports.globAllPackageJsonPaths = globAllPackageJsonPaths;
 /**
+ * @param workspaceProjectRoot root file path for a yarn workspace.
+ * @returns list of package.json file paths that are linked to the yarn workspace.
+ */
+function resolveAllWorkspacePackageJsonPaths(workspaceProjectRoot) {
+    try {
+        // Extract the "packages" array or use "workspaces" as packages array (yarn workspaces spec).
+        const workspaceGlobs = (0, paths_1.getMetroWorkspaceGlobs)(workspaceProjectRoot);
+        if (!workspaceGlobs?.length)
+            return [];
+        // Glob all package.json files and return valid paths.
+        return globAllPackageJsonPaths(workspaceProjectRoot, workspaceGlobs);
+    }
+    catch {
+        return [];
+    }
+}
+exports.resolveAllWorkspacePackageJsonPaths = resolveAllWorkspacePackageJsonPaths;
+/**
  * @param projectRoot file path to app's project root
  * @returns list of node module paths to watch in Metro bundler, ex: `['/Users/me/app/node_modules/', '/Users/me/app/apps/my-app/', '/Users/me/app/packages/my-package/']`
  */
@@ -57,7 +75,7 @@ function getWatchFolders(projectRoot) {
     if (workspaceRoot === resolvedProjectRoot) {
         return [];
     }
-    const packages = (0, paths_1.getMetroWorkspaceGlobs)(workspaceRoot);
+    const packages = resolveAllWorkspacePackageJsonPaths(workspaceRoot);
     if (!packages?.length) {
         return [];
     }
