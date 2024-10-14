@@ -105,6 +105,13 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   /**
+   * Creates module's lifecycle listener that is called right before user leaves the activity.
+   */
+  inline fun OnUserLeavesActivity(crossinline body: () -> Unit) {
+    eventListeners[EventName.ON_USER_LEAVES_ACTIVITY] = BasicEventListener(EventName.ON_USER_LEAVES_ACTIVITY) { body() }
+  }
+
+  /**
    * Creates module's lifecycle listener that is called right after the activity is destroyed.
    */
   inline fun OnActivityDestroys(crossinline body: () -> Unit) {
