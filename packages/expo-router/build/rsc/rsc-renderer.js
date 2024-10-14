@@ -9,7 +9,7 @@
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRsc = void 0;
+exports.getSsrConfig = exports.renderRsc = void 0;
 // This file must remain platform agnostic for production exports.
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
 require("./runtime");
@@ -198,4 +198,30 @@ const streamToString = async (stream) => {
     outs.push(decoder.decode());
     return outs.join('');
 };
+async function getSsrConfig(args, opts) {
+    const { pathname, searchParams } = args;
+    const { entries, resolveClientEntry } = opts;
+    const { default: { getSsrConfig },
+    // buildConfig,
+     } = entries;
+    const ssrConfig = await getSsrConfig?.(pathname, {
+        searchParams,
+        // buildConfig,
+    });
+    if (!ssrConfig) {
+        return null;
+    }
+    const bundlerConfig = new Proxy({}, {
+        get(_target, encodedId) {
+            const [file, name] = encodedId.split('#');
+            const { id } = resolveClientEntry(file);
+            return { id, chunks: [id], name, async: true };
+        },
+    });
+    return {
+        ...ssrConfig,
+        body: (0, server_1.renderToReadableStream)(ssrConfig.html, bundlerConfig),
+    };
+}
+exports.getSsrConfig = getSsrConfig;
 //# sourceMappingURL=rsc-renderer.js.map

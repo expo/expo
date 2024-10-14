@@ -63,53 +63,6 @@ export function createServerComponentsMiddleware(
 ) {
   const serverRoot = getMetroServerRootMemo(projectRoot);
 
-  globalThis.__metro_node_chunk_load__ = async (chunk) => {
-    console.log('[SSR]__metro_node_chunk_load__:', chunk);
-
-    const url = new URL(chunk, 'http://localhost:0');
-    const getStringParam = (key: string) => {
-      const param = url.searchParams.get(key);
-      if (Array.isArray(param)) {
-        throw new Error(`Expected single value for ${key}`);
-      }
-      return param;
-    };
-
-    let pathname = url.pathname;
-    if (pathname.endsWith('.bundle')) {
-      pathname = pathname.slice(0, -'.bundle'.length);
-    }
-
-    const options = {
-      mode: (getStringParam('dev') ?? 'true') === 'true' ? 'development' : 'production',
-      minify: (getStringParam('minify') ?? 'false') === 'true',
-      lazy: (getStringParam('lazy') ?? 'false') === 'true',
-      routerRoot: getStringParam('transform.routerRoot') ?? 'app',
-      /** Enable React compiler support in Babel. */
-      // reactCompiler: boolean;
-      // baseUrl?: string;
-      isExporting: (getStringParam('resolver.exporting') ?? 'false') === 'true',
-      /** Is bundling a DOM Component ("use dom"). */
-      // inlineSourceMap?: boolean;
-      // clientBoundaries?: string[];
-      // splitChunks?: boolean;
-      // usedExports?: boolean;
-      /** Enable optimized bundling (required for tree shaking). */
-      // optimize?: boolean;
-
-      environment: 'node', // getStringParam('transform.environment') ?? 'node',
-      platform: url.searchParams.get('platform') ?? 'web',
-    } as const;
-
-    // console.log('[SSR] load:', options);
-
-    return await ssrLoadModule(path.join(serverRoot, pathname), {
-      ...options,
-
-      skipRunningSsr: true,
-    });
-  };
-
   const htmlMiddleware = {
     async GET(req: Request): Promise<Response> {
       // TODO: Add this from prod branch
@@ -765,9 +718,15 @@ export function createServerComponentsMiddleware(
                   { isDev: false, entries: distEntries }
                 ),
               isExporting: true,
-              async loadModule(id) {
-                // TODO: Implement this
-                console.warn('SSR -> loadModule not implemented', id);
+              async loadModule(chunk) {
+                console.log('[SSR]__metro_node_chunk_load__:', chunk);
+
+                const options = getMetroOptionsFromUrl(chunk);
+                return await ssrLoadModule(path.join(serverRoot, options.mainModuleName), {
+                  ...options,
+                  modulesOnly: true,
+                  runModule: false,
+                });
               },
             });
             // await fs.promises.mkdir(path.join(destHtmlFile, '..'), { recursive: true });

@@ -1,3 +1,4 @@
+import './runtime';
 type ResolveClientEntry = (id: string) => {
     id: string;
     chunks: string[];

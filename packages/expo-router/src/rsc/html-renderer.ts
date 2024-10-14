@@ -1,5 +1,8 @@
 // SSR middleware:
 
+// Support loading other modules in the Node runtime.
+import './runtime';
+
 import type {
   default as ReactType,
   createElement as createElementType,
@@ -16,15 +19,6 @@ import { ServerRoot } from './router/host';
 //   react: require('react/package.json').version,
 //   'react-dom': require('react-dom/package.json').version,
 // });
-
-global.__webpack_chunk_load__ = async (chunk) => {
-  return globalThis.__metro_node_chunk_load__(chunk);
-};
-
-global.__webpack_require__ = (id) => {
-  console.log('[SSR]__webpack_require__:', id);
-  return global[`__r`](id);
-};
 
 // renderHtml:
 // Import
@@ -50,8 +44,6 @@ global.__webpack_require__ = (id) => {
 
 type ResolveClientEntry = (id: string) => { id: string; chunks: string[] };
 type ImportManifestEntry = any;
-
-const DIST_SSR = 'TODO';
 
 export async function renderHtml({
   pathname,
@@ -83,34 +75,8 @@ export async function renderHtml({
   resolveClientEntry: ResolveClientEntry;
   loadModule: (id: string) => Promise<any>;
 }) {
-  // const loadClientModule = async <T>(name: string): Promise<T> => {
-  //   // console.log('loadClientModule:', name);
-  //   const m = await $$require_external(name);
-  //   // console.log('loadClientModule.2:', m);
-  //   // Interop default
-  //   return { default: m.default ? Promise.resolve(m.default) : m };
-  // };
-  //   const { injectRSCPayload } = await import('rsc-html-stream/server');
-
-  // const [
-  //   {
-  //     default: { createElement },
-  //   },
-  //   {
-  //     default: { renderToReadableStream },
-  //   },
-  //   {
-  //     default: { createFromReadableStream },
-  //   },
-  //   {
-  //     default: { ServerRoot },
-  //   },
-  // ] = await Promise.all([
-  //   loadClientModule<{ default: typeof ReactType }>('react'),
-  //   loadClientModule<{ default: typeof RDServerType }>('react-dom/server.edge'),
-  //   loadClientModule<{ default: typeof RSDWClientType }>('react-server-dom-webpack/client.edge'),
-  //   loadClientModule<typeof import('./router/host')>('expo-router/build/rsc/router/host'),
-  // ]);
+  // @ts-ignore: Not part of global types. This is added to support loading more modules.
+  global[`${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`] = loadModule;
 
   const ssrConfig = await getSsrConfigForHtml?.(pathname, searchParams);
   if (!ssrConfig) {

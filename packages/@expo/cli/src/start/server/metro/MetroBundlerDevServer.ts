@@ -452,7 +452,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.setupHmr(url);
     }
 
-    if (specificOptions.skipRunningSsr) {
+    if (specificOptions.runModule === false) {
       return evalMetroNoHandling(this.projectRoot, res.src, res.filename);
     }
 
@@ -614,7 +614,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
-    const scriptContents = specificOptions.skipRunningSsr ? bundle : wrapBundle(bundle);
+    const scriptContents = opts.runModule === false ? bundle : wrapBundle(bundle);
 
     if (map) {
       debug('Registering SSR source map for:', filename);
