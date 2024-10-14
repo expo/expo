@@ -61,8 +61,10 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeDouble),
                    makeNativeMethod("invokeNative", JavaCallback::invokeFloat),
                    makeNativeMethod("invokeNative", JavaCallback::invokeString),
-                   makeNativeMethod("invokeNative", JavaCallback::invokeArray),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeCollection),
                    makeNativeMethod("invokeNative", JavaCallback::invokeMap),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeWritableArray),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeWritableMap),
                    makeNativeMethod("invokeNative", JavaCallback::invokeSharedObject),
                    makeNativeMethod("invokeNative", JavaCallback::invokeError),
                    makeNativeMethod("invokeIntArray", JavaCallback::invokeIntArray),
@@ -142,7 +144,7 @@ void JavaCallback::invokeJSFunction(T arg) {
 template<class T>
 void JavaCallback::invokeJSFunctionForArray(T &arg) {
   size_t size = arg->size();
-  auto region = arg->getRegion((jsize)0, size);
+  auto region = arg->getRegion((jsize) 0, size);
   RawArray<typename decltype(region)::element_type> rawArray;
   rawArray.size = size;
   rawArray.data = std::move(region);
@@ -185,11 +187,24 @@ void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
   invokeJSFunction(result->toStdString());
 }
 
-void JavaCallback::invokeArray(jni::alias_ref<react::WritableNativeArray::javaobject> result) {
+void JavaCallback::invokeCollection(jni::alias_ref<jni::JCollection<jobject>> result) {
+  invokeJSFunction<
+    jni::global_ref<jni::JCollection<jobject>>
+  >(jni::make_global(result));
+}
+
+void JavaCallback::invokeMap(jni::alias_ref<jni::JMap<jstring, jobject>> result) {
+  invokeJSFunction<
+    jni::global_ref<jni::JMap<jstring, jobject>>
+  >(jni::make_global(result));
+}
+
+void
+JavaCallback::invokeWritableArray(jni::alias_ref<react::WritableNativeArray::javaobject> result) {
   invokeJSFunction(result->cthis()->consume());
 }
 
-void JavaCallback::invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result) {
+void JavaCallback::invokeWritableMap(jni::alias_ref<react::WritableNativeMap::javaobject> result) {
   invokeJSFunction(result->cthis()->consume());
 }
 

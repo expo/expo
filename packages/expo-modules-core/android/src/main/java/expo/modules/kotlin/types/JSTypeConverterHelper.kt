@@ -66,7 +66,7 @@ fun <K, V> Map<K, V>.toJSValue(containerProvider: JSTypeConverter.ContainerProvi
   return result
 }
 
-fun <T> Collection<T>.toJSValueExperimental(): List<Any?> {
+fun <T> Collection<T>.toJSValueExperimental(): Collection<Any?> {
   return this.map { JSTypeConverter.convertToJSValue(it, useExperimentalConverter = true) }
 }
 
