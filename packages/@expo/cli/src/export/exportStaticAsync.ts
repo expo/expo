@@ -394,9 +394,11 @@ export async function exportApiRoutesStandaloneAsync(
   {
     files = new Map(),
     platform,
+    apiRoutesOnly,
   }: {
     files?: ExportAssetMap;
     platform: string;
+    apiRoutesOnly: boolean;
   }
 ) {
   const { serverManifest } = await devServer.getServerManifestAsync();
@@ -407,7 +409,8 @@ export async function exportApiRoutesStandaloneAsync(
     // NOTE(kitten): For now, we always output source maps for API route exports
     includeSourceMaps: true,
     platform,
-    apiRoutesOnly: true,
+    // Omit HTML files in web-only standalone exports.
+    apiRoutesOnly: apiRoutesOnly ?? platform !== 'web',
   });
 
   // Add the api routes to the files to export.
