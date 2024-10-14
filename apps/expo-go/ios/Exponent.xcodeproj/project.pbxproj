@@ -137,7 +137,6 @@
 		F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */; };
 		F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */; };
 		F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */; };
-		F138E0D32A5F1AE9002E15BC /* EXVersionUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = F11AEFE52A5EE20C00D49170 /* EXVersionUtils.mm */; };
 		F138E0D62A5F2090002E15BC /* ExpoGoModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = F138E0D52A5F2090002E15BC /* ExpoGoModule.swift */; };
 		F151B1122A5C6881001BB70F /* VersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F151B1112A5C6880001BB70F /* VersionManager.swift */; };
 		F156867823E19E3D0029DF16 /* EXKernelDevKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = F156867723E19E3C0029DF16 /* EXKernelDevKeyCommands.m */; };
@@ -446,8 +445,6 @@
 		F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuGestureInterceptor.m; sourceTree = "<group>"; };
 		F116A3BE2445EBBB008FA957 /* EXDevMenuWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuWindow.h; sourceTree = "<group>"; };
 		F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuWindow.m; sourceTree = "<group>"; };
-		F11AEFE52A5EE20C00D49170 /* EXVersionUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXVersionUtils.mm; sourceTree = "<group>"; };
-		F11AEFE82A5EE37300D49170 /* EXVersionUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXVersionUtils.h; sourceTree = "<group>"; };
 		F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-dynamic-macros.sh"; sourceTree = "<group>"; };
 		F138E0D52A5F2090002E15BC /* ExpoGoModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpoGoModule.swift; sourceTree = "<group>"; };
 		F151B1112A5C6880001BB70F /* VersionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionManager.swift; sourceTree = "<group>"; };
@@ -1063,8 +1060,6 @@
 				837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */,
 				B5FB73FB1FF6DADB001C764B /* EXVersionManagerObjC.h */,
 				B5FB73FC1FF6DADB001C764B /* EXVersionManagerObjC.mm */,
-				F11AEFE82A5EE37300D49170 /* EXVersionUtils.h */,
-				F11AEFE52A5EE20C00D49170 /* EXVersionUtils.mm */,
 				F151B1112A5C6880001BB70F /* VersionManager.swift */,
 			);
 			path = Core;
@@ -1851,7 +1846,6 @@
 				F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */,
 				B2E2CCD02AA7DF9C00E2260C /* HomeAppLoaderTask.swift in Sources */,
 				F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */,
-				F138E0D32A5F1AE9002E15BC /* EXVersionUtils.mm in Sources */,
 				0761342424DB63AC001375B6 /* EXUpdatesDatabaseManager.m in Sources */,
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
