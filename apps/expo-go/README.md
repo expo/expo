@@ -76,4 +76,4 @@ run `rm -rf ./react-native-lab/react-native/node_modules`
 - If you're seeing C++ related errors, run `find . -name ".cxx" -type d -prune -exec rm -rf '{}' +` which clears `.cxx` build artifacts. Alternatively, use the "nuke" approach below.
 - If you get `A valid Firebase Project ID is required to communicate with Firebase server APIs.`, make sure you Metro is running in the `apps/expo-go` directory and run `et android-generate-dynamic-macros`.
 - You might need clean the project before building it. Run `./gradlew clean` in the `apps/expo-go/android` directory.
-- the "nuke" option is `git submodule foreach --recursive git clean -xfd` which removes all untracked files so you need to run `yarn` again and building then takes a bit longer - but this approach appears to be effective.
+- the "nuke" option is `git submodule foreach --recursive git clean -xfd` and / or `git clean -xfd` which removes all untracked files so you need to run the setup script `./scripts/download-dependencies.sh` again and building then takes a bit longer - but this approach appears to be effective.
