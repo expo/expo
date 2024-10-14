@@ -2986,9 +2986,9 @@ CHECKOUT OPTIONS:
     :git: https://github.com/googlemaps/google-maps-ios-utils.git
 
 SPEC CHECKSUMS:
-  boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
+  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
   EASClient: 00a5bbc03a76fbcca972e7a4465f0e939d567e0d
   EXApplication: a329dec35dfc3ef30c64d1746698f209ef2b4db6
   EXAV: 1abd55830a134995b308d8ba9e3acbce67a2a666
@@ -3060,8 +3060,8 @@ SPEC CHECKSUMS:
   FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f
   FirebaseCoreDiagnostics: 99a495094b10a57eeb3ae8efa1665700ad0bdaa6
   FirebaseCoreInternal: bca76517fe1ed381e989f5e7d8abb0da8d85bed3
-  fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
+  fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
+  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
@@ -3078,7 +3078,7 @@ SPEC CHECKSUMS:
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
-  RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
+  RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
   RCTDeprecation: ea1525e5eda35bb079a7ac260551c5e0468f9ee3
   RCTRequired: c78ef50a39a3c8060e546760c46148d9abee6388
   RCTTypeSafety: 1841770b2ab4e4325bfe2a6b5ddca520b3e6c40d
@@ -3110,7 +3110,7 @@ SPEC CHECKSUMS:
   React-logger: ccab6d41424202fd511faa9a88bec12cadc83dfa
   React-Mapbuffer: fe84c6dde7dab6dd8658bb18beb932c1b15c993a
   React-microtasksnativemodule: b96aa3fc27ef864c183605decc24df15258cadfc
-  react-native-maps: cbf2f03bfeebfd7ec45966b066db13a075fd2af3
+  react-native-maps: 2e6e9896195781327ee15b33e3e84bf73c08207a
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 94195f1bf32e7f78359fa20057c97e632364a08b
   react-native-safe-area-context: f1fda705dfe14355f41933debb5932887e234cc5
