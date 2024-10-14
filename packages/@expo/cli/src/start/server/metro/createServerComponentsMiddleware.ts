@@ -101,13 +101,11 @@ export function createServerComponentsMiddleware(
 
     // console.log('[SSR] load:', options);
 
-    // console.log(
-    //   await ssrLoadModule(path.join(serverRoot, pathname), {
-    //     ...options,
+    return await ssrLoadModule(path.join(serverRoot, pathname), {
+      ...options,
 
-    //     skipRunningSsr: true,
-    //   })
-    // );
+      skipRunningSsr: true,
+    });
   };
 
   // globalThis.__webpack_require__ = (id) => {
