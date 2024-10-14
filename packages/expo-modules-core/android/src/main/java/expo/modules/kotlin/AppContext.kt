@@ -283,6 +283,10 @@ class AppContext(
     hostingRuntimeContext.registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
   }
 
+  internal fun onUserLeaveHint() {
+    hostingRuntimeContext.registry.post(EventName.ON_USER_LEAVES_ACTIVITY)
+  }
+
   internal fun onHostDestroy() {
     currentActivity?.let {
       check(it is AppCompatActivity) {

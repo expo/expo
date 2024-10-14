@@ -7,6 +7,7 @@ exports.convertEntryPointToRelative = convertEntryPointToRelative;
 exports.ensureSlash = ensureSlash;
 exports.getFileWithExtensions = getFileWithExtensions;
 exports.getMetroServerRoot = getMetroServerRoot;
+exports.getMetroWorkspaceGlobs = getMetroWorkspaceGlobs;
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.resolveEntryPoint = resolveEntryPoint;
 exports.resolveRelativeEntryPoint = void 0;
@@ -156,6 +157,14 @@ function getMetroServerRoot(projectRoot) {
     return projectRoot;
   }
   return (0, _resolveWorkspaceRoot().resolveWorkspaceRoot)(projectRoot) ?? projectRoot;
+}
+
+/**
+ * Get the workspace globs for Metro's watchFolders.
+ * @note This does not traverse the monorepo, and should be used with `getMetroServerRoot`
+ */
+function getMetroWorkspaceGlobs(monorepoRoot) {
+  return (0, _resolveWorkspaceRoot().getWorkspaceGlobs)(monorepoRoot);
 }
 
 /**

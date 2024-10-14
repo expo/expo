@@ -14215,10 +14215,10 @@ resolve-url@^0.2.1:
   resolved "https://registry.yarnpkg.com/resolve-url/-/resolve-url-0.2.1.tgz#2c637fe77c893afd2a663fe21aa9080068e2052a"
   integrity sha1-LGN/53yJOv0qZj/iGqkIAGjiBSo=
 
-resolve-workspace-root@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/resolve-workspace-root/-/resolve-workspace-root-1.0.0.tgz#c5c0b393e446b6a20bb608d710757635051d6158"
-  integrity sha512-1TUtBwAjc5DAxF6OcZvrUn9o9tFJWT4JQEey7lRlUN2mh5Y66PwhKXnWP2kAr7cBYjc8gF86KgejocApDdBuhg==
+resolve-workspace-root@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/resolve-workspace-root/-/resolve-workspace-root-2.0.0.tgz#a0098daa0067cd0efa6eb525c57c8fb4a61e78f8"
+  integrity sha512-IsaBUZETJD5WsI11Wt8PKHwaIe45or6pwNc8yflvLJ4DWtImK9kuLoH5kUva/2Mmx/RdIyr4aONNSa2v9LTJsw==
 
 resolve.exports@^2.0.0, resolve.exports@^2.0.2:
   version "2.0.2"
