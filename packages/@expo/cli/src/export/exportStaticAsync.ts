@@ -409,8 +409,7 @@ export async function exportApiRoutesStandaloneAsync(
     // NOTE(kitten): For now, we always output source maps for API route exports
     includeSourceMaps: true,
     platform,
-    // Omit HTML files in web-only standalone exports.
-    apiRoutesOnly: apiRoutesOnly ?? platform !== 'web',
+    apiRoutesOnly,
   });
 
   // Add the api routes to the files to export.
