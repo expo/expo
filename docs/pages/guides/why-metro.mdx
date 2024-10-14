@@ -1,0 +1,86 @@
+---
+title: Why Metro?
+description: Learn why Metro is the future of universal bundling in React Native and how it benefits developers.
+---
+
+[Metro][metro] is the official bundler for Expo and React Native. It's a central build-tool in the Expo framework. Bundlers are comprised of thousands of opinions and trade-offs, this document outlines the key reasons why Expo is developed around Metro and how it benefits developers.
+
+## Official Meta Bundler
+
+Metro is maintained by Meta, the maintainers of React, React Native, Yoga, and Hermes. It's used for developing some of the world's largest apps, ranging across all categories in the app store.
+
+By having first-class Metro support, we ensure Expo users have continuity across Meta's tools and get instant access to emerging features. This includes:
+
+- React Fast Refresh was [first introduced](https://reactnative.dev/blog/2019/09/18/version-0.61) as a Metro feature in 2019. The React web community adopted it the following year via Webpack.
+- Transforming JavaScript to Bytecode for instant native startup.
+- React Native Dev Tools. First-class support for [network and JS debugging](https://docs.expo.dev/debugging/tools/#debugging-with-chrome-devtools) is exclusively available with Metro and Hermes.
+
+New and upcoming features are planned to come to Metro first, including:
+
+- Compiling Flow code to native machine code with Static Hermes. Learn more in the [Static Hermes](https://www.youtube.com/watch?v=GUM64b-gAGg) talk by Tzvetan Mikov.
+- Data fetching, streaming, React suspense, server rendering, and build-time static rendering with universal React Server Components for all platforms. Learn more in the [Universal React Server Components](https://www.youtube.com/watch?v=djhEgxQf3Kw) talk at React Conf 2024.
+
+The Expo team collaborates with Meta to develop Metro for Expo Router, adding features like [file-based routing](https://docs.expo.dev/develop/file-based-routing/), [web support](https://docs.expo.dev/guides/customizing-metro/#web-support), [bundle splitting](https://docs.expo.dev/guides/customizing-metro/#bundle-splitting), [tree shaking](https://docs.expo.dev/guides/tree-shaking/), [CSS](https://docs.expo.dev/versions/latest/config/metro/#css), [DOM components](https://docs.expo.dev/guides/dom-components/), server components, and [API routes](https://docs.expo.dev/router/reference/api-routes/).
+
+## Battle-Tested at Scale
+
+Nearly every React Native app in the world uses Metro, making it a battle-tested solution optimized for large-scale projects. This makes it suitable for developers of all sizes, from hobbyists to large companies. Metro is designed specifically to handle large-scale Meta apps, which is why it has features such as native file watching with Watchman and [shared remote caches](https://metrobundler.dev/docs/caching).
+
+## On-Demand Processing
+
+Metro doesn't perform any platform or route-specific work until requested. This allows developers to work on large projects without being penalized for the number of platforms or routes they support.
+
+## Multi-Dimensional Graph
+
+Unlike traditional bundlers that need to create multiple instances to bundle server and client, Metro maximizes resource reuse across platforms and environments (server, client, DOM components).
+
+## Reusable Transform Memoization
+
+Metro is incremental and can create cached transform artifacts that can be used across machines. This enables large teams to reuse work from remote builders, a technique used at Meta for all large projects.
+
+## Optimized for Custom Runtimes
+
+While other bundlers are designed around the stability of web browsers, Metro is optimized for the flexibility of React Native. This enables features like bytecode compilation for faster app startup in production and will extend to Static Hermes, which will compile type information into machine code for native apps.
+
+## Cross-Technology Support
+
+Expo leverages Metro's technology to create novel functionality like DOM components. This allows a React component in a native app to be dynamically bundled as an entire website with all the same defaults as the parent app, on-demand.
+
+## Native Asset Exports
+
+Unlike traditional bundlers where the end result is a fully hosted app, Metro can export bundles with intricate presets to embed as native artifacts in standalone app binaries. This leverages OS-specific optimizations such as `xcassets` on Apple platforms.
+
+## Concurrent Processing
+
+All AST transformation in Metro is performed concurrently across all available threads, maximizing the use of modern hardware.
+
+## Comparison with Other Approaches
+
+### Browser ESM vs. Bundling
+
+While bundlers like Vite leverage built-in ESM support in the browser, this approach can lead to slower practical development times at medium to large scales due to thousands of cascading network requests. Metro performs bundling in local development, which is better suited for React Native's larger module count.
+
+### JavaScript vs. Native Languages
+
+Metro takes a mixed approach:
+
+- Core written in JS/Flow
+- File watching in C++ (via Watchman)
+- AST parsing with Hermes parser (WebAssembly)
+- Transformation with Babel
+- Minification uses Hermes (native) for native platforms and Terser (with optional ESBuild support) for web
+- CSS parsing and minification with LightningCSS (native)
+
+This approach aligns with Meta and community tools while allowing easier debugging, profiling, and patching for developers.
+
+### Ecosystem Considerations
+
+Metro opts for a more limited but optimized API to avoid the pitfalls of highly customizable bundlers:
+
+- Includes many modern features by default (TypeScript, environment variables, CSS Modules, Sass, PostCSS, tsconfig paths, etc.)
+- Allows for testing and optimization of median usage
+- Customizations can be made by extending the defaults for transformer, resolver, and serializer
+
+By leveraging Metro, Expo provides a powerful, flexible, and optimized development experience for React Native applications across various scales and use cases.
+
+[metro]: https://metrobundler.dev/
