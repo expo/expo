@@ -291,20 +291,22 @@ export function useLinking(
         path = getPathFromStateRef.current(state, configRef.current);
       }
 
-      const previousRoute = previousStateRef.current
-        ? findFocusedRoute(previousStateRef.current)
-        : undefined;
+      // START FORK - ExpoRouter manually handles hashes
+      // const previousRoute = previousStateRef.current
+      //   ? findFocusedRoute(previousStateRef.current)
+      //   : undefined;
 
       // Preserve the hash if the route didn't change
-      if (
-        previousRoute &&
-        route &&
-        'key' in previousRoute &&
-        'key' in route &&
-        previousRoute.key === route.key
-      ) {
-        path = path + location.hash;
-      }
+      // if (
+      //   previousRoute &&
+      //   route &&
+      //   'key' in previousRoute &&
+      //   'key' in route &&
+      //   previousRoute.key === route.key
+      // ) {
+      //   path = path + location.hash;
+      // }
+      // END FORK
 
       return path;
     };

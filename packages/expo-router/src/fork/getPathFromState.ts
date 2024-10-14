@@ -1,5 +1,6 @@
 import { PathConfig, PathConfigMap } from '@react-navigation/native';
 import type { NavigationState, PartialState, Route } from '@react-navigation/routers';
+import * as queryString from 'query-string';
 
 import * as expo from './getPathFromState-forks';
 import type { ExpoConfigItem, ExpoOptions } from './getPathFromState-forks';
@@ -135,6 +136,7 @@ export function getPathDataFromState<ParamList extends object>(
         // START FORK
         // This mutates allParams
         const currentParams = expo.fixCurrentParams(allParams, route, stringify);
+
         // const currentParams = Object.fromEntries(
         //   Object.entries(route.params).map(([key, value]) => [
         //     key,
@@ -272,13 +274,13 @@ export function getPathDataFromState<ParamList extends object>(
       }
 
       // START FORK
-      path = expo.appendQueryAndHash(path, focusedParams);
-      // const query = queryString.stringify(focusedParams, { sort: false });
-
-      // if (query) {
-      //   path += `?${query}`;
-      // }
+      delete focusedParams['#'];
       // END FORK
+
+      const query = queryString.stringify(focusedParams, { sort: false });
+      if (query) {
+        path += `?${query}`;
+      }
     }
 
     current = route.state;
@@ -295,6 +297,9 @@ export function getPathDataFromState<ParamList extends object>(
 
   // START FORK
   path = expo.appendBaseUrl(path);
+  if (allParams['#']) {
+    path += `#${allParams['#']}`;
+  }
   // END FORK
 
   // START FORK

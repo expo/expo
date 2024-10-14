@@ -24,6 +24,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.appendBaseUrl = exports.getPathDataFromState = exports.getPathFromState = void 0;
+const queryString = __importStar(require("query-string"));
 const expo = __importStar(require("./getPathFromState-forks"));
 // END FORK
 const getActiveRoute = (state) => {
@@ -234,12 +235,12 @@ function getPathDataFromState(state, options) {
                 }
             }
             // START FORK
-            path = expo.appendQueryAndHash(path, focusedParams);
-            // const query = queryString.stringify(focusedParams, { sort: false });
-            // if (query) {
-            //   path += `?${query}`;
-            // }
+            delete focusedParams['#'];
             // END FORK
+            const query = queryString.stringify(focusedParams, { sort: false });
+            if (query) {
+                path += `?${query}`;
+            }
         }
         current = route.state;
     }
@@ -252,6 +253,9 @@ function getPathDataFromState(state, options) {
     }
     // START FORK
     path = expo.appendBaseUrl(path);
+    if (allParams['#']) {
+        path += `#${allParams['#']}`;
+    }
     // END FORK
     // START FORK
     return { path, params: allParams };

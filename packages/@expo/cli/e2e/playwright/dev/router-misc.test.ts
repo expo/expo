@@ -47,8 +47,10 @@ test.describe(inputDir, () => {
     await expect(page.locator('[data-testid="hash"]')).toHaveText('my-hash');
 
     // Update the hash
+    page.pause();
     page.locator('[data-testid="set-hash-test"]').click();
     await expect(page.locator('[data-testid="hash"]')).toHaveText('test');
+
     expect(page.url()).toEqual(`${expo.url}/hash-support#test`);
 
     // Updating the hash multiple times will not duplicate the hash
