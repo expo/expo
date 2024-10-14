@@ -1712,6 +1712,12 @@ function getBuildID(buildNumber: number): string {
   return buildNumber.toString(36);
 }
 
+function wrapBundleWithGlobal(str: string, runModule: boolean) {
+  return `module.exports = function(globalThis) {
+${runModule ? str.replace(/^(__r\(.*\);)$/gm, 'return $1') : str}
+};`;
+}
+
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
