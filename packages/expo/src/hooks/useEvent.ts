@@ -70,6 +70,7 @@ export function useEvent<
 
 /**
  * React hook that listens to events emitted by the given object and calls the listener function whenever a new event is dispatched.
+ * The event listener is automatically added during the first render and removed when the component unmounts.
  * @param eventEmitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
  * @param eventName Name of the event to listen to.
  * @param listener A function to call when the event is dispatched.
