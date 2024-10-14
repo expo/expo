@@ -6,7 +6,6 @@ import {
   useLinkBuilder,
   useLinkProps,
 } from '@react-navigation/native';
-import * as SS from '@react-navigation/stack';
 import React from 'react';
 import {
   FlatList,
