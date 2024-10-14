@@ -126,7 +126,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if ([self _isHomeVisible]) {
     EXReactAppManager *homeAppManager = [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
-    // reloadApp will only reload the app if developer tools are enabled for the app
     [homeAppManager reloadApp];
     return;
   }
