@@ -330,6 +330,7 @@ The modal allows the user to choose an emoji from a list of available emoji. Cre
 {/* prettier-ignore */}
 ```tsx components/EmojiPicker.tsx|collapseHeight=430
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
+import { PropsWithChildren } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 type Props = PropsWithChildren<{
