@@ -17,12 +17,6 @@
 + (nonnull instancetype)sharedInstance;
 
 /**
- * Returns the bridge to which the dev menu is hooked.
- * TODO: (@tsapeta) It's gonna be removed once the dev menu moves to have its own bridge.
- */
-- (nullable RCTBridge *)mainBridge;
-
-/**
  * Returns the AppDelegate whose rootViewfactory the dev menu uses to create it's root view.
  */
 - (nullable RCTAppDelegate *)mainAppDelegate;
