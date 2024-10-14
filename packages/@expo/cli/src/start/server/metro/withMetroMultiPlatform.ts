@@ -18,6 +18,7 @@ import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } fr
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import {
+  type ExpoCustomMetroResolver,
   withMetroErrorReportingResolver,
   withMetroMutatedResolverContext,
   withMetroResolvers,
@@ -631,6 +632,9 @@ export function withExtendedResolver(
 
       return result;
     },
+
+    // (Try to) resolve single module instances, only enabled for `react-native`
+    createMonoresolver(getOptionalResolver),
   ]);
 
   // Ensure we mutate the resolution context to include the custom resolver options for server and web.
@@ -807,4 +811,65 @@ export async function withMetroMultiPlatformAsync(
 
 function isDirectoryIn(targetPath: string, rootPath: string) {
   return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
+}
+
+/**
+ * The monoresolver is a special resolver, that tries to resolve single package instances.
+ * It breaks away from Node module resolution to avoid projects breaking with multiple versions of `react-native`.
+ * This works by:
+ *   - Resolving the requested module import for `react-native` (e.g. `import 'react-native'` or `import 'react-native/...'`)
+ *   - Caches the module root in-memory (e.g. `/Users/../project/apps/node_modules/react-native`)
+ *   - Next resolutions will resolve directly from the known module root, instead of Node module resolution.
+ *
+ * It's specifically designed for monorepos using multiple `react-native` versions in different workspaces.
+ * Once a hoisted module imports `react-native`, it might accidentally import a different version of `react-native`.
+ * When that happens, the project fails with unclear errors. This resolver tries to avoid that.
+ */
+function createMonoresolver(
+  getOptionalResolver: (
+    context: ResolutionContext,
+    platform: string | null
+  ) => (moduleName: string) => Resolution | null
+): ExpoCustomMetroResolver {
+  // Only enable the monoresolver as opt-in
+  if (!env.EXPO_UNSTABLE_MONORESOLVER) {
+    return () => null;
+  }
+
+  /** The known module roots, by package name */
+  const moduleRoots = new Map<string, string>();
+
+  return (context, moduleImport, platform) => {
+    // Only enable this for `react-native`
+    if (!(moduleImport === 'react-native' || moduleImport.startsWith('react-native/'))) {
+      return null;
+    }
+
+    // Split the module import into `<packageName>/<...nestedModuleImport>`
+    // Note, this does not support scoped packages as we only enable this for `react-native`
+    const [packageName, nestedModuleImport] = moduleImport.split('/', 1);
+
+    // Resolve from the in-memory cache when available
+    if (moduleRoots.has(packageName)) {
+      const absoluteModuleImport = [moduleRoots.get(packageName), nestedModuleImport]
+        .filter(Boolean)
+        .join('/');
+
+      debug(`monoresolver: ${moduleImport} → ${absoluteModuleImport}`);
+
+      return getOptionalResolver(context, platform)(absoluteModuleImport);
+    }
+
+    // Check if we can resolve the module normally
+    const resolution = getOptionalResolver(context, platform)(moduleImport);
+
+    // Populate the cache with the root of the module
+    if (resolution) {
+      const [moduleRootWithoutPackageName] = moduleImport.split(`/${packageName}/`, 1);
+      moduleRoots.set(packageName, `${moduleRootWithoutPackageName}/${packageName}`);
+      debug(`monoresolver root: ${packageName} → ${moduleRootWithoutPackageName}/${packageName}`);
+    }
+
+    return resolution;
+  };
 }

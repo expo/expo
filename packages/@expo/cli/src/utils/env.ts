@@ -219,6 +219,11 @@ class Env {
   get EXPO_NO_DEPLOY(): boolean {
     return boolish('EXPO_NO_DEPLOY', false);
   }
+
+  /** Enable force resolution for `react-native`, using the location of the first resolved `react-native` location */
+  get EXPO_UNSTABLE_MONORESOLVER(): boolean {
+    return boolish('EXPO_UNSTABLE_MONORESOLVER', false);
+  }
 }
 
 export const env = new Env();
