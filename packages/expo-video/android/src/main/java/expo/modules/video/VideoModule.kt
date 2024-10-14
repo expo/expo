@@ -21,6 +21,7 @@ import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.ifYogaDefinedUse
 import expo.modules.video.utils.makeYogaUndefinedIfNegative
+import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -131,7 +132,7 @@ class VideoModule : Module() {
       }
 
       AsyncFunction("startPictureInPicture") { view: VideoView ->
-        view.runWithPiPMisconfigurationSoftHandling(true) {
+        runWithPiPMisconfigurationSoftHandling(true) {
           view.enterPictureInPicture()
         }
       }
