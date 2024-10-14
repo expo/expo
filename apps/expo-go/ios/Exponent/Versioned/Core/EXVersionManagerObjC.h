@@ -4,7 +4,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTBridge.h>
 
-#import "EXVersionUtils.h"
 
 @class EXManifestsManifest;
 
@@ -20,9 +19,6 @@
 - (void)hostFinishedLoading:(id)host;
 - (void)invalidate;
 
-/**
- *  Dev tools (implementation varies by SDK)
- */
 - (void)showDevMenuForHost:(id)host;
 - (void)disableRemoteDebuggingForHost:(id)host;
 - (void)toggleRemoteDebuggingForHost:(id)host;

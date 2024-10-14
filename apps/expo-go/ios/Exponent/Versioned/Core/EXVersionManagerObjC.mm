@@ -13,8 +13,6 @@
 #import "EXTest.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTBridge.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTExceptionsManager.h>
@@ -27,7 +25,7 @@
 #import <React/RCTFileRequestHandler.h>
 #import <React/RCTHTTPRequestHandler.h>
 #import <React/RCTNetworking.h>
-#import <React/RCTBundleAssetImageLoader.h>
+#import <React/RCTLocalAssetImageLoader.h>
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTInspectorDevServerHelper.h>
@@ -36,16 +34,8 @@
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
-#import <React/RCTFabricSurface.h>
-#import <React/RCTSurfaceHostingProxyRootView.h>
-#import <React/RCTSurfacePresenter.h>
-#import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <react/config/ReactNativeConfig.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
-
-#import <React/RCTUIManager.h>
-#import <React/RCTJSIExecutorRuntimeInstaller.h>
-#import <reacthermes/HermesExecutorFactory.h>
 
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
@@ -69,23 +59,12 @@
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
 RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
-// this is needed because RCTPerfMonitor does not declare a public interface
-// anywhere that we can import.
-@interface RCTPerfMonitorDevSettingsHack <NSObject>
-
-- (void)hide;
-- (void)show;
-
-@end
-
 @interface EXVersionManagerObjC ()
 
 // is this the first time this ABI has been touched at runtime?
-@property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) EXVersionedNetworkInterceptor *networkInterceptor;
-@property (nonatomic, assign, readonly) BOOL fabricEnabled;
 
 // Legacy
 @property (nonatomic, strong) EXModuleRegistry *legacyModuleRegistry;
@@ -119,7 +98,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if (self = [super init]) {
     _params = params;
     _manifest = manifest;
-    _fabricEnabled = true;
   }
   return self;
 }
@@ -430,7 +408,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   // Standard
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *) {
-      return @[[RCTBundleAssetImageLoader new]];
+      return @[[RCTLocalAssetImageLoader new]];
     } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *) {
       return @[[RCTGIFImageDecoder new]];
     }];
