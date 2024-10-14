@@ -332,11 +332,10 @@ The modal allows the user to choose an emoji from a list of available emoji. Cre
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-type Props = {
+type Props = PropsWithChildren<{
   isVisible: boolean;
-  children?: React.ReactNode;
   onClose: () => void;
-};
+}>;
 
 export default function EmojiPicker({ isVisible, children, onClose }: Props) {
   return (
