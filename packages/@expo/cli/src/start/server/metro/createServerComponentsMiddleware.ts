@@ -38,7 +38,7 @@ type SSRLoadModuleArtifactsFunc = (
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
   filePath: string,
   specificOptions?: Partial<ExpoMetroOptions>,
-  extras?: { hot?: boolean }
+  extras?: { hot?: boolean; global?: any }
 ) => Promise<T>;
 
 const getMetroServerRootMemo = memoize(getMetroServerRoot);
@@ -61,6 +61,7 @@ export function createServerComponentsMiddleware(
     getStaticScriptUrl: () => string;
   }
 ) {
+  const nodeGlobal = {};
   const serverRoot = getMetroServerRootMemo(projectRoot);
 
   const htmlMiddleware = {
@@ -459,14 +460,20 @@ export function createServerComponentsMiddleware(
     // if (htmlRendererCache.has(platform)) {
     //   return htmlRendererCache.get(platform)!;
     // }
+    console.log('BACON:START');
 
-    const renderer = await ssrLoadModule<typeof import('expo-router/src/rsc/html-renderer')>(
+    const renderer = await ssrLoadModule<typeof import('expo-router/build/rsc/html-renderer')>(
       'expo-router/build/rsc/html-renderer',
       {
         environment: 'node',
         platform,
+      },
+      {
+        global: nodeGlobal,
       }
     );
+
+    console.log('BACON:RENDERER', renderer);
 
     // htmlRendererCache.set(platform, renderer);
     return renderer;
@@ -581,173 +588,173 @@ export function createServerComponentsMiddleware(
     getExpoRouterClientReferencesAsync,
     exportServerActionsAsync,
 
-    exportHtmlFiles: async ({
-      projectRoot,
-      buildConfig,
-      publicIndexHtml,
-      files,
-      artifacts,
-      getClientModules,
-    }: {
-      projectRoot: string;
-      buildConfig: any;
-      publicIndexHtml: string;
-      files: ExportAssetMap;
-      artifacts: SerialAsset[];
-      getClientModules: (input: string) => string[];
-    }) => {
-      const platform = 'web';
+    // exportHtmlFiles: async ({
+    //   projectRoot,
+    //   buildConfig,
+    //   publicIndexHtml,
+    //   files,
+    //   artifacts,
+    //   getClientModules,
+    // }: {
+    //   projectRoot: string;
+    //   buildConfig: any;
+    //   publicIndexHtml: string;
+    //   files: ExportAssetMap;
+    //   artifacts: SerialAsset[];
+    //   getClientModules: (input: string) => string[];
+    // }) => {
+    //   const platform = 'web';
 
-      const { renderHtml } = await getHtmlRendererAsync(platform);
+    //   const { renderHtml } = await getHtmlRendererAsync(platform);
 
-      const { getSsrConfig } = await getRscRendererAsync(platform);
+    //   const { getSsrConfig } = await getRscRendererAsync(platform);
 
-      const config = {
-        basePath: '',
-        rscPath: '/_flight/web',
-        distDir: 'dist',
-      };
+    //   const config = {
+    //     basePath: '',
+    //     rscPath: '/_flight/web',
+    //     distDir: 'dist',
+    //   };
 
-      const serverRoot = getMetroServerRoot(projectRoot);
+    //   const serverRoot = getMetroServerRoot(projectRoot);
 
-      // const nonJsAssets = artifacts.filter(({ type }) =>
-      //   type === 'css' && !fileName.endsWith('.js') ? [fileName] : []
-      // );
-      // const cssAssets = nonJsAssets.filter((asset) => asset.endsWith('.css'));
-      const basePrefix = config.basePath + config.rscPath + '/';
-      // const publicIndexHtmlFile = joinPath(projectRoot, config.distDir, DIST_PUBLIC, 'index.html');
-      // const publicIndexHtml = await fs.promises.readFile(publicIndexHtmlFile, {
-      //   encoding: 'utf8',
-      // });
-      // if (await willEmitPublicIndexHtml(env, config, distEntries, buildConfig)) {
-      //   await unlink(publicIndexHtmlFile);
-      // }
-      // const publicIndexHtmlHead = publicIndexHtml.replace(/.*?<head>(.*?)<\/head>.*/s, '$1');
-      const dynamicHtmlPathMap = new Map<PathSpec, string>();
-      await Promise.all(
-        Array.from(buildConfig).map(
-          async ({ pathname, isStatic, entries, customCode, context }) => {
-            const pathSpec = typeof pathname === 'string' ? pathname2pathSpec(pathname) : pathname;
+    //   // const nonJsAssets = artifacts.filter(({ type }) =>
+    //   //   type === 'css' && !fileName.endsWith('.js') ? [fileName] : []
+    //   // );
+    //   // const cssAssets = nonJsAssets.filter((asset) => asset.endsWith('.css'));
+    //   const basePrefix = config.basePath + config.rscPath + '/';
+    //   // const publicIndexHtmlFile = joinPath(projectRoot, config.distDir, DIST_PUBLIC, 'index.html');
+    //   // const publicIndexHtml = await fs.promises.readFile(publicIndexHtmlFile, {
+    //   //   encoding: 'utf8',
+    //   // });
+    //   // if (await willEmitPublicIndexHtml(env, config, distEntries, buildConfig)) {
+    //   //   await unlink(publicIndexHtmlFile);
+    //   // }
+    //   // const publicIndexHtmlHead = publicIndexHtml.replace(/.*?<head>(.*?)<\/head>.*/s, '$1');
+    //   const dynamicHtmlPathMap = new Map<PathSpec, string>();
+    //   await Promise.all(
+    //     Array.from(buildConfig).map(
+    //       async ({ pathname, isStatic, entries, customCode, context }) => {
+    //         const pathSpec = typeof pathname === 'string' ? pathname2pathSpec(pathname) : pathname;
 
-            let htmlStr = serializeHtmlWithAssets({
-              // Just inject css assets for now
-              resources: artifacts.filter((asset) => asset.type !== 'js'),
-              template: publicIndexHtml,
-              baseUrl: config.basePath,
-              isExporting: true,
-              hydrate: true,
-              // TODO: Ensure this matches standard router
-              route: pathSpec,
-            });
+    //         let htmlStr = serializeHtmlWithAssets({
+    //           // Just inject css assets for now
+    //           resources: artifacts.filter((asset) => asset.type !== 'js'),
+    //           template: publicIndexHtml,
+    //           baseUrl: config.basePath,
+    //           isExporting: true,
+    //           hydrate: true,
+    //           // TODO: Ensure this matches standard router
+    //           route: pathSpec,
+    //         });
 
-            const publicIndexHtmlHead = publicIndexHtml.replace(/.*?<head>(.*?)<\/head>.*/s, '$1');
-            let htmlHead = publicIndexHtmlHead;
-            // if (cssAssets.length) {
-            //   const cssStr = cssAssets
-            //     .map((asset) => `<link rel="stylesheet" href="${config.basePath}${asset}">`)
-            //     .join('\n');
-            //   // HACK is this too naive to inject style code?
-            //   htmlStr = htmlStr.replace(/<\/head>/, cssStr);
-            //   htmlHead += cssStr;
-            // }
-            const inputsForPrefetch = new Set<string>();
-            const moduleIdsForPrefetch = new Set<string>();
-            for (const { input, skipPrefetch } of entries || []) {
-              if (!skipPrefetch) {
-                inputsForPrefetch.add(input);
-                for (const id of getClientModules(input)) {
-                  moduleIdsForPrefetch.add(id);
-                }
-              }
-            }
-            const code =
-              generatePrefetchCode(basePrefix, inputsForPrefetch, moduleIdsForPrefetch) +
-              (customCode || '');
-            if (code) {
-              // HACK is this too naive to inject script code?
-              htmlStr = htmlStr.replace(
-                /<\/head>/,
-                `<script type="module" async>${code}</script></head>`
-              );
-              htmlHead += `<script type="module" async>${code}</script>`;
-            }
-            if (!isStatic) {
-              dynamicHtmlPathMap.set(pathSpec, htmlHead);
-              return;
-            }
-            pathname = pathSpec2pathname(pathSpec);
-            const destHtmlFile = path.join(
-              // projectRoot,
-              // config.distDir,
-              // DIST_PUBLIC,
-              path.extname(pathname)
-                ? pathname
-                : pathname === '/404'
-                  ? '404.html' // HACK special treatment for 404, better way?
-                  : pathname + '/index.html'
-            );
+    //         const publicIndexHtmlHead = publicIndexHtml.replace(/.*?<head>(.*?)<\/head>.*/s, '$1');
+    //         let htmlHead = publicIndexHtmlHead;
+    //         // if (cssAssets.length) {
+    //         //   const cssStr = cssAssets
+    //         //     .map((asset) => `<link rel="stylesheet" href="${config.basePath}${asset}">`)
+    //         //     .join('\n');
+    //         //   // HACK is this too naive to inject style code?
+    //         //   htmlStr = htmlStr.replace(/<\/head>/, cssStr);
+    //         //   htmlHead += cssStr;
+    //         // }
+    //         const inputsForPrefetch = new Set<string>();
+    //         const moduleIdsForPrefetch = new Set<string>();
+    //         for (const { input, skipPrefetch } of entries || []) {
+    //           if (!skipPrefetch) {
+    //             inputsForPrefetch.add(input);
+    //             for (const id of getClientModules(input)) {
+    //               moduleIdsForPrefetch.add(id);
+    //             }
+    //           }
+    //         }
+    //         const code =
+    //           generatePrefetchCode(basePrefix, inputsForPrefetch, moduleIdsForPrefetch) +
+    //           (customCode || '');
+    //         if (code) {
+    //           // HACK is this too naive to inject script code?
+    //           htmlStr = htmlStr.replace(
+    //             /<\/head>/,
+    //             `<script type="module" async>${code}</script></head>`
+    //           );
+    //           htmlHead += `<script type="module" async>${code}</script>`;
+    //         }
+    //         if (!isStatic) {
+    //           dynamicHtmlPathMap.set(pathSpec, htmlHead);
+    //           return;
+    //         }
+    //         pathname = pathSpec2pathname(pathSpec);
+    //         const destHtmlFile = path.join(
+    //           // projectRoot,
+    //           // config.distDir,
+    //           // DIST_PUBLIC,
+    //           path.extname(pathname)
+    //             ? pathname
+    //             : pathname === '/404'
+    //               ? '404.html' // HACK special treatment for 404, better way?
+    //               : pathname + '/index.html'
+    //         );
 
-            // In partial mode, skip if the file already exists.
-            // if (fs.existsSync(destHtmlFile)) {
-            //   return;
-            // }
-            const htmlReadable = await renderHtml({
-              // config: {},
-              serverRoot,
-              resolveClientEntry: getResolveClientEntry({ platform, environment: 'node' }),
-              pathname,
-              searchParams: new URLSearchParams(),
-              htmlHead,
-              renderRscForHtml: (input, params) =>
-                renderRsc(
-                  { config, input, context, decodedBody: params },
-                  { isDev: false, entries: distEntries }
-                ),
-              // getSsrConfigForHtml: async (pathname, searchParams) => {
-              //   return getSsrConfig(
-              //     { config: {}, pathname, searchParams },
-              //     {
-              //       entries,
-              //       resolveClientEntry: getResolveClientEntry({ platform }),
-              //     }
-              //   );
-              // },
-              getSsrConfigForHtml: (pathname, searchParams) =>
-                getSsrConfig(
-                  { config: {}, pathname, searchParams },
-                  { isDev: false, entries: distEntries }
-                ),
-              isExporting: true,
-              async loadModule(chunk) {
-                console.log('[SSR]__metro_node_chunk_load__:', chunk);
+    //         // In partial mode, skip if the file already exists.
+    //         // if (fs.existsSync(destHtmlFile)) {
+    //         //   return;
+    //         // }
+    //         const htmlReadable = await renderHtml({
+    //           // config: {},
+    //           serverRoot,
+    //           resolveClientEntry: getResolveClientEntry({ platform, environment: 'node' }),
+    //           pathname,
+    //           searchParams: new URLSearchParams(),
+    //           htmlHead,
+    //           renderRscForHtml: (input, params) =>
+    //             renderRsc(
+    //               { config, input, context, decodedBody: params },
+    //               { isDev: false, entries: distEntries }
+    //             ),
+    //           // getSsrConfigForHtml: async (pathname, searchParams) => {
+    //           //   return getSsrConfig(
+    //           //     { config: {}, pathname, searchParams },
+    //           //     {
+    //           //       entries,
+    //           //       resolveClientEntry: getResolveClientEntry({ platform }),
+    //           //     }
+    //           //   );
+    //           // },
+    //           getSsrConfigForHtml: (pathname, searchParams) =>
+    //             getSsrConfig(
+    //               { config: {}, pathname, searchParams },
+    //               { isDev: false, entries: distEntries }
+    //             ),
+    //           isExporting: true,
+    //           async loadModule(chunk) {
+    //             console.log('[SSR]__metro_node_chunk_load__:', chunk);
 
-                const options = getMetroOptionsFromUrl(chunk);
-                return await ssrLoadModule(path.join(serverRoot, options.mainModuleName), {
-                  ...options,
-                  modulesOnly: true,
-                  runModule: false,
-                });
-              },
-            });
-            // await fs.promises.mkdir(path.join(destHtmlFile, '..'), { recursive: true });
-            if (htmlReadable) {
-              htmlStr = await streamToStringAsync(htmlReadable);
-              // await pipeline(
-              //   Readable.fromWeb(htmlReadable as any),
-              //   createWriteStream(destHtmlFile)
-              // );
-            } else {
-              // await fs.promises.writeFile(destHtmlFile, htmlStr);
-            }
-            files.set(destHtmlFile, {
-              contents: htmlStr,
-              targetDomain: 'client',
-              rscId: pathname,
-            });
-          }
-        )
-      );
-    },
+    //             const options = getMetroOptionsFromUrl(chunk);
+    //             return await ssrLoadModule(path.join(serverRoot, options.mainModuleName), {
+    //               ...options,
+    //               modulesOnly: true,
+    //               runModule: false,
+    //             });
+    //           },
+    //         });
+    //         // await fs.promises.mkdir(path.join(destHtmlFile, '..'), { recursive: true });
+    //         if (htmlReadable) {
+    //           htmlStr = await streamToStringAsync(htmlReadable);
+    //           // await pipeline(
+    //           //   Readable.fromWeb(htmlReadable as any),
+    //           //   createWriteStream(destHtmlFile)
+    //           // );
+    //         } else {
+    //           // await fs.promises.writeFile(destHtmlFile, htmlStr);
+    //         }
+    //         files.set(destHtmlFile, {
+    //           contents: htmlStr,
+    //           targetDomain: 'client',
+    //           rscId: pathname,
+    //         });
+    //       }
+    //     )
+    //   );
+    // },
 
     async exportRoutesAsync(
       {
@@ -816,23 +823,23 @@ export function createServerComponentsMiddleware(
         return Array.from(idSet || []);
       };
 
-      this.exportHtmlFiles({
-        buildConfig,
-        files,
-        projectRoot,
-        publicIndexHtml: `<!DOCTYPE html>
-<html lang="%LANG_ISO_CODE%">
-  <head>
-    <meta charset="utf-8" />
-    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  </head>
-  <body>
-  </body>
-</html>`,
-        artifacts,
-        getClientModules,
-      });
+      //       this.exportHtmlFiles({
+      //         buildConfig,
+      //         files,
+      //         projectRoot,
+      //         publicIndexHtml: `<!DOCTYPE html>
+      // <html lang="%LANG_ISO_CODE%">
+      //   <head>
+      //     <meta charset="utf-8" />
+      //     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+      //     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+      //   </head>
+      //   <body>
+      //   </body>
+      // </html>`,
+      //         artifacts,
+      //         getClientModules,
+      //       });
     },
     htmlMiddleware: htmlMiddleware.GET,
     // htmlMiddleware: createBuiltinAPIRequestHandler(

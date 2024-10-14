@@ -88,10 +88,11 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
   filename: string,
-  isExporting: boolean
+  isExporting: boolean,
+  global?: any
 ): T {
   // TODO: Add back stack trace logic that hides traces from metro-runtime and other internal modules.
-  const contents = evalMetroNoHandling(projectRoot, script, filename);
+  const contents = evalMetroNoHandling(projectRoot, script, filename, global);
 
   if (!contents) {
     // This can happen if ErrorUtils isn't working correctly on web and failing to throw an error when a module throws.
@@ -123,8 +124,19 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   }, {} as any);
 }
 
-export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
+export function evalMetroNoHandling(
+  projectRoot: string,
+  src: string,
+  filename: string,
+  global?: any
+) {
   augmentLogs(projectRoot);
 
-  return profile(requireString, 'eval-metro-bundle')(src, filename);
+  const res = profile(requireString, 'eval-metro-bundle')(src, filename);
+
+  if (global) {
+    return res(global);
+  }
+
+  return res;
 }

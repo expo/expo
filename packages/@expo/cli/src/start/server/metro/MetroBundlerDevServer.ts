@@ -86,7 +86,7 @@ type MetroOnProgress = NonNullable<
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
   filePath: string,
   specificOptions?: Partial<ExpoMetroOptions>,
-  extras?: { hot?: boolean }
+  extras?: { hot?: boolean; global?: any }
 ) => Promise<T>;
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
@@ -276,6 +276,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     manifest: ExpoRouterRuntimeManifest;
     renderAsync: (path: string) => Promise<string>;
   }> {
+    if (this.isReactServerComponentsEnabled) {
+      // Sanity...
+      throw new Error(
+        'Internal error: getStaticRenderFunctionAsync is not supported with React Server Components.'
+      );
+    }
     const url = this.getDevServerUrlOrAssert();
 
     const { getStaticContent, getManifest, getBuildTimeServerManifestAsync } =
@@ -377,6 +383,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   private async getStaticPageAsync(pathname: string) {
+    if (this.isReactServerComponentsEnabled) {
+      // Sanity...
+      throw new Error(
+        'Internal error: getStaticPageAsync is not supported with React Server Components.'
+      );
+    }
     const { mode, isExporting, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
     assert(
@@ -438,7 +450,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     specificOptions = {},
     extras = {}
   ) => {
-    const res = await this.ssrLoadModuleContents(filePath, specificOptions);
+    const res = await this.ssrLoadModuleContents(filePath, specificOptions, {
+      global: extras.global,
+    });
 
     if (filePath.includes('html')) {
       console.log(res.src);
@@ -453,14 +467,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     if (specificOptions.runModule === false) {
-      return evalMetroNoHandling(this.projectRoot, res.src, res.filename);
+      return evalMetroNoHandling(this.projectRoot, res.src, res.filename, extras.global);
     }
 
     return evalMetroAndWrapFunctions(
       this.projectRoot,
       res.src,
       res.filename,
-      specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!
+      specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!,
+      extras.global
     );
   };
 
@@ -579,7 +594,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private async ssrLoadModuleContents(
     filePath: string,
-    specificOptions: Partial<ExpoMetroOptions> = {}
+    specificOptions: Partial<ExpoMetroOptions> = {},
+    extras?: { global?: boolean }
   ) {
     const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
     assert(
@@ -614,7 +630,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
-    const scriptContents = opts.runModule === false ? bundle : wrapBundle(bundle);
+
+    let scriptContents: string;
+    if (extras?.global) {
+      scriptContents = wrapBundleWithGlobal(bundle, opts.runModule !== false);
+    } else {
+      scriptContents = opts.runModule === false ? bundle : wrapBundle(bundle);
+    }
 
     if (map) {
       debug('Registering SSR source map for:', filename);
@@ -1713,8 +1735,12 @@ function getBuildID(buildNumber: number): string {
 }
 
 function wrapBundleWithGlobal(str: string, runModule: boolean) {
-  return `module.exports = function(globalThis) {
-${runModule ? str.replace(/^(__r\(.*\);)$/gm, 'return $1') : str}
+  const scopedDefine = str
+    .replace(/^(__d\()/gm, 'globalThis.__d(')
+    .replace(/^(__r\()/gm, 'globalThis.__r(');
+  // TODO: modulesRunBeforeMainModule could break this as there would be multiple return statements. We avoid using this in server bundles though.
+  return `module.exports = function(globalThis, global = globalThis) {
+${runModule ? scopedDefine.replace(/^(globalThis\.__r\(.*\);)$/gm, 'return $1') : scopedDefine}
 };`;
 }
 

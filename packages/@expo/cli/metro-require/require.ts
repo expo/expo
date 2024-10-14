@@ -184,6 +184,7 @@ function define(factory: FactoryFn, moduleId: ModuleID, dependencyMap?: Dependen
 }
 
 function metroRequire(moduleId: ModuleID | VerboseModuleNameForDev): Exports {
+  console.log('IMPORT:>', moduleId);
   // if (__DEV__ && typeof moduleId === 'string') {
   //   const verboseName = moduleId;
   //   moduleId = getModuleIdForVerboseName(verboseName);

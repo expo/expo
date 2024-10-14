@@ -13,36 +13,42 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RootWrap = void 0;
 const react_1 = __importDefault(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const ErrorBoundary_1 = require("../../views/ErrorBoundary");
-const Try_1 = require("../../views/Try");
-// Add root error recovery.
-function RootErrorBoundary(props) {
-    react_1.default.useEffect(() => {
-        function refetchRoute() {
-            if (props.error) {
-                props.retry();
-            }
-        }
-        // TODO: Only strip when not connected to a dev server.
-        if (process.env.NODE_ENV === 'development') {
-            globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
-            const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(globalThis.__EXPO_REFETCH_ROUTE__);
-            if (index !== -1) {
-                globalThis.__EXPO_RSC_RELOAD_LISTENERS__.splice(index, 1, refetchRoute);
-            }
-            else {
-                globalThis.__EXPO_RSC_RELOAD_LISTENERS__.unshift(refetchRoute);
-            }
-            globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
-        }
-    }, [props.error, props.retry]);
-    return (<ErrorBoundary_1.ErrorBoundary error={props.error} retry={() => {
-            // TODO: Invalidate the cache automatically when the request fails.
-            // Invalidate the fetch cache so we can retry the request.
-            globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__?.();
-            return props.retry();
-        }}/>);
-}
+// import { ErrorBoundary } from '../../views/ErrorBoundary';
+// import { ErrorBoundaryProps, Try } from '../../views/Try';
+// // Add root error recovery.
+// function RootErrorBoundary(props: ErrorBoundaryProps) {
+//   React.useEffect(() => {
+//     function refetchRoute() {
+//       if (props.error) {
+//         props.retry();
+//       }
+//     }
+//     // TODO: Only strip when not connected to a dev server.
+//     if (process.env.NODE_ENV === 'development') {
+//       globalThis.__EXPO_RSC_RELOAD_LISTENERS__ ||= [];
+//       const index = globalThis.__EXPO_RSC_RELOAD_LISTENERS__.indexOf(
+//         globalThis.__EXPO_REFETCH_ROUTE__
+//       );
+//       if (index !== -1) {
+//         globalThis.__EXPO_RSC_RELOAD_LISTENERS__.splice(index, 1, refetchRoute);
+//       } else {
+//         globalThis.__EXPO_RSC_RELOAD_LISTENERS__.unshift(refetchRoute);
+//       }
+//       globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
+//     }
+//   }, [props.error, props.retry]);
+//   return (
+//     <ErrorBoundary
+//       error={props.error}
+//       retry={() => {
+//         // TODO: Invalidate the cache automatically when the request fails.
+//         // Invalidate the fetch cache so we can retry the request.
+//         globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__?.();
+//         return props.retry();
+//       }}
+//     />
+//   );
+// }
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = process.env.EXPO_OS === 'web' || isTestEnv
     ? {
@@ -52,7 +58,8 @@ const INITIAL_METRICS = process.env.EXPO_OS === 'web' || isTestEnv
     : undefined;
 function RootWrap({ children }) {
     return (<react_native_safe_area_context_1.SafeAreaProvider initialMetrics={INITIAL_METRICS}>
-      <Try_1.Try catch={RootErrorBoundary}>{children}</Try_1.Try>
+      {children}
+      {/* <Try catch={RootErrorBoundary}>{children}</Try> */}
     </react_native_safe_area_context_1.SafeAreaProvider>);
 }
 exports.RootWrap = RootWrap;
