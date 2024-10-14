@@ -58,7 +58,7 @@ abstract class BaseNotificationBuilder protected constructor(protected val conte
         return fallbackNotificationChannel!!.id
       }
 
-      val requestedChannelId = trigger.notificationChannel
+      val requestedChannelId = trigger.getNotificationChannel()
         ?: return fallbackNotificationChannel!!.id
 
       val channelForRequestedId =

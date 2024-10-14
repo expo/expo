@@ -1,5 +1,7 @@
 package expo.modules.notifications.notifications.triggers
 
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
 import kotlinx.parcelize.IgnoredOnParcel
@@ -14,8 +16,12 @@ open class ChannelAwareTrigger(open val channelId: String?) :
 
   override fun describeContents(): Int = 0
 
-  override fun getNotificationChannel(): String? {
-    return channelId
+  override fun getNotificationChannel() = channelId
+
+  override fun toBundle() = bundleWithChannelId()
+
+  protected fun bundleWithChannelId(vararg pairs: Pair<String, Any?>): Bundle {
+    return bundleOf("channelId" to channelId, *pairs)
   }
 }
 
@@ -24,6 +30,11 @@ open class ChannelAwareTrigger(open val channelId: String?) :
  */
 @Parcelize
 class DailyTrigger(override val channelId: String?, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+  override fun toBundle() = bundleWithChannelId(
+    "type" to "daily",
+    "hour" to hour,
+    "minute" to minute
+  )
 
   override fun nextTriggerDate(): Date? {
     val nextTriggerDate = Calendar.getInstance()
@@ -45,6 +56,12 @@ class DailyTrigger(override val channelId: String?, val hour: Int, val minute: I
 @Parcelize
 class DateTrigger(override val channelId: String?, val timestamp: Long) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
 
+  override fun toBundle() = bundleWithChannelId(
+    "type" to "date",
+    "repeats" to false,
+    "value" to timestamp
+  )
+
   override fun nextTriggerDate(): Date? {
     val now = Date()
     val triggerDate = Date(timestamp)
@@ -62,6 +79,12 @@ class DateTrigger(override val channelId: String?, val timestamp: Long) : Channe
  */
 @Parcelize
 class MonthlyTrigger(override val channelId: String?, val day: Int, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+  override fun toBundle() = bundleWithChannelId(
+    "type" to "monthly",
+    "day" to day,
+    "hour" to hour,
+    "minute" to minute
+  )
 
   override fun nextTriggerDate(): Date? {
     val nextTriggerDate = Calendar.getInstance()
@@ -92,6 +115,12 @@ class TimeIntervalTrigger(override val channelId: String?, val timeInterval: Lon
   @IgnoredOnParcel
   private var triggerDate = Date(Date().time + timeInterval * 1000)
 
+  override fun toBundle() = bundleWithChannelId(
+    "type" to "timeInterval",
+    "repeats" to isRepeating,
+    "seconds" to timeInterval
+  )
+
   override fun nextTriggerDate(): Date? {
     val now = Date()
 
@@ -114,6 +143,12 @@ class TimeIntervalTrigger(override val channelId: String?, val timeInterval: Lon
  */
 @Parcelize
 class WeeklyTrigger(override val channelId: String?, val weekday: Int, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+  override fun toBundle() = bundleWithChannelId(
+    "type" to "weekly",
+    "weekday" to weekday,
+    "hour" to hour,
+    "minute" to minute
+  )
 
   override fun nextTriggerDate(): Date? {
     val nextTriggerDate = Calendar.getInstance()
@@ -135,6 +170,13 @@ class WeeklyTrigger(override val channelId: String?, val weekday: Int, val hour:
  */
 @Parcelize
 class YearlyTrigger(override val channelId: String?, val day: Int, val month: Int, val hour: Int, val minute: Int) : ChannelAwareTrigger(channelId), SchedulableNotificationTrigger {
+  override fun toBundle() = bundleWithChannelId(
+    "type" to "yearly",
+    "day" to day,
+    "month" to month,
+    "hour" to hour,
+    "minute" to minute
+  )
 
   override fun nextTriggerDate(): Date? {
     val nextTriggerDate = Calendar.getInstance()

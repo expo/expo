@@ -1,10 +1,13 @@
 package expo.modules.notifications.notifications.model.triggers
 
 import android.os.Build
+import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RequiresApi
+import androidx.core.os.bundleOf
 import com.google.firebase.messaging.RemoteMessage
+import expo.modules.notifications.notifications.RemoteMessageSerializer
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 
 /**
@@ -23,6 +26,13 @@ class FirebaseNotificationTrigger(private val remoteMessage: RemoteMessage) : No
   override fun getNotificationChannel(): String? {
     val channelId = remoteMessage.notification?.channelId ?: remoteMessage.data["channelId"]
     return channelId ?: super.getNotificationChannel()
+  }
+
+  override fun toBundle(): Bundle {
+    return bundleOf(
+      "type" to "push",
+      "remoteMessage" to RemoteMessageSerializer.toBundle(remoteMessage)
+    )
   }
 
   override fun describeContents(): Int {

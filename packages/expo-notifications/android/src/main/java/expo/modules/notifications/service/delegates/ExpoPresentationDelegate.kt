@@ -115,7 +115,7 @@ open class ExpoPresentationDelegate(
 
   private fun getNotificationSoundUri(notification: Notification): Uri? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      notification.notificationRequest.trigger.notificationChannel?.let {
+      notification.notificationRequest.trigger.getNotificationChannel()?.let {
         notificationManager.getNotificationChannel(it)?.sound
       }
     } else {
