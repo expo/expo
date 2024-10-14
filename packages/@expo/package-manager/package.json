@@ -46,7 +46,7 @@
     "micromatch": "^4.0.2",
     "npm-package-arg": "^11.0.0",
     "ora": "^3.4.0",
-    "resolve-workspace-root": "^1.0.0",
+    "resolve-workspace-root": "^2.0.0",
     "split": "^1.0.1",
     "sudo-prompt": "9.1.1"
   },
