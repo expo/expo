@@ -64,6 +64,7 @@ interface JSFile extends BaseFile {
   readonly ast?: ParseResult | null;
   readonly type: JSFileType;
   readonly functionMap: FBSourceFunctionMap | null;
+  readonly reactServerReference?: string;
   readonly reactClientReference?: string;
   readonly expoDomComponentReference?: string;
   readonly hasCjsExports?: boolean;
@@ -521,6 +522,7 @@ async function transformJS(
         map,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
+        reactServerReference: file.reactServerReference,
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
         ...(possibleReconcile
@@ -605,6 +607,7 @@ async function transformJSWithBabel(
       transformResult.functionMap ??
       null,
     hasCjsExports: transformResult.metadata?.hasCjsExports,
+    reactServerReference: transformResult.metadata?.reactServerReference,
     reactClientReference: transformResult.metadata?.reactClientReference,
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
   };

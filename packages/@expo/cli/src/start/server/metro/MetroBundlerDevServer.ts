@@ -25,7 +25,10 @@ import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
+import {
+  createServerComponentsMiddleware,
+  fileURLToFilePath,
+} from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
@@ -641,13 +644,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files: ExportAssetMap;
   }> {
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
-    const { reactClientReferences: clientBoundaries, cssModules } =
-      await this.rscRenderer!.getExpoRouterClientReferencesAsync(
-        {
-          platform: options.platform,
-        },
-        files
-      );
+    const {
+      reactClientReferences: clientBoundaries,
+      reactServerReferences: serverActionReferencesInServer,
+      cssModules,
+    } = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
+      {
+        platform: options.platform,
+      },
+      files
+    );
+
+    // TODO: The output keys should be in production format or use a lookup manifest.
 
     debug('Evaluated client boundaries:', clientBoundaries);
 
@@ -658,6 +666,33 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         clientBoundaries,
       },
       extraOptions
+    );
+
+    // Get the React server action boundaries from the client bundle.
+    const reactServerReferences = bundle.artifacts
+      .filter((a) => a.type === 'js')
+      .map((artifact) =>
+        artifact.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref))
+      )
+      // TODO: Segment by module for splitting.
+      .flat()
+      .filter(Boolean) as string[];
+
+    if (!reactServerReferences) {
+      // Issue with babel plugin / metro-config.
+      throw new Error(
+        'Static server action references were not returned from the Metro client bundle'
+      );
+    }
+
+    debug('React server action boundaries from client:', reactServerReferences);
+
+    await this.rscRenderer!.exportServerActionsAsync(
+      {
+        platform: options.platform,
+        entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
+      },
+      files
     );
 
     // Inject the global CSS that was imported during the server render.
@@ -710,17 +745,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
-    files.set(`_expo/rsc/${options.platform}/ssr-manifest.json`, {
+    files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
       targetDomain: 'server',
-      contents: JSON.stringify(
-        // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
-        Object.fromEntries(
-          Array.from(ssrManifest.entries()).map(([key, value]) => [
-            path.join(serverRoot, key),
-            [key, value],
-          ])
-        )
-      ),
+      contents:
+        'module.exports = ' +
+        JSON.stringify(
+          // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
+          Object.fromEntries(
+            Array.from(ssrManifest.entries()).map(([key, value]) => [
+              path.join(serverRoot, key),
+              [key, value],
+            ])
+          )
+        ),
     });
 
     return { ...bundle, files };

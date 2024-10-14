@@ -10,49 +10,54 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRsc = void 0;
+// This file must remain platform agnostic for production exports.
+// Import the runtime to support polyfills for webpack to load modules in the server using Metro.
+require("./runtime");
 const server_1 = require("react-server-dom-webpack/server");
 const path_1 = require("./path");
 const utils_1 = require("./router/utils");
 const server_2 = require("./server");
-// Make global so we only pull in one instance for state saved in the react-server-dom-webpack package.
-// @ts-ignore: HACK type for server actions
-globalThis._REACT_registerServerReference = server_1.registerServerReference;
 async function renderRsc(args, opts) {
     const { input, body, contentType, context, onError } = args;
     const { resolveClientEntry, entries } = opts;
     const { default: { renderEntries }, 
     // @ts-expect-error
     buildConfig, } = entries;
+    function resolveRequest(isServer, encodedId) {
+        const [
+        // File is the on-disk location of the module, this is injected during the "use client" transformation (babel).
+        file, 
+        // The name of the import (e.g. "default" or "")
+        // This will be empty when using `module.exports = ` and `require('...')`.
+        name = '',] = encodedId.split('#');
+        const filePath = file.startsWith('file://') ? (0, path_1.fileURLToFilePath)(file) : file;
+        args.moduleIdCallback?.({
+            id: filePath,
+            chunks: [
+                // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
+                // NOTE(EvanBacon): This is a placeholder since we need to render RSC to get the client boundaries, which we then inject later.
+                'chunk:' + filePath,
+            ],
+            name,
+            async: true,
+        });
+        // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
+        // This is similar to how we handle lazy bundling.
+        const resolved = resolveClientEntry(filePath, isServer);
+        return { id: resolved.id, chunks: resolved.chunks, name, async: true };
+    }
     const bundlerConfig = new Proxy({}, {
         get(_target, encodedId) {
-            const [
-            // File is the on-disk location of the module, this is injected during the "use client" transformation (babel).
-            file, 
-            // The name of the import (e.g. "default" or "")
-            // This will be empty when using `module.exports = ` and `require('...')`.
-            name = '',] = encodedId.split('#');
-            // HACK: Special handling for server actions being recursively resolved, e.g. ai demo.
-            if (encodedId.match(/[0-9a-z]{40}#/i)) {
-                // TODO: Rework server actions to use some ES Modules like system instead of the globals.
-                return { id: encodedId, chunks: [encodedId], name: '*', async: true };
-            }
-            const filePath = file.startsWith('file://') ? (0, path_1.fileURLToFilePath)(file) : file;
-            args.moduleIdCallback?.({
-                id: filePath,
-                chunks: [
-                    // TODO: Add a lookup later which reads from the SSR manifest to get the correct chunk.
-                    // NOTE(EvanBacon): This is a placeholder since we need to render RSC to get the client boundaries, which we then inject later.
-                    'chunk:' + filePath,
-                ],
-                name,
-                async: true,
-            });
-            // We'll augment the file path with the incoming RSC request which will forward the metro props required to make a cache hit, e.g. platform=web&...
-            // This is similar to how we handle lazy bundling.
-            const resolved = resolveClientEntry(filePath);
-            return { id: resolved.id, chunks: resolved.chunks, name, async: true };
+            return resolveRequest(false, encodedId);
         },
     });
+    const serverConfig = new Proxy({}, {
+        get(_target, encodedId) {
+            return resolveRequest(true, encodedId);
+        },
+    });
+    // @ts-ignore: Not part of global types. This is added to support server actions loading more actions.
+    global[`${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`] = opts.loadServerModuleRsc;
     const renderWithContext = async (context, input, params) => {
         const renderStore = {
             context: context || {},
@@ -115,22 +120,29 @@ async function renderRsc(args, opts) {
         if (typeof contentType === 'string' && contentType.startsWith('multipart/form-data')) {
             // XXX This doesn't support streaming unlike busboy
             const formData = parseFormData(bodyStr, contentType);
-            decodedBody = await (0, server_1.decodeReply)(formData, 
-            // TODO: add server action config
-            bundlerConfig);
+            decodedBody = await (0, server_1.decodeReply)(formData, serverConfig);
         }
         else if (bodyStr) {
-            decodedBody = await (0, server_1.decodeReply)(bodyStr, 
-            // TODO: add server action config
-            bundlerConfig);
+            decodedBody = await (0, server_1.decodeReply)(bodyStr, serverConfig);
         }
     }
     const actionId = (0, utils_1.decodeActionId)(input);
     if (actionId) {
+        if (!opts.isExporting &&
+            // @ts-ignore
+            !process.env.EXPO_UNSTABLE_SERVER_ACTIONS) {
+            throw new Error('Experimental support for React Server Actions is not enabled');
+        }
         const args = Array.isArray(decodedBody) ? decodedBody : [];
-        const [fileId, name] = actionId.split('#');
-        const mod = await opts.loadServerModuleRsc((0, utils_1.filePathToFileURL)(fileId));
-        const fn = name === '*' ? name : mod[name] || mod;
+        const chunkInfo = serverConfig[actionId];
+        // Load module into memory.
+        await Promise.all(chunkInfo.chunks.map((chunk) => globalThis.__webpack_chunk_load__(chunk)));
+        // Import module.
+        const mod = globalThis.__webpack_require__(chunkInfo.id);
+        const fn = chunkInfo.name === '*' ? chunkInfo.name : mod[chunkInfo.name] || mod;
+        if (!fn) {
+            throw new Error(`Could not find server action: ${actionId}. Module: ${JSON.stringify(chunkInfo, null, 2)}`);
+        }
         return renderWithContextWithAction(context, fn, args);
     }
     // method === 'GET'
