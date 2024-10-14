@@ -542,6 +542,9 @@ export function withExtendedResolver(
       return null;
     },
 
+    // (Try to) resolve single module instances, only enabled for `react-native`
+    createMonoresolver(getOptionalResolver),
+
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -632,9 +635,6 @@ export function withExtendedResolver(
 
       return result;
     },
-
-    // (Try to) resolve single module instances, only enabled for `react-native`
-    createMonoresolver(getOptionalResolver),
   ]);
 
   // Ensure we mutate the resolution context to include the custom resolver options for server and web.
@@ -836,40 +836,47 @@ function createMonoresolver(
     return () => null;
   }
 
-  /** The known module roots, by package name */
-  const moduleRoots = new Map<string, string>();
+  Log.warn('Experimental monoresolver enabled');
 
-  return (context, moduleImport, platform) => {
+  /** The parent directory that contains `react-native` */
+  let reactNativeParentDir = '';
+
+  return (context, moduleName, platform) => {
     // Only enable this for `react-native`
-    if (!(moduleImport === 'react-native' || moduleImport.startsWith('react-native/'))) {
+    if (!(moduleName === 'react-native' || moduleName.startsWith('react-native/'))) {
       return null;
     }
 
-    // Split the module import into `<packageName>/<...nestedModuleImport>`
-    // Note, this does not support scoped packages as we only enable this for `react-native`
-    const [packageName, nestedModuleImport] = moduleImport.split('/', 1);
+    if (!reactNativeParentDir) {
+      // Check if we can resolve the module normally
+      const resolution = getOptionalResolver(context, platform)(moduleName);
+
+      // Populate the cache with the root of the module
+      if (resolution && resolution.type === 'sourceFile') {
+        const [modulePathPrefix] = resolution.filePath.split(`/node_modules/react-native/`, 1);
+        reactNativeParentDir = `${modulePathPrefix}/node_modules`;
+        debug(`monoresolver root: react-native → ${reactNativeParentDir}`);
+      }
+
+      return resolution;
+    }
 
     // Resolve from the in-memory cache when available
-    if (moduleRoots.has(packageName)) {
-      const absoluteModuleImport = [moduleRoots.get(packageName), nestedModuleImport]
-        .filter(Boolean)
-        .join('/');
+    if (reactNativeParentDir) {
+      const modifiedContext = { ...context, originModulePath: reactNativeParentDir };
+      const resolution = getOptionalResolver(modifiedContext, platform)(moduleName);
 
-      debug(`monoresolver: ${moduleImport} → ${absoluteModuleImport}`);
+      if (!resolution) {
+        debug(
+          `monoresolver: WARNING - unexpected resolution failure, this might pull in another react-native version: ${moduleName}`
+        );
+      } else if (resolution?.type === 'sourceFile') {
+        debug(`monoresolver: ${moduleName} → ${resolution.filePath}`);
+      }
 
-      return getOptionalResolver(context, platform)(absoluteModuleImport);
+      return resolution;
     }
 
-    // Check if we can resolve the module normally
-    const resolution = getOptionalResolver(context, platform)(moduleImport);
-
-    // Populate the cache with the root of the module
-    if (resolution) {
-      const [moduleRootWithoutPackageName] = moduleImport.split(`/${packageName}/`, 1);
-      moduleRoots.set(packageName, `${moduleRootWithoutPackageName}/${packageName}`);
-      debug(`monoresolver root: ${packageName} → ${moduleRootWithoutPackageName}/${packageName}`);
-    }
-
-    return resolution;
+    return null;
   };
 }
