@@ -13,6 +13,8 @@ type BabelPresetExpoPlatformOptions = {
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
+    /** Defaults to "legacy", set to false to disable `@babel/plugin-proposal-decorators` or set custom version string like "2023-05" */
+    decoratorsPluginVersion?: string | false;
     /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
     'react-compiler'?: false | {
         enableUseMemoCachePolyfill?: boolean;

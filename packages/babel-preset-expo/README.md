@@ -177,6 +177,23 @@ If `undefined` (default), this will be set automatically via `caller.supportsSta
 
 Changes the engine preset in `@react-native/babel-preset` based on the JavaScript engine that is being targeted. In Expo SDK 50 and greater, this is automatically set based on the [`jsEngine`](https://docs.expo.dev/versions/latest/config/app/#jsengine) option in your `app.json`.
 
+### `decoratorsPluginVersion`
+
+Changes the proposal version that `@babel/plugin-proposal-decorators` uses. Defaults to `legacy`. Set to `false` to disable the plugin. Read more about supported versions in the [`@babel/plugin-proposal-decorators` docs](https://babeljs.io/docs/babel-plugin-proposal-decorators#version). 
+
+```js
+[
+  'babel-preset-expo',
+  {
+    // Use specific version of decorators proposal
+    decoratorsPluginVersion: '2023-05',
+
+    // Disable decorators plugin
+    decoratorsPluginVersion: false,
+  },
+];
+```
+
 ### `enableBabelRuntime`
 
 Passed to `@react-native/babel-preset`.

@@ -43,6 +43,8 @@ type BabelPresetExpoPlatformOptions = {
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
 
+  /** Defaults to "legacy", set to false to disable `@babel/plugin-proposal-decorators` or set a custom version string like "2023-05" */
+  decoratorsPluginVersion?: string | false;
   /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
   'react-compiler'?:
     | false
@@ -319,6 +321,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   // Use the simpler babel preset for web and server environments (both web and native SSR).
   const isModernEngine = platform === 'web' || isServerEnv;
 
+  if (platformOptions.decoratorsPluginVersion !== false) {
+    extraPlugins.push([
+      require('@babel/plugin-proposal-decorators'),
+      {
+        version: platformOptions.decoratorsPluginVersion ?? 'legacy',
+      },
+    ]);
+  }
+
   return {
     presets: [
       [
@@ -394,7 +405,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     plugins: [
       ...extraPlugins,
       // TODO: Remove
-      [require('@babel/plugin-proposal-decorators'), { legacy: true }],
       require('@babel/plugin-transform-export-namespace-from'),
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
       // TODO: Move to be a customTransformOption.
