@@ -1,6 +1,7 @@
 package expo.modules.notifications.service.delegates
 
 import android.os.Parcel
+import androidx.core.os.bundleOf
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.notifications.notifications.NotificationManager
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger
@@ -100,6 +101,8 @@ class ExpoHandlingDelegateTest {
         "identifier",
         NotificationContent.Builder().setTitle(title).setText(text).setBody(body).build(),
         object : NotificationTrigger {
+          override fun toBundle() = bundleOf()
+
           override fun describeContents(): Int = -1
           override fun writeToParcel(dest: Parcel, flags: Int) {}
         }
