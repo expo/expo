@@ -128,6 +128,13 @@ function reactClientReferencesPlugin(api) {
                         // Do nothing for "use client" on the client.
                         return;
                     }
+                    // HACK: Mock out the polyfill that doesn't run through the normal bundler pipeline.
+                    if (filePath.endsWith('@react-native/js-polyfills/console.js')) {
+                        // Clear the body
+                        path.node.body = [];
+                        path.node.directives = [];
+                        return;
+                    }
                     // We need to add all of the exports to support `export * from './module'` which iterates the keys of the module.
                     const proxyModule = [
                         `const proxy = /*@__PURE__*/ require("react-server-dom-webpack/server").createClientModuleProxy(${JSON.stringify(outputKey)});`,
