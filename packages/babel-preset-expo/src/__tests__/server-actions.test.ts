@@ -270,8 +270,7 @@ export async function foo() {
           }
         };
       };
-      import { jsx as _jsx } from "react/jsx-runtime";
-      import { jsxs as _jsxs } from "react/jsx-runtime";
+      import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
       // hoisted action: doStuff
       export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
         var [foo2] = _$$CLOSURE.value;
@@ -338,8 +337,7 @@ export const Test2 = ({ foo }) => {
           }
         };
       };
-      import { jsx as _jsx } from "react/jsx-runtime";
-      import { jsxs as _jsxs } from "react/jsx-runtime";
+      import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
       // hoisted action: doStuff
       export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
         var [foo2] = _$$CLOSURE.value;
@@ -647,8 +645,7 @@ export const Test = ({ foo, bar }) => {
       };
     };
     import { doSomethingOnTheServer } from "../server-stuff";
-    import { jsx as _jsx } from "react/jsx-runtime";
-    import { jsxs as _jsxs } from "react/jsx-runtime";
+    import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: <anonymous>
     export const _$$INLINE_ACTION2 = _registerServerReference(async (_$$CLOSURE2, data) => {
       var [bar, foo] = _$$CLOSURE2.value;
@@ -727,8 +724,7 @@ export const Test = ({ foo }) => {
       };
     };
     import { doSomethingOnTheServer } from "../server-stuff";
-    import { jsx as _jsx } from "react/jsx-runtime";
-    import { jsxs as _jsxs } from "react/jsx-runtime";
+    import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: <anonymous>
     export const _$$INLINE_ACTION = _registerServerReference(async (_$$CLOSURE, data) => {
       var [foo] = _$$CLOSURE.value;
@@ -802,8 +798,7 @@ export const Test = ({ foo }) => {
     /* eslint-disable @typescript-eslint/no-unused-vars */
     import { doSomethingOnTheServer } from "../server-stuff";
     import "./server-stuff";
-    import { jsx as _jsx } from "react/jsx-runtime";
-    import { jsxs as _jsxs } from "react/jsx-runtime";
+    import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: <anonymous>
     export const _$$INLINE_ACTION2 = _registerServerReference(async _$$CLOSURE2 => {
       var [foo1] = _$$CLOSURE2.value;
@@ -870,8 +865,7 @@ export const Test = ({ foo }) => {
       };
     };
     import { doSomethingOnTheServer } from "../server-stuff";
-    import { jsx as _jsx } from "react/jsx-runtime";
-    import { jsxs as _jsxs } from "react/jsx-runtime";
+    import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuff
     export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo] = _$$CLOSURE.value;
@@ -934,8 +928,7 @@ export const Test = ({ foo }) => {
       };
     };
     import { doSomethingOnTheServer } from "../server-stuff";
-    import { jsx as _jsx } from "react/jsx-runtime";
-    import { jsxs as _jsxs } from "react/jsx-runtime";
+    import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuff
     export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo] = _$$CLOSURE.value;
@@ -998,8 +991,7 @@ export const Test = ({ foo }) => {
       };
     };
     import { doSomethingOnTheServer } from "../server-stuff";
-    import { jsx as _jsx } from "react/jsx-runtime";
-    import { jsxs as _jsxs } from "react/jsx-runtime";
+    import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuff
     export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo2, x] = _$$CLOSURE.value;
@@ -1071,8 +1063,7 @@ export const Test = ({ foo }) => {
       };
     };
     import { doSomethingOnTheServer } from "../server-stuff";
-    import { jsx as _jsx } from "react/jsx-runtime";
-    import { jsxs as _jsxs } from "react/jsx-runtime";
+    import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuffWrapped
     export const _$$INLINE_ACTION2 = _registerServerReference(async function doStuffWrapped(_$$CLOSURE2, data) {
       var [doStuff] = _$$CLOSURE2.value;
@@ -1162,8 +1153,7 @@ export const Test = ({ foo }) => {
     /* eslint-disable @typescript-eslint/no-unused-vars */
     import { doSomethingOnTheServer } from "../server-stuff";
     import "./server-stuff";
-    import { jsx as _jsx } from "react/jsx-runtime";
-    import { jsxs as _jsxs } from "react/jsx-runtime";
+    import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
     // hoisted action: doStuff
     export const _$$INLINE_ACTION = _registerServerReference(async function doStuff(_$$CLOSURE, data) {
       var [foo2] = _$$CLOSURE.value;
