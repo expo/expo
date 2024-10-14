@@ -7,7 +7,7 @@
  *
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
-import type { ReactNode } from 'react';
+import './runtime';
 import { type EntriesDev } from './server';
 export interface RenderContext<T = unknown> {
     rerender: (input: string, searchParams?: URLSearchParams) => void;
@@ -29,7 +29,7 @@ export type RenderRscArgs = {
     }) => void;
     onError?: (err: unknown) => void;
 };
-type ResolveClientEntry = (id: string) => {
+type ResolveClientEntry = (id: string, server: boolean) => {
     id: string;
     chunks: string[];
 };
@@ -40,20 +40,5 @@ type RenderRscOpts = {
     loadServerModuleRsc: (url: string) => Promise<any>;
 };
 export declare function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promise<ReadableStream>;
-export type GetSsrConfigArgs = {
-    config: Omit<ResolvedConfig, 'middleware'>;
-    pathname: string;
-    searchParams: URLSearchParams;
-};
-type GetSsrConfigOpts = {
-    entries: EntriesDev;
-    resolveClientEntry: ResolveClientEntry;
-};
-export declare function getSsrConfig(args: GetSsrConfigArgs, opts: GetSsrConfigOpts): Promise<{
-    body: ReadableStream<any>;
-    input: string;
-    searchParams?: URLSearchParams | undefined;
-    html: ReactNode;
-} | null>;
 export {};
 //# sourceMappingURL=rsc-renderer.d.ts.map

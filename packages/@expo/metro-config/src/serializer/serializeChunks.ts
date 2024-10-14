@@ -259,8 +259,8 @@ export class Chunk {
         serializerConfig?.getModulesRunBeforeMainModule?.(
           path.relative(this.options.projectRoot, entryFile)
         ) ?? [],
-      runModule: !this.isVendor && !this.isAsync,
-      modulesOnly: this.preModules.size === 0,
+      runModule: this.options.runModule && !this.isVendor && !this.isAsync,
+      modulesOnly: this.options.modulesOnly || this.preModules.size === 0,
       platform: this.getPlatform(),
       baseUrl: getBaseUrlOption(this.graph, this.options),
       splitChunks: !!this.options.serializerOptions?.splitChunks,
@@ -447,6 +447,23 @@ export class Chunk {
                     typeof output.data.reactClientReference === 'string'
                   ) {
                     return output.data.reactClientReference;
+                  }
+                  return undefined;
+                });
+              })
+              .flat()
+          ),
+        ].filter((value) => typeof value === 'string') as string[],
+        reactServerReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => {
+                  if (
+                    'reactServerReference' in output.data &&
+                    typeof output.data.reactServerReference === 'string'
+                  ) {
+                    return output.data.reactServerReference;
                   }
                   return undefined;
                 });

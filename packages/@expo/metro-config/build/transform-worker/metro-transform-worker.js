@@ -385,6 +385,7 @@ async function transformJS(file, { config, options }) {
                 map,
                 functionMap: file.functionMap,
                 hasCjsExports: file.hasCjsExports,
+                reactServerReference: file.reactServerReference,
                 reactClientReference: file.reactClientReference,
                 expoDomComponentReference: file.expoDomComponentReference,
                 ...(possibleReconcile
@@ -448,6 +449,7 @@ async function transformJSWithBabel(file, context) {
             transformResult.functionMap ??
             null,
         hasCjsExports: transformResult.metadata?.hasCjsExports,
+        reactServerReference: transformResult.metadata?.reactServerReference,
         reactClientReference: transformResult.metadata?.reactClientReference,
         expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
     };

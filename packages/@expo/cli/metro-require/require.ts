@@ -225,7 +225,7 @@ function shouldPrintRequireCycle(modules: readonly (string | null | undefined)[]
   // const regExps = eval(`${__METRO_GLOBAL_PREFIX__}__requireCycleIgnorePatterns`);
   const rcip = __METRO_GLOBAL_PREFIX__ + '__requireCycleIgnorePatterns';
   // Try using the globalThis version to reach outside the bundle in SSR bundles.
-  const regExps = globalThis[rcip] ?? global[rcip];
+  const regExps = globalThis[rcip] ?? global[rcip] ?? [/(^|\/|\\)node_modules($|\/|\\)/];
   if (!Array.isArray(regExps)) {
     return true;
   }
