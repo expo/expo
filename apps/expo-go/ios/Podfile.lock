@@ -1697,7 +1697,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-maps (1.14.0):
+  - react-native-maps (1.18.0):
     - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
@@ -3110,7 +3110,7 @@ SPEC CHECKSUMS:
   React-logger: ccab6d41424202fd511faa9a88bec12cadc83dfa
   React-Mapbuffer: fe84c6dde7dab6dd8658bb18beb932c1b15c993a
   React-microtasksnativemodule: b96aa3fc27ef864c183605decc24df15258cadfc
-  react-native-maps: cbf2f03bfeebfd7ec45966b066db13a075fd2af3
+  react-native-maps: 2e6e9896195781327ee15b33e3e84bf73c08207a
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 94195f1bf32e7f78359fa20057c97e632364a08b
   react-native-safe-area-context: f1fda705dfe14355f41933debb5932887e234cc5

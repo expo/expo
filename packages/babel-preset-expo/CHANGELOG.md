@@ -16,6 +16,7 @@
 
 ### 🐛 Bug fixes
 
+- Mock out js console polyfill for server environments. ([#32028](https://github.com/expo/expo/pull/32028) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove `@babel/plugin-transform-parameters` plugin when bundling for server environments that target native. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed `ReferenceError: Property 'React' doesn't exist.` crash when a DOM component includes `import React from 'react';`. ([#31469](https://github.com/expo/expo/pull/31469) by [@kudo](https://github.com/kudo))
 

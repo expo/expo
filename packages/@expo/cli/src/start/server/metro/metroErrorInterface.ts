@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getMetroServerRoot } from '@expo/config/paths';
 import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -143,7 +144,7 @@ export async function logMetroError(projectRoot: string, { error }: { error: Err
     return;
   }
 
-  const stack = parseErrorStack(error.stack);
+  const stack = parseErrorStack(projectRoot, error.stack);
 
   const log = new LogBoxLog({
     level: 'static',
@@ -201,7 +202,7 @@ function logFromError({ error, projectRoot }: { error: Error; projectRoot: strin
       },
     ];
   } else {
-    stack = parseErrorStack(error.stack);
+    stack = parseErrorStack(projectRoot, error.stack);
   }
 
   return new LogBoxLog({
@@ -291,7 +292,10 @@ export async function getErrorOverlayHtmlAsync({
   return htmlWithJs;
 }
 
-function parseErrorStack(stack?: string): (StackFrame & { collapse?: boolean })[] {
+function parseErrorStack(
+  projectRoot: string,
+  stack?: string
+): (StackFrame & { collapse?: boolean })[] {
   if (stack == null) {
     return [];
   }
@@ -299,11 +303,34 @@ function parseErrorStack(stack?: string): (StackFrame & { collapse?: boolean })[
     return stack;
   }
 
-  return parse(stack).map((frame) => {
-    // frame.file will mostly look like `http://localhost:8081/index.bundle?platform=web&dev=true&hot=false`
-    return {
-      ...frame,
-      column: frame.column != null ? frame.column - 1 : null,
-    };
-  });
+  const serverRoot = getMetroServerRoot(projectRoot);
+
+  return parse(stack)
+    .map((frame) => {
+      // frame.file will mostly look like `http://localhost:8081/index.bundle?platform=web&dev=true&hot=false`
+
+      if (frame.file) {
+        // SSR will sometimes have absolute paths followed by `.bundle?...`, we need to try and make them relative paths and append a dev server URL.
+        if (frame.file.startsWith('/') && frame.file.includes('bundle?') && !canParse(frame.file)) {
+          // Malformed stack file from SSR. Attempt to repair.
+          frame.file = 'https://localhost:8081/' + path.relative(serverRoot, frame.file);
+        }
+      }
+
+      return {
+        ...frame,
+        column: frame.column != null ? frame.column - 1 : null,
+      };
+    })
+    .filter((frame) => frame.file && !frame.file.includes('node_modules'));
+}
+
+function canParse(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }

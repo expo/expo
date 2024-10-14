@@ -138,7 +138,7 @@
     "react-native": "0.76.0-rc.4",
     "react-native-dropdown-picker": "^5.3.0",
     "react-native-gesture-handler": "~2.20.0",
-    "react-native-maps": "1.14.0",
+    "react-native-maps": "1.18.0",
     "react-native-pager-view": "6.4.1",
     "react-native-paper": "^4.0.1",
     "react-native-reanimated": "~3.15.4",
