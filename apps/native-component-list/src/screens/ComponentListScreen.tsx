@@ -1,5 +1,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link, useLinkBuilder, useLinkProps } from '@react-navigation/native';
+import {
+  Link,
+  NavigationAction,
+  StackActions,
+  useLinkBuilder,
+  useLinkProps,
+} from '@react-navigation/native';
+import * as SS from '@react-navigation/stack';
 import React from 'react';
 import {
   FlatList,
@@ -31,14 +38,20 @@ interface Props {
 function LinkButton({
   href,
   children,
+  screenName,
   ...rest
 }: Omit<React.ComponentProps<typeof Link>, 'action'> & {
   href: string;
   disabled?: boolean;
   children?: React.ReactNode;
+  screenName?: string;
 }) {
   const { buildAction } = useLinkBuilder();
-  const action = buildAction(href);
+  let action: NavigationAction = buildAction(href);
+  if (screenName) {
+    action = StackActions.push(screenName);
+  }
+
   const { onPress, ...props } = useLinkProps({ href, action });
 
   const [isPressed, setIsPressed] = React.useState(false);
@@ -87,8 +100,13 @@ export default function ComponentListScreen(props: Props) {
 
   const renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
+    console.log(route, exampleName);
     return (
-      <LinkButton disabled={!isAvailable} href={route ?? exampleName} style={[styles.rowTouchable]}>
+      <LinkButton
+        disabled={!isAvailable}
+        href={route ?? exampleName}
+        screenName={exampleName}
+        style={[styles.rowTouchable]}>
         <View
           pointerEvents="none"
           style={[styles.row, !isAvailable && styles.disabledRow, { paddingRight: 10 + right }]}>

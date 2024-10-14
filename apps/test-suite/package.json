@@ -11,8 +11,8 @@
   "dependencies": {
     "@expo/html-elements": "^0.10.0",
     "@expo/styleguide-base": "^1.0.1",
-    "@react-navigation/native": "7.0.0-rc.19",
-    "@react-navigation/stack": "7.0.0-rc.26",
+    "@react-navigation/native": "7.0.0-rc.20",
+    "@react-navigation/stack": "7.0.0-rc.27",
     "async-retry": "^1.1.4",
     "expo": "~51.0.0",
     "expo-application": "~5.9.0",
