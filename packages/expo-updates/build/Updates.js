@@ -61,6 +61,10 @@ export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch;
  */
 export const emergencyLaunchReason = ExpoUpdates.emergencyLaunchReason;
 /**
+ * Number of milliseconds it took to launch.
+ */
+export const launchDuration = ExpoUpdates.launchDuration;
+/**
  * This will be true if the currently running update is the one embedded in the build,
  * and not one downloaded from the updates server.
  */
@@ -237,41 +241,5 @@ export async function fetchUpdateAsync() {
         };
     }
     return result;
-}
-/**
- * @hidden
- */
-export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
-    console.warn("This method is no longer necessary. `expo-updates` now automatically deletes your app's old bundle files!");
-}
-/**
- * @hidden
- */
-export function transformNativeStateMachineContext(originalNativeContext) {
-    const nativeContext = { ...originalNativeContext };
-    if (nativeContext.latestManifestString) {
-        nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
-        delete nativeContext.latestManifestString;
-    }
-    if (nativeContext.downloadedManifestString) {
-        nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
-        delete nativeContext.downloadedManifestString;
-    }
-    if (nativeContext.lastCheckForUpdateTimeString) {
-        nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
-        delete nativeContext.lastCheckForUpdateTimeString;
-    }
-    if (nativeContext.rollbackString) {
-        nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
-        delete nativeContext.rollbackString;
-    }
-    return nativeContext;
-}
-/**
- * @hidden
- */
-export async function getNativeStateMachineContextAsync() {
-    const nativeContext = await ExpoUpdates.getNativeStateMachineContextAsync();
-    return transformNativeStateMachineContext(nativeContext);
 }
 //# sourceMappingURL=Updates.js.map

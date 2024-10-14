@@ -27,6 +27,13 @@ class SQLiteModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSQLite")
 
+    Constants {
+      val defaultDatabaseDirectory = context.filesDir.canonicalPath + File.separator + "SQLite"
+      return@Constants mapOf(
+        "defaultDatabaseDirectory" to defaultDatabaseDirectory
+      )
+    }
+
     Events("onDatabaseChange")
 
     OnStartObserving {
@@ -45,15 +52,15 @@ class SQLiteModule : Module() {
       } catch (_: Throwable) {}
     }
 
-    AsyncFunction("deleteDatabaseAsync") { databaseName: String ->
-      deleteDatabase(databaseName)
+    AsyncFunction("deleteDatabaseAsync") { databasePath: String ->
+      deleteDatabase(databasePath)
     }
-    Function("deleteDatabaseSync") { databaseName: String ->
-      deleteDatabase(databaseName)
+    Function("deleteDatabaseSync") { databasePath: String ->
+      deleteDatabase(databasePath)
     }
 
-    AsyncFunction("importAssetDatabaseAsync") { databaseName: String, assetDatabasePath: String, forceOverwrite: Boolean ->
-      val dbFile = File(pathForDatabaseName(databaseName))
+    AsyncFunction("importAssetDatabaseAsync") { databasePath: String, assetDatabasePath: String, forceOverwrite: Boolean ->
+      val dbFile = File(ensureDatabasePathExists(databasePath))
       if (dbFile.exists() && !forceOverwrite) {
         return@AsyncFunction
       }
@@ -64,23 +71,29 @@ class SQLiteModule : Module() {
       assetFile.copyTo(dbFile, forceOverwrite)
     }
 
+    AsyncFunction("ensureDatabasePathExistsAsync") { databasePath: String ->
+      ensureDatabasePathExists(databasePath)
+    }
+    Function("ensureDatabasePathExistsSync") { databasePath: String ->
+      ensureDatabasePathExists(databasePath)
+    }
+
     Class(NativeDatabase::class) {
-      Constructor { databaseName: String, options: OpenDatabaseOptions, serializedData: ByteArray? ->
+      Constructor { databasePath: String, options: OpenDatabaseOptions, serializedData: ByteArray? ->
         val database: NativeDatabase
         if (serializedData != null) {
           database = deserializeDatabase(serializedData, options)
         } else {
-          val dbPath = pathForDatabaseName(databaseName)
-
           // Try to find opened database for fast refresh
-          findCachedDatabase { it.databaseName == databaseName && it.openOptions == options && !options.useNewConnection }?.let {
+          findCachedDatabase { it.databasePath == databasePath && it.openOptions == options && !options.useNewConnection }?.let {
             it.addRef()
             return@Constructor it
           }
 
-          database = NativeDatabase(databaseName, options)
+          val dbPath = ensureDatabasePathExists(databasePath)
+          database = NativeDatabase(databasePath, options)
           if (database.ref.sqlite3_open(dbPath) != NativeDatabaseBinding.SQLITE_OK) {
-            throw OpenDatabaseException(databaseName)
+            throw OpenDatabaseException(databasePath)
           }
         }
 
@@ -187,16 +200,20 @@ class SQLiteModule : Module() {
   }
 
   @Throws(OpenDatabaseException::class)
-  private fun pathForDatabaseName(name: String): String {
-    if (name == MEMORY_DB_NAME) {
-      return name
+  private fun ensureDatabasePathExists(databasePath: String): String {
+    if (databasePath == MEMORY_DB_NAME) {
+      return databasePath
     }
     try {
-      val directory = File("${context.filesDir}${File.separator}SQLite")
-      ensureDirExists(directory)
-      return "$directory${File.separator}$name"
-    } catch (_: IOException) {
-      throw OpenDatabaseException(name)
+      val parsedPath =
+        Uri.parse(databasePath).path ?: throw IOException("Couldn't parse Uri - $databasePath")
+      val path = File(parsedPath)
+      val parentPath =
+        path.parentFile ?: throw IOException("Parent directory is null for path '$path'.")
+      ensureDirExists(parentPath)
+      return path.canonicalPath
+    } catch (e: IOException) {
+      throw OpenDatabaseException(databasePath, e.message)
     }
   }
 
@@ -387,20 +404,20 @@ class SQLiteModule : Module() {
     database.isClosed = true
   }
 
-  private fun deleteDatabase(databaseName: String) {
-    findCachedDatabase { it.databaseName == databaseName }?.let {
-      throw DeleteDatabaseException(databaseName)
+  private fun deleteDatabase(databasePath: String) {
+    findCachedDatabase { it.databasePath == databasePath }?.let {
+      throw DeleteDatabaseException(databasePath)
     }
 
-    if (databaseName == MEMORY_DB_NAME) {
+    if (databasePath == MEMORY_DB_NAME) {
       return
     }
-    val dbFile = File(pathForDatabaseName(databaseName))
+    val dbFile = File(ensureDatabasePathExists(databasePath))
     if (!dbFile.exists()) {
-      throw DatabaseNotFoundException(databaseName)
+      throw DatabaseNotFoundException(databasePath)
     }
     if (!dbFile.delete()) {
-      throw DeleteDatabaseFileException(databaseName)
+      throw DeleteDatabaseFileException(databasePath)
     }
   }
 

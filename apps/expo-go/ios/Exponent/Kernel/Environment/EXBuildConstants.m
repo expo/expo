@@ -47,7 +47,7 @@
     _kernelManifestAndAssetRequestHeadersJsonString = config[@"DEV_PUBLISHED_KERNEL_MANIFEST"];
   }
   _apiServerEndpoint = [NSURL URLWithString:config[@"API_SERVER_ENDPOINT"]];
-  _temporarySdkVersion = config[@"TEMPORARY_SDK_VERSION"];
+  _sdkVersion = config[@"TEMPORARY_SDK_VERSION"];
   if (config[@"EXPO_RUNTIME_VERSION"]) {
     _expoRuntimeVersion = config[@"EXPO_RUNTIME_VERSION"];
   }

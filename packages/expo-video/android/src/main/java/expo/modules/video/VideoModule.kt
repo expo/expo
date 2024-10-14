@@ -16,6 +16,8 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
 import expo.modules.video.enums.ContentFit
+import expo.modules.video.player.VideoPlayer
+import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.ifYogaDefinedUse
 import expo.modules.video.utils.makeYogaUndefinedIfNegative
@@ -108,10 +110,8 @@ class VideoModule : Module() {
         ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
         ViewProps.BORDER_START_COLOR to Spacing.START,
         ViewProps.BORDER_END_COLOR to Spacing.END
-      ) { view: VideoView, index: Int, color: Int? ->
-        val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
-        val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.setBorderColor(index, rgbComponent, alphaComponent)
+      ) { view: VideoView, index: Int, color: Int ->
+        view.setBorderColor(index, color)
       }
 
       Prop("borderStyle") { view: VideoView, borderStyle: String? ->
@@ -275,6 +275,22 @@ class VideoModule : Module() {
               REPEAT_MODE_OFF
             }
           }
+        }
+
+      Property("bufferedPosition")
+        .get { ref: VideoPlayer ->
+          // Same as currentTime
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.bufferedPosition
+          }
+        }
+
+      Property("bufferOptions")
+        .get { ref: VideoPlayer ->
+          ref.bufferOptions
+        }
+        .set { ref: VideoPlayer, bufferOptions: BufferOptions ->
+          ref.bufferOptions = bufferOptions
         }
 
       Function("play") { ref: VideoPlayer ->

@@ -103,6 +103,17 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     return unixTime - timeIntervalSince
   }
 
+  var bufferOptions = BufferOptions() {
+    didSet {
+      pointer.currentItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+      pointer.automaticallyWaitsToMinimizeStalling = bufferOptions.waitsToMinimizeStalling
+    }
+  }
+
+  var bufferedPosition: Double {
+    return getBufferedPosition()
+  }
+
   override init(_ pointer: AVPlayer) {
     super.init(pointer)
     observer = VideoPlayerObserver(owner: self)
@@ -145,6 +156,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
 
     playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
+    playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
     pointer.replaceCurrentItem(with: playerItem)
   }
 
@@ -163,6 +175,22 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         track.isEnabled = enabled
       }
     })
+  }
+
+  private func getBufferedPosition() -> Double {
+    guard let currentItem = pointer.currentItem else {
+      return -1
+    }
+    let currentTime = pointer.currentTime().seconds
+
+    for timeRange in currentItem.loadedTimeRanges {
+      let start = CMTimeGetSeconds(timeRange.timeRangeValue.start)
+      let end = CMTimeGetSeconds(timeRange.timeRangeValue.end)
+      if start <= currentTime && end >= currentTime {
+        return end
+      }
+    }
+    return 0
   }
 
   // MARK: - VideoPlayerObserverDelegate
@@ -211,6 +239,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
     safeEmit(event: "sourceChange", arguments: newVideoPlayerItem?.videoSource, oldVideoPlayerItem?.videoSource)
+    newVideoPlayerItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
   }
 
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {

@@ -14,13 +14,22 @@
 
 ### 🐛 Bug fixes
 
+- [android] `createNotificationChannel` could return incorrect channel information ([#32000](https://github.com/expo/expo/pull/32000) by [@vonovak](https://github.com/vonovak))
+- [android] fix notifications with `ChannelAwareTrigger` not being presented ([#31999](https://github.com/expo/expo/pull/31999) by [@vonovak](https://github.com/vonovak))
+- export `PermissionStatus` as value, not as type ([#31968](https://github.com/expo/expo/pull/31968) by [@vonovak](https://github.com/vonovak))
+- throw improved error on invalid subscription in removeNotificationSubscription ([#31842](https://github.com/expo/expo/pull/31842) by [@vonovak](https://github.com/vonovak))
 - [android] fix notifications actions not being presented ([#31795](https://github.com/expo/expo/pull/31795) by [@vonovak](https://github.com/vonovak))
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30478](https://github.com/expo/expo/pull/30478) by [@byCedric](https://github.com/byCedric))
+- [iOS] do not overwrite existing aps entitlement. ([#31892](https://github.com/expo/expo/pull/31892) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
+- [android] refactor trigger serialization ([#32032](https://github.com/expo/expo/pull/32032) by [@vonovak](https://github.com/vonovak))
+- [android] simplify DateTrigger ([#32002](https://github.com/expo/expo/pull/32002) by [@vonovak](https://github.com/vonovak))
+- [android] refactor ExpoNotificationBuilder ([#31838](https://github.com/expo/expo/pull/31838) by [@vonovak](https://github.com/vonovak))
 - Warn about limited support in Expo Go ([#31573](https://github.com/expo/expo/pull/31573) by [@vonovak](https://github.com/vonovak))
 - Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Convert trigger Java classes to Kotlin. ([#31856](https://github.com/expo/expo/pull/31856) by [@douglowder](https://github.com/douglowder))
 
 ## 0.28.17 - 2024-09-17
 
@@ -283,6 +292,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🛠 Breaking changes
 
+- remove `usePermissions` hook ([#31905](https://github.com/expo/expo/pull/31905) by [@vonovak](https://github.com/vonovak))
 - [android] Set the "notification number" (sometimes used to increment badge count on some launchers) from the notification payload `badge` field. ([#17171](https://github.com/expo/expo/pull/17171) by [@danstepanov](https://github.com/danstepanov))
 
 ### 🐛 Bug fixes

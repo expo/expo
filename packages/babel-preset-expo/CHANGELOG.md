@@ -15,6 +15,7 @@
 
 ### 🐛 Bug fixes
 
+- Mock out js console polyfill for server environments. ([#32028](https://github.com/expo/expo/pull/32028) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove `@babel/plugin-transform-parameters` plugin when bundling for server environments that target native. ([#30147](https://github.com/expo/expo/pull/30147) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed `ReferenceError: Property 'React' doesn't exist.` crash when a DOM component includes `import React from 'react';`. ([#31469](https://github.com/expo/expo/pull/31469) by [@kudo](https://github.com/kudo))
 
@@ -26,10 +27,12 @@
 - Make `babel-plugin-react-compiler` an optional peer dependency. ([#30960](https://github.com/expo/expo/pull/30960) by [@EvanBacon](https://github.com/EvanBacon))
 - Changed the react client reference collection property to be a string. ([#29646](https://github.com/expo/expo/pull/29646) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed DOM components bundling issues for Android emulators and release builds. ([#30974](https://github.com/expo/expo/pull/30974) by [@kudo](https://github.com/kudo))
+- Allows type exports in DOM components. ([#31855](https://github.com/expo/expo/pull/31855) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 11.0.14 - 2024-08-14
 

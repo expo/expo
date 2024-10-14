@@ -1,0 +1,26 @@
+diff --git a/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt b/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt
+index e9c4a52..f946583 100644
+--- a/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt
++++ b/node_modules/react-native-pager-view/android/src/fabric/java/com/reactnativepagerview/PagerViewViewManager.kt
+@@ -37,7 +37,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>(), RNCViewPa
+         return PagerViewViewManagerImpl.NAME
+     }
+ 
+-    override fun receiveCommand(root: NestedScrollableHost, commandId: String?, args: ReadableArray?) {
++    override fun receiveCommand(root: NestedScrollableHost, commandId: String, args: ReadableArray?) {
+         mDelegate.receiveCommand(root, commandId, args)
+     }
+ 
+diff --git a/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt b/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
+index 959362c..8d8da1f 100644
+--- a/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
++++ b/node_modules/react-native-pager-view/android/src/paper/java/com/reactnativepagerview/PagerViewViewManager.kt
+@@ -34,7 +34,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
+         vp.adapter = ViewPagerAdapter()
+         //https://github.com/callstack/react-native-viewpager/issues/183
+         vp.isSaveEnabled = false
+-        eventDispatcher = reactContext.getNativeModule(UIManagerModule::class.java)!!.eventDispatcher
++        eventDispatcher = reactContext.getNativeModule(UIManagerModule::class.java)!!.getEventDispatcher()
+ 
+         vp.post {
+             vp.registerOnPageChangeCallback(object : OnPageChangeCallback() {

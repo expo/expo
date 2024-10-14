@@ -200,6 +200,23 @@ describe(printCheckResultSummaryOnComplete, () => {
     expect(jest.mocked(Log.error).mock.calls[0][0]).toContain('Unexpected error while running');
     expect(jest.mocked(Log.exception).mock.calls[0][0].message).toContain('Some error');
   });
+
+  it(`Prints the error cause if check throws a network error`, () => {
+    jest.mocked(Log.error).mockReset();
+    jest.mocked(Log.exception).mockReset();
+    const error = new Error('ENOTFOUND');
+    // @ts-ignore
+    error.cause = { code: 'ENOTFOUND' };
+    // @ts-ignore
+    error.cause.toString = () => 'ENOTFOUND';
+    printCheckResultSummaryOnComplete({
+      result: { isSuccessful: false, issues: [], advice: '' },
+      check: new MockFailedCheck(),
+      duration: 0,
+      error,
+    });
+    expect(jest.mocked(Log.error).mock.calls[1][0]).toContain('ENOTFOUND');
+  });
 });
 
 describe(printFailedCheckIssueAndAdvice, () => {

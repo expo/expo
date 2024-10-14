@@ -9,10 +9,18 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Android, iOS, and the web have different capabilities. In our case, both Android and iOS can capture a screenshot with the `react-native-view-shot` library. However, web browsers cannot.
 
 In this chapter, we'll learn how to handle capturing screenshots for web browsers so our app has the same functionality on all platforms.
+
+<VideoBoxLink
+  videoId="mEKQvF4irBM"
+  title="Watch: Handling platform differences in your universal Expo app"
+/>
+
+---
 
 <Step label="1">
 
@@ -56,7 +64,7 @@ import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
 import EmojiSticker from '@/components/EmojiSticker';
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);

@@ -96,7 +96,7 @@ internal class DevLauncherAppLoaderFactoryTest {
     mockUpdatesInterface(developmentManifestJSONString) {
       Truth.assertThat(it).isFalse()
     }.let { updatesInterface ->
-      every { updatesInterface.isValidUpdatesConfiguration(any(), any()) } returns true
+      every { updatesInterface.isValidUpdatesConfiguration(any()) } returns true
     }
     val appLoaderFactory = DevLauncherAppLoaderFactory()
 
@@ -113,7 +113,7 @@ internal class DevLauncherAppLoaderFactoryTest {
     mockUpdatesInterface(publishedManifestJSONString) {
       Truth.assertThat(it).isTrue()
     }.let { updatesInterface ->
-      every { updatesInterface.isValidUpdatesConfiguration(any(), any()) } returns true
+      every { updatesInterface.isValidUpdatesConfiguration(any()) } returns true
     }
     val appLoaderFactory = DevLauncherAppLoaderFactory()
 
@@ -130,7 +130,7 @@ internal class DevLauncherAppLoaderFactoryTest {
     mockUpdatesInterface(developmentManifestJSONString) {
       Truth.assertThat(it).isTrue()
     }.let { updatesInterface ->
-      every { updatesInterface.isValidUpdatesConfiguration(any(), any()) } returns false
+      every { updatesInterface.isValidUpdatesConfiguration(any()) } returns false
     }
     val appLoaderFactory = DevLauncherAppLoaderFactory()
 

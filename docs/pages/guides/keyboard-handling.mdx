@@ -7,19 +7,23 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Keyboard handling is crucial for creating an excellent user experience in your Expo app. React Native provides [`Keyboard`](https://reactnative.dev/docs/keyboard) and [`KeyboardAvoidingView`](https://reactnative.dev/docs/keyboardavoidingview), which are commonly used to handle keyboard events. For more complex or custom keyboard interactions, you can consider using [`react-native-keyboard-controller`](https://kirillzyusko.github.io/react-native-keyboard-controller), which is a library that offers advanced keyboard handling capabilities.
 
 This guide covers common keyboard interactions and how to manage them effectively.
 
-## Keyboard handling video tutorial
-
-<ContentSpotlight url="https://www.youtube.com/embed/Y51mDfAhd4E" />
+<VideoBoxLink
+  videoId="Y51mDfAhd4E"
+  title="Keyboard Handling tutorial for React Native apps"
+  description="In this keyboard handling tutorial for React Native apps, you'll learn how to solve the problem of the keyboard covering your input when you try to type on your app."
+/>
 
 ## Keyboard handling basics
+
+The following sections explain how to handle keyboard interactions with common APIs.
 
 ### Keyboard avoiding view
 

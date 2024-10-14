@@ -16,6 +16,17 @@ export async function getProjectPackageJsonPathAsync(projectRoot: string): Promi
 }
 
 /**
+ * Synchronous version of {@link getProjectPackageJsonPathAsync}.
+ */
+export function getProjectPackageJsonPathSync(projectRoot: string): string {
+  const result = findUp.sync('package.json', { cwd: projectRoot });
+  if (!result) {
+    throw new Error(`Couldn't find "package.json" up from path "${projectRoot}"`);
+  }
+  return result;
+}
+
+/**
  * Merges autolinking options from different sources (the later the higher priority)
  * - options defined in package.json's `expo.autolinking` field
  * - platform-specific options from the above (e.g. `expo.autolinking.apple`)

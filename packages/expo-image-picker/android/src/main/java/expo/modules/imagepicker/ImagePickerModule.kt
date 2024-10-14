@@ -1,8 +1,6 @@
 package expo.modules.imagepicker
 
 import android.Manifest
-import android.Manifest.permission.READ_MEDIA_IMAGES
-import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -250,10 +248,7 @@ class ImagePickerModule : Module() {
 
   private fun getMediaLibraryPermissions(writeOnly: Boolean): Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      listOfNotNull(
-        READ_MEDIA_IMAGES,
-        READ_MEDIA_VIDEO
-      ).toTypedArray()
+      emptyArray<String>()
     } else {
       listOfNotNull(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,

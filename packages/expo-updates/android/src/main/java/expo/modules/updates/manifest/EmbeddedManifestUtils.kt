@@ -32,7 +32,7 @@ object EmbeddedManifestUtils {
         }
       } catch (e: Exception) {
         Log.e(TAG, "Could not read embedded manifest", e)
-        throw AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle. " + e.message)
+        throw AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle.", e)
       }
     }
     return sEmbeddedUpdate!!

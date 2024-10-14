@@ -3,7 +3,7 @@ package expo.modules.kotlin.sharedobjects
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.IncorrectRefTypeException
-import expo.modules.kotlin.exception.InvalidSharedObjectException
+import expo.modules.kotlin.exception.InvalidSharedObjectTypeException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.toStrongReference
@@ -27,9 +27,7 @@ class SharedObjectTypeConverter<T : SharedObject>(
     )
 
     val appContext = context.toStrongReference()
-    val result = id.toNativeObject(appContext)
-      ?: throw InvalidSharedObjectException(type)
-
+    val result = id.toNativeObject(appContext.hostingRuntimeContext)
     return result as T
   }
 
@@ -69,7 +67,7 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
   override fun convertNonOptional(value: Any, context: AppContext?): T {
     val sharedObject = sharedObjectTypeConverter.convert(value, context)
     if (sharedObject !is SharedRef<*>) {
-      throw InvalidSharedObjectException(type)
+      throw InvalidSharedObjectTypeException(type)
     }
 
     @Suppress("UNCHECKED_CAST")

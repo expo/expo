@@ -177,6 +177,24 @@ it(`keeps React import from tsx`, () => {
   expect(res.code).toMatch(/_react\.default/);
   expect(res.code).not.toMatch(/React\.createElement/);
 });
+it('allows type exports', () => {
+  const sourceCode = `
+    'use dom';
+
+    export type CustomType = string;
+
+    export interface CustomInterface {
+      key: string;
+    };
+
+    export default function App() {
+      return <div />;
+    }
+`;
+
+  const res = transformClient({ sourceCode });
+  expect(res.code).toMatch('expo/dom/internal');
+});
 
 describe('errors', () => {
   it(`throws when there are non-default exports`, () => {

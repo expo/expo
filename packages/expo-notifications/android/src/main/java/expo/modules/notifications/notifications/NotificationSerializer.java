@@ -58,11 +58,12 @@ public class NotificationSerializer {
   public static Bundle toBundle(NotificationRequest request) {
     Bundle serializedRequest = new Bundle();
     serializedRequest.putString("identifier", request.getIdentifier());
-    serializedRequest.putBundle("trigger", toBundle(request.getTrigger()));
+    NotificationTrigger requestTrigger = request.getTrigger();
+    serializedRequest.putBundle("trigger", requestTrigger == null ? null : requestTrigger.toBundle());
     Bundle content = toBundle(request.getContent());
     Bundle existingContentData = content.getBundle("data");
     if (existingContentData == null) {
-      if(request.getTrigger() instanceof FirebaseNotificationTrigger trigger) {
+      if(requestTrigger instanceof FirebaseNotificationTrigger trigger) {
         RemoteMessage message = trigger.getRemoteMessage();
         RemoteMessage.Notification notification = message.getNotification();
         Map<String, String> data = message.getData();
@@ -77,8 +78,8 @@ public class NotificationSerializer {
           content.putBundle("data", toBundle(data));
         }
       } else if(
-        request.getTrigger() instanceof SchedulableNotificationTrigger ||
-          request.getTrigger() == null
+        requestTrigger instanceof SchedulableNotificationTrigger ||
+          requestTrigger == null
       ) {
         JSONObject body = request.getContent().getBody();
         if (body != null) {
@@ -102,7 +103,7 @@ public class NotificationSerializer {
   public static Bundle toBundle(INotificationContent content) {
     Bundle serializedContent = new Bundle();
     serializedContent.putString("title", content.getTitle());
-    serializedContent.putString("subtitle", content.getSubtitle());
+    serializedContent.putString("subtitle", content.getSubText());
     serializedContent.putString("body", content.getText());
     if (content.getColor() != null) {
       serializedContent.putString("color", String.format("#%08X", content.getColor().intValue()));
@@ -185,55 +186,6 @@ public class NotificationSerializer {
       }
     }
     return result;
-  }
-
-  private static Bundle toBundle(@Nullable NotificationTrigger trigger) {
-    if (trigger == null) {
-      return null;
-    }
-    Bundle bundle = new Bundle();
-    if (trigger instanceof FirebaseNotificationTrigger) {
-      bundle.putString("type", "push");
-      bundle.putBundle("remoteMessage", RemoteMessageSerializer.toBundle(((FirebaseNotificationTrigger) trigger).getRemoteMessage()));
-    } else if (trigger instanceof TimeIntervalTrigger) {
-      bundle.putString("type", "timeInterval");
-      bundle.putBoolean("repeats", ((TimeIntervalTrigger) trigger).isRepeating());
-      bundle.putLong("seconds", ((TimeIntervalTrigger) trigger).getTimeInterval());
-    } else if (trigger instanceof DateTrigger) {
-      bundle.putString("type", "date");
-      bundle.putBoolean("repeats", false);
-      bundle.putLong("value", ((DateTrigger) trigger).getTriggerDate().getTime());
-    } else if (trigger instanceof DailyTrigger) {
-      bundle.putString("type", "daily");
-      bundle.putInt("hour", ((DailyTrigger) trigger).getHour());
-      bundle.putInt("minute", ((DailyTrigger) trigger).getMinute());
-    } else if (trigger instanceof WeeklyTrigger) {
-      bundle.putString("type", "weekly");
-      bundle.putInt("weekday", ((WeeklyTrigger) trigger).getWeekday());
-      bundle.putInt("hour", ((WeeklyTrigger) trigger).getHour());
-      bundle.putInt("minute", ((WeeklyTrigger) trigger).getMinute());
-    } else if (trigger instanceof MonthlyTrigger) {
-      bundle.putString("type", "monthly");
-      bundle.putInt("day", ((MonthlyTrigger) trigger).getDay());
-      bundle.putInt("hour", ((MonthlyTrigger) trigger).getHour());
-      bundle.putInt("minute", ((MonthlyTrigger) trigger).getMinute());
-    } else if (trigger instanceof YearlyTrigger) {
-      bundle.putString("type", "yearly");
-      bundle.putInt("day", ((YearlyTrigger) trigger).getDay());
-      bundle.putInt("month", ((YearlyTrigger) trigger).getMonth());
-      bundle.putInt("hour", ((YearlyTrigger) trigger).getHour());
-      bundle.putInt("minute", ((YearlyTrigger) trigger).getMinute());
-    } else {
-      bundle.putString("type", "unknown");
-    }
-    bundle.putString("channelId", getChannelId(trigger));
-
-    return bundle;
-  }
-
-  @Nullable
-  private static String getChannelId(NotificationTrigger trigger) {
-    return trigger.getNotificationChannel();
   }
 
   @NotNull

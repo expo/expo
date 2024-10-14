@@ -19,7 +19,6 @@ import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
-import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 import kotlinx.coroutines.CoroutineScope
@@ -116,7 +115,7 @@ open class ExpoPresentationDelegate(
 
   private fun getNotificationSoundUri(notification: Notification): Uri? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      notification.notificationRequest.trigger.notificationChannel?.let {
+      notification.notificationRequest.trigger.getNotificationChannel()?.let {
         notificationManager.getNotificationChannel(it)?.sound
       }
     } else {
@@ -158,8 +157,7 @@ open class ExpoPresentationDelegate(
   override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
   protected open suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
-    CategoryAwareNotificationBuilder(context, SharedPreferencesNotificationCategoriesStore(context)).apply {
-      setNotification(notification)
+    ExpoNotificationBuilder(context, notification, SharedPreferencesNotificationCategoriesStore(context)).apply {
       setAllowedBehavior(notificationBehavior)
     }.build()
 

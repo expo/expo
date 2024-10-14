@@ -55,8 +55,10 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
     if (
       unsyncedFields.length &&
       // git check-ignore needs a specific file to check gitignore, we choose Podfile or build.gradle
-      ((await existsAndIsNotIgnoredAsync(path.join(projectRoot, 'ios', 'Podfile')),
-      isBuildingOnEAS) ||
+      ((await existsAndIsNotIgnoredAsync(
+        path.join(projectRoot, 'ios', 'Podfile'),
+        isBuildingOnEAS
+      )) ||
         (await existsAndIsNotIgnoredAsync(
           path.join(projectRoot, 'android', 'build.gradle'),
           isBuildingOnEAS

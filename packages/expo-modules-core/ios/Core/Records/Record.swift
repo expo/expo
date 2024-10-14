@@ -1,5 +1,6 @@
 /**
  A protocol that allows initializing the object with a dictionary.
+ For supported field types, see https://docs.expo.dev/modules/module-api/#argument-types
  */
 public protocol Record: Convertible {
   /**

@@ -10,6 +10,11 @@ export declare function getFileWithExtensions(fromDirectory: string, moduleId: s
 /** Get the Metro server root, when working in monorepos */
 export declare function getMetroServerRoot(projectRoot: string): string;
 /**
+ * Get the workspace globs for Metro's watchFolders.
+ * @note This does not traverse the monorepo, and should be used with `getMetroServerRoot`
+ */
+export declare function getMetroWorkspaceGlobs(monorepoRoot: string): string[] | null;
+/**
  * Convert an absolute entry point to a server or project root relative filepath.
  * This is useful on Android where the entry point is an absolute path.
  */

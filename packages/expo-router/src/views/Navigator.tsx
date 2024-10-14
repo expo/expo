@@ -36,7 +36,11 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
 };
 
-/** An unstyled custom navigator. Good for basic web layouts */
+/**
+ * An unstyled custom navigator. Good for basic web layouts.
+ *
+ * @hidden
+ */
 export function Navigator<T extends UseNavigationBuilderRouter>({
   initialRouteName,
   screenOptions,
@@ -104,6 +108,9 @@ function QualifiedNavigator<T extends UseNavigationBuilderRouter>({
   );
 }
 
+/**
+ * @hidden
+ */
 export function useNavigatorContext() {
   const context = React.useContext(NavigatorContext);
   if (!context) {

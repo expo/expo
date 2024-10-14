@@ -18,6 +18,7 @@ import expo.modules.manifests.core.Manifest
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_ALGORITHM_KEY
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
 import expo.modules.updates.codesigning.CodeSigningAlgorithm
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -34,6 +35,8 @@ import org.json.JSONObject
 import java.io.File
 import java.util.*
 import javax.inject.Inject
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
 private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
@@ -80,6 +83,16 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   var shouldShowAppLoaderStatus = true
     private set
   private var isStarted = false
+  private var startupStartTimeMillis: Long? = null
+  private var startupEndTimeMillis: Long? = null
+  val launchDuration
+    get() = startupStartTimeMillis?.let { start ->
+      startupEndTimeMillis?.let { end ->
+        (end - start).toDuration(
+          DurationUnit.MILLISECONDS
+        )
+      }
+    }
 
   interface AppLoaderCallback {
     fun onOptimisticManifest(optimisticManifest: Manifest)
@@ -99,6 +112,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   fun start(context: Context) {
     check(!isStarted) { "AppLoader for $manifestUrl was started twice. AppLoader.start() may only be called once per instance." }
     isStarted = true
+    startupStartTimeMillis = System.currentTimeMillis()
     status = AppLoaderStatus.CHECKING_FOR_UPDATE
     kernel.addAppLoaderForManifestUrl(manifestUrl, this)
 
@@ -145,8 +159,9 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       callback.onError(e)
       return
     }
-    val fileDownloader = FileDownloader(context, configuration)
-    startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context)
+    val logger = UpdatesLogger(context)
+    val fileDownloader = FileDownloader(context, configuration, logger)
+    startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
   }
 
   private fun startLoaderTask(
@@ -154,21 +169,25 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     fileDownloader: FileDownloader,
     directory: File,
     selectionPolicy: SelectionPolicy,
-    context: Context
+    context: Context,
+    logger: UpdatesLogger
   ) {
     updatesConfiguration = configuration
     LoaderTask(
+      context,
       configuration,
       databaseHolder,
       directory,
       fileDownloader,
       selectionPolicy,
+      logger,
       object : LoaderTaskCallback {
         private var didAbort = false
         override fun onFailure(e: Exception) {
           if (didAbort) {
             return
           }
+          this@ExpoUpdatesAppLoader.startupEndTimeMillis = System.currentTimeMillis()
           var exception = e
           try {
             val errorJson = JSONObject(e.message!!)
@@ -222,6 +241,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           if (didAbort) {
             return
           }
+          this@ExpoUpdatesAppLoader.startupEndTimeMillis = System.currentTimeMillis()
           this@ExpoUpdatesAppLoader.launcher = launcher
           this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
           try {
@@ -273,7 +293,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           }
         }
       }
-    ).start(context)
+    ).start()
   }
 
   private fun setShouldShowAppLoaderStatus(manifest: Manifest) {

@@ -93,6 +93,11 @@ On Android, values are stored in [`SharedPreferences`](https://developer.android
 
 On iOS, values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
 
+## Data persistence
+
+`expo-secure-store` is designed to provide a persistent data storage solution across app restarts and updates. However, it is important not to rely on it as a single source of truth for irreplaceable, critical data. Data saved using `expo-secure-store` will not be preserved upon app uninstallation.
+Additionally, any data protected with the `requireAuthentication` option set to `true` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint.
+
 #### Exempting encryption prompt
 
 Apple App Store Connect prompts you to select the type of encryption algorithm your app implements. This is known as **Export Compliance Information**. It is asked when publishing the app or submitting for TestFlight.

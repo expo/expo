@@ -14,24 +14,33 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
+import androidx.media3.common.Format
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.Tracks
 import androidx.media3.ui.PlayerView
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.modules.i18nmanager.I18nUtil
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
-import com.facebook.react.views.view.ReactViewBackgroundDrawable
+import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable
+import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
+import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.drawing.OutlineProvider
 import expo.modules.video.enums.ContentFit
+import expo.modules.video.player.VideoPlayer
+import expo.modules.video.player.VideoPlayerListener
 import expo.modules.video.utils.ifYogaDefinedUse
 import java.util.UUID
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext), VideoPlayerListener {
   val id: String = UUID.randomUUID().toString()
   val playerView: PlayerView = PlayerView(context.applicationContext)
   val onPictureInPictureStart by EventDispatcher<Unit>()
@@ -41,6 +50,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   var willEnterPiP: Boolean = false
   var isInFullscreen: Boolean = false
+    private set
+  var showsSubtitlesButton = false
     private set
 
   private val currentActivity = appContext.throwingActivity
@@ -58,7 +69,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   @UnstableReactNativeAPI
   private val borderDrawableLazyHolder = lazy {
-    ReactViewBackgroundDrawable(context).apply {
+    CSSBackgroundDrawable(context).apply {
       callback = this@VideoView
 
       outlineProvider.borderRadiiConfig
@@ -66,9 +77,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .withIndex()
         .forEach { (i, radius) ->
           if (i == 0) {
-            setRadius(radius)
+            setBorderRadius(BorderRadiusProp.BORDER_RADIUS, LengthPercentage(radius, LengthPercentageType.POINT))
           } else {
-            setRadius(radius, i - 1)
+            setBorderRadius(BorderRadiusProp.entries[i - 1], LengthPercentage(radius, LengthPercentageType.POINT))
           }
         }
     }
@@ -78,15 +89,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   private val borderDrawable
     get() = borderDrawableLazyHolder.value
 
-  var autoEnterPiP: Boolean = false
-    set(value) {
-      if (Build.VERSION.SDK_INT >= 31 && isPictureInPictureSupported(currentActivity) && field != value) {
-        runWithPiPMisconfigurationSoftHandling {
-          currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(value).build())
-        }
-      }
-      field = value
-    }
+  var autoEnterPiP: Boolean by IgnoreSameSet(false) { new, _ ->
+    applyAutoEnterPiP(new)
+  }
 
   var contentFit: ContentFit = ContentFit.CONTAIN
     set(value) {
@@ -95,13 +100,15 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
 
   var videoPlayer: VideoPlayer? = null
-    set(videoPlayer) {
+    set(newPlayer) {
       field?.let {
         VideoManager.onVideoPlayerDetachedFromView(it, this)
       }
-      playerView.player = videoPlayer?.player
-      field = videoPlayer
-      videoPlayer?.let {
+      videoPlayer?.removeListener(this)
+      newPlayer?.addListener(this)
+      playerView.player = newPlayer?.player
+      field = newPlayer
+      newPlayer?.let {
         VideoManager.onVideoPlayerAttachedToView(it, this)
       }
     }
@@ -109,6 +116,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   var useNativeControls: Boolean = true
     set(value) {
       playerView.useController = value
+      playerView.setShowSubtitleButton(value)
       field = value
     }
 
@@ -237,6 +245,25 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     this.addView(playerView)
   }
 
+  override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
+    showsSubtitlesButton = hasSubtitles(tracks)
+    playerView.setShowSubtitleButton(showsSubtitlesButton)
+    super.onTracksChanged(player, tracks)
+  }
+
+  private fun hasSubtitles(tracks: Tracks): Boolean {
+    for (group in tracks.groups) {
+      for (i in 0..<group.length) {
+        val format: Format = group.getTrackFormat(i)
+
+        if (MimeTypes.isText(format.sampleMimeType)) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
   private fun calculateRectHint() {
     getGlobalVisibleRect(rectHint)
 
@@ -321,6 +348,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .add(fragment, fragment.id)
         .commitAllowingStateLoss()
     }
+    applyAutoEnterPiP(autoEnterPiP)
   }
 
   override fun onDetachedFromWindow() {
@@ -332,6 +360,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
         .remove(fragment)
         .commitAllowingStateLoss()
     }
+    applyAutoEnterPiP(false)
   }
 
   @UnstableReactNativeAPI
@@ -351,9 +380,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       val radius = borderRadius.ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
       borderDrawableLazyHolder.value.apply {
         if (position == 0) {
-          setRadius(radius)
+          setBorderRadius(BorderRadiusProp.BORDER_RADIUS, LengthPercentage(radius, LengthPercentageType.POINT))
         } else {
-          setRadius(radius, position - 1)
+          setBorderRadius(BorderRadiusProp.entries[position - 1], LengthPercentage(radius, LengthPercentageType.POINT))
         }
       }
     }
@@ -366,8 +395,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   @UnstableReactNativeAPI
-  internal fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
-    borderDrawable.setBorderColor(position, rgb, alpha)
+  internal fun setBorderColor(position: Int, rgb: Int) {
+    borderDrawable.setBorderColor(position, rgb)
     shouldInvalided = true
   }
 
@@ -417,6 +446,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       Log.e("ExpoVideo", "Current activity does not support picture-in-picture. Make sure you have configured the `expo-video` config plugin correctly.")
       if (shouldThrow) {
         throw PictureInPictureConfigurationException()
+      }
+    }
+  }
+
+  private fun applyAutoEnterPiP(autoEnterPiP: Boolean) {
+    if (Build.VERSION.SDK_INT >= 31 && isPictureInPictureSupported(currentActivity)) {
+      runWithPiPMisconfigurationSoftHandling {
+        currentActivity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(autoEnterPiP).build())
       }
     }
   }

@@ -73,9 +73,13 @@ private:
 
   void invokeString(jni::alias_ref<jstring> result);
 
-  void invokeArray(jni::alias_ref<react::WritableNativeArray::javaobject> result);
+  void invokeWritableArray(jni::alias_ref<react::WritableNativeArray::javaobject> result);
 
-  void invokeMap(jni::alias_ref<react::WritableNativeMap::javaobject> result);
+  void invokeWritableMap(jni::alias_ref<react::WritableNativeMap::javaobject> result);
+
+  void invokeCollection(jni::alias_ref<jni::JCollection<jobject>> result);
+
+  void invokeMap(jni::alias_ref<jni::JMap<jstring, jobject>> result);
 
   void invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result);
 

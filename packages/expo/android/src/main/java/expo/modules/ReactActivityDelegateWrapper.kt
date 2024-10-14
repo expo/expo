@@ -203,6 +203,13 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("onPause")
   }
 
+  override fun onUserLeaveHint() {
+    reactActivityLifecycleListeners.forEach { listener ->
+      listener.onUserLeaveHint(activity)
+    }
+    return invokeDelegateMethod("onUserLeaveHint")
+  }
+
   override fun onDestroy() {
     // If app is stopped before delayed `loadApp`, we should cancel the pending resume
     if (shouldEmitPendingResume) {

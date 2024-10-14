@@ -136,13 +136,23 @@ const general = [
   makeSection('Development process', [
     makePage('workflow/overview.mdx'),
     makePage('workflow/configuration.mdx'),
-    makePage('guides/local-app-development.mdx'),
     makePage('workflow/using-libraries.mdx'),
     makePage('guides/apple-privacy.mdx'),
     makePage('guides/permissions.mdx'),
     makePage('guides/environment-variables.mdx'),
-    makePage('guides/linking.mdx'),
-    makePage('guides/deep-linking.mdx'),
+    makeGroup(
+      'Linking',
+      [
+        makePage('linking/overview.mdx'),
+        makePage('linking/into-other-apps.mdx'),
+        makePage('linking/into-your-app.mdx'),
+        makePage('linking/android-app-links.mdx'),
+        makePage('linking/ios-universal-links.mdx'),
+      ],
+      {
+        expanded: false,
+      }
+    ),
     makeGroup(
       'Custom native code',
       [
@@ -152,6 +162,13 @@ const general = [
         makePage('guides/adopting-prebuild.mdx'),
       ],
       { expanded: false }
+    ),
+    makeGroup(
+      'Local app',
+      [makePage('guides/local-app-development.mdx'), makePage('guides/local-app-production.mdx')],
+      {
+        expanded: false,
+      }
     ),
     makeGroup(
       'Web',
@@ -362,13 +379,12 @@ const general = [
       makePage('eas-update/error-recovery.mdx'),
     ]),
     makeGroup('Reference', [
-      makePage('eas-update/codepush.mdx'),
       makePage('eas-update/environment-variables.mdx'),
       makePage('eas-update/code-signing.mdx'),
       makePage('eas-update/asset-selection.mdx'),
+      makePage('eas-update/standalone-service.mdx'),
+      makePage('eas-update/codepush.mdx'),
       makePage('eas-update/migrate-from-classic-updates.mdx'),
-      makePage('eas-update/updating-your-app.mdx'),
-      makePage('eas-update/build-locally.mdx'),
       makePage('eas-update/faq.mdx'),
     ]),
   ]),
@@ -405,7 +421,6 @@ const general = [
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
-    makePage('distribution/runtime-versions.mdx'),
     makePage('distribution/app-transfers.mdx'),
   ]),
   makeSection(
@@ -477,7 +492,7 @@ const general = [
 const learn = [
   makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
-    'Universal app',
+    'Expo tutorial',
     [
       makePage('tutorial/introduction.mdx'),
       makePage('tutorial/create-your-first-app.mdx'),

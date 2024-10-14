@@ -568,6 +568,8 @@ describe('JS API tests', () => {
     jestExpect(isEmbedded).toEqual('true');
     const checkAutomatically = await testElementValueAsync('checkAutomatically');
     jestExpect(checkAutomatically).toEqual('ON_LOAD');
+    const launchDuration = await testElementValueAsync('launchDuration');
+    jestExpect(parseInt(launchDuration, 10)).toBeGreaterThan(0);
 
     // Test extra params
     await pressTestButtonAsync('setExtraParams');
@@ -681,14 +683,6 @@ describe('JS API tests', () => {
     console.warn(`latestManifestId3 = ${latestManifestId3}`);
     console.warn(`downloadedManifestId3 = ${downloadedManifestId3}`);
 
-    // Test native context reader
-    await pressTestButtonAsync('readNativeStateContext');
-    await waitForAsynchronousTaskCompletion();
-
-    const nativeStateContextString = await testElementValueAsync('nativeStateContextString');
-    const nativeStateContext = JSON.parse(nativeStateContextString);
-    console.warn(`nativeStateContext = ${JSON.stringify(nativeStateContext, null, 2)}`);
-
     // Terminate and relaunch app, we should be running the update, and back to the default state
     await device.terminateApp();
     await device.launchApp();
@@ -782,10 +776,6 @@ describe('JS API tests', () => {
     jestExpect(isRollback3).toEqual('false');
     jestExpect(latestManifestId3).toEqual(manifest.id);
     jestExpect(downloadedManifestId3).toEqual(manifest.id);
-    // native state context values
-    jestExpect(nativeStateContext.latestManifest?.id).toEqual(manifest.id);
-    jestExpect(nativeStateContext.isUpdateAvailable).toBe(true);
-    jestExpect(nativeStateContext.isUpdatePending).toBe(true);
     // After restarting
     jestExpect(isUpdateAvailable4).toEqual('false');
     jestExpect(isUpdatePending4).toEqual('false');

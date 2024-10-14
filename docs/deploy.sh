@@ -22,7 +22,7 @@ fi
 #   5. Add custom redirects
 #   6. Notify Google of sitemap changes for SEO
 
-echo "::group::[1/6] Sync Next.js static assets in \`_next/**\` folder"
+echo "::group::[1/5] Sync Next.js static assets in \`_next/**\` folder"
 aws s3 sync \
   --no-progress \
   --exclude "*" \
@@ -32,7 +32,7 @@ aws s3 sync \
   "s3://${bucket}"
 echo "::endgroup::"
 
-echo "::group::[2/6] Sync assets in \`static/**\` folder"
+echo "::group::[2/5] Sync assets in \`static/**\` folder"
 aws s3 sync \
   --no-progress \
   --exclude "*" \
@@ -44,7 +44,7 @@ echo "::endgroup::"
 
 # Due to a bug with `aws s3 sync` we need to copy everything first instead of syncing
 # see: https://github.com/aws/aws-cli/issues/3273#issuecomment-643436849
-echo "::group::[3/6] Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder"
+echo "::group::[3/5] Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder"
 aws s3 cp \
   --no-progress \
   --recursive \
@@ -54,7 +54,7 @@ aws s3 cp \
   "s3://${bucket}"
 echo "::endgroup::"
 
-echo "::group::[4/6] Sync assets and clean up outdated files from previous deployments"
+echo "::group::[4/5] Sync assets and clean up outdated files from previous deployments"
 aws s3 sync \
   --no-progress \
   --delete \
@@ -157,6 +157,7 @@ redirects[guides/setting-up-continuous-integration]=build/building-on-ci
 redirects[distribution/release-channels]=archive/classic-updates/release-channels
 redirects[distribution/advanced-release-channels]=archive/classic-updates/advanced-release-channels
 redirects[distribution/optimizing-updates]=archive/classic-updates/optimizing-updates
+redirects[distribution/runtime-versions]=eas-update/runtime-versions
 redirects[guides/offline-support]=archive/classic-updates/offline-support
 redirects[guides/preloading-and-caching-assets]=archive/classic-updates/preloading-and-caching-assets
 redirects[guides/configuring-updates]=archive/classic-updates/configuring-updates
@@ -281,7 +282,11 @@ redirects[guides/react-compiler]=preview/react-compiler
 # Troubleshooting section
 redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
 
-echo "::group::[5/6] Add custom redirects"
+# After adding "Linking" (/linking/**) section
+redirects[guides/linking]=linking/overview
+redirects[guides/deep-linking]=/linking/into-your-app
+
+echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
   aws s3 cp \
@@ -305,10 +310,3 @@ do
   fi
 done
 echo "::endgroup::"
-
-
-if [ "$bucket" = "docs.expo.dev" ]; then
-  echo "::group::[6/6] Notify Google of sitemap changes"
-  curl -m 15 "https://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
-  echo "\n::endgroup::"
-fi

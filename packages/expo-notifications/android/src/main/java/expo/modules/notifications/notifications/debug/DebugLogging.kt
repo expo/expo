@@ -70,10 +70,10 @@ object DebugLogging {
       """
       $caller:
         notification.notificationRequest.content.title: ${notification.notificationRequest.content.title}
-        notification.notificationRequest.content.subtitle: ${notification.notificationRequest.content.subtitle}
+        notification.notificationRequest.content.subText: ${notification.notificationRequest.content.subText}
         notification.notificationRequest.content.text: ${notification.notificationRequest.content.text}
         notification.notificationRequest.content.sound: ${notification.notificationRequest.content.soundName}
-        notification.notificationRequest.content.channelID: ${notification.notificationRequest.trigger.notificationChannel}
+        notification.notificationRequest.content.channelID: ${notification.notificationRequest.trigger.getNotificationChannel()}
         notification.notificationRequest.content.body: ${notification.notificationRequest.content.body}
         notification.notificationRequest.content.color: ${notification.notificationRequest.content.color}
         notification.notificationRequest.content.vibrationPattern: ${notification.notificationRequest.content.vibrationPattern?.contentToString()}

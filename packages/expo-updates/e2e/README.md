@@ -37,7 +37,7 @@ yarn generate-test-update-bundles
 
 - To run iOS tests:
 
-  - Start an iPhone 14 simulator
+  - Start an iPhone 16 simulator
   - Execute these commands:
 
 ```bash

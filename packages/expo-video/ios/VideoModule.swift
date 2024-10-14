@@ -224,6 +224,17 @@ public final class VideoModule: Module {
         player.volume = volume
       }
 
+      Property("bufferedPosition") { player -> Double in
+        return player.bufferedPosition
+      }
+
+      Property("bufferOptions") { player -> [String: Any] in
+        return player.bufferOptions.toDictionary()
+      }
+      .set { (player, bufferOptions: BufferOptions) in
+        player.bufferOptions = bufferOptions
+      }
+
       Function("play") { player in
         player.pointer.play()
       }
@@ -257,6 +268,24 @@ public final class VideoModule: Module {
       Function("replay") { player in
         player.pointer.seek(to: CMTime.zero)
       }
+
+      AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?) -> [VideoThumbnail] in
+        guard let times, !times.isEmpty else {
+          return []
+        }
+        guard let asset = player.ref.currentItem?.asset else {
+          // TODO: We should throw here as nothing is playing
+          return []
+        }
+        return try await generateThumbnails(asset: asset, times: times)
+      }
+    }
+
+    Class(VideoThumbnail.self) {
+      Property("width", \.ref.size.width)
+      Property("height", \.ref.size.height)
+      Property("requestedTime", \.requestedTime.seconds)
+      Property("actualTime", \.actualTime.seconds)
     }
 
     OnAppEntersBackground {
