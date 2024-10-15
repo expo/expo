@@ -3,7 +3,7 @@ import { shadows, theme, typography, mergeClasses } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { slug } from 'github-slugger';
-import type { ComponentType } from 'react';
+import type { ComponentType, PropsWithChildren } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
@@ -69,18 +69,25 @@ export enum TypeDocKind {
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
 
 export type MDComponents = Components;
+export type CodeComponentProps = PropsWithChildren<{
+  className?: string;
+  node: { data?: { meta?: string } };
+}>;
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => <Callout>{children}</Callout>,
-  code: ({ children, className }) =>
-    className ? (
-      <PrismCodeBlock className={className}>{children}</PrismCodeBlock>
+  code: ({ className, children, node }: CodeComponentProps) => {
+    return className ? (
+      <PrismCodeBlock className={className} title={node?.data?.meta}>
+        {children}
+      </PrismCodeBlock>
     ) : (
       <CODE css={css({ display: 'inline' })}>{children}</CODE>
-    ),
+    );
+  },
   pre: ({ children }) => <>{children}</>,
   h1: ({ children }) => <H4 hideInSidebar>{children}</H4>,
   ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
