@@ -1,7 +1,7 @@
 // #region metro-runtime
 // metro-runtime has no entrypoint
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-runtime/src/modules/asyncRequire.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-runtime/src/modules/asyncRequire.js
 declare module 'metro-runtime/src/modules/asyncRequire' {
   type DependencyMapPaths =
     | null
@@ -17,12 +17,12 @@ declare module 'metro-runtime/src/modules/asyncRequire' {
   export default asyncRequire;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-runtime/src/modules/empty-module.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-runtime/src/modules/empty-module.js
 declare module 'metro-runtime/src/modules/empty-module' {
   // This has no exports
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-runtime/src/modules/HMRClient.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-runtime/src/modules/HMRClient.js
 declare module 'metro-runtime/src/modules/HMRClient' {
   import type { HmrUpdate } from 'metro-runtime/src/modules/types.flow';
   import EventEmitter from 'metro-runtime/src/modules/vendor/eventemitter3';
@@ -45,13 +45,18 @@ declare module 'metro-runtime/src/modules/HMRClient' {
   export default HMRClient;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-runtime/src/modules/null-module.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-runtime/src/modules/null-module.js
 declare module 'metro-runtime/src/modules/null-module' {
   const $$EXPORT_DEFAULT_DECLARATION$$: null;
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-runtime/src/modules/types.flow.js
+// NOTE(cedric): this is a manual change, to avoid having to import `../types.flow`
+declare module 'metro-runtime/src/modules/types' {
+  export * from 'metro-runtime/src/modules/types.flow';
+}
+
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-runtime/src/modules/types.flow.js
 declare module 'metro-runtime/src/modules/types.flow' {
   export type ModuleMap = readonly [number, string][];
   export type Bundle = {
@@ -144,7 +149,7 @@ declare module 'metro-runtime/src/modules/types.flow' {
     | HmrErrorMessage;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-runtime/src/modules/vendor/eventemitter3.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-runtime/src/modules/vendor/eventemitter3.js
 declare module 'metro-runtime/src/modules/vendor/eventemitter3' {
   /**
    * `object` should be in either of the following forms:
@@ -229,7 +234,7 @@ declare module 'metro-runtime/src/modules/vendor/eventemitter3' {
   export default EventEmitter;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-runtime/src/polyfills/require.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-runtime/src/polyfills/require.js
 declare module 'metro-runtime/src/polyfills/require' {
   type ArrayIndexable<T> = {
     readonly [indexer: number]: T;

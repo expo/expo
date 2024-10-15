@@ -3,7 +3,7 @@ declare module 'metro-transform-plugins' {
   export * from 'metro-transform-plugins/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-plugins/src/addParamsToDefineCall.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/addParamsToDefineCall.js
 declare module 'metro-transform-plugins/src/addParamsToDefineCall' {
   /**
    * Simple way of adding additional parameters to the end of the define calls.
@@ -15,7 +15,7 @@ declare module 'metro-transform-plugins/src/addParamsToDefineCall' {
   export default addParamsToDefineCall;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-plugins/src/constant-folding-plugin.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/constant-folding-plugin.js
 declare module 'metro-transform-plugins/src/constant-folding-plugin' {
   import type { PluginObj } from '@babel/core';
   import type $$IMPORT_TYPEOF_1$$ from '@babel/traverse';
@@ -29,7 +29,7 @@ declare module 'metro-transform-plugins/src/constant-folding-plugin' {
   export default constantFoldingPlugin;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-plugins/src/import-export-plugin.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/import-export-plugin.js
 declare module 'metro-transform-plugins/src/import-export-plugin' {
   import type * as _babel_types from '@babel/types';
   import type { PluginObj } from '@babel/core';
@@ -66,9 +66,9 @@ declare module 'metro-transform-plugins/src/import-export-plugin' {
   export default importExportPlugin;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-plugins/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/index.js
 declare module 'metro-transform-plugins/src/index' {
-  // See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-plugins/src/index.js
+  // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/index.js
 
   // NOTE(cedric): this is quite a complicated CJS export, this can't be automatically typed
 
@@ -82,7 +82,7 @@ declare module 'metro-transform-plugins/src/index' {
   export function getTransformPluginCacheKeyFiles(): string[];
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-plugins/src/inline-plugin.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/inline-plugin.js
 declare module 'metro-transform-plugins/src/inline-plugin' {
   import type { PluginObj } from '@babel/core';
   import type * as $$IMPORT_TYPEOF_1$$ from '@babel/types';
@@ -106,13 +106,15 @@ declare module 'metro-transform-plugins/src/inline-plugin' {
   export default inlinePlugin;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-plugins/src/inline-requires-plugin.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/inline-requires-plugin.js
 declare module 'metro-transform-plugins/src/inline-requires-plugin' {
   import type * as _babel_core from '@babel/core';
   type Babel = typeof _babel_core;
   export type PluginOptions = Readonly<{
     ignoredRequires?: readonly string[];
     inlineableCalls?: readonly string[];
+    nonMemoizedModules?: readonly string[];
+    memoizeCalls?: boolean;
   }>;
   export type State = {
     opts?: PluginOptions;
@@ -124,7 +126,7 @@ declare module 'metro-transform-plugins/src/inline-requires-plugin' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-plugins/src/normalizePseudoGlobals.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/normalizePseudoGlobals.js
 declare module 'metro-transform-plugins/src/normalizePseudoGlobals' {
   import type * as _babel_types from '@babel/types';
   export type Options = {
@@ -134,10 +136,10 @@ declare module 'metro-transform-plugins/src/normalizePseudoGlobals' {
   export default normalizePseudoglobals;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.80.12/packages/metro-transform-plugins/src/utils/createInlinePlatformChecks.js
+// See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/utils/createInlinePlatformChecks.js
 declare module 'metro-transform-plugins/src/utils/createInlinePlatformChecks' {
-  import type * as _babel_types from '@babel/types';
   import type { Scope } from '@babel/traverse';
+  import type * as _babel_types from '@babel/types';
   type Types = typeof _babel_types;
   type PlatformChecks = {
     isPlatformNode: (
