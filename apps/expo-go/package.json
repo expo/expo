@@ -73,7 +73,7 @@
     "react-native-paper": "^5.12.5",
     "react-native-reanimated": "~3.15.4",
     "react-native-safe-area-context": "4.11.0",
-    "react-native-screens": "4.0.0-beta.9",
+    "react-native-screens": "4.0.0-beta.11",
     "react-native-svg": "15.8.0-rc.1",
     "react-redux": "^7.2.0",
     "react-string-replace": "^0.4.4",

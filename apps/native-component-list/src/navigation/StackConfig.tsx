@@ -26,7 +26,7 @@ export default function getStackConfig(navigation: BottomTabNavigationProp<any>,
       },
       headerTintColor: theme.icon.info,
       headerTitleStyle: {
-        color: 'theme.text.default',
+        color: theme.text.default,
       },
       headerPressColorAndroid: theme.icon.info,
       headerRight: () => (

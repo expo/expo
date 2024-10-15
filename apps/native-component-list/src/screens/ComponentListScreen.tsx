@@ -99,7 +99,6 @@ export default function ComponentListScreen(props: Props) {
 
   const renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
-    console.log(route, exampleName);
     return (
       <LinkButton
         disabled={!isAvailable}
