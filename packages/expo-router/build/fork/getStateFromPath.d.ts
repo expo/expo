@@ -48,7 +48,7 @@ export default function getStateFromPath<ParamList extends object>(this: RouterS
 export declare function getMatchableRouteConfigs<ParamList extends object>(options?: Options<ParamList>, previousSegments?: string[]): {
     configs: {
         isInitial: boolean;
-        type: "static" | "dynamic" | "layout";
+        type: "layout" | "static" | "dynamic";
         screen: string;
         regex?: RegExp | undefined;
         path: string;
