@@ -4,7 +4,7 @@ import {
   parseMultipartMixedResponseAsync,
   MultipartPart,
 } from '@expo/multipart-body-parser';
-import { GraphQLError } from 'graphql';
+import { GraphQLError } from '@0no-co/graphql.web';
 import { vol } from 'memfs';
 import nullthrows from 'nullthrows';
 
