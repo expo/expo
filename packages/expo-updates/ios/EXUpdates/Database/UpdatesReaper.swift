@@ -19,13 +19,15 @@ public final class UpdatesReaper: NSObject {
     selectionPolicy: SelectionPolicy,
     launchedUpdate: Update
   ) {
+    let logger = UpdatesLogger()
+
     database.databaseQueue.async {
       let beginDeleteFromDatabase = Date()
 
       do {
         try database.markUpdateFinished(launchedUpdate)
       } catch {
-        NSLog("Error reaping updates: %@", [error.localizedDescription])
+        logger.warn(message: "Error reaping updates: \(error.localizedDescription)")
         return
       }
 
@@ -33,7 +35,7 @@ public final class UpdatesReaper: NSObject {
       do {
         allUpdates = try database.allUpdates(withConfig: config)
       } catch {
-        NSLog("Error reaping updates: %@", [error.localizedDescription])
+        logger.warn(message: "Error reaping updates: \(error.localizedDescription)")
         return
       }
 
@@ -41,15 +43,15 @@ public final class UpdatesReaper: NSObject {
       do {
         manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey)
       } catch {
-        NSLog("Error selecting manifest filters while reaping updates: %@", [error.localizedDescription])
+        logger.warn(message: "Error selecting manifest filters while reaping updates: \(error.localizedDescription)")
         return
       }
 
-      var updatesToDelete = selectionPolicy.updatesToDelete(withLaunchedUpdate: launchedUpdate, updates: allUpdates, filters: manifestFilters)
+      let updatesToDelete = selectionPolicy.updatesToDelete(withLaunchedUpdate: launchedUpdate, updates: allUpdates, filters: manifestFilters)
       do {
         try database.deleteUpdates(updatesToDelete)
       } catch {
-        NSLog("Error reaping updates: %@", [error.localizedDescription])
+        logger.warn(message: "Error reaping updates: \(error.localizedDescription)")
         return
       }
 
@@ -57,11 +59,11 @@ public final class UpdatesReaper: NSObject {
       do {
         assetsForDeletion = try database.deleteUnusedAssets()
       } catch {
-        NSLog("Error reaping updates: %@", [error.localizedDescription])
+        logger.warn(message: "Error reaping updates: \(error.localizedDescription)")
         return
       }
 
-      NSLog("Deleted assets and updates from SQLite in %f ms", [beginDeleteFromDatabase.timeIntervalSinceNow * -1000])
+      logger.info(message: "Deleted assets and updates from SQLite in \(beginDeleteFromDatabase.timeIntervalSinceNow * -1000) ms")
 
       FileDownloader.assetFilesQueue.async {
         var deletedAssets = 0
@@ -75,14 +77,14 @@ public final class UpdatesReaper: NSObject {
               try FileManager.default.removeItem(at: localUrl)
               deletedAssets += 1
             } catch {
-              NSLog("Error deleting asset at %@: %@", [localUrl, error.localizedDescription])
+              logger.warn(message: "Error deleting asset at \(localUrl): \(error.localizedDescription)")
               erroredAssets.append(asset)
             }
           } else {
             deletedAssets += 1
           }
         }
-        NSLog("Deleted %lu assets from disk in %f ms", [deletedAssets, beginDeleteAssets.timeIntervalSinceNow * -1000])
+        logger.info(message: "Deleted \(deletedAssets) assets from disk in \(beginDeleteAssets.timeIntervalSinceNow * -1000) ms")
 
         // retry errored deletions
         let beginRetryDeletes = Date()
@@ -92,12 +94,15 @@ public final class UpdatesReaper: NSObject {
             do {
               try FileManager.default.removeItem(at: localUrl)
             } catch {
-              NSLog("Retried deleting asset at %@ and failed again: %@", [localUrl, error.localizedDescription])
+              logger.warn(message: "Retried deleting asset at \(localUrl) and failed again: \(error.localizedDescription)")
             }
           }
         }
-        NSLog("Retried deleting assets from disk in %f ms", [beginRetryDeletes.timeIntervalSinceNow * -1000])
+
+        logger.info(message: "Retried deleting assets from disk in \(beginRetryDeletes.timeIntervalSinceNow * -1000) ms")
       }
     }
   }
 }
+
+// swiftlint:enable closure_body_length

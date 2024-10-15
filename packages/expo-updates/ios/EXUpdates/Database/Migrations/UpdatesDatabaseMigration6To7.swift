@@ -49,3 +49,5 @@ internal final class UpdatesDatabaseMigration6To7: UpdatesDatabaseMigration {
     }
   }
 }
+
+// swiftlint:enable line_length
