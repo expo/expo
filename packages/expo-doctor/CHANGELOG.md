@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Remove `--minify` from ncc for now, in order to prevent log spam on errors.
-
 ### 💡 Others
+
+## 1.11.1 — 2024-10-15
+
+### 🐛 Bug fixes
+
+- Remove `--minify` from ncc for now, in order to prevent log spam on errors.
 
 ## 1.11.0 — 2024-10-15
 
