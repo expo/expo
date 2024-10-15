@@ -17,7 +17,7 @@ const schemaJson: { [sdkVersion: string]: Schema } = {};
 
 // TODO: Maybe move json-schema-deref-sync out of api (1.58MB -- lodash)
 // https://packagephobia.com/result?p=json-schema-deref-sync
-async function getSchemaAsync(sdkVersion: string): Promise<Schema> {
+export async function _getSchemaAsync(sdkVersion: string): Promise<Schema> {
   const json = await getSchemaJSONAsync(sdkVersion);
   return schemaDerefSync(json.schema);
 }
@@ -29,7 +29,7 @@ async function getSchemaAsync(sdkVersion: string): Promise<Schema> {
  */
 export async function getAssetSchemasAsync(sdkVersion: string = 'UNVERSIONED'): Promise<string[]> {
   // If no SDK version is available then fall back to unversioned
-  const schema = await getSchemaAsync(sdkVersion);
+  const schema = await _getSchemaAsync(sdkVersion);
   const assetSchemas: string[] = [];
   const visit = (node: Schema, fieldPath: string) => {
     if (node.meta && node.meta.asset) {
