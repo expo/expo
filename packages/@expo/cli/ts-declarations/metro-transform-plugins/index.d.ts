@@ -1,7 +1,6 @@
 // #region metro-transform-plugins
 declare module 'metro-transform-plugins' {
   export * from 'metro-transform-plugins/src/index';
-  export { default } from 'metro-transform-plugins/src/index';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/addParamsToDefineCall.js
@@ -139,8 +138,8 @@ declare module 'metro-transform-plugins/src/normalizePseudoGlobals' {
 
 // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-transform-plugins/src/utils/createInlinePlatformChecks.js
 declare module 'metro-transform-plugins/src/utils/createInlinePlatformChecks' {
-  import type * as _babel_types from '@babel/types';
   import type { Scope } from '@babel/traverse';
+  import type * as _babel_types from '@babel/types';
   type Types = typeof _babel_types;
   type PlatformChecks = {
     isPlatformNode: (

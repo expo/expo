@@ -1134,6 +1134,7 @@ declare module 'metro-file-map/src/watchers/FSEventsWatcher' {
     readonly dot: boolean;
     readonly doIgnore: (path: string) => boolean;
     readonly fsEventsWatchStopper: () => Promise<void>;
+    readonly watcherInitialReaddirPromise: Promise<void>;
     _tracked: Set<string>;
     static isSupported(): boolean;
     static _normalizeProxy(
@@ -1144,7 +1145,7 @@ declare module 'metro-file-map/src/watchers/FSEventsWatcher' {
       dirCallback: (normalizedPath: string, stats: Stats) => void,
       fileCallback: (normalizedPath: string, stats: Stats) => void,
       symlinkCallback: (normalizedPath: string, stats: Stats) => void,
-      endCallback: Function,
+      endCallback: () => void,
       errorCallback: Function,
       ignored?: Matcher
     ): void;

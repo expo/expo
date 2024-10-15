@@ -84,7 +84,7 @@ declare module 'metro/src/Bundler' {
   }>;
   class Bundler {
     _depGraph: DependencyGraph;
-    _readyPromise: Promise<void>;
+    _initializedPromise: Promise<void>;
     _transformer: Transformer;
     constructor(config: ConfigT, options?: BundlerOptions);
     getWatcher(): EventEmitter;
@@ -142,10 +142,13 @@ declare module 'metro/src/cli/parseKeyValueParamArray' {
 // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro/src/commands/build.js
 // NOTE(cedric): yargs is custom-typed in metro
 // declare module 'metro/src/commands/build' {
-//   import type { ModuleObject } from "yargs";
-//   const $$EXPORT_DEFAULT_DECLARATION$$: () => Omit<ModuleObject, keyof ({
-//     handler: Function;
-//   })> & {
+//   import type { ModuleObject } from 'yargs';
+//   const $$EXPORT_DEFAULT_DECLARATION$$: () => Omit<
+//     ModuleObject,
+//     keyof {
+//       handler: Function;
+//     }
+//   > & {
 //     handler: Function;
 //   };
 //   export default $$EXPORT_DEFAULT_DECLARATION$$;
@@ -154,10 +157,13 @@ declare module 'metro/src/cli/parseKeyValueParamArray' {
 // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro/src/commands/dependencies.js
 // NOTE(cedric): yargs is custom-typed in metro
 // declare module 'metro/src/commands/dependencies' {
-//   import type { ModuleObject } from "yargs";
-//   const $$EXPORT_DEFAULT_DECLARATION$$: () => Omit<ModuleObject, keyof ({
-//     handler: Function;
-//   })> & {
+//   import type { ModuleObject } from 'yargs';
+//   const $$EXPORT_DEFAULT_DECLARATION$$: () => Omit<
+//     ModuleObject,
+//     keyof {
+//       handler: Function;
+//     }
+//   > & {
 //     handler: Function;
 //   };
 //   export default $$EXPORT_DEFAULT_DECLARATION$$;
@@ -166,10 +172,13 @@ declare module 'metro/src/cli/parseKeyValueParamArray' {
 // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro/src/commands/serve.js
 // NOTE(cedric): yargs is custom-typed in metro
 // declare module 'metro/src/commands/serve' {
-//   import type { ModuleObject } from "yargs";
-//   const $$EXPORT_DEFAULT_DECLARATION$$: () => Omit<ModuleObject, keyof ({
-//     handler: Function;
-//   })> & {
+//   import type { ModuleObject } from 'yargs';
+//   const $$EXPORT_DEFAULT_DECLARATION$$: () => Omit<
+//     ModuleObject,
+//     keyof {
+//       handler: Function;
+//     }
+//   > & {
 //     handler: Function;
 //   };
 //   export default $$EXPORT_DEFAULT_DECLARATION$$;
@@ -340,11 +349,6 @@ declare module 'metro/src/DeltaBundler/Graph' {
     modified: Map<string, Module<T>>;
     deleted: Set<string>;
   };
-  /**
-   * Internal data structure that the traversal logic uses to know which of the
-   * files have been modified. This allows to return the added modules before the
-   * modified ones (which is useful for things like Hot Module Reloading).
-   **/
   /**
    * Internal data structure that the traversal logic uses to know which of the
    * files have been modified. This allows to return the added modules before the
@@ -698,7 +702,7 @@ declare module 'metro/src/DeltaBundler/Transformer' {
       transformerOptions: TransformOptions,
       fileBuffer?: Buffer
     ): Promise<TransformResultWithSource>;
-    end(): void;
+    end(): Promise<void>;
   }
   export default Transformer;
 }
@@ -1052,7 +1056,7 @@ declare module 'metro/src/IncrementalBundler' {
     _revisionsByGraphId: Map<GraphId, Promise<GraphRevision>>;
     static revisionIdFromString: (str: string) => RevisionId;
     constructor(config: ConfigT, options?: IncrementalBundlerOptions);
-    end(): void;
+    end(): Promise<void>;
     getBundler(): Bundler;
     getDeltaBundler(): DeltaBundler;
     getRevision(revisionId: RevisionId): null | undefined | Promise<GraphRevision>;
@@ -1183,7 +1187,7 @@ declare module 'metro/src/index.flow' {
   import MetroServer from 'metro/src/Server';
   type MetroMiddleWare = {
     attachHmrServer: (httpServer: HttpServer | HttpsServer) => void;
-    end: () => void;
+    end: () => Promise<void>;
     metroServer: MetroServer;
     middleware: Middleware;
   };
@@ -1199,6 +1203,7 @@ declare module 'metro/src/index.flow' {
       }
     ) => void;
     onReady?: (server: HttpServer | HttpsServer) => void;
+    onClose?: () => void;
     secureServerOptions?: object;
     secure?: boolean;
     secureCert?: string;
@@ -2145,7 +2150,7 @@ declare module 'metro/src/node-haste/DependencyGraph' {
       string | symbol,
       Map<string | symbol, Map<string | symbol, Map<string | symbol, BundlerResolution>>>
     >;
-    _readyPromise: Promise<void>;
+    _initializedPromise: Promise<void>;
     constructor(
       config: ConfigT,
       options?: {
@@ -2259,6 +2264,7 @@ declare module 'metro/src/node-haste/DependencyGraph/ModuleResolution' {
     doesFileExist: DoesFileExist;
     emptyModulePath: string;
     extraNodeModules?: null | object;
+    fileSystemLookup: FileSystemLookup;
     getHasteModulePath: (
       name: string,
       platform: null | undefined | string
@@ -2281,7 +2287,6 @@ declare module 'metro/src/node-haste/DependencyGraph/ModuleResolution' {
       [platform: string]: readonly string[];
     }>;
     unstable_enablePackageExports: boolean;
-    unstable_fileSystemLookup?: null | FileSystemLookup;
   }>;
   export class ModuleResolver<TPackage extends Packageish> {
     _options: Options<TPackage>;

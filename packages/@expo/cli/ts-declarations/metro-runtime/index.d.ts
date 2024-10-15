@@ -51,6 +51,11 @@ declare module 'metro-runtime/src/modules/null-module' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
+// NOTE(cedric): this is a manual change, to avoid having to import `../types.flow`
+declare module 'metro-runtime/src/modules/types' {
+  export * from 'metro-runtime/src/modules/types.flow';
+}
+
 // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-runtime/src/modules/types.flow.js
 declare module 'metro-runtime/src/modules/types.flow' {
   export type ModuleMap = readonly [number, string][];

@@ -4,6 +4,11 @@ declare module 'metro-config' {
   export { default } from 'metro-config/src/index';
 }
 
+// NOTE(cedric): this is a manual change, to avoid having to import `../configTypes.flow`
+declare module 'metro-config/src/configTypes' {
+  export * from 'metro-config/src/configTypes.flow';
+}
+
 // See: https://github.com/facebook/metro/blob/v0.81.0/packages/metro-config/src/configTypes.flow.js
 declare module 'metro-config/src/configTypes.flow' {
   import type { IntermediateStackFrame } from 'metro/src/Server/symbolicate';
