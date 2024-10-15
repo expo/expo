@@ -126,9 +126,12 @@ export async function loadDetailScreen({ params }) {
     res.json()
   );
 
-  const name = mockData.forms[0].name;
+  let name = mockData.forms[0].name;
 
-  console.log('name', { id: params.id, name, image: mockData.sprites.front_default });
+  // upper first
+  name = name.charAt(0).toUpperCase() + name.slice(1);
+
+  //   console.log('name', { id: params.id, name, image: mockData.sprites.front_default });
 
   return (
     <>

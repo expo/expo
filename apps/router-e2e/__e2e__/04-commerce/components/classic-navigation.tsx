@@ -68,7 +68,7 @@ function HomeScreen() {
 function DetailsLoading() {
   return (
     <>
-      <ScreenOptions title="..." />
+      <ScreenOptions title="" />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         automaticallyAdjustsScrollIndicatorInsets>
