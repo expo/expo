@@ -45,17 +45,50 @@ function HomeScreen() {
   return <LoadableScreen loadAsync={loadScreen} fallback={<Loading />} />;
 }
 
+function DetailsLoading() {
+  return (
+    <>
+      <ScreenOptions title="..." />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        automaticallyAdjustsScrollIndicatorInsets>
+        <View style={{ padding: 16, gap: 12, gap: 12 }}>
+          <View style={{ alignItems: 'center' }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center', height: 300 }}>
+              <SkeletonBox width={200} height={200} />
+            </View>
+          </View>
+          <Skeleton
+            style={{
+              height: 100,
+              borderCurve: 'continuous',
+
+              borderRadius: 10,
+            }}
+          />
+          <Skeleton
+            delay={100}
+            style={{
+              marginTop: 64,
+              height: 200,
+              borderCurve: 'continuous',
+
+              borderRadius: 10,
+            }}
+          />
+        </View>
+      </ScrollView>
+    </>
+  );
+}
+
 function DetailScreen() {
   const { params } = useRoute();
+  //   return <DetailsLoading />;
   return (
     <LoadableScreen
       loadAsync={loadDetailScreen.bind(null, { params })}
-      fallback={
-        <>
-          <ScreenOptions title="..." />
-          <Loading />
-        </>
-      }
+      fallback={<DetailsLoading />}
     />
   );
 }
