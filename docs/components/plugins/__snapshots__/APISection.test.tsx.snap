@@ -6298,7 +6298,14 @@ for more details.
         data-text="true"
       >
         React.
-        Component
+        <a
+          class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+          href="https://react.dev/reference/react/Component"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Component
+        </a>
         <span
           class="text-quaternary"
         >
@@ -6321,11 +6328,11 @@ for more details.
     </p>
     <div>
       <p
-        class="!text-secondary !font-medium emotion-16"
+        class="!text-secondary !font-medium emotion-17"
         data-text="true"
       >
         <span
-          class="group emotion-17"
+          class="group emotion-18"
           data-text="true"
         >
           <a
@@ -6370,7 +6377,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-18"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-19"
       >
         <h3
           class="group emotion-10"
@@ -6385,7 +6392,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-20"
+                class="wrap-anywhere emotion-21"
                 data-text="true"
               >
                 barCodeTypes
@@ -6486,7 +6493,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-18"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-19"
       >
         <h3
           class="group emotion-10"
@@ -6501,7 +6508,7 @@ minimize battery usage.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-20"
+                class="wrap-anywhere emotion-21"
                 data-text="true"
               >
                 onBarCodeScanned
@@ -6577,7 +6584,7 @@ provided with an
         
 
         <blockquote
-          class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-37"
+          class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-38"
           data-testid="callout-container"
         >
           <div
@@ -6640,7 +6647,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-18"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-19"
       >
         <h3
           class="group emotion-10"
@@ -6655,7 +6662,7 @@ data has been retrieved.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-20"
+                class="wrap-anywhere emotion-21"
                 data-text="true"
               >
                 type
@@ -6778,7 +6785,7 @@ Same as
         </p>
       </div>
       <h4
-        class="group emotion-54"
+        class="group emotion-55"
         data-heading="true"
       >
         <a
@@ -6818,10 +6825,10 @@ Same as
         </a>
       </h4>
       <ul
-        class="emotion-55"
+        class="emotion-56"
       >
         <li
-          class="emotion-56"
+          class="emotion-57"
           data-text="true"
         >
           <code
@@ -6882,7 +6889,7 @@ Same as
     </a>
   </h2>
   <div
-    class="emotion-18"
+    class="emotion-19"
   >
     <h3
       class="group emotion-10"
@@ -6897,7 +6904,7 @@ Same as
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-62"
+            class="wrap-anywhere emotion-63"
             data-text="true"
           >
             usePermissions(options)
@@ -7053,14 +7060,14 @@ This uses both
           </g>
         </svg>
         <span
-          class="emotion-69"
+          class="emotion-70"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-70"
+        class="emotion-71"
         data-text="true"
       >
         <code
@@ -7138,11 +7145,11 @@ This uses both
       class="mb-3.5 last:[&>*]:mb-0"
     >
       <p
-        class="!mt-1 emotion-16"
+        class="!mt-1 emotion-17"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-69"
+          class="text-inherit flex flex-row gap-2 items-center emotion-70"
           data-text="true"
         >
           <svg
@@ -7169,11 +7176,11 @@ This uses both
         </span>
       </p>
       <pre
-        class="relative border border-secondary p-4 my-4 bg-subtle last:mb-0 emotion-77"
+        class="relative border border-secondary p-4 my-4 bg-subtle last:mb-0 emotion-78"
         data-text="true"
       >
         <code
-          class="emotion-78"
+          class="emotion-79"
         >
           <span
             class="token keyword"
@@ -7277,7 +7284,7 @@ This uses both
     </a>
   </h2>
   <div
-    class="emotion-18"
+    class="emotion-19"
   >
     <h3
       class="group emotion-10"
@@ -7292,7 +7299,7 @@ This uses both
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-62"
+            class="wrap-anywhere emotion-63"
             data-text="true"
           >
             BarCodeScanner.getPermissionsAsync()
@@ -7357,14 +7364,14 @@ This uses both
           </g>
         </svg>
         <span
-          class="emotion-69"
+          class="emotion-70"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-70"
+        class="emotion-71"
         data-text="true"
       >
         <code
@@ -7424,7 +7431,7 @@ This uses both
     </div>
   </div>
   <div
-    class="emotion-18"
+    class="emotion-19"
   >
     <h3
       class="group emotion-10"
@@ -7439,7 +7446,7 @@ This uses both
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-62"
+            class="wrap-anywhere emotion-63"
             data-text="true"
           >
             BarCodeScanner.requestPermissionsAsync()
@@ -7526,14 +7533,14 @@ This uses both
           </g>
         </svg>
         <span
-          class="emotion-69"
+          class="emotion-70"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-70"
+        class="emotion-71"
         data-text="true"
       >
         <code
@@ -7593,7 +7600,7 @@ This uses both
     </div>
   </div>
   <div
-    class="emotion-18"
+    class="emotion-19"
   >
     <h3
       class="group emotion-10"
@@ -7608,7 +7615,7 @@ This uses both
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-62"
+            class="wrap-anywhere emotion-63"
             data-text="true"
           >
             BarCodeScanner.scanFromURLAsync(url, barCodeTypes)
@@ -7744,7 +7751,7 @@ the platform.
               
 
               <blockquote
-                class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-37"
+                class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-38"
                 data-testid="callout-container"
               >
                 <div
@@ -7828,14 +7835,14 @@ the platform.
           </g>
         </svg>
         <span
-          class="emotion-69"
+          class="emotion-70"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-70"
+        class="emotion-71"
         data-text="true"
       >
         <code
@@ -7933,7 +7940,7 @@ code.
     </a>
   </h2>
   <div
-    class="emotion-18"
+    class="emotion-19"
   >
     <h3
       class="group emotion-10"
@@ -7987,11 +7994,11 @@ code.
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="emotion-16"
+      class="emotion-17"
       data-text="true"
     >
       <span
-        class="text-inherit flex flex-row gap-2 items-center emotion-69"
+        class="text-inherit flex flex-row gap-2 items-center emotion-70"
         data-text="true"
       >
         PermissionResponse Properties
@@ -8423,11 +8430,11 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="emotion-70"
+      class="emotion-71"
       data-text="true"
     >
       <span
-        class="emotion-69"
+        class="emotion-70"
         data-text="true"
       >
         Type:
@@ -8446,7 +8453,7 @@ in order to enable/disable the permission.
       </code>
        
       <span
-        class="emotion-168"
+        class="emotion-169"
         data-text="true"
       >
         extended by
@@ -9391,11 +9398,11 @@ you don't get this value.
       </a>
     </h3>
     <p
-      class="mb-3 emotion-70"
+      class="mb-3 emotion-71"
       data-text="true"
     >
       <span
-        class="emotion-69"
+        class="emotion-70"
         data-text="true"
       >
         Literal Type:
@@ -9404,11 +9411,11 @@ you don't get this value.
       multiple types
     </p>
     <p
-      class="emotion-70"
+      class="emotion-71"
       data-text="true"
     >
       <span
-        class="emotion-69"
+        class="emotion-70"
         data-text="true"
       >
         Acceptable values are:
@@ -9422,7 +9429,7 @@ you don't get this value.
           PermissionHookBehavior
         </code>
         <span
-          class="emotion-235"
+          class="emotion-236"
           data-text="true"
         >
            | 
@@ -9530,11 +9537,11 @@ you don't get this value.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 emotion-16"
+        class="!mb-0 !border-b-0 emotion-17"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-69"
+          class="text-inherit flex flex-row gap-2 items-center emotion-70"
           data-text="true"
         >
           PermissionStatus Values
@@ -9545,7 +9552,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-54"
+        class="group emotion-55"
         data-heading="true"
       >
         <a
@@ -9557,7 +9564,7 @@ you don't get this value.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-244"
+              class="!text-inherit emotion-245"
               data-text="true"
             >
               DENIED
@@ -9590,7 +9597,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-245"
+        class="mb-3 emotion-246"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -9606,7 +9613,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-54"
+        class="group emotion-55"
         data-heading="true"
       >
         <a
@@ -9618,7 +9625,7 @@ you don't get this value.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-244"
+              class="!text-inherit emotion-245"
               data-text="true"
             >
               GRANTED
@@ -9651,7 +9658,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-245"
+        class="mb-3 emotion-246"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -9667,7 +9674,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-54"
+        class="group emotion-55"
         data-heading="true"
       >
         <a
@@ -9679,7 +9686,7 @@ you don't get this value.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-244"
+              class="!text-inherit emotion-245"
               data-text="true"
             >
               UNDETERMINED
@@ -9712,7 +9719,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-245"
+        class="mb-3 emotion-246"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"

@@ -58,9 +58,9 @@ const renderTypeDeclarationTable = (
     <Table>
       <ParamsTableHeadRow />
       <tbody>
-        {children?.map(d => renderTypePropertyRow(d, sdkVersion))}
+        {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
         {indexSignature?.parameters &&
-          indexSignature.parameters.map(d => renderTypePropertyRow(d, sdkVersion))}
+          indexSignature.parameters.map(param => renderTypePropertyRow(param, sdkVersion))}
       </tbody>
     </Table>
   </Fragment>
@@ -77,7 +77,7 @@ const renderTypeMethodEntry = (
       <APIBox
         key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
         className="!mb-0">
-        <RawH4 className="inline-flex !mb-3 !-mt-2">
+        <RawH4 className="!mb-3">
           <MONOSPACE>
             {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
             {` => `}
@@ -88,8 +88,7 @@ const renderTypeMethodEntry = (
         <Table>
           <ParamsTableHeadRow mainCellLabel="Parameter" />
           <tbody>
-            {children?.map(d => renderTypePropertyRow(d, sdkVersion))}
-            {baseSignature.parameters?.map(d => renderTypePropertyRow(d, sdkVersion))}
+            {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
           </tbody>
         </Table>
       </APIBox>
@@ -134,7 +133,7 @@ const renderTypePropertyRow = (
 const renderType = (
   { name, comment, type, typeParameter }: TypeGeneralData,
   sdkVersion: string
-): JSX.Element | undefined => {
+): ReactNode => {
   if (type.declaration) {
     // Object Types
     return (
@@ -167,7 +166,7 @@ const renderType = (
     const propMethodDefinitions = propTypes.filter(
       (t: TypeDefinitionData) => t.declaration?.signatures?.length
     );
-    const propObjectDefinitions = propTypes.filter(x => !propMethodDefinitions.includes(x));
+    const propObjectDefinitions = propTypes.filter(type => !propMethodDefinitions.includes(type));
 
     if (propTypes.length) {
       return (
@@ -200,7 +199,7 @@ const renderType = (
                   ))}
                 <SPAN theme="secondary">
                   {type.type === 'union'
-                    ? propMethodDefinitions
+                    ? propMethodDefinitions.length > 2
                       ? 'an anonymous method defined as described below'
                       : 'object shaped as below'
                     : 'extended by'}
