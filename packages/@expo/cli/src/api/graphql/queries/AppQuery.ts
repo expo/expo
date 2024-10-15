@@ -1,4 +1,3 @@
-import { print } from 'graphql';
 import { gql } from '@urql/core';
 
 import { AppByIdQuery } from '../../../graphql/generated';
@@ -19,7 +18,8 @@ export const AppQuery = {
                 }
               }
             }
-            ${print(AppFragmentNode)}
+
+            ${AppFragmentNode}
           `,
           { appId: projectId },
           {
