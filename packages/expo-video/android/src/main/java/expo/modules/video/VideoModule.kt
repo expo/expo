@@ -362,6 +362,7 @@ class VideoModule : Module() {
         Property("width") { ref -> ref.width }
         Property("height") { ref -> ref.height }
         Property("requestedTime") { ref -> ref.requestedTime }
+        Property("actualTime") { ref -> ref.actualTime }
       }
     }
 
