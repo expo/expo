@@ -3,7 +3,7 @@
 // In App.js in a new project
 
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { PlatformColor, ScrollView, Text, View } from 'react-native';
 import { createStaticNavigation, useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -25,14 +25,19 @@ function LoadableScreen({ loadAsync, fallback }) {
 }
 
 import Skeleton, { SkeletonBox } from './skeleton';
+import { ScreenOptions } from './react-navigation';
 
 function Loading() {
   return (
-    <View style={{ padding: 16, gap: 8 }}>
-      <SkeletonBox width={100} height={50} />
-      <Skeleton />
-      <Skeleton />
-    </View>
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      automaticallyAdjustsScrollIndicatorInsets>
+      <View style={{ padding: 16, gap: 8 }}>
+        <SkeletonBox width={100} height={50} />
+        <Skeleton />
+        <Skeleton />
+      </View>
+    </ScrollView>
   );
 }
 
@@ -43,11 +48,34 @@ function HomeScreen() {
 function DetailScreen() {
   const { params } = useRoute();
   return (
-    <LoadableScreen loadAsync={loadDetailScreen.bind(null, { params })} fallback={<Loading />} />
+    <LoadableScreen
+      loadAsync={loadDetailScreen.bind(null, { params })}
+      fallback={
+        <>
+          <ScreenOptions title="..." />
+          <Loading />
+        </>
+      }
+    />
   );
 }
 
 const RootStack = createNativeStackNavigator({
+  screenOptions: {
+    headerTransparent: true,
+    headerLargeTitle: true,
+    headerBlurEffect: 'prominent',
+    headerShadowVisible: true,
+    headerLargeTitleShadowVisible: false,
+    headerStyle: {
+      // Hack to ensure the collapsed small header shows the shadow / border.
+      backgroundColor: 'rgba(255,255,255,0.01)',
+    },
+    // @ts-expect-error
+    headerLargeStyle: {
+      backgroundColor: PlatformColor('systemGroupedBackgroundColor'), // Color of your background
+    },
+  },
   screens: {
     Home: HomeScreen,
     detail: DetailScreen,
