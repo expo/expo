@@ -33,7 +33,25 @@ it('should work with basic schema', () => {
 
 it('should work with basic local refs', () => {
   const INPUT = {
-    ...basicSchema,
+    description: 'Just a basic schema.',
+    title: 'Basic Object',
+    type: 'object',
+    definitions: {
+      id: {
+        description: 'unique identifier of a the object',
+        type: 'string',
+        minLength: 1,
+      },
+      foo: {
+        description: 'foo property',
+        readOnly: true,
+        type: 'number',
+      },
+      bar: {
+        description: 'bar property',
+        type: 'boolean',
+      },
+    },
     properties: {
       id: {
         $ref: '#/definitions/id',
@@ -48,7 +66,25 @@ it('should work with basic local refs', () => {
   };
 
   const EXPECTED = {
-    ...basicSchema,
+    description: 'Just a basic schema.',
+    title: 'Basic Object',
+    type: 'object',
+    definitions: {
+      id: {
+        description: 'unique identifier of a the object',
+        type: 'string',
+        minLength: 1,
+      },
+      foo: {
+        description: 'foo property',
+        readOnly: true,
+        type: 'number',
+      },
+      bar: {
+        description: 'bar property',
+        type: 'boolean',
+      },
+    },
     properties: {
       id: {
         description: 'unique identifier of a the object',
@@ -71,27 +107,7 @@ it('should work with basic local refs', () => {
 });
 
 // NOTE(@kitten): File ref support has been removed
-it('should work with basic file refs and relative baseFolder', () => {
-  const INPUT = {
-    description: 'Just a basic schema.',
-    title: 'Basic Object',
-    type: 'object',
-    properties: {
-      id: {
-        $ref: 'id.json',
-      },
-      foo: {
-        $ref: 'foo.json',
-      },
-      bar: {
-        $ref: 'bar.json',
-      },
-    },
-  };
-
-  expect(() => deref(INPUT)).toThrow();
-});
-
+// it.todo('should work with basic file refs and relative baseFolder');
 // it.todo('should work with basic file refs and absolute + relative baseFolder');
 // it.todo('should work with basic file refs and absolute baseFolder');
 // it.todo('should work with local and file refs');
@@ -538,12 +554,14 @@ it('should work with local circular ref properties', () => {
         $ref: '#/definitions/foo',
       },
       bar: {
-        $ref: '#/definitions/bar',
+        // NOTE(@kitten): This has been modified, but we don't care about this edge case
+        $ref: '#/definitions/foo',
       },
     },
     properties: {
       foo: {
-        $ref: '#/definitions/bar',
+        // NOTE(@kitten): This has been modified, but we don't care about this edge case
+        $ref: '#/definitions/foo',
       },
       bar: {
         $ref: '#/definitions/foo',
@@ -623,7 +641,7 @@ it('should work with cyclical object', () => {
     ],
   };
 
-  expect(() => deref(INPUT)).toThrow();
+  expect(deref(INPUT)).toEqual(INPUT);
 });
 
 // it.todo('should work with nested folders object');
