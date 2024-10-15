@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from '@urql/core';
 
 export const AppFragmentNode = gql`
   fragment AppFragment on App {

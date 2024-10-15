@@ -78,7 +78,6 @@
     "getenv": "^1.0.0",
     "glob": "^10.4.2",
     "graphql": "^15.8.0",
-    "graphql-tag": "^2.10.1",
     "internal-ip": "^4.3.0",
     "is-docker": "^2.0.0",
     "is-wsl": "^2.1.1",

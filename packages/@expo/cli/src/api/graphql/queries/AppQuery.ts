@@ -1,5 +1,5 @@
 import { print } from 'graphql';
-import gql from 'graphql-tag';
+import { gql } from '@urql/core';
 
 import { AppByIdQuery } from '../../../graphql/generated';
 import { graphqlClient, withErrorHandlingAsync } from '../client';
