@@ -142,7 +142,6 @@ export const runServer = async (
       );
 
       Object.assign(websocketEndpoints, {
-        // @ts-expect-error: incorrect types
         '/hot': createWebsocketServer({
           websocketServer: hmrServer,
         }),

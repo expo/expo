@@ -38,12 +38,10 @@ class LogRespectingTerminal extends Terminal {
     super(stream);
 
     const sendLog = (...args: any[]) => {
-      // @ts-expect-error
       this._logLines.push(
         // format args like console.log
         util.format(...args)
       );
-      // @ts-expect-error
       this._scheduleUpdate();
 
       // Flush the logs to the terminal immediately so logs at the end of the process are not lost.
@@ -222,7 +220,6 @@ export async function instantiateMetroAsync(
     metroBundler,
     metroConfig,
     {
-      // @ts-expect-error: Inconsistent `websocketEndpoints` type in metro
       websocketEndpoints: {
         ...websocketEndpoints,
         ...createDevToolsPluginWebsocketEndpoint(),
