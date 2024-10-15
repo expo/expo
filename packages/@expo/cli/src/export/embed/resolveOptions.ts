@@ -1,5 +1,7 @@
 import { resolveEntryPoint } from '@expo/config/paths';
 import arg from 'arg';
+import type { OutputOptions } from 'metro/src/shared/types';
+import canonicalize from 'metro-core/src/canonicalize';
 import os from 'os';
 import path from 'path';
 
@@ -7,8 +9,6 @@ import { isAndroidUsingHermes, isIosUsingHermes } from './guessHermes';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
-
-const canonicalize = require('metro-core/src/canonicalize');
 
 export interface Options {
   assetsDest?: string;
@@ -21,7 +21,7 @@ export interface Options {
   platform: string;
   dev: boolean;
   bundleOutput: string;
-  bundleEncoding?: string;
+  bundleEncoding?: OutputOptions['bundleEncoding'];
   maxWorkers?: number;
   sourcemapOutput?: string;
   sourcemapSourcesRoot?: string;
@@ -35,6 +35,12 @@ function assertIsBoolean(val: any): asserts val is boolean {
   if (typeof val !== 'boolean') {
     throw new CommandError(`Expected boolean, got ${typeof val}`);
   }
+}
+
+function getBundleEncoding(encoding: string | undefined): OutputOptions['bundleEncoding'] {
+  return encoding === 'utf8' || encoding === 'utf16le' || encoding === 'ascii'
+    ? encoding
+    : undefined;
 }
 
 export function resolveOptions(
@@ -60,7 +66,7 @@ export function resolveOptions(
     // TODO: Support `--dev false`
     //   dev: false,
     bundleOutput,
-    bundleEncoding: args['--bundle-encoding'] ?? 'utf8',
+    bundleEncoding: getBundleEncoding(args['--bundle-encoding']) ?? 'utf8',
     maxWorkers: args['--max-workers'],
     sourcemapOutput: args['--sourcemap-output'],
     sourcemapSourcesRoot: args['--sourcemap-sources-root'],
