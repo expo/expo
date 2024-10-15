@@ -11,21 +11,7 @@ import { ScreenOptions } from './react-navigation';
 
 import { loadDetailScreen, loadInfoScreen, loadScreen } from './server-fns';
 import Skeleton, { SkeletonBox } from './skeleton';
-
-function LoadableScreen({ loadAsync, fallback }) {
-  const [isPending, startTransition] = React.useTransition();
-  const [contents, setContents] = React.useState<React.ReactElement | Promise<React.ReactElement>>(
-    <></>
-  );
-
-  React.useEffect(() => {
-    startTransition(() => {
-      setContents(loadAsync());
-    });
-  }, []);
-
-  return <>{isPending ? fallback : contents}</>;
-}
+import { LoadableScreen } from './loadable';
 
 function Loading() {
   return (
