@@ -585,10 +585,10 @@ export const renderParamRow = (
   );
 };
 
-export const ParamsTableHeadRow = ({ hasDescription = true }) => (
+export const ParamsTableHeadRow = ({ hasDescription = true, mainCellLabel = 'Name' }) => (
   <TableHead>
     <Row>
-      <HeaderCell size="sm">Name</HeaderCell>
+      <HeaderCell size="sm">{mainCellLabel}</HeaderCell>
       <HeaderCell size="sm">Type</HeaderCell>
       {hasDescription && <HeaderCell size="sm">Description</HeaderCell>}
     </Row>
@@ -636,7 +636,7 @@ export const renderParams = (parameters: MethodParamData[], sdkVersion: string) 
   const hasDescription = Boolean(parameters.find(param => param.comment));
   return (
     <Table>
-      <ParamsTableHeadRow hasDescription={hasDescription} />
+      <ParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
       <tbody>{parameters?.map(p => renderParamRow(p, sdkVersion, hasDescription))}</tbody>
     </Table>
   );

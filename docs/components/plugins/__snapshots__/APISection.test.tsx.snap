@@ -979,7 +979,7 @@ properties.
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
-              Name
+              Parameter
             </th>
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -1399,7 +1399,7 @@ value depending on the state of the credential.
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
-              Name
+              Parameter
             </th>
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -1640,7 +1640,7 @@ refresh operation.
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
-              Name
+              Parameter
             </th>
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -1928,7 +1928,7 @@ sign-in operation.
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
-              Name
+              Parameter
             </th>
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -2243,7 +2243,7 @@ sign-out operation.
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
-              Name
+              Parameter
             </th>
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -6944,7 +6944,7 @@ Same as
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
-              Name
+              Parameter
             </th>
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -7655,7 +7655,7 @@ This uses both
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
-              Name
+              Parameter
             </th>
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -8879,7 +8879,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               <th
                 class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
               >
-                Name
+                Parameter
               </th>
               <th
                 class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -10001,7 +10001,7 @@ exports[`APISection expo-pedometer 1`] = `
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
-              Name
+              Parameter
             </th>
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -10586,7 +10586,7 @@ available on this device.
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
             >
-              Name
+              Parameter
             </th>
             <th
               class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
@@ -11314,7 +11314,7 @@ in order to enable/disable the permission.
               <th
                 class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
               >
-                Name
+                Parameter
               </th>
               <th
                 class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
