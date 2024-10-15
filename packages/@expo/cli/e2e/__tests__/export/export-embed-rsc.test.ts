@@ -102,11 +102,7 @@ describe('export embed for RSC iOS', () => {
       });
 
       console.time('npx serve');
-      await serveCmd.startAsync([
-        '__e2e__/01-rsc/server.js',
-        '--port=' + 3035,
-        '--dist=' + inputDir,
-      ]);
+      await serveCmd.startAsync(['serve.js', '--port=' + 3035, '--dist=' + inputDir]);
 
       // Move the static file to a temporary location so we can test both static and dynamic RSC payloads.
       if (fs.existsSync(staticLocation)) {

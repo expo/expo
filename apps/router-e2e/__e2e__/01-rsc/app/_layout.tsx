@@ -4,7 +4,8 @@ import 'server-only';
 import { Link } from 'expo-router/build/rsc/exports';
 
 import { unstable_styles } from '../home.module.css';
-import { View, SafeAreaView } from '../lib/react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 
 const HomeLayout = (props) => {
   return (

@@ -1,7 +1,7 @@
 import { Link } from 'expo-router/build/rsc/exports';
+import { Image, Text, View } from 'react-native';
 
 import { Counter } from '../components/counter';
-import { Image, Text, View } from '../lib/react-native';
 
 export default function IndexRoute({ path, query }) {
   return (
