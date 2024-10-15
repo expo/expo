@@ -3210,7 +3210,19 @@
     color "^4.2.3"
     warn-once "^0.1.0"
 
-"@react-navigation/core@6.4.0", "@react-navigation/core@^6.4.17", "@react-navigation/core@^6.4.9":
+"@react-navigation/core@6.4.0":
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-6.4.0.tgz#c44d33a8d8ef010a102c7f831fc8add772678509"
+  integrity sha512-tpc0Ak/DiHfU3LlYaRmIY7vI4sM/Ru0xCet6runLUh9aABf4wiLgxyFJ5BtoWq6xFF8ymYEA/KWtDhetQ24YiA==
+  dependencies:
+    "@react-navigation/routers" "^6.1.3"
+    escape-string-regexp "^4.0.0"
+    nanoid "^3.1.23"
+    query-string "^7.0.0"
+    react-is "^16.13.0"
+    use-latest-callback "^0.1.5"
+
+"@react-navigation/core@^6.4.0", "@react-navigation/core@^6.4.17", "@react-navigation/core@^6.4.3":
   version "6.4.17"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-6.4.17.tgz#f277a196b578c8a456efcc563d1c9bd87eb4ab04"
   integrity sha512-Nd76EpomzChWAosGqWOYE3ItayhDzIEzzZsT7PfGcRFDgW5miHV2t4MZcq9YIK4tzxZjVVpYbIynOOQQd1e0Cg==
@@ -3260,7 +3272,27 @@
     "@react-navigation/elements" "^1.3.17"
     warn-once "^0.1.0"
 
-"@react-navigation/native@6.0.13", "@react-navigation/native@^6.1.6", "@react-navigation/native@~6.0.13", "@react-navigation/native@~6.1.6":
+"@react-navigation/native@6.0.13":
+  version "6.0.13"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-6.0.13.tgz#ec504120e193ea6a7f24ffa765a1338be5a3160a"
+  integrity sha512-CwaJcAGbhv3p3ECablxBkw8QBCGDWXqVRwQ4QbelajNW623m3sNTC9dOF6kjp8au6Rg9B5e0KmeuY0xWbPk79A==
+  dependencies:
+    "@react-navigation/core" "^6.4.0"
+    escape-string-regexp "^4.0.0"
+    fast-deep-equal "^3.1.3"
+    nanoid "^3.1.23"
+
+"@react-navigation/native@~6.0.13":
+  version "6.0.16"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-6.0.16.tgz#a37df62da9db912c91c53e2cdeadb954865a6a9b"
+  integrity sha512-YVmzypkDppV/vAG+66KTJ2RFtPjhDTLLjgk8TNTCHG3pahq1q13zbnEPjqB42bU4kgL5SG17O4saErt1DJaWQg==
+  dependencies:
+    "@react-navigation/core" "^6.4.3"
+    escape-string-regexp "^4.0.0"
+    fast-deep-equal "^3.1.3"
+    nanoid "^3.1.23"
+
+"@react-navigation/native@~6.1.6":
   version "6.1.18"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-6.1.18.tgz#338fa9afa2c89feec1d3eac41c963840d8d6f106"
   integrity sha512-mIT9MiL/vMm4eirLcmw2h6h/Nm5FICtnYSdohq4vTLA2FF/6PNhByM7s8ffqoVfE5L0uAa6Xda1B7oddolUiGg==
@@ -3270,7 +3302,7 @@
     fast-deep-equal "^3.1.3"
     nanoid "^3.1.23"
 
-"@react-navigation/routers@^6.1.9":
+"@react-navigation/routers@^6.1.3", "@react-navigation/routers@^6.1.9":
   version "6.1.9"
   resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-6.1.9.tgz#73f5481a15a38e36592a0afa13c3c064b9f90bed"
   integrity sha512-lTM8gSFHSfkJvQkxacGM6VJtBt61ip2XO54aNfswD+KMw6eeZ4oehl7m0me3CR9hnDE4+60iAZR8sAhvCiI3NA==
@@ -4633,7 +4665,7 @@
     "@urql/core" ">=2.3.1"
     wonka "^4.0.14"
 
-"@vercel/ncc@^0.38.0", "@vercel/ncc@^0.38.1":
+"@vercel/ncc@0.38.1", "@vercel/ncc@^0.38.0", "@vercel/ncc@^0.38.1":
   version "0.38.1"
   resolved "https://registry.yarnpkg.com/@vercel/ncc/-/ncc-0.38.1.tgz#13f08738111e1d9e8a22fd6141f3590e54d9a60e"
   integrity sha512-IBBb+iI2NLu4VQn3Vwldyi2QwaXt5+hTyh58ggAMoCGE6DJmPvwL3KPBWcJl1m9LYPChBLE980Jw+CS4Wokqxw==
@@ -9514,6 +9546,11 @@ inherits@2, inherits@2.0.4, inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4, i
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
+inherits@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
+  integrity sha512-x00IRNXNy63jwGkJmzPigoySHbaqpNuzKbBOmzK+g2OdZpQ9w+sxCN+VSB3ja7IAge2OP2qpfxTjeNcyjmW1uw==
+
 ini@~1.3.0:
   version "1.3.8"
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.8.tgz#a29da425b48806f34767a4efce397269af28432c"
@@ -13440,7 +13477,7 @@ query-string@^5.0.1:
     object-assign "^4.1.0"
     strict-uri-encode "^1.0.0"
 
-query-string@^7.1.3:
+query-string@^7.0.0, query-string@^7.1.3:
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/query-string/-/query-string-7.1.3.tgz#a1cf90e994abb113a325804a972d98276fe02328"
   integrity sha512-hh2WYhq4fi8+b+/2Kg9CEge4fDPvHS534aOOvOZeQ3+Vf2mCFsaFBYj0i+iXcAq6I9Vzp5fjMFBlONvayDC1qg==
@@ -13856,7 +13893,14 @@ react-timer-mixin@^0.13.3:
   resolved "https://registry.yarnpkg.com/react-timer-mixin/-/react-timer-mixin-0.13.4.tgz#75a00c3c94c13abe29b43d63b4c65a88fc8264d3"
   integrity sha512-4+ow23tp/Tv7hBM5Az5/Be/eKKF7DIvJ09voz5LyHGQaqqz9WV8YMs31eFvcYQs7d451LSg7kDJV70XYN/Ug/Q==
 
-react@18.2.0, react@18.3.1:
+react@18.2.0:
+  version "18.2.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
+  integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
+  dependencies:
+    loose-envify "^1.1.0"
+
+react@18.3.1:
   version "18.3.1"
   resolved "https://registry.yarnpkg.com/react/-/react-18.3.1.tgz#49ab892009c53933625bd16b2533fc754cab2891"
   integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==
@@ -16266,6 +16310,11 @@ urlpattern-polyfill@^6.0.2:
   dependencies:
     braces "^3.0.2"
 
+use-latest-callback@^0.1.5:
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/use-latest-callback/-/use-latest-callback-0.1.11.tgz#e073fcbba792cc95ac661d96bc13b6041956cfe1"
+  integrity sha512-8nhb73STSD/z3GTHklvNjL8F9wMOo0bj0AFnulpIYuFTm6aQlT3ZcNbXF2YurKImIY8+kpSFSDHZZyQmurGrhw==
+
 use-latest-callback@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/use-latest-callback/-/use-latest-callback-0.2.1.tgz#4d4e6a9e4817b13142834850dcfa8d24ca4569cf"
@@ -16293,7 +16342,14 @@ util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
 
-util@^0.10.3, util@^0.12.0, util@^0.12.3, util@~0.12.4:
+util@^0.10.3:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/util/-/util-0.10.4.tgz#3aa0125bfe668a4672de58857d3ace27ecb76901"
+  integrity sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==
+  dependencies:
+    inherits "2.0.3"
+
+util@^0.12.0, util@^0.12.3:
   version "0.12.5"
   resolved "https://registry.yarnpkg.com/util/-/util-0.12.5.tgz#5f17a6059b73db61a875668781a1c2b136bd6fbc"
   integrity sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==

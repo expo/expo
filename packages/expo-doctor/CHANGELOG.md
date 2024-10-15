@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove `--minify` from ncc for now, in order to prevent log spam on errors.
+
 ### 💡 Others
 
 ## 1.11.0 — 2024-10-15
