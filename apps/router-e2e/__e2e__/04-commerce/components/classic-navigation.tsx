@@ -4,12 +4,13 @@
 
 import * as React from 'react';
 import { PlatformColor, ScrollView, Text, View } from 'react-native';
-import { createStaticNavigation, Link, useNavigation, useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
+import { createStaticNavigation, Link, useNavigation, useRoute } from '@react-navigation/native';
+import { ScreenOptions } from './react-navigation';
 
 import { loadDetailScreen, loadInfoScreen, loadScreen } from './server-fns';
 import Skeleton, { SkeletonBox } from './skeleton';
-import { ScreenOptions } from './react-navigation';
 
 function LoadableScreen({ loadAsync, fallback }) {
   const [isPending, startTransition] = React.useTransition();
@@ -40,9 +41,14 @@ function Loading() {
   );
 }
 
-import { Ionicons } from '@expo/vector-icons';
-
 function HomeScreen() {
+  // TODO: Preloading
+  //   const navigation = useNavigation();
+
+  //   React.useEffect(() => {
+  //     navigation.preload('detail', { id: 1 });
+  //     navigation.preload('detail', { id: 2 });
+  //   }, []);
   return (
     <>
       <ScreenOptions

@@ -1,7 +1,7 @@
 'use client';
 import { TouchableHighlight, View, ViewProps, TouchableHighlightProps } from 'react-native';
 
-import { IconSymbol } from './IconSymbol';
+// import { IconSymbol } from './IconSymbol';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 
@@ -23,15 +23,15 @@ export function FormItem({
   React.Children.forEach(children, (child, index) => {
     if (!React.isValidElement(child)) return;
 
-    if (child.type === IconSymbol && index === 0) {
-      leadingIconChild = React.cloneElement(child, {
-        size: 24,
-        style: { width: 60, top: 0 },
-        ...child.props,
-      });
-    } else {
-      parsedChildren.push(child);
-    }
+    // if (child.type === IconSymbol && index === 0) {
+    //   leadingIconChild = React.cloneElement(child, {
+    //     size: 24,
+    //     style: { width: 60, top: 0 },
+    //     ...child.props,
+    //   });
+    // } else {
+    parsedChildren.push(child);
+    // }
   });
 
   const navigation = useNavigation();
