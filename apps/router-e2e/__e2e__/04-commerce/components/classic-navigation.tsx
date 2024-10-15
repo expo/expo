@@ -107,7 +107,6 @@ function DetailScreen() {
 
 function InfoScreen() {
   const { params } = useRoute();
-  //   return <DetailsLoading />;
   return <LoadableScreen loadAsync={loadInfoScreen.bind(null, { params })} fallback={null} />;
 }
 
