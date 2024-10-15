@@ -33,8 +33,7 @@
     "ajv": "8.11.0",
     "expo-dev-menu": "5.0.14",
     "expo-manifests": "~0.14.0",
-    "resolve-from": "^5.0.0",
-    "semver": "^7.6.0"
+    "resolve-from": "^5.0.0"
   },
   "devDependencies": {
     "@babel/plugin-transform-export-namespace-from": "^7.23.4",
