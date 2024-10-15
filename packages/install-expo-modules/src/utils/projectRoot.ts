@@ -4,9 +4,9 @@ import fs from 'fs/promises';
 import path from 'path';
 
 export async function normalizeProjectRootAsync(
-  projectRoot?: string
+  projectRoot: string
 ): Promise<{ projectRoot: string; platformAndroid: boolean; platformIos: boolean }> {
-  const root = path.dirname(findUpPackageJson(projectRoot ?? process.cwd()));
+  const root = path.dirname(findUpPackageJson(projectRoot));
   const platformAndroid = await pathExistsAsync(path.join(root, 'android'));
   const platformIos = await pathExistsAsync(path.join(root, 'ios'));
   return {
