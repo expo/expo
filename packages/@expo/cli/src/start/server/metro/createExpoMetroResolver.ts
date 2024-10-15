@@ -102,6 +102,7 @@ export function createFastResolver({
       | 'resolveAsset'
       | 'unstable_conditionNames'
       | 'unstable_conditionsByPlatform'
+      | 'fileSystemLookup'
     >,
     moduleName: string,
     platform: string | null
@@ -126,14 +127,18 @@ export function createFastResolver({
           ]),
         ]
       : [];
-    const { unstable_fileSystemLookup } = context as {
-      unstable_fileSystemLookup?: (
-        filePath: string
-      ) => { exists: false } | { exists: true; type: 'f' | 'd'; realPath: string };
-    };
-    if (!unstable_fileSystemLookup) {
-      throw new Error('Metro API unstable_fileSystemLookup is required for fast resolver');
+
+    // NOTE(cedric): metro@0.81.0 ships with `fileSystemLookup`, while `metro@0.80.12` ships as unstable
+    const fileSystemLookup = (
+      'unstable_fileSystemLookup' in context
+        ? context.unstable_fileSystemLookup
+        : context.fileSystemLookup
+    ) as ResolutionContext['fileSystemLookup'] | undefined;
+
+    if (!fileSystemLookup) {
+      throw new Error('Metro API fileSystemLookup is required for fast resolver');
     }
+
     try {
       fp = jestResolver(moduleName, {
         blockList,
@@ -147,7 +152,7 @@ export function createFastResolver({
         realpathSync(file: string): string {
           let metroRealPath: string | null = null;
 
-          const res = unstable_fileSystemLookup(file);
+          const res = fileSystemLookup(file);
           if (res?.exists) {
             metroRealPath = res.realPath;
           }
@@ -158,15 +163,15 @@ export function createFastResolver({
           return metroRealPath ?? file;
         },
         isDirectory(file: string): boolean {
-          const res = unstable_fileSystemLookup(file);
+          const res = fileSystemLookup(file);
           return res.exists && res.type === 'd';
         },
         isFile(file: string): boolean {
-          const res = unstable_fileSystemLookup(file);
+          const res = fileSystemLookup(file);
           return res.exists && res.type === 'f';
         },
         pathExists(file: string): boolean {
-          return unstable_fileSystemLookup(file).exists;
+          return fileSystemLookup(file).exists;
         },
         packageFilter(pkg) {
           // set the pkg.main to the first available field in context.mainFields
