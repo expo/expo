@@ -379,7 +379,7 @@ export type TimeUpdate = {
 
   /**
    * Float value indicating how far the player has buffered the video in seconds
-   * Same as the [`bufferedPosition`](#bufferetPosition) property
+   * Same as the [`bufferedPosition`](#bufferedposition) property
    * @platform android
    * @platform ios
    */
@@ -396,7 +396,7 @@ export type BufferOptions = {
   /**
    * The duration in seconds which determines how much media the player should buffer ahead of the current playback time.
    *
-   * On iOS when set to 0 the player will automatically decide appropriate buffer duration.
+   * On iOS when set to `0` the player will automatically decide appropriate buffer duration.
    *
    * Equivalent to [`AVPlayerItem.preferredForwardBufferDuration`](https://developer.apple.com/documentation/avfoundation/avplayeritem/1643630-preferredforwardbufferduration).
    * @default Android: 20, iOS: 0
