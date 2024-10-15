@@ -4,10 +4,12 @@
 
 import * as React from 'react';
 import { PlatformColor, ScrollView, Text, View } from 'react-native';
-import { createStaticNavigation, useRoute } from '@react-navigation/native';
+import { createStaticNavigation, Link, useNavigation, useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { loadDetailScreen, loadScreen } from './server-fns';
+import { loadDetailScreen, loadInfoScreen, loadScreen } from './server-fns';
+import Skeleton, { SkeletonBox } from './skeleton';
+import { ScreenOptions } from './react-navigation';
 
 function LoadableScreen({ loadAsync, fallback }) {
   const [isPending, startTransition] = React.useTransition();
@@ -24,9 +26,6 @@ function LoadableScreen({ loadAsync, fallback }) {
   return <>{isPending ? fallback : contents}</>;
 }
 
-import Skeleton, { SkeletonBox } from './skeleton';
-import { ScreenOptions } from './react-navigation';
-
 function Loading() {
   return (
     <ScrollView
@@ -41,8 +40,29 @@ function Loading() {
   );
 }
 
+import { Ionicons } from '@expo/vector-icons';
+
 function HomeScreen() {
-  return <LoadableScreen loadAsync={loadScreen} fallback={<Loading />} />;
+  return (
+    <>
+      <ScreenOptions
+        headerRight={(props) => {
+          // const navigation = useNavigation();
+          return (
+            <Link screen="info">
+              <Ionicons
+                style={{ padding: 8 }}
+                name="information-circle-outline"
+                size={24}
+                color={'rgba(0, 122, 255, 1)'}
+              />
+            </Link>
+          );
+        }}
+      />
+      <LoadableScreen loadAsync={loadScreen} fallback={<Loading />} />
+    </>
+  );
 }
 
 function DetailsLoading() {
@@ -93,6 +113,12 @@ function DetailScreen() {
   );
 }
 
+function InfoScreen() {
+  const { params } = useRoute();
+  //   return <DetailsLoading />;
+  return <LoadableScreen loadAsync={loadInfoScreen.bind(null, { params })} fallback={null} />;
+}
+
 const RootStack = createNativeStackNavigator({
   screenOptions: {
     headerTransparent: true,
@@ -112,6 +138,12 @@ const RootStack = createNativeStackNavigator({
   screens: {
     Home: HomeScreen,
     detail: DetailScreen,
+    info: {
+      screen: InfoScreen,
+      options: {
+        presentation: 'modal',
+      },
+    },
   },
 });
 

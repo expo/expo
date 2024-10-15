@@ -1,11 +1,5 @@
 'use client';
-import {
-  StyleSheet,
-  TouchableHighlight,
-  View,
-  ViewProps,
-  TouchableHighlightProps,
-} from 'react-native';
+import { TouchableHighlight, View, ViewProps, TouchableHighlightProps } from 'react-native';
 
 import { IconSymbol } from './IconSymbol';
 import React from 'react';

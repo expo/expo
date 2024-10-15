@@ -97,6 +97,26 @@ export async function loadScreen() {
   );
 }
 
+import InfoPage from './info-page';
+
+export async function loadInfoScreen() {
+  return (
+    <>
+      <ScreenOptions title={'Info'} />
+      <InfoPage
+        dom={{
+          contentInsetAdjustmentBehavior: 'automatic',
+          contentContainerStyle: {
+            paddingHorizontal: 16,
+            gap: 8,
+          },
+          automaticallyAdjustsScrollIndicatorInsets: true,
+        }}
+      />
+    </>
+  );
+}
+
 export async function loadDetailScreen({ params }) {
   if (!params?.id) {
     throw new Error('No id provided to details route');
