@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Support implementing `customizeRootView` in `ExpoAppDelegateSubscriber`. ([#30550](https://github.com/expo/expo/pull/30550) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 51.0.38 — 2024-10-15
+
+### 🎉 New features
+
+- [iOS] Support implementing `customizeRootView` in `ExpoAppDelegateSubscriber`. ([#30550](https://github.com/expo/expo/pull/30550) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 51.0.37 — 2024-10-08
 

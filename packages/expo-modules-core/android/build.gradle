@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '1.12.25'
+version = '1.12.26'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -63,7 +63,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.12.25"
+    versionName "1.12.26"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
