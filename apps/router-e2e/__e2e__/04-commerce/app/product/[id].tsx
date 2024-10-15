@@ -4,23 +4,47 @@ import React from 'react';
 
 import { Image, Text, ScrollView, View, ActivityIndicator } from 'react-native';
 
+import {
+  NativeScreen,
+  NativeScreenContainer,
+  ScreenStack,
+  ScreenStackHeaderConfig,
+  Screen,
+} from '../../lib/react-native-screens';
+
 export default function ProductRoute({ id }) {
   return (
     <View style={{ flex: 1, alignItems: 'stretch' }}>
-      <View
+      <NativeScreenContainer style={{ flex: 1, backgroundColor: 'blue' }}>
+        <ScreenStack style={{ flex: 1 }}>
+          <Screen
+            enabled
+            isNativeStack
+            freezeOnBlur
+            hasLargeHeader
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+            {/* descriptor */}
+            <ScreenStackHeaderConfig title="Hey" />
+
+            <Text>Product</Text>
+          </Screen>
+        </ScreenStack>
+      </NativeScreenContainer>
+      {/* <View
         style={{
           padding: 12,
           boxShadow: '0 4px 4px rgba(0,0,0,0.1)',
           backgroundColor: 'white',
           marginBottom: 12,
         }}>
-        <Link href="/">
-          <Ionicons name="chevron-back" /> Back
+        <Text>Product</Text>
+        <Link href="/" style={{ color: 'blue', fontSize: 16 }}>
+          Done
         </Link>
-      </View>
-      <React.Suspense fallback={<ActivityIndicator />}>
+      </View> */}
+      {/* <React.Suspense fallback={<ActivityIndicator />}>
         <ProductRouteInner id={id} />
-      </React.Suspense>
+      </React.Suspense> */}
     </View>
   );
 }
@@ -42,7 +66,7 @@ async function ProductRouteInner({ id }) {
         gap: 8,
         padding: 12,
       }}>
-      <Text>Product</Text>
+      <Text style={{ fontSize: 24 }}>Product</Text>
       <Image source={{ uri: mockData.sprites.front_default }} style={{ width: 100, height: 100 }} />
       <Text>ID: {id}</Text>
       <Text>Name: {mockData.forms[0].name}</Text>

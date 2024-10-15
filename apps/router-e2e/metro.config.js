@@ -63,7 +63,7 @@ config.transformer.enableBabelRCLookup = false;
 
 config.transformer.getTransformOptions = () => ({
   transform: {
-    experimentalImportSupport: boolish('EXPO_USE_METRO_REQUIRE', false),
+    experimentalImportSupport: false, // boolish('EXPO_USE_METRO_REQUIRE', false),
     inlineRequires: false,
   },
 });
