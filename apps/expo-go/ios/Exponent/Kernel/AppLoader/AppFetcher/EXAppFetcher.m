@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXApiUtil.h"
 #import "EXAppFetcher+Private.h"
 #import "EXAbstractLoader.h"
 #import "EXEnvironment.h"
@@ -10,6 +9,8 @@
 #import "EXVersions.h"
 
 #import <React/RCTUtils.h>
+
+#import "Expo_Go-Swift.h"
 
 @import EXManifests;
 
