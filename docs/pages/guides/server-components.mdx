@@ -217,7 +217,7 @@ export default function Index() {
 
 The CSS will be hoisted into the client bundle from the server.
 
-## React 19
+## Metadata
 
 React Server Components are a feature of React 19. To enable them, Expo CLI automatically uses a special canary build of React on all platforms. We'll remove this feature in the future when React 19 is enabled by default in React Native.
 
@@ -227,12 +227,19 @@ As a result, you can use React 19 features such as placing `<meta>` tags anywher
 export default function Index() {
   return (
     <>
-      <meta name="description" content="Hello, world!" />
-      <div>Hello, world!</div>
+      {process.env.EXPO_OS === 'web' && (
+        <>
+          <meta name="description" content="Hello, world!" />
+          <meta property="og:image" content="/og-image.png" />
+        </>
+      )}
+      <MyComponent />
     </>
   );
 }
 ```
+
+Use this in favor of the `Head` component from `expo-router/head`.
 
 ## Suspense
 
@@ -332,7 +339,17 @@ You can define the secret in your `.env` file:
 SECRET=123
 ```
 
-## Known Limitations
+## Platform detection
+
+To detect which platform your code is bundled for, use the `process.env.EXPO_OS` envrionment variable. For example `process.env.EXPO_OS === 'ios'`. Prefer this to `Platform.OS` as `react-native` is not fully optimized for React Server Components yet and therefore won't work as expected.
+
+You can detect if code is running in the server by performing a `typeof window === 'undefined'` check. This will always return `true` on client devices and `false` on the server.
+
+## Testing with jest
+
+Library authors can test their modules support server components by using `jest-expo`. Learn more in the [testing react server components guide](/guides/testing-rsc).
+
+## Known limitations
 
 > This is a very early technical preview that we're actively developing.
 
