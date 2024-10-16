@@ -13,7 +13,10 @@
   "author": "Expo",
   "license": "MIT",
   "jest": {
-    "preset": "jest-expo/ios"
+    "preset": "jest-expo/ios",
+    "modulePathIgnorePatterns": [
+      "./ios/Pods"
+    ]
   },
   "dependencies": {
     "@apollo/client": "^3.4.10",
