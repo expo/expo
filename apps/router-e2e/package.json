@@ -1,7 +1,7 @@
 {
   "name": "@expo/router-e2e",
   "version": "0.0.0",
-  "main": "index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "start:02-server-actions": "EXPO_UNSTABLE_SERVER_ACTIONS=1 E2E_RSC_ENABLED=1 E2E_ROUTER_JS_ENGINE=hermes EXPO_USE_METRO_REQUIRE=1 E2E_CANARY_ENABLED=1 EXPO_USE_STATIC=single E2E_ROUTER_SRC=02-server-actions expo start",

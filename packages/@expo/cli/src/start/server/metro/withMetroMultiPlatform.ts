@@ -132,6 +132,7 @@ export function withExtendedResolver(
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
+    isReactServerComponentsEnabled,
     getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
@@ -139,6 +140,7 @@ export function withExtendedResolver(
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled?: boolean;
+    isReactServerComponentsEnabled?: boolean;
     getMetroBundler: () => Bundler;
   }
 ) {
@@ -214,6 +216,14 @@ export function withExtendedResolver(
     if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
       debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
       _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
+    }
+    if (isReactServerComponentsEnabled) {
+      if (resolveFrom.silent(config.projectRoot, 'expo-router/rsc')) {
+        debug('Enabling bridge alias: expo-router -> expo-router/rsc');
+        _universalAliases.push([/^expo-router$/, 'expo-router/rsc']);
+        // Bridge the internal entry point which is a standalone import to ensure package.json resolution works as expected.
+        _universalAliases.push([/^expo-router\/entry-classic$/, 'expo-router/rsc/entry']);
+      }
     }
     return _universalAliases;
   }
@@ -722,21 +732,21 @@ export async function withMetroMultiPlatformAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled,
-    webOutput,
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
     isNamedRequiresEnabled,
+    isReactServerComponentsEnabled,
     getMetroBundler,
   }: {
     config: ConfigT;
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
-    webOutput?: 'single' | 'static' | 'server';
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
+    isReactServerComponentsEnabled: boolean;
     isNamedRequiresEnabled: boolean;
     getMetroBundler: () => Bundler;
   }
@@ -802,6 +812,7 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isReactCanaryEnabled,
+    isReactServerComponentsEnabled,
     getMetroBundler,
   });
 }
