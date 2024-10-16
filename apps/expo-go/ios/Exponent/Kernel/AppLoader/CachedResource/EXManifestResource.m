@@ -5,9 +5,10 @@
 #import "EXFileDownloader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelUtil.h"
-#import "EXVersions.h"
 
 #import <React/RCTConvert.h>
+
+#import "Expo_Go-Swift.h"
 
 @import EXManifests;
 @import EXUpdates;

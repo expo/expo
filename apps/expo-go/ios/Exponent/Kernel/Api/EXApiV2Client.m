@@ -1,8 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXApiV2Client.h"
-#import "EXBuildConstants.h"
 #import "EXKernelUtil.h"
+
+#import "Expo_Go-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

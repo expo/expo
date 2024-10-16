@@ -11,7 +11,6 @@
 #import "EXManifestResource.h"
 #import "EXSession.h"
 #import "EXUpdatesDatabaseManager.h"
-#import "EXVersions.h"
 
 #import "Expo_Go-Swift.h"
 

@@ -2,7 +2,6 @@
 
 #import "ExpoKit.h"
 #import "EXViewController.h"
-#import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
@@ -13,6 +12,7 @@
 
 #import <GoogleMaps/GoogleMaps.h>
 
+#import "Expo_Go-Swift.h"
 
 @interface ExpoKit ()
 {

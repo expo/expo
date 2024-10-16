@@ -15,7 +15,8 @@
 #import "EXRootViewController.h"
 #import "EXDevMenuManager.h"
 #import "EXEmbeddedHomeLoader.h"
-#import "EXBuildConstants.h"
+
+#import "Expo_Go-Swift.h"
 
 @import ExpoScreenOrientation;
 

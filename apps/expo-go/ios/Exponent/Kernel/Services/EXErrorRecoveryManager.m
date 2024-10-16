@@ -1,11 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXBuildConstants.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
 #import "EXScopedBridgeModule.h"
 
 #import <React/RCTAssert.h>
+
+#import "Expo_Go-Swift.h"
 
 // if the app crashes and it has not yet been 5 seconds since it loaded, don't auto refresh.
 #define EX_AUTO_REFRESH_BUFFER_BASE_SECONDS 5.0

@@ -61,6 +61,8 @@
 		B26DF25628048DB80071B0CD /* EXAppLoaderHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26DF25528048DB80071B0CD /* EXAppLoaderHelpers.swift */; };
 		B287BB2427DD909C008DA282 /* expo-root.pem in Resources */ = {isa = PBXBuildFile; fileRef = B287BB2327DD909B008DA282 /* expo-root.pem */; };
 		B2A8E25F2CBF3B24004CA9AF /* EXApiUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A8E25E2CBF3B1E004CA9AF /* EXApiUtil.swift */; };
+		B2A8E2652CC01C0A004CA9AF /* EXVersions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A8E2642CC01C0A004CA9AF /* EXVersions.swift */; };
+		B2A8E2672CC01D80004CA9AF /* EXBuildConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A8E2662CC01D80004CA9AF /* EXBuildConstants.swift */; };
 		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
 		B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */; };
 		B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCC92AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift */; };
@@ -92,9 +94,7 @@
 		B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2B20A0D1BF00974CCE /* EXAppFetcher.m */; };
 		B5A72C3420A0D42D00974CCE /* EXAbstractLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3120A0D42C00974CCE /* EXAbstractLoader.m */; };
 		B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC398E1E95A90B00540AA7 /* EXKernel.m */; };
-		B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39A11E95A90B00540AA7 /* EXVersions.m */; };
 		B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */; };
-		B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ADEE941F7DB4E000C88D2F /* EXBuildConstants.m */; };
 		B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */; };
 		B5CFBF4D1EDE398D00B4BE24 /* EXBuildConstants.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */; };
 		B5D0D65C204F152D00DDFC99 /* EXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D65B204F152D00DDFC99 /* EXViewController.m */; };
@@ -413,6 +413,8 @@
 		B26DF25528048DB80071B0CD /* EXAppLoaderHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXAppLoaderHelpers.swift; sourceTree = "<group>"; };
 		B287BB2327DD909B008DA282 /* expo-root.pem */ = {isa = PBXFileReference; lastKnownFileType = text; name = "expo-root.pem"; path = "Exponent/Supporting/expo-root.pem"; sourceTree = "<group>"; };
 		B2A8E25E2CBF3B1E004CA9AF /* EXApiUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXApiUtil.swift; sourceTree = "<group>"; };
+		B2A8E2642CC01C0A004CA9AF /* EXVersions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXVersions.swift; sourceTree = "<group>"; };
+		B2A8E2662CC01D80004CA9AF /* EXBuildConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXBuildConstants.swift; sourceTree = "<group>"; };
 		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
 		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
 		B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeAppLoader.swift; sourceTree = "<group>"; };
@@ -476,12 +478,8 @@
 		B5AC398D1E95A90B00540AA7 /* EXKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernel.h; sourceTree = "<group>"; };
 		B5AC398E1E95A90B00540AA7 /* EXKernel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernel.m; sourceTree = "<group>"; };
 		B5AC39931E95A90B00540AA7 /* EXKernelUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelUtil.h; sourceTree = "<group>"; };
-		B5AC39A01E95A90B00540AA7 /* EXVersions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXVersions.h; sourceTree = "<group>"; };
-		B5AC39A11E95A90B00540AA7 /* EXVersions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXVersions.m; sourceTree = "<group>"; };
 		B5AC39D41E95B17300540AA7 /* EXErrorRecoveryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXErrorRecoveryManager.h; sourceTree = "<group>"; };
 		B5AC39D51E95B17300540AA7 /* EXErrorRecoveryManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorRecoveryManager.m; sourceTree = "<group>"; };
-		B5ADEE931F7DB4E000C88D2F /* EXBuildConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXBuildConstants.h; sourceTree = "<group>"; };
-		B5ADEE941F7DB4E000C88D2F /* EXBuildConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXBuildConstants.m; sourceTree = "<group>"; };
 		B5C2740A1EC24AE1003355CE /* EXKernelLinkingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelLinkingManager.h; sourceTree = "<group>"; };
 		B5C2740B1EC24AE1003355CE /* EXKernelLinkingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernelLinkingManager.m; sourceTree = "<group>"; };
 		B5CFBF4C1EDE398D00B4BE24 /* EXBuildConstants.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXBuildConstants.plist; sourceTree = "<group>"; };
@@ -1071,14 +1069,12 @@
 		B5AC399B1E95A90B00540AA7 /* Environment */ = {
 			isa = PBXGroup;
 			children = (
-				B5ADEE931F7DB4E000C88D2F /* EXBuildConstants.h */,
-				B5ADEE941F7DB4E000C88D2F /* EXBuildConstants.m */,
+				B2A8E2662CC01D80004CA9AF /* EXBuildConstants.swift */,
 				B58F125A20B73455003E13F1 /* EXEnvironment.h */,
 				B58F125B20B73455003E13F1 /* EXEnvironment.m */,
 				B5D0D65E204F4BF500DDFC99 /* EXLog.h */,
 				B5D0D65D204F4BF400DDFC99 /* EXLog.m */,
-				B5AC39A01E95A90B00540AA7 /* EXVersions.h */,
-				B5AC39A11E95A90B00540AA7 /* EXVersions.m */,
+				B2A8E2642CC01C0A004CA9AF /* EXVersions.swift */,
 				31E8B2FB23D090E200E6C2BF /* EXClientReleaseType.h */,
 				31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */,
 			);
@@ -2076,7 +2072,6 @@
 				B5FB74DE1FF6DADC001C764B /* EXVersionManagerObjC.mm in Sources */,
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */,
-				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,
 				837A38252A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */,
 				8767F97624D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m in Sources */,
 				F151B1122A5C6881001BB70F /* VersionManager.swift in Sources */,
@@ -2088,7 +2083,6 @@
 				B2A8E25F2CBF3B24004CA9AF /* EXApiUtil.swift in Sources */,
 				B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */,
 				312D2ED2234DF2DC002F4049 /* EXScopedFacebook.m in Sources */,
-				B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */,
 				B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */,
 				B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */,
 				F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */,
@@ -2100,12 +2094,14 @@
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
 				8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */,
 				B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */,
+				B2A8E2652CC01C0A004CA9AF /* EXVersions.swift in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				2D5265EB294998B5001BB2BB /* EXDevelopmentHomeLoader.m in Sources */,
 				07295CD920559E7300ED42D4 /* EXUpdatesManager.m in Sources */,
 				25742BE72174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m in Sources */,
 				8767F5B824D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m in Sources */,
 				31E44FBF20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m in Sources */,
+				B2A8E2672CC01D80004CA9AF /* EXBuildConstants.swift in Sources */,
 				B5FB74EA1FF6DADC001C764B /* EXScopedModuleRegistry.m in Sources */,
 				B216039C2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */,
 				8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */,
