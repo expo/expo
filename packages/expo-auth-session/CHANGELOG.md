@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `extraHeaders` option to TokenRequest and RevokeTokenRequest. ([#31381](https://github.com/expo/expo/pull/31381)) by [@levizimmerman](https://github.com/levizimmerman)[@lsarni](https://github.com/lsarni)
+
 ### 🐛 Bug fixes
 
 - Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
