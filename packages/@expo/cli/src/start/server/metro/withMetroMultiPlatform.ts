@@ -49,7 +49,7 @@ function withWebPolyfills(
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
+  const getPolyfills = (ctx: { platform?: string | null }): readonly string[] => {
     const virtualEnvVarId = `\0polyfill:environment-variables`;
 
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -185,9 +185,11 @@ export function withExtendedResolver(
   const resolver = isFastResolverEnabled
     ? createFastResolver({
         preserveSymlinks: true,
-        blockList: Array.isArray(config.resolver?.blockList)
-          ? config.resolver?.blockList
-          : [config.resolver?.blockList],
+        blockList: !config.resolver?.blockList
+          ? []
+          : Array.isArray(config.resolver?.blockList)
+            ? config.resolver?.blockList
+            : [config.resolver?.blockList],
       })
     : defaultResolver;
 
@@ -372,7 +374,6 @@ export function withExtendedResolver(
     // Mock out production react imports in development.
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
       // This resolution is dev-only to prevent bundling the production React packages in development.
-      // @ts-expect-error: dev is not on type.
       if (!context.dev) return null;
 
       if (

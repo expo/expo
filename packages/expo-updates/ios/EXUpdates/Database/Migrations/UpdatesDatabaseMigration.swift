@@ -7,10 +7,21 @@ import sqlite3
 import SQLite3
 #endif
 
-internal enum UpdatesDatabaseMigrationError: Error {
+internal enum UpdatesDatabaseMigrationError: Error, Sendable, LocalizedError {
   case foreignKeysError
   case transactionError
   case migrationSQLError
+
+  var errorDescription: String? {
+    switch self {
+    case .foreignKeysError:
+      return "SQLite error temporarily disabling foreign keys"
+    case .transactionError:
+      return "SQLite error beginning or ending transaction"
+    case .migrationSQLError:
+      return "SQLite error running migration"
+    }
+  }
 }
 
 internal final class TransactionExecutor {

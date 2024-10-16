@@ -22,10 +22,7 @@
     "react-native": "0.76.0-rc.4",
     "react": "18.3.1",
     "@react-navigation/native": "7.0.0-rc.20",
-    "@react-navigation/native-stack": "7.0.0-rc.28",
-    "@react-navigation/bottom-tabs": "7.0.0-rc.33",
     "@react-navigation/core": "7.0.0-rc.15",
-    "@react-navigation/stack": "7.0.0-rc.27",
     "**/util": "~0.12.4"
   },
   "dependencies": {

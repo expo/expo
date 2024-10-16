@@ -7,6 +7,7 @@
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- Changed the exports shape, instead of using namespaces, all entities now are exported directly on package top-level. ([#31969](https://github.com/expo/expo/pull/31969) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 

@@ -2,9 +2,30 @@
 
 // swiftlint:disable identifier_name
 
-import Foundation
+public enum CodeSigningError: Error, Sendable, LocalizedError {
+  public enum CertificateChainErrorReason: Sendable {
+    case couldNotCreateSecTrust(osStatus: OSStatus)
+    case couldNotSetAnchorOnSecTrust(osStatus: OSStatus)
+    case couldNotSetAnchorOnlySettingOnSecTrust(osStatus: OSStatus)
+    case couldNotDisableNetworkFetchOnSecTrust(osStatus: OSStatus)
+    case secTrustEvaluationError(cause: Error?)
 
-internal enum CodeSigningError: Error {
+    var localizedDescription: String {
+      switch self {
+      case let .couldNotCreateSecTrust(osStatus):
+        return "Could not create sec trust with certificates (OSStatus: \(osStatus))"
+      case let .couldNotSetAnchorOnSecTrust(osStatus):
+        return "Could not set anchor certificates on sec trust (OSStatus: \(osStatus))"
+      case let .couldNotSetAnchorOnlySettingOnSecTrust(osStatus):
+        return "Could not set anchor certificates only setting on sec trust (OSStatus: \(osStatus))"
+      case let .couldNotDisableNetworkFetchOnSecTrust(osStatus):
+        return "Could not disable network fetch on sec trust (OSStatus: \(osStatus))"
+      case let .secTrustEvaluationError(cause):
+        return "Sec trust evaluation error: \(cause?.localizedDescription ?? "Unknown evaluation error")"
+      }
+    }
+  }
+
   case CertificateEncodingError
   case CertificateDERDecodeError
   case CertificateValidityError
@@ -14,9 +35,9 @@ internal enum CodeSigningError: Error {
   case CertificateRootNotCA
   case CertificateProjectInformationChainError
   case KeyIdMismatchError
-  case SecurityFrameworkError
+  case SecurityFrameworkSecKeyVerificationError(cause: Error)
   case CertificateEmptyError
-  case CertificateChainError
+  case CertificateChainError(reason: CertificateChainErrorReason)
   case CertificateRootNotSelfSigned
   case SignatureHeaderMissing
   case SignatureHeaderStructuredFieldParseError
@@ -26,7 +47,7 @@ internal enum CodeSigningError: Error {
   case AlgorithmParseError
   case InvalidExpoProjectInformationExtensionValue
 
-  func message() -> String {
+  public var errorDescription: String? {
     switch self {
     case .CertificateEncodingError:
       return "Code signing certificate could not be encoded in a lossless manner using utf8 encoding"
@@ -46,12 +67,12 @@ internal enum CodeSigningError: Error {
       return "Expo project information must be a subset or equal of that of parent certificates"
     case .KeyIdMismatchError:
       return "Key with keyid from signature not found in client configuration"
-    case .SecurityFrameworkError:
-      return "Signature verification failed due to security framework error"
+    case let .SecurityFrameworkSecKeyVerificationError(cause):
+      return "Signature verification failed due to security framework sec key verification error: \(cause.localizedDescription)"
     case .CertificateEmptyError:
       return "No code signing certificates provided"
-    case .CertificateChainError:
-      return "Certificate chain error"
+    case let .CertificateChainError(reason):
+      return "Certificate chain error: \(reason.localizedDescription)"
     case .CertificateRootNotSelfSigned:
       return "Root certificate not self-signed"
     case .SignatureHeaderMissing:
@@ -71,3 +92,5 @@ internal enum CodeSigningError: Error {
     }
   }
 }
+
+// swiftlint:enable identifier_name

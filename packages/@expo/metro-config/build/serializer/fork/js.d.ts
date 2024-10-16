@@ -16,7 +16,7 @@ export type Options = {
     includeAsyncPaths: boolean;
     projectRoot: string;
     serverRoot: string;
-    sourceUrl: string | undefined;
+    sourceUrl?: string | null;
     splitChunks: boolean;
     skipWrapping: boolean;
     computedAsyncModulePaths: Record<string, string> | null;

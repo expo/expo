@@ -13,8 +13,6 @@
 #import "EXTest.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTBridge.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTExceptionsManager.h>
@@ -32,9 +30,13 @@
 #import <React/RCTImageLoader.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/CoreModulesPlugins.h>
+#import <React/RCTReloadCommand.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
+#import <react/config/ReactNativeConfig.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
+
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.
@@ -46,7 +48,7 @@
 
 // Import 3rd party modules that need to be scoped.
 #import <RNCAsyncStorage/RNCAsyncStorage.h>
-#import "RNCWebViewManager.h"
+#import <RNCWebViewManager.h>
 
 #import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
@@ -57,25 +59,9 @@
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
 RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
-// this is needed because RCTPerfMonitor does not declare a public interface
-// anywhere that we can import.
-@interface RCTPerfMonitorDevSettingsHack <NSObject>
-
-- (void)hide;
-- (void)show;
-
-@end
-
-@interface RCTBridgeHack <NSObject>
-
-- (void)reload;
-
-@end
-
 @interface EXVersionManagerObjC ()
 
 // is this the first time this ABI has been touched at runtime?
-@property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) EXVersionedNetworkInterceptor *networkInterceptor;
@@ -123,11 +109,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
 }
 
-- (void)bridgeWillStartLoading:(id)bridge
+- (void)hostDidStart:(NSURL *)bundleURL
 {
-  if ([self _isDevModeEnabledForBridge:bridge]) {
+  if ([self _isDevModeEnabledForHost:bundleURL]) {
     // Set the bundle url for the packager connection manually
-    NSURL *bundleURL = [bridge bundleURL];
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
     [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
@@ -138,17 +123,13 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
       self.networkInterceptor = [[EXVersionedNetworkInterceptor alloc] initWithRCTInspectorPackagerConnection:inspectorPackagerConnection];
     }
   }
-
-  // Manually send a "start loading" notif, since the real one happened uselessly inside the RCTBatchedBridge constructor
-  [[NSNotificationCenter defaultCenter]
-   postNotificationName:RCTJavaScriptWillStartLoadingNotification object:bridge];
 }
 
-- (void)bridgeFinishedLoading:(id)bridge
+- (void)hostFinishedLoading:(id)host
 {
   // Override the "Reload" button from Redbox to reload the app from manifest
   // Keep in mind that it is possible this will return a EXDisabledRedBox
-  RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
+  RCTRedBox *redBox = (RCTRedBox *)[[host moduleRegistry] moduleForName:"RedBox"];
   [redBox setOverrideReloadAction:^{
     [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
   }];
@@ -158,12 +139,16 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   self.networkInterceptor = nil;
 }
 
+- (RCTDevSettings *) devSettings:(id)host {
+  return (RCTDevSettings *)[self _moduleInstanceForHost:host named:@"DevSettings"];
+}
+
 #pragma mark - Dev menu
 
-- (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge
+- (NSDictionary<NSString *, NSString *> *)devMenuItemsForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
-  BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
+  RCTDevSettings *devSettings = [self devSettings:host];
+  BOOL isDevModeEnabled = YES;
   NSMutableDictionary *items = [NSMutableDictionary new];
 
   if (isDevModeEnabled) {
@@ -178,21 +163,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     };
   }
 
-  if ([self _isBridgeInspectable:bridge] && isDevModeEnabled) {
-    items[@"dev-remote-debug"] = @{
-      @"label": @"Open JS Debugger",
-      @"isEnabled": @YES
-    };
-  } else if (
-      [self.manifest.expoGoSDKVersion compare:@"49.0.0" options:NSNumericSearch] == NSOrderedAscending &&
-      devSettings.isRemoteDebuggingAvailable &&
-      isDevModeEnabled
-    ) {
-    items[@"dev-remote-debug"] = @{
-      @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
-      @"isEnabled": @YES
-    };
-  }
+  items[@"dev-remote-debug"] = @{
+    @"label": @"Open JS Debugger",
+    @"isEnabled": @YES
+  };
 
   if (devSettings.isHotLoadingAvailable && isDevModeEnabled) {
     items[@"dev-hmr"] = @{
@@ -207,7 +181,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     };
   }
 
-  id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
+  id perfMonitor = [self _moduleInstanceForHost:host named:@"PerfMonitor"];
   if (perfMonitor && isDevModeEnabled) {
     items[@"dev-perf-monitor"] = @{
       @"label": devSettings.isPerfMonitorShown ? @"Hide Performance Monitor" : @"Show Performance Monitor",
@@ -223,20 +197,16 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   return items;
 }
 
-- (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge
+- (void)selectDevMenuItemWithKey:(NSString *)key host:(id)host bundleURL:(NSURL *)bundleURL
 {
   RCTAssertMainQueue();
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   if ([key isEqualToString:@"dev-reload"]) {
     // bridge could be an RCTBridge of any version and we need to cast it since ARC needs to know
     // the return type
-    [(RCTBridgeHack *)bridge reload];
+    RCTTriggerReloadCommandListeners(@"Dev menu - reload");
   } else if ([key isEqualToString:@"dev-remote-debug"]) {
-    if ([self _isBridgeInspectable:bridge]) {
-      [self _openJsInspector:bridge];
-    } else {
-      devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
-    }
+    [self _openJsInspector:bundleURL];
   } else if ([key isEqualToString:@"dev-profiler"]) {
     devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
   } else if ([key isEqualToString:@"dev-hmr"]) {
@@ -244,7 +214,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   } else if ([key isEqualToString:@"dev-inspector"]) {
     [devSettings toggleElementInspector];
   } else if ([key isEqualToString:@"dev-perf-monitor"]) {
-    id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
+    id perfMonitor = [self _moduleInstanceForHost:host named:@"PerfMonitor"];
     if (perfMonitor) {
       if (devSettings.isPerfMonitorShown) {
         [perfMonitor hide];
@@ -257,10 +227,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }
 }
 
-- (void)showDevMenuForBridge:(id)bridge
+- (void)showDevMenuForHost:(id)host
 {
   RCTAssertMainQueue();
-  id devMenu = [self _moduleInstanceForBridge:bridge named:@"DevMenu"];
+  id devMenu = [self _moduleInstanceForHost:host named:@"DevMenu"];
   // respondsToSelector: check is required because it's possible this bridge
   // was instantiated with a `disabledDevMenu` instance and the gesture preference was recently updated.
   if ([devMenu respondsToSelector:@selector(show)]) {
@@ -268,22 +238,22 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }
 }
 
-- (void)disableRemoteDebuggingForBridge:(id)bridge
+- (void)disableRemoteDebuggingForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   devSettings.isDebuggingRemotely = NO;
 }
 
-- (void)toggleRemoteDebuggingForBridge:(id)bridge
+- (void)toggleRemoteDebuggingForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
 }
 
-- (void)togglePerformanceMonitorForBridge:(id)bridge
+- (void)togglePerformanceMonitorForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
-  id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
+  RCTDevSettings *devSettings = [self devSettings:host];
+  id perfMonitor = [self _moduleInstanceForHost:host named:@"PerfMonitor"];
   if (perfMonitor) {
     if (devSettings.isPerfMonitorShown) {
       [perfMonitor hide];
@@ -295,9 +265,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }
 }
 
-- (void)toggleElementInspectorForBridge:(id)bridge
+- (void)toggleElementInspectorForHost:(id)host
 {
-  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  RCTDevSettings *devSettings = [self devSettings:host];
   [devSettings toggleElementInspector];
 }
 
@@ -310,20 +280,15 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 #pragma mark - internal
 
-- (BOOL)_isDevModeEnabledForBridge:(id)bridge
+- (BOOL)_isDevModeEnabledForHost:(NSURL *)bundleURL
 {
-  return ([RCTGetURLQueryParam([bridge bundleURL], @"dev") boolValue]);
+  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue]);
 }
 
-- (BOOL)_isBridgeInspectable:(id)bridge
+- (void)_openJsInspector:(NSURL *)bundleURL
 {
-  return [[bridge batchedBridge] isInspectable];
-}
-
-- (void)_openJsInspector:(id)bridge
-{
-  NSInteger port = [[[bridge bundleURL] port] integerValue] ?: RCT_METRO_PORT;
-  NSString *host = [[bridge bundleURL] host] ?: @"localhost";
+  NSInteger port = [[bundleURL port] integerValue] ?: RCT_METRO_PORT;
+  NSString *host = [bundleURL host] ?: @"localhost";
   NSString *url =
       [NSString stringWithFormat:@"http://%@:%lld/_expo/debugger?applicationId=%@", host, (long long)port, NSBundle.mainBundle.bundleIdentifier];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
@@ -331,12 +296,12 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
-- (id<RCTBridgeModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
+- (id<RCTTurboModule>)_moduleInstanceForHost:(id)host named:(NSString *)name
 {
-  return [bridge moduleForClass:[self getModuleClassFromName:[name UTF8String]]];
+  return [[host moduleRegistry] moduleForName:[name UTF8String]];
 }
 
-- (NSArray *)extraModulesForBridge:(id)bridge
+- (NSArray *)extraModules
 {
   NSDictionary *params = _params;
   NSDictionary *services = params[@"services"];
@@ -363,17 +328,14 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     [extraModules addObject:homeModule];
   }
 
-  if (!RCTTurboModuleEnabled()) {
-    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
-    id exceptionsManager = [self getModuleInstanceFromClass:RCTExceptionsManagerCls()];
-    if (exceptionsManager) {
-      [extraModules addObject:exceptionsManager];
-    }
-    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
-    [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
-    [extraModules addObject:[self getModuleInstanceFromClass:RNCAsyncStorage.class]];
+  [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
+  id exceptionsManager = [self getModuleInstanceFromClass:RCTExceptionsManagerCls()];
+  if (exceptionsManager) {
+    [extraModules addObject:exceptionsManager];
   }
-
+  [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
+  [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
+  
   return extraModules;
 }
 
@@ -469,7 +431,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     if (exceptionsManagerDelegate) {
       return [[moduleClass alloc] initWithDelegate:exceptionsManagerDelegate];
     } else {
-      RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
+      RCTLogWarn(@"No exceptions manager provided when building extra modules.");
     }
   } else if (moduleClass == RNCAsyncStorage.class) {
     NSString *documentDirectory;
@@ -489,11 +451,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 - (BOOL)_isOpeningHomeInProductionMode
 {
   return _params[@"browserModuleClass"] && !self.manifest.developer;
-}
-
-- (void *)versionedJsExecutorFactoryForBridge:(nonnull RCTBridge *)bridge
-{
-  return [EXVersionUtils versionedJsExecutorFactoryForBridge:bridge engine:_manifest.jsEngine];
 }
 
 @end

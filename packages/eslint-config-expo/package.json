@@ -28,8 +28,8 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/eslint-config-expo",
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.6.0",
-    "@typescript-eslint/parser": "^8.6.0",
+    "@typescript-eslint/eslint-plugin": "^8.9.0",
+    "@typescript-eslint/parser": "^8.9.0",
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-expo": "^0.0.1",
     "eslint-plugin-import": "^2.30.0",

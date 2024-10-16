@@ -30,6 +30,8 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   public let eventManager: UpdatesEventManager = NoOpUpdatesEventManager()
 
+  private let logger = UpdatesLogger()
+
   public weak var delegate: AppControllerDelegate?
   public weak var updatesExternalInterfaceDelegate: (any EXUpdatesInterface.UpdatesExternalInterfaceDelegate)?
 
@@ -132,6 +134,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
     let loader = RemoteAppLoader(
       config: updatesConfiguration,
+      logger: self.logger,
       database: self.database,
       directory: self.updatesDirectory!,
       launchedUpdate: nil,
@@ -175,10 +178,10 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   public func isValidUpdatesConfiguration(_ configuration: [String: Any]) -> Bool {
     do {
-      try createUpdatesConfiguration(configuration)
+      _ = try createUpdatesConfiguration(configuration)
       return true
     } catch let error {
-      NSLog("Invalid updates configuration: %@", error.localizedDescription)
+      logger.warn(message: "Invalid updates configuration: \(error.localizedDescription)")
     }
     return false
   }

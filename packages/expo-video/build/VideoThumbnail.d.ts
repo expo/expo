@@ -15,7 +15,6 @@ export declare class VideoThumbnail extends SharedRef<'image'> {
     height: number;
     /**
      * The time in seconds at which the thumbnail was to be created.
-     * @platform ios
      */
     requestedTime: number;
     /**

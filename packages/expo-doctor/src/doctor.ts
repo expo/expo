@@ -147,7 +147,7 @@ export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConf
     new StoreCompatibilityCheck(),
   ];
 
-  if (getReactNativeDirectoryCheckEnabled(pkg)) {
+  if (getReactNativeDirectoryCheckEnabled(exp, pkg)) {
     chalk.yellow(
       'Enabled experimental React Native Directory checks. Unset the EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK environment variable to disable this check.'
     );
