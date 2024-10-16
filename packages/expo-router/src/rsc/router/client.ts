@@ -22,6 +22,8 @@ import {
   createContext,
   useState,
   Fragment,
+  forwardRef,
+  useMemo,
 } from 'react';
 import type {
   ComponentProps,
@@ -31,6 +33,7 @@ import type {
   AnchorHTMLAttributes,
   ReactElement,
   MouseEvent,
+  ForwardedRef,
 } from 'react';
 import { Text } from 'react-native';
 
@@ -279,6 +282,7 @@ import type { Router } from '../../imperative-api';
 import type { NavigationOptions } from '../../global-state/routing.js';
 import type { Href } from '../../types.js';
 import { resolveHref } from '../../link/href';
+import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Link.js';
 
 export function useRouter_UNSTABLE(): Router &
   RouteProps & {
@@ -479,26 +483,54 @@ export function ServerRouter({ children, route }: { children: ReactNode; route: 
   );
 }
 
-export type LinkProps = {
+export type LinkProps<T extends string | object> = ClassicLinkProps<T> & {
   href: string;
-  pending?: ReactNode;
-  notPending?: ReactNode;
-  children: ReactNode;
-  unstable_prefetchOnEnter?: boolean;
-  unstable_prefetchOnView?: boolean;
-  asChild?: boolean;
+  // pending?: ReactNode;
+  // notPending?: ReactNode;
+
+  // unstable_prefetchOnEnter?: boolean;
+  // unstable_prefetchOnView?: boolean;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
 
-export function Link({
-  href: to,
-  children,
-  pending,
-  notPending,
-  unstable_prefetchOnEnter,
-  unstable_prefetchOnView,
-  asChild,
-  ...props
-}: LinkProps): ReactElement {
+export const Link = forwardRef(ExpoRouterLink) as unknown as LinkComponent;
+
+Link.resolveHref = resolveHref;
+
+import { useInteropClassName, useHrefAttrs } from '../../link/useLinkHooks';
+
+function ExpoRouterLink(
+  {
+    href,
+    replace,
+    push,
+    // TODO: This does not prevent default on the anchor tag.
+    relativeToDirectory,
+    asChild,
+    rel,
+    target,
+    download,
+    //   pending,
+    // notPending,
+    // unstable_prefetchOnEnter,
+    // unstable_prefetchOnView,
+    children,
+    ...props
+  }: LinkProps<any>,
+  ref: ForwardedRef<Text>
+) {
+  // Mutate the style prop to add the className on web.
+  const style = useInteropClassName(props);
+
+  // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
+  const hrefAttrs = useHrefAttrs({ asChild, rel, target, download });
+
+  const resolvedHref = useMemo(() => {
+    if (href == null) {
+      throw new Error('Link: href is required');
+    }
+    return resolveHref(href);
+  }, [href]);
+
   const router = useContext(RouterContext);
   const changeRoute = router
     ? router.changeRoute
@@ -510,37 +542,39 @@ export function Link({
     : () => {
         throw new Error('Missing Router');
       };
-  const [isPending, startTransition] = useTransition();
-  const ref = useRef<HTMLAnchorElement>();
+  // TODO: Implement support for pending states in the future.
+  const [, startTransition] = useTransition();
+  // const elementRef = useRef<HTMLAnchorElement>();
 
-  useEffect(() => {
-    if (unstable_prefetchOnView && ref.current) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const url = new URL(to, getHref());
-              if (router && url.href !== getHref()) {
-                const route = parseRoute(url);
-                router.prefetchRoute(route);
-              }
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
+  // useEffect(() => {
+  //   if (unstable_prefetchOnView && process.env.EXPO_OS === 'web' && ref.current) {
+  //     const observer = new IntersectionObserver(
+  //       (entries) => {
+  //         entries.forEach((entry) => {
+  //           if (entry.isIntersecting) {
+  //             const url = new URL(resolvedHref, getHref());
+  //             if (router && url.href !== getHref()) {
+  //               const route = parseRoute(url);
+  //               router.prefetchRoute(route);
+  //             }
+  //           }
+  //         });
+  //       },
+  //       { threshold: 0.1 }
+  //     );
 
-      observer.observe(ref.current);
+  //     observer.observe(ref.current);
 
-      return () => {
-        observer.disconnect();
-      };
-    }
-    return () => {};
-  }, [unstable_prefetchOnView, router, to]);
+  //     return () => {
+  //       observer.disconnect();
+  //     };
+  //   }
+  //   return () => {};
+  // }, [unstable_prefetchOnView, router, resolvedHref]);
+
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    const url = new URL(to, getHref());
+    const url = new URL(resolvedHref, getHref());
     // TODO: Use in-memory route for native platforms.
     // if (url.href !== getHref()) {
     const route = parseRoute(url);
@@ -570,23 +604,27 @@ export function Link({
   //     }
   //   : props.onMouseEnter;
 
+  const Element = asChild ? ReactSlot : Text;
+
   const ele = createElement(
     // @ts-expect-error
-    asChild ? ReactSlot : Text,
+    Element,
     {
+      ...hrefAttrs,
       ...props,
-      href: to,
+      style,
+      href: resolvedHref,
       onPress: onClick,
       // onMouseEnter,
       ref,
     },
     children
   );
-  if (isPending && pending !== undefined) {
-    return createElement(Fragment, null, ele, pending);
-  }
-  if (!isPending && notPending !== undefined) {
-    return createElement(Fragment, null, ele, notPending);
-  }
+  // if (isPending && pending !== undefined) {
+  //   return createElement(Fragment, null, ele, pending);
+  // }
+  // if (!isPending && notPending !== undefined) {
+  //   return createElement(Fragment, null, ele, notPending);
+  // }
   return ele;
 }
