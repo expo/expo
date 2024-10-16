@@ -94,7 +94,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
     // swiftlint:enable force_unwrapping
   }
 
-  private func emergencyLaunch(fatalError error: NSError) {
+  private func emergencyLaunch(fatalError error: Error) {
     emergencyLaunchException = error
 
     let launcherNoDatabase = AppLauncherNoDatabase()
@@ -103,7 +103,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
 
     delegate?.startupProcedureDidLaunch(self)
 
-    ErrorRecovery.writeErrorOrExceptionToLog(error)
+    ErrorRecovery.writeErrorOrExceptionToLog(error, logger)
   }
 
   // MARK: - AppLoaderTaskDelegate
@@ -172,10 +172,9 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
-    let logMessage = String(format: "AppController appLoaderTask didFinishWithError: %@", error.localizedDescription)
-    logger.error(message: logMessage, code: .updateFailedToLoad)
+    logger.error(cause: UpdatesError.startupProcedureDidFinishWithError(cause: error), code: .updateFailedToLoad)
     self.procedureContext.processStateEvent(UpdatesStateEventDownloadError(message: error.localizedDescription))
-    emergencyLaunch(fatalError: error as NSError)
+    emergencyLaunch(fatalError: error)
   }
 
   func appLoaderTask(
@@ -191,7 +190,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
         preconditionFailure("Background update with error status must have a nonnull error object")
       }
       logger.error(
-        message: "AppController appLoaderTask didFinishBackgroundUpdateWithStatus=Error",
+        cause: UpdatesError.startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: error),
         code: .updateFailedToLoad,
         updateId: update?.loggingId(),
         assetId: nil
@@ -254,6 +253,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
     // swiftlint:disable force_unwrapping
     errorRecoveryRemoteAppLoader = RemoteAppLoader(
       config: config,
+      logger: logger,
       database: database,
       directory: self.updatesDirectory,
       launchedUpdate: launchedUpdate(),
@@ -289,7 +289,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       self.remoteLoadStatus = updateResponse != nil ? .NewUpdateLoaded : .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     } error: { error in
-      self.logger.error(message: "AppController loadRemoteUpdate error: \(error.localizedDescription)", code: .updateFailedToLoad)
+      self.logger.error(cause: error, code: .updateFailedToLoad)
       self.remoteLoadStatus = .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     }
@@ -306,7 +306,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
         return
       }
 
-      self.logger.error(
+      self.logger.warn(
         message: "AppController markFailedLaunchForUpdate",
         code: .unknown,
         updateId: launchedUpdate.loggingId(),
@@ -315,7 +315,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       do {
         try self.database.incrementFailedLaunchCountForUpdate(launchedUpdate)
       } catch {
-        NSLog("Unable to mark update as failed in the local DB: %@", error.localizedDescription)
+        self.logger.warn(message: "Unable to mark update as failed in the local DB: \(error.localizedDescription)")
       }
     }
   }
@@ -333,7 +333,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       do {
         try self.database.incrementSuccessfulLaunchCountForUpdate(launchedUpdate)
       } catch {
-        NSLog("Failed to increment successful launch count for update: %@", error.localizedDescription)
+        self.logger.warn(message: "Failed to increment successful launch count for update: \(error.localizedDescription)")
       }
     }
   }

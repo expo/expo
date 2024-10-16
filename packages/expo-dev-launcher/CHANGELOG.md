@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Added other debuggable variants for network inspector by referring the `react.debuggableVariants`. ([#32014](https://github.com/expo/expo/pull/32014) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

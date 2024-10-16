@@ -1,6 +1,6 @@
-import { useEvent } from 'expo';
+import { useEvent, useEventListener } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text, TextProps } from 'react-native';
 
 import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
@@ -17,6 +17,7 @@ export default function VideoEventsScreen() {
 
   const player = useVideoPlayer(bigBuckBunnySource, (player) => {
     player.loop = true;
+    player.timeUpdateEventInterval = 0.25;
     player.showNowPlayingNotification = false;
     player.play();
   });
@@ -41,14 +42,10 @@ export default function VideoEventsScreen() {
     player.replace('https://example.com/invalid.mp4');
   }, [player]);
 
-  useEffect(() => {
-    player.timeUpdateEventInterval = 0.25;
-    player.addListener('statusChange', (_, __, error) => {
-      setError(error?.message ?? null);
-      console.log('statusChange', status, error?.message ?? null);
-    });
-    return () => player.removeAllListeners('statusChange');
-  }, [player]);
+  useEventListener(player, 'statusChange', (status, _, error) => {
+    setError(error?.message ?? null);
+    console.log('statusChange', status, error?.message ?? null);
+  });
 
   return (
     <View style={styles.contentContainer}>

@@ -134,6 +134,9 @@ export async function transform(
   }
 
   return {
-    ast: generateAssetCodeFileAst(assetRegistryPath, data),
+    ast: {
+      ...generateAssetCodeFileAst(assetRegistryPath, data),
+      errors: [],
+    },
   };
 }

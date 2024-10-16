@@ -164,7 +164,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           errorOccurred = error
         }
         
-        expect(errorOccurred?.localizedDescription) == "Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive."
+        expect(errorOccurred?.localizedDescription) == "Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the response being for a different protocol version."
         expect(resultUpdateResponse).to(beNil())
       }
       
@@ -449,7 +449,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           errorOccurred = error
         }
         
-        expect(errorOccurred?.localizedDescription) == "No expo-signature header specified"
+        expect(errorOccurred?.localizedDescription) == "Code signature validation failed: No expo-signature header specified"
         expect(resultUpdateResponse).to(beNil())
       }
       
@@ -545,7 +545,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           errorOccurred = error
         }
         
-        expect(errorOccurred?.localizedDescription) == "Invalid certificate for manifest project ID or scope key"
+        expect(errorOccurred?.localizedDescription) == "Code signing certificate project ID or scope key does not match project ID or scope key in response part"
         expect(resultUpdateResponse).to(beNil())
       }
       
@@ -591,7 +591,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           errorOccurred = error
         }
         
-        expect(errorOccurred?.localizedDescription) == "Invalid certificate for directive project ID or scope key"
+        expect(errorOccurred?.localizedDescription) == "Code signing certificate project ID or scope key does not match project ID or scope key in response part"
         expect(resultUpdateResponse).to(beNil())
       }
       

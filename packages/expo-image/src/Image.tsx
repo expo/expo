@@ -5,7 +5,13 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import ExpoImage from './ExpoImage';
-import { ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
+import {
+  ImageLoadOptions,
+  ImagePrefetchOptions,
+  ImageProps,
+  ImageRef,
+  ImageSource,
+} from './Image.types';
 import ImageModule from './ImageModule';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
 import { resolveSource, resolveSources } from './utils/resolveSources';
@@ -159,9 +165,12 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform ios
    * @platform web
    */
-  static async loadAsync(source: ImageSource | string): Promise<ImageRef> {
+  static async loadAsync(
+    source: ImageSource | string,
+    options?: ImageLoadOptions
+  ): Promise<ImageRef> {
     const resolvedSource = resolveSource(source) as ImageSource;
-    return await ImageModule.loadAsync(resolvedSource);
+    return await ImageModule.loadAsync(resolvedSource, options);
   }
 
   render() {

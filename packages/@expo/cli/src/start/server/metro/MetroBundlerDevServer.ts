@@ -20,12 +20,16 @@ import type MetroHmrServer from 'metro/src/HmrServer';
 import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
 import { GraphRevision } from 'metro/src/IncrementalBundler';
 import bundleToString from 'metro/src/lib/bundleToString';
+import getGraphId from 'metro/src/lib/getGraphId';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { createServerComponentsMiddleware } from './createServerComponentsMiddleware';
+import {
+  createServerComponentsMiddleware,
+  fileURLToFilePath,
+} from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
@@ -87,17 +91,6 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
 ) => Promise<T>;
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
-
-const getGraphId = require('metro/src/lib/getGraphId') as (
-  entryFile: string,
-  options: any,
-  etc: {
-    shallow: boolean;
-    lazy: boolean;
-    unstable_allowRequireContext: boolean;
-    resolverOptions: unknown;
-  }
-) => string;
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 8081;
@@ -400,9 +393,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
       baseUrl,
-
-      // TODO: Support hydration in development. This is only disabled due to a bug discovered during the refactor.
-      hydrate: false,
+      hydrate: true,
     });
     return {
       content,
@@ -508,6 +499,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
       platform: expoBundleOptions.platform ?? 'web',
+      // @ts-expect-error: `runtimeBytecodeVersion` does not exist in `expoBundleOptions` or `TransformInputOptions`
       runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
     };
 
@@ -641,13 +633,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files: ExportAssetMap;
   }> {
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
-    const { reactClientReferences: clientBoundaries, cssModules } =
-      await this.rscRenderer!.getExpoRouterClientReferencesAsync(
-        {
-          platform: options.platform,
-        },
-        files
-      );
+    const {
+      reactClientReferences: clientBoundaries,
+      reactServerReferences: serverActionReferencesInServer,
+      cssModules,
+    } = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
+      {
+        platform: options.platform,
+      },
+      files
+    );
+
+    // TODO: The output keys should be in production format or use a lookup manifest.
 
     debug('Evaluated client boundaries:', clientBoundaries);
 
@@ -658,6 +655,33 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         clientBoundaries,
       },
       extraOptions
+    );
+
+    // Get the React server action boundaries from the client bundle.
+    const reactServerReferences = bundle.artifacts
+      .filter((a) => a.type === 'js')
+      .map((artifact) =>
+        artifact.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref))
+      )
+      // TODO: Segment by module for splitting.
+      .flat()
+      .filter(Boolean) as string[];
+
+    if (!reactServerReferences) {
+      // Issue with babel plugin / metro-config.
+      throw new Error(
+        'Static server action references were not returned from the Metro client bundle'
+      );
+    }
+
+    debug('React server action boundaries from client:', reactServerReferences);
+
+    await this.rscRenderer!.exportServerActionsAsync(
+      {
+        platform: options.platform,
+        entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
+      },
+      files
     );
 
     // Inject the global CSS that was imported during the server render.
@@ -710,17 +734,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
-    files.set(`_expo/rsc/${options.platform}/ssr-manifest.json`, {
+    files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
       targetDomain: 'server',
-      contents: JSON.stringify(
-        // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
-        Object.fromEntries(
-          Array.from(ssrManifest.entries()).map(([key, value]) => [
-            path.join(serverRoot, key),
-            [key, value],
-          ])
-        )
-      ),
+      contents:
+        'module.exports = ' +
+        JSON.stringify(
+          // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
+          Object.fromEntries(
+            Array.from(ssrManifest.entries()).map(([key, value]) => [
+              path.join(serverRoot, key),
+              [key, value],
+            ])
+          )
+        ),
     });
 
     return { ...bundle, files };
@@ -1353,16 +1379,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         entryFile: resolvedEntryFilePath,
         minify: transformOptions.minify,
         platform: transformOptions.platform,
-        // @ts-expect-error: typed incorrectly upstream
         customResolverOptions: resolverOptions.customResolverOptions,
-        customTransformOptions: transformOptions.customTransformOptions,
+        customTransformOptions: transformOptions.customTransformOptions ?? {},
       },
       isPrefetch: false,
       type: 'bundle_build_started',
     });
 
     try {
-      let delta: DeltaResult<void>;
+      let delta: DeltaResult;
       let revision: GraphRevision;
 
       // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
@@ -1378,7 +1403,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           {
             onProgress,
             shallow: graphOptions.shallow,
-            // @ts-expect-error: typed incorrectly
             lazy: graphOptions.lazy,
           }
         );
@@ -1397,7 +1421,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               {
                 onProgress,
                 shallow: graphOptions.shallow,
-                // @ts-expect-error: typed incorrectly
                 lazy: graphOptions.lazy,
               }
             ));

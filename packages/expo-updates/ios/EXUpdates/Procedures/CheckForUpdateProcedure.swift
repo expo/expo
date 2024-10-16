@@ -47,6 +47,7 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
       let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
         withDatabase: self.database,
         config: self.config,
+        logger: self.logger,
         launchedUpdate: self.getLaunchedUpdate(),
         embeddedUpdate: embeddedUpdate
       )

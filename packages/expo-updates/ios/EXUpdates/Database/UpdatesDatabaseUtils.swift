@@ -14,13 +14,7 @@ import sqlite3
 import SQLite3
 #endif
 
-internal struct UpdatesDatabaseUtilsErrorInfo {
-  let code: Int
-  let extendedCode: Int
-  let message: String
-}
-
-internal struct UpdatesDatabaseUtilsError: Error {
+internal struct UpdatesDatabaseUtilsError: Error, Sendable, LocalizedError {
   enum ErrorKind {
     case SQLitePrepareError
     case SQLiteArgsBindError
@@ -28,8 +22,35 @@ internal struct UpdatesDatabaseUtilsError: Error {
     case SQLiteGetResultsError
   }
 
+  internal struct UpdatesDatabaseUtilsErrorInfo: Sendable {
+    let code: Int
+    let extendedCode: Int
+    let message: String
+
+    var localizedDescription: String {
+      return "(code: \(code); extendedCode: \(extendedCode); message: \(message))"
+    }
+  }
+
   let kind: ErrorKind
   let info: UpdatesDatabaseUtilsErrorInfo?
+
+  var errorDescription: String? {
+    let infoString = info.let { it in
+      ": \(it.localizedDescription)"
+    } ?? ""
+
+    switch kind {
+    case .SQLitePrepareError:
+      return "SQLitePrepareError\(infoString)"
+    case .SQLiteArgsBindError:
+      return "SQLiteArgsBindError\(infoString)"
+    case .SQLiteBlobNotUUID:
+      return "SQLiteBlobNotUUID\(infoString)"
+    case .SQLiteGetResultsError:
+      return "SQLiteGetResultsError\(infoString)"
+    }
+  }
 }
 
 // these are not exported in the swift headers
@@ -179,14 +200,18 @@ internal final class UpdatesDatabaseUtils {
     }
   }
 
-  static func errorCodesAndMessage(fromSqlite db: OpaquePointer) -> UpdatesDatabaseUtilsErrorInfo {
+  static func errorCodesAndMessage(fromSqlite db: OpaquePointer) -> UpdatesDatabaseUtilsError.UpdatesDatabaseUtilsErrorInfo {
     let code = sqlite3_errcode(db)
     let extendedCode = sqlite3_extended_errcode(db)
     let message = String(cString: sqlite3_errmsg(db))
-    return UpdatesDatabaseUtilsErrorInfo(code: Int(code), extendedCode: Int(extendedCode), message: message)
+    return UpdatesDatabaseUtilsError.UpdatesDatabaseUtilsErrorInfo(code: Int(code), extendedCode: Int(extendedCode), message: message)
   }
 
   static func date(fromUnixTimeMilliseconds number: NSNumber) -> Date {
     return Date(timeIntervalSince1970: number.doubleValue / 1000)
   }
 }
+
+// swiftlint:enable legacy_objc_type
+// swiftlint:enable force_cast
+// swiftlint:enable force_unwrapping

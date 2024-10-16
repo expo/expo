@@ -32,12 +32,12 @@ public class DisabledAppController: InternalAppControllerInterface {
   // disabled controller state machine can only be idle or restarting
   private let stateMachine: UpdatesStateMachine
 
-  private let initializationError: Error?
+  private let initializationError: UpdatesError?
   private var launcher: AppLauncher?
 
   public let updatesDirectory: URL? = nil // internal for E2E test
 
-  required init(error: Error?) {
+  required init(error: UpdatesError?) {
     self.initializationError = error
     self.eventManager = QueueUpdatesEventManager(logger: self.logger)
     self.stateMachine = UpdatesStateMachine(eventManager: self.eventManager, validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
@@ -63,7 +63,7 @@ public class DisabledAppController: InternalAppControllerInterface {
     }
 
     if let initializationError = self.initializationError {
-      ErrorRecovery.writeErrorOrExceptionToLog(initializationError)
+      ErrorRecovery.writeErrorOrExceptionToLog(initializationError, logger)
     }
   }
 

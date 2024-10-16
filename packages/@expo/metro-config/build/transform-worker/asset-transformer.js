@@ -115,7 +115,10 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         };
     }
     return {
-        ast: (0, util_1.generateAssetCodeFileAst)(assetRegistryPath, data),
+        ast: {
+            ...(0, util_1.generateAssetCodeFileAst)(assetRegistryPath, data),
+            errors: [],
+        },
     };
 }
 exports.transform = transform;

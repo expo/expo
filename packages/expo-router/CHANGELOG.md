@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add experimental support for React Server Actions in Expo Router. ([#31959](https://github.com/expo/expo/pull/31959) by [@EvanBacon](https://github.com/EvanBacon))
 - server routing and static exports ([#31500](https://github.com/expo/expo/pull/31500) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `expo-router/link` export. ([#31174](https://github.com/expo/expo/pull/31174) by [@EvanBacon](https://github.com/EvanBacon))
 - Added production exports for experimental server renderer. ([#30850](https://github.com/expo/expo/pull/30850) by [@EvanBacon](https://github.com/EvanBacon))
@@ -23,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix Head module in dev clients. ([#32019](https://github.com/expo/expo/pull/32019) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix styling bug in native production error boundary. ([#31791](https://github.com/expo/expo/pull/31791) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix search params in RSC. ([#31641](https://github.com/expo/expo/pull/31641) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix reloading RSC requests in production. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))

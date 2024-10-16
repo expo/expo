@@ -70,22 +70,22 @@ final class RelaunchProcedure: StateMachineProcedure {
           self.requestStartErrorMonitoring()
           RCTReloadCommandSetBundleURL(self.launcherWithDatabase.launchAssetUrl)
           RCTTriggerReloadCommandListeners(self.triggerReloadCommandListenersReason)
-          
+
           // TODO(wschurman): this was moved to after the RCT calls to unify reload
           // code between JS API call and error recovery handler. double check that
           // this is okay
           self.successBlock()
-          
+
           if self.shouldRunReaper {
             self.runReaper()
           }
-          
+
           // Reset the state machine
           procedureContext.resetState()
           procedureContext.onComplete()
         } else {
           // swiftlint:disable:next force_unwrapping
-          NSLog("Failed to relaunch: %@", error!.localizedDescription)
+          self.logger.error(cause: UpdatesError.relaunchProcedureFailedToRelaunch(cause: error!))
           self.errorBlock(UpdatesReloadException())
           procedureContext.onComplete()
         }
