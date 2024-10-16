@@ -12,15 +12,14 @@ public class BadgeModule: Module {
       return EXSharedApplication().applicationIconBadgeNumber
     }
 
-    AsyncFunction("setBadgeCountAsync") { (badgeCount: Int) -> Bool in
-      var result = false
+    AsyncFunction("setBadgeCountAsync") { (badgeCount: Int, promise: Promise) in
       UNUserNotificationCenter.current().getNotificationSettings { settings in
-        if settings.badgeSetting == .enabled {
+        let canSetBadge = settings.badgeSetting == .enabled
+        if canSetBadge {
           EXSharedApplication().applicationIconBadgeNumber = badgeCount
-          result = true
         }
+        promise.resolve(canSetBadge)
       }
-      return result
     }
   }
 }
