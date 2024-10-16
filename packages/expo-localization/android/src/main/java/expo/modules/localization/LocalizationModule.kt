@@ -160,7 +160,7 @@ class LocalizationModule : Module() {
       mapOf(
         // Android (except MIUI) has no separate region selection, so `languageCurrencyCode` and `languageCurrencySymbol` are the same as `currencyCode` and `currencySymbol`, and both are specific to the current locale in the list.
         "currencyCode" to Currency.getInstance(locale).currencyCode,
-        "currencySymbol" to Currency.getInstance(locale).getSymbol(locale)
+        "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
         "languageCurrencyCode" to Currency.getInstance(locale).currencyCode,
         "languageCurrencySymbol" to Currency.getInstance(locale).getSymbol(locale)
       )
@@ -169,7 +169,7 @@ class LocalizationModule : Module() {
         "currencyCode" to null,
         "currencySymbol" to null,
         "languageCurrencyCode" to null,
-        "languageCurrencySymbol" to null,
+        "languageCurrencySymbol" to null
       )
     }
   }
