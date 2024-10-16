@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link } from 'expo-router/build/rsc/exports';
+import { Link } from 'expo-router';
 
 import { Counter } from '../components/counter';
 import { Pokemon } from '../components/pokemon';
