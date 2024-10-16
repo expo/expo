@@ -158,14 +158,18 @@ class LocalizationModule : Module() {
   private fun getCurrencyProperties(locale: Locale): Map<String, Any?> {
     return try {
       mapOf(
+        // Android (except MIUI) has no separate region selection, so `languageCurrencyCode` and `languageCurrencySymbol` are the same as `currencyCode` and `currencySymbol`, and both are specific to the current locale in the list.
         "currencyCode" to Currency.getInstance(locale).currencyCode,
-        // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
         "currencySymbol" to Currency.getInstance(locale).getSymbol(locale)
+        "languageCurrencyCode" to Currency.getInstance(locale).currencyCode,
+        "languageCurrencySymbol" to Currency.getInstance(locale).getSymbol(locale)
       )
     } catch (e: Exception) {
       mapOf(
         "currencyCode" to null,
-        "currencySymbol" to null
+        "currencySymbol" to null,
+        "languageCurrencyCode" to null,
+        "languageCurrencySymbol" to null,
       )
     }
   }
@@ -180,10 +184,11 @@ class LocalizationModule : Module() {
         locales.add(
           mapOf(
             "languageTag" to locale.toLanguageTag(),
+            // On Android `regionCode` is the same as `countryCode`, except for miui where there's an additional region picker.
             "regionCode" to getRegionCode(locale),
+            "languageRegionCode": getCountryCode(locale),
             "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
             "languageCode" to locale.language,
-
             // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
             "decimalSeparator" to decimalFormat.decimalSeparator.toString(),
             "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
