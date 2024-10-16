@@ -4,4 +4,5 @@ import Foundation
 public class BackgroundTaskConstants: NSObject {
   public static let BackgroundWorkerIdentifier = "com.expo.modules.backgroundtask.processing"
   public static let EVENT_PERFORM_WORK = "onPerformWork"
+  public static let EVENT_WORK_DONE = "onWorkDone"
 }

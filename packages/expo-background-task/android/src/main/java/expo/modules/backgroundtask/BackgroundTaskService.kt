@@ -102,7 +102,7 @@ class BackgroundTaskService {
 
     /**
      LaunchHandler for the BGTaskScheduler. This function is passed to the registration code of the BGTaskScheduler on startup.
-     The function will not return until we've
+     The function will not return until we're finished running the JS code.
      */
     fun launchHandler(work: BackgroundTaskWork): Result {
       Log.i(TAG,"Callback from OS for background task")

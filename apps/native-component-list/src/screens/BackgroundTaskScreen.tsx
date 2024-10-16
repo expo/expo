@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import format from 'date-format';
 import * as BackgroundTask from 'expo-background-task';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
 import Button from '../components/Button';
@@ -64,6 +64,11 @@ export default function BackgroundTaskScreen() {
     setLog(taskLog);
     await refreshLastFetchDateAsync();
   };
+
+  // Update status after work has been done
+  useEffect(() => {
+    return BackgroundTask.addOnWorkListener(checkStatusAsync).remove;
+  });
 
   const scheduleTaskAsync = async () => {
     await BackgroundTask.scheduleTaskAsync(BACKGROUND_TASK_IDENTIFIER, {

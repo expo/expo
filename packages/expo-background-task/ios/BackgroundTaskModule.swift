@@ -8,9 +8,11 @@ public class BackgroundTaskModule: Module {
   
   public func definition() -> ModuleDefinition {
     Name(ModuleName)
-    Events(BackgroundTaskConstants.EVENT_PERFORM_WORK)
+    Events(BackgroundTaskConstants.EVENT_PERFORM_WORK,
+           BackgroundTaskConstants.EVENT_WORK_DONE)
     
-    Constants(["EVENT_PERFORM_WORK": BackgroundTaskConstants.EVENT_PERFORM_WORK])
+    Constants(["EVENT_PERFORM_WORK": BackgroundTaskConstants.EVENT_PERFORM_WORK,
+               "EVENT_WORK_DONE": BackgroundTaskConstants.EVENT_WORK_DONE])
     
     OnCreate {
       BackgroundTaskService.setRunTasksHandler {
@@ -41,6 +43,9 @@ public class BackgroundTaskModule: Module {
     AsyncFunction("workFinished") {
       // Mark as done
       try BackgroundTaskService.markTaskAsFinished()
+      
+      // Send event
+      self.sendEvent(BackgroundTaskConstants.EVENT_WORK_DONE)
       
       // Re-schedule task
       try BackgroundTaskScheduler.tryScheduleWorker()

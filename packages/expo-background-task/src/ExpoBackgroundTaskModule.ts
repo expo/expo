@@ -5,6 +5,7 @@ import { BackgroundTaskStatus } from './BackgroundTask.types';
 
 type ExpoBackgroundTaskModuleEventMap = {
   onPerformWork: () => void;
+  onWorkDone: () => void;
 };
 
 declare class ExpoBackgroundTaskModule extends NativeModule<ExpoBackgroundTaskModuleEventMap> {
@@ -15,6 +16,7 @@ declare class ExpoBackgroundTaskModule extends NativeModule<ExpoBackgroundTaskMo
   workFinished(): void;
   initialiseFromJS(): void;
   EVENT_PERFORM_WORK: string;
+  EVENT_WORK_DONE: string;
 }
 
 export default requireNativeModule<ExpoBackgroundTaskModule>('ExpoBackgroundTask');

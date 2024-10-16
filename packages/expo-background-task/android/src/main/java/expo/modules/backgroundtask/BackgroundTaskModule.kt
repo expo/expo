@@ -7,6 +7,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 const val PERFORM_WORK_EVENT_NAME = "onPerformWork"
+const val WORK_DONE_EVENT_NAME = "onWorkDone"
 
 class BackgroundTaskModule : Module() {
   companion object {
@@ -16,8 +17,10 @@ class BackgroundTaskModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name(MODULE_NAME)
-    Events(PERFORM_WORK_EVENT_NAME)
-    Constants("EVENT_PERFORM_WORK" to PERFORM_WORK_EVENT_NAME)
+    Events(PERFORM_WORK_EVENT_NAME, WORK_DONE_EVENT_NAME)
+    Constants(
+      "EVENT_PERFORM_WORK" to PERFORM_WORK_EVENT_NAME,
+      "EVENT_WORK_DONE" to WORK_DONE_EVENT_NAME)
 
     OnCreate {
       Log.i(TAG, "Background Task Manager Module created - adding callback.")
@@ -54,6 +57,7 @@ class BackgroundTaskModule : Module() {
 
     AsyncFunction("workFinished") {
       BackgroundTaskService.markTaskAsFinished()
+      sendEvent(WORK_DONE_EVENT_NAME)
       // No need to re-schedule, our worker is automatically repeating
     }
   }

@@ -238,6 +238,20 @@ const deleteTaskAsync = async (taskIdentifier) => {
         await ExpoBackgroundTaskModule.stopWorkerAsync();
     }
 };
+// @needsAudit
+/**
+ * Adds a listener for the onPerformWork event
+ * @param cb Callback to be called when the event is triggered
+ * @returns An unsubscribe method
+ */
+export const addOnWorkListener = (cb) => {
+    if (ExpoBackgroundTaskModule.EVENT_WORK_DONE !== 'onWorkDone') {
+        throw new Error("Expected 'onWorkDone' got '" +
+            ExpoBackgroundTaskModule.EVENT_WORK_DONE +
+            "' when adding event listener.");
+    }
+    return ExpoBackgroundTaskModule.addListener('onWorkDone', cb);
+};
 /**
  * Set up event emitter for the Background Task Manager
  */

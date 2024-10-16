@@ -60,4 +60,10 @@ export declare const isWorkerRunning: () => Promise<boolean>;
  * Cleans up the repository of scheduled tasks with logs
  */
 export declare const cleanScheduledTasks: () => Promise<void>;
+/**
+ * Adds a listener for the onPerformWork event
+ * @param cb Callback to be called when the event is triggered
+ * @returns An unsubscribe method
+ */
+export declare const addOnWorkListener: (cb: () => void) => import("expo-modules-core").EventSubscription;
 //# sourceMappingURL=BackgroundTask.d.ts.map
