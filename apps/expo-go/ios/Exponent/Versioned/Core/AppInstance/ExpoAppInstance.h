@@ -17,8 +17,8 @@ typedef void (^OnLoad)(NSURL *sourceURL, RCTSourceLoadBlock loadCallback);
 
 @interface ExpoAppInstance : RCTAppDelegate
 
-@property(atomic, strong) NSURL* sourceURL;
-@property(atomic, strong) EXVersionManagerObjC* manager;
+@property(atomic, strong, nonnull) NSURL *sourceURL;
+@property(atomic, strong, nonnull) EXVersionManagerObjC *manager;
 @property (nonatomic, nonnull) OnLoad onLoad;
 
 - (instancetype)initWithSourceURL:(NSURL *)sourceURL manager:(EXVersionManagerObjC *)manager onLoad:(OnLoad)onLoad;
