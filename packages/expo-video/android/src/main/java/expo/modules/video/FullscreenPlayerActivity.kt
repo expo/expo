@@ -37,7 +37,7 @@ class FullscreenPlayerActivity : Activity() {
         ?: throw FullScreenVideoViewNotFoundException()
       videoView = VideoManager.getVideoView(videoViewId)
     } catch (e: CodedException) {
-      Log.e("ExpoVideo", "${e.message}")
+      Log.e("ExpoVideo", "${e.message}", e)
       finish()
       return
     }

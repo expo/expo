@@ -70,7 +70,11 @@ object VideoManager {
     return videoPlayersToVideoViews[videoPlayer]?.isNotEmpty() ?: false
   }
 
-  fun onAppForegrounded() = Unit
+  fun onAppForegrounded() {
+    for (videoView in videoViews.values) {
+      videoView.playerView.useController = videoView.useNativeControls
+    }
+  }
 
   fun onAppBackgrounded() {
     for (videoView in videoViews.values) {
@@ -89,7 +93,7 @@ object VideoManager {
   }
 
   private fun handleVideoPause(videoView: VideoView) {
-    videoView.playerView.hideController()
+    videoView.playerView.useController = false
     videoView.videoPlayer?.player?.let { player ->
       if (player.isPlaying) {
         player.pause()
