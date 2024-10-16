@@ -44,8 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       devToolsEnabled:manifest.isUsingDeveloperTool];
   jsResource.abiVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:manifest];
   jsResource.requestTimeoutInterval = timeoutInterval;
-
-  EXCachedResourceBehavior behavior = cacheBehavior;
   
   if ([self.dataSource appFetcherShouldInvalidateBundleCache:self]) {
     [jsResource removeCache];
