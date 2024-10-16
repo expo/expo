@@ -7,7 +7,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getContext = exports.rerender = exports.runWithRenderStore = exports.defineEntries = void 0;
+exports.unstable_headers = exports.getContext = exports.rerender = exports.runWithRenderStore = exports.defineEntries = exports.REQUEST_HEADERS = void 0;
+exports.REQUEST_HEADERS = '__expo_requestHeaders';
 function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
     return { renderEntries, getBuildConfig, getSsrConfig };
 }
@@ -84,4 +85,20 @@ function getContext() {
     return renderStore.context;
 }
 exports.getContext = getContext;
+function unstable_headers() {
+    const headers = (getContext()[exports.REQUEST_HEADERS] || {});
+    return new ReadonlyHeaders(headers);
+}
+exports.unstable_headers = unstable_headers;
+class ReadonlyHeaders extends Headers {
+    set() {
+        throw new Error('Server component Headers are read-only');
+    }
+    append() {
+        throw new Error('Server component Headers are read-only');
+    }
+    delete() {
+        throw new Error('Server component Headers are read-only');
+    }
+}
 //# sourceMappingURL=server.js.map

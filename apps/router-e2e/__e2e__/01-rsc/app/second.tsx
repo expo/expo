@@ -1,9 +1,13 @@
+import { unstable_headers } from 'expo-router/rsc/headers';
 import { Link } from 'expo-router/build/rsc/exports';
 
 import { Counter } from '../components/counter';
 import { Image, Text, View } from '../lib/react-native';
 
 export default function IndexRoute({ path, query }) {
+  const headers = unstable_headers();
+  console.log('Headers:', headers);
+
   return (
     <View style={{ flex: 1, padding: 12 }} testID="child-wrapper">
       <Text testID="second-text">Second</Text>

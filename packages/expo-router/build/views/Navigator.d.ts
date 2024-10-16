@@ -38,15 +38,7 @@ export declare function useNavigatorContext(): {
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
         type: string;
         stale: false;
     }>;
@@ -56,53 +48,40 @@ export declare function useNavigatorContext(): {
             payload?: object | undefined;
             source?: string | undefined;
             target?: string | undefined;
-        }> | ((state: Readonly<{
+        }> | ((state: Readonly<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-            })[];
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
-        }>) => Readonly<{
+        }>>) => Readonly<{
             type: string;
             payload?: object | undefined;
             source?: string | undefined;
             target?: string | undefined;
         }>)): void;
-        navigate<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName] | [screen: RouteName, params: object | undefined] : never): void;
-        navigate<RouteName_1 extends string>(options: RouteName_1 extends unknown ? {
-            key: string;
-            params?: object | undefined;
+        navigate<RouteName extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+        navigate<RouteName_1 extends string>(options: {
+            name: string;
+            params: object | undefined;
+            path?: string | undefined;
             merge?: boolean | undefined;
-        } | {
-            name: RouteName_1;
-            key?: string | undefined;
+        }): void;
+        navigateDeprecated<RouteName_2 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+        navigateDeprecated<RouteName_3 extends string>(options: {
+            name: string;
             params: object | undefined;
             merge?: boolean | undefined;
-        } : never): void;
+        }): void;
+        preload<RouteName_4 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
         reset(state: Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-            })[];
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
         }> | import("@react-navigation/native").PartialState<Readonly<{
@@ -110,15 +89,7 @@ export declare function useNavigatorContext(): {
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-            })[];
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
         }>>): void;
@@ -132,74 +103,16 @@ export declare function useNavigatorContext(): {
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-            })[];
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
         }>;
-    } & import("@react-navigation/native").PrivateValueStore<[import("@react-navigation/native").ParamListBase, unknown, unknown]> & import("@react-navigation/native").EventEmitter<Record<string, any>> & {
-        setParams<RouteName_2 extends string>(params: Partial<object | undefined>): void;
-    } & Record<string, () => void>;
-    descriptors: Record<string, import("@react-navigation/native").Descriptor<{}, Omit<{
-        dispatch(action: Readonly<{
-            type: string;
-            payload?: object | undefined;
-            source?: string | undefined;
-            target?: string | undefined;
-        }> | ((state: Readonly<{
+        setStateForNextRouteNamesChange(state: Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-            })[];
-            type: string;
-            stale: false;
-        }>) => Readonly<{
-            type: string;
-            payload?: object | undefined;
-            source?: string | undefined;
-            target?: string | undefined;
-        }>)): void;
-        navigate<RouteName_3 extends string>(...args: RouteName_3 extends unknown ? [screen: RouteName_3] | [screen: RouteName_3, params: object | undefined] : never): void;
-        navigate<RouteName_1_1 extends string>(options: RouteName_1_1 extends unknown ? {
-            key: string;
-            params?: object | undefined;
-            merge?: boolean | undefined;
-        } | {
-            name: RouteName_1_1;
-            key?: string | undefined;
-            params: object | undefined;
-            merge?: boolean | undefined;
-        } : never): void;
-        reset(state: Readonly<{
-            key: string;
-            index: number;
-            routeNames: string[];
-            history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-            })[];
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
         }> | import("@react-navigation/native").PartialState<Readonly<{
@@ -207,15 +120,61 @@ export declare function useNavigatorContext(): {
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-            })[];
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+            type: string;
+            stale: false;
+        }>>): void;
+    } & import("@react-navigation/native").PrivateValueStore<[import("@react-navigation/native").ParamListBase, unknown, unknown]> & import("@react-navigation/native").EventEmitter<Record<string, any>> & {
+        setParams<RouteName_5 extends string>(params: Partial<object | undefined>): void;
+    } & Record<string, (...args: any) => void>;
+    descriptors: Record<string, import("@react-navigation/native").Descriptor<{}, Omit<{
+        dispatch(action: Readonly<{
+            type: string;
+            payload?: object | undefined;
+            source?: string | undefined;
+            target?: string | undefined;
+        }> | ((state: Readonly<Readonly<{
+            key: string;
+            index: number;
+            routeNames: string[];
+            history?: unknown[] | undefined;
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+            type: string;
+            stale: false;
+        }>>) => Readonly<{
+            type: string;
+            payload?: object | undefined;
+            source?: string | undefined;
+            target?: string | undefined;
+        }>)): void;
+        navigate<RouteName_6 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+        navigate<RouteName_7 extends string>(options: {
+            name: string;
+            params: object | undefined;
+            path?: string | undefined;
+            merge?: boolean | undefined;
+        }): void;
+        navigateDeprecated<RouteName_8 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+        navigateDeprecated<RouteName_9 extends string>(options: {
+            name: string;
+            params: object | undefined;
+            merge?: boolean | undefined;
+        }): void;
+        preload<RouteName_10 extends string>(...args: [screen: string] | [screen: string, params: object | undefined]): void;
+        reset(state: Readonly<{
+            key: string;
+            index: number;
+            routeNames: string[];
+            history?: unknown[] | undefined;
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+            type: string;
+            stale: false;
+        }> | import("@react-navigation/native").PartialState<Readonly<{
+            key: string;
+            index: number;
+            routeNames: string[];
+            history?: unknown[] | undefined;
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
         }>>): void;
@@ -229,36 +188,37 @@ export declare function useNavigatorContext(): {
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-            })[];
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
         }>;
-    } & import("@react-navigation/native").PrivateValueStore<[import("@react-navigation/native").ParamListBase, unknown, unknown]>, "getParent"> & {
-        getParent<T_1 = import("@react-navigation/native").NavigationProp<import("@react-navigation/native").ParamListBase, string, undefined, Readonly<{
+        setStateForNextRouteNamesChange(state: Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
-            routes: (Readonly<{
-                key: string;
-                name: string;
-                path?: string | undefined;
-            }> & Readonly<{
-                params?: Readonly<object | undefined>;
-            }> & {
-                state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-            })[];
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
-        }>, {}, {}> | undefined>(id?: string | undefined): T_1;
+        }> | import("@react-navigation/native").PartialState<Readonly<{
+            key: string;
+            index: number;
+            routeNames: string[];
+            history?: unknown[] | undefined;
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+            type: string;
+            stale: false;
+        }>>): void;
+    } & import("@react-navigation/native").PrivateValueStore<[import("@react-navigation/native").ParamListBase, unknown, unknown]>, "getParent"> & {
+        getParent<T_2 = import("@react-navigation/native").NavigationProp<import("@react-navigation/native").ParamListBase, string, undefined, Readonly<{
+            key: string;
+            index: number;
+            routeNames: string[];
+            history?: unknown[] | undefined;
+            routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+            type: string;
+            stale: false;
+        }>, {}, {}> | undefined>(id?: string | undefined): T_2;
         setParams(params: Partial<object | undefined>): void;
         setOptions(options: Partial<{}>): void;
     } & import("@react-navigation/native").EventConsumer<Record<string, any> & import("@react-navigation/native").EventMapCore<Readonly<{
@@ -266,18 +226,10 @@ export declare function useNavigatorContext(): {
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: (Readonly<{
-            key: string;
-            name: string;
-            path?: string | undefined;
-        }> & Readonly<{
-            params?: Readonly<object | undefined>;
-        }> & {
-            state?: Readonly<any> | import("@react-navigation/native").PartialState<Readonly<any>> | undefined;
-        })[];
+        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
         type: string;
         stale: false;
-    }>>> & import("@react-navigation/native").PrivateValueStore<[import("@react-navigation/native").ParamListBase, string, Record<string, any>]> & Record<string, () => void>, import("@react-navigation/native").RouteProp<import("@react-navigation/native").ParamListBase, string>>>;
+    }>>> & import("@react-navigation/native").PrivateValueStore<[import("@react-navigation/native").ParamListBase, string, Record<string, any>]> & Record<string, (...args: any) => void>, import("@react-navigation/native").RouteProp<import("@react-navigation/native").ParamListBase, string>>>;
     router: RouterFactory<any, any, any>;
 };
 export declare function useSlot(): JSX.Element | null;

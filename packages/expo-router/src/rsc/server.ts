@@ -9,6 +9,8 @@
 import { type AsyncLocalStorage } from 'node:async_hooks';
 import type { ReactNode } from 'react';
 
+export const REQUEST_HEADERS = '__expo_requestHeaders';
+
 import type { PathSpec } from './path';
 
 declare let globalThis: {
@@ -156,4 +158,21 @@ export function getContext<
     throw new Error('Render store is not available');
   }
   return renderStore.context as RscContext;
+}
+
+export function unstable_headers(): Headers {
+  const headers = (getContext()[REQUEST_HEADERS] || {}) as Record<string, string>;
+  return new ReadonlyHeaders(headers);
+}
+
+class ReadonlyHeaders extends Headers {
+  set() {
+    throw new Error('Server component Headers are read-only');
+  }
+  append() {
+    throw new Error('Server component Headers are read-only');
+  }
+  delete() {
+    throw new Error('Server component Headers are read-only');
+  }
 }

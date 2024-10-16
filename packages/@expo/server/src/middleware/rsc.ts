@@ -22,6 +22,7 @@ export type RenderRscArgs = {
   decodedBody?: unknown;
   moduleIdCallback?: ((id: string) => void) | undefined;
   onError?: (err: unknown) => void;
+  headers: Record<string, string>;
 };
 
 export const decodeInput = (encodedInput: string) => {
@@ -114,6 +115,7 @@ export function getRscMiddleware(options: {
         contentType: req.headers.get('Content-Type') ?? '',
         decodedBody: req.headers.get('X-Expo-Params'),
         onError: options.onError,
+        headers: headersToRecord(req.headers),
       };
       const readable = await options.renderRsc(args);
 
@@ -142,4 +144,12 @@ export function getRscMiddleware(options: {
     GET: getOrPostAsync,
     POST: getOrPostAsync,
   };
+}
+
+function headersToRecord(headers: Headers) {
+  const record: Record<string, string> = {};
+  for (const [key, value] of headers.entries()) {
+    record[key] = value;
+  }
+  return record;
 }
