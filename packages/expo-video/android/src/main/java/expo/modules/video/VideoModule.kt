@@ -12,6 +12,7 @@ import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
@@ -22,8 +23,11 @@ import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.ifYogaDefinedUse
 import expo.modules.video.utils.makeYogaUndefinedIfNegative
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlin.time.Duration
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableReactNativeAPI
@@ -341,6 +345,25 @@ class VideoModule : Module() {
           ref.player.seekTo(0)
           ref.player.play()
         }
+      }
+
+      AsyncFunction("generateThumbnailsAsync") Coroutine { ref: VideoPlayer, times: List<Duration> ->
+        return@Coroutine ref.toMetadataRetriever().safeUse {
+          val bitmaps = times.map { time ->
+            appContext.backgroundCoroutineScope.async {
+              generateThumbnailAtTime(time)
+            }
+          }
+
+          bitmaps.awaitAll()
+        }
+      }
+
+      Class<VideoThumbnail> {
+        Property("width") { ref -> ref.width }
+        Property("height") { ref -> ref.height }
+        Property("requestedTime") { ref -> ref.requestedTime }
+        Property("actualTime") { ref -> ref.actualTime }
       }
     }
 
