@@ -63,7 +63,7 @@ While Metro is designed for universal app development, it's often compared to ot
 
 While bundlers like Vite leverage built-in ESM support in the browser, this approach can lead to slower practical development times at medium to large scales due to thousands of cascading network requests. Metro performs bundling in local development, which is better suited for React Native's larger module count.
 
-## JavaScript versus native languages
+### JavaScript versus native languages
 
 Several bundlers are opting to write their core in Rust for performance reasons, but this comes with some trade-offs, such as more challenging contributions, patches, and development. Metro uses a mix of technologies based on the operation:
 
@@ -75,4 +75,3 @@ Several bundlers are opting to write their core in Rust for performance reasons,
 - CSS parsing and minification is performed with [LightningCSS](https://lightningcss.dev/) (Rust).
 
 This approach aligns with Meta and community tools while allowing easier debugging, profiling, and patching for developers.
-
