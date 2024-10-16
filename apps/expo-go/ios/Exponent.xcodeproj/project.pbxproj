@@ -63,6 +63,8 @@
 		B2A8E25F2CBF3B24004CA9AF /* EXApiUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A8E25E2CBF3B1E004CA9AF /* EXApiUtil.swift */; };
 		B2A8E2652CC01C0A004CA9AF /* EXVersions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A8E2642CC01C0A004CA9AF /* EXVersions.swift */; };
 		B2A8E2672CC01D80004CA9AF /* EXBuildConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A8E2662CC01D80004CA9AF /* EXBuildConstants.swift */; };
+		B2A8E2692CC0218D004CA9AF /* EXEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A8E2682CC0218D004CA9AF /* EXEnvironment.swift */; };
+		B2A8E26B2CC0226C004CA9AF /* EXTestEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A8E26A2CC02265004CA9AF /* EXTestEnvironment.swift */; };
 		B2B492172462F5EF001576D8 /* EXScopedNotificationsEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */; };
 		B2E2CCC72AA7D33E00E2260C /* HomeAppLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */; };
 		B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E2CCC92AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift */; };
@@ -84,7 +86,6 @@
 		B5854ED720D078C6001D2F6E /* EXClientTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED620D078C6001D2F6E /* EXClientTestCase.m */; };
 		B5854ED920D0790C001D2F6E /* EXDevTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED820D0790C001D2F6E /* EXDevTestCase.m */; };
 		B5854EEB20D07D4D001D2F6E /* EXLinkingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */; };
-		B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = B58F125B20B73455003E13F1 /* EXEnvironment.m */; };
 		B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */ = {isa = PBXBuildFile; fileRef = B59B59481F6369480083850D /* EXTestEnvironment.plist */; };
 		B5A473DA204A66F70035C61C /* EXAppViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5A473D4204A66F60035C61C /* EXAppViewController.mm */; };
 		B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473D6204A66F60035C61C /* EXErrorView.m */; };
@@ -415,6 +416,8 @@
 		B2A8E25E2CBF3B1E004CA9AF /* EXApiUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXApiUtil.swift; sourceTree = "<group>"; };
 		B2A8E2642CC01C0A004CA9AF /* EXVersions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXVersions.swift; sourceTree = "<group>"; };
 		B2A8E2662CC01D80004CA9AF /* EXBuildConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXBuildConstants.swift; sourceTree = "<group>"; };
+		B2A8E2682CC0218D004CA9AF /* EXEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXEnvironment.swift; sourceTree = "<group>"; };
+		B2A8E26A2CC02265004CA9AF /* EXTestEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXTestEnvironment.swift; sourceTree = "<group>"; };
 		B2B492152462F5EF001576D8 /* EXScopedNotificationsEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationsEmitter.h; sourceTree = "<group>"; };
 		B2B492162462F5EF001576D8 /* EXScopedNotificationsEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationsEmitter.m; sourceTree = "<group>"; };
 		B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeAppLoader.swift; sourceTree = "<group>"; };
@@ -456,8 +459,6 @@
 		B5854EE520D07B3E001D2F6E /* EXDevTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevTestCase.h; sourceTree = "<group>"; };
 		B5854EE720D07BCB001D2F6E /* EXAppLoader+Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXAppLoader+Tests.h"; sourceTree = "<group>"; };
 		B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinkingTests.m; sourceTree = "<group>"; };
-		B58F125A20B73455003E13F1 /* EXEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXEnvironment.h; sourceTree = "<group>"; };
-		B58F125B20B73455003E13F1 /* EXEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironment.m; sourceTree = "<group>"; };
 		B59B59481F6369480083850D /* EXTestEnvironment.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXTestEnvironment.plist; sourceTree = "<group>"; };
 		B5A473D4204A66F60035C61C /* EXAppViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXAppViewController.mm; sourceTree = "<group>"; };
 		B5A473D6204A66F60035C61C /* EXErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXErrorView.m; sourceTree = "<group>"; };
@@ -1070,8 +1071,7 @@
 			isa = PBXGroup;
 			children = (
 				B2A8E2662CC01D80004CA9AF /* EXBuildConstants.swift */,
-				B58F125A20B73455003E13F1 /* EXEnvironment.h */,
-				B58F125B20B73455003E13F1 /* EXEnvironment.m */,
+				B2A8E2682CC0218D004CA9AF /* EXEnvironment.swift */,
 				B5D0D65E204F4BF500DDFC99 /* EXLog.h */,
 				B5D0D65D204F4BF400DDFC99 /* EXLog.m */,
 				B2A8E2642CC01C0A004CA9AF /* EXVersions.swift */,
@@ -1371,6 +1371,7 @@
 		B5FB74211FF6DADB001C764B /* Test */ = {
 			isa = PBXGroup;
 			children = (
+				B2A8E26A2CC02265004CA9AF /* EXTestEnvironment.swift */,
 				B5FB74221FF6DADB001C764B /* EXTest.h */,
 				B5FB74231FF6DADB001C764B /* EXTest.m */,
 			);
@@ -2003,6 +2004,7 @@
 				B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.mm in Sources */,
 				FCA11CA724C1215B00C1FC54 /* EXScopedNotificationCategoriesModule.m in Sources */,
 				B5D0D65C204F152D00DDFC99 /* EXViewController.m in Sources */,
+				B2A8E26B2CC0226C004CA9AF /* EXTestEnvironment.swift in Sources */,
 				B5FB74EB1FF6DADC001C764B /* EXStatusBarManager.m in Sources */,
 				B5C2740C1EC24AE1003355CE /* EXKernelLinkingManager.m in Sources */,
 				B5FB74E51FF6DADC001C764B /* EXAppState.m in Sources */,
@@ -2022,6 +2024,7 @@
 				B56C65C6204768F3002B2424 /* EXRootViewController.m in Sources */,
 				31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */,
 				78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */,
+				B2A8E2692CC0218D004CA9AF /* EXEnvironment.swift in Sources */,
 				B2F7C02E246B09AE0060EE06 /* EXScopedNotificationsUtils.m in Sources */,
 				F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */,
 				318102BA20C15E460061726F /* EXLinkingManager.m in Sources */,
@@ -2081,7 +2084,6 @@
 				0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */,
 				B5AC39D61E95B17300540AA7 /* EXErrorRecoveryManager.m in Sources */,
 				B2A8E25F2CBF3B24004CA9AF /* EXApiUtil.swift in Sources */,
-				B58F125C20B73455003E13F1 /* EXEnvironment.m in Sources */,
 				312D2ED2234DF2DC002F4049 /* EXScopedFacebook.m in Sources */,
 				B56C65C8204768F3002B2424 /* EXHomeAppManager.m in Sources */,
 				B2E2CCCA2AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift in Sources */,

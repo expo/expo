@@ -3,7 +3,6 @@
 #import "EXAppFetcher.h"
 #import "EXAppLoaderExpoUpdates.h"
 #import "EXClientReleaseType.h"
-#import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"

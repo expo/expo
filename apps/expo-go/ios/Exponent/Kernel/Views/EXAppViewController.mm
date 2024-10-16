@@ -11,7 +11,6 @@
 #import "EXManagedAppSplashScreenViewController.h"
 #import "EXHomeAppSplashScreenViewProvider.h"
 #import "EXHomeModule.h"
-#import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
 #import "EXFileDownloader.h"

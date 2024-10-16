@@ -2,7 +2,6 @@
 
 #import "EXKernelAppRegistry.h"
 #import "EXAbstractLoader.h"
-#import "EXEnvironment.h"
 #import "EXReactAppManager.h"
 #import "EXKernel.h"
 

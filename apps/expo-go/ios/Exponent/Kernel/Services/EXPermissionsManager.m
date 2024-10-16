@@ -3,7 +3,6 @@
 #import <ExpoModulesCore/EXPermissionsService.h>
 
 #import "EXPermissionsManager.h"
-#import "EXEnvironment.h"
 
 NSString * const EXPermissionsKey = @"ExpoPermissions";
 
