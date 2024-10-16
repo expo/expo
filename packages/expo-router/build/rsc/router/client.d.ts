@@ -9,16 +9,12 @@
  */
 import type { ReactNode, AnchorHTMLAttributes, ReactElement } from 'react';
 import type { RouteProps } from './common.js';
-export declare function useRouter_UNSTABLE(): {
-    push: (to: string) => void;
-    replace: (to: string) => void;
+import type { Router } from '../../imperative-api';
+import type { Href } from '../../types.js';
+export declare function useRouter_UNSTABLE(): Router & RouteProps & {
     reload: () => void;
-    back: () => void;
     forward: () => void;
-    prefetch: (to: string) => void;
-    path: string;
-    query: string;
-    hash: string;
+    prefetch: <T extends string | object>(href: Href<T>) => void;
 };
 type ShouldSkip = (readonly [
     string,

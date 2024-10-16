@@ -197,22 +197,31 @@ function getHistory() {
         state: {},
     };
 }
+const href_1 = require("../../link/href");
 function useRouter_UNSTABLE() {
     const router = (0, react_1.useContext)(RouterContext);
     if (!router) {
         throw new Error('Missing Router');
     }
     const { route, changeRoute, prefetchRoute } = router;
-    const push = (0, react_1.useCallback)((to) => {
-        const url = new URL(to, getHref());
+    const push = (0, react_1.useCallback)((href, options) => {
+        if (options) {
+            // TODO(Bacon): Implement options
+            console.warn('options prop of router.push() is not supported in React Server Components yet');
+        }
+        const url = new URL((0, href_1.resolveHref)(href), getHref());
         getHistory().pushState({
             ...getHistory().state,
             expo_new_path: url.pathname !== window.location.pathname,
         }, '', url);
         changeRoute(parseRoute(url));
     }, [changeRoute]);
-    const replace = (0, react_1.useCallback)((to) => {
-        const url = new URL(to, getHref());
+    const replace = (0, react_1.useCallback)((href, options) => {
+        if (options) {
+            // TODO(Bacon): Implement options
+            console.warn('options prop of router.replace() is not supported in React Server Components yet');
+        }
+        const url = new URL((0, href_1.resolveHref)(href), getHref());
         getHistory().replaceState(getHistory().state, '', url);
         changeRoute(parseRoute(url));
     }, [changeRoute]);
@@ -228,12 +237,29 @@ function useRouter_UNSTABLE() {
         // FIXME is this correct?
         getHistory().forward();
     }, []);
-    const prefetch = (0, react_1.useCallback)((to) => {
-        const url = new URL(to, getHref());
+    const prefetch = (0, react_1.useCallback)((href) => {
+        const url = new URL((0, href_1.resolveHref)(href), getHref());
         prefetchRoute(parseRoute(url));
     }, [prefetchRoute]);
     return {
         ...route,
+        canDismiss() {
+            throw new Error('router.canDismiss() is not supported in React Server Components yet');
+        },
+        canGoBack() {
+            throw new Error('router.canGoBack() is not supported in React Server Components yet');
+        },
+        dismiss() {
+            throw new Error('router.dismiss() is not supported in React Server Components yet');
+        },
+        dismissAll() {
+            throw new Error('router.dismissAll() is not supported in React Server Components yet');
+        },
+        setParams() {
+            throw new Error('router.setParams() is not supported in React Server Components yet');
+        },
+        // TODO: The behavior here is not the same as before.
+        navigate: push,
         push,
         replace,
         reload,

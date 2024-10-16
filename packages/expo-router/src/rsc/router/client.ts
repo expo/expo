@@ -275,15 +275,32 @@ function getHistory() {
   };
 }
 
-export function useRouter_UNSTABLE() {
+import type { Router } from '../../imperative-api';
+import type { NavigationOptions } from '../../global-state/routing.js';
+import type { Href } from '../../types.js';
+import { resolveHref } from '../../link/href';
+
+export function useRouter_UNSTABLE(): Router &
+  RouteProps & {
+    reload: () => void;
+    forward: () => void;
+    prefetch: <T extends string | object>(href: Href<T>) => void;
+  } {
   const router = useContext(RouterContext);
   if (!router) {
     throw new Error('Missing Router');
   }
   const { route, changeRoute, prefetchRoute } = router;
-  const push = useCallback(
-    (to: string) => {
-      const url = new URL(to, getHref());
+  const push: Router['push'] = useCallback(
+    <T extends string | object>(href: Href<T>, options?: NavigationOptions) => {
+      if (options) {
+        // TODO(Bacon): Implement options
+        console.warn(
+          'options prop of router.push() is not supported in React Server Components yet'
+        );
+      }
+
+      const url = new URL(resolveHref(href), getHref());
       getHistory().pushState(
         {
           ...getHistory().state,
@@ -296,9 +313,16 @@ export function useRouter_UNSTABLE() {
     },
     [changeRoute]
   );
-  const replace = useCallback(
-    (to: string) => {
-      const url = new URL(to, getHref());
+  const replace: Router['replace'] = useCallback(
+    <T extends string | object>(href: Href<T>, options?: NavigationOptions) => {
+      if (options) {
+        // TODO(Bacon): Implement options
+        console.warn(
+          'options prop of router.replace() is not supported in React Server Components yet'
+        );
+      }
+
+      const url = new URL(resolveHref(href), getHref());
       getHistory().replaceState(getHistory().state, '', url);
       changeRoute(parseRoute(url));
     },
@@ -317,14 +341,32 @@ export function useRouter_UNSTABLE() {
     getHistory().forward();
   }, []);
   const prefetch = useCallback(
-    (to: string) => {
-      const url = new URL(to, getHref());
+    <T extends string | object>(href: Href<T>) => {
+      const url = new URL(resolveHref(href), getHref());
       prefetchRoute(parseRoute(url));
     },
     [prefetchRoute]
   );
   return {
     ...route,
+    canDismiss() {
+      throw new Error('router.canDismiss() is not supported in React Server Components yet');
+    },
+    canGoBack() {
+      throw new Error('router.canGoBack() is not supported in React Server Components yet');
+    },
+    dismiss() {
+      throw new Error('router.dismiss() is not supported in React Server Components yet');
+    },
+    dismissAll() {
+      throw new Error('router.dismissAll() is not supported in React Server Components yet');
+    },
+    setParams() {
+      throw new Error('router.setParams() is not supported in React Server Components yet');
+    },
+
+    // TODO: The behavior here is not the same as before.
+    navigate: push,
     push,
     replace,
     reload,
