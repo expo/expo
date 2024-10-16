@@ -6,7 +6,7 @@ description: Learn about rendering React components on the server in Expo.
 
 import { Terminal } from '~/ui/components/Snippet';
 
-> Experimentally available in **SDK 52 and above**. This is not ready for production use.
+> Experimentally available in **SDK 52 and above**. This is a very early preview and not ready for production or wide use yet. This initial version is meant to help library authors understand universal React Server Components and add support in their libraries.
 
 Expo Router enables support for [React Server Components](https://react.dev/reference/rsc/server-components) on all platforms.
 
@@ -25,9 +25,9 @@ Your project must be using Expo Router and React Native new architecture. New Ar
 
 As of SDK 52, there's no strategy to migrate existing projects, we recommend starting from a new project.
 
-Enable the flag in the project `app.json`:
+Enable the flag in the project Expo config:
 
-```json
+```json app.json
 {
   "expo": {
     "experiments": {
@@ -37,13 +37,9 @@ Enable the flag in the project `app.json`:
 }
 ```
 
-Then change the entry file for your Expo Router project to be `index.js`:
+Ensure the entry module is `expo-router/entry` (default).
 
-```js index.js
-import 'expo-router/entry-rsc';
-```
-
-Create a file `app/index.tsx`:
+Create an initial route `app/index.tsx`:
 
 ```tsx app/index.tsx
 // This is a server component.
@@ -54,7 +50,44 @@ export default function Index() {
 }
 ```
 
-### Server Components
+## Moving between routes
+
+You can navigate between routes by using the `<Link />` API from Expo Router (not all props are supported yet).
+
+```tsx app/index.tsx
+import { Link } from 'expo-router';
+
+export default function Index() {
+  return (
+    <Link href="/second">
+      <Text>Hello, world!</Text>
+    </Link>
+  );
+}
+```
+
+## Layout Routes
+
+> Complex built-in layouts such as Stack, and Tabs are not supported yet. They'll fallback to a `<Slot />`.
+
+Layout routes (`app/_layout.js`) can be used to wrap all routes in a common layout.
+
+```tsx app/_layout.tsx
+import { View } from 'react-native';
+import { Slot } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <View>
+      <Slot />
+    </View>
+  );
+}
+```
+
+The `Slot` component is used to render the current route.
+
+## Server Components
 
 Server Components run in the server, meaning they can access Node.js built-ins and server APIs. They can also use async components.
 
@@ -84,7 +117,7 @@ export async function Pokemon() {
 - `"use server"` is not meant to mark a file as a server component. It's used to mark a file as having React Server Actions.
 - Server components have access to all environment variables as they run securely off the client.
 
-### Client Components
+## Client Components
 
 Server Components run in the server and have no access to native APIs or React Context. To use these features, you can create a Client Component. Client Components are created by marking files with the `"use client"` directive at the top.
 
@@ -109,7 +142,7 @@ export default function Index() {
 
 - You cannot pass functions as props to Server Components. You can only pass serializable data.
 
-### Server Actions
+## Server Actions
 
 > Server Actions are gated behind an additional experimental flag. Pass the environment variable `EXPO_UNSTABLE_SERVER_ACTIONS=1` to enable them.
 
@@ -169,7 +202,7 @@ export default function Button({ title }) {
 - Server actions can only return serializable data.
 - Server actions run on the server and therefore are a good place to put logic that should not be exposed to the client.
 
-### CSS
+## CSS
 
 Expo Router supports importing global CSS and CSS modules in server components.
 
@@ -184,7 +217,7 @@ export default function Index() {
 
 The CSS will be hoisted into the client bundle from the server.
 
-### React 19
+## React 19
 
 React Server Components are a feature of React 19. To enable them, Expo CLI automatically uses a special canary build of React on all platforms. We'll remove this feature in the future when React 19 is enabled by default in React Native.
 
@@ -201,7 +234,7 @@ export default function Index() {
 }
 ```
 
-### Suspense
+## Suspense
 
 You can stream back partial UI from the server while waiting for data to load by using React Suspense.
 
@@ -238,7 +271,7 @@ async function ExpensiveTask() {
 
 If you remove the `Suspense` wrapper around `<ExpensiveTask>`, you'll see that the `Loading...` waits for both components to finish rendering before updating the UI. This enables you to control how incremental you want your loading to be. Sometimes it makes sense to wait for everything to load at once (most of the time), and sometimes it makes sense to stream back UI as soon as you have (like the text response in ChatGPT).
 
-### Build-time rendering
+## Build-time rendering
 
 Expo Router supports two different modes of rendering server components: build-time rendering and request-time rendering.
 
@@ -270,7 +303,7 @@ Routes marked with `static` output will be rendered at build-time and embeded in
 
 The current default is `dynamic` rendering, we'll change the caching and optimizations to be smarter and more automatic in the future.
 
-### Routing
+## Routing
 
 You can use the same routing system as before with `expo-router`.
 
@@ -290,9 +323,7 @@ export default function Layout({ children }) {
 
 ## Known Limitations
 
-- All APIs from `expo-router` are not optimized for server components yet. You can essentially only use a single route. Creating multiple routes will work but you cannot navigate between them using any public APIs.
-- There is currently no stack routing. The custom layouts `Stack`, `Tabs`, `Slot` do not support server components yet.
-- The `Link` component does not support server components yet.
+- There is currently no stack routing. The custom layouts `Stack`, `Tabs`, `Drawer` do not support server components yet.
 - Expo Go does not support the new architecture yet, meaning you cannot use server components in Expo Go.
 - Expo Snack does not support bundling server components.
 - EAS Update does not work with server components yet.
