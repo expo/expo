@@ -6,7 +6,6 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"
-#import "EXVersions.h"
 
 #import <React/RCTUtils.h>
 

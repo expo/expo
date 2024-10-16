@@ -2,13 +2,11 @@
 
 #import "EXAppState.h"
 #import "EXAppViewController.h"
-#import "EXBuildConstants.h"
 #import "EXKernel.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
-#import "EXVersions.h"
 #import "EXHomeModule.h"
 
 #import <EXConstants/EXConstantsService.h>
@@ -16,6 +14,8 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
+
+#import "Expo_Go-Swift.h"
 
 // Kernel is DevMenu's delegate only in non-detached builds.
 #import "EXDevMenuManager.h"

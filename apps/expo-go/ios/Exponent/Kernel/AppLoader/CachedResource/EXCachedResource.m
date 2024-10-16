@@ -5,9 +5,10 @@
 #import "EXFileDownloader.h"
 #import "EXKernelUtil.h"
 #import "EXUtil.h"
-#import "EXVersions.h"
 
 #import <React/RCTUtils.h>
+
+#import "Expo_Go-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

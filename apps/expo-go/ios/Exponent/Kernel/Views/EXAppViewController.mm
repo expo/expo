@@ -18,7 +18,6 @@
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXReactAppManager.h"
-#import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
 

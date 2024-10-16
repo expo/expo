@@ -4,6 +4,8 @@
 //  pass error recovery info to an experience which just reloaded.
 //
 
+#import <Foundation/Foundation.h>
+
 @protocol EXErrorRecoveryScopedModuleDelegate
 
 - (void)setDeveloperInfo:(NSDictionary *)developerInfo forScopedModule:(id)scopedModule;
