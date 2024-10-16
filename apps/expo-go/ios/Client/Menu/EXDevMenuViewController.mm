@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <React/RCTRootView.h>
+#import <React-RCTAppDelegate/RCTAppDelegate.h>
 #import <ExpoModulesCore/EXDefines.h>
 
 #import "EXDevMenuViewController.h"
@@ -9,17 +10,18 @@
 #import "EXAbstractLoader.h"
 #import "EXKernelAppRegistry.h"
 #import "EXUtil.h"
-
-@import EXManifests;
+#import <React/RCTFabricSurface.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
+#import "EXManifests-Swift.h"
 
 @interface EXDevMenuViewController ()
 
-@property (nonatomic, strong) RCTRootView *reactRootView;
+@property (nonatomic, strong) UIView *reactRootView;
 @property (nonatomic, assign) BOOL hasCalledJSLoadedNotification;
 
 @end
 
-@interface RCTRootView (EXDevMenuView)
+@interface RCTSurfaceHostingProxyRootView (EXDevMenuView)
 
 - (void)javaScriptDidLoad:(NSNotification *)notification;
 - (void)hideLoadingView;
@@ -29,14 +31,6 @@
 @implementation EXDevMenuViewController
 
 # pragma mark - UIViewController
-
-- (void)viewDidLoad
-{
-  [super viewDidLoad];
-
-  [self _rebuildRootView];
-  [self.view addSubview:_reactRootView];
-}
 
 - (UIRectEdge)edgesForExtendedLayout
 {
@@ -58,7 +52,6 @@
 {
   [super viewWillAppear:animated];
   [self _rebuildRootView];
-  [self _forceRootViewToRenderHack];
   [_reactRootView becomeFirstResponder];
 }
 
@@ -118,31 +111,17 @@
   };
 }
 
-// RCTRootView assumes it is created on a loading bridge.
-// in our case, the bridge has usually already loaded. so we need to prod the view.
-- (void)_forceRootViewToRenderHack
-{
-  if (!_hasCalledJSLoadedNotification) {
-    RCTBridge *mainBridge = [[EXDevMenuManager sharedInstance] mainBridge];
-    NSNotification *notif = [[NSNotification alloc] initWithName:RCTJavaScriptDidLoadNotification
-                                                          object:nil
-                                                        userInfo:@{ @"bridge": mainBridge }];
-    [_reactRootView javaScriptDidLoad:notif];
-    _hasCalledJSLoadedNotification = YES;
-  }
-}
-
 - (void)_rebuildRootView
 {
-  RCTBridge *mainBridge = [[EXDevMenuManager sharedInstance] mainBridge];
+  RCTAppDelegate *mainAppDelegate = [[EXDevMenuManager sharedInstance] mainAppDelegate];
 
   if (_reactRootView) {
     [_reactRootView removeFromSuperview];
     _reactRootView = nil;
   }
   _hasCalledJSLoadedNotification = NO;
-
-  _reactRootView = [[RCTRootView alloc] initWithBridge:mainBridge moduleName:@"HomeMenu" initialProperties:[self _getInitialPropsForVisibleApp]];
+  
+  _reactRootView =  [mainAppDelegate.rootViewFactory viewWithModuleName:@"HomeMenu" initialProperties:[self _getInitialPropsForVisibleApp]];
 
   // By default react root view has white background,
   // however devmenu's bottom sheet looks better with partially visible experience.

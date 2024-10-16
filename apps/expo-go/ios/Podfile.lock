@@ -319,81 +319,61 @@ PODS:
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
   - FBLazyVector (0.76.0-rc.4)
-  - FirebaseCore (9.5.0):
-    - FirebaseCoreDiagnostics (~> 9.0)
-    - FirebaseCoreInternal (~> 9.0)
-    - GoogleUtilities/Environment (~> 7.7)
-    - GoogleUtilities/Logger (~> 7.7)
-  - FirebaseCoreDiagnostics (9.6.0):
-    - GoogleDataTransport (< 10.0.0, >= 9.1.4)
-    - GoogleUtilities/Environment (~> 7.7)
-    - GoogleUtilities/Logger (~> 7.7)
-    - nanopb (< 2.30910.0, >= 2.30908.0)
-  - FirebaseCoreInternal (9.6.0):
-    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+  - FirebaseCore (11.3.0):
+    - FirebaseCoreInternal (~> 11.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/Logger (~> 8.0)
+  - FirebaseCoreInternal (11.3.0):
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
   - fmt (9.1.0)
   - glog (0.3.5)
-  - Google-Maps-iOS-Utils (4.2.2):
-    - Google-Maps-iOS-Utils/Clustering (= 4.2.2)
-    - Google-Maps-iOS-Utils/Geometry (= 4.2.2)
-    - Google-Maps-iOS-Utils/GeometryUtils (= 4.2.2)
-    - Google-Maps-iOS-Utils/Heatmap (= 4.2.2)
-    - Google-Maps-iOS-Utils/QuadTree (= 4.2.2)
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/Clustering (4.2.2):
-    - Google-Maps-iOS-Utils/QuadTree
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/Geometry (4.2.2):
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/GeometryUtils (4.2.2):
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/Heatmap (4.2.2):
-    - Google-Maps-iOS-Utils/QuadTree
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/QuadTree (4.2.2):
-    - GoogleMaps (~> 7.3)
-  - GoogleDataTransport (9.2.5):
-    - GoogleUtilities/Environment (~> 7.7)
-    - nanopb (< 2.30910.0, >= 2.30908.0)
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleMaps (7.4.0):
-    - GoogleMaps/Maps (= 7.4.0)
-  - GoogleMaps/Base (7.4.0)
-  - GoogleMaps/Maps (7.4.0):
+  - Google-Maps-iOS-Utils (6.0.0):
+    - GoogleMaps (~> 9.0)
+  - GoogleMaps (9.1.1):
+    - GoogleMaps/Maps (= 9.1.1)
+  - GoogleMaps/Base (9.1.1)
+  - GoogleMaps/Maps (9.1.1):
     - GoogleMaps/Base
-  - GoogleUtilities (7.11.5):
-    - GoogleUtilities/AppDelegateSwizzler (= 7.11.5)
-    - GoogleUtilities/Environment (= 7.11.5)
-    - GoogleUtilities/ISASwizzler (= 7.11.5)
-    - GoogleUtilities/Logger (= 7.11.5)
-    - GoogleUtilities/MethodSwizzler (= 7.11.5)
-    - GoogleUtilities/Network (= 7.11.5)
-    - "GoogleUtilities/NSData+zlib (= 7.11.5)"
-    - GoogleUtilities/Reachability (= 7.11.5)
-    - GoogleUtilities/SwizzlerTestHelpers (= 7.11.5)
-    - GoogleUtilities/UserDefaults (= 7.11.5)
-  - GoogleUtilities/AppDelegateSwizzler (7.11.5):
+  - GoogleUtilities (8.0.2):
+    - GoogleUtilities/AppDelegateSwizzler (= 8.0.2)
+    - GoogleUtilities/Environment (= 8.0.2)
+    - GoogleUtilities/Logger (= 8.0.2)
+    - GoogleUtilities/MethodSwizzler (= 8.0.2)
+    - GoogleUtilities/Network (= 8.0.2)
+    - "GoogleUtilities/NSData+zlib (= 8.0.2)"
+    - GoogleUtilities/Privacy (= 8.0.2)
+    - GoogleUtilities/Reachability (= 8.0.2)
+    - GoogleUtilities/SwizzlerTestHelpers (= 8.0.2)
+    - GoogleUtilities/UserDefaults (= 8.0.2)
+  - GoogleUtilities/AppDelegateSwizzler (8.0.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (7.11.5):
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/ISASwizzler (7.11.5)
-  - GoogleUtilities/Logger (7.11.5):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (8.0.2):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.0.2):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (7.11.5):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/MethodSwizzler (8.0.2):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (7.11.5):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (8.0.2):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (7.11.5)"
-  - GoogleUtilities/Reachability (7.11.5):
+  - "GoogleUtilities/NSData+zlib (8.0.2)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.0.2)
+  - GoogleUtilities/Reachability (8.0.2):
     - GoogleUtilities/Logger
-  - GoogleUtilities/SwizzlerTestHelpers (7.11.5):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/SwizzlerTestHelpers (8.0.2):
     - GoogleUtilities/MethodSwizzler
-  - GoogleUtilities/UserDefaults (7.11.5):
+  - GoogleUtilities/UserDefaults (8.0.2):
     - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
   - hermes-engine (0.76.0-rc.4):
     - hermes-engine/cdp (= 0.76.0-rc.4)
     - hermes-engine/Hermes (= 0.76.0-rc.4)
@@ -447,14 +427,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - MBProgressHUD (1.2.0)
-  - nanopb (2.30909.0):
-    - nanopb/decode (= 2.30909.0)
-    - nanopb/encode (= 2.30909.0)
-  - nanopb/decode (2.30909.0)
-  - nanopb/encode (2.30909.0)
   - Nimble (13.0.0)
-  - PromisesObjC (2.3.1)
-  - Quick (7.3.0)
+  - Quick (7.3.1)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -477,7 +451,7 @@ PODS:
     - FBLazyVector (= 0.76.0-rc.4)
     - RCTRequired (= 0.76.0-rc.4)
     - React-Core (= 0.76.0-rc.4)
-  - ReachabilitySwift (5.0.0)
+  - ReachabilitySwift (5.2.4)
   - React (0.76.0-rc.4):
     - React-Core (= 0.76.0-rc.4)
     - React-Core/DevSupport (= 0.76.0-rc.4)
@@ -492,7 +466,6 @@ PODS:
     - React-RCTText (= 0.76.0-rc.4)
     - React-RCTVibration (= 0.76.0-rc.4)
   - React-callinvoker (0.76.0-rc.4)
-  - React-Codegen (0.1.0)
   - React-Core (0.76.0-rc.4):
     - glog
     - hermes-engine
@@ -1878,14 +1851,13 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-webview (13.8.6):
+  - react-native-webview (13.12.2):
     - DoubleConversion
     - glog
     - hermes-engine
     - RCT-Folly (= 2024.01.01.00)
     - RCTRequired
     - RCTTypeSafety
-    - React-Codegen
     - React-Core
     - React-debug
     - React-Fabric
@@ -1896,6 +1868,7 @@ PODS:
     - React-RCTFabric
     - React-rendererdebug
     - React-utils
+    - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
@@ -2167,7 +2140,26 @@ PODS:
     - React-perflogger (= 0.76.0-rc.4)
     - React-utils (= 0.76.0-rc.4)
   - RNCAsyncStorage (1.23.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNCMaskedView (0.3.1):
     - React-Core
   - RNCPicker (2.8.1):
@@ -2407,9 +2399,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - SDWebImage (5.19.1):
-    - SDWebImage/Core (= 5.19.1)
-  - SDWebImage/Core (5.19.1)
+  - SDWebImage (5.19.7):
+    - SDWebImage/Core (= 5.19.7)
+  - SDWebImage/Core (5.19.7)
   - SDWebImageAVIFCoder (0.11.0):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
@@ -2549,7 +2541,7 @@ DEPENDENCIES:
   - fmt (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (from `https://github.com/googlemaps/google-maps-ios-utils.git`)
-  - GoogleMaps (~> 7.4.0)
+  - GoogleMaps (~> 9.0)
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
@@ -2594,7 +2586,7 @@ DEPENDENCIES:
   - "react-native-segmented-control (from `../../../node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/@react-native-community/slider`)"
-  - react-native-webview (from `./vendored/unversioned/react-native-webview`)
+  - react-native-webview (from `../../../node_modules/react-native-webview`)
   - React-nativeconfig (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/reactperflogger`)
@@ -2622,7 +2614,7 @@ DEPENDENCIES:
   - React-utils (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/utils`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
-  - "RNCAsyncStorage (from `./vendored/unversioned/@react-native-async-storage/async-storage`)"
+  - "RNCAsyncStorage (from `../../../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../../../node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/@react-native-community/datetimepicker`)"
@@ -2640,9 +2632,7 @@ SPEC REPOS:
   trunk:
     - CocoaLumberjack
     - FirebaseCore
-    - FirebaseCoreDiagnostics
     - FirebaseCoreInternal
-    - GoogleDataTransport
     - GoogleMaps
     - GoogleUtilities
     - libavif
@@ -2650,12 +2640,9 @@ SPEC REPOS:
     - libwebp
     - lottie-ios
     - MBProgressHUD
-    - nanopb
     - Nimble
-    - PromisesObjC
     - Quick
     - ReachabilitySwift
-    - React-Codegen
     - SDWebImage
     - SDWebImageAVIFCoder
     - SDWebImageSVGCoder
@@ -2900,7 +2887,7 @@ EXTERNAL SOURCES:
   react-native-slider:
     :path: "../../../node_modules/@react-native-community/slider"
   react-native-webview:
-    :path: "./vendored/unversioned/react-native-webview"
+    :path: "../../../node_modules/react-native-webview"
   React-nativeconfig:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -2956,7 +2943,7 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon"
   RNCAsyncStorage:
-    :path: "./vendored/unversioned/@react-native-async-storage/async-storage"
+    :path: "../../../node_modules/@react-native-async-storage/async-storage"
   RNCMaskedView:
     :path: "../../../node_modules/@react-native-masked-view/masked-view"
   RNCPicker:
@@ -2982,13 +2969,13 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Google-Maps-iOS-Utils:
-    :commit: b56b39cec0e3d5938ddadbfeb4d3fec541ebbb5e
+    :commit: 3b4711914d6b79e5800d8470a4f7f402896ec049
     :git: https://github.com/googlemaps/google-maps-ios-utils.git
 
 SPEC CHECKSUMS:
-  boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
+  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
   EASClient: 00a5bbc03a76fbcca972e7a4465f0e939d567e0d
   EXApplication: a329dec35dfc3ef30c64d1746698f209ef2b4db6
   EXAV: 1abd55830a134995b308d8ba9e3acbce67a2a666
@@ -3037,7 +3024,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: 19af2b57d6c88c15b56c1084cc21c352e67aeab9
   ExpoPrint: ab75a41dd1f48c14a6f8de320e75cd6d57c53153
   ExpoScreenCapture: 1f7ac662e67a14261424bebb046e0e9c7bb4e73d
-  ExpoScreenOrientation: 084827cae9c5cdc16ac8dc105957ba17c3def0e9
+  ExpoScreenOrientation: f9f798d4083e95985b0ccc44d04de8680130ed20
   ExpoSecureStore: ce152862c108e05d619077da572c77cf0e938a1b
   ExpoSensors: e6e78e3a1522e320fe79b1ae41a09b6ec8a598b8
   ExpoSharing: 79410307f4679f347480cb5e838c389ca99f8b6f
@@ -3057,16 +3044,14 @@ SPEC CHECKSUMS:
   EXUpdates: 0914f15b9f0c1ab72587a6bc113979ee46120fd8
   EXUpdatesInterface: 8d16d1242225d0bdb4d8db788349b522aa8e0343
   FBLazyVector: 20c5e40f776552291d12ea1f6cb14568aeccec92
-  FirebaseCore: 25c0400b670fd1e2f2104349cd3b5dcce8d9418f
-  FirebaseCoreDiagnostics: 99a495094b10a57eeb3ae8efa1665700ad0bdaa6
-  FirebaseCoreInternal: bca76517fe1ed381e989f5e7d8abb0da8d85bed3
-  fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
-  Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
-  GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2
-  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
-  GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  hermes-engine: 7b7ac6cadf0e652ed10822cdcf9364f27c98da57
+  FirebaseCore: 8542de610f35f86196ba26cdb2544565a5157c8e
+  FirebaseCoreInternal: ac26d09a70c730e497936430af4e60fb0c68ec4e
+  fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
+  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
+  GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
+  GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
+  hermes-engine: fbe4c0c72d1a9f2204a115f4b9bcbdee19ae6e97
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3074,18 +3059,15 @@ SPEC CHECKSUMS:
   lottie-ios: a881093fab623c467d3bce374367755c272bdd59
   lottie-react-native: 1fdff72253c5699ea2fe3b998999285daff77500
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
-  nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
-  PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
-  Quick: d32871931c05547cb4e0bc9009d66a18b50d8558
-  RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
+  Quick: 83e25bf349dd84f894b024f48033274512d6129b
+  RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
   RCTDeprecation: ea1525e5eda35bb079a7ac260551c5e0468f9ee3
   RCTRequired: c78ef50a39a3c8060e546760c46148d9abee6388
   RCTTypeSafety: 1841770b2ab4e4325bfe2a6b5ddca520b3e6c40d
-  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   React: 0d0b01ad72a7d78942ecca7efef21261a95b571e
   React-callinvoker: dfffa5cbc328b8c6c50a1175d0949a2625bc16d1
-  React-Codegen: 4b8b4817cea7a54b83851d4c1f91f79aa73de30a
   React-Core: 8471c8632fff23c34b3e5f393ddc15b2e2fc6986
   React-CoreModules: abc8746b32605f56185ae717ae3f0b495555e7cd
   React-cxxreact: b27afedad262b3795b8e6159d08502914a1d92ed
@@ -3117,7 +3099,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
   react-native-skia: c825cb272f6129fe148989eaf662c302d4f60587
   react-native-slider: e1f4b4538f7de7417b626174874f4f58d4cf6c28
-  react-native-webview: 05bae3a03a1e4f59568dfc05286c0ebf8954106c
+  react-native-webview: 06f91954784dde28e1210f381c791f0c5f9bd9a2
   React-nativeconfig: 38e9f8764eb61e31e11915c950cc97aedddb8736
   React-NativeModulesApple: 32ae99d8d82da3efb18b96915467e9bc851fd866
   React-perflogger: 8e26de3ec512cdd60a42a0058227c9c66ea87ee5
@@ -3145,7 +3127,7 @@ SPEC CHECKSUMS:
   React-utils: 0ab6858c3bdff0219b119b881dcdd12d9b913769
   ReactCodegen: fd245cb9d473b8cf51225ff0907feafada826e60
   ReactCommon: 9cb3c46af4f75f0a61e40d24b54f8b848226dadf
-  RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
+  RNCAsyncStorage: a927b768986f83467b635cf6d7559e6edb46db7a
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
   RNCPicker: 6ad936eee086dbe2aeb658994021770b46897d62
   RNDateTimePicker: 6008d74df8122d6af6d9d08096bff19a8c6ba647
@@ -3154,7 +3136,7 @@ SPEC CHECKSUMS:
   RNReanimated: f258d9ce122d59e36be8e516c40ed773ee46b687
   RNScreens: 01b042df69d92d82bd7f614715f0d7f8a888b3af
   RNSVG: 08750404f92a36162a92522cc77dee437be1d257
-  SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
+  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
@@ -3169,9 +3151,9 @@ SPEC CHECKSUMS:
   StripePaymentsUI: c24f990b03a68a7f6fe704b15dd487e7bb6b603e
   StripeUICore: f2d514e900c37436dc5427fdf2c29d68ab1c2935
   UMAppLoader: c34fd315863887c7961e059efd9475e056bdd72d
-  Yoga: 5d51a729293c0d98559c73507b54c3c949a69eea
+  Yoga: faaab08e21d56d9b7d5225d64fa23cdf72af2f74
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 872d0b7602e6897edede4fb7ef6825062beb9d69
+PODFILE CHECKSUM: a55dff50a80accf78a8db0aa86be957c63fdfc01
 
 COCOAPODS: 1.15.2

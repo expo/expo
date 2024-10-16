@@ -17,6 +17,7 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.
@@ -30,6 +31,8 @@
 #import <React/RCTRootView.h>
 
 #import "Expo_Go-Swift.h"
+
+NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 @implementation RCTSource (EXReactAppManager)
 
@@ -66,8 +69,13 @@
     _initialProps = initialProps;
     _isHeadless = NO;
     _exceptionHandler = [[EXReactAppExceptionHandler alloc] initWithAppRecord:_appRecord];
+    RCTRegisterReloadCommandListener(self);
   }
   return self;
+}
+
+- (id)reactHost {
+  return _reactAppInstance.rootViewFactory.reactHost;
 }
 
 - (void)setAppRecord:(EXKernelAppRecord *)appRecord
@@ -82,10 +90,9 @@
     return kEXReactAppManagerStatusError;
   }
   if (_loadCallback) {
-    // we have a RCTBridge load callback so we're ready to receive load events
     return kEXReactAppManagerStatusBridgeLoading;
   }
-  if (_isBridgeRunning) {
+  if (_isReactHostRunning) {
     return kEXReactAppManagerStatusRunning;
   }
   return kEXReactAppManagerStatusNew;
@@ -96,7 +103,7 @@
   return _reactRootView;
 }
 
-- (void)rebuildBridge
+- (void)rebuildHost
 {
   EXAssertMainThread();
   NSAssert((_delegate != nil), @"Cannot init react app without EXReactAppManagerDelegate");
@@ -116,23 +123,31 @@
                                                   fatalHandler:handleFatalReactError
                                                    logFunction:[self logFunction]
                                                   logThreshold:[self logLevel]];
-
-    _reactBridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:[self launchOptionsForBridge]];
-
+    
+    [self _createAppInstance];
+    [self _startObservingNotificationsForHost];
+    
     if (!_isHeadless) {
       // We don't want to run the whole JS app if app launches in the background,
       // so we're omitting creation of RCTRootView that triggers runApplication and sets up React view hierarchy.
-      _reactRootView = [[RCTRootView alloc] initWithBridge:_reactBridge
-                                                moduleName:[self applicationKeyForRootView]
-                                         initialProperties:[self initialPropertiesForRootView]];
+      _reactRootView = [self.reactAppInstance.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
     }
 
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
-
-    NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
-    [_versionManager bridgeWillStartLoading:_reactBridge];
   }
+}
+
+- (void)_createAppInstance
+{
+  __weak __typeof(self) weakSelf = self;
+  ExpoAppInstance *appInstance = [[ExpoAppInstance alloc] initWithSourceURL:[self bundleUrl] manager:_versionManager onLoad:^(NSURL *sourceURL, RCTSourceLoadBlock loadCallback) {
+    EXReactAppManager *strongSelf = weakSelf;
+    [strongSelf loadSourceForHost:sourceURL onComplete:loadCallback];
+  }];
+  
+  appInstance.rootViewFactory = [appInstance createRCTRootViewFactory];
+  _reactAppInstance = appInstance;
 }
 
 - (NSDictionary *)extraParams
@@ -173,7 +188,7 @@
 
 - (void)_invalidateAndClearDelegate:(BOOL)clearDelegate
 {
-  [self _stopObservingBridgeNotifications];
+  [self _stopObservingNotifications];
   if (_viewTestTimer) {
     [_viewTestTimer invalidate];
     _viewTestTimer = nil;
@@ -186,9 +201,8 @@
     [_reactRootView removeFromSuperview];
     _reactRootView = nil;
   }
-  if (_reactBridge) {
-    [_reactBridge invalidate];
-    _reactBridge = nil;
+  if (_reactAppInstance) {
+    _reactAppInstance = nil;
     if (_delegate) {
       [_delegate reactAppManagerDidInvalidate:self];
       if (clearDelegate) {
@@ -196,7 +210,7 @@
       }
     }
   }
-  _isBridgeRunning = NO;
+  _isReactHostRunning = NO;
 }
 
 - (BOOL)isReadyToLoad
@@ -231,15 +245,12 @@
   return [self bundleUrl];
 }
 
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
-{
+- (void)loadSourceForHost:(NSURL *)sourceURL onComplete:(RCTSourceLoadBlock)loadCallback {
   // clear any potentially old loading state
   if (_appRecord.scopeKey) {
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forScopeKey:_appRecord.scopeKey];
   }
-  [self _stopObservingBridgeNotifications];
-  [self _startObservingBridgeNotificationsForBridge:bridge];
-
+  
   if ([self enablesDeveloperTools]) {
     if ([_appRecord.appLoader supportsBundleReload]) {
       [_appRecord.appLoader forceBundleReload];
@@ -248,7 +259,7 @@
       [[EXKernel sharedInstance] reloadAppWithScopeKey:_appRecord.scopeKey];
     }
   }
-
+  
   _loadCallback = loadCallback;
   if (_appRecord.appLoader.status == kEXAppLoaderStatusHasManifestAndBundle) {
     // finish loading immediately (app loader won't call this since it's already done)
@@ -256,11 +267,6 @@
   } else {
     // wait for something else to call `appLoaderFinished` or `appLoaderFailed` later.
   }
-}
-
-- (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
-{
-  return [self.versionManager extraModulesForBridge:bridge];
 }
 
 - (void)appLoaderFinished
@@ -291,39 +297,27 @@
 
 #pragma mark - JavaScript loading
 
-- (void)_startObservingBridgeNotificationsForBridge:(RCTBridge *)bridge
+- (void)_startObservingNotificationsForHost
 {
-  NSAssert(bridge, @"Must subscribe to loading notifs for a non-null bridge");
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleJavaScriptStartLoadingEvent:)
-                                               name:RCTJavaScriptWillStartLoadingNotification
-                                             object:bridge];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
-                                               name:RCTJavaScriptDidLoadNotification
-                                             object:bridge];
+                                               name:RCTInstanceDidLoadBundle
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleJavaScriptLoadEvent:)
                                                name:RCTJavaScriptDidFailToLoadNotification
-                                             object:bridge];
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_handleReactContentEvent:)
                                                name:RCTContentDidAppearNotification
                                              object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_handleBridgeEvent:)
-                                               name:RCTBridgeWillReloadNotification
-                                             object:bridge];
 }
 
-- (void)_stopObservingBridgeNotifications
+- (void)_stopObservingNotifications
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptWillStartLoadingNotification object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:_reactBridge];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillReloadNotification object:_reactBridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTInstanceDidLoadBundle object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
 }
 
 - (void)_handleJavaScriptStartLoadingEvent:(NSNotification *)notification
@@ -339,14 +333,18 @@
 
 - (void)_handleJavaScriptLoadEvent:(NSNotification *)notification
 {
-  if ([notification.name isEqualToString:RCTJavaScriptDidLoadNotification]) {
-    _isBridgeRunning = YES;
+  if ([notification.name isEqualToString:RCTInstanceDidLoadBundle]) {
+    _isReactHostRunning = YES;
     _hasBridgeEverLoaded = YES;
-    [_versionManager bridgeFinishedLoading:_reactBridge];
+    [_versionManager hostFinishedLoading:self.reactHost];
 
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {
-      [_appRecord.viewController hideLoadingProgressWindow];
+      EX_WEAKIFY(self);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        EX_ENSURE_STRONGIFY(self);
+        [self->_appRecord.viewController hideLoadingProgressWindow];
+      });
     }
   } else if ([notification.name isEqualToString:RCTJavaScriptDidFailToLoadNotification]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
@@ -366,24 +364,12 @@
 
 - (void)_handleReactContentEvent:(NSNotification *)notification
 {
-  if ([notification.name isEqualToString:RCTContentDidAppearNotification]
-      && notification.object == self.reactRootView) {
+  if ([notification.name isEqualToString:RCTContentDidAppearNotification]) {
     EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       EX_ENSURE_STRONGIFY(self);
       [self.delegate reactAppManagerAppContentDidAppear:self];
       [self _appLoadingFinished];
-    });
-  }
-}
-
-- (void)_handleBridgeEvent:(NSNotification *)notification
-{
-  if ([notification.name isEqualToString:RCTBridgeWillReloadNotification]) {
-    EX_WEAKIFY(self);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      EX_ENSURE_STRONGIFY(self);
-      [self.delegate reactAppManagerAppContentWillReload:self];
     });
   }
 }
@@ -397,6 +383,14 @@
       [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithScopeKey:self.appRecord.scopeKey];
     }
     [self.delegate reactAppManagerFinishedLoadingJavaScript:self];
+  });
+}
+
+- (void)didReceiveReloadCommand {
+  EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    EX_ENSURE_STRONGIFY(self);
+    [self.delegate reactAppManagerAppContentWillReload:self];
   });
 }
 
@@ -430,43 +424,43 @@
 {
   if ([self enablesDeveloperTools]) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.versionManager showDevMenuForBridge:self.reactBridge];
+      [self.versionManager showDevMenuForHost:self.reactHost];
     });
   }
 }
 
-- (void)reloadBridge
+- (void)reloadApp
 {
   if ([self enablesDeveloperTools]) {
-    [(RCTBridge *) self.reactBridge reload];
+    RCTTriggerReloadCommandListeners(@"Dev menu - reload");
   }
 }
 
 - (void)disableRemoteDebugging
 {
   if ([self enablesDeveloperTools]) {
-    [self.versionManager disableRemoteDebuggingForBridge:self.reactBridge];
+    [self.versionManager disableRemoteDebuggingForHost:self.reactHost];
   }
 }
 
 - (void)toggleRemoteDebugging
 {
   if ([self enablesDeveloperTools]) {
-    [self.versionManager toggleRemoteDebuggingForBridge:self.reactBridge];
+    [self.versionManager toggleRemoteDebuggingForHost:self.reactHost];
   }
 }
 
 - (void)togglePerformanceMonitor
 {
   if ([self enablesDeveloperTools]) {
-    [self.versionManager togglePerformanceMonitorForBridge:self.reactBridge];
+    [self.versionManager togglePerformanceMonitorForHost:self.reactHost];
   }
 }
 
 - (void)toggleElementInspector
 {
   if ([self enablesDeveloperTools]) {
-    [self.versionManager toggleElementInspectorForBridge:self.reactBridge];
+    [self.versionManager toggleElementInspectorForHost:self.reactHost];
   }
 }
 
@@ -475,7 +469,10 @@
   if ([self enablesDeveloperTools]) {
     // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
     // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
-    [self.reactBridge enqueueJSCall:@"RCTNativeAppEventEmitter.emit" args:@[@"RCTDevMenuShown"]];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[[self.reactHost moduleRegistry] moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"RCTDevMenuShown" body:nil];
+#pragma clang diagnostic pop
   }
 }
 
@@ -539,13 +536,13 @@
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems
 {
-  return [self.versionManager devMenuItemsForBridge:self.reactBridge];
+  return [self.versionManager devMenuItemsForHost:self.reactHost];
 }
 
 - (void)selectDevMenuItemWithKey:(NSString *)key
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self.versionManager selectDevMenuItemWithKey:key onBridge:self.reactBridge];
+    [self.versionManager selectDevMenuItemWithKey:key host:self.reactHost bundleURL:[self bundleUrl]];
   });
 }
 
@@ -642,11 +639,6 @@
   NSString *mainCachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
   NSString *exponentCachesDirectory = [mainCachesDirectory stringByAppendingPathComponent:@"ExponentExperienceData"];
   return [[exponentCachesDirectory stringByAppendingPathComponent:scopeKey] stringByStandardizingPath];
-}
-
-- (void *)jsExecutorFactoryForBridge:(id)bridge
-{
-  return [_versionManager versionedJsExecutorFactoryForBridge:bridge];
 }
 
 @end
