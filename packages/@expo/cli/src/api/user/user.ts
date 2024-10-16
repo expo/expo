@@ -1,5 +1,5 @@
-import { promises as fs } from 'fs';
 import { gql } from '@urql/core';
+import { promises as fs } from 'fs';
 
 import { getAccessToken, getSession, setSessionAsync } from './UserSettings';
 import { getSessionUsingBrowserAuthFlowAsync } from './expoSsoLauncher';
