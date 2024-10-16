@@ -263,6 +263,10 @@ public class ReactAndroidCodeTransformer {
       String modifySource(String source) {
         // Make DevInternalSettings class "public"
         source = source.replace("\ninternal class DevInternalSettings", "\npublic class DevInternalSettings");
+        source = source.replace("companion object", "public companion object");
+        source = source.replace("interface Listener", "public interface Listener");
+        source = source.replace("fun onInternalSettingsChanged()", "public fun onInternalSettingsChanged()");
+        source = source.replace("override fun addMenuItem(title: String) = Unit", "override fun addMenuItem(title: String): Unit = Unit");
 
         return addBeforeEndOfClass(source, """
           private var exponentActivityId: Int = -1
