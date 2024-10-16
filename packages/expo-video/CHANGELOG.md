@@ -16,6 +16,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `FullscreenPlayerActivity` not closing when the system returned to the `MainActivity` after backgrounding and reopening the app via icon. ([#32044](https://github.com/expo/expo/pull/32044) by [@behenate](https://github.com/behenate))
 - [Android] Fix `Activity` auto-entering Picture in Picture after leaving the screen with video. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
 - [Android] Fix `startsPictureInPictureAutomatically` not working in fullscreen mode. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
 - [Android] Fix video pausing after auto-entering Picture in Picture. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))

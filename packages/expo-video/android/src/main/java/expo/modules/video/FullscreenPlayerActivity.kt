@@ -43,6 +43,7 @@ class FullscreenPlayerActivity : Activity() {
     }
     videoPlayer = videoView.videoPlayer
     videoPlayer?.changePlayerView(playerView)
+    VideoManager.registerFullscreenPlayerActivity(hashCode().toString(), this)
     applyAutoEnterPiP(this, videoView.autoEnterPiP)
   }
 
@@ -95,7 +96,8 @@ class FullscreenPlayerActivity : Activity() {
 
   override fun onDestroy() {
     super.onDestroy()
-    VideoManager.getVideoView(videoViewId).exitFullscreen()
+    videoView.exitFullscreen()
+    VideoManager.unregisterFullscreenPlayerActivity(hashCode().toString())
   }
 
   private fun setupFullscreenButton() {
