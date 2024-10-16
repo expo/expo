@@ -1,5 +1,6 @@
 import { SharedObject } from 'expo';
 
+import { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
 
 /**
@@ -182,44 +183,6 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 }
 
 /**
- * Handlers for events which can be emitted by the player.
- */
-export type VideoPlayerEvents = {
-  /**
-   * Handler for an event emitted when the status of the player changes.
-   */
-  statusChange(
-    newStatus: VideoPlayerStatus,
-    oldStatus: VideoPlayerStatus,
-    error?: PlayerError
-  ): void;
-  /**
-   * Handler for an event emitted when the player starts or stops playback.
-   */
-  playingChange(newIsPlaying: boolean, oldIsPlaying: boolean): void;
-  /**
-   * Handler for an event emitted when the `playbackRate` property of the player changes.
-   */
-  playbackRateChange(newPlaybackRate: number, oldPlaybackRate: number): void;
-  /**
-   * Handler for an event emitted when the `volume` property of the player changes.
-   */
-  volumeChange(newVolume: VolumeEvent, oldVolume: VolumeEvent): void;
-  /**
-   * Handler for an event emitted when the player plays to the end of the current source.
-   */
-  playToEnd(): void;
-  /**
-   * Handler for an event emitted in a given interval specified by the `timeUpdateEventInterval`.
-   */
-  timeUpdate(timeUpdate: TimeUpdate): void;
-  /**
-   * Handler for an event emitted when the current media source of the player changes.
-   */
-  sourceChange(newSource: VideoSource, previousSource: VideoSource): void;
-};
-
-/**
  * Describes the current status of the player.
  * - `idle`: The player is not playing or loading any videos.
  * - `loading`: The player is loading video data from the provided source
@@ -271,20 +234,6 @@ export type VideoSource =
  */
 export type PlayerError = {
   message: string;
-};
-
-/**
- * Player volume related information returned inside `volumeChange` event.
- */
-export type VolumeEvent = {
-  /**
-   * Float value representing the current volume.
-   */
-  volume: number;
-  /**
-   * Flag showing if the player is currently muted.
-   */
-  isMuted: boolean;
 };
 
 /**
@@ -351,39 +300,6 @@ export type DRMOptions = {
    * @platform ios
    */
   base64CertificateData?: string;
-};
-
-/**
- * Data delivered with the [`timeUpdate`](#videoplayerevents) event, contains information about the current playback progress.
- */
-export type TimeUpdate = {
-  /**
-   * Float value indicating the current playback time in seconds. Same as the [`currentTime`](#currenttime) property.
-   */
-  currentTime: number;
-  /**
-   * The exact timestamp when the currently displayed video frame was sent from the server,
-   * based on the `EXT-X-PROGRAM-DATE-TIME` tag in the livestream metadata.
-   * Same as the [`currentLiveTimestamp`](#currentlivetimestamp) property.
-   * @platform android
-   * @platform ios
-   */
-  currentLiveTimestamp: number | null;
-  /**
-   * Float value indicating the latency of the live stream in seconds.
-   * Same as the [`currentOffsetFromLive`](#currentoffsetfromlive) property.
-   * @platform android
-   * @platform ios
-   */
-  currentOffsetFromLive: number | null;
-
-  /**
-   * Float value indicating how far the player has buffered the video in seconds
-   * Same as the [`bufferedPosition`](#bufferedposition) property
-   * @platform android
-   * @platform ios
-   */
-  bufferedPosition: number;
 };
 
 /**
