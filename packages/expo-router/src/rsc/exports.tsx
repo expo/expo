@@ -87,7 +87,7 @@ export { ErrorBoundary } from '../views/ErrorBoundary';
 export const router = new Proxy(
   {},
   {
-    get: function (target, prop, receiver) {
+    get(target, prop, receiver) {
       throw new Error(
         `The router object is not available in React Server Components. Use the useRouter hook instead.`
       );

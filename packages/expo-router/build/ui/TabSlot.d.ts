@@ -16,7 +16,7 @@ export declare function useTabSlot({ detachInactiveScreens, style, renderFn, }?:
 export type TabSlotProps = UseTabSlotOptions;
 export declare function TabSlot(props: TabSlotProps): import("react").JSX.Element;
 export declare function useTab(): {
-    options: BottomTabNavigationOptions;
+    options: import("@react-navigation/bottom-tabs").BottomTabNavigationOptions;
     setOptions: (options: Partial<{}>) => void;
 };
 export declare function defaultTabsSlotRender(descriptor: TabsDescriptor, { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions): import("react").JSX.Element | null;

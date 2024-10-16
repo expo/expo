@@ -1,7 +1,7 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
 import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef } from 'react';
-import { Text, TextProps, GestureResponderEvent, Platform } from 'react-native';
+import { Text, GestureResponderEvent, Platform } from 'react-native';
 
 import { Slot } from './LinkSlot';
 import { resolveHref } from './href';

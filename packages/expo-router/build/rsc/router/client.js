@@ -16,6 +16,8 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 const common_js_1 = require("./common.js");
 const host_js_1 = require("./host.js");
+const href_1 = require("../../link/href");
+const useLinkHooks_1 = require("../../link/useLinkHooks");
 const normalizeRoutePath = (path) => {
     for (const suffix of ['/', '/index.html']) {
         if (path.endsWith(suffix)) {
@@ -197,7 +199,6 @@ function getHistory() {
         state: {},
     };
 }
-const href_1 = require("../../link/href");
 function useRouter_UNSTABLE() {
     const router = (0, react_1.useContext)(RouterContext);
     if (!router) {
@@ -325,7 +326,6 @@ function ServerRouter({ children, route }) {
 exports.ServerRouter = ServerRouter;
 exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
-const useLinkHooks_1 = require("../../link/useLinkHooks");
 function ExpoRouterLink({ href, replace, push, 
 // TODO: This does not prevent default on the anchor tag.
 relativeToDirectory, asChild, rel, target, download, 

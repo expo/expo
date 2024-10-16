@@ -73,7 +73,7 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
         stale: false;
     }>, {}, {}> | undefined>(id?: string | undefined): T_1;
     setParams(params: Partial<object | undefined>): void;
-    setOptions(options: BottomTabNavigationOptions): void;
+    setOptions(options: Partial<BottomTabNavigationOptions>): void;
 } & import("@react-navigation/native").EventConsumer<TabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<any>>> & import("@react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>>;
 export declare const TabsNavigatorContext: import("react").Context<({
     dispatch(action: Readonly<{

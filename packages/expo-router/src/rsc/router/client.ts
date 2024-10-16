@@ -31,7 +31,6 @@ import type {
   ReactNode,
   MutableRefObject,
   AnchorHTMLAttributes,
-  ReactElement,
   MouseEvent,
   ForwardedRef,
 } from 'react';
@@ -40,6 +39,12 @@ import { Text } from 'react-native';
 import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
 import type { RouteProps } from './common.js';
 import { prefetchRSC, Root, Slot, useRefetch } from './host.js';
+import type { NavigationOptions } from '../../global-state/routing.js';
+import type { Router as ClassicExpoRouterType } from '../../imperative-api';
+import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Link.js';
+import { resolveHref } from '../../link/href';
+import { useInteropClassName, useHrefAttrs } from '../../link/useLinkHooks';
+import type { Href } from '../../types.js';
 
 const normalizeRoutePath = (path: string) => {
   for (const suffix of ['/', '/index.html']) {
@@ -278,13 +283,7 @@ function getHistory() {
   };
 }
 
-import type { Router } from '../../imperative-api';
-import type { NavigationOptions } from '../../global-state/routing.js';
-import type { Href } from '../../types.js';
-import { resolveHref } from '../../link/href';
-import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Link.js';
-
-export function useRouter_UNSTABLE(): Router &
+export function useRouter_UNSTABLE(): ClassicExpoRouterType &
   RouteProps & {
     reload: () => void;
     forward: () => void;
@@ -295,7 +294,7 @@ export function useRouter_UNSTABLE(): Router &
     throw new Error('Missing Router');
   }
   const { route, changeRoute, prefetchRoute } = router;
-  const push: Router['push'] = useCallback(
+  const push: ClassicExpoRouterType['push'] = useCallback(
     <T extends string | object>(href: Href<T>, options?: NavigationOptions) => {
       if (options) {
         // TODO(Bacon): Implement options
@@ -317,7 +316,7 @@ export function useRouter_UNSTABLE(): Router &
     },
     [changeRoute]
   );
-  const replace: Router['replace'] = useCallback(
+  const replace: ClassicExpoRouterType['replace'] = useCallback(
     <T extends string | object>(href: Href<T>, options?: NavigationOptions) => {
       if (options) {
         // TODO(Bacon): Implement options
@@ -495,8 +494,6 @@ export type LinkProps<T extends string | object> = ClassicLinkProps<T> & {
 export const Link = forwardRef(ExpoRouterLink) as unknown as LinkComponent;
 
 Link.resolveHref = resolveHref;
-
-import { useInteropClassName, useHrefAttrs } from '../../link/useLinkHooks';
 
 function ExpoRouterLink(
   {

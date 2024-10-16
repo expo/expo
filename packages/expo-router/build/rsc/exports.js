@@ -89,7 +89,7 @@ Object.defineProperty(exports, "Unmatched", { enumerable: true, get: function ()
 var ErrorBoundary_1 = require("../views/ErrorBoundary");
 Object.defineProperty(exports, "ErrorBoundary", { enumerable: true, get: function () { return ErrorBoundary_1.ErrorBoundary; } });
 exports.router = new Proxy({}, {
-    get: function (target, prop, receiver) {
+    get(target, prop, receiver) {
         throw new Error(`The router object is not available in React Server Components. Use the useRouter hook instead.`);
     },
 });
