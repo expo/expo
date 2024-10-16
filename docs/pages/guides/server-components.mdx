@@ -303,6 +303,35 @@ Routes marked with `static` output will be rendered at build-time and embeded in
 
 The current default is `dynamic` rendering, we'll change the caching and optimizations to be smarter and more automatic in the future.
 
+## Secrets
+
+Server components can access secrets and server-side APIs. You can use the `process.env` object to access environment variables. You can ensure a module never runs on the client by importing the `server-only` module in your project.
+
+```tsx app/index.tsx
+// This will assert if the module runs on the client.
+import 'server-only';
+
+import { Text } from 'react-native';
+
+export default async function Index() {
+  // This code only runs on the server.
+  const data = await fetch('https://my-endpoint/', {
+    headers: {
+      Authorization: `Bearer ${process.env.SECRET}`,
+    },
+  });
+
+  // ...
+  return <div />;
+}
+```
+
+You can define the secret in your `.env` file:
+
+```env
+SECRET=123
+```
+
 ## Known Limitations
 
 > This is a very early technical preview that we're actively developing.
