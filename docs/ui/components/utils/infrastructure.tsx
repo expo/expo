@@ -30,7 +30,7 @@ const AndroidResourceClassToSpec: Record<(typeof ResourceClasses.android)[number
         c3d-standard-8
       </markdownComponents.a>{' '}
       Google Cloud machine type, powered by AMD EPYC™ processor, when new Android builders
-      infrastructure setting is enabled (default)
+      infrastructure setting is enabled (default))
     </>
   ),
 };
