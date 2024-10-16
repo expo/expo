@@ -19,7 +19,8 @@ export default (theme: ColorTheme): StackNavigationOptions => {
       color: theme === 'dark' ? darkTheme.text.default : lightTheme.text.default,
     },
     headerTintColor: theme === 'dark' ? darkTheme.icon.default : lightTheme.icon.default,
-    headerBackTitleVisible: false,
+    headerBackButtonDisplayMode: 'minimal',
+    headerBackImage: () => <></>,
     headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
   };
 };

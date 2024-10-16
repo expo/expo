@@ -642,9 +642,12 @@ class RNCWebViewManagerImpl {
       }
     }
 
-    fun setMenuCustomItems(viewWrapper: RNCWebViewWrapper, value: ReadableArray) {
+    fun setMenuCustomItems(viewWrapper: RNCWebViewWrapper, value: ReadableArray?) {
         val view = viewWrapper.webView
-        view.setMenuCustomItems(value.toArrayList() as List<Map<String, String>>)
+        when (value) {
+            null -> view.setMenuCustomItems(null)
+            else -> view.setMenuCustomItems(value.toArrayList() as List<Map<String, String>>)
+        }
     }
 
     fun setNestedScrollEnabled(viewWrapper: RNCWebViewWrapper, value: Boolean) {

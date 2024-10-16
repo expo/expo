@@ -47,8 +47,7 @@
     ]
   },
   "dependencies": {
-    "expo-dev-menu-interface": "1.8.3",
-    "semver": "^7.5.4"
+    "expo-dev-menu-interface": "1.8.3"
   },
   "devDependencies": {
     "@apollo/client": "^3.4.10",

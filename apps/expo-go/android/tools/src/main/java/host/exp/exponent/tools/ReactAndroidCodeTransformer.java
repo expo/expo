@@ -202,9 +202,8 @@ public class ReactAndroidCodeTransformer {
     });
     JAVA_FILES_TO_MODIFY.put("devsupport/BridgeDevSupportManager.java", null);
 
-    JAVA_FILES_TO_MODIFY.put("modules/core/ExceptionsManagerModule.java", new MethodVisitor() {
+    KOTLIN_FILES_TO_MODIFY.put("modules/core/ExceptionsManagerModule.kt", new KtMethodVisitor() {
 
-      @Override
       public Node visit(String methodName, MethodDeclaration n) {
         // In dev mode call the original methods. Otherwise open Expo error screen
         switch (methodName) {
@@ -263,7 +262,11 @@ public class ReactAndroidCodeTransformer {
       @Override
       String modifySource(String source) {
         // Make DevInternalSettings class "public"
-        source = source.replace("\nclass DevInternalSettings", "\npublic class DevInternalSettings");
+        source = source.replace("\ninternal class DevInternalSettings", "\npublic class DevInternalSettings");
+        source = source.replace("companion object", "public companion object");
+        source = source.replace("interface Listener", "public interface Listener");
+        source = source.replace("fun onInternalSettingsChanged()", "public fun onInternalSettingsChanged()");
+        source = source.replace("override fun addMenuItem(title: String) = Unit", "override fun addMenuItem(title: String): Unit = Unit");
 
         return addBeforeEndOfClass(source, """
           private var exponentActivityId: Int = -1
@@ -324,11 +327,6 @@ public class ReactAndroidCodeTransformer {
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle.kts"),
             "$rootDir/node_modules/@react-native/codegen",
             "${project(\":packages:react-native:ReactAndroid\").projectDir.parent}/../react-native-codegen");
-
-    // This version also gets updated in android-tasks.js
-    replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle.kts"),
-        "version = project.findProperty(\"VERSION_NAME\")?.toString()!!",
-        "version = \"" + sdkVersion + "\"");
 
     // RN uses a weird directory structure for soloader to build with Buck. Change this so that Android Studio doesn't complain.
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle.kts"),
