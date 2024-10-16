@@ -54,7 +54,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
     const requiredPackages: ResolvedPackage[] = [
       // use react-native-web/package.json to skip node module cache issues when the user installs
       // the package and attempts to resolve the module in the same process.
-      { file: 'react-native-web/package.json', pkg: 'react-native-web' },
+      // { file: 'react-native-web/package.json', pkg: 'react-native-web' },
       { file: 'react-dom/package.json', pkg: 'react-dom' },
     ];
 

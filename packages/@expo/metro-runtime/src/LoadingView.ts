@@ -5,17 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { DeviceEventEmitter } from 'react-native-web';
+import { emitter } from 'expo/src/environment/devEventEmitter';
 
 // Ensure events are sent so custom Fast Refresh views are shown.
 function showMessage(message: string, type: 'load' | 'refresh') {
-  DeviceEventEmitter.emit('devLoadingView:showMessage', {
+  emitter.emit('devLoadingView:showMessage', {
     message,
   });
 }
 
 function hide() {
-  DeviceEventEmitter.emit('devLoadingView:hide', {});
+  emitter.emit('devLoadingView:hide');
 }
 
 export default {
