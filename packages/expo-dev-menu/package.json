@@ -59,7 +59,6 @@
     "expo-dev-client-components": "2.0.2",
     "expo-module-scripts": "^4.0.0",
     "fuse.js": "^6.4.6",
-    "graphql": "^15.3.0",
     "react": "18.3.1",
     "react-native": "0.76.1",
     "url": "^0.11.0",
