@@ -186,7 +186,7 @@ class LocalizationModule : Module() {
             "languageTag" to locale.toLanguageTag(),
             // On Android `regionCode` is the same as `countryCode`, except for miui where there's an additional region picker.
             "regionCode" to getRegionCode(locale),
-            "languageRegionCode": getCountryCode(locale),
+            "languageRegionCode" to getCountryCode(locale),
             "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
             "languageCode" to locale.language,
             // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
