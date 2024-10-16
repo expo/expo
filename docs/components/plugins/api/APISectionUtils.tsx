@@ -277,6 +277,7 @@ const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>
     NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
     SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
     SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
+    BufferOptions: '/versions/v52.0.0/sdk/video/#bufferoptions-1',
   },
   'v53.0.0': {
     EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
@@ -296,6 +297,7 @@ const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>
     SharedObject: '/versions/unversioned/sdk/expo/#sharedobject',
     SharedRef: '/versions/unversioned/sdk/expo/#sharedref',
     Href: '/versions/unversioned/sdk/router/#href-1',
+    BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
   },
 };
 
