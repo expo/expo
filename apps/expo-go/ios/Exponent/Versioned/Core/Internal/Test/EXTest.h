@@ -4,17 +4,11 @@
 
 FOUNDATION_EXPORT NSNotificationName EXTestSuiteCompletedNotification;
 
-typedef enum EXTestEnvironment {
-  EXTestEnvironmentNone = 0,
-  EXTestEnvironmentLocal = 1,
-  EXTestEnvironmentCI = 2,
-} EXTestEnvironment;
-
 @interface EXTest : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithEnvironment:(EXTestEnvironment)environment NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithEnvironment:(int)environment NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (EXTestEnvironment)testEnvironmentFromString:(NSString *)testEnvironmentString;
++ (int)testEnvironmentFromString:(NSString *)testEnvironmentString;
 
 @end

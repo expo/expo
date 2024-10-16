@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAbstractLoader.h"
-#import "EXEnvironment.h"
 #import "EXFileDownloader.h"
 #import "EXHomeModuleManager.h"
 #import "EXManifestResource.h"

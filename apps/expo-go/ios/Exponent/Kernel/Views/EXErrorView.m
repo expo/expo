@@ -2,7 +2,6 @@
 
 #import "EXAbstractLoader.h"
 #import "EXErrorView.h"
-#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
 #import "EXManifestResource.h"

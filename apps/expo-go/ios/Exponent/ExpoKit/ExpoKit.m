@@ -2,7 +2,6 @@
 
 #import "ExpoKit.h"
 #import "EXViewController.h"
-#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXKernelLinkingManager.h"

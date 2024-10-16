@@ -2,7 +2,6 @@
 
 #import "EXAppFetcher+Private.h"
 #import "EXAbstractLoader.h"
-#import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXJavaScriptResource.h"
 #import "EXKernel.h"

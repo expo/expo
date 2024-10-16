@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXCachedResource.h"
-#import "EXEnvironment.h"
 #import "EXFileDownloader.h"
 #import "EXKernelUtil.h"
 #import "EXUtil.h"

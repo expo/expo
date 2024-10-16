@@ -5,6 +5,8 @@
 
 #import <os/log.h>
 
+#import "Expo_Go-Swift.h"
+
 NSNotificationName EXTestSuiteCompletedNotification = @"EXTestSuiteCompletedNotification";
 
 @interface EXTest ()
@@ -38,7 +40,7 @@ RCT_EXPORT_MODULE(ExponentTest);
 - (NSDictionary *)constantsToExport
 {
   return @{
-           @"isInCI": @(_environment == EXTestEnvironmentCI),
+           @"isInCI": @(_environment == EXTestEnvironmentCi),
            };
 }
 
@@ -85,7 +87,7 @@ RCT_REMAP_METHOD(shouldSkipTestsRequiringPermissionsAsync,
                  shouldSkipTestsRequiringPermissionsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-  resolve(@(_environment == EXTestEnvironmentCI));
+  resolve(@(_environment == EXTestEnvironmentCi));
 }
 
 #pragma mark - util
@@ -95,7 +97,7 @@ RCT_REMAP_METHOD(shouldSkipTestsRequiringPermissionsAsync,
   if ([testEnvironmentString isEqualToString:@"local"]) {
     return EXTestEnvironmentLocal;
   } else if ([testEnvironmentString isEqualToString:@"ci"]) {
-    return EXTestEnvironmentCI;
+    return EXTestEnvironmentCi;
   }
   return EXTestEnvironmentNone;
 }
