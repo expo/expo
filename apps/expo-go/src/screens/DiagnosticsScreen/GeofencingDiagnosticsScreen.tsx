@@ -209,15 +209,6 @@ export default class GeofencingScreen extends React.Component<Props, State> {
 
     return (
       <View style={styles.screen}>
-        <MapView
-          ref={this.mapViewRef}
-          style={styles.mapView}
-          initialRegion={this.state.initialRegion}
-          onPress={this.onMapPress}
-          showsUserLocation>
-          {this.renderRegions()}
-        </MapView>
-
         <View style={styles.buttons} pointerEvents="box-none">
           <View style={styles.topButtons}>
             <View style={styles.buttonsColumn}>

@@ -101,11 +101,11 @@ NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
 
 #pragma mark - EXReactAppManager
 
-- (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
+- (NSArray *)extraModules
 {
   NSMutableArray *modules = [NSMutableArray array];
 
-  [modules addObjectsFromArray:[self.versionManager extraModulesForBridge:bridge]];
+  [modules addObjectsFromArray:[self.versionManager extraModules]];
 
   return modules;
 }

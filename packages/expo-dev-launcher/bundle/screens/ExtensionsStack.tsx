@@ -13,11 +13,12 @@ export type ExtensionsStackParamList = {
   };
 };
 
-const Extensions = createStackNavigator<ExtensionsStackParamList>();
+const Extensions = createStackNavigator<ExtensionsStackParamList, 'extensions'>();
 
 export function ExtensionsStack() {
   return (
     <Extensions.Navigator
+      id="extensions"
       screenOptions={{ headerMode: 'float', gestureEnabled: false }}
       detachInactiveScreens={false}>
       <Extensions.Screen

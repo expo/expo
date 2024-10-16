@@ -4,11 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RCTInspectorPackagerConnection;
+@class RCTCxxInspectorPackagerConnection;
 
 @interface EXVersionedNetworkInterceptor : NSObject
 
-- (instancetype)initWithRCTInspectorPackagerConnection:(RCTInspectorPackagerConnection *)inspectorPackgerConnection;
+- (instancetype)initWithRCTInspectorPackagerConnection:(id)inspectorPackgerConnection;
 
 @end
 

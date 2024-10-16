@@ -1,5 +1,6 @@
-import { Fragment } from 'react';
+import { Fragment, ReactNode } from 'react';
 
+import { APIBox } from '~/components/plugins/APIBox';
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   PropData,
@@ -26,9 +27,10 @@ import {
   getTagNamesList,
   H3Code,
   getCommentContent,
+  listParams,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
+import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN, RawH4 } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -49,20 +51,51 @@ const renderTypeDeclarationTable = (
   { children, indexSignature, comment }: TypeDeclarationContentData,
   sdkVersion: string,
   index?: number
-): JSX.Element => (
+): ReactNode => (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     {index && index > 0 ? <br /> : undefined}
     <CommentTextBlock comment={comment} />
     <Table>
       <ParamsTableHeadRow />
       <tbody>
-        {children?.map(d => renderTypePropertyRow(d, sdkVersion))}
+        {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
         {indexSignature?.parameters &&
-          indexSignature.parameters.map(d => renderTypePropertyRow(d, sdkVersion))}
+          indexSignature.parameters.map(param => renderTypePropertyRow(param, sdkVersion))}
       </tbody>
     </Table>
   </Fragment>
 );
+
+const renderTypeMethodEntry = (
+  { children, signatures, comment }: TypeDeclarationContentData,
+  sdkVersion: string
+): ReactNode => {
+  const baseSignature = signatures?.[0];
+
+  if (baseSignature && baseSignature.type) {
+    return (
+      <APIBox
+        key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
+        className="!mb-0">
+        <RawH4 className="!mb-3">
+          <MONOSPACE>
+            {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
+            {` => `}
+            {renderTypeOrSignatureType({ type: baseSignature.type, sdkVersion })}
+          </MONOSPACE>
+        </RawH4>
+        <CommentTextBlock comment={comment} />
+        <Table>
+          <ParamsTableHeadRow mainCellLabel="Parameter" />
+          <tbody>
+            {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
+          </tbody>
+        </Table>
+      </APIBox>
+    );
+  }
+  return null;
+};
 
 const renderTypePropertyRow = (
   { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
@@ -100,7 +133,7 @@ const renderTypePropertyRow = (
 const renderType = (
   { name, comment, type, typeParameter }: TypeGeneralData,
   sdkVersion: string
-): JSX.Element | undefined => {
+): ReactNode => {
   if (type.declaration) {
     // Object Types
     return (
@@ -130,6 +163,11 @@ const renderType = (
       ['literal', 'intrinsic', 'reference', 'tuple'].includes(t.type)
     );
     const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
+    const propMethodDefinitions = propTypes.filter(
+      (t: TypeDefinitionData) => t.declaration?.signatures?.length
+    );
+    const propObjectDefinitions = propTypes.filter(type => !propMethodDefinitions.includes(type));
+
     if (propTypes.length) {
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
@@ -160,16 +198,25 @@ const renderType = (
                     </Fragment>
                   ))}
                 <SPAN theme="secondary">
-                  {type.type === 'union' ? 'object shaped as below' : 'extended by'}:
+                  {type.type === 'union'
+                    ? propMethodDefinitions.length > 2
+                      ? 'an anonymous method defined as described below'
+                      : 'object shaped as below'
+                    : 'extended by'}
+                  :
                 </SPAN>
               </CALLOUT>
               <br />
             </>
           ) : null}
-          {propTypes.map(
+          {propObjectDefinitions.map(
             (propType, index) =>
               propType.declaration &&
               renderTypeDeclarationTable(propType.declaration, sdkVersion, index)
+          )}
+          {propMethodDefinitions.map(
+            propType =>
+              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion)
           )}
         </div>
       );

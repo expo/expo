@@ -15,7 +15,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -60,11 +59,12 @@ public class AsyncStorageModule
   @VisibleForTesting
   AsyncStorageModule(ReactApplicationContext reactContext, Executor executor) {
     super(reactContext);
+
     // The migration MUST run before the AsyncStorage database is created for the first time.
     AsyncStorageExpoMigration.migrate(reactContext);
 
     this.executor = new SerialExecutor(executor);
-    reactContext.addLifecycleEventListener(this);
+
     // Creating the database MUST happen after the migration.
     // NOTE(kudo): ExponentAsyncStorageModule will setup the `mReactDatabaseSupplier`
      mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
@@ -82,8 +82,10 @@ public class AsyncStorageModule
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     mShuttingDown = true;
+    // ensure we close database when activity is destroyed
+    mReactDatabaseSupplier.closeDatabase();
   }
 
   @Override
@@ -92,18 +94,6 @@ public class AsyncStorageModule
     // cause a privacy violation. We're still not recovering from this well, but at least the error
     // will be reported to the server.
     mReactDatabaseSupplier.clearAndCloseDatabase();
-  }
-
-  @Override
-  public void onHostResume() {}
-
-  @Override
-  public void onHostPause() {}
-
-  @Override
-  public void onHostDestroy() {
-    // ensure we close database when activity is destroyed
-    mReactDatabaseSupplier.closeDatabase();
   }
 
   /**

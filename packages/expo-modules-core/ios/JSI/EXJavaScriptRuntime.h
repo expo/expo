@@ -6,7 +6,6 @@
 #import <React/React-Core-umbrella.h>
 
 #ifdef __cplusplus
-#import <ReactCommon/ReactCommon-umbrella.h>
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -16,7 +15,7 @@ namespace react = facebook::react;
 @class EXJavaScriptObject;
 @class EXJavaScriptSharedObject;
 
-typedef void (^JSRuntimeExecutionBlock)();
+typedef void (^JSRuntimeExecutionBlock)(void);
 
 typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
                                      NSArray<EXJavaScriptValue *> * _Nonnull arguments,

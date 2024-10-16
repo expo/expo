@@ -4,7 +4,7 @@
 
 #import <React/RCTHTTPRequestHandler.h>
 #import <React/RCTInspector.h>
-#import <React/RCTInspectorPackagerConnection.h>
+#import <React/RCTCxxInspectorPackagerConnection.h>
 #import <SocketRocket/SRWebSocket.h>
 
 #import <ExpoModulesCore/ExpoModulesCore.h>
@@ -13,7 +13,7 @@
 
 #pragma mark - RCTInspectorPackagerConnection category interface
 
-@interface RCTInspectorPackagerConnection(sendWrappedEventToAllPages)
+@interface RCTCxxInspectorPackagerConnection(sendWrappedEventToAllPages)
 
 - (BOOL)isReadyToSend;
 - (void)sendWrappedEventToAllPages:(NSString *)event;
@@ -24,13 +24,13 @@
 
 @interface EXVersionedNetworkInterceptor () <EXRequestCdpInterceptorDelegate>
 
-@property (nonatomic, strong) RCTInspectorPackagerConnection *inspectorPackgerConnection;
+@property (nonatomic, strong) RCTCxxInspectorPackagerConnection *inspectorPackgerConnection;
 
 @end
 
 @implementation EXVersionedNetworkInterceptor
 
-- (instancetype)initWithRCTInspectorPackagerConnection:(RCTInspectorPackagerConnection *)inspectorPackgerConnection
+- (instancetype)initWithRCTInspectorPackagerConnection:(id)inspectorPackgerConnection
 {
   if (self = [super init]) {
     self.inspectorPackgerConnection = inspectorPackgerConnection;
@@ -77,7 +77,7 @@
 
 #pragma mark - RCTInspectorPackagerConnection category
 
-@interface RCTInspectorPackagerConnection(sendWrappedEventToAllPages)
+@interface RCTCxxInspectorPackagerConnection(sendWrappedEventToAllPages)
 
 - (BOOL)isReadyToSend;
 - (void)sendWrappedEventToAllPages:(NSString *)event;
@@ -86,7 +86,7 @@
 
 #pragma mark - RCTInspectorPackagerConnection category implementation
 
-@implementation RCTInspectorPackagerConnection(sendWrappedEventToAllPages)
+@implementation RCTCxxInspectorPackagerConnection(sendWrappedEventToAllPages)
 
 - (BOOL)isReadyToSend
 {

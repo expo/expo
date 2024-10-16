@@ -61,9 +61,10 @@ interface AssetFile extends BaseFile {
 type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
 
 interface JSFile extends BaseFile {
-  readonly ast?: ParseResult | null;
+  readonly ast?: ParseResult | t.File | null;
   readonly type: JSFileType;
   readonly functionMap: FBSourceFunctionMap | null;
+  readonly reactServerReference?: string;
   readonly reactClientReference?: string;
   readonly expoDomComponentReference?: string;
   readonly hasCjsExports?: boolean;
@@ -176,7 +177,7 @@ function renameTopLevelModuleVariables() {
   };
 }
 
-function applyUseStrictDirective(ast: babylon.ParseResult<t.File>) {
+function applyUseStrictDirective(ast: t.File | babylon.ParseResult<t.File>) {
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
   const { directives } = ast.program;
@@ -274,7 +275,7 @@ export function applyImportSupport<TFile extends t.File>(
 }
 
 function performConstantFolding(
-  ast: babylon.ParseResult<t.File>,
+  ast: t.File | babylon.ParseResult<t.File>,
   { filename }: { filename: string }
 ) {
   // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
@@ -340,7 +341,7 @@ async function transformJS(
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
-  let ast: babylon.ParseResult<t.File> =
+  let ast: t.File | babylon.ParseResult<t.File> =
     file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
 
   // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
@@ -428,7 +429,6 @@ async function transformJS(
         // TODO: This config is optional to allow its introduction in a minor
         // release. It should be made non-optional in ConfigT or removed in
         // future.
-        // @ts-expect-error: Not on types yet (Metro 0.80.9).
         unstable_renameRequire === false
       ));
     }
@@ -521,6 +521,7 @@ async function transformJS(
         map,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
+        reactServerReference: file.reactServerReference,
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
         ...(possibleReconcile
@@ -605,6 +606,7 @@ async function transformJSWithBabel(
       transformResult.functionMap ??
       null,
     hasCjsExports: transformResult.metadata?.hasCjsExports,
+    reactServerReference: transformResult.metadata?.reactServerReference,
     reactClientReference: transformResult.metadata?.reactClientReference,
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
   };

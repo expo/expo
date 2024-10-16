@@ -67,3 +67,5 @@ internal final class NotAvailableInDevClientException: Exception {
     "\(jsMethodName) is not supported in development builds."
   }
 }
+
+// swiftlint:enable line_length

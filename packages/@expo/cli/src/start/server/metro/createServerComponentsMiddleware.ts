@@ -16,7 +16,11 @@ import { stripAnsi } from '../../../utils/ansi';
 import { memoize } from '../../../utils/fn';
 import { streamToStringAsync } from '../../../utils/stream';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
-import { createBundleUrlSearchParams, ExpoMetroOptions } from '../middleware/metroOptions';
+import {
+  createBundleUrlSearchParams,
+  ExpoMetroOptions,
+  getMetroOptionsFromUrl,
+} from '../middleware/metroOptions';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
 
@@ -92,10 +96,65 @@ export function createServerComponentsMiddleware(
     rscPathPrefix += '/';
   }
 
+  async function exportServerActionsAsync(
+    { platform, entryPoints }: { platform: string; entryPoints: string[] },
+    files: ExportAssetMap
+  ): Promise<{
+    manifest: Record<string, [string, string]>;
+  }> {
+    const uniqueEntryPoints = [...new Set(entryPoints)];
+    // TODO: Support multiple entry points in a single split server bundle...
+    const serverRoot = getMetroServerRootMemo(projectRoot);
+
+    const manifest: Record<string, [string, string]> = {};
+    for (const entryPoint of uniqueEntryPoints) {
+      const contents = await ssrLoadModuleArtifacts(entryPoint, {
+        environment: 'react-server',
+        platform,
+        // Ignore the metro runtime to avoid overwriting the original in the API route.
+        modulesOnly: true,
+        // Required
+        runModule: true,
+      });
+
+      // Naive check to ensure the module runtime is not included in the server action bundle.
+      if (contents.src.includes('The experimental Metro feature')) {
+        throw new Error(
+          'Internal error: module runtime should not be included in server action bundles: ' +
+            entryPoint
+        );
+      }
+      const relativeName = path.relative(serverRoot, entryPoint);
+      const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
+
+      const outputName = `_expo/rsc/${platform}/${safeName}`;
+      // While we're here, export the router for the server to dynamically render RSC.
+      files.set(outputName, {
+        targetDomain: 'server',
+        contents: wrapBundle(contents.src),
+      });
+
+      // Import relative to `dist/server/_expo/rsc/web/router.js`
+      manifest[entryPoint] = [relativeName, outputName];
+    }
+
+    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+    files.set(`_expo/rsc/${platform}/action-manifest.js`, {
+      targetDomain: 'server',
+      contents: 'module.exports = ' + JSON.stringify(manifest),
+    });
+
+    return { manifest };
+  }
+
   async function getExpoRouterClientReferencesAsync(
     { platform }: { platform: string },
     files: ExportAssetMap
-  ): Promise<{ reactClientReferences: string[]; cssModules: SerialAsset[] }> {
+  ): Promise<{
+    reactClientReferences: string[];
+    reactServerReferences: string[];
+    cssModules: SerialAsset[];
+  }> {
     const contents = await ssrLoadModuleArtifacts(
       'expo-router/build/rsc/router/expo-definedRouter',
       {
@@ -107,6 +166,17 @@ export function createServerComponentsMiddleware(
     // Extract the global CSS modules that are imported from the router.
     // These will be injected in the head of the HTML document for the website.
     const cssModules = contents.artifacts.filter((a) => a.type.startsWith('css'));
+
+    const reactServerReferences = contents.artifacts
+      .filter((a) => a.type === 'js')[0]
+      .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+
+    if (!reactServerReferences) {
+      throw new Error(
+        'Static server action references were not returned from the Metro SSR bundle for definedRouter'
+      );
+    }
+    debug('React client boundaries:', reactServerReferences);
 
     const reactClientReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
@@ -125,7 +195,7 @@ export function createServerComponentsMiddleware(
       contents: wrapBundle(contents.src),
     });
 
-    return { reactClientReferences, cssModules };
+    return { reactClientReferences, reactServerReferences, cssModules };
   }
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
@@ -169,7 +239,7 @@ export function createServerComponentsMiddleware(
       `The server must be started. (isExporting: ${isExporting}, baseUrl: ${baseUrl}, mode: ${mode}, routerRoot: ${routerRoot}, asyncRoutes: ${asyncRoutes})`
     );
 
-    return (file: string) => {
+    return (file: string, isServer: boolean) => {
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
         const relativeFilePath = path.relative(serverRoot, file);
@@ -203,11 +273,12 @@ export function createServerComponentsMiddleware(
         bytecode: false,
         clientBoundaries: [],
         inlineSourceMap: false,
+        environment: isServer ? 'react-server' : 'client',
+        modulesOnly: true,
+        runModule: false,
       });
 
       searchParams.set('resolver.clientboundary', String(true));
-      searchParams.set('modulesOnly', String(true));
-      searchParams.set('runModule', String(false));
 
       const clientReferenceUrl = new URL('http://a');
 
@@ -233,7 +304,7 @@ export function createServerComponentsMiddleware(
     };
   }
 
-  const rscRendererCache = new Map<string, typeof import('expo-router/src/rsc/rsc-renderer')>();
+  const rscRendererCache = new Map<string, typeof import('expo-router/build/rsc/rsc-renderer')>();
 
   async function getRscRendererAsync(platform: string) {
     // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
@@ -242,7 +313,7 @@ export function createServerComponentsMiddleware(
     }
 
     // TODO: Extract CSS Modules / Assets from the bundler process
-    const renderer = await ssrLoadModule<typeof import('expo-router/src/rsc/rsc-renderer')>(
+    const renderer = await ssrLoadModule<typeof import('expo-router/build/rsc/rsc-renderer')>(
       'expo-router/build/rsc/rsc-renderer',
       {
         environment: 'react-server',
@@ -316,9 +387,14 @@ export function createServerComponentsMiddleware(
         isExporting,
         entries: await getExpoRouterRscEntriesGetterAsync({ platform }),
         resolveClientEntry: getResolveClientEntry({ platform, engine, ssrManifest }),
-        loadServerModuleRsc: async (url) => {
-          // TODO: SSR load action code from Metro URL.
-          throw new Error('React server actions are not implemented yet');
+        async loadServerModuleRsc(urlFragment) {
+          const serverRoot = getMetroServerRootMemo(projectRoot);
+
+          debug('[SSR] loadServerModuleRsc:', urlFragment);
+
+          const options = getMetroOptionsFromUrl(urlFragment);
+
+          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options);
         },
       }
     );
@@ -327,6 +403,7 @@ export function createServerComponentsMiddleware(
   return {
     // Get the static client boundaries (no dead code elimination allowed) for the production export.
     getExpoRouterClientReferencesAsync,
+    exportServerActionsAsync,
 
     async exportRoutesAsync(
       {

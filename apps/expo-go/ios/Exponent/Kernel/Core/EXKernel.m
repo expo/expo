@@ -112,44 +112,38 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
 {
-  id destinationBridge = appManager.reactBridge;
-
-  if ([destinationBridge respondsToSelector:@selector(batchedBridge)]) {
-    id batchedBridge = [destinationBridge batchedBridge];
-    id moduleData = [batchedBridge moduleDataForName:moduleName];
-    
-    if (moduleData) {
-      return [moduleData instance];
+  id host = appManager.reactHost;
+  
+  if (host) {
+    id module = [[host moduleRegistry] moduleForName:[moduleName UTF8String]];
+    if (module) {
+      return module;
     }
   } else {
     // bridge can be null if the record is in an error state and never created a bridge.
-    if (destinationBridge) {
-      DDLogError(@"Bridge does not support the API we use to get its underlying batched bridge");
+    if (host) {
+      DDLogError(@"Host does not support the API");
     }
   }
+  
   return nil;
 }
 
 /**
  *  If the bridge has a batchedBridge or parentBridge selector, posts the notification on that object as well.
  */
-- (void)_postNotificationName: (NSNotificationName)name onAbstractBridge: (id)bridge
+- (void)_postNotificationName: (NSNotificationName)name
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:name object:bridge];
-  if ([bridge respondsToSelector:@selector(batchedBridge)]) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:name object:[bridge batchedBridge]];
-  } else if ([bridge respondsToSelector:@selector(parentBridge)]) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:name object:[bridge parentBridge]];
-  }
+  [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
 }
 
 - (BOOL)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody toApp:(EXKernelAppRecord *)appRecord
 {
-  if (!appRecord.appManager.reactBridge) {
+  if (!appRecord.appManager.reactHost) {
     return NO;
   }
-  [appRecord.appManager.reactBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                                             args:eventBody ? @[eventName, eventBody] : @[eventName]];
+  RCTEventDispatcher *dispatcher = [[appRecord.appManager.reactHost moduleRegistry] moduleForName:"EventDispatcher"];
+  [dispatcher sendAppEventWithName:eventName body:eventBody ? @[eventName, eventBody] : @[eventName]];
   return YES;
 }
 
@@ -220,7 +214,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   if (appRecord != appRecordPreviouslyVisible) {
     if (appRecordPreviouslyVisible) {
       [appRecordPreviouslyVisible.viewController appStateDidBecomeInactive];
-      [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appRecordPreviouslyVisible.appManager.reactBridge];
+      [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification];
       id<EXAppStateProtocol> appStateModule = [self nativeModuleForAppManager:appRecordPreviouslyVisible.appManager named:@"AppState"];
       if (appStateModule != nil) {
         [appStateModule setState:@"background"];
@@ -228,7 +222,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     }
     if (appRecord) {
       [appRecord.viewController appStateDidBecomeActive];
-      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appRecord.appManager.reactBridge];
+      [self _postNotificationName:kEXKernelBridgeDidForegroundNotification];
       id<EXAppStateProtocol> appStateModule = [self nativeModuleForAppManager:appRecord.appManager named:@"AppState"];
       if (appStateModule != nil) {
         [appStateModule setState:@"active"];
@@ -290,10 +284,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     if (!lastKnownState || ![newState isEqualToString:lastKnownState]) {
       if ([newState isEqualToString:@"active"]) {
         [_visibleApp.viewController appStateDidBecomeActive];
-        [self _postNotificationName:kEXKernelBridgeDidForegroundNotification onAbstractBridge:appManager.reactBridge];
+        [self _postNotificationName:kEXKernelBridgeDidForegroundNotification];
       } else if ([newState isEqualToString:@"background"]) {
         [_visibleApp.viewController appStateDidBecomeInactive];
-        [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification onAbstractBridge:appManager.reactBridge];
+        [self _postNotificationName:kEXKernelBridgeDidBackgroundNotification];
       }
     }
   }
@@ -316,17 +310,12 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 #pragma mark - EXDevMenuDelegateProtocol
 
-- (RCTBridge *)mainBridgeForDevMenuManager:(EXDevMenuManager *)manager
-{
-  return _appRegistry.homeAppRecord.appManager.reactBridge;
+- (RCTHost *)mainHostForDevMenuManager:(EXDevMenuManager *)manager {
+  return _appRegistry.homeAppRecord.appManager.reactHost;
 }
 
-- (nullable RCTBridge *)appBridgeForDevMenuManager:(EXDevMenuManager *)manager
-{
-  if (_visibleApp == _appRegistry.homeAppRecord) {
-    return nil;
-  }
-  return _visibleApp.appManager.reactBridge;
+- (nullable RCTAppDelegate *)appDelegateForDevMenuManager:(EXDevMenuManager *)manager {
+  return _appRegistry.homeAppRecord.appManager.reactAppInstance;
 }
 
 - (BOOL)devMenuManager:(EXDevMenuManager *)manager canChangeVisibility:(BOOL)visibility

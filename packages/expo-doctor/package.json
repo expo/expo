@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.10.1",
+  "version": "1.11.1",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
-    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
+    "build:prod": "ncc build ./src/index.ts -o build/ --no-cache --no-source-map-register",
     "prepare": "yarn run clean && yarn run build:prod",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
@@ -38,6 +38,7 @@
     "@expo/schemer": "1.5.2",
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.8",
+    "@vercel/ncc": "0.38.1",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
     "expo-module-scripts": "^3.3.0",
