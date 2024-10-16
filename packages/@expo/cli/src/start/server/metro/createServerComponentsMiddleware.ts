@@ -469,7 +469,7 @@ export function createServerComponentsMiddleware(
         platform,
       },
       {
-        global: nodeGlobal,
+        // global: nodeGlobal,
       }
     );
 
