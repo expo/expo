@@ -587,12 +587,12 @@ abstract class ReactNativeActivity :
   override fun requestPermissions(
     permissions: Array<String>,
     requestCode: Int,
-    listener: PermissionListener
+    listener: PermissionListener?
   ) {
     if (requestCode == ScopedPermissionsRequester.EXPONENT_PERMISSIONS_REQUEST) {
       val name = manifest!!.getName()
       scopedPermissionsRequester = ScopedPermissionsRequester(experienceKey!!)
-      scopedPermissionsRequester!!.requestPermissions(this, name ?: "", permissions, listener)
+      scopedPermissionsRequester!!.requestPermissions(this, name ?: "", permissions, listener!!)
     } else {
       super.requestPermissions(permissions, requestCode)
     }
