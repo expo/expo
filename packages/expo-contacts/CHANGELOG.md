@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed a null pointer on android when calling updateContactAsync on a contact with an image ([#32097](https://github.com/expo/expo/pull/32097) by [@freeboub](https://github.com/freeboub))
 - Fixed an issue on iOS with presentFormAsync where dates were not displayed. ([#31780](https://github.com/expo/expo/pull/31780) by [@mlecoq](https://github.com/mlecoq))
 - Fixed an iOS issue where the contact's birthday isn't displayed when the year is set. ([#31948](https://github.com/expo/expo/pull/31948) by [@chrfalch](https://github.com/chrfalch))
 - Fixed an Android issue where creating a contact with a birthday was not saved. ([#30131](https://github.com/expo/expo/issues/30131) by [@Eric013](https://github.com/Eric013))
