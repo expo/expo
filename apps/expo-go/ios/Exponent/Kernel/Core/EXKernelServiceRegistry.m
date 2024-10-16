@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelServiceRegistry.h"
-#import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXHomeModuleManager.h"
 #import "EXKernelAppRegistry.h"
@@ -15,7 +14,6 @@
 
 @interface EXKernelServiceRegistry ()
 
-@property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
@@ -33,7 +31,6 @@
 {
   if (self = [super init]) {
     // TODO: init these in some clean way
-    [self cachedResourceManager];
     [self errorRecoveryManager];
     [self linkingManager];
     [self homeModuleManager];
@@ -51,14 +48,6 @@
     _deviceInstallationUUIDService = [[EXDeviceInstallationUUIDService alloc] init];
   }
   return _deviceInstallationUUIDService;
-}
-
-- (EXCachedResourceManager *)cachedResourceManager
-{
-  if (!_cachedResourceManager) {
-    _cachedResourceManager = [[EXCachedResourceManager alloc] init];
-  }
-  return _cachedResourceManager;
 }
 
 - (EXErrorRecoveryManager *)errorRecoveryManager
@@ -120,7 +109,6 @@
     // New singleton modules should register themselves in EXModuleRegistryProvider's set
     // using EX_REGISTER_SINGLETON_MODULE macro.
     NSArray *registryServices = @[
-                                  self.cachedResourceManager,
                                   self.errorRecoveryManager,
                                   self.homeModuleManager,
                                   self.linkingManager,
