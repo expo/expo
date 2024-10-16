@@ -303,24 +303,6 @@ Routes marked with `static` output will be rendered at build-time and embeded in
 
 The current default is `dynamic` rendering, we'll change the caching and optimizations to be smarter and more automatic in the future.
 
-## Routing
-
-You can use the same routing system as before with `expo-router`.
-
-The layout API is currently a little different to Expo Router while experimental. Instead of using `<Slot>` from Expo Router, use the `children` prop that's passed to each `_layout` route.
-
-```tsx app/_layout.tsx
-export default function Layout({ children }) {
-  return (
-    <div>
-      <a href="/">Index</a>
-      <a href="/second">Second</a>
-      {children}
-    </div>
-  );
-}
-```
-
 ## Known Limitations
 
 > This is a very early technical preview that we're actively developing.
