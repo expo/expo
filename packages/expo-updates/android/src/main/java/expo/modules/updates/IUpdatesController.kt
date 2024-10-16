@@ -42,12 +42,9 @@ interface IUpdatesController {
    */
   val updatesDirectory: File?
 
-  /**
-   * The [AppContext] assigned from [UpdatesModule]
-   */
-  var appContext: WeakReference<AppContext>?
-
   val eventManager: IUpdatesEventManager
+
+  fun onEventListenerStartObserving()
 
   fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager)
 
