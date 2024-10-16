@@ -70,15 +70,34 @@ object VideoManager {
     return videoPlayersToVideoViews[videoPlayer]?.isNotEmpty() ?: false
   }
 
-  fun onAppForegrounded() = Unit
+  fun onAppForegrounded() {
+    for (videoView in videoViews.values) {
+      videoView.playerView.useController = videoView.useNativeControls
+    }
+  }
 
   fun onAppBackgrounded() {
     for (videoView in videoViews.values) {
-      if (videoView.videoPlayer?.staysActiveInBackground == false &&
-        !videoView.willEnterPiP &&
-        !videoView.isInFullscreen
-      ) {
-        videoView.videoPlayer?.player?.pause()
+      if (shouldPauseVideo(videoView)) {
+        handleVideoPause(videoView)
+      } else {
+        videoView.wasAutoPaused = false
+      }
+    }
+  }
+
+  private fun shouldPauseVideo(videoView: VideoView): Boolean {
+    return videoView.videoPlayer?.staysActiveInBackground == false &&
+      !videoView.willEnterPiP &&
+      !videoView.isInFullscreen
+  }
+
+  private fun handleVideoPause(videoView: VideoView) {
+    videoView.playerView.useController = false
+    videoView.videoPlayer?.player?.let { player ->
+      if (player.isPlaying) {
+        player.pause()
+        videoView.wasAutoPaused = true
       }
     }
   }
