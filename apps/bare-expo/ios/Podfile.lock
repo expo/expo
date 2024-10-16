@@ -2528,7 +2528,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (4.0.0-beta.9):
+  - RNScreens (4.0.0-beta.12):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2549,9 +2549,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.0.0-beta.9)
+    - RNScreens/common (= 4.0.0-beta.12)
     - Yoga
-  - RNScreens/common (4.0.0-beta.9):
+  - RNScreens/common (4.0.0-beta.12):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3207,8 +3207,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BenchmarkingModule: 0be4117c4bf255d2e21df9e4a4a486ec89c8640f
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
-  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
+  boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
+  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EASClient: 00a5bbc03a76fbcca972e7a4465f0e939d567e0d
   EXApplication: a329dec35dfc3ef30c64d1746698f209ef2b4db6
   EXAV: 1abd55830a134995b308d8ba9e3acbce67a2a666
@@ -3282,8 +3282,8 @@ SPEC CHECKSUMS:
   EXUpdates: 992e73bb96f83c8ed958949bb2475c883a3119ae
   EXUpdatesInterface: 8d16d1242225d0bdb4d8db788349b522aa8e0343
   FBLazyVector: 20c5e40f776552291d12ea1f6cb14568aeccec92
-  fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
-  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
+  glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
   hermes-engine: 367546049df3ab3b58c9b07dab01e9c7c5640728
@@ -3293,7 +3293,7 @@ SPEC CHECKSUMS:
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
-  RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
+  RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
   RCTDeprecation: ea1525e5eda35bb079a7ac260551c5e0468f9ee3
   RCTRequired: c78ef50a39a3c8060e546760c46148d9abee6388
   RCTTypeSafety: 1841770b2ab4e4325bfe2a6b5ddca520b3e6c40d
@@ -3364,7 +3364,7 @@ SPEC CHECKSUMS:
   RNFlashList: 6f169ad83e52579b7754cbbcec1b004c27d82c93
   RNGestureHandler: c374c750a0a9bacd95f5c740d146ab9428549d6b
   RNReanimated: f258d9ce122d59e36be8e516c40ed773ee46b687
-  RNScreens: 627c132735982175fde8ccaeec178afcbe62fb61
+  RNScreens: 01b042df69d92d82bd7f614715f0d7f8a888b3af
   RNSVG: 08750404f92a36162a92522cc77dee437be1d257
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90

@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import {
   darkNavigationTheme,
   lightNavigationTheme,
@@ -49,6 +49,11 @@ export function AppProviders({
   const theme = useColorScheme();
   const isDark = theme === 'dark';
 
+  const navTheme = {
+    ...(isDark ? darkNavigationTheme : lightNavigationTheme),
+    fonts: DefaultTheme.fonts,
+  };
+
   return (
     <QueryProvider>
       <ThemeProvider themePreference="no-preference">
@@ -64,7 +69,7 @@ export function AppProviders({
                           <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
                             <NavigationContainer
                               initialState={initialNavigationState}
-                              theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
+                              theme={navTheme}>
                               {children}
                             </NavigationContainer>
                           </PendingDeepLinkProvider>
