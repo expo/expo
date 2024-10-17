@@ -23,7 +23,7 @@
 - Add `routerOptions` prop and improved types of `<Navigator />`. ([#31289](https://github.com/expo/expo/pull/31289) by [@marklawlor](https://github.com/marklawlor))
 - Render the default StatusBar before screens are rendered. ([#31624](https://github.com/expo/expo/pull/31624) by [@marklawlor](https://github.com/marklawlor))
 - Add `expo-router/ui` with new `Tabs` component ([#30767](https://github.com/expo/expo/pull/30767) by [@marklawlor](https://github.com/marklawlor))
-- Add `initial` to navigation options and `<Link />`. ([#31763](https://github.com/expo/expo/pull/31763) by [@marklawlor](https://github.com/marklawlor))
+- Add `withAnchor` to navigation options and `<Link />`. ([#31763](https://github.com/expo/expo/pull/31763) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
