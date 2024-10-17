@@ -5,7 +5,7 @@ import { ScreenContainer, Screen } from 'react-native-screens';
 import { TabContext, TabsDescriptor } from './TabContext';
 import { TabListProps } from './TabList';
 import { useNavigation } from '../useNavigation';
-import { NavigatorContext, useNavigatorContext } from '../views/Navigator';
+import { useNavigatorContext } from '../views/Navigator';
 
 export type UseTabSlotOptions = ComponentProps<typeof ScreenContainer> & {
   detachInactiveScreens?: boolean;
