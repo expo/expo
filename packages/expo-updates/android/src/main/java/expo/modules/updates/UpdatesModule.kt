@@ -44,6 +44,7 @@ class UpdatesModule : Module() {
     }
 
     OnStopObserving {
+      UpdatesController.onEventListenerStopObserving()
     }
 
     AsyncFunction("reload") { promise: Promise ->
