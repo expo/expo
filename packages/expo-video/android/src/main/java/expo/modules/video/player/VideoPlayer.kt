@@ -30,7 +30,6 @@ import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
-import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
@@ -84,12 +83,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var volume: Float by IgnoreSameSet(1f) { new: Float, old: Float ->
     player.volume = if (muted) 0f else new
     userVolume = volume
-    sendEvent(PlayerEvent.VolumeChanged(VolumeEvent(new, muted), VolumeEvent(old, muted)))
+    sendEvent(PlayerEvent.VolumeChanged(new, old))
   }
 
   var muted: Boolean by IgnoreSameSet(false) { new: Boolean, old: Boolean ->
     player.volume = if (new) 0f else userVolume
-    sendEvent(PlayerEvent.VolumeChanged(VolumeEvent(volume, new), VolumeEvent(volume, old)))
+    sendEvent(PlayerEvent.MutedChanged(new, old))
   }
 
   var playbackParameters by IgnoreSameSet(
@@ -295,11 +294,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     event.emit(this, listeners.mapNotNull { it.get() })
     // Emits to the JS side
     if (event.emitToJS) {
-      emit(event.name, *event.arguments)
+      emit(event.name, event.jsEventPayload)
     }
   }
-  // MARK: IntervalUpdateEmitter
 
+  // IntervalUpdateEmitter
   override fun emitTimeUpdate() {
     appContext?.mainQueue?.launch {
       val updatePayload = TimeUpdate(player.currentPosition / 1000.0, currentOffsetFromLive, currentLiveTimestamp, bufferedPosition)
