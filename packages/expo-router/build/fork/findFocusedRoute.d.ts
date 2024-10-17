@@ -5,10 +5,18 @@ export declare function findFocusedRoute(state: InitialState): (Omit<import("@re
         index: number;
         routeNames: string[];
         history?: unknown[] | undefined;
-        routes: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>[];
+        routes: (Readonly<{
+            key: string;
+            name: string;
+            path?: string | undefined;
+        }> & Readonly<{
+            params?: Readonly<object | undefined>;
+        }> & {
+            state?: Readonly<any> | import("@react-navigation/routers").PartialState<Readonly<any>> | undefined;
+        })[];
         type: string;
         stale: false;
-    }>, "routes" | "stale">> & {
+    }>, "stale" | "routes">> & {
         routes: (Omit<import("@react-navigation/routers").Route<string, object | undefined>, "key"> & any)[];
     }> | undefined;
 }) | undefined;
