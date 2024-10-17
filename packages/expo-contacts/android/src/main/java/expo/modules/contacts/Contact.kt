@@ -2,15 +2,18 @@ package expo.modules.contacts
 
 import android.content.ContentProviderOperation
 import android.content.ContentValues
+import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.provider.ContactsContract.RawContacts
+import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import expo.modules.contacts.models.BaseModel
@@ -28,8 +31,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+
 // TODO: MaidenName Nickname
-class Contact(var contactId: String) {
+class Contact(var contactId: String, val context: Context) {
   private var rawContactId: String? = null
   var lookupKey: String? = null
   private var displayName: String? = null
@@ -512,7 +516,12 @@ class Contact(var contactId: String) {
     }
 
   private fun getThumbnailBitmap(photoUri: String?): Bitmap {
-    val path = Uri.parse(photoUri).path
-    return BitmapFactory.decodeFile(path)
+    val uri = Uri.parse(photoUri)
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
+    } else {
+      @Suppress("DEPRECATION")
+      MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+    }
   }
 }
