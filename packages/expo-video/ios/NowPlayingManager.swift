@@ -65,6 +65,8 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     if let timeObserver {
       mostRecentInteractionPlayer?.removeTimeObserver(timeObserver)
     }
+    artworkDataTask?.cancel()
+    artworkDataTask = nil
 
     self.mostRecentInteractionPlayer = player
     self.setupNowPlayingControls()
@@ -174,10 +176,10 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue // Using MPNowPlayingInfoMediaType.video causes a crash
       if let artworkUrlString = userMetadata?.artwork, let url = URL(string: artworkUrlString), artworkDataTask?.originalRequest?.url != url {
         artworkDataTask?.cancel()
-        artworkDataTask = fetchArtwork(url: url) { image in
+        artworkDataTask = fetchArtwork(url: url) { artwork in
           // We can't reuse the `nowPlayingInfo` as the actual nowPlayingInfo might've changed while the image was being fetched
           var currentNowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
-          currentNowPlayingInfo[MPMediaItemPropertyArtwork] = image
+          currentNowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
           MPNowPlayingInfoCenter.default().nowPlayingInfo = currentNowPlayingInfo
         }
       } else if userMetadata?.artwork == nil {
