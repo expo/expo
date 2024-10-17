@@ -48,11 +48,7 @@ test.beforeAll('bundle and serve', async () => {
   });
 
   console.time('npx serve');
-  await serveCmd.startAsync([
-    path.join('__e2e__', '01-rsc', 'server.js'),
-    '--port=' + randomPort(),
-    '--dist=' + inputDir,
-  ]);
+  await serveCmd.startAsync(['serve.js', '--port=' + randomPort(), '--dist=' + inputDir]);
   console.timeEnd('npx serve');
   console.log('Server running:', serveCmd.url);
 });

@@ -1,4 +1,4 @@
-import { Image, Text, View } from '../lib/react-native';
+import { Image, Text, View } from 'react-native';
 
 export async function Pokemon({ id }: { id: number }) {
   // await new Promise((res) => setTimeout(res, 1000));
