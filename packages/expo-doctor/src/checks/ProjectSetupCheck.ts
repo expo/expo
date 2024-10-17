@@ -32,7 +32,7 @@ export class ProjectSetupCheck implements DoctorCheck {
         )
       ) {
         issues.push(
-          'This project contains local Expo modules, but the "android" and "ios" directories inside the modules are gitignored. This is often due to overly general gitignore rules. Use patterns like "/android" and "/ios" in your .gitignore file to exclude only the top-level "android" and "ios" directories.'
+          `The "android" and/or "ios" directories (./modules/your-module/[android|ios]) for local Expo modules are gitignored, and they should not be. This is often due to overly general gitignore rules. Use patterns like "/android" and "/ios" in your .gitignore file to exclude only the top-level "android" and "ios" directories, and not those in the modules directory.`
         );
       }
     }
