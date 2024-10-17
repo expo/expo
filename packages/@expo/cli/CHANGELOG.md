@@ -100,6 +100,7 @@
 - Throwing an error for DOM components if no webview installed. ([#31974](https://github.com/expo/expo/pull/31974) by [@kudo](https://github.com/kudo))
 - Update Metro type definitions to `metro@0.80.12`. ([#32007](https://github.com/expo/expo/pull/32007) by [@byCedric](https://github.com/byCedric))
 - Remove `json-schema-deref-sync` dependency. ([#32048](https://github.com/expo/expo/pull/32048) by [@kitten](https://github.com/kitten))
+- Chore upgrade send to 0.19.0 ([#32131](https://github.com/expo/expo/pull/32131) by [@MWein](https://github.com/MWein))
 
 ### ⚠️ Notices
 
