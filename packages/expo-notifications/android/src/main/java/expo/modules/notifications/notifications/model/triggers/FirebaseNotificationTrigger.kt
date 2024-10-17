@@ -13,7 +13,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 /**
  * A trigger representing an incoming remote Firebase notification.
  */
-class FirebaseNotificationTrigger(private val remoteMessage: RemoteMessage) : NotificationTrigger {
+class FirebaseNotificationTrigger(val remoteMessage: RemoteMessage) : NotificationTrigger {
 
   private constructor(parcel: Parcel) : this(
     parcel.readParcelable(FirebaseNotificationTrigger::class.java.classLoader)
