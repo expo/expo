@@ -186,6 +186,7 @@ const general = [
         makePage('guides/analyzing-bundles.mdx'),
         makePage('guides/tree-shaking.mdx'),
         makePage('guides/minify.mdx'),
+        makePage('guides/why-metro.mdx'),
       ],
       { expanded: false }
     ),
