@@ -126,7 +126,7 @@ index 38e5178..9a87331 100644
  // array of arrays at position 1.
  - (void)multiGet:(NSArray<NSString *> *)keys callback:(RCTResponseSenderBlock)callback;
 diff --git a/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.mm b/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.mm
-index 6b81187..9daa5ab 100644
+index 6b81187..b1a5499 100644
 --- a/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.mm
 +++ b/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.mm
 @@ -14,7 +14,9 @@
@@ -410,12 +410,18 @@ index 6b81187..9daa5ab 100644
                                             RCTManifestFileName,
                                             &errorOut);
          if (!serialized) {
-@@ -563,7 +516,7 @@ RCT_EXPORT_MODULE()
+@@ -563,10 +516,10 @@ RCT_EXPORT_MODULE()
  {
      NSError *error;
      NSString *serialized = RCTJSONStringify(_manifest, &error);
 -    [serialized writeToFile:RCTCreateStorageDirectoryPath(RCTGetManifestFilePath())
-+  [serialized writeToFile:RCTGetManifestFilePath()
-                  atomically:YES
-                    encoding:NSUTF8StringEncoding
-                       error:&error];
+-                 atomically:YES
+-                   encoding:NSUTF8StringEncoding
+-                      error:&error];
++    [serialized writeToFile:RCTGetManifestFilePath()
++                   atomically:YES
++                     encoding:NSUTF8StringEncoding
++                        error:&error];
+     NSDictionary *errorOut;
+     if (error) {
+         errorOut = RCTMakeError(@"Failed to write manifest file.", error, nil);
