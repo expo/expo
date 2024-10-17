@@ -6,7 +6,6 @@ description: Learn about rendering React components on the server in Expo.
 
 > Experimentally available in **SDK 52 and above**. This is a very early preview and not ready for production or wide use yet. This initial version is meant to help library authors understand universal React Server Components and add support in their libraries.
 
-
 React Server Components enable a number of exciting capabilities, including:
 
 - Data fetching with async components and React Suspense.
@@ -18,13 +17,11 @@ Expo Router enables support for [React Server Components](https://react.dev/refe
 
 ## Prerequisites
 
-Your project must use Expo Router and React Native new architecture. New Architecture is not supported in Expo Go, so you'll need to [create a development build](/develop/development-builds/introduction/) or create a web app.
+Your project must use Expo Router and React Native new architecture (default in SDK 52).
 
 As of SDK 52, there is no strategy for migrating existing projects. We recommend starting with a new project.
 
 ## Usage
-
-
 
 To use React Server Components in your Expo app, you need to:
 
@@ -204,7 +201,6 @@ export default function Button({ title }) {
 }
 ```
 
-
 ### Key points
 
 - You can only pass serializable data to Server Actions as arguments.
@@ -361,7 +357,6 @@ Library authors can test their modules support Server Components by using `jest-
 > This is a very early technical preview that we're actively developing.
 
 - There is currently no stack routing. The custom layouts, `Stack`, `Tabs`, and `Drawer`, do not support Server Components yet.
-- Expo Go does not support the new architecture yet, meaning you cannot use Server Components in Expo Go.
 - Expo Snack does not support bundling Server Components.
 - EAS Update does not work with Server Components yet.
 - DOM components cannot use Server Components yet.
