@@ -145,15 +145,20 @@ public class ServerRegistrationModule: Module {
     if status == errSecItemNotFound {
       return nil
     }
-  throw Exception(name: "ERR_NOTIFICATIONS_KEYCHAIN_ACCESS", description: "Keychain access failed, status = \(status)", code: "\(status)")
+    throw keychainException(status)
   }
 
   private func storeStringWithQueries(search: CFDictionary, set: CFDictionary) throws {
     SecItemDelete(search)
     let status = SecItemAdd(set, nil)
     if status != errSecSuccess {
-      throw Exception(name: "ERR_NOTIFICATIONS_KEYCHAIN_ACCESS", description: "Keychain access failed, status = \(status)", code: "\(status)")
+      throw keychainException(status)
     }
+  }
+
+  private func keychainException(_ status: OSStatus) -> Exception {
+    let statusString = SecCopyErrorMessageString(status, nil) as? String ?? "\(status)"
+    return Exception(name: "ERR_NOTIFICATIONS_KEYCHAIN_ACCESS", description: "Keychain access failed: \(statusString)", code: "\(status)")
   }
 
   private func dataFromString(_ input: String) -> Data {
