@@ -52,6 +52,38 @@ it('should respect `unstable_settings', () => {
   expect(screen.getByTestId('orange')).toBeVisible();
 });
 
+it('can skip initialRouteName', () => {
+  renderRouter({
+    index: () => <Text testID="index">Index</Text>,
+    '(stack)/_layout': {
+      unstable_settings: {
+        initialRouteName: 'apple',
+      },
+      default: () => <Stack />,
+    },
+    '(stack)/apple': () => <Text testID="apple">Apple</Text>,
+    '(stack)/banana': () => <Text testID="banana">Banana</Text>,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  act(() => router.push('/banana'));
+  expect(screen.getByTestId('banana')).toBeVisible();
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeVisible();
+
+  act(() => router.push('/banana', { withAnchor: true }));
+  expect(screen.getByTestId('banana')).toBeVisible();
+  act(() => router.back());
+  expect(screen.getByTestId('apple')).toBeVisible();
+
+  act(() => router.replace('/'));
+
+  act(() => router.push('/banana', { withAnchor: false }));
+  expect(screen.getByTestId('banana')).toBeVisible();
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeVisible();
+});
+
 describe('hooks only', () => {
   it('can handle navigation between routes', async () => {
     renderRouter({

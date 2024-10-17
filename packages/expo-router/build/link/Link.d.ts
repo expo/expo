@@ -71,6 +71,8 @@ export interface LinkProps<T extends string | object> extends Omit<TextProps, 'h
     replace?: boolean;
     /** Should push the current route  */
     push?: boolean;
+    /** If this route loads a new navigator, should its initialRouteName also be loaded. Default: False */
+    withAnchor?: boolean;
     /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
     className?: string;
     onPress?: (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => void;
