@@ -23,6 +23,7 @@
 - Add `routerOptions` prop and improved types of `<Navigator />`. ([#31289](https://github.com/expo/expo/pull/31289) by [@marklawlor](https://github.com/marklawlor))
 - Render the default StatusBar before screens are rendered. ([#31624](https://github.com/expo/expo/pull/31624) by [@marklawlor](https://github.com/marklawlor))
 - Add `expo-router/headless` with new `Tabs` component ([#30767](https://github.com/expo/expo/pull/30767) by [@marklawlor](https://github.com/marklawlor))
+- Add `sitemap` option to `expo-router` config plugin to disable sitemap. ([#31701](https://github.com/expo/expo/pull/31701) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
