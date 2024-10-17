@@ -2,6 +2,7 @@ import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 
 import { env } from './env';
 import { gteSdkVersion } from './versions';
+import { DoctorConfigChecks } from '../checks/checks.types';
 
 /**
  * Get the doctor config from the package.json.
@@ -17,13 +18,28 @@ import { gteSdkVersion } from './versions';
  *        "enabled": true,
  *        "exclude": ["/foo/", "bar"]
  *        "listUnknownPackages": true,
+ *      },
+ *      "checks": {
+ *        "ExpoConfigCommonIssueCheck": {
+ *          "enabled": true
+ *        },
+ *        "AppConfigFieldsNotSyncedToNativeProjectsCheck": {
+ *          "enabled": false
+ *        }
  *      }
  *    }
  *  }
  * ```
  **/
 
-export function getDoctorConfig(pkg: any) {
+export function getDoctorConfig(pkg: any): {
+  reactNativeDirectoryCheck?: {
+    enabled?: boolean;
+    exclude?: string[];
+    listUnknownPackages?: boolean;
+  };
+  checks?: DoctorConfigChecks;
+} {
   return pkg?.expo?.doctor ?? {};
 }
 
@@ -69,4 +85,27 @@ export function getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg: any)
   }
 
   return listUnknownPackages;
+}
+
+/**
+ * Get status of a specific check
+ * @param pkg package.json
+ * @param checkName name of the check
+ * @returns true if the check is enabled, false otherwise
+ */
+export function isCheckEnabled(pkg: any, checkName: string): boolean {
+  const config = getDoctorConfig(pkg);
+  return config.checks?.[checkName]?.enabled ?? true;
+}
+
+/**
+ * Get the list of disabled checks
+ * @param pkg package.json
+ * @returns list of disabled checks
+ */
+export function getDisabledChecks(pkg: any): string[] {
+  const config = getDoctorConfig(pkg);
+  return Object.entries(config.checks ?? {})
+    .filter(([_, value]) => value.enabled === false)
+    .map(([key, _]) => key);
 }
