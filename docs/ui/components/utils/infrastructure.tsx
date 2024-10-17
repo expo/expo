@@ -9,13 +9,12 @@ const AndroidResourceClassToSpec: Record<(typeof ResourceClasses.android)[number
       <markdownComponents.a href="https://cloud.google.com/compute/docs/general-purpose-machines#n2_machine_types">
         n2-standard-4
       </markdownComponents.a>{' '}
-      Google Cloud machine type when new Android builders infrastructure setting is disabled in
-      project setings, or faster{' '}
+      or
       <markdownComponents.a href="https://cloud.google.com/compute/docs/general-purpose-machines#c3d_machine_types">
         c3d-standard-4
       </markdownComponents.a>{' '}
-      Google Cloud machine type, powered by AMD EPYC™ processor, when new Android builders
-      infrastructure setting is enabled (default))
+      (default) Google Cloud machine type, depending on the "New Android Builds Infrastructure"
+      setting in project settings.)
     </>
   ),
   large: (
@@ -24,13 +23,12 @@ const AndroidResourceClassToSpec: Record<(typeof ResourceClasses.android)[number
       <markdownComponents.a href="https://cloud.google.com/compute/docs/general-purpose-machines#n2_machine_types">
         n2-standard-8
       </markdownComponents.a>{' '}
-      Google Cloud machine type when new Android builders infrastructure setting is disabled in
-      project setings, or faster{' '}
+      or
       <markdownComponents.a href="https://cloud.google.com/compute/docs/general-purpose-machines#c3d_machine_types">
         c3d-standard-8
       </markdownComponents.a>{' '}
-      Google Cloud machine type, powered by AMD EPYC™ processor, when new Android builders
-      infrastructure setting is enabled (default))
+      (default) Google Cloud machine type, depending on the "New Android Builds Infrastructure"
+      setting in project settings.)
     </>
   ),
 };
