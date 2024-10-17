@@ -22,18 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPathFromState = exports.getStateFromPath = exports.addEventListener = exports.getRootURL = exports.getInitialURL = void 0;
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("../fork/extractPathFromURL");
-const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
-exports.getPathFromState = getPathFromState_1.default;
-const getStateFromPath_1 = __importDefault(require("../fork/getStateFromPath"));
-exports.getStateFromPath = getStateFromPath_1.default;
+const getPathFromState_1 = require("../fork/getPathFromState");
+Object.defineProperty(exports, "getPathFromState", { enumerable: true, get: function () { return getPathFromState_1.getPathFromState; } });
+const getStateFromPath_1 = require("../fork/getStateFromPath");
+Object.defineProperty(exports, "getStateFromPath", { enumerable: true, get: function () { return getStateFromPath_1.getStateFromPath; } });
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 function getInitialURLWithTimeout() {
     return Promise.race([
