@@ -40,7 +40,7 @@ test.beforeAll('bundle and serve', async () => {
 
   // Duplicate the index.html file for an SPA-style export.
   fs.copyFileSync(
-    path.join(projectRoot, inputDir, 'client/index.html'),
+    path.join(projectRoot, inputDir, 'server/index.html'),
     path.join(projectRoot, inputDir, 'client/second.html')
   );
 

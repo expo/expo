@@ -60,7 +60,7 @@ describe('exports with serializer plugins', () => {
 
     // "_expo/static/js/web/_layout-e67451b6ca1f415eec1baf46b17d16c6.js.map",
     expect(mapFiles).toEqual(
-      ['_layout', 'index', 'index', 'modal'].map((file) =>
+      ['_layout', 'entry', 'index', 'modal'].map((file) =>
         expect.stringMatching(new RegExp(`_expo\\/static\\/js\\/web\\/${file}-.*\\.js\\.map`))
       )
     );
@@ -77,7 +77,6 @@ describe('exports with serializer plugins', () => {
       // Ensure the bundle does not contain a source map reference
       const jsBundle = fs.readFileSync(path.join(outputDir, file!), 'utf8');
       expect(jsBundle).toMatch(/^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/.*\.js\.map$/gm);
-      // expect(jsBundle).toMatch(/^\/\/\# sourceURL=\/_expo\/static\/js\/web\/index-.*\.js$/gm);
       const mapFile = jsBundle.match(
         /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/.*\.js\.map)$/m
       )?.[1];

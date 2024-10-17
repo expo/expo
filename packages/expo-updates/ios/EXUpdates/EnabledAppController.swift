@@ -120,6 +120,10 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     start()
   }
 
+  public func onEventListenerStartObserving() {
+    stateMachine.sendContextToJS()
+  }
+
   // MARK: - StartupProcedureDelegate
 
   func startupProcedureDidLaunch(_ startupProcedure: StartupProcedure) {

@@ -19,15 +19,6 @@ import ExpoModulesCore
 @objc(EXUpdatesDevLauncherController)
 @objcMembers
 public final class DevLauncherAppController: NSObject, InternalAppControllerInterface, UpdatesExternalInterface {
-  public var appContext: AppContext? {
-    get {
-      return eventManager.appContext
-    }
-    set {
-      eventManager.appContext = newValue
-    }
-  }
-
   public let eventManager: UpdatesEventManager = NoOpUpdatesEventManager()
 
   private let logger = UpdatesLogger()
@@ -105,6 +96,10 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       return true
     }
     return launcher.isUsingEmbeddedAssets()
+  }
+
+  public func onEventListenerStartObserving() {
+    eventManager.sendStateMachineContextEvent(context: UpdatesStateContext())
   }
 
   public func reset() {

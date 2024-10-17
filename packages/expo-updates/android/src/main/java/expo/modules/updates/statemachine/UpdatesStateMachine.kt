@@ -58,7 +58,7 @@ class UpdatesStateMachine(
     state = UpdatesStateValue.Idle
     context = context.resetCopyWithIncrementedSequenceNumber()
     logger.info("Updates state change: reset, context = ${context.json}")
-    sendChangeEventToJS(UpdatesStateEvent.Restart())
+    sendContextToJS()
   }
 
   /**
@@ -68,8 +68,7 @@ class UpdatesStateMachine(
     if (transition(event)) {
       context = reduceContext(context, event)
       logger.info("Updates state change: ${event.type}, context = ${context.json}")
-      // Send change event
-      sendChangeEventToJS(event)
+      sendContextToJS()
     }
   }
 
@@ -91,8 +90,8 @@ class UpdatesStateMachine(
     return true
   }
 
-  private fun sendChangeEventToJS(event: UpdatesStateEvent) {
-    eventManager.sendStateChangeEvent(event.type, context)
+  fun sendContextToJS() {
+    eventManager.sendStateMachineContextEvent(context)
   }
 
   companion object {

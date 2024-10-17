@@ -1,10 +1,10 @@
 import {
   NavigationContainerRefWithCurrent,
-  getPathFromState,
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import * as SplashScreen from 'expo-splash-screen';
+import equal from 'fast-deep-equal';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 import { Platform } from 'react-native';
 
@@ -23,12 +23,14 @@ import {
 import { getSortedRoutes } from './sort-routes';
 import { UrlObject, getRouteInfoFromState } from '../LocationProvider';
 import { RouteNode } from '../Route';
-import { deepEqual, getPathDataFromState } from '../fork/getPathFromState';
-import { ResultState } from '../fork/getStateFromPath';
+import { getPathDataFromState, getPathFromState } from '../fork/getPathFromState';
+// import { ResultState } from '../fork/getStateFromPath';
 import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
 import { getRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
+
+type ResultState = any;
 
 /**
  * This is the global state for the router. It is used to keep track of the current route, and to provide a way to navigate to other routes.
@@ -175,7 +177,7 @@ export class RouterStore {
 
     const nextRouteInfo = store.getRouteInfo(state);
 
-    if (!deepEqual(this.routeInfo, nextRouteInfo)) {
+    if (!equal(this.routeInfo, nextRouteInfo)) {
       store.routeInfo = nextRouteInfo;
     }
   }
@@ -188,6 +190,7 @@ export class RouterStore {
           ...this.linking?.config,
           preserveDynamicRoutes: asPath,
           preserveGroups: asPath,
+          shouldEncodeURISegment: false,
         });
       },
       state

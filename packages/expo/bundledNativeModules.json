@@ -1,7 +1,7 @@
 {
   "@expo/metro-runtime": "~3.2.1",
   "@expo/vector-icons": "^14.0.2",
-  "@react-native-async-storage/async-storage": "2.0.0",
+  "@react-native-async-storage/async-storage": "1.23.1",
   "@react-native-community/datetimepicker": "8.2.0",
   "@react-native-masked-view/masked-view": "0.3.1",
   "@react-native-community/netinfo": "11.4.1",
@@ -86,7 +86,7 @@
   "lottie-react-native": "7.0.0",
   "react": "18.3.1",
   "react-dom": "18.3.1",
-  "react-native": "0.76.0-rc.4",
+  "react-native": "0.76.0-rc.6",
   "react-native-web": "~0.19.13",
   "react-native-gesture-handler": "~2.20.0",
   "react-native-get-random-values": "~1.11.0",
