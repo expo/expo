@@ -83,7 +83,7 @@ If you will be working with the iOS project, ensure **ruby 2.7** is installed on
 All Expo SDK packages can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory, so you can edit them in-place and see the changes in the running app.
 
 1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
-2. Start the TypeScript build in watch mode: `yarn build`
+2. Start the TypeScript build in watch mode: `yarn build` (skip this if such script is not present)
 3. Edit code in that package's `src/` directory
 4. Play with your changes on a simulator or device through `bare-expo`:
    - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
@@ -95,12 +95,13 @@ All Expo SDK packages can be found in the `packages/` directory. These packages 
    - Android Studio: `yarn edit:android`
    - Xcode: `yarn edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change
+6. Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
 
 ### Finding a task to work on
 
 If you don't have something in mind already, the best way to find something to help with is ["Issue accepted" label](https://github.com/expo/expo/issues?q=is%3Aissue+is%3Aopen+label%3A%22Issue+accepted%22).
 
-Note that we generally do not accept PRs that bump versions of native dependencies. The Expo team handles bumping these dependencies as part of our release process for each Expo SDK. The process for pulling in a new version and adequately requires a fair amount of context on how Expo Go works.
+Note that we generally do not accept PRs that bump versions of native dependencies. The Expo team handles bumping these dependencies as part of our release process for each Expo SDK. The process for pulling in a new version requires a fair amount of context on how Expo Go works.
 
 ### Style
 
@@ -152,6 +153,7 @@ Our docs are made with [Next.js](https://github.com/vercel/next.js). They're loc
 2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`).
 3. Navigate to the docs you want to edit: `cd docs/pages/`.
 4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
+5. Package API docs are generated from sources. To regenerate the docs, run `et generate-docs-api-data -p <package-name>`.
 
 ## 📝 Writing a Commit Message
 
