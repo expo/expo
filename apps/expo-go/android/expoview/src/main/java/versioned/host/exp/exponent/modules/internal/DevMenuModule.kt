@@ -229,8 +229,6 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    * workaround to determine the state by executor name.
    */
   private val isJsExecutorInspectable: Boolean by lazy {
-    val activity = currentActivity as? ReactNativeActivity
-//    activity?.jsExecutorName == "JSIExecutor+HermesRuntime"
     true
   }
 

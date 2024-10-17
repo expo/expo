@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.ReactSurfaceImpl
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.ReactNativeHostWrapper
@@ -156,7 +157,7 @@ class Kernel : KernelInterface() {
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
   fun startJSKernel(activity: Activity?) {
     activityContext = activity
-    SoLoader.init(context, false)
+    SoLoader.init(context, OpenSourceMergedSoMapping)
     synchronized(this) {
       if (isStarted && !hasError) {
         return
@@ -570,7 +571,7 @@ class Kernel : KernelInterface() {
     isOptimistic: Boolean,
     forceCache: Boolean = false
   ) {
-    SoLoader.init(context, false)
+    SoLoader.init(context, OpenSourceMergedSoMapping)
     if (options == null) {
       manifestUrlToOptions.remove(manifestUrl)
     } else {

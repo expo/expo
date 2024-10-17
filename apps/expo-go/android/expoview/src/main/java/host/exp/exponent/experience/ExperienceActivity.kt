@@ -22,6 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
 import com.facebook.react.runtime.ReactSurfaceView
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.greenrobot.event.EventBus
@@ -251,7 +252,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   }
 
   private fun soLoaderInit() {
-    SoLoader.init(this, false)
+    SoLoader.init(this, OpenSourceMergedSoMapping)
   }
 
   open fun shouldCheckOptions() {

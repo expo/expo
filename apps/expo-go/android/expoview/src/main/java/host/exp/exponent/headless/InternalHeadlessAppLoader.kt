@@ -8,6 +8,7 @@ import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import expo.modules.ReactNativeHostWrapper
 import expo.modules.apploader.AppLoaderProvider
@@ -171,7 +172,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
 
   private fun soLoaderInit() {
     if (detachSdkVersion != null) {
-      SoLoader.init(context, false)
+      SoLoader.init(context, OpenSourceMergedSoMapping)
     }
   }
 

@@ -18,6 +18,9 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
+    'amazon-cognito-identity-js': {
+      source: 'https://github.com/aws-amplify/amplify-js.git',
+    },
     'react-native-view-shot': {
       source: 'https://github.com/gre/react-native-view-shot.git',
     },
