@@ -132,7 +132,7 @@ const withIosExpoPlugins = (config, {
   config.ios.bundleIdentifier = bundleIdentifier;
   return (0, _configPlugins().withPlugins)(config, [[_configPlugins().IOSConfig.BundleIdentifier.withBundleIdentifier, {
     bundleIdentifier
-  }], _configPlugins().IOSConfig.Swift.withSwiftBridgingHeader, _configPlugins().IOSConfig.Swift.withNoopSwiftFile, _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile, _configPlugins().IOSConfig.BuildProperties.withJsEnginePodfileProps,
+  }], _configPlugins().IOSConfig.Swift.withSwiftBridgingHeader, _configPlugins().IOSConfig.Swift.withNoopSwiftFile, _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile, _configPlugins().IOSConfig.BuildProperties.withJsEnginePodfileProps, _configPlugins().IOSConfig.BuildProperties.withNewArchEnabledPodfileProps,
   // Entitlements
   _configPlugins().IOSConfig.Entitlements.withAssociatedDomains,
   // XcodeProject
@@ -152,7 +152,7 @@ const withAndroidExpoPlugins = (config, props) => {
   config.android.package = props.package;
   return (0, _configPlugins().withPlugins)(config, [
   // gradle.properties
-  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps,
+  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps, _configPlugins().AndroidConfig.BuildProperties.withNewArchEnabledGradleProps,
   // settings.gradle
   _configPlugins().AndroidConfig.Name.withNameSettingsGradle,
   // project build.gradle

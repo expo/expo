@@ -2,6 +2,7 @@ import {
   AndroidConfig,
   ConfigPlugin,
   History,
+  WarningAggregator,
   withAndroidManifest,
   withDangerousMod,
 } from 'expo/config-plugins';
@@ -18,7 +19,17 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
   [
     {
       propName: 'newArchEnabled',
-      propValueGetter: (config) => config.android?.newArchEnabled?.toString(),
+      propValueGetter: (config) => {
+        if (config.android?.newArchEnabled !== undefined) {
+          WarningAggregator.addWarningAndroid(
+            'withAndroidBuildProperties',
+            'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.',
+            'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
+          );
+        }
+
+        return config.android?.newArchEnabled?.toString();
+      },
     },
     {
       propName: 'android.minSdkVersion',

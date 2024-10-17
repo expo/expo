@@ -58,6 +58,20 @@ export const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin<ExpoCo
   'withJsEngineGradleProps'
 );
 
+/**
+ * A config-plugin to update `android/gradle.properties` from the `newArchEnabled` in expo config
+ */
+export const withNewArchEnabledGradleProps = createBuildGradlePropsConfigPlugin<ExpoConfig>(
+  [
+    {
+      propName: 'newArchEnabled',
+      propValueGetter: (config) =>
+        (config.android?.newArchEnabled ?? config.newArchEnabled ?? false).toString(),
+    },
+  ],
+  'withNewArchEnabledGradleProps'
+);
+
 export function updateAndroidBuildPropertiesFromConfig<
   SourceConfigType extends BuildPropertiesConfig,
 >(

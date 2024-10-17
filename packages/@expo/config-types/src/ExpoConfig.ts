@@ -239,6 +239,10 @@ export interface ExpoConfig {
    * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
+  /**
+   * Enable React Native new architecture.
+   */
+  newArchEnabled?: boolean;
   ios?: IOS;
   android?: Android;
   web?: Web;
@@ -519,6 +523,10 @@ export interface IOS {
   runtimeVersion?:
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
+  /**
+   * Enable React Native new architecture for iOS.
+   */
+  newArchEnabled?: boolean;
 }
 /**
  * Configuration that is specific to the iOS platform icons.
@@ -763,6 +771,10 @@ export interface Android {
   runtimeVersion?:
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
+  /**
+   * Enable React Native new architecture for Android.
+   */
+  newArchEnabled?: boolean;
 }
 export interface AndroidIntentFiltersData {
   /**
