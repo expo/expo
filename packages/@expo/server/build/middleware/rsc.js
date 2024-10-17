@@ -82,6 +82,7 @@ function getRscMiddleware(options) {
                 contentType: req.headers.get('Content-Type') ?? '',
                 decodedBody: req.headers.get('X-Expo-Params'),
                 onError: options.onError,
+                headers: headersToRecord(req.headers),
             };
             const readable = await options.renderRsc(args);
             return new Response(readable, {
@@ -110,4 +111,11 @@ function getRscMiddleware(options) {
     };
 }
 exports.getRscMiddleware = getRscMiddleware;
+function headersToRecord(headers) {
+    const record = {};
+    for (const [key, value] of headers.entries()) {
+        record[key] = value;
+    }
+    return record;
+}
 //# sourceMappingURL=rsc.js.map

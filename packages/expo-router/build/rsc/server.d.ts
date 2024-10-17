@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { ReactNode } from 'react';
+export declare const REQUEST_HEADERS = "__expo_requestHeaders";
 import type { PathSpec } from './path';
 type Config = any;
 type Elements = Record<string, ReactNode>;
@@ -58,5 +59,6 @@ type RenderStore = {
 export declare const runWithRenderStore: <T>(renderStore: RenderStore, fn: () => T) => T;
 export declare function rerender(input: string, params?: unknown): void;
 export declare function getContext<RscContext extends Record<string, unknown> = Record<string, unknown>>(): RscContext;
+export declare function unstable_headers(): Headers;
 export {};
 //# sourceMappingURL=server.d.ts.map
