@@ -2,7 +2,6 @@ package expo.modules.updates
 
 import android.content.Context
 import com.facebook.react.ReactApplication
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
