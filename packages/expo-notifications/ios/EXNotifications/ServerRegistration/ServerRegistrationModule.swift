@@ -157,8 +157,14 @@ public class ServerRegistrationModule: Module {
   }
 
   private func dataFromString(_ input: String) -> Data {
+    if let data = input.data(using: .utf8) {
+      return data
+    }
+    // If the above fails, find the fastest encoding that can be used without loss,
+    // guaranteeing a non-null result, and a safe force-unwrapping
+    let fastEncoding = input.fastestEncoding
     // swiftlint:disable:next force_unwrapping
-    return input.data(using: .utf8)!
+    return input.data(using: fastEncoding)!
   }
 
   private let kEXDeviceInstallationUUIDKey = "EXDeviceInstallationUUIDKey"
