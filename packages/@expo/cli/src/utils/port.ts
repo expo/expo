@@ -4,6 +4,7 @@ import freeportAsync from 'freeport-async';
 import { env } from './env';
 import { CommandError } from './errors';
 import * as Log from '../log';
+import { isInteractive } from './interactive';
 
 /** Get a free port or assert a CLI command error. */
 export async function getFreePortAsync(rangeStart: number): Promise<number> {
@@ -109,6 +110,11 @@ export async function choosePortAsync(
     }
 
     Log.log(`\u203A ${message}`);
+
+    if (!isInteractive()) {
+      return port;
+    }
+
     const { confirmAsync } = require('./prompts') as typeof import('./prompts');
     const change = await confirmAsync({
       message: `Use port ${port} instead?`,
