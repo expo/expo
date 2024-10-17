@@ -53,7 +53,7 @@ class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegat
       return super.getNotifyId(request)
     }
     val experienceId = if (request.trigger is FirebaseNotificationTrigger) {
-      (request.trigger as FirebaseNotificationTrigger).getRemoteMessage().data["scopeKey"]
+      (request.trigger as FirebaseNotificationTrigger).remoteMessage.data["scopeKey"]
     } else if (request is ScopedNotificationRequest) {
       request.experienceScopeKeyString
     } else {
