@@ -28,7 +28,10 @@ export default function BackgroundTaskScreen() {
   const [isWorkerRunning, setIsWorkerRunning] = React.useState<boolean>(false);
   const [isTaskScheduled, setIsTaskScheduled] = React.useState<boolean>(false);
   const [status, setStatus] = React.useState<BackgroundTask.BackgroundTaskStatus | null>(null);
-  const [log, setLog] = React.useState<BackgroundTask.BackgroundTaskRunInfo[] | undefined>([]);
+  const [log, setLog] = React.useState<BackgroundTask.BackgroundTaskLogEntry[] | undefined>([]);
+  const [taskInfos, setTaskInfos] = React.useState<BackgroundTask.BackgroundTaskInfo[] | undefined>(
+    []
+  );
   const appState = useAppState(null);
 
   React.useEffect(() => {
@@ -56,12 +59,14 @@ export default function BackgroundTaskScreen() {
     const isRegistered = await BackgroundTask.isTaskRegisteredAsync(BACKGROUND_TASK_IDENTIFIER);
     const isScheduled = await BackgroundTask.isTaskScheduled(BACKGROUND_TASK_IDENTIFIER);
     const isWorkerRunning = await BackgroundTask.isWorkerRunning();
-    const taskLog = await BackgroundTask.getTaskInfoLog(BACKGROUND_TASK_IDENTIFIER);
+    const taskLog = await BackgroundTask.getLogItems();
+    const tasks = await BackgroundTask.getScheduledTaskInfos();
     console.log({ status, isScheduled, isRegistered, isWorkerRunning });
     setStatus(status);
     setIsWorkerRunning(isWorkerRunning);
     setIsTaskScheduled(isScheduled);
     setLog(taskLog);
+    setTaskInfos(tasks);
     await refreshLastFetchDateAsync();
   };
 
@@ -80,12 +85,17 @@ export default function BackgroundTaskScreen() {
   };
 
   const cancelTaskAsync = async () => {
-    await BackgroundTask.cancelTaskAsync(BACKGROUND_TASK_IDENTIFIER);
+    await BackgroundTask.cancelScheduledTaskAsync(BACKGROUND_TASK_IDENTIFIER);
     checkStatusAsync();
   };
 
   const cleanTasks = async () => {
-    await BackgroundTask.cleanScheduledTasks();
+    await BackgroundTask.clearScheduledTasks();
+    checkStatusAsync();
+  };
+
+  const cleanLog = async () => {
+    await BackgroundTask.clearTaskLog();
     checkStatusAsync();
   };
 
@@ -104,15 +114,24 @@ export default function BackgroundTaskScreen() {
   const renderLog = () => {
     return (
       <View style={{ maxHeight: 150 }}>
-        <Text>Task log:</Text>
-        <ScrollView style={{ borderColor: 'gray', borderWidth: 1, padding: 4 }}>
-          {log?.map((logItem, index) => (
-            <Text key={index}>
-              {format('yyyy-MM-dd hh:mm:ss:SSS', new Date(logItem.date))} -{' '}
-              {BackgroundTask.BackgroundTaskInfoStatus[logItem.status]}
-            </Text>
-          ))}
-        </ScrollView>
+        <View>
+          <Text>Scheduled Tasks:</Text>
+          <ScrollView style={{ borderColor: 'gray', borderWidth: 1, padding: 4 }}>
+            {taskInfos?.map((info, index) => <Text key={index}>{info.taskIdentifier}</Text>)}
+          </ScrollView>
+        </View>
+        <View style={{ marginVertical: 10 }} />
+        <View>
+          <Text>Task log:</Text>
+          <ScrollView style={{ borderColor: 'gray', borderWidth: 1, padding: 4 }}>
+            {log?.map((logItem, index) => (
+              <Text key={index}>
+                {format('yyyy-MM-dd hh:mm:ss:SSS', new Date(logItem.date))} -{' '}
+                {BackgroundTask.BackgroundTaskInfoStatus[logItem.status]}
+              </Text>
+            ))}
+          </ScrollView>
+        </View>
       </View>
     );
   };
@@ -155,7 +174,11 @@ export default function BackgroundTaskScreen() {
         title="Check Background Task Status"
         onPress={checkStatusAsync}
       />
-      <Button buttonStyle={styles.button} title="Clean Tasks" onPress={cleanTasks} />
+      <View style={{ flexDirection: 'row' }}>
+        <Button buttonStyle={styles.button} title="Clear Tasks" onPress={cleanTasks} />
+        <View style={{ width: 10 }} />
+        <Button buttonStyle={styles.button} title="Clear Log" onPress={cleanLog} />
+      </View>
       <View style={styles.textContainer}>{renderLog()}</View>
     </View>
   );

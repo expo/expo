@@ -1,8 +1,13 @@
 package expo.modules.backgroundtask
 
+import android.os.Debug
 import android.util.Log
-import kotlinx.coroutines.CompletableDeferred
 import androidx.work.ListenableWorker.*
+import expo.modules.apploader.AppLoaderProvider
+import expo.modules.apploader.HeadlessAppLoader
+import expo.modules.apploader.HeadlessAppLoader.AppConfigurationError
+import expo.modules.core.interfaces.Consumer
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -106,6 +111,24 @@ class BackgroundTaskService {
      */
     fun launchHandler(work: BackgroundTaskWork): Result {
       Log.i(TAG,"Callback from OS for background task")
+     /* val loader = AppLoaderProvider.getLoader("react-native-headless", work.applicationContext)
+      if (loader != null) {
+        try {
+          loader.loadApp(work.applicationContext, HeadlessAppLoader.Params("bgtask", "bgtask"),
+            {}, { success: Boolean? ->
+            if (!success!!) {
+              // Failed
+              Log.i(TAG, "failed")
+            } else {
+              // Success - what to do?
+              Log.i(TAG, "Works")
+              var s = loader.isRunning("bgtask")
+            }
+          })
+        } catch (ignored: AppConfigurationError) {
+          ignored.message?.let { Log.e(TAG, it) }
+        }
+      }*/
 
       // Check if we have an already running task
       if (runTasksCompletable != null) {

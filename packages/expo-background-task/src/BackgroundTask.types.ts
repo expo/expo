@@ -73,7 +73,11 @@ export enum BackgroundTaskInfoStatus {
 /**
  * Defines the serialized information about a background task run.
  */
-export type BackgroundTaskRunInfo = {
+export type BackgroundTaskLogEntry = {
+  /**
+   * Task identifier
+   */
+  identifier: string;
   /**
    * The date and time when the task was started
    */

@@ -1,31 +1,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const TASK_INFO_STORE_KEY = 'expo-background-task-info';
-const getTaskInfoKey = (taskIdentifier) => `${TASK_INFO_STORE_KEY}:${taskIdentifier}`;
-const TASK_INFO_RUN_INFO_STORE_KEY = 'expo-background-task-info-run_info';
-const getTaskRunInfoKey = (taskIdentifier) => `${TASK_INFO_RUN_INFO_STORE_KEY}:${taskIdentifier}`;
-const TASK_INFO_IDENTIFIER_LIST_STORE_KEY = 'expo-background-task-info-identifier_list';
+const TASK_INFO_KEY = 'expo-background-task-info';
+const TASK_LOG_KEY = 'expo-background-task-log';
 const DEFAULT_INTERVAL_MINUTES = 60 * 24; // 24 hours - once every day
 // @needsAudit
 /**
- * When creating a new task, we need to save the task info to the database.
- * @param taskIdentifier Identifier of the task
- * @param options Options for the task
+ * Removes all tasks from the task repository
  * */
-export const cleanRepository = async () => {
-    console.info("BackgroundTaskRepository.cleanRepository should only be called if you really know what you're doing.");
-    const taskIdenfiers = await getIdentifierList();
-    console.log('BackgroundTaskRepository.cleanRepository', { taskIdenfiers });
-    //   await AsyncStorage.removeItem(getTaskInfoKey('background-task'));
-    //   await AsyncStorage.removeItem(getTaskRunInfoKey('background-task'));
-    if (taskIdenfiers) {
-        for (const identifier of taskIdenfiers) {
-            console.log('BackgroundTaskRepository.cleanRepository - deleting', { identifier });
-            await AsyncStorage.removeItem(getTaskInfoKey(identifier));
-            await AsyncStorage.removeItem(getTaskRunInfoKey(identifier));
-        }
-        console.log('BackgroundTaskRepository.cleanRepository - deleting identifiers');
-        setIdentifierList([]);
-    }
+export const clearScheduledTasks = async () => {
+    console.info("BackgroundTaskRepository.cleanTasks should only be called if you really know what you're doing.");
+    console.log('BackgroundTaskRepository.cleanRepository');
+    await AsyncStorage.removeItem(TASK_INFO_KEY);
+};
+// @needsAudit
+/**
+ * Removes all task log items from the task repository
+ * */
+export const clearTaksLog = async () => {
+    console.info("BackgroundTaskRepository.cleanTaskLogItems should only be called if you really know what you're doing.");
+    console.log('BackgroundTaskRepository.cleanRepository');
+    await AsyncStorage.removeItem(TASK_LOG_KEY);
 };
 // @needsAudit
 /**
@@ -33,7 +26,7 @@ export const cleanRepository = async () => {
  * @param taskIdentifier Identifier of the task
  * @param options Options for the task
  * */
-export const createTaskInfo = async (taskIdentifier, options) => {
+export const createScheduledTaskInfo = async (taskIdentifier, options) => {
     console.log('BackgroundTaskRepository.createTaskInfo', { taskIdentifier });
     if (!taskIdentifier || typeof taskIdentifier !== 'string') {
         throw Error(`BackgroundTask.createTaskInfo: 'taskIdentifier' argument must be a non-empty string.`);
@@ -48,98 +41,68 @@ export const createTaskInfo = async (taskIdentifier, options) => {
         taskIdentifier,
     };
     // Store task info
-    await AsyncStorage.setItem(getTaskInfoKey(taskIdentifier), JSON.stringify(taskInfo));
+    const currentList = JSON.parse((await AsyncStorage.getItem(TASK_INFO_KEY)) ?? '[]');
+    currentList.push(taskInfo);
+    await AsyncStorage.setItem(TASK_INFO_KEY, JSON.stringify(currentList));
     console.log('BackgroundTaskRepository.createTaskInfo - storing', { taskInfo });
-    // Update list of identifiers
-    const identifierList = [...(await getIdentifierList()), taskIdentifier];
-    await setIdentifierList(identifierList);
-    return identifierList.length;
+    return taskInfo;
 };
-// @needsAudit
 /**
- * Logs task info to the task repository
- * @param taskIdentifier Identifier to log
- * @param taskRunInfo Task run info to log
+ * Returns all task infos from the task repository
+ * @returns List of task infos
  */
-export const addTaskInfoLog = async (taskIdentifier, taskRunInfo) => {
-    console.log('BackgroundTaskRepository.addTaskInfoLog', { taskIdentifier, taskRunInfo });
-    if (!taskIdentifier || typeof taskIdentifier !== 'string') {
-        throw Error(`BackgroundTask.storeTaskInfoRunInfo: 'taskIdentifier' argument must be a non-empty string.`);
-    }
-    if (!taskRunInfo || typeof taskRunInfo !== 'object') {
-        throw Error(`BackgroundTask.storeTaskInfoRunInfo: 'taskRunInfo' argument must be an object.`);
-    }
-    // Store task run info
-    const logListJson = (await AsyncStorage.getItem(getTaskRunInfoKey(taskIdentifier))) ?? '[]';
-    const logList = JSON.parse(logListJson);
-    logList.push(taskRunInfo);
-    await AsyncStorage.setItem(getTaskRunInfoKey(taskIdentifier), JSON.stringify(logList));
+export const getScheduledTaskInfos = async () => {
+    return JSON.parse((await AsyncStorage.getItem(TASK_INFO_KEY)) ?? '[]');
 };
-// @needsAudit
-/**
- * Returns the log for a task from the task repository
- * @param taskIdentifier
- * @returns Task run info log
- */
-export const getTaskInfoLog = async (taskIdentifier) => {
+export const getScheduledTaskInfo = async (taskIdentifier) => {
     if (!taskIdentifier || typeof taskIdentifier !== 'string') {
-        throw Error(`BackgroundTask.getTaskInfoLog: 'taskIdentifier' argument must be a non-empty string.`);
+        throw Error(`BackgroundTask.deleteTaskInfo: 'taskIdentifier' argument must be a non-empty string.`);
     }
-    const logListJson = (await AsyncStorage.getItem(getTaskRunInfoKey(taskIdentifier))) ?? '[]';
-    return JSON.parse(logListJson);
+    const taskInfos = await getScheduledTaskInfos();
+    return taskInfos.find((t) => t.taskIdentifier === taskIdentifier) ?? null;
 };
 // @needsAudit
 /**
  * Cancels a scheduled task by its identifier
  * @param taskIdentifier Identifier of task to cancel
- * @returns Number of tasks left in the list
+ * @returns Deleted item(s)
  */
-export const deleteTaskInfo = async (taskIdentifier) => {
+export const deleteScheduledTaskInfo = async (taskIdentifier) => {
     console.log('BackgroundTaskRepository.deleteTaskInfo', { taskIdentifier });
     if (!taskIdentifier || typeof taskIdentifier !== 'string') {
         throw Error(`BackgroundTask.deleteTaskInfo: 'taskIdentifier' argument must be a non-empty string.`);
     }
     // Delete from store!
-    await AsyncStorage.removeItem(getTaskInfoKey(taskIdentifier));
-    // Update list of identifiers
-    const identifierList = (await getIdentifierList()).filter((id) => id !== taskIdentifier);
-    await setIdentifierList(identifierList);
-    console.log('BackgroundTaskRepository.deleteTaskInfo', { identifierList });
-    return identifierList.length;
+    const currentList = JSON.parse((await AsyncStorage.getItem(TASK_INFO_KEY)) ?? '[]');
+    const deleted = currentList.splice(currentList.findIndex((t) => t.taskIdentifier === taskIdentifier), 1);
+    await AsyncStorage.setItem(TASK_INFO_KEY, JSON.stringify(currentList));
+    return deleted;
 };
+// @needsAudit
 /**
- * Returns task info from the task repository
- * @param taskIdentifier Identifier of the task to get info for
- * @returns Task info or null if not found
+ * Logs task info to the task repository
+ * @param taskRunInfo Task run info to log
  */
-export const getTaskInfo = async (taskIdentifier) => {
-    if (!taskIdentifier || typeof taskIdentifier !== 'string') {
-        throw Error(`BackgroundTask.getTaskInfo: 'taskIdentifier' argument must be a non-empty string.`);
+export const addLogItem = async (taskRunInfo) => {
+    console.log('BackgroundTaskRepository.addTaskInfoLog', { taskRunInfo });
+    if (!taskRunInfo || typeof taskRunInfo !== 'object') {
+        throw Error(`BackgroundTask.storeTaskInfoRunInfo: 'taskRunInfo' argument must be an object.`);
     }
-    const taskInfo = await AsyncStorage.getItem(getTaskInfoKey(taskIdentifier));
-    if (!taskInfo) {
-        return null;
+    if (!taskRunInfo.identifier || typeof taskRunInfo.identifier !== 'string') {
+        throw Error(`BackgroundTask.storeTaskInfoRunInfo: 'taskIdentifier' argument must be a non-empty string.`);
     }
-    return JSON.parse(taskInfo);
+    // Store task run info
+    const currentList = JSON.parse((await AsyncStorage.getItem(TASK_LOG_KEY)) ?? '[]');
+    currentList.push(taskRunInfo);
+    await AsyncStorage.setItem(TASK_LOG_KEY, JSON.stringify(currentList));
 };
+// @needsAudit
 /**
- * Returns all task identifiers stored in the task repository. This includes all tasks that are
- * scheduled to run or have been run for one-time tasks.
+ * Returns the log for all tasks from the task repository
+ * @returns Task run info log
  */
-export const getTaskIdentifiers = async () => getIdentifierList();
-/**
- * Internal accessor for getting the list of identifiers
- */
-const getIdentifierList = async () => {
-    const identifiersValue = (await AsyncStorage.getItem(TASK_INFO_IDENTIFIER_LIST_STORE_KEY)) ?? '[]';
-    return JSON.parse(identifiersValue);
-};
-/**
- *  Internal setter for the list of identifiers
- * @param identifiers List of identifiers
- */
-const setIdentifierList = async (identifiers) => {
-    console.log('BackgroundTaskRepository.setIdentifierList', { identifiers });
-    await AsyncStorage.setItem(TASK_INFO_IDENTIFIER_LIST_STORE_KEY, JSON.stringify(identifiers));
+export const getLogItems = async () => {
+    const logListJson = (await AsyncStorage.getItem(TASK_LOG_KEY)) ?? '[]';
+    return JSON.parse(logListJson);
 };
 //# sourceMappingURL=BackgroundTaskRepository.js.map
