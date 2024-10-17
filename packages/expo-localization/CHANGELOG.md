@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix invalid `regionCode` response on iOS. ([#32081](https://github.com/expo/expo/pull/32081) by [@aleqsio](https://github.com/aleqsio))
 - Add missing `react` peer dependencies for isolated modules. ([#30474](https://github.com/expo/expo/pull/30474) by [@byCedric](https://github.com/byCedric))
 - Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
