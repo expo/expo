@@ -72,7 +72,10 @@ export class AppConfigFieldsNotSyncedToNativeProjectsCheck implements DoctorChec
         `This project contains native project folders but also has native configuration properties in ${configFileName}, indicating it is configured to use Prebuild. When the android/ios folders are present, ${prebuildMessage} ${unsyncedFields.join(', ')}. \n`
       );
 
-      advice = `Add '/android' and '/ios' to your ${ignoreFile} file if you intend to use CNG / Prebuild. ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`;
+      advice = `Add '/android' and '/ios' to your ${ignoreFile} file if you intend to use CNG / Prebuild.`;
+      advice = isBuildingOnEAS
+        ? `${advice} ${learnMore('https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build')}`
+        : advice;
     }
 
     return {
