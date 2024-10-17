@@ -2,7 +2,6 @@ package expo.modules.updates.events
 
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updates.statemachine.UpdatesStateEventType
 
 enum class UpdatesJSEvent(val eventName: String) {
   StateChange("Expo.nativeUpdatesStateChangeEvent")
@@ -10,10 +9,5 @@ enum class UpdatesJSEvent(val eventName: String) {
 
 interface IUpdatesEventManager {
   var eventEmitter: EventEmitter?
-  var shouldEmitJsEvents: Boolean
-
-  fun sendStateChangeEvent(
-    eventType: UpdatesStateEventType,
-    context: UpdatesStateContext
-  )
+  fun sendStateMachineContextEvent(context: UpdatesStateContext)
 }

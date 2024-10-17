@@ -1,4 +1,4 @@
-import { Link } from 'expo-router/build/rsc/exports';
+import { Link } from 'expo-router';
 
 import { Counter } from '../components/counter';
 import { Image, Text, View } from '../lib/react-native';

@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import execa from 'execa';
 import * as fs from 'fs';
 import { remove } from 'fs-extra';
@@ -14,6 +15,8 @@ function execaLog(command: string, args: string[], options: execa.Options) {
   //   console.log(`Running: ${command} ${args.join(' ')}`);
   return execa(command, args, options);
 }
+
+jest.unmock('resolve-from');
 
 describe('export embed for RSC iOS', () => {
   const projectRoot = getRouterE2ERoot();
@@ -31,7 +34,7 @@ describe('export embed for RSC iOS', () => {
           'export:embed',
           //
           '--entry-file',
-          path.join(projectRoot, './index.js'),
+          resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
           //
           '--bundle-output',
           `./${outputName}/index.js`,

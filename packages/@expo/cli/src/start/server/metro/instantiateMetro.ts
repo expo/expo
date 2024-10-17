@@ -131,12 +131,12 @@ export async function loadMetroConfigAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
-    webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled:
       (exp.experiments?.reactServerComponents || exp.experiments?.reactCanary) ?? false,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
+    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponents,
     getMetroBundler,
   });
 
