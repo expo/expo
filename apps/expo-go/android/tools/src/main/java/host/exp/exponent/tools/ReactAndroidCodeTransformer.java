@@ -11,9 +11,6 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.comments.LineComment;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
@@ -23,12 +20,9 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.UnionType;
-import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
-import com.github.javaparser.ast.visitor.VoidVisitor;
 
 import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,6 +53,8 @@ public class ReactAndroidCodeTransformer {
     String modifySource(final String source) {
       return source;
     };
+
+    public abstract Node visit(String methodName, MethodDeclaration n);
   }
 
   private static final Map<String, MethodVisitor> JAVA_FILES_TO_MODIFY = new HashMap<>();
@@ -280,6 +276,11 @@ public class ReactAndroidCodeTransformer {
           }
         """);
       }
+
+      @Override
+      public Node visit(String methodName, MethodDeclaration n) {
+        return n;
+      }
     });
 
     KOTLIN_FILES_TO_MODIFY.put("modules/debug/interfaces/DeveloperSettings.kt", new KtMethodVisitor() {
@@ -287,6 +288,11 @@ public class ReactAndroidCodeTransformer {
       @Override
       String modifySource(String source) {
         return addBeforeEndOfClass(source, "public fun getExponentActivityId(): Int");
+      }
+
+      @Override
+      public Node visit(String methodName, MethodDeclaration n) {
+        return n;
       }
     });
 
