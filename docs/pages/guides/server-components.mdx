@@ -4,28 +4,26 @@ sidebar_title: React Server Components
 description: Learn about rendering React components on the server in Expo.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 
 > Experimentally available in **SDK 52 and above**. This is a very early preview and not ready for production or wide use yet. This initial version is meant to help library authors understand universal React Server Components and add support in their libraries.
 
-Expo Router enables support for [React Server Components](https://react.dev/reference/rsc/server-components) on all platforms.
 
-React Server Components enable a number of exciting capabilities including:
+React Server Components enable a number of exciting capabilities, including:
 
 - Data fetching with async components and React Suspense.
 - Working with secrets and server-side APIs.
 - Server-side rendering (SSR) for SEO and performance.
 - Build-time rendering to remove unused JS code.
 
-This is an early preview of a feature that will be enabled by default in Expo Router.
+Expo Router enables support for [React Server Components](https://react.dev/reference/rsc/server-components) on all platforms. This is an early preview of a feature that will be enabled by default in Expo Router.
 
 ## Usage
 
-Your project must be using Expo Router and React Native new architecture. New Architecture is not supported in Expo Go so you'll need to create a development build or use the web.
+Your project must use Expo Router and React Native new architecture. New Architecture is not supported in Expo Go, so you'll need to [create a development build](/develop/development-builds/introduction/) or use the web.
 
-As of SDK 52, there's no strategy to migrate existing projects, we recommend starting from a new project.
+As of SDK 52, there is no strategy for migrating existing projects. We recommend starting with a new project.
 
-Enable the flag in the project Expo config:
+Enable the flag in the project app config:
 
 ```json app.json
 {
@@ -37,9 +35,7 @@ Enable the flag in the project Expo config:
 }
 ```
 
-Ensure the entry module is `expo-router/entry` (default).
-
-Create an initial route `app/index.tsx`:
+Ensure the entry module is `expo-router/entry` (default) in **package.json**. Then, create an initial route **app/index.tsx**:
 
 ```tsx app/index.tsx
 // This is a server component.
@@ -50,7 +46,7 @@ export default function Index() {
 }
 ```
 
-## Moving between routes
+## Navigating between routes
 
 You can navigate between routes by using the `<Link />` API from Expo Router (not all props are supported yet).
 
@@ -68,9 +64,9 @@ export default function Index() {
 
 ## Layout Routes
 
-> Complex built-in layouts such as Stack, and Tabs are not supported yet. They'll fallback to a `<Slot />`.
+> Complex built-in layouts such as Stack and Tabs are not yet supported. They will fallback to a `<Slot />`.
 
-Layout routes (`app/_layout.js`) can be used to wrap all routes in a common layout.
+Layout routes (**app/_layout.tsx**) can wrap all routes in a common layout.
 
 ```tsx app/_layout.tsx
 import { View } from 'react-native';
@@ -99,6 +95,7 @@ import { Image, Text, View } from 'react-native';
 export async function Pokemon() {
   const res = await fetch('https://pokeapi.co/api/v2/pokemon/2');
   const json = await res.json();
+  
   return (
     <View style={{ padding: 8, borderWidth: 1 }}>
       <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{json.name}</Text>
@@ -119,7 +116,7 @@ export async function Pokemon() {
 
 ## Client Components
 
-Server Components run in the server and have no access to native APIs or React Context. To use these features, you can create a Client Component. Client Components are created by marking files with the `"use client"` directive at the top.
+Since Server Components cannot access native APIs or React Context, you can create a Client Component to use these features. Client Components are created by marking files with the `"use client"` directive at the top.
 
 ```tsx components/button.tsx
 'use client';
@@ -140,7 +137,7 @@ export default function Index() {
 }
 ```
 
-- You cannot pass functions as props to Server Components. You can only pass serializable data.
+You cannot pass functions as props to Server Components. You can only pass serializable data.
 
 ## Server Actions
 
@@ -166,7 +163,7 @@ export default function Index() {
 }
 ```
 
-We can create a client component to invoke our server action:
+You can create a client component to invoke the server action:
 
 ```tsx components/button.tsx
 'use client';
@@ -177,7 +174,7 @@ export default function Button({ title, onPress }) {
 }
 ```
 
-Server Actions can also be defined in a standalone file (with "use server" at the top) and imported from client components:
+Server Actions can also be defined in a standalone file (with `"use server"` at the top) and imported from client components:
 
 ```tsx components/server-actions.tsx
 'use server';
@@ -245,7 +242,7 @@ Use this in favor of the `Head` component from `expo-router/head`.
 
 You can stream back partial UI from the server while waiting for data to load by using React Suspense.
 
-In the following example, we'll instantly return a `Loading...` text on the client, and when the `<MediumTask>` finishes rendering one second later, it will replace the text with `Medium task done!`. The `<ExpensiveTask>` will take three seconds to load, and when it finishes, it will replace the text with `Expensive task done!`.
+In the following example, a `Loading...` text is returned instantly on the client, and when the `<MediumTask>` finishes rendering one second later, it will replace the text with `Medium task done!`. The `<ExpensiveTask>` will take three seconds to load, and when it finishes, it will replace the text with `Expensive task done!`.
 
 ```tsx app/index.tsx
 import { Suspense } from 'react';
@@ -276,15 +273,13 @@ async function ExpensiveTask() {
 }
 ```
 
-If you remove the `Suspense` wrapper around `<ExpensiveTask>`, you'll see that the `Loading...` waits for both components to finish rendering before updating the UI. This enables you to control how incremental you want your loading to be. Sometimes it makes sense to wait for everything to load at once (most of the time), and sometimes it makes sense to stream back UI as soon as you have (like the text response in ChatGPT).
+If you remove the `Suspense` wrapper around `<ExpensiveTask>`, you'll see that the `Loading...` waits for both components to finish rendering before updating the UI. This enables you to control how incremental you want your loading to be. Sometimes, it makes sense to wait for everything to load at once (most of the time), and sometimes, it makes sense to stream back UI as soon as you have (like the text response in ChatGPT).
 
 ## Build-time rendering
 
-Expo Router supports two different modes of rendering server components: build-time rendering and request-time rendering.
+Expo Router supports two different modes of rendering server components: build-time rendering and request-time rendering. These modes can be indicated on a per-route basis by using the `unstable_settings` export:
 
-These modes can be indicated on a per-route basis by using the `unstable_settings` export:
-
-```js app/index.tsx
+```tsx app/index.tsx
 import { Text, View } from 'react-native';
 
 export const unstable_settings = {
@@ -333,15 +328,15 @@ export default async function Index() {
 }
 ```
 
-You can define the secret in your `.env` file:
+You can define the secret in your **.env** file:
 
-```env
+```text .env
 SECRET=123
 ```
 
 ## Platform detection
 
-To detect which platform your code is bundled for, use the `process.env.EXPO_OS` envrionment variable. For example `process.env.EXPO_OS === 'ios'`. Prefer this to `Platform.OS` as `react-native` is not fully optimized for React Server Components yet and therefore won't work as expected.
+To detect which platform your code is bundled for, use the `process.env.EXPO_OS` environment variable. For example, `process.env.EXPO_OS === 'ios'`. Prefer this to `Platform.OS` as `react-native` is not fully optimized for React Server Components yet and won't work as expected.
 
 You can detect if code is running in the server by performing a `typeof window === 'undefined'` check. This will always return `true` on client devices and `false` on the server.
 
@@ -371,13 +366,13 @@ Library authors can test their modules support server components by using `jest-
 
 To deploy your website to production, run: `npx expo export -p web`.
 
-You can host the website locally with the [express server adapter](https://docs.expo.dev/router/reference/api-routes/#express).
+You can host the website locally with the [express server adapter](/router/reference/api-routes/#express).
 
 ### Native
 
-Unlike standard native builds, React Server Components requires an additional server to be generated and hosted. This server is responsible for rendering the server components and serving the data to the native app. We'll generate this server code during the native build in order to optimize and link static assets to the binary.
+Unlike standard native builds, React Server Components requires an additional server to be generated and hosted. This server is responsible for rendering the server components and serving the data to the native app. We'll generate this server code during the native build to optimize and link static assets to the binary.
 
-First, set the `origin` in your `app.json` to the URL of your server:
+Set the `origin` in your app config to the URL of your server:
 
 ```json app.json
 {
@@ -395,6 +390,6 @@ First, set the `origin` in your `app.json` to the URL of your server:
 }
 ```
 
-To deploy your native app to production, you'll need to build it for production with `npx expo run:ios --configuration Release` or `npx expo run:android --variant release`. This will generate the required server code to `./.expo/server/<platform>` along with building and embedding any assets which could potentially be local-first into the binary.
+To deploy your native app to production, you'll need to build it for production with `npx expo run:android --variant release` or `npx expo run:ios --configuration Release`. This will generate the required server code to `./.expo/server/<platform>` along with building and embedding any assets that could potentially be local-first into the binary.
 
-You can host the website locally with the [express server adapter](https://docs.expo.dev/router/reference/api-routes/#express), substituting the `dist` directory for the `.expo/server/<platform>` directory.
+You can host the website locally with the [express server adapter](/router/reference/api-routes/#express), substituting the **dist** directory for the `.expo/server/<platform>` directory.
