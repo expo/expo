@@ -29,6 +29,7 @@ const Route_1 = require("../Route");
 const hooks_1 = require("../hooks");
 const href_1 = require("../link/href");
 const url_1 = require("../utils/url");
+const Navigator_1 = require("../views/Navigator");
 __exportStar(require("./TabContext"), exports);
 __exportStar(require("./TabList"), exports);
 __exportStar(require("./TabSlot"), exports);
@@ -61,21 +62,23 @@ function useTabsWithTriggers({ triggers, ...options }) {
     }
     const initialRouteName = routeNode.initialRouteName;
     const { children, triggerMap } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, initialRouteName, parentTriggerMap, routeInfo, contextKey);
-    const { state, descriptors, navigation, NavigationContent: RNNavigationContent, } = (0, native_1.useNavigationBuilder)(TabRouter_1.ExpoTabRouter, {
+    const navigatorContext = (0, native_1.useNavigationBuilder)(TabRouter_1.ExpoTabRouter, {
         children,
         ...options,
         triggerMap,
         id: contextKey,
         initialRouteName,
     });
+    const { state, descriptors, navigation, NavigationContent: RNNavigationContent, } = navigatorContext;
+    const navigatorContextValue = (0, react_1.useMemo)(() => ({
+        ...navigatorContext,
+        contextKey,
+        router: TabRouter_1.ExpoTabRouter,
+    }), [navigatorContext, contextKey, TabRouter_1.ExpoTabRouter]);
     const NavigationContent = (0, useComponent_1.useComponent)((children) => (<TabContext_1.TabTriggerMapContext.Provider value={triggerMap}>
-      <TabContext_1.TabsNavigatorContext.Provider value={navigation}>
-        <TabContext_1.TabsDescriptorsContext.Provider value={descriptors}>
-          <TabContext_1.TabsStateContext.Provider value={state}>
-            <RNNavigationContent>{children}</RNNavigationContent>
-          </TabContext_1.TabsStateContext.Provider>
-        </TabContext_1.TabsDescriptorsContext.Provider>
-      </TabContext_1.TabsNavigatorContext.Provider>
+      <Navigator_1.NavigatorContext.Provider value={navigatorContextValue}>
+        <RNNavigationContent>{children}</RNNavigationContent>
+      </Navigator_1.NavigatorContext.Provider>
     </TabContext_1.TabTriggerMapContext.Provider>));
     return { state, descriptors, navigation, NavigationContent };
 }
