@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix project setup check running on EAS Build and failing ([#32106](https://github.com/expo/expo/pull/32106) by [@brentvatne](https://github.com/brentvatne))
-
 ### 💡 Others
+
+## 1.11.2 — 2024-10-17
+
+### 🐛 Bug fixes
+
+- Fix project setup check running on EAS Build and failing ([#32106](https://github.com/expo/expo/pull/32106) by [@brentvatne](https://github.com/brentvatne))
 
 ## 1.11.1 — 2024-10-15
 
