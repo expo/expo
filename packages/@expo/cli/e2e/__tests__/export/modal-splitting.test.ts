@@ -62,7 +62,7 @@ describe('exports static splitting with modal', () => {
   // Ensure the correct script tags are injected.
   it('has eager script tags in html', async () => {
     expect(await getScriptTagsAsync('index.html')).toEqual(
-      ['index', '_layout', 'index'].map(expectChunkPathMatching)
+      ['entry', '_layout', 'index'].map(expectChunkPathMatching)
     );
   });
 
