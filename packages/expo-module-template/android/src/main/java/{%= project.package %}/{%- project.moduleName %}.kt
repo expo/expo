@@ -39,9 +39,11 @@ class <%- project.moduleName %> : Module() {
     // the view definition: Prop, Events.
     View(<%- project.viewName %>::class) {
       // Defines a setter for the `name` prop.
-      Prop("name") { view: <%- project.viewName %>, prop: String ->
-        println(prop)
+      Prop("url") { view: <%- project.viewName %>, url: String ->
+        view.webView.loadUrl(url.toString())
       }
+      // Defines an event that the view can send to JavaScript.
+      Events("onLoad")
     }
   }
 }
