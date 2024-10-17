@@ -354,17 +354,17 @@ You can detect if code is running in the server by performing a `typeof window =
 
 ## Testing with jest
 
-Library authors can test their modules support server components by using `jest-expo`. Learn more in the [testing react server components guide](/guides/testing-rsc).
+Library authors can test their modules support Server Components by using `jest-expo`. Learn more in the [testing react server components guide](/guides/testing-rsc).
 
 ## Known limitations
 
 > This is a very early technical preview that we're actively developing.
 
-- There is currently no stack routing. The custom layouts `Stack`, `Tabs`, `Drawer` do not support server components yet.
-- Expo Go does not support the new architecture yet, meaning you cannot use server components in Expo Go.
-- Expo Snack does not support bundling server components.
-- EAS Update does not work with server components yet.
-- DOM components cannot use server components yet.
+- There is currently no stack routing. The custom layouts, `Stack`, `Tabs`, and `Drawer`, do not support Server Components yet.
+- Expo Go does not support the new architecture yet, meaning you cannot use Server Components in Expo Go.
+- Expo Snack does not support bundling Server Components.
+- EAS Update does not work with Server Components yet.
+- DOM components cannot use Server Components yet.
 - Production deployment is very limited and not recommended yet.
 - Server Rendering RSC payloads to HTML is not supported yet.
 - `generateStaticParams` is not yet supported.
@@ -382,7 +382,7 @@ You can host the website locally with the [express server adapter](/router/refer
 
 ### Native
 
-Unlike standard native builds, React Server Components requires an additional server to be generated and hosted. This server is responsible for rendering the server components and serving the data to the native app. We'll generate this server code during the native build to optimize and link static assets to the binary.
+Unlike standard native builds, React Server Components requires an additional server to be generated and hosted. This server is responsible for rendering the Server Components and serving the data to the native app. We'll generate this server code during the native build to optimize and link static assets to the binary.
 
 Set the `origin` in your app config to the URL of your server:
 
