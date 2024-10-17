@@ -6,9 +6,5 @@ import expo.modules.updates.statemachine.UpdatesStateEventType
 
 class NoOpUpdatesEventManager : IUpdatesEventManager {
   override var eventEmitter: EventEmitter? = null
-  override var shouldEmitJsEvents: Boolean = false
-  override fun sendStateChangeEvent(
-    eventType: UpdatesStateEventType,
-    context: UpdatesStateContext
-  ) {}
+  override fun sendStateMachineContextEvent(context: UpdatesStateContext) {}
 }

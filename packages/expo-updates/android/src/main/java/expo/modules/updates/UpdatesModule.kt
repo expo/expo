@@ -40,19 +40,12 @@ class UpdatesModule : Module() {
       UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnCreate {
-      UpdatesController.bindAppContext(
-        WeakReference(appContext),
-        appContext.eventEmitter(this@UpdatesModule)
-      )
-    }
-
     OnStartObserving {
-      UpdatesController.shouldEmitJsEvents = true
+      UpdatesController.onEventListenerStartObserving(appContext.eventEmitter(this@UpdatesModule))
     }
 
     OnStopObserving {
-      UpdatesController.shouldEmitJsEvents = false
+
     }
 
     AsyncFunction("reload") { promise: Promise ->
