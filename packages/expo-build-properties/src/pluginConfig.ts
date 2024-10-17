@@ -39,7 +39,7 @@ export interface PluginConfigType {
  */
 export interface PluginConfigTypeAndroid {
   /**
-   * @deprecated Set `newArchEnabled` through your app config file instead.
+   * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
    * Enable React Native new architecture for Android platform.
    */
   newArchEnabled?: boolean;
@@ -224,7 +224,7 @@ export type AndroidMavenRepositoryCredentials =
  */
 export interface PluginConfigTypeIos {
   /**
-   * @deprecated Set `newArchEnabled` through your app config file instead.
+   * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
    * Enable React Native new architecture for iOS platform.
    */
   newArchEnabled?: boolean;
