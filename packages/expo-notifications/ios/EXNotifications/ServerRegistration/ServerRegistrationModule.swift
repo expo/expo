@@ -1,7 +1,5 @@
 //  Copyright © 2024 650 Industries. All rights reserved.
 
-// swiftlint:disable force_unwrapping
-
 import ExpoModulesCore
 import UIKit
 import MachO
@@ -74,13 +72,13 @@ public class ServerRegistrationModule: Module {
   private func installationIdGetQuery() -> CFDictionary {
     return installationIdSearchQueryMerging([
       kSecMatchLimit: kSecMatchLimitOne,
-      kSecReturnData: kCFBooleanTrue!
+      kSecReturnData: CFTrue
     ])
   }
 
   private func installationIdSetQuery(_ deviceInstallationUUID: String) -> CFDictionary {
     return installationIdSearchQueryMerging([
-      kSecValueData: deviceInstallationUUID.data(using: .utf8)!,
+      kSecValueData: dataFromString(deviceInstallationUUID),
       kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
     ])
   }
@@ -106,13 +104,13 @@ public class ServerRegistrationModule: Module {
   private func registrationGetQuery() -> CFDictionary {
     return registrationSearchQueryMerging([
       kSecMatchLimit: kSecMatchLimitOne,
-      kSecReturnData: kCFBooleanTrue!
+      kSecReturnData: CFTrue
     ])
   }
 
   private func registrationSetQuery(_ registration: String) -> CFDictionary {
     return registrationSearchQueryMerging([
-      kSecValueData: registration.data(using: .utf8)!,
+      kSecValueData: dataFromString(registration),
       kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
     ])
   }
@@ -120,7 +118,7 @@ public class ServerRegistrationModule: Module {
   // MARK: - Generic keychain methods
 
   private func keychainSearchQueryFor(key: String, dictionaryToMerge: [AnyHashable: Any]) -> CFDictionary {
-    let encodedKey: Data = key.data(using: .utf8)!
+    let encodedKey: Data = dataFromString(key)
     let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
     var query: [AnyHashable: Any] = [
       kSecClass: kSecClassGenericPassword,
@@ -158,9 +156,13 @@ public class ServerRegistrationModule: Module {
     }
   }
 
+  private func dataFromString(_ input: String) -> Data {
+    // swiftlint:disable:next force_unwrapping
+    return input.data(using: .utf8)!
+  }
+
   private let kEXDeviceInstallationUUIDKey = "EXDeviceInstallationUUIDKey"
   private let kEXDeviceInstallationUUIDLegacyKey = "EXDeviceInstallationUUIDKey"
   private let kEXRegistrationInfoKey = "EXNotificationRegistrationInfoKey"
+  private let CFTrue = true as CFBoolean
 }
-
-// swiftlint:enable force_unwrapping

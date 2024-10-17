@@ -16,7 +16,9 @@ public class BadgeModule: Module {
       let settings = await UNUserNotificationCenter.current().notificationSettings()
 
       if settings.badgeSetting == .enabled {
-        EXSharedApplication().applicationIconBadgeNumber = badgeCount
+        DispatchQueue.main.async {
+          EXSharedApplication().applicationIconBadgeNumber = badgeCount
+        }
         return true
       }
       return false
