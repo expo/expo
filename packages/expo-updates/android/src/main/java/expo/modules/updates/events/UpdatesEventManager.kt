@@ -4,7 +4,6 @@ import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updates.statemachine.UpdatesStateEventType
 
 class UpdatesEventManager(private val logger: UpdatesLogger) : IUpdatesEventManager {
   override var eventEmitter: EventEmitter? = null

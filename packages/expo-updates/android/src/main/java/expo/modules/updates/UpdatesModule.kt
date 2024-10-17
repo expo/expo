@@ -13,7 +13,6 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
-import java.lang.ref.WeakReference
 import java.util.Date
 
 /**
@@ -45,7 +44,6 @@ class UpdatesModule : Module() {
     }
 
     OnStopObserving {
-
     }
 
     AsyncFunction("reload") { promise: Promise ->
