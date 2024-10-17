@@ -71,7 +71,7 @@ describe('exports static splitting with modal', () => {
     const indexScripts = await getScriptTagsAsync('index.html');
     const modalScripts = await getScriptTagsAsync('modal.html');
     expect(modalScripts).toEqual(
-      ['index', '_layout', 'index', 'modal'].map(expectChunkPathMatching)
+      ['entry', '_layout', 'index', 'modal'].map(expectChunkPathMatching)
     );
 
     // Ensure modal scripts is a subset of index scripts
