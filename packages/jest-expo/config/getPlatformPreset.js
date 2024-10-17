@@ -51,7 +51,6 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       [upstreamBabelJest]: [
         'babel-jest',
         {
-          plugins: ['babel-plugin-syntax-hermes-parser'],
           caller: {
             name: 'metro',
             bundler: 'metro',

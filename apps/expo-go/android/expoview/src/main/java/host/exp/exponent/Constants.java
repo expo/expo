@@ -2,19 +2,9 @@
 
 package host.exp.exponent;
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.text.TextUtils;
-
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
-import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.generated.ExponentBuildConstants;
 
 public class Constants {
@@ -58,7 +48,6 @@ public class Constants {
   public static final boolean DEBUG_COLD_START_METHOD_TRACING = false;
   public static final boolean DEBUG_MANIFEST_METHOD_TRACING = false;
   public static final boolean DEBUG_METHOD_TRACING = DEBUG_COLD_START_METHOD_TRACING || DEBUG_MANIFEST_METHOD_TRACING;
-  public static final boolean ENABLE_LEAK_CANARY = false;
   public static final boolean WRITE_BUNDLE_TO_LOG = false;
   public static final boolean WAIT_FOR_DEBUGGER = false;
 

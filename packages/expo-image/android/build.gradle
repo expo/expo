@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-  def GLIDE_VERSION = "4.13.2"
+  def GLIDE_VERSION = "4.16.0"
 
   implementation 'com.facebook.react:react-android'
 

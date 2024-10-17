@@ -73,7 +73,12 @@ export async function authenticateAsync(options = {}) {
         invariant(typeof options.promptMessage === 'string' && options.promptMessage.length, 'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.');
     }
     const promptMessage = options.promptMessage || 'Authenticate';
-    const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
+    const cancelLabel = options.cancelLabel || 'Cancel';
+    const result = await ExpoLocalAuthentication.authenticateAsync({
+        ...options,
+        promptMessage,
+        cancelLabel,
+    });
     return result;
 }
 // @needsAudit

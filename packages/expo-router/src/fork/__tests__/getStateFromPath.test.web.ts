@@ -1,9 +1,7 @@
 import { getMockConfig } from '../../testing-library';
-import getPathFromState from '../getPathFromState';
-import getStateFromPath, {
-  stripBaseUrl,
-  getUrlWithReactNavigationConcessions,
-} from '../getStateFromPath';
+import { getPathFromState } from '../getPathFromState';
+import { getStateFromPath } from '../getStateFromPath';
+import { getUrlWithReactNavigationConcessions, stripBaseUrl } from '../getStateFromPath-forks';
 
 beforeEach(() => {
   delete process.env.EXPO_BASE_URL;
@@ -102,39 +100,57 @@ describe(getUrlWithReactNavigationConcessions, () => {
   });
 });
 
-it(`parses hashes`, () => {
-  expect(
-    getStateFromPath('/hello#123', {
-      screens: {
-        hello: 'hello',
-      },
-    } as any)
-  ).toEqual({
-    routes: [
-      {
-        name: 'hello',
-        path: '/hello',
-        params: {
-          '#': '123',
-        },
-      },
-    ],
-  });
-
-  expect(getStateFromPath('/hello#123', getMockConfig(['[hello]']))).toEqual({
-    routes: [
-      {
-        name: '[hello]',
-        params: {
+describe('hash', () => {
+  it(`parses hashes`, () => {
+    expect(
+      getStateFromPath('/hello#123', {
+        screens: {
           hello: 'hello',
-          '#': '123',
         },
-        path: '/hello',
-      },
-    ],
+      } as any)
+    ).toEqual({
+      routes: [
+        {
+          name: 'hello',
+          path: '/hello#123',
+          params: {
+            '#': '123',
+          },
+        },
+      ],
+    });
   });
 
-  // TODO: Test rest params
+  it('parses hashes with dynamic routes', () => {
+    expect(getStateFromPath('/hello#123', getMockConfig(['[hello]']))).toEqual({
+      routes: [
+        {
+          name: '[hello]',
+          params: {
+            hello: 'hello',
+            '#': '123',
+          },
+          path: '/hello#123',
+        },
+      ],
+    });
+  });
+
+  it('parses hashes with query params', () => {
+    expect(getStateFromPath('/?#123', getMockConfig(['index']))).toEqual({
+      routes: [
+        {
+          name: 'index',
+          path: '/?#123',
+          params: {
+            '#': '123',
+          },
+        },
+      ],
+    });
+
+    // TODO: Test rest params
+  });
 });
 
 it(`supports spaces`, () => {
@@ -158,7 +174,7 @@ it(`supports spaces`, () => {
       {
         name: '[hello world]',
         params: {
-          'hello world': 'hello%20world',
+          'hello world': 'hello world',
         },
         path: '/hello%20world',
       },
@@ -263,6 +279,20 @@ it(`adds dynamic route params from all levels of the path`, () => {
             },
           ],
         },
+      },
+    ],
+  });
+});
+
+it(`handles not-found routes`, () => {
+  expect(getStateFromPath('/missing-page', getMockConfig(['+not-found', 'index']))).toEqual({
+    routes: [
+      {
+        name: '+not-found',
+        params: {
+          'not-found': ['missing-page'],
+        },
+        path: '/missing-page',
       },
     ],
   });

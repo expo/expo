@@ -16,7 +16,7 @@ open class ReactNativeHostWrapperBase(
 ) : ReactNativeHost(application) {
   // TODO: Inherit from DefaultReactNativeHost when we drop SDK 49 support
 
-  internal val reactNativeHostHandlers = ExpoModulesPackage.packageList
+  val reactNativeHostHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
@@ -58,13 +58,13 @@ open class ReactNativeHostWrapperBase(
   public override fun getJSBundleFile(): String? {
     return reactNativeHostHandlers.asSequence()
       .mapNotNull { it.getJSBundleFile(useDeveloperSupport) }
-      .firstOrNull() ?: invokeDelegateMethod<String?>("getJSBundleFile")
+      .firstOrNull() ?: invokeDelegateMethod("getJSBundleFile")
   }
 
   public override fun getBundleAssetName(): String? {
     return reactNativeHostHandlers.asSequence()
       .mapNotNull { it.getBundleAssetName(useDeveloperSupport) }
-      .firstOrNull() ?: invokeDelegateMethod<String?>("getBundleAssetName")
+      .firstOrNull() ?: invokeDelegateMethod("getBundleAssetName")
   }
 
   override fun getUseDeveloperSupport(): Boolean {

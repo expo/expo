@@ -234,7 +234,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   }
 
   protected open fun askForManifestPermissions(permissions: Array<out String>, listener: PermissionsResponseListener) {
-    delegateRequestToActivity(permissions as Array<String>, listener)
+    delegateRequestToActivity(arrayOf(*permissions), listener)
   }
 
   /**
