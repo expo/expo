@@ -2,9 +2,10 @@ import { ComponentProps, ReactElement, useState, useContext } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 
-import { TabContext, TabsDescriptor, TabsDescriptorsContext, TabsStateContext } from './TabContext';
+import { TabContext, TabsDescriptor } from './TabContext';
 import { TabListProps } from './TabList';
 import { useNavigation } from '../useNavigation';
+import { NavigatorContext, useNavigatorContext } from '../views/Navigator';
 
 export type UseTabSlotOptions = ComponentProps<typeof ScreenContainer> & {
   detachInactiveScreens?: boolean;
@@ -25,8 +26,7 @@ export function useTabSlot({
   style,
   renderFn = defaultTabsSlotRender,
 }: UseTabSlotOptions = {}) {
-  const state = useContext(TabsStateContext);
-  const descriptors = useContext(TabsDescriptorsContext);
+  const { state, descriptors } = useNavigatorContext();
   const focusedRouteKey = state.routes[state.index].key;
   const [loaded, setLoaded] = useState({ [focusedRouteKey]: true });
 
@@ -40,7 +40,7 @@ export function useTabSlot({
       hasTwoStates
       style={[styles.screenContainer, style]}>
       {state.routes.map((route, index) => {
-        const descriptor = descriptors[route.key];
+        const descriptor = descriptors[route.key] as unknown as TabsDescriptor;
 
         return (
           <TabContext.Provider key={descriptor.route.key} value={descriptor.options}>
@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     position: 'relative',
+    height: '100%',
   },
   screenContainer: {
     flexShrink: 0,
