@@ -98,6 +98,7 @@ describe(choosePortAsync, () => {
     expect(confirmAsync).not.toBeCalled();
   });
   it(`chooses the next port automatically when in a non-interactive terminal`, async () => {
+    // Jest runs in a non-interactive terminal
     jest.mocked(freeportAsync).mockResolvedValueOnce(8082);
     jest.mocked(getRunningProcess).mockReturnValueOnce({
       pid: 1,
