@@ -393,7 +393,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
       baseUrl,
-      hydrate: true,
+      hydrate: env.EXPO_WEB_DEV_HYDRATE,
     });
     return {
       content,

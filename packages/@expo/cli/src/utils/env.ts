@@ -219,6 +219,11 @@ class Env {
   get EXPO_NO_DEPLOY(): boolean {
     return boolish('EXPO_NO_DEPLOY', false);
   }
+
+  /** Enable hydration during development when rendering Expo Web */
+  get EXPO_WEB_DEV_HYDRATE(): boolean {
+    return boolish('EXPO_WEB_DEV_HYDRATE', false);
+  }
 }
 
 export const env = new Env();
