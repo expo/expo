@@ -2,23 +2,15 @@ import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
 import semver from 'semver';
 
-import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from './checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
-import { DirectPackageInstallCheck } from './checks/DirectPackageInstallCheck';
-import { ExpoConfigCommonIssueCheck } from './checks/ExpoConfigCommonIssueCheck';
-import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
-import { GlobalPackageInstalledLocallyCheck } from './checks/GlobalPackageInstalledLocallyCheck';
-import { IllegalPackageCheck } from './checks/IllegalPackageCheck';
 import { InstalledDependencyVersionCheck } from './checks/InstalledDependencyVersionCheck';
-import { MetroConfigCheck } from './checks/MetroConfigCheck';
-import { NativeToolingVersionCheck } from './checks/NativeToolingVersionCheck';
-import { PackageJsonCheck } from './checks/PackageJsonCheck';
-import { PackageManagerVersionCheck } from './checks/PackageManagerVersionCheck';
-import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
-import { StoreCompatibilityCheck } from './checks/StoreCompatibilityCheck';
-import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
-import { getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
+import {
+  DOCTOR_CHECKS,
+  DoctorCheck,
+  DoctorCheckParams,
+  DoctorCheckResult,
+} from './checks/checks.types';
+import { getDisabledChecks, getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
 import { env } from './utils/env';
 import { isNetworkError } from './utils/errors';
 import { isInteractive } from './utils/interactive';
@@ -130,28 +122,11 @@ export async function runChecksAsync(
 }
 
 export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConfig) {
-  // add additional checks here
-  const checks = [
-    new PackageManagerVersionCheck(),
-    new IllegalPackageCheck(),
-    new GlobalPackageInstalledLocallyCheck(),
-    new SupportPackageVersionCheck(),
-    new ExpoConfigSchemaCheck(),
-    new ExpoConfigCommonIssueCheck(),
-    new DirectPackageInstallCheck(),
-    new PackageJsonCheck(),
-    new ProjectSetupCheck(),
-    new MetroConfigCheck(),
-    new NativeToolingVersionCheck(),
-    new AppConfigFieldsNotSyncedToNativeProjectsCheck(),
-    new StoreCompatibilityCheck(),
-  ];
-
   if (getReactNativeDirectoryCheckEnabled(exp, pkg)) {
     chalk.yellow(
       'Enabled experimental React Native Directory checks. Unset the EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK environment variable to disable this check.'
     );
-    checks.push(new ReactNativeDirectoryCheck());
+    DOCTOR_CHECKS.push(new ReactNativeDirectoryCheck());
   }
 
   if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
@@ -161,9 +136,9 @@ export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConf
       )
     );
   } else {
-    checks.push(new InstalledDependencyVersionCheck());
+    DOCTOR_CHECKS.push(new InstalledDependencyVersionCheck());
   }
-  return checks.filter(
+  return DOCTOR_CHECKS.filter(
     (check) =>
       exp.sdkVersion === 'UNVERSIONED' || semver.satisfies(exp.sdkVersion!, check.sdkVersionRange)
   );
@@ -173,6 +148,7 @@ export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
   const projectConfig = getConfig(projectRoot);
+  const disabledChecks = getDisabledChecks(projectConfig.pkg);
 
   // expo-doctor relies on versioned CLI, which is only available for 44+
   try {
@@ -187,7 +163,13 @@ export async function actionAsync(projectRoot: string) {
     return;
   }
 
-  const filteredChecks = getChecksInScopeForProject(projectConfig.exp, projectConfig.pkg);
+  const filteredChecks = getChecksInScopeForProject(projectConfig.exp, projectConfig.pkg).filter(
+    (check) => !disabledChecks.includes(check.constructor.name)
+  );
+
+  if (disabledChecks.length > 0) {
+    Log.log(chalk.yellow(`Skipping disabled checks: ${disabledChecks.join(', ')}`));
+  }
 
   const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
 
