@@ -2,10 +2,10 @@ import '../global.css';
 import 'server-only';
 
 import { Link, Slot } from 'expo-router';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { unstable_styles } from '../home.module.css';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { View } from 'react-native';
 
 const HomeLayout = (props) => {
   return (
