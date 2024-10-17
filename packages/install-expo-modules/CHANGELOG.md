@@ -19,6 +19,7 @@
 
 - Update `commander` dependency. ([#29603](https://github.com/expo/expo/pull/29603) by [@Simek](https://github.com/Simek))
 - Update `glob@7` to `glob@10`. ([#29933](https://github.com/expo/expo/pull/29933) by [@byCedric](https://github.com/byCedric))
+- Fixed the `missing required argument 'project-directory'` error when executing without specifying a project directory. ([#32054](https://github.com/expo/expo/pull/32054) by [@kudo](https://github.com/kudo))
 
 ## 0.10.2 - 2024-06-28
 

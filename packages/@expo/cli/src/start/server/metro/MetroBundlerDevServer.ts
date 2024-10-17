@@ -20,6 +20,7 @@ import type MetroHmrServer from 'metro/src/HmrServer';
 import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
 import { GraphRevision } from 'metro/src/IncrementalBundler';
 import bundleToString from 'metro/src/lib/bundleToString';
+import getGraphId from 'metro/src/lib/getGraphId';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
@@ -90,17 +91,6 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
 ) => Promise<T>;
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
-
-const getGraphId = require('metro/src/lib/getGraphId') as (
-  entryFile: string,
-  options: any,
-  etc: {
-    shallow: boolean;
-    lazy: boolean;
-    unstable_allowRequireContext: boolean;
-    resolverOptions: unknown;
-  }
-) => string;
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 8081;
@@ -403,9 +393,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
       baseUrl,
-
-      // TODO: Support hydration in development. This is only disabled due to a bug discovered during the refactor.
-      hydrate: false,
+      hydrate: true,
     });
     return {
       content,
@@ -511,6 +499,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
       platform: expoBundleOptions.platform ?? 'web',
+      // @ts-expect-error: `runtimeBytecodeVersion` does not exist in `expoBundleOptions` or `TransformInputOptions`
       runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
     };
 
@@ -1390,16 +1379,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         entryFile: resolvedEntryFilePath,
         minify: transformOptions.minify,
         platform: transformOptions.platform,
-        // @ts-expect-error: typed incorrectly upstream
         customResolverOptions: resolverOptions.customResolverOptions,
-        customTransformOptions: transformOptions.customTransformOptions,
+        customTransformOptions: transformOptions.customTransformOptions ?? {},
       },
       isPrefetch: false,
       type: 'bundle_build_started',
     });
 
     try {
-      let delta: DeltaResult<void>;
+      let delta: DeltaResult;
       let revision: GraphRevision;
 
       // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
@@ -1415,7 +1403,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           {
             onProgress,
             shallow: graphOptions.shallow,
-            // @ts-expect-error: typed incorrectly
             lazy: graphOptions.lazy,
           }
         );
@@ -1434,7 +1421,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               {
                 onProgress,
                 shallow: graphOptions.shallow,
-                // @ts-expect-error: typed incorrectly
                 lazy: graphOptions.lazy,
               }
             ));

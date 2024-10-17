@@ -108,7 +108,6 @@ function getEnvPrelude(code) {
                 type: 'js/script/virtual',
                 data: {
                     code,
-                    // @ts-expect-error: typed incorrectly upstream
                     lineCount: 1,
                     map: [],
                 },

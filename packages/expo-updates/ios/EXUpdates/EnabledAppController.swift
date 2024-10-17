@@ -9,8 +9,6 @@ import ExpoModulesCore
  * Updates controller for applications that have updates enabled and properly-configured.
  */
 public class EnabledAppController: InternalAppControllerInterface, StartupProcedureDelegate {
-  private static let ErrorDomain = "EXUpdatesAppController"
-
   public weak var delegate: AppControllerDelegate?
 
   internal let config: UpdatesConfig
@@ -69,7 +67,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
 
     purgeUpdatesLogsOlderThanOneDay()
 
-    UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: database, config: config)
+    UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: database, config: config, logger: logger)
 
     startupProcedure = StartupProcedure(
       database: self.database,
@@ -108,7 +106,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
       view = viewController?.view
       viewController?.view = nil
     } else {
-      NSLog("Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.")
+      logger.warn(message: "Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.")
       view = UIView()
       view?.backgroundColor = .white
     }
@@ -192,7 +190,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
   // MARK: - Internal
 
   private func purgeUpdatesLogsOlderThanOneDay() {
-    UpdatesUtils.purgeUpdatesLogsOlderThanOneDay()
+    UpdatesUtils.purgeUpdatesLogsOlderThanOneDay(logger: logger)
   }
 
   // MARK: - JS API

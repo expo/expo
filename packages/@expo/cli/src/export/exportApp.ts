@@ -199,17 +199,19 @@ export async function exportAppAsync(
             // If web exists, then write the template HTML file.
             files.set('index.html', {
               contents: html,
-              targetDomain: 'client',
+              targetDomain: devServer.isReactServerComponentsEnabled ? 'server' : 'client',
             });
           }
         })
       );
 
       if (devServer.isReactServerComponentsEnabled) {
-        if (!(platforms.includes('web') && useServerRendering)) {
+        const isWeb = platforms.includes('web');
+        if (!(isWeb && useServerRendering)) {
           await exportApiRoutesStandaloneAsync(devServer, {
             files,
             platform: 'web',
+            apiRoutesOnly: !isWeb,
           });
         }
       }
@@ -259,6 +261,7 @@ export async function exportAppAsync(
         await exportApiRoutesStandaloneAsync(devServer, {
           files,
           platform: 'web',
+          apiRoutesOnly: true,
         });
 
         // Output a placeholder index.html if one doesn't exist in the public directory.

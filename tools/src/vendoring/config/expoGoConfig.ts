@@ -109,9 +109,6 @@ const config: VendoringTargetConfig = {
           ],
         },
       },
-      android: {
-        excludeFiles: ['android/gradle{/**,**}'],
-      },
     },
     '@react-native-async-storage/async-storage': {
       source: 'https://github.com/react-native-async-storage/async-storage.git',

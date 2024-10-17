@@ -35,7 +35,7 @@ export type SoundObject = {
     status: AVPlaybackStatus;
 };
 type AudioInstance = number | HTMLMediaElement | null;
-type AudioSampleCallback = ((sample: AudioSample) => void) | null;
+export type AudioSampleCallback = ((sample: AudioSample) => void) | null;
 declare global {
     interface Global {
         __EXAV_setOnAudioSampleReceivedCallback: ((key: number, callback: AudioSampleCallback) => void) | undefined;

@@ -50,7 +50,7 @@ export async function getCssModulesFromBundler(
     [entryFile],
     transformOptions,
     resolverOptions,
-    { onProgress, shallow: false }
+    { onProgress, shallow: false, lazy: false }
   );
 
   return getCssModules(dependencies, {

@@ -2,7 +2,6 @@
 
 // swiftlint:disable closure_body_length
 // swiftlint:disable superfluous_else
-// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable line_length
 
 // this class uses a ton of implicit non-null properties based on method call order. not worth changing to appease lint
@@ -105,8 +104,6 @@ public enum BackgroundUpdateStatus: Int {
 @objc(EXUpdatesAppLoaderTask)
 @objcMembers
 public final class AppLoaderTask: NSObject {
-  private static let ErrorDomain = "EXUpdatesAppLoaderTask"
-
   public weak var delegate: AppLoaderTaskDelegate?
   public weak var swiftDelegate: AppLoaderTaskSwiftDelegate?
 
@@ -170,8 +167,9 @@ public final class AppLoaderTask: NSObject {
           if !shouldCheckForUpdate {
             self.finish(withError: error)
           }
+          let cause = UpdatesError.appLoaderTaskFailedToLaunch(cause: error)
           self.logger.error(
-            message: "Failed to launch embedded or launchable update: \(error?.localizedDescription ?? "")",
+            cause: cause,
             code: .updateFailedToLoad
           )
         } else {
@@ -204,7 +202,7 @@ public final class AppLoaderTask: NSObject {
     }
   }
 
-  private func finish(withError error: Error?) {
+  private func finish(withError error: UpdatesError?) {
     dispatchPrecondition(condition: .onQueue(loaderTaskQueue))
 
     if hasLaunched {
@@ -223,13 +221,7 @@ public final class AppLoaderTask: NSObject {
         } else {
           delegate.appLoaderTask(
             self,
-            didFinishWithError: error ?? NSError(
-              domain: AppLoaderTask.ErrorDomain,
-              code: 1031,
-              userInfo: [
-                NSLocalizedDescriptionKey: "AppLoaderTask encountered an unexpected error and could not launch an update."
-              ]
-            )
+            didFinishWithError: error ?? UpdatesError.appLoaderTaskUnexpectedErrorDuringLaunch
           )
         }
       }
@@ -304,6 +296,7 @@ public final class AppLoaderTask: NSObject {
             // be sending an HTTP request from EmbeddedAppLoader
             self.embeddedAppLoader = EmbeddedAppLoader(
               config: self.config,
+              logger: self.logger,
               database: self.database,
               directory: self.directory,
               launchedUpdate: nil,
@@ -329,15 +322,16 @@ public final class AppLoaderTask: NSObject {
     }
   }
 
-  private func launch(withCompletion completion: @escaping (_ error: Error?, _ success: Bool) -> Void) {
+  private func launch(withCompletion completion: @escaping (_ error: UpdatesError?, _ success: Bool) -> Void) {
     let launcher = AppLauncherWithDatabase(config: config, database: database, directory: directory, completionQueue: loaderTaskQueue)
     candidateLauncher = launcher
     launcher.launchUpdate(withSelectionPolicy: selectionPolicy, completion: completion)
   }
 
-  private func loadRemoteUpdate(withCompletion completion: @escaping (_ remoteError: Error?, _ updateResponse: UpdateResponse?) -> Void) {
+  private func loadRemoteUpdate(withCompletion completion: @escaping (_ remoteError: UpdatesError?, _ updateResponse: UpdateResponse?) -> Void) {
     remoteAppLoader = RemoteAppLoader(
       config: config,
+      logger: logger,
       database: database,
       directory: directory,
       launchedUpdate: candidateLauncher?.launchedUpdate,
@@ -451,7 +445,7 @@ public final class AppLoaderTask: NSObject {
     }
   }
 
-  private func handleRemoteUpdateResponseLoaded(_ updateResponse: UpdateResponse?, error: Error?) {
+  private func handleRemoteUpdateResponseLoaded(_ updateResponse: UpdateResponse?, error: UpdatesError?) {
     // If the app has not yet been launched (because the timer is still running),
     // create a new launcher so that we can launch with the newly downloaded update.
     // Otherwise, we've already launched. Send an event to the notify JS of the new update.
@@ -461,6 +455,7 @@ public final class AppLoaderTask: NSObject {
 
       RemoteAppLoader.processSuccessLoaderResult(
         config: self.config,
+        logger: self.logger,
         database: self.database,
         selectionPolicy: self.selectionPolicy,
         launchedUpdate: self.candidateLauncher?.launchedUpdate,
@@ -474,7 +469,7 @@ public final class AppLoaderTask: NSObject {
     }
   }
 
-  private func launchUpdate(_ updateBeingLaunched: Update?, error: Error?) {
+  private func launchUpdate(_ updateBeingLaunched: Update?, error: UpdatesError?) {
     if let updateBeingLaunched = updateBeingLaunched {
       if !self.hasLaunched {
         let newLauncher = AppLauncherWithDatabase(
@@ -493,7 +488,7 @@ public final class AppLoaderTask: NSObject {
             }
           } else {
             self.finish(withError: error)
-            NSLog("Downloaded update but failed to relaunch: %@", error?.localizedDescription ?? "")
+            self.logger.warn(message: "Downloaded update but failed to relaunch: \(error?.localizedDescription ?? "")")
           }
           self.isRunning = false
           self.runReaper()
@@ -524,7 +519,7 @@ public final class AppLoaderTask: NSObject {
     }
   }
 
-  private func didFinishBackgroundUpdate(withStatus status: BackgroundUpdateStatus, update: Update?, error: Error?) {
+  private func didFinishBackgroundUpdate(withStatus status: BackgroundUpdateStatus, update: Update?, error: UpdatesError?) {
     delegate.let { it in
       delegateQueue.async {
         it.appLoaderTask(self, didFinishBackgroundUpdateWithStatus: status, update: update, error: error)
@@ -537,5 +532,4 @@ public final class AppLoaderTask: NSObject {
 // swiftlint:enable closure_body_length
 // swiftlint:enable force_unwrapping
 // swiftlint:enable superfluous_else
-// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable line_length

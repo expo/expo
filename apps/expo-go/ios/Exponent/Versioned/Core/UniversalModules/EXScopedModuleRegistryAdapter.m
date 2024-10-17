@@ -9,11 +9,8 @@
 #import "EXScopedFontLoader.h"
 #import "EXScopedSecureStore.h"
 #import "EXScopedPermissions.h"
-#import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
 #import "EXScopedErrorRecoveryModule.h"
-#import "EXScopedFacebook.h"
-#import "EXScopedFirebaseCore.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXExpoUserNotificationCenterProxy.h"
@@ -45,11 +42,6 @@
 #if __has_include(<EXConstants/EXConstantsService.h>)
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithParams:params];
   [moduleRegistry registerInternalModule:constantsBinding];
-#endif
-
-#if __has_include(<EXFacebook/EXFacebook.h>)
-  EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] initWithScopeKey:scopeKey manifest:manifest];
-  [moduleRegistry registerExportedModule:scopedFacebook];
 #endif
 
 if (params[@"fileSystemDirectories"]) {

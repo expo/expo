@@ -12,10 +12,15 @@
 - [iOS] Add 'allowsExternalPlayback' property to control the AirPlay to stream video or mirror the screen. ([#30436](https://github.com/expo/expo/pull/30436) by [@adsalihac](https://github.com/adsalihac))
 - [iOS] Fixed `player.currentTime` being `NaN` when source is not provided and `player.duration` being `NaN` inside the hook callback when the source is updated. ([#31011](https://github.com/expo/expo/pull/31011) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
 - [Android] Fix not being able to select subtitles in the player. ([#31829](https://github.com/expo/expo/pull/31829) by [@fobos531](https://github.com/fobos531))
-- [iOS] Added generating video thumbnails. ([#31807](https://github.com/expo/expo/pull/31807) by [@tsapeta](https://github.com/tsapeta))
+- Added generating video thumbnails. ([#31807](https://github.com/expo/expo/pull/31807) by [@tsapeta](https://github.com/tsapeta) & [#32037](https://github.com/expo/expo/pull/32037) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `FullscreenPlayerActivity` not closing when the system returned to the `MainActivity` after backgrounding and reopening the app via icon. ([#32044](https://github.com/expo/expo/pull/32044) by [@behenate](https://github.com/behenate))
+- [Android] Fix `Activity` auto-entering Picture in Picture after leaving the screen with video. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
+- [Android] Fix `startsPictureInPictureAutomatically` not working in fullscreen mode. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
+- [Android] Fix video pausing after auto-entering Picture in Picture. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
+- [Android] Fix `MainActivity` sometimes entering Picture in Picture when entering fullscreen. ([#32043](https://github.com/expo/expo/pull/32043) by [@behenate](https://github.com/behenate))
 - [Android] Fix support for local file playback. ([#30472](https://github.com/expo/expo/pull/30472) by [@behenate](https://github.com/behenate))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 - [Android] Fix an issue where using non-ASCII characters in the application name would cause the media to not play. ([#31659](https://github.com/expo/expo/pull/31659) by [@fobos531](https://github.com/fobos531))

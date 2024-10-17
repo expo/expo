@@ -5,7 +5,7 @@
 
 import Foundation
 
-public typealias AppLauncherUpdateCompletionBlock = (_ error: Error?, _ update: Update?) -> Void
+public typealias AppLauncherUpdateCompletionBlock = (_ error: UpdatesError?, _ update: Update?) -> Void
 
 /**
  * Implementation of AppLauncher that uses the SQLite database and expo-updates file store
@@ -28,8 +28,6 @@ public typealias AppLauncherUpdateCompletionBlock = (_ error: Error?, _ update: 
 @objc(EXUpdatesAppLauncherWithDatabase)
 @objcMembers
 public class AppLauncherWithDatabase: NSObject, AppLauncher {
-  private static let ErrorDomain = "AppLauncher"
-
   public var launchedUpdate: Update?
   public var launchAssetUrl: URL?
   public var assetFilesMap: [String: String]?
@@ -43,7 +41,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   public private(set) var completionQueue: DispatchQueue
   public private(set) var completion: AppLauncherCompletionBlock?
 
-  private var launchAssetError: Error?
+  private var launchAssetError: UpdatesError?
 
   public required init(config: UpdatesConfig, database: UpdatesDatabase, directory: URL, completionQueue: DispatchQueue) {
     self.launcherQueue = DispatchQueue(label: "expo.launcher.LauncherQueue")
@@ -68,19 +66,19 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   ) {
     database.databaseQueue.async {
       var launchableUpdates: [Update]?
-      var launchableUpdatesError: Error?
+      var launchableUpdatesError: UpdatesError?
       do {
         launchableUpdates = try database.launchableUpdates(withConfig: config)
       } catch {
-        launchableUpdatesError = error
+        launchableUpdatesError = UpdatesError.appLauncherWithDatabaseUnknownError(cause: error)
       }
 
       var manifestFilters: [String: Any]?
-      var manifestFiltersError: Error?
+      var manifestFiltersError: UpdatesError?
       do {
         manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey)
       } catch {
-        manifestFiltersError = error
+        manifestFiltersError = UpdatesError.appLauncherWithDatabaseUnknownError(cause: error)
       }
 
       completionQueue.async {
@@ -139,13 +137,8 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         if error != nil || launchableUpdate == nil {
           if let completionInner = self.completion {
             self.completionQueue.async {
-              var userInfo: [String: Any] = [
-                NSLocalizedDescriptionKey: "No launchable updates found in database"
-              ]
-              if let error = error {
-                userInfo[NSUnderlyingErrorKey] = error
-              }
-              completionInner(NSError(domain: AppLauncherWithDatabase.ErrorDomain, code: 1011, userInfo: userInfo), false)
+              let cause = UpdatesError.appLauncherNoLaunchableUpdates(cause: error)
+              completionInner(cause, false)
             }
           }
         } else {
@@ -289,7 +282,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   private func maybeCopyAssetFromMainBundle(
     _ asset: UpdateAsset,
     withLocalUrl assetLocalUrl: URL,
-    completion: @escaping (Bool, Error?) -> Void
+    completion: @escaping (Bool, UpdatesError?) -> Void
   ) {
     guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database) else {
       completion(false, nil)
@@ -306,11 +299,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
           self.launcherQueue.async {
             completion(
               false,
-              NSError(
-                domain: AppLauncherWithDatabase.ErrorDomain,
-                code: 1013,
-                userInfo: [NSLocalizedDescriptionKey: "Asset bundlePath was unexpectedly nil"]
-              )
+              UpdatesError.appLauncherWithDatabaseAssetBundlePathNil
             )
           }
           return
@@ -325,11 +314,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
           self.launcherQueue.async {
             completion(
               false,
-              NSError(
-                domain: AppLauncherWithDatabase.ErrorDomain,
-                code: 1013,
-                userInfo: [NSLocalizedDescriptionKey: "Asset copy failed"]
-              )
+              UpdatesError.appLauncherWithDatabaseAssetCopyFailed
             )
           }
         }
@@ -341,14 +326,10 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
   }
 
-  private func downloadAsset(_ asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (Error?, UpdateAsset, URL) -> Void) {
+  private func downloadAsset(_ asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (UpdatesError?, UpdateAsset, URL) -> Void) {
     guard let assetUrl = asset.url else {
       completion(
-        NSError(
-          domain: AppLauncherWithDatabase.ErrorDomain,
-          code: 1007,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to download asset with no URL provided"]
-        ),
+        UpdatesError.appLauncherWithDatabaseAssetMissingUrl,
         asset,
         assetLocalUrl
       )

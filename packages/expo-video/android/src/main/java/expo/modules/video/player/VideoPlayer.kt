@@ -1,8 +1,10 @@
 package expo.modules.video.player
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.view.SurfaceView
 import androidx.media3.common.C
+import android.webkit.URLUtil
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
@@ -30,6 +32,7 @@ import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VolumeEvent
 import kotlinx.coroutines.launch
+import java.io.FileInputStream
 import java.lang.ref.WeakReference
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
@@ -302,5 +305,25 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       val updatePayload = TimeUpdate(player.currentPosition / 1000.0, currentOffsetFromLive, currentLiveTimestamp, bufferedPosition)
       sendEvent(PlayerEvent.TimeUpdated(updatePayload))
     }
+  }
+
+  fun toMetadataRetriever(): MediaMetadataRetriever {
+    val source = uncommittedSource ?: lastLoadedSource
+    val uri = source?.uri ?: throw IllegalStateException("Video source is not set")
+    val stringUri = uri.toString()
+
+    val mediaMetadataRetriever = MediaMetadataRetriever()
+    if (URLUtil.isFileUrl(stringUri)) {
+      mediaMetadataRetriever.setDataSource(stringUri.replace("file://", ""))
+    } else if (URLUtil.isContentUrl(stringUri)) {
+      context.contentResolver.openFileDescriptor(uri, "r")?.use { parcelFileDescriptor ->
+        FileInputStream(parcelFileDescriptor.fileDescriptor).use { inputStream ->
+          mediaMetadataRetriever.setDataSource(inputStream.fd)
+        }
+      }
+    } else {
+      mediaMetadataRetriever.setDataSource(stringUri, source.headers ?: emptyMap())
+    }
+    return mediaMetadataRetriever
   }
 }

@@ -5,7 +5,7 @@
   "main": "build/withPatchPlugin.js",
   "types": "build/withPatchPlugin.d.ts",
   "scripts": {
-    "build": "expo-module tsc && chmod +x build/cli/index.js",
+    "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepare": "yarn run clean && yarn run build",
@@ -16,10 +16,11 @@
     "watch": "expo-module tsc --watch"
   },
   "bin": {
-    "patch-project": "build/cli/index.js"
+    "patch-project": "bin/cli.js"
   },
   "files": [
     "app.plugin.js",
+    "bin",
     "build"
   ],
   "repository": {

@@ -6,6 +6,7 @@
 
 - Remove `debug.html` from `npx expo export --source-maps`. ([#31477](https://github.com/expo/expo/pull/31477) by [@EvanBacon](https://github.com/EvanBacon))
 - Ignore /dist folder in the default eslint config ([#31532](https://github.com/expo/expo/pull/31532) by [@kadikraman](https://github.com/kadikraman))
+- Enable `hydrate: true` in MetroBundlerDevServer. ([#32047](https://github.com/expo/expo/pull/32047) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🎉 New features
 
@@ -45,6 +46,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix experimental web exports for RSC. ([#32042](https://github.com/expo/expo/pull/32042) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix RSC after RN upgrade. ([#32028](https://github.com/expo/expo/pull/32028) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix search params in RSC. ([#31641](https://github.com/expo/expo/pull/31641) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix cache sharing across Expo Go and dev client. ([#31566](https://github.com/expo/expo/pull/31566) by [@EvanBacon](https://github.com/EvanBacon))
@@ -69,6 +71,7 @@
 
 ### 💡 Others
 
+- Bump `react-native-web` patch ([#32105](https://github.com/expo/expo/pull/32105) by [@EvanBacon](https://github.com/EvanBacon))
 - Stop pinging dev session with updates. ([#31717](https://github.com/expo/expo/pull/31717) by [@EvanBacon](https://github.com/EvanBacon))
 - improve export log format ([#31476](https://github.com/expo/expo/pull/31476) by [@EvanBacon](https://github.com/EvanBacon))
 - Reduce scope of custom transform options in Metro cache. ([#31262](https://github.com/expo/expo/pull/31262) by [@EvanBacon](https://github.com/EvanBacon))
@@ -95,6 +98,7 @@
 - Drop usage of `@react-native-community/cli-server-api` in favor of our own Metro dev middleware. ([#31570](https://github.com/expo/expo/pull/31570) by [@byCedric](https://github.com/byCedric))
 - Move location of assetPatternsToBeBundled config key ([#31584](https://github.com/expo/expo/pull/31584) by [@wschurman](https://github.com/wschurman))
 - Throwing an error for DOM components if no webview installed. ([#31974](https://github.com/expo/expo/pull/31974) by [@kudo](https://github.com/kudo))
+- Update Metro type definitions to `metro@0.80.12`. ([#32007](https://github.com/expo/expo/pull/32007) by [@byCedric](https://github.com/byCedric))
 
 ### ⚠️ Notices
 

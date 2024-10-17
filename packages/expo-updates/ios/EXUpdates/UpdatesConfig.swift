@@ -25,11 +25,21 @@ public enum CheckAutomaticallyConfig: Int {
   }
 }
 
-@objc(EXUpdatesConfigError)
-public enum UpdatesConfigError: Int, Error {
+public enum UpdatesConfigError: Error, Sendable, LocalizedError {
   case ExpoUpdatesConfigPlistError
   case ExpoUpdatesConfigMissingURLError
   case ExpoUpdatesMissingRuntimeVersionError
+
+  public var errorDescription: String? {
+    switch self {
+    case .ExpoUpdatesConfigPlistError:
+      return "Expo.plist not found in bundle or invalid"
+    case .ExpoUpdatesConfigMissingURLError:
+      return "Config for expo-updates missing URL"
+    case .ExpoUpdatesMissingRuntimeVersionError:
+      return "Config for expo-updates missing runtime version"
+    }
+  }
 }
 
 public enum UpdatesConfigurationValidationResult {
@@ -200,7 +210,8 @@ public final class UpdatesConfig: NSObject {
       // swiftlint:disable:next legacy_objc_type
       if let it = it as? NSNumber {
         return it.intValue
-      } else if let it = it as? String {
+      }
+      if let it = it as? String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .none
         return formatter.number(from: it)?.intValue
@@ -308,3 +319,5 @@ public final class UpdatesConfig: NSObject {
     }
   }
 }
+
+// swiftlint:enable identifier_name
