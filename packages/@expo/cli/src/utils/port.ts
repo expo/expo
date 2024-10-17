@@ -72,10 +72,13 @@ export async function choosePortAsync(
     defaultPort,
     host,
     reuseExistingPort,
+    forceInteractive,
   }: {
     defaultPort: number;
     host?: string;
     reuseExistingPort?: boolean;
+    /* Override the checks for interactive mode. Used for testing where the terminal is always non-interactive */
+    forceInteractive?: boolean;
   }
 ): Promise<number | null> {
   try {
@@ -111,7 +114,7 @@ export async function choosePortAsync(
 
     Log.log(`\u203A ${message}`);
 
-    if (!isInteractive()) {
+    if (!forceInteractive && !isInteractive()) {
       return port;
     }
 

@@ -1,4 +1,3 @@
-// @ts-expect-error
 import freeportAsync from 'freeport-async';
 
 import { getRunningProcess } from '../getRunningProcess';
@@ -58,7 +57,11 @@ describe(choosePortAsync, () => {
       command: 'npx expo',
     });
     jest.mocked(confirmAsync).mockResolvedValueOnce(true);
-    const port = await choosePortAsync('/', { defaultPort: 8081, reuseExistingPort: false });
+    const port = await choosePortAsync('/', {
+      defaultPort: 8081,
+      reuseExistingPort: false,
+      forceInteractive: true,
+    });
     expect(port).toBe(8082);
     expect(confirmAsync).toHaveBeenCalledWith({ initial: true, message: 'Use port 8082 instead?' });
   });
@@ -70,7 +73,11 @@ describe(choosePortAsync, () => {
       command: 'npx expo',
     });
     jest.mocked(confirmAsync).mockResolvedValueOnce(false);
-    const port = await choosePortAsync('/', { defaultPort: 8081, reuseExistingPort: false });
+    const port = await choosePortAsync('/', {
+      defaultPort: 8081,
+      reuseExistingPort: false,
+      forceInteractive: true,
+    });
     expect(port).toBe(null);
     expect(confirmAsync).toHaveBeenCalledWith({ initial: true, message: 'Use port 8082 instead?' });
   });
@@ -82,8 +89,27 @@ describe(choosePortAsync, () => {
       command: 'npx expo',
     });
     jest.mocked(confirmAsync).mockResolvedValueOnce(false);
-    const port = await choosePortAsync('/me', { defaultPort: 8081, reuseExistingPort: true });
+    const port = await choosePortAsync('/me', {
+      defaultPort: 8081,
+      reuseExistingPort: true,
+      forceInteractive: true,
+    });
     expect(port).toBe(null);
     expect(confirmAsync).not.toBeCalled();
+  });
+  it(`chooses the next port automatically when in a non-interactive terminal`, async () => {
+    jest.mocked(freeportAsync).mockResolvedValueOnce(8082);
+    jest.mocked(getRunningProcess).mockReturnValueOnce({
+      pid: 1,
+      directory: '/other/project',
+      command: 'npx expo',
+    });
+    jest.mocked(confirmAsync).mockResolvedValueOnce(false);
+    const port = await choosePortAsync('/', {
+      defaultPort: 8081,
+      reuseExistingPort: false,
+    });
+    expect(port).toBe(8082);
+    expect(confirmAsync).not.toHaveBeenCalled();
   });
 });
