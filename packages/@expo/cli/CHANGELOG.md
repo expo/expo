@@ -42,7 +42,7 @@
 - Add an optional New Architecture compatibility check for dependencies added via `install` command. ([#31222](https://github.com/expo/expo/pull/31222) by [@Simek](https://github.com/Simek))
 - Add support in `expo run android` for product flavors with custom app ids. ([#31756](https://github.com/expo/expo/pull/31756) by [@byCedric](https://github.com/byCedric))
 - Support Fusebox and React Native DevTools in Expo. ([#32029](https://github.com/expo/expo/pull/32029) by [@byCedric](https://github.com/byCedric))
-- Enable `hydration` on Expo Web in development when `EXPO_WEB_DEV_HYDRATE` is set. ([#32047](https://github.com/expo/expo/pull/32047) by [@marklawlor](https://github.com/marklawlor))
+- Enable `hydration` on Expo Web in development when `EXPO_WEB_DEV_HYDRATE` is set. ([#32047](https://github.com/expo/expo/pull/32047) by [@marklawlor](https://github.com/marklawlor)) & ([#32109](https://github.com/expo/expo/pull/32109) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
