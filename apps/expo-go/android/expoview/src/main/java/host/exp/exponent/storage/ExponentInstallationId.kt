@@ -15,7 +15,7 @@ import java.util.*
  *
  * Similar class exists in expo-constants and expo-notifications.
  */
-class ExponentInstallationId internal constructor(
+internal class ExponentInstallationId(
   private val context: Context, // We only remove the value from old storage once it's set and saved in the new storage.
   private val sharedPreferences: SharedPreferences
 ) {

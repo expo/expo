@@ -26,3 +26,12 @@ fun <T> Class<out T>.setPrivateDeclaredFieldValue(filedName: String, obj: T, new
 
   field.set(obj, newValue)
 }
+
+fun <T> Class<out T>.hasDeclaredField(fieldName: String): Boolean {
+  return try {
+    getDeclaredField(fieldName)
+    true
+  } catch (_: NoSuchFieldException) {
+    false
+  }
+}

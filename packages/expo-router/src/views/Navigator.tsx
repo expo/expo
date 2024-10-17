@@ -10,16 +10,13 @@ import { useContextKey } from '../Route';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import { useSortedScreens } from '../useScreens';
 
-type NavigatorTypes = ReturnType<typeof useNavigationBuilder>;
-
-// TODO: This might already exist upstream, maybe something like `useCurrentRender` ?
-export const NavigatorContext = React.createContext<{
-  contextKey: string;
-  state: NavigatorTypes['state'];
-  navigation: NavigatorTypes['navigation'];
-  descriptors: NavigatorTypes['descriptors'];
-  router: RouterFactory<any, any, any>;
-} | null>(null);
+export const NavigatorContext = React.createContext<
+  | (ReturnType<typeof useNavigationBuilder> & {
+      contextKey: string;
+      router: RouterFactory<any, any, any>;
+    })
+  | null
+>(null);
 
 if (process.env.NODE_ENV !== 'production') {
   NavigatorContext.displayName = 'NavigatorContext';
@@ -41,7 +38,7 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
  *
  * @hidden
  */
-export function Navigator<T extends UseNavigationBuilderRouter>({
+export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({
   initialRouteName,
   screenOptions,
   children,
@@ -50,60 +47,39 @@ export function Navigator<T extends UseNavigationBuilderRouter>({
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
 
-  // Allows adding Screen components as children to configure routes.
-  const { screens, children: otherSlot } = useFilterScreenChildren(children, {
+  // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
+  const { screens, children: nonScreenChildren } = useFilterScreenChildren(children, {
     isCustomNavigator: true,
     contextKey,
   });
 
-  const sorted = useSortedScreens(screens ?? []);
+  const sortedScreens = useSortedScreens(screens ?? []);
 
-  if (!sorted.length) {
+  router ||= StackRouter as unknown as T;
+
+  const navigation = useNavigationBuilder(router, {
+    // Used for getting the parent with navigation.getParent('/normalized/path')
+    ...routerOptions,
+    id: contextKey,
+    children: sortedScreens || [<Screen key="default" />],
+    screenOptions,
+    initialRouteName,
+  });
+
+  // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
+  if (!sortedScreens.length) {
     console.warn(`Navigator at "${contextKey}" has no children.`);
     return null;
   }
 
   return (
-    <QualifiedNavigator
-      initialRouteName={initialRouteName}
-      screenOptions={screenOptions}
-      screens={sorted}
-      contextKey={contextKey}
-      router={router}
-      routerOptions={routerOptions}>
-      {otherSlot}
-    </QualifiedNavigator>
-  );
-}
-
-function QualifiedNavigator<T extends UseNavigationBuilderRouter>({
-  initialRouteName,
-  screenOptions,
-  children,
-  screens,
-  contextKey,
-  router = StackRouter as T,
-  routerOptions,
-}: NavigatorProps<T> & { contextKey: string; screens: React.ReactNode[] }) {
-  const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(router, {
-    // Used for getting the parent with navigation.getParent('/normalized/path')
-    ...routerOptions,
-    id: contextKey,
-    children: screens,
-    screenOptions,
-    initialRouteName,
-  });
-
-  return (
     <NavigatorContext.Provider
       value={{
+        ...navigation,
         contextKey,
-        state,
-        navigation,
-        descriptors,
         router,
       }}>
-      <NavigationContent>{children}</NavigationContent>
+      {nonScreenChildren}
     </NavigatorContext.Provider>
   );
 }
@@ -119,54 +95,74 @@ export function useNavigatorContext() {
   return context;
 }
 
-export function useSlot() {
+function SlotNavigator(props: NavigatorProps<any>) {
+  const contextKey = useContextKey();
+
+  // Allows adding Screen components as children to configure routes.
+  const { screens } = useFilterScreenChildren([], {
+    contextKey,
+  });
+
+  const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
+    ...props,
+    id: contextKey,
+    children: useSortedScreens(screens ?? []),
+  });
+
+  return (
+    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+  );
+}
+
+/**
+ * Renders the currently selected content.
+ *
+ * There are actually two different implementations of Slot:
+ *  - Used inside a _layout as the Navigator
+ *  - Used inside a Navigator as the content
+ *
+ * As a custom <Navigator /> will set the NavigatorContext.contextKey to be the current _layout,
+ * we can use this to determine if we are inside a custom navigator or not.
+ */
+export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
+  const contextKey = useContextKey();
+  const context = React.useContext(NavigatorContext);
+
+  if (context?.contextKey !== contextKey) {
+    // The _layout has changed since the last navigator
+    return <SlotNavigator {...props} />;
+  }
+
+  /*
+   * The user has defined a custom navigator
+   * <Navigator><Slot /></Navigator>
+   */
+  return <NavigatorSlot />;
+}
+
+/**
+ * Render the current navigator content.
+ */
+function NavigatorSlot() {
   const context = useNavigatorContext();
 
   const { state, descriptors } = context;
 
-  const current = state.routes.find((route, i) => {
-    return state.index === i;
-  });
-
-  if (!current) {
-    return null;
-  }
-
-  return descriptors[current.key]?.render() ?? null;
+  return descriptors[state.routes[state.index].key]?.render() ?? null;
 }
 
-/** Renders the currently selected content. */
-export function Slot(props: Omit<NavigatorProps<any>, 'children'>) {
-  const contextKey = useContextKey();
-  const context = React.useContext(NavigatorContext);
-  // Ensure the context is for the current contextKey
-  if (context?.contextKey !== contextKey) {
-    // Qualify the content and re-export.
-    return (
-      <Navigator {...props}>
-        <QualifiedSlot />
-      </Navigator>
-    );
-  }
-
-  return <QualifiedSlot />;
-}
-
-export function QualifiedSlot() {
-  return useSlot();
-}
-
+/**
+ * The default navigator for the app when no root _layout is provided.
+ */
 export function DefaultNavigator() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Navigator>
-        <QualifiedSlot />
-      </Navigator>
+      <SlotNavigator />
     </SafeAreaView>
   );
 }
 
-Navigator.Slot = Slot;
+Navigator.Slot = NavigatorSlot;
 Navigator.useContext = useNavigatorContext;
 
 /** Used to configure route settings. */

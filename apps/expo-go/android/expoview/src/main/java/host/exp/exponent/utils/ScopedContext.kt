@@ -10,12 +10,15 @@ import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase.CursorFactory
 import android.database.sqlite.SQLiteDatabase
 import android.database.DatabaseErrorHandler
+import android.os.Build
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.io.UnsupportedEncodingException
 import java.lang.Exception
 import kotlin.jvm.Throws
+
+private val TAG = ScopedContext::class.java.simpleName
 
 class ScopedContext
 @Throws(UnsupportedEncodingException::class)
@@ -25,35 +28,31 @@ constructor(context: Context?, experienceKey: ExperienceKey) : ContextWrapper(co
   private var noBackupDir: File
   private var cacheDir: File
 
-  private val scopedApplicationContext by lazy { ScopedApplicationContext(baseContext.applicationContext as Application, this) }
-
-  private fun migrateAllFiles(legacyDir: File, newDir: File) {
-    try {
-      migrateFilesRecursively(legacyDir, newDir)
-      val scopedFilesMigrationMarker = File(legacyDir, ".expo-migration")
-      scopedFilesMigrationMarker.createNewFile()
-    } catch (e: Exception) {
-      EXL.e(TAG, e)
-    }
+  private val scopedApplicationContext by lazy {
+    ScopedApplicationContext(
+      baseContext.applicationContext as Application,
+      this
+    )
   }
 
   private fun migrateFilesRecursively(legacyDir: File, newDir: File) {
-    val files = legacyDir.listFiles()
-    for (file in files) {
-      val fileName = file.name
-      val newLocation = File(newDir, fileName)
-      if (file.isDirectory) {
-        if (!newLocation.exists()) {
-          newLocation.mkdirs()
-        }
-        migrateFilesRecursively(file, newLocation)
-      } else if (!newLocation.exists()) {
-        // if a file with the same name already exists in the new location, ignore
-        // we don't want to overwrite potentially newer files
-        try {
-          FileUtils.copyFile(file, newLocation)
-        } catch (e: Exception) {
-          EXL.e(TAG, e)
+    legacyDir.listFiles()?.let { files ->
+      for (file in files) {
+        val fileName = file.name
+        val newLocation = File(newDir, fileName)
+        if (file.isDirectory) {
+          if (!newLocation.exists()) {
+            newLocation.mkdirs()
+          }
+          migrateFilesRecursively(file, newLocation)
+        } else if (!newLocation.exists()) {
+          // if a file with the same name already exists in the new location, ignore
+          // we don't want to overwrite potentially newer files
+          try {
+            FileUtils.copyFile(file, newLocation)
+          } catch (e: Exception) {
+            EXL.e(TAG, e)
+          }
         }
       }
     }
@@ -68,26 +67,27 @@ constructor(context: Context?, experienceKey: ExperienceKey) : ContextWrapper(co
     return baseContext.packageName
   }
 
-  override fun getSharedPreferences(name: String, mode: Int): SharedPreferences {
-    return baseContext.getSharedPreferences(scope + name, mode)
-  }
+  override fun getSharedPreferences(name: String, mode: Int): SharedPreferences =
+    baseContext.getSharedPreferences(scope + name, mode)
 
-  override fun moveSharedPreferencesFrom(context: Context, s: String): Boolean {
-    return baseContext.moveSharedPreferencesFrom(context, scope + s)
-  }
+  override fun moveSharedPreferencesFrom(context: Context, s: String): Boolean =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      baseContext.moveSharedPreferencesFrom(context, scope + s)
+    } else {
+      false
+    }
 
-  override fun deleteSharedPreferences(s: String): Boolean {
-    return baseContext.deleteSharedPreferences(scope + s)
-  }
+  override fun deleteSharedPreferences(s: String): Boolean =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      baseContext.deleteSharedPreferences(scope + s)
+    } else {
+      false
+    }
 
   // TODO: scope all file methods
-  override fun getFilesDir(): File {
-    return filesDir
-  }
+  override fun getFilesDir(): File = filesDir
 
-  override fun getCacheDir(): File {
-    return cacheDir
-  }
+  override fun getCacheDir(): File = cacheDir
 
   override fun getNoBackupFilesDir(): File {
     // We only need to create the directory if someone
@@ -101,39 +101,26 @@ constructor(context: Context?, experienceKey: ExperienceKey) : ContextWrapper(co
     name: String,
     mode: Int,
     factory: CursorFactory
-  ): SQLiteDatabase {
-    return baseContext.openOrCreateDatabase(scope + name, mode, factory)
-  }
+  ): SQLiteDatabase = baseContext.openOrCreateDatabase(scope + name, mode, factory)
 
   override fun openOrCreateDatabase(
     name: String,
     mode: Int,
     factory: CursorFactory,
     errorHandler: DatabaseErrorHandler?
-  ): SQLiteDatabase {
-    return baseContext.openOrCreateDatabase(scope + name, mode, factory, errorHandler)
-  }
+  ): SQLiteDatabase = baseContext.openOrCreateDatabase(scope + name, mode, factory, errorHandler)
 
-  override fun moveDatabaseFrom(context: Context, s: String): Boolean {
-    return false
-  }
+  override fun moveDatabaseFrom(context: Context, s: String) = false
 
-  override fun deleteDatabase(name: String): Boolean {
-    return baseContext.deleteDatabase(scope + name)
-  }
+  override fun deleteDatabase(name: String): Boolean = baseContext.deleteDatabase(scope + name)
 
-  override fun getDatabasePath(name: String): File {
-    return baseContext.getDatabasePath(scope + name)
-  }
+  override fun getDatabasePath(name: String): File = baseContext.getDatabasePath(scope + name)
 
-  override fun databaseList(): Array<String> {
-    val list = baseContext.databaseList()
-    return list.filter {
-      it.startsWith(scope)
-    }.map {
-      it.substring(scope.length)
-    }.toTypedArray()
-  }
+  override fun databaseList(): Array<String> = baseContext.databaseList().filter {
+    it.startsWith(scope)
+  }.map {
+    it.substring(scope.length)
+  }.toTypedArray()
 
   private fun ensureDirExists(file: File) {
     if (!file.exists()) {
@@ -144,11 +131,7 @@ constructor(context: Context?, experienceKey: ExperienceKey) : ContextWrapper(co
     }
   }
 
-  val context: Context = baseContext
-
-  companion object {
-    private val TAG = ScopedContext::class.java.simpleName
-  }
+  val context: Context get() = baseContext
 
   init {
     val scopeKey = experienceKey.getUrlEncodedScopeKey()

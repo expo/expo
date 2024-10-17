@@ -3,7 +3,7 @@ import { learnMore } from '../utils/TerminalLink';
 import { configExistsAsync, loadConfigAsync } from '../utils/metroConfigLoader';
 
 export class MetroConfigCheck implements DoctorCheck {
-  description = 'Check for issues with metro config';
+  description = 'Check for issues with Metro config';
 
   sdkVersionRange = '>=46.0.0';
 
@@ -29,7 +29,7 @@ export class MetroConfigCheck implements DoctorCheck {
       isSuccessful: !issues.length,
       issues,
       advice: issues.length
-        ? `Update your custom metro.config.js to extend @expo/metro-config.`
+        ? `Update your metro.config.js to extend @expo/metro-config.`
         : undefined,
     };
   }
