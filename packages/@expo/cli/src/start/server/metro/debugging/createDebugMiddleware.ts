@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { WebSocketServer } from 'ws';
 
 import { createHandlersFactory } from './createHandlersFactory';
 import { Log } from '../../../../log';
@@ -25,6 +26,11 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
     },
   });
 
+  // NOTE(cedric): add a temporary websocket to handle Network-related CDP events
+  websocketEndpoints['/inspector/network'] = createNetworkWebsocket(
+    websocketEndpoints['/inspector/debug']
+  );
+
   return {
     debugMiddleware: middleware,
     debugWebsocketEndpoints: websocketEndpoints,
@@ -39,4 +45,33 @@ function createLogger(
     warn: (...args) => Log.warn(logPrefix, ...args),
     error: (...args) => Log.error(logPrefix, ...args),
   };
+}
+
+/**
+ * This adds a dedicated websocket connection that handles Network-related CDP events.
+ * It's a temporary solution until Fusebox either implements the Network CDP domain,
+ * or allows external domain agents that can send messages over the CDP socket to the debugger.
+ * The Network websocket rebroadcasts events on the debugger CDP connections.
+ */
+function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
+  const wss = new WebSocketServer({
+    noServer: true,
+    perMessageDeflate: true,
+    // Don't crash on exceptionally large messages - assume the device is
+    // well-behaved and the debugger is prepared to handle large messages.
+    maxPayload: 0,
+  });
+
+  wss.on('connection', (networkSocket) => {
+    networkSocket.on('message', (data) => {
+      // Rebroadcast the Network events to all connected debuggers
+      debuggerWebsocket.clients.forEach((debuggerSocket) => {
+        if (debuggerSocket.readyState === debuggerSocket.OPEN) {
+          debuggerSocket.send(data);
+        }
+      });
+    });
+  });
+
+  return wss;
 }
