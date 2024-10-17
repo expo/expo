@@ -81,7 +81,6 @@
     "internal-ip": "^4.3.0",
     "is-docker": "^2.0.0",
     "is-wsl": "^2.1.1",
-    "json-schema-deref-sync": "^0.13.0",
     "lodash.debounce": "^4.0.8",
     "minimatch": "^3.0.4",
     "node-forge": "^1.3.1",
