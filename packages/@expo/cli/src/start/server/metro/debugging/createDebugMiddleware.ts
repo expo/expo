@@ -15,7 +15,7 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
     projectRoot: metroBundler.projectRoot,
     serverBaseUrl: metroBundler.getUrlCreator().constructUrl({ scheme: 'http', hostType: 'lan' }),
     logger: createLogger(chalk.bold('Debug:')),
-    unstable_customInspectorMessageHandler: createHandlersFactory(metroBundler),
+    unstable_customInspectorMessageHandler: createHandlersFactory(),
     unstable_experiments: {
       // Enable the Network tab in React Native DevTools
       enableNetworkInspector: true,
