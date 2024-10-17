@@ -16,21 +16,16 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.core.os.bundleOf
-import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.interfaces.fabric.ReactSurface
-import com.facebook.react.jscexecutor.JSCExecutorFactory
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.ReactSurfaceImpl
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
-import expo.modules.ExpoReactHostFactory
 import expo.modules.ReactNativeHostWrapper
 import expo.modules.jsonutils.require
 import expo.modules.manifests.core.ExpoUpdatesManifest
@@ -65,7 +60,6 @@ import host.exp.exponent.storage.ExponentDB
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.AsyncCondition
 import host.exp.exponent.utils.AsyncCondition.AsyncConditionListener
-import host.exp.exponent.utils.BundleJSONConverter
 import host.exp.expoview.BuildConfig
 import host.exp.expoview.ExpoViewBuildConfig
 import host.exp.expoview.Exponent
@@ -149,9 +143,9 @@ class Kernel : KernelInterface() {
       val action = intent.action
       val uri = intent.data
       return if ((
-                uri != null &&
-                        ((Intent.ACTION_VIEW == action) || (NfcAdapter.ACTION_NDEF_DISCOVERED == action))
-                )
+        uri != null &&
+          ((Intent.ACTION_VIEW == action) || (NfcAdapter.ACTION_NDEF_DISCOVERED == action))
+        )
       ) {
         uri.toString()
       } else {
@@ -331,7 +325,7 @@ class Kernel : KernelInterface() {
       surface.start()
       return surface
     }
-    
+
   private val kernelLaunchOptions = bundleOf(
     "exp" to Bundle()
   )
@@ -598,10 +592,10 @@ class Kernel : KernelInterface() {
         try {
           val baseIntent = task.taskInfo.baseIntent
           if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
-                    baseIntent.getStringExtra(
-                      KernelConstants.MANIFEST_URL_KEY
-                    ) == manifestUrl
-                    )
+              baseIntent.getStringExtra(
+                KernelConstants.MANIFEST_URL_KEY
+              ) == manifestUrl
+              )
           ) {
             return@run task
           }
@@ -1038,9 +1032,9 @@ class Kernel : KernelInterface() {
         for (i in 2 until stackTraceElements.size) {
           val element = stackTraceElements[i]
           if ((
-                    (element.fileName != null) && element.fileName.startsWith(Kernel::class.java.simpleName) &&
-                            ((element.methodName == "handleReactNativeError") || (element.methodName == "handleError"))
-                    )
+            (element.fileName != null) && element.fileName.startsWith(Kernel::class.java.simpleName) &&
+              ((element.methodName == "handleReactNativeError") || (element.methodName == "handleError"))
+            )
           ) {
             // Ignore these base error handling methods.
             continue

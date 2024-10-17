@@ -15,8 +15,7 @@ import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.BridgelessDevSupportManager
 import versioned.host.exp.exponent.VersionedUtils
 
-
-class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDownloadListener?, private val minNumShakes: Int = 100, ) : DevSupportManagerFactory {
+class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDownloadListener?, private val minNumShakes: Int = 100) : DevSupportManagerFactory {
   override fun create(
     applicationContext: Context,
     reactInstanceManagerHelper: ReactInstanceDevHelper,
