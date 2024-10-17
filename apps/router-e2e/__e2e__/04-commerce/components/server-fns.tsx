@@ -1,6 +1,6 @@
 'use server';
 
-import { Image, ScrollView, Text, View } from 'react-native';
+import { Image, Animated, ScrollView, Text, View } from 'react-native';
 import { ScreenOptions } from './react-navigation';
 import { FormItem } from './form';
 import { FormList } from './form-list';
@@ -98,6 +98,8 @@ export async function loadScreen() {
 }
 
 import InfoPage from './info-page';
+import { useEffect, useMemo, useRef } from 'react';
+import { FadeIn } from './fade-in';
 
 export async function loadInfoScreen() {
   return (
@@ -143,46 +145,51 @@ export async function loadDetailScreen({ params }) {
           gap: 8,
         }}
         automaticallyAdjustsScrollIndicatorInsets>
-        <Image
-          source={{ uri: mockData.sprites.front_default }}
-          style={{ width: '100%', height: 300, resizeMode: 'contain' }}
-        />
+        <FadeIn>
+          <Image
+            source={{ uri: mockData.sprites.front_default }}
+            style={{ width: '100%', height: 300, resizeMode: 'contain' }}
+          />
+        </FadeIn>
 
-        <SectionTitle>Types</SectionTitle>
-        <FormList>
-          {mockData.types.map((type) => (
-            <>
-              <FormItem>
-                <Text
-                  style={{
-                    color: Colors.label,
-                    fontSize: 18,
-                    fontWeight: '600',
-                  }}>
-                  {type.type.name}
-                </Text>
-              </FormItem>
-            </>
-          ))}
-        </FormList>
+        <FadeIn>
+          <SectionTitle>Types</SectionTitle>
+          <FormList>
+            {mockData.types.map((type) => (
+              <>
+                <FormItem>
+                  <Text
+                    style={{
+                      color: Colors.label,
+                      fontSize: 18,
+                      fontWeight: '600',
+                    }}>
+                    {type.type.name}
+                  </Text>
+                </FormItem>
+              </>
+            ))}
+          </FormList>
 
-        <SectionTitle>Moves</SectionTitle>
-        <FormList>
-          {mockData.moves.map((type) => (
-            <>
-              <FormItem>
-                <Text
-                  style={{
-                    color: Colors.label,
-                    fontSize: 18,
-                    fontWeight: '600',
-                  }}>
-                  {type.move.name}
-                </Text>
-              </FormItem>
-            </>
-          ))}
-        </FormList>
+          <SectionTitle>Moves</SectionTitle>
+
+          <FormList>
+            {mockData.moves.map((type) => (
+              <>
+                <FormItem>
+                  <Text
+                    style={{
+                      color: Colors.label,
+                      fontSize: 18,
+                      fontWeight: '600',
+                    }}>
+                    {type.move.name}
+                  </Text>
+                </FormItem>
+              </>
+            ))}
+          </FormList>
+        </FadeIn>
       </ScrollView>
     </>
   );
