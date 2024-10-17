@@ -1,14 +1,14 @@
-import { DefaultNavigatorOptions, ParamListBase, TabActionHelpers, TabNavigationState } from '@react-navigation/native';
+import { ParamListBase, TabActionHelpers, TabNavigationState } from '@react-navigation/native';
 import { ReactNode } from 'react';
 import { ViewProps } from 'react-native';
-import { ExpoTabsScreenOptions, TabNavigationEventMap } from './TabContext';
+import { ExpoTabsProps, ExpoTabsScreenOptions, TabNavigationEventMap } from './TabContext';
 import { ExpoTabRouterOptions } from './TabRouter';
 import { ScreenTrigger } from './common';
 export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
-export type UseTabsOptions = Omit<DefaultNavigatorOptions<ParamListBase, TabNavigationState<any>, ExpoTabsScreenOptions, TabNavigationEventMap>, 'children'> & Omit<ExpoTabRouterOptions, 'initialRouteName' | 'triggerMap'>;
+export type UseTabsOptions = Omit<ExpoTabsProps, 'children'> & Omit<ExpoTabRouterOptions, 'initialRouteName' | 'triggerMap'>;
 export type TabsProps = ViewProps & {
     asChild?: boolean;
     options?: UseTabsOptions;

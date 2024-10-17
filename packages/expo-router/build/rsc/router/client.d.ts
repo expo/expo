@@ -7,15 +7,18 @@
  *
  * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
  */
-import type { ReactNode, AnchorHTMLAttributes } from 'react';
+import type { ReactNode, AnchorHTMLAttributes, ReactElement } from 'react';
 import type { RouteProps } from './common.js';
-import type { Router as ClassicExpoRouterType } from '../../imperative-api';
-import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Link.js';
-import type { Href } from '../../types.js';
-export declare function useRouter_UNSTABLE(): ClassicExpoRouterType & RouteProps & {
+export declare function useRouter_UNSTABLE(): {
+    push: (to: string) => void;
+    replace: (to: string) => void;
     reload: () => void;
+    back: () => void;
     forward: () => void;
-    prefetch: <T extends string | object>(href: Href<T>) => void;
+    prefetch: (to: string) => void;
+    path: string;
+    query: string;
+    hash: string;
 };
 type ShouldSkip = (readonly [
     string,
@@ -59,9 +62,15 @@ export declare function ServerRouter({ children, route }: {
 }): import("react").FunctionComponentElement<{
     children?: ReactNode;
 }>;
-export type LinkProps<T extends string | object> = ClassicLinkProps<T> & {
+export type LinkProps = {
     href: string;
+    pending?: ReactNode;
+    notPending?: ReactNode;
+    children: ReactNode;
+    unstable_prefetchOnEnter?: boolean;
+    unstable_prefetchOnView?: boolean;
+    asChild?: boolean;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
-export declare const Link: LinkComponent;
+export declare function Link({ href: to, children, pending, notPending, unstable_prefetchOnEnter, unstable_prefetchOnView, asChild, ...props }: LinkProps): ReactElement;
 export {};
 //# sourceMappingURL=client.d.ts.map

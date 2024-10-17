@@ -100,6 +100,7 @@
 - Move location of assetPatternsToBeBundled config key ([#31584](https://github.com/expo/expo/pull/31584) by [@wschurman](https://github.com/wschurman))
 - Throwing an error for DOM components if no webview installed. ([#31974](https://github.com/expo/expo/pull/31974) by [@kudo](https://github.com/kudo))
 - Update Metro type definitions to `metro@0.80.12`. ([#32007](https://github.com/expo/expo/pull/32007) by [@byCedric](https://github.com/byCedric))
+- Remove `json-schema-deref-sync` dependency. ([#32048](https://github.com/expo/expo/pull/32048) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

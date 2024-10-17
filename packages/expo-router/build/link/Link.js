@@ -13,7 +13,6 @@ const href_1 = require("./href");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const hooks_1 = require("../hooks");
 const useFocusEffect_1 = require("../useFocusEffect");
-const useLinkHooks_1 = require("./useLinkHooks");
 /** Redirects to the href as soon as the component is mounted. */
 function Redirect({ href }) {
     const router = (0, hooks_1.useRouter)();
@@ -34,13 +33,53 @@ exports.Redirect = Redirect;
  */
 exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
+// Mutate the style prop to add the className on web.
+function useInteropClassName(props) {
+    if (react_native_1.Platform.OS !== 'web') {
+        return props.style;
+    }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return (0, react_1.useMemo)(() => {
+        if (props.className == null) {
+            return props.style;
+        }
+        const cssStyle = {
+            $$css: true,
+            __routerLinkClassName: props.className,
+        };
+        if (Array.isArray(props.style)) {
+            return [...props.style, cssStyle];
+        }
+        return [props.style, cssStyle];
+    }, [props.style, props.className]);
+}
+const useHrefAttrs = react_native_1.Platform.select({
+    web: function useHrefAttrs({ asChild, rel, target, download }) {
+        return (0, react_1.useMemo)(() => {
+            const hrefAttrs = {
+                rel,
+                target,
+                download,
+            };
+            if (asChild) {
+                return hrefAttrs;
+            }
+            return {
+                hrefAttrs,
+            };
+        }, [asChild, rel, target, download]);
+    },
+    default: function useHrefAttrs() {
+        return {};
+    },
+});
 function ExpoRouterLink({ href, replace, push, 
 // TODO: This does not prevent default on the anchor tag.
 relativeToDirectory, asChild, rel, target, download, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
-    const style = (0, useLinkHooks_1.useInteropClassName)(rest);
+    const style = useInteropClassName(rest);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
-    const hrefAttrs = (0, useLinkHooks_1.useHrefAttrs)({ asChild, rel, target, download });
+    const hrefAttrs = useHrefAttrs({ asChild, rel, target, download });
     const resolvedHref = (0, react_1.useMemo)(() => {
         if (href == null) {
             throw new Error('Link: href is required');

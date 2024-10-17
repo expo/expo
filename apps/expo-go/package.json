@@ -13,7 +13,10 @@
   "author": "Expo",
   "license": "MIT",
   "jest": {
-    "preset": "jest-expo/ios"
+    "preset": "jest-expo/ios",
+    "modulePathIgnorePatterns": [
+      "./ios/Pods"
+    ]
   },
   "dependencies": {
     "@apollo/client": "^3.4.10",
@@ -63,7 +66,7 @@
     "prop-types": "^15.7.2",
     "querystring": "^0.2.0",
     "react": "18.2.0",
-    "react-native": "0.76.0-rc.4",
+    "react-native": "0.76.0-rc.5",
     "react-native-fade-in-image": "^1.6.1",
     "react-native-gesture-handler": "~2.20.0",
     "react-native-infinite-scroll-view": "^0.4.5",

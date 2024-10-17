@@ -8,7 +8,7 @@ import '@expo/metro-runtime';
 import { Options } from '../getRoutes';
 /** Get the linking manifest from a Node.js process. */
 declare function getManifest(options?: Options): Promise<{
-    initialRouteName: string | undefined;
+    initialRouteName: undefined;
     screens: Record<string, import("../getReactNavigationConfig").Screen>;
 }>;
 export declare function getStaticContent(location: URL): Promise<string>;

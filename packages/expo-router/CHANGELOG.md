@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- Update to React Navigation v7 ([#28109](https://github.com/expo/expo/pull/28109) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🎉 New features
 
@@ -42,6 +43,7 @@
 - Fix incorrect initialRouteName for nested groups. ([#31025](https://github.com/expo/expo/pull/31025) by [@marklawlor](https://github.com/marklawlor))
 - Ensure `router.replace()` falls back correctly on `<Drawer />` navigators. ([#26381](https://github.com/expo/expo/pull/26381) by [@jleem99](https://github.com/jleem99))
 - Fix passing style array to `<Link />` when using `asChild`. ([#31373](https://github.com/expo/expo/pull/31373) by [@marklawlor](https://github.com/marklawlor))
+- Add `legacy_subscribe` to `+native-intent`. ([#31765](https://github.com/expo/expo/pull/31765) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 

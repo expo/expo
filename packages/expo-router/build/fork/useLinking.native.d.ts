@@ -1,8 +1,8 @@
-import { NavigationContainerRef, ParamListBase } from '@react-navigation/core';
-import type { LinkingOptions } from '@react-navigation/native';
+import { type NavigationContainerRef, type ParamListBase } from '@react-navigation/core';
+import { LinkingOptions } from '@react-navigation/native';
 import * as React from 'react';
 type Options = LinkingOptions<ParamListBase>;
-export default function useLinking(ref: React.RefObject<NavigationContainerRef<ParamListBase>>, { filter, config, getInitialURL, subscribe, getStateFromPath, getActionFromState, }: Options): {
+export declare function useLinking(ref: React.RefObject<NavigationContainerRef<ParamListBase>>, { enabled, prefixes, filter, config, getInitialURL, subscribe, getStateFromPath, getActionFromState, }: Options, onUnhandledLinking: (lastUnhandledLining: string | undefined) => void): {
     getInitialState: () => PromiseLike<(Partial<Omit<Readonly<{
         key: string;
         index: number;

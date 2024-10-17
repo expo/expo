@@ -192,7 +192,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
          *
          */
         if (navigationState.type === 'stack') {
-            rootPayload.key = `${rootPayload.name}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+            rootPayload.params.__EXPO_ROUTER_key = `${rootPayload.name}-${(0, non_secure_1.nanoid)()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
         }
     }
     if (navigationState.type === 'expo-tab') {
@@ -205,7 +205,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
         type,
         target: navigationState.key,
         payload: {
-            key: rootPayload.key,
+            // key: rootPayload.key,
             name: rootPayload.screen,
             params: rootPayload.params,
         },
