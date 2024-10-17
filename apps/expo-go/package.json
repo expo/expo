@@ -21,7 +21,7 @@
     "@expo/vector-icons": "^14.0.0",
     "@gorhom/bottom-sheet": "4.4.6",
     "@graphql-codegen/introspection": "^2.1.1",
-    "@react-native-async-storage/async-storage": "^2.0.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "^8.2.0",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-community/slider": "4.5.2",

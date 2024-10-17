@@ -1,3 +1,110 @@
+diff --git a/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncLocalStorageUtil.java b/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncLocalStorageUtil.java
+index 689901f..7d6aa64 100644
+--- a/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncLocalStorageUtil.java
++++ b/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncLocalStorageUtil.java
+@@ -159,7 +159,9 @@ public class AsyncLocalStorageUtil {
+     }
+ 
+     File nextStorageFile = ctx.getDatabasePath("AsyncStorage");
+-    File currentStorageFile = ctx.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME);
++    // NOTE(kudo): Expo Go doesn't turn on next storage, having dummy db name to pass build
++    // File currentStorageFile = ctx.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME);
++    File currentStorageFile = ctx.getDatabasePath("UNUSED");
+     boolean isCheckpointRequired = !nextStorageFile.exists() && currentStorageFile.exists();
+     if (!isCheckpointRequired) {
+       Log.i("AsyncStorage_Next", "SQLite checkpoint not required.");
+diff --git a/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageExpoMigration.java b/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageExpoMigration.java
+index cd79cc0..f956dec 100644
+--- a/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageExpoMigration.java
++++ b/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageExpoMigration.java
+@@ -38,7 +38,8 @@ public class AsyncStorageExpoMigration {
+         try {
+             // Create the storage file
+             ReactDatabaseSupplier.getInstance(context).get();
+-            copyFile(new FileInputStream(expoDatabase), new FileOutputStream(context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME)));
++            // NOTE(kudo): Don't run migration on Expo Go for backward compatibility
++//            copyFile(new FileInputStream(expoDatabase), new FileOutputStream(context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME)));
+             Log.v(LOG_TAG, "Migrated most recently modified database " + expoDatabase.getName() + " to RKStorage");
+         } catch (Exception e) {
+             Log.v(LOG_TAG, "Failed to migrate scoped database " + expoDatabase.getName());
+@@ -62,7 +63,9 @@ public class AsyncStorageExpoMigration {
+     }
+ 
+     private static boolean isAsyncStorageDatabaseCreated(Context context) {
+-        return context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME).exists();
++        // NOTE(kudo): Don't run migration on Expo Go for backward compatibility
++        // return context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME).exists();
++        return true;
+     }
+ 
+     // Find all database files that the user may have created while using Expo.
+diff --git a/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java b/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java
+index 3e40248..58d2fec 100644
+--- a/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java
++++ b/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java
+@@ -33,7 +33,7 @@ import java.util.concurrent.Executor;
+ import java.util.concurrent.Executors;
+ 
+ @ReactModule(name = AsyncStorageModule.NAME)
+-public final class AsyncStorageModule
++public class AsyncStorageModule
+     extends NativeAsyncStorageModuleSpec implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
+ 
+   // changed name to not conflict with AsyncStorage from RN repo
+@@ -43,7 +43,7 @@ public final class AsyncStorageModule
+   // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
+   private static final int MAX_SQL_KEYS = 999;
+ 
+-  private ReactDatabaseSupplier mReactDatabaseSupplier;
++  public ReactDatabaseSupplier mReactDatabaseSupplier;
+   private boolean mShuttingDown = false;
+ 
+   private final SerialExecutor executor;
+@@ -66,6 +66,7 @@ public final class AsyncStorageModule
+     this.executor = new SerialExecutor(executor);
+     reactContext.addLifecycleEventListener(this);
+     // Creating the database MUST happen after the migration.
++    // NOTE(kudo): ExponentAsyncStorageModule will setup the `mReactDatabaseSupplier`
+     mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
+   }
+ 
+diff --git a/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/ReactDatabaseSupplier.java b/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/ReactDatabaseSupplier.java
+index c7c59b0..909af38 100644
+--- a/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/ReactDatabaseSupplier.java
++++ b/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/ReactDatabaseSupplier.java
+@@ -22,7 +22,9 @@ import javax.annotation.Nullable;
+ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
+ 
+   // VisibleForTesting
+-  public static final String DATABASE_NAME = "RKStorage";
++  // NOTE(kudo): Dynamic database name for scoped async storage
++  // public static final String DATABASE_NAME = "RKStorage";
++  public String DATABASE_NAME = "RKStorage";
+ 
+   private static final int DATABASE_VERSION = 1;
+   private static final int SLEEP_TIME_MS = 30;
+@@ -43,9 +45,19 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
+   private @Nullable SQLiteDatabase mDb;
+   private long mMaximumDatabaseSize =  BuildConfig.AsyncStorage_db_size * 1024L * 1024L;
+ 
+-  private ReactDatabaseSupplier(Context context) {
+-    super(context, DATABASE_NAME, null, DATABASE_VERSION);
++  private ReactDatabaseSupplier(Context context) {// NOTE(kudo): Dynamic database name for scoped async storage
++    // super(context, databaseName, null, DATABASE_VERSION);
++    // mContext = context;
++    super(context, "RKStorage", null, DATABASE_VERSION);
+     mContext = context;
++    DATABASE_NAME = "RKStorage";
++  }
++
++  // NOTE(kudo): Dynamic database name for scoped async storage
++  public ReactDatabaseSupplier(Context context, String databaseName) {
++    super(context, databaseName, null, DATABASE_VERSION);
++    mContext = context;
++    DATABASE_NAME = databaseName;
+   }
+ 
+   public static ReactDatabaseSupplier getInstance(Context context) {
 diff --git a/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.h b/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.h
 index 38e5178..9a87331 100644
 --- a/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.h
@@ -19,7 +126,7 @@ index 38e5178..9a87331 100644
  // array of arrays at position 1.
  - (void)multiGet:(NSArray<NSString *> *)keys callback:(RCTResponseSenderBlock)callback;
 diff --git a/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.mm b/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.mm
-index 6b81187..d61ceff 100644
+index 6b81187..9daa5ab 100644
 --- a/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.mm
 +++ b/node_modules/@react-native-async-storage/async-storage/ios/RNCAsyncStorage.mm
 @@ -14,7 +14,9 @@
@@ -33,7 +140,7 @@ index 6b81187..d61ceff 100644
  static NSString *const RCTOldStorageDirectory = @"RNCAsyncLocalStorage_V1";
  static NSString *const RCTExpoStorageDirectory = @"RCTAsyncLocalStorage";
  static NSString *const RCTManifestFileName = @"manifest.json";
-@@ -150,34 +152,11 @@ static NSString *RCTCreateStorageDirectoryPath(NSString *storageDir)
+@@ -150,35 +152,11 @@ static NSString *RCTCreateStorageDirectoryPath(NSString *storageDir)
      return storageDirectoryPath;
  }
  
@@ -65,10 +172,11 @@ index 6b81187..d61ceff 100644
 -    });
 -    return manifestFilePath;
 -}
- 
+-
  // Only merges objects - all other types are just clobbered (including arrays)
  static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
-@@ -207,55 +186,29 @@ static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *so
+ {
+@@ -207,55 +185,30 @@ static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *so
      return modified;
  }
  
@@ -108,7 +216,7 @@ index 6b81187..d61ceff 100644
 -    });
 -    return cache;
 -}
--
+ 
  static BOOL RCTHasCreatedStorageDirectory = NO;
 -static NSDictionary *RCTDeleteStorageDirectory()
 +
@@ -251,7 +359,7 @@ index 6b81187..d61ceff 100644
  
  - (void)clearAllData
  {
-@@ -467,14 +424,6 @@ RCT_EXPORT_MODULE()
+@@ -467,13 +424,6 @@ RCT_EXPORT_MODULE()
      });
  }
  
@@ -262,11 +370,10 @@ index 6b81187..d61ceff 100644
 -      RCTDeleteStorageDirectory();
 -    });
 -}
--
+ 
  - (void)invalidate
  {
-     if (_clearOnInvalidate) {
-@@ -507,12 +456,13 @@ RCT_EXPORT_MODULE()
+@@ -507,12 +457,13 @@ RCT_EXPORT_MODULE()
      RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
  
      NSError *error = nil;
@@ -279,21 +386,21 @@ index 6b81187..d61ceff 100644
 +    // NOTE(nikki93): `withIntermediateDirectories:YES` makes this idempotent
 +    [[NSFileManager defaultManager] createDirectoryAtPath:RCTGetStorageDirectory()
 +                              withIntermediateDirectories:YES
-+                                               attributes:nil
-+                                                    error:&error];
++                                             attributes:nil
++                                                error:&error];
 +    if (error) {
 +      return RCTMakeError(@"Failed to create storage directory.", error, nil);
      }
  
      if (!_haveSetup) {
-@@ -523,11 +473,13 @@ RCT_EXPORT_MODULE()
+@@ -523,11 +474,13 @@ RCT_EXPORT_MODULE()
              // by default, we want to exclude AsyncStorage data from backup
              isExcludedFromBackup = @YES;
          }
 -        RCTAsyncStorageSetExcludedFromBackup(RCTCreateStorageDirectoryPath(RCTStorageDirectory),
 -                                             isExcludedFromBackup);
-+//        RCTAsyncStorageSetExcludedFromBackup(RCTCreateStorageDirectoryPath(RCTStorageDirectory),
-+//                                             isExcludedFromBackup);
++      // RCTAsyncStorageSetExcludedFromBackup(RCTCreateStorageDirectoryPath(RCTStorageDirectory),
++      //                                             isExcludedFromBackup);
  
          NSDictionary *errorOut = nil;
 -        NSString *serialized = RCTReadFile(RCTCreateStorageDirectoryPath(RCTGetManifestFilePath()),
@@ -303,12 +410,12 @@ index 6b81187..d61ceff 100644
                                             RCTManifestFileName,
                                             &errorOut);
          if (!serialized) {
-@@ -563,7 +515,7 @@ RCT_EXPORT_MODULE()
+@@ -563,7 +516,7 @@ RCT_EXPORT_MODULE()
  {
      NSError *error;
      NSString *serialized = RCTJSONStringify(_manifest, &error);
 -    [serialized writeToFile:RCTCreateStorageDirectoryPath(RCTGetManifestFilePath())
-+    [serialized writeToFile:RCTGetManifestFilePath()
++  [serialized writeToFile:RCTGetManifestFilePath()
                   atomically:YES
                     encoding:NSUTF8StringEncoding
                        error:&error];

@@ -5,6 +5,7 @@ import android.app.Application
 import android.os.Debug
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.branch.BranchManager
@@ -72,7 +73,7 @@ abstract class ExpoApplication : Application() {
       Debug.startMethodTracing("coldStart")
     }
 
-    SoLoader.init(applicationContext, false)
+    SoLoader.init(applicationContext, OpenSourceMergedSoMapping)
     // For the New Architecture, we load the native entry point for this app.
     load()
 
