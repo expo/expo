@@ -298,6 +298,17 @@ class ContactsModule : Module() {
       contactPickingPromise = promise
       currentActivity.startActivityForResult(intent, RC_PICK_CONTACT)
     }
+
+    AsyncFunction("displayContactAsync") { contactId: String, promise: Promise ->
+      val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId)
+      val intent = Intent(Intent.ACTION_VIEW).apply {
+        setData(uri)
+      }
+      currentActivity.startActivity(intent)
+      promise.resolve(true)
+    }
+
+
   }
 
   private fun presentForm(contact: Contact, promise: Promise) {
