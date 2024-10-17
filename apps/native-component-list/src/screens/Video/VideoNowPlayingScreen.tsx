@@ -13,7 +13,7 @@ export default function VideoNowPlayingScreen() {
 
   const player = useVideoPlayer(bigBuckBunnySource, (player) => {
     player.loop = true;
-    player.showNowPlayingNotification = false;
+    player.showNowPlayingNotification = showNowPlaying;
     player.staysActiveInBackground = true;
     player.play();
   });
