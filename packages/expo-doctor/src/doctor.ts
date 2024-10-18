@@ -10,7 +10,7 @@ import {
   DoctorCheckParams,
   DoctorCheckResult,
 } from './checks/checks.types';
-import { getDisabledChecks, getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
+import { getCngCheckStatus, getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
 import { env } from './utils/env';
 import { isNetworkError } from './utils/errors';
 import { isInteractive } from './utils/interactive';
@@ -148,7 +148,7 @@ export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
   const projectConfig = getConfig(projectRoot);
-  const disabledChecks = getDisabledChecks(projectConfig.pkg);
+  const isCngCheckEnabled = getCngCheckStatus(projectConfig.pkg);
 
   // expo-doctor relies on versioned CLI, which is only available for 44+
   try {
@@ -163,12 +163,21 @@ export async function actionAsync(projectRoot: string) {
     return;
   }
 
-  const filteredChecks = getChecksInScopeForProject(projectConfig.exp, projectConfig.pkg).filter(
-    (check) => !disabledChecks.includes(check.constructor.name)
-  );
+  const filteredChecks = getChecksInScopeForProject(projectConfig.exp, projectConfig.pkg);
 
-  if (disabledChecks.length > 0) {
-    Log.log(chalk.yellow(`Skipping disabled checks: ${disabledChecks.join(', ')}`));
+  if (!isCngCheckEnabled) {
+    // remove CNG check from the list of checks
+    filteredChecks.splice(
+      filteredChecks.findIndex(
+        (check) => check.constructor.name === 'AppConfigFieldsNotSyncedToNativeProjectsCheck'
+      ),
+      1
+    );
+    Log.log(
+      chalk.yellow(
+        `CNG check is disabled. You can re-enable it by setting 'cngCheckEnabled' to true in package.json.`
+      )
+    );
   }
 
   const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
