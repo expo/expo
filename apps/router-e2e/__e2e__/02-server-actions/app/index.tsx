@@ -1,9 +1,9 @@
 import 'server-only';
+import { Text, View } from 'react-native';
 
 import { Counter } from '../components/counter';
 import { greet } from '../components/server-actions-in-file';
 import { UIHost } from '../components/ui-host';
-import { Text, View } from '../lib/react-native';
 
 type ServerFunction<T> = T extends (...args: infer A) => infer R
   ? (...args: A) => Promise<R>

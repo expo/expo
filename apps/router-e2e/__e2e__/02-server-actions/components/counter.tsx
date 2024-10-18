@@ -1,7 +1,7 @@
 /// <reference types="react/canary" />
 'use client';
 
-import { View, Text, Button } from '../lib/react-native';
+import { View, Text, Button } from 'react-native';
 import { useState, useTransition } from 'react';
 
 export const Counter = ({ greet }: { greet: (name: string) => Promise<string> }) => {
