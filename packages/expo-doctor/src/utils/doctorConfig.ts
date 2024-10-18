@@ -17,13 +17,21 @@ import { gteSdkVersion } from './versions';
  *        "enabled": true,
  *        "exclude": ["/foo/", "bar"]
  *        "listUnknownPackages": true,
- *      }
+ *      },
+ *      "cngCheckEnabled": false
  *    }
  *  }
  * ```
  **/
 
-export function getDoctorConfig(pkg: any) {
+export function getDoctorConfig(pkg: any): {
+  reactNativeDirectoryCheck?: {
+    enabled?: boolean;
+    exclude?: string[];
+    listUnknownPackages?: boolean;
+  };
+  cngCheckEnabled?: boolean;
+} {
   return pkg?.expo?.doctor ?? {};
 }
 
@@ -69,4 +77,14 @@ export function getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg: any)
   }
 
   return listUnknownPackages;
+}
+
+/**
+ * Get status of CNG check
+ * @param pkg package.json
+ * @returns true if the check is enabled, false otherwise
+ */
+export function getCngCheckStatus(pkg: any): boolean {
+  const config = getDoctorConfig(pkg);
+  return config.cngCheckEnabled ?? true;
 }
