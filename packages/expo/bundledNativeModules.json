@@ -10,6 +10,7 @@
   "@react-native-picker/picker": "2.7.5",
   "@react-native-segmented-control/segmented-control": "2.5.2",
   "@stripe/stripe-react-native": "0.37.2",
+  "eslint-config-expo": "~7.1.2",
   "expo-analytics-amplitude": "~11.3.0",
   "expo-app-auth": "~11.1.0",
   "expo-app-loader-provider": "~8.0.0",
