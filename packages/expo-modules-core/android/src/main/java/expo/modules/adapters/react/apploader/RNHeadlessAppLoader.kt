@@ -37,7 +37,8 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
                 appRecords[params.appScopeKey] = context
                 callback?.apply(true)
               }
-            })
+            }
+          )
           reactHost.start()
         } else {
           // Old architecture
@@ -50,7 +51,8 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
                 appRecords[params.appScopeKey] = context
                 callback?.apply(true)
               }
-            })
+            }
+          )
           reactInstanceManager.createReactContextInBackground()
         }
       } else {
