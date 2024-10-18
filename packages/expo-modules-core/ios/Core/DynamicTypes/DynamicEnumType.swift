@@ -18,6 +18,9 @@ internal struct DynamicEnumType: AnyDynamicType {
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
+    if var value = value as? any Enumerable {
+      return value
+    }
     return try innerType.create(fromRawValue: value)
   }
 
