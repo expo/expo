@@ -9,6 +9,7 @@ const getPathFromState_1 = require("../fork/getPathFromState");
 const imperative_api_1 = require("../imperative-api");
 const useLinkToPathProps_1 = require("../link/useLinkToPathProps");
 const matchers_1 = require("../matchers");
+const Navigator_1 = require("../views/Navigator");
 const TabTriggerSlot = react_slot_1.Slot;
 function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }) {
     const { trigger, triggerProps } = useTabTrigger({
@@ -36,9 +37,8 @@ function isTabTrigger(child) {
 }
 exports.isTabTrigger = isTabTrigger;
 function useTabTrigger({ name, reset, onPress, onLongPress }) {
-    const navigation = (0, react_1.useContext)(TabContext_1.TabsNavigatorContext);
+    const { state, navigation } = (0, Navigator_1.useNavigatorContext)();
     const triggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
-    const state = (0, react_1.useContext)(TabContext_1.TabsStateContext);
     const getTrigger = (0, react_1.useCallback)((name) => {
         const config = triggerMap[name];
         if (!config) {

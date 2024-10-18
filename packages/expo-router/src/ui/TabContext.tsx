@@ -77,18 +77,6 @@ export type TabContextValue = TabsDescriptor['options'];
 
 export const TabContext = createContext<TabContextValue>({});
 export const TabTriggerMapContext = createContext<TriggerMap>({});
-export const TabsDescriptorsContext = createContext<TabsContextValue['descriptors']>({});
-export const TabsNavigatorContext = createContext<TabsContextValue['navigation'] | null>(null);
-export const TabsStateContext = createContext<TabsContextValue['state']>({
-  type: 'tab',
-  history: [],
-  index: -1,
-  key: '',
-  stale: false,
-  routeNames: [],
-  routes: [],
-  preloadedRouteKeys: [],
-});
 
 export type Route = TabNavigationState<ParamListBase>['routes'][number];
 export type TabsDescriptor = TabsContextValue['descriptors'][number];

@@ -45,7 +45,7 @@ export declare function useTabTrigger({ name, reset, onPress, onLongPress }: Tab
         };
         index: number;
         isFocused: boolean;
-        route: import("@react-navigation/routers").NavigationRoute<any, string | number | symbol>;
+        route: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>;
         resolvedHref: string;
     } | {
         type: "external";
@@ -53,7 +53,7 @@ export declare function useTabTrigger({ name, reset, onPress, onLongPress }: Tab
         href: string;
         index: number;
         isFocused: boolean;
-        route: import("@react-navigation/routers").NavigationRoute<any, string | number | symbol>;
+        route: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>;
         resolvedHref: string;
     } | undefined;
     trigger: {
@@ -73,7 +73,7 @@ export declare function useTabTrigger({ name, reset, onPress, onLongPress }: Tab
         };
         index: number;
         isFocused: boolean;
-        route: import("@react-navigation/routers").NavigationRoute<any, string | number | symbol>;
+        route: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>;
         resolvedHref: string;
     } | {
         type: "external";
@@ -81,7 +81,7 @@ export declare function useTabTrigger({ name, reset, onPress, onLongPress }: Tab
         href: string;
         index: number;
         isFocused: boolean;
-        route: import("@react-navigation/routers").NavigationRoute<any, string | number | symbol>;
+        route: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>;
         resolvedHref: string;
     } | undefined;
     triggerProps: {
