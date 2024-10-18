@@ -15,6 +15,8 @@ const bigBuckBunnySource: VideoSource = {
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
+    artwork:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/1200px-Big_buck_bunny_poster_big.jpg',
   },
 };
 
@@ -23,6 +25,7 @@ const elephantsDreamSource: VideoSource = {
   metadata: {
     title: 'Elephants Dream',
     artist: 'Blender Foundation',
+    artwork: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/ElephantsDreamPoster.jpg',
   },
 };
 
