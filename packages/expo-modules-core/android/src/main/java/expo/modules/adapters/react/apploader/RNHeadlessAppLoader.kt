@@ -67,15 +67,11 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
       val reactContext = appRecords[appScopeKey] ?: return false
       if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
         // New architecture
-        val reactHost = (reactContext.baseContext as ReactApplication).reactHost
-        if (reactHost != null) {
-          android.os.Handler(reactContext.mainLooper).post {
-            reactHost.destroy("Closing headless task app", null)
-            HeadlessAppLoaderNotifier.notifyAppDestroyed(appScopeKey)
-            appRecords.remove(appScopeKey)
-          }
-        } else {
-          throw IllegalStateException("Your application does not have a valid reactHost")
+        val reactHost = (reactContext.baseContext as ReactApplication).reactHost ?: throw IllegalStateException("Your application does not have a valid reactHost")
+        android.os.Handler(reactContext.mainLooper).post {
+          reactHost.destroy("Closing headless task app", null)
+          HeadlessAppLoaderNotifier.notifyAppDestroyed(appScopeKey)
+          appRecords.remove(appScopeKey)
         }
       } else {
         // Old architecture
