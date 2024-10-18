@@ -64,7 +64,7 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
   @SuppressLint("VisibleForTests")
   override fun invalidateApp(appScopeKey: String?): Boolean {
     return if (appRecords.containsKey(appScopeKey) && appRecords[appScopeKey] != null) {
-      val reactContext = appRecords[appScopeKey]!!
+      val reactContext = appRecords[appScopeKey] ?: return false
       if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
         // New architecture
         val reactHost = (reactContext.baseContext as ReactApplication).reactHost
