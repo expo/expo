@@ -1,8 +1,10 @@
 package expo.modules.backgroundtask
 
+import android.content.Context
 import android.os.Debug
 import android.util.Log
 import androidx.work.ListenableWorker.*
+import com.facebook.react.ReactApplication
 import expo.modules.apploader.AppLoaderProvider
 import expo.modules.apploader.HeadlessAppLoader
 import expo.modules.apploader.HeadlessAppLoader.AppConfigurationError
@@ -10,13 +12,23 @@ import expo.modules.core.interfaces.Consumer
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import okhttp3.internal.wait
 
 class BackgroundTaskService {
   companion object {
+    // AppLoader key
+    private val APP_SCOPE_KEY = "expo-background-tasks"
+
     // Log tag
     private val TAG: String = BackgroundTaskScheduler::class.java.simpleName
+
+    /**
+     * Contains the headless app loader if started form the background
+     */
+    private var headlessAppLoader: HeadlessAppLoader? = null
 
     /*
      Callback for handling background tasks. This callback can be set from the BackgroundTaskModule
@@ -37,8 +49,12 @@ class BackgroundTaskService {
     fun markTaskAsFinished() {
       Log.i(TAG, "Marking task as finished")
       if (runTasksCompletable != null) {
+        // Mark task as completed
         runTasksCompletable!!.complete(true)
         runTasksCompletable = null
+        // We can tear down any appLoaders
+        headlessAppLoader?.invalidateApp(APP_SCOPE_KEY)
+        headlessAppLoader = null
       } else {
         // This should never happen - one shouldn't mark a task that was never finished
         // as done...
@@ -74,12 +90,11 @@ class BackgroundTaskService {
      */
     fun checkForPendingTaskWorkerRequests() {
       Log.i(TAG, "Checking for pending task requests")
-      // Check if we should call it if there are any pending tasks
+      // Check if there are any pending tasks
       if (runTasksCompletable != null) {
         Log.i(TAG, "Found pending task requests")
         if (runTasksHandler != null) {
-          val scope = CoroutineScope(Dispatchers.Default)
-          scope.launch {
+          CoroutineScope(Dispatchers.Default).launch {
             // It is super important to run this on a separate thread since it might
             // take a lot of time
             try {
@@ -109,53 +124,18 @@ class BackgroundTaskService {
      LaunchHandler for the BGTaskScheduler. This function is passed to the registration code of the BGTaskScheduler on startup.
      The function will not return until we're finished running the JS code.
      */
-    fun launchHandler(work: BackgroundTaskWork): Result {
+    fun launchHandler(context: Context): Result {
       Log.i(TAG,"Callback from OS for background task")
-     /* val loader = AppLoaderProvider.getLoader("react-native-headless", work.applicationContext)
-      if (loader != null) {
-        try {
-          loader.loadApp(work.applicationContext, HeadlessAppLoader.Params("bgtask", "bgtask"),
-            {}, { success: Boolean? ->
-            if (!success!!) {
-              // Failed
-              Log.i(TAG, "failed")
-            } else {
-              // Success - what to do?
-              Log.i(TAG, "Works")
-              var s = loader.isRunning("bgtask")
-            }
-          })
-        } catch (ignored: AppConfigurationError) {
-          ignored.message?.let { Log.e(TAG, it) }
-        }
-      }*/
 
       // Check if we have an already running task
       if (runTasksCompletable != null) {
         // TODO: What should we do...!? We're already running.... Just return task completed?
         Log.i(TAG, "ExpoBackgroundTask: Already running - this task will be ignored")
-        return Result.success()
+        return Result.failure()
       }
 
-      return runBlocking {
-        try {
-          tryCallTaskHandler()
-          Log.i(TAG, "BackgroundTask worker successfully finished.")
-          return@runBlocking Result.success()
-        } catch (e: Exception) {
-          Log.e(TAG, "BackgroundTask worker failed with error " + e.message)
-          return@runBlocking Result.failure()
-        }
-      }
-    }
-
-    /**
-    Checks to see if we have a runTaskHandler - which means that we're already initialised and have a valid
-    appContext - we can just call it directly. If not we'll just create the continuation object and let the module
-    grab it when it is loaded.
-     */
-    private fun tryCallTaskHandler() {
       Log.i(TAG, "Setting up continuation and optionally calling handler")
+
       // 1. Create CompletableDeferred object
       runTasksCompletable = CompletableDeferred()
 
@@ -163,18 +143,50 @@ class BackgroundTaskService {
       if (runTasksHandler != null) {
         // 3. Call the handler
         Log.i(TAG, "Calling handler")
-        val scope = CoroutineScope(Dispatchers.Default)
-        scope.launch {
-          // It is super important to run this on a separate thread since it might
-          // take a lot of time
+        return runBlocking {
           try {
-            runTasksHandler?.let { it() }
+            runTasksHandler!!()
+            return@runBlocking Result.success()
           } catch (e: Exception) {
             Log.i(TAG, "Executing background task failed with error ${e.message}")
+            return@runBlocking Result.failure()
           }
         }
       } else {
-        print("ExpoBackgroundTask: Did not call handler since it was not set.")
+        return runBlocking {
+          Log.i(TAG, "Executing background task in headless mode")
+          tryStartHeadless (context)
+          if (runTasksCompletable != null) {
+            runTasksCompletable?.await()
+            return@runBlocking Result.success()
+          } else {
+            return@runBlocking Result.failure()
+          }
+        }
+      }
+    }
+
+    private fun tryStartHeadless(context: Context) {
+      Log.i(TAG, "Starting headless handling of task")
+
+      if (headlessAppLoader == null) {
+        CoroutineScope(Dispatchers.Main).launch {
+          headlessAppLoader = AppLoaderProvider.getLoader("react-native-headless", context)
+          try {
+            headlessAppLoader?.loadApp(context, HeadlessAppLoader.Params(APP_SCOPE_KEY, ""),
+              {}, { success: Boolean? ->
+                if (!success!!) {
+                  // Failed
+                  Log.i(TAG, "failed")
+                } else {
+                  // Success
+                  Log.i(TAG, "Headless loaded - wait for completion of task runner")
+                }
+              })
+          } catch (e: Exception) {
+            e.message?.let { Log.e(TAG, it) }
+          }
+        }
       }
     }
   }

@@ -12,6 +12,6 @@ class BackgroundTaskWork(context: Context, params: WorkerParameters) : Coroutine
 
   override suspend fun doWork(): Result {
     Log.i(TAG, "BackgroundTask worker doWork called.")
-    return BackgroundTaskService.launchHandler(this)
+    return BackgroundTaskService.launchHandler(this.applicationContext)
   }
 }

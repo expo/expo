@@ -44,6 +44,7 @@ const initialize = async () => {
         }
       });
     } else {
+      console.log('BackgroundTask: No tasks found on startup.');
       ExpoBackgroundTaskModule.isWorkerRunningAsync().then((isRunning) => {
         if (isRunning) {
           console.log('BackgroundTask: Stopping worker, we have no scheduled tasks.');

@@ -11,8 +11,8 @@ useDefaultAndroidSdkVersions()
 useExpoPublishing()
 
 dependencies {
-   implementation 'androidx.work:work-runtime-ktx:2.9.1'
-   implementation 'com.facebook.react:react-android'
+  implementation 'androidx.work:work-runtime-ktx:2.9.1'
+  implementation 'com.facebook.react:react-android'
 }
 
 android {
