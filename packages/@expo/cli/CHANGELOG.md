@@ -47,6 +47,7 @@
 
 ### 🐛 Bug fixes
 
+- Improve server error stacks. ([#32098](https://github.com/expo/expo/pull/32098) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix experimental web exports for RSC. ([#32042](https://github.com/expo/expo/pull/32042) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix RSC after RN upgrade. ([#32028](https://github.com/expo/expo/pull/32028) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix search params in RSC. ([#31641](https://github.com/expo/expo/pull/31641) by [@EvanBacon](https://github.com/EvanBacon))
@@ -69,6 +70,7 @@
 - Detect network issues and enable offline mode with Undici errors. ([#31517](https://github.com/expo/expo/pull/31517) by [@byCedric](https://github.com/byCedric))
 - Resolve dom components entry relative to workspace root instead of project root. ([#31433](https://github.com/expo/expo/pull/31433) by [@byCedric](https://github.com/byCedric))
 - Use proper telemetry strategies for every command. ([#31281](https://github.com/expo/expo/pull/31281) by [@byCedric](https://github.com/byCedric))
+- Only test project web support through `react-dom`. ([#32148](https://github.com/expo/expo/pull/32148) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

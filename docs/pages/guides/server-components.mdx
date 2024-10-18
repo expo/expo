@@ -367,7 +367,7 @@ Library authors can test their modules support Server Components by using `jest-
 
 ## Deployment
 
-> Avoid using this feature in production as it's not stable yet. We'll streamline all of this to a single command in the future.
+> Avoid using universal server components in production as they are not stable yet. We'll streamline all of this to a single command in the future.
 
 ### Web
 
@@ -377,26 +377,4 @@ You can host the website locally with the [express server adapter](/router/refer
 
 ### Native
 
-Unlike standard native builds, React Server Components requires an additional server to be generated and hosted. This server is responsible for rendering the Server Components and serving the data to the native app. We'll generate this server code during the native build to optimize and link static assets to the binary.
-
-Set the `origin` in your app config to the URL of your server:
-
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-router",
-        {
-          // Setting this to a local server URL.
-          "origin": "http://localhost:3000"
-        }
-      ]
-    ]
-  }
-}
-```
-
-To deploy your native app to production, you'll need to build it for production with `npx expo run:android --variant release` or `npx expo run:ios --configuration Release`. This will generate the required server code to `./.expo/server/<platform>` along with building and embedding any assets that could potentially be local-first into the binary.
-
-You can host the website locally with the [express server adapter](/router/reference/api-routes/#express), substituting the **dist** directory for the `.expo/server/<platform>` directory.
+Production exports for React Server Components on native are not yet supported. This is planned for Expo SDK 53.

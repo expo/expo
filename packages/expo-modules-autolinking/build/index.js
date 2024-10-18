@@ -46,19 +46,28 @@ function registerReactNativeConfigCommand() {
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "android", "ios"', 'ios')
         .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
         .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
-        .action(async (paths, options) => {
-        if (!['android', 'ios'].includes(options.platform)) {
-            throw new Error(`Unsupported platform: ${options.platform}`);
+        .action(async (searchPaths, providedOptions) => {
+        if (!['android', 'ios'].includes(providedOptions.platform)) {
+            throw new Error(`Unsupported platform: ${providedOptions.platform}`);
         }
-        const projectRoot = path_1.default.dirname(await (0, autolinking_1.getProjectPackageJsonPathAsync)(options.projectRoot));
-        const searchPaths = await (0, autolinking_1.resolveSearchPathsAsync)(paths, projectRoot);
-        const providedOptions = {
-            platform: options.platform,
+        const projectRoot = path_1.default.dirname(await (0, autolinking_1.getProjectPackageJsonPathAsync)(providedOptions.projectRoot));
+        const linkingOptions = await (0, autolinking_1.mergeLinkingOptionsAsync)(searchPaths.length > 0
+            ? {
+                ...providedOptions,
+                projectRoot,
+                searchPaths,
+            }
+            : {
+                ...providedOptions,
+                projectRoot,
+            });
+        const options = {
+            platform: linkingOptions.platform,
             projectRoot,
-            searchPaths,
+            searchPaths: linkingOptions.searchPaths,
         };
-        const results = await (0, reactNativeConfig_1.createReactNativeConfigAsync)(providedOptions);
-        if (options.json) {
+        const results = await (0, reactNativeConfig_1.createReactNativeConfigAsync)(options);
+        if (providedOptions.json) {
             console.log(JSON.stringify(results));
         }
         else {

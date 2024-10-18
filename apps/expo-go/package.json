@@ -97,5 +97,14 @@
     "@types/react": "~18.2.79",
     "@types/semver": "^7.5.8",
     "expo-module-scripts": "^3.0.0"
+  },
+  "expo": {
+    "autolinking": {
+      "searchPaths": [
+        "./modules",
+        "./node_modules",
+        "../../node_modules"
+      ]
+    }
   }
 }
