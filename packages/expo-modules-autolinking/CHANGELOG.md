@@ -11,6 +11,7 @@
 - Added AAR files autolinking as Gradle projects. ([#30706](https://github.com/expo/expo/pull/30706) by [@kudo](https://github.com/kudo))
 - Add support for react-native 0.76 ([#31593](https://github.com/expo/expo/pull/31593) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Added Apple code sign entitlements to generated `ExpoModulesProvider.swift`. ([#31518](https://github.com/expo/expo/pull/31518) by [@kudo](https://github.com/kudo))
+- Added `searchPaths` support to the `react-native-config`. ([#32153](https://github.com/expo/expo/pull/32153) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
