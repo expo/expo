@@ -17,7 +17,7 @@
 ### 🐛 Bug fixes
 
 - Move entry point path modifications to Node script instead of Gradle plugin. ([#30654](https://github.com/expo/expo/pull/30654) by [@byCedric](https://github.com/byCedric))
-- Enable web as a default platform when `react-dom` is installed.
+- Enable web as a default platform when `react-dom` is installed. ([#32149](https://github.com/expo/expo/pull/32149) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
