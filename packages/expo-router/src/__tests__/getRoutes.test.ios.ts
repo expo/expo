@@ -965,4 +965,50 @@ describe('group expansion', () => {
       type: 'layout',
     });
   });
+
+  it(`can disable sitemap generate`, () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+        }),
+        { internal_stripLoadRoute: true, sitemap: false }
+      )
+    ).toEqual({
+      children: [
+        {
+          type: 'route',
+          children: [],
+          contextKey: 'expo-router/build/views/Unmatched.js',
+          dynamic: [
+            {
+              deep: true,
+              name: '+not-found',
+              notFound: true,
+            },
+          ],
+          entryPoints: [
+            'expo-router/build/views/Navigator.js',
+            'expo-router/build/views/Unmatched.js',
+          ],
+          generated: true,
+          internal: true,
+          route: '+not-found',
+        },
+        {
+          type: 'route',
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          route: '(app)/index',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      type: 'layout',
+      route: '',
+    });
+  });
 });
