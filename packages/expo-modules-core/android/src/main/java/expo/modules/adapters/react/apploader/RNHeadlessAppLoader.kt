@@ -101,19 +101,16 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
   }
 
   override fun isRunning(appScopeKey: String?): Boolean {
-    if (appRecords.contains(appScopeKey)) {
-      val reactContext = appRecords[appScopeKey]!!
-      if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-        // New architecture - We can return true since the fact that we have a reactContext
-        // means that we've already called start on the reactHost
-        return true
-      } else {
-        // Old architecture
-        val reactNativeHost = (reactContext.baseContext as ReactApplication).reactNativeHost
-        return reactNativeHost.reactInstanceManager.hasStartedCreatingInitialContext()
-      }
+    val reactContext = appRecords[appScopeKey] ?: return false
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      // New architecture - We can return true since the fact that we have a reactContext
+      // means that we've already called start on the reactHost
+      return true
+    } else {
+      // Old architecture
+      val reactNativeHost = (reactContext.baseContext as ReactApplication).reactNativeHost
+      return reactNativeHost.reactInstanceManager.hasStartedCreatingInitialContext()
     }
-    return false
   }
 
   //endregion HeadlessAppLoader
