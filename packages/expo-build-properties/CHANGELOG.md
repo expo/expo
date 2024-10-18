@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Export missing types. ([#29401](https://github.com/expo/expo/pull/29401) by [@Simek](https://github.com/Simek))
+- Deprecate `android.newArchEnabled` and `ios.newArchEnabled` in favor of app config `newArchEnabled`. ([#31963](https://github.com/expo/expo/pull/31963) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.12.5 - 2024-08-07
 
