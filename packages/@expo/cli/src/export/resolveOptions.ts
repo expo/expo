@@ -2,6 +2,7 @@ import { ExpoConfig, getConfig, Platform } from '@expo/config';
 
 import { getPlatformBundlers, PlatformBundlers } from '../start/server/platformBundlers';
 import { CommandError } from '../utils/errors';
+import { learnMore } from '../utils/link';
 
 export type Options = {
   outputDir: string;
@@ -40,12 +41,18 @@ export function resolvePlatformOption(
         // Pass through so the more robust error message is shown.
         return platform;
       }
-      throw new CommandError(
-        'BAD_ARGS',
-        `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config, or is missing from the supported platforms in the platforms array: [${exp.platforms?.join(
-          ', '
-        )}].`
-      );
+
+      let error = `Platform "${platform}" is not configured to use the Metro bundler in the project Expo config, or is missing from the supported platforms in the platforms array: [${exp.platforms?.join(
+        ', '
+      )}].`;
+
+      if (platform === 'web') {
+        error = `${error} ${learnMore(
+          'https://docs.expo.dev/guides/customizing-metro/#web-support'
+        )}`;
+      }
+
+      throw new CommandError('BAD_ARGS', error);
     }
 
     return platform;
