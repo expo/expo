@@ -1,0 +1,8 @@
+{
+  "android": {
+    "package": "com.example.reactdom"
+  },
+  "ios": {
+    "bundleIdentifier": "com.example.reactdom"
+  }
+}
