@@ -78,7 +78,7 @@ jobs:
       - name: Setup maestro env
         run: |
           # Setup the maestro env
-          echo "MAESTRO_APP_URL=exp://localhost:${E2E_ROUTER_EXPO_PORT}/--;" >> $GITHUB_ENV
+          echo "MAESTRO_APP_URL=exp://localhost:${E2E_ROUTER_EXPO_PORT}/--" >> $GITHUB_ENV
 
       - name: Run Maestro iOS tests
         working-directory: apps/router-e2e
