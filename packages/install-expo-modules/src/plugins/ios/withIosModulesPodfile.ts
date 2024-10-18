@@ -36,8 +36,27 @@ export function updatePodfile(
     contents = contents.replace(targetRegExp, '$1\n  use_expo_modules!');
   }
 
+  // use_native_modules! from expo-modules-autolinking
+  if (sdkVersion && semver.gte(sdkVersion, '52.0.0')) {
+    const autolinkinRegExp = /^(\s+config\s+=\s+use_native_modules!\s*)$/m;
+    const newBlock = `\
+  config_command = [
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(require.resolve(\\'expo-modules-autolinking\\', { paths: [require.resolve(\\'expo/package.json\\')] }))(process.argv.slice(1))',
+    'react-native-config',
+    '--json',
+    '--platform',
+    'ios'
+  ]
+  config = use_native_modules!(config_command)
+`;
+    contents = contents.replace(autolinkinRegExp, newBlock);
+  }
+
   // expo_patch_react_imports!
-  if (sdkVersion && semver.gte(sdkVersion, '44.0.0')) {
+  if (sdkVersion && semver.gte(sdkVersion, '44.0.0') && semver.lt(sdkVersion, '52.0.0')) {
     if (!contents.match(/\bexpo_patch_react_imports!\(installer\)\b/)) {
       const regExpPostIntegrate = /(\bpost_integrate do \|installer\|)/;
       if (contents.match(regExpPostIntegrate)) {
