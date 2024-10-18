@@ -236,7 +236,7 @@ export interface ExpoConfig {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
-     * Enable React Native new architecture.
+     * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
      */
     newArchEnabled?: boolean;
     ios?: IOS;
@@ -514,15 +514,15 @@ export interface IOS {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
+     * A Boolean value that indicates whether the iOS app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
+    /**
      * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
      */
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
-    /**
-     * Enable React Native new architecture for iOS.
-     */
-    newArchEnabled?: boolean;
 }
 /**
  * Configuration that is specific to the iOS platform icons.
@@ -762,15 +762,15 @@ export interface Android {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
+     * A Boolean value that indicates whether the Android app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
+    /**
      * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
      */
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
-    /**
-     * Enable React Native new architecture for Android.
-     */
-    newArchEnabled?: boolean;
 }
 export interface AndroidIntentFiltersData {
     /**
