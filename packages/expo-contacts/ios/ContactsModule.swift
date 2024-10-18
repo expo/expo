@@ -324,6 +324,41 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
         reject: promise.legacyRejecter
       )
     }
+
+
+    AsyncFunction("displayContactAsync") { (contactId: String, promise: Promise) -> Void in
+      // swiftlint:enable closure_body_length
+      var controller: ContactsViewController?
+      if let foundContact = try? getContact(withId: contactId) {
+        controller = ContactsViewController.init(for: foundContact)
+      }
+      guard let controller else {
+        promise.reject(FailedToCreateViewControllerException())
+        return
+      }
+      controller.contactStore = contactStore
+      controller.delegate = delegate
+      controller.allowsEditing = false
+      controller.allowsActions = true
+      controller.shouldShowLinkedContacts = true
+      let parent = appContext?.utilities?.currentViewController()
+      let navController = UINavigationController(rootViewController: controller)
+        if #available(iOS 16.0, *) {
+            controller.navigationItem.backAction = UIAction(handler: { [] action in
+                controller.dismiss(animated: true)
+            })
+        } else {
+            controller.navigationItem.hidesBackButton = false
+        }
+      presentingViewController = navController
+      let animated = true
+      controller.onViewDisappeared = {
+        promise.resolve(true)
+        self.contactManipulationPromise = nil
+      }
+      contactManipulationPromise = promise
+      parent?.present(navController, animated: animated)
+    }.runOnQueue(.main)
   }
 
   func didPickContact(contact: CNContact) throws {
