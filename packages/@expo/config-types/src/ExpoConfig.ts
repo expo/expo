@@ -67,7 +67,7 @@ export interface ExpoConfig {
    */
   primaryColor?: string;
   /**
-   * Local path or remote URL to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo Go app.
+   * Local path or remote URL to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo app.
    */
   icon?: string;
   /**
@@ -240,7 +240,7 @@ export interface ExpoConfig {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
-   * Enable React Native new architecture.
+   * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
    */
   newArchEnabled?: boolean;
   ios?: IOS;
@@ -343,11 +343,11 @@ export interface IOS {
    */
   backgroundColor?: string;
   /**
-   * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., dark, tinted) can be provided. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
+   * Local path or remote URL to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
    *
-   * Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo Go app.
+   *  Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
    */
-  icon?: string | IOSIcons;
+  icon?: string;
   /**
    * URL to your app on the Apple App Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
    */
@@ -518,32 +518,15 @@ export interface IOS {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
+   * A Boolean value that indicates whether the iOS app should use the new architecture.
+   */
+  newArchEnabled?: boolean;
+  /**
    * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
    */
   runtimeVersion?:
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
-  /**
-   * Enable React Native new architecture for iOS.
-   */
-  newArchEnabled?: boolean;
-}
-/**
- * Configuration that is specific to the iOS platform icons.
- */
-export interface IOSIcons {
-  /**
-   * The icon that will appear for the app regardless of the user's current system appearance.
-   */
-  any?: string;
-  /**
-   * The icon that will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
-   */
-  dark?: string;
-  /**
-   * The icon that will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
-   */
-  tinted?: string;
 }
 /**
  * Configuration that is specific to the Android platform.
@@ -574,7 +557,7 @@ export interface Android {
    */
   userInterfaceStyle?: 'light' | 'dark' | 'automatic';
   /**
-   * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo Go app.
+   * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
    */
   icon?: string;
   /**
@@ -766,15 +749,15 @@ export interface Android {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
+   * A Boolean value that indicates whether the Android app should use the new architecture.
+   */
+  newArchEnabled?: boolean;
+  /**
    * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
    */
   runtimeVersion?:
     | string
     | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint' };
-  /**
-   * Enable React Native new architecture for Android.
-   */
-  newArchEnabled?: boolean;
 }
 export interface AndroidIntentFiltersData {
   /**
