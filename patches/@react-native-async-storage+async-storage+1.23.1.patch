@@ -338,15 +338,20 @@ index 6b81187..b1a5499 100644
  }
  
  + (BOOL)requiresMainQueueSetup
-@@ -428,6 +390,7 @@ RCTStorageDirectoryMigrationCheck(NSString *fromStorageDirectory,
- 
- - (instancetype)init
- {
-+    assert(false);
-     if (!(self = [super init])) {
+@@ -432,6 +394,12 @@ - (instancetype)init
          return nil;
      }
-@@ -451,12 +414,6 @@ RCTStorageDirectoryMigrationCheck(NSString *fromStorageDirectory,
+     
++    // NOTE(@lukmccall): this constructor shouldn't be used in Expo Go. However, we need to ensure it's working
++    // for the bare-expo. We need to provide default paths for async storage.
++    _storageDirectory = RCTCreateStorageDirectoryPath(RCTStorageDirectory);
++    _manifestFilePath = RCTCreateStorageDirectoryPath(RCTManifestFileName);
++  
++    
+     // Get the path to any old storage directory that needs to be migrated. If multiple exist,
+     // the oldest are removed and the most recently modified is returned.
+     NSString *oldStoragePath = RCTGetStoragePathForMigration();
+@@ -451,12 +419,6 @@ - (instancetype)init
      return self;
  }
  
