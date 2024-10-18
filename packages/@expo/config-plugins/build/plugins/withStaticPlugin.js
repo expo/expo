@@ -128,7 +128,7 @@ const withStaticPlugin = (config, props) => {
     }
   } else {
     if (typeof pluginResolve === 'object') {
-      throw new (_errors().PluginError)(`Plugin is an unexpected type. Saw an object with keys: "${Object.keys(pluginResolve).join(', ')}".\n
+      throw new (_errors().PluginError)(`Plugin is an unexpected object, with keys: "${Object.keys(pluginResolve).join(', ')}".\n
 If you tried to provide parameters to a config plugin, make sure the plugin configuration is wrapped by square brackets. Ex:\n
 [
   "some-config-plugin",
@@ -137,9 +137,9 @@ If you tried to provide parameters to a config plugin, make sure the plugin conf
   }
 ]
 \n
-Please consult the package documentation on how to correctly configure the plugin.`, 'INVALID_PLUGIN_TYPE');
+See the package documentation on how to correctly configure the plugin.`, 'INVALID_PLUGIN_TYPE');
     }
-    throw new (_errors().PluginError)(`Plugin is an unexpected type: ${typeof pluginResolve}. Please consult the documentation on how to correctly configure a config plugin.`, 'INVALID_PLUGIN_TYPE');
+    throw new (_errors().PluginError)(`Plugin is an unexpected type: ${typeof pluginResolve}. See the package documentation on how to correctly configure the plugin.`, 'INVALID_PLUGIN_TYPE');
   }
 
   // Execute the plugin.
