@@ -287,3 +287,70 @@ export function expectChunkPathMatching(name: string) {
     )
   );
 }
+
+/**
+ * Create a tarball from a package within the Expo monorepo.
+ * This creates the tarball and moves the tarball to the temporary system dir.
+ */
+export async function createPackageTarball(fixtureRoot: string, packageName: string) {
+  const repoRoot = path.join(__dirname, '../../../../');
+  const packagePath = path.join(
+    repoRoot,
+    packageName.startsWith('@') ? packageName.replace('@', '') : packageName
+  );
+
+  if (!fs.existsSync(packagePath)) {
+    throw new Error(`Cannot find package "${packageName}" in the Expo monorepo`);
+  }
+
+  // Create the tarball
+  const outputDir = path.join(fixtureRoot, '_tarballs');
+  await fs.promises.mkdir(outputDir, { recursive: true });
+  const { stdout } = await execa(
+    'npm',
+    // Run `npm pack --json` without the script logging (see: https://github.com/npm/cli/issues/7354)
+    ['--foreground-scripts=false', 'pack', '--json', '--pack-destination', outputDir],
+    { cwd: packagePath, stdio: testingLocally ? undefined : 'pipe' }
+  );
+
+  // Validate the tarball output
+  const output = JSON.parse(stdout);
+  if (output.length !== 1) {
+    throw new Error(`Expected a single tarball to be created, received: ${output.length}`);
+  }
+
+  // Return the absolute path to the tarball
+  return {
+    name: output[0].name as string,
+    version: output[0].version as string,
+    relativePath: `./${path.join('_tarballs', output[0].filename)}`,
+    absolutePath: path.join(fixtureRoot, '_tarballs', output[0].filename),
+  };
+}
+
+/**
+ * Link one or more packages from the Expo monorepo into the fixture.
+ * This creates a package tarball from the monorepo, which is then set as dependency in the fixture.
+ * After linking all packages, this will also run install again.
+ */
+export async function linkPackagesFromMonorepo(fixtureRoot: string, linkPackages: string[]) {
+  const packageFile = path.join(fixtureRoot, 'package.json');
+  const packageData = JSON.parse(await fs.promises.readFile(packageFile, 'utf-8'));
+
+  for (const packageName of linkPackages) {
+    // Create a tarball from the monorepo
+    const tarball = await createPackageTarball(fixtureRoot, packageName);
+
+    // Change the dependency in the package file
+    for (const dependencyType of ['dependencies', 'devDependencies']) {
+      if (packageData[dependencyType][packageName]) {
+        packageData[dependencyType][packageName] = tarball.relativePath;
+        console.log(`Linked ${packageName}@${tarball.version} as ${dependencyType}`);
+      }
+    }
+  }
+
+  // Update the package file and reinstall
+  await fs.promises.writeFile(packageFile, JSON.stringify(packageData, null, 2));
+  await installAsync(fixtureRoot);
+}
