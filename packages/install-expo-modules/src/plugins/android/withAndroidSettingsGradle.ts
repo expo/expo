@@ -1,4 +1,4 @@
-import { ConfigPlugin, withSettingsGradle } from 'expo/config-plugins';
+import { ConfigPlugin, withSettingsGradle } from '@expo/config-plugins';
 import semver from 'semver';
 
 export const withAndroidModulesSettingGradle: ConfigPlugin = (config) => {
