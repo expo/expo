@@ -18,7 +18,7 @@ export const Step = ({ children, label }: Props) => {
         )}>
         {label}
       </HEADLINE>
-      <div className="pt-1.5 w-full max-w-[calc(100%-44px)] prose-h2:!-mt-1.5 prose-h3:!-mt-1 [&>*:last-child]:!mb-0">
+      <div className="pt-1.5 w-full max-w-[calc(100%-44px)] prose-h2:!-mt-1.5 prose-h3:!-mt-1 prose-h4:!-mt-0.5 [&>*:last-child]:!mb-0">
         {typeof children === 'string' ? <P>{children}</P> : children}
       </div>
     </div>
