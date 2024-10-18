@@ -107,7 +107,7 @@ export class AudioPlayerWeb
   isAudioSamplingSupported = false;
   isBuffering = false;
   shouldCorrectPitch = false;
-
+  enableLockScreenControls = false;
   private src: AudioSource = null;
   private media: HTMLAudioElement;
   private interval = 100;
