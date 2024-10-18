@@ -28,21 +28,17 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
         // In old arch reactHost will be null
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
           // New architecture
-          val reactHost = (context as ReactApplication).reactHost
-          if (reactHost != null) {
-            reactHost.addReactInstanceEventListener(
-              object : ReactInstanceEventListener {
-                override fun onReactContextInitialized(context: ReactContext) {
-                  reactHost.removeReactInstanceEventListener(this)
-                  HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
-                  appRecords[params.appScopeKey] = context
-                  callback?.apply(true)
-                }
-              })
-            reactHost.start()
-          } else {
-            throw IllegalStateException("Your application does not have a valid reactHost")
-          }
+          val reactHost = (context as ReactApplication).reactHost ?: throw IllegalStateException("Your application does not have a valid reactHost")
+          reactHost.addReactInstanceEventListener(
+            object : ReactInstanceEventListener {
+              override fun onReactContextInitialized(context: ReactContext) {
+                reactHost.removeReactInstanceEventListener(this)
+                HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
+                appRecords[params.appScopeKey] = context
+                callback?.apply(true)
+              }
+            })
+          reactHost.start()
         } else {
           // Old architecture
           val reactInstanceManager = (context as ReactApplication).reactNativeHost.reactInstanceManager
