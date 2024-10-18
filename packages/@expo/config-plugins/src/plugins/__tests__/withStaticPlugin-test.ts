@@ -50,7 +50,7 @@ describe(withStaticPlugin, () => {
           key2: 'value2',
         },
       })
-    ).toThrow('Plugin is an unexpected type. Saw an object with keys: "key, key2"');
+    ).toThrow('Plugin is an unexpected object, with keys: "key, key2"');
   });
   it(`asserts wrong number of arguments`, () => {
     const config = withInternal(
