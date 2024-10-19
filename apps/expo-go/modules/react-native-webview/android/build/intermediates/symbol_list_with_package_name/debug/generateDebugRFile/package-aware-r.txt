@@ -1,0 +1,2 @@
+com.reactnativecommunity.webview
+xml file_provider_paths

@@ -1,0 +1,17 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml:2:1-5:12
+INJECTED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml:2:1-5:12
+	package
+		ADDED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml:3:11-58
+		INJECTED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml:2:11-69
+uses-sdk
+INJECTED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml
+INJECTED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/alanhughes/Work/expo/node_modules/@react-native-async-storage/async-storage/android/src/main/AndroidManifest.xml

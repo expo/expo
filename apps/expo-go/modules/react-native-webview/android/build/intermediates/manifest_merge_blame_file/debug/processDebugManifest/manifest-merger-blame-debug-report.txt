@@ -1,0 +1,28 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.reactnativecommunity.webview" >
+4
+5    <uses-sdk android:minSdkVersion="24" />
+6
+7    <application>
+7-->/Users/alanhughes/Work/expo/node_modules/react-native-webview/android/src/main/AndroidManifestNew.xml:2:3-12:17
+8        <provider
+8-->/Users/alanhughes/Work/expo/node_modules/react-native-webview/android/src/main/AndroidManifestNew.xml:3:5-11:16
+9            android:name="com.reactnativecommunity.webview.RNCWebViewFileProvider"
+9-->/Users/alanhughes/Work/expo/node_modules/react-native-webview/android/src/main/AndroidManifestNew.xml:4:7-45
+10            android:authorities="${applicationId}.fileprovider"
+10-->/Users/alanhughes/Work/expo/node_modules/react-native-webview/android/src/main/AndroidManifestNew.xml:5:7-58
+11            android:exported="false"
+11-->/Users/alanhughes/Work/expo/node_modules/react-native-webview/android/src/main/AndroidManifestNew.xml:6:7-31
+12            android:grantUriPermissions="true" >
+12-->/Users/alanhughes/Work/expo/node_modules/react-native-webview/android/src/main/AndroidManifestNew.xml:7:7-41
+13            <meta-data
+13-->/Users/alanhughes/Work/expo/node_modules/react-native-webview/android/src/main/AndroidManifestNew.xml:8:7-10:55
+14                android:name="android.support.FILE_PROVIDER_PATHS"
+14-->/Users/alanhughes/Work/expo/node_modules/react-native-webview/android/src/main/AndroidManifestNew.xml:9:9-59
+15                android:resource="@xml/file_provider_paths" />
+15-->/Users/alanhughes/Work/expo/node_modules/react-native-webview/android/src/main/AndroidManifestNew.xml:10:9-52
+16        </provider>
+17    </application>
+18
+19</manifest>

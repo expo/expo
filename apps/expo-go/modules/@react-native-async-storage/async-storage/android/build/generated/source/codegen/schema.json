@@ -1,0 +1,279 @@
+{
+  "modules": {
+    "NativeAsyncStorageModule": {
+      "type": "NativeModule",
+      "aliasMap": {},
+      "enumMap": {},
+      "spec": {
+        "eventEmitters": [],
+        "methods": [
+          {
+            "name": "multiGet",
+            "optional": false,
+            "typeAnnotation": {
+              "type": "FunctionTypeAnnotation",
+              "returnTypeAnnotation": {
+                "type": "VoidTypeAnnotation"
+              },
+              "params": [
+                {
+                  "name": "keys",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "ArrayTypeAnnotation",
+                    "elementType": {
+                      "type": "StringTypeAnnotation"
+                    }
+                  }
+                },
+                {
+                  "name": "callback",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "FunctionTypeAnnotation",
+                    "returnTypeAnnotation": {
+                      "type": "VoidTypeAnnotation"
+                    },
+                    "params": [
+                      {
+                        "name": "error",
+                        "optional": true,
+                        "typeAnnotation": {
+                          "type": "ArrayTypeAnnotation",
+                          "elementType": {
+                            "type": "AnyTypeAnnotation"
+                          }
+                        }
+                      },
+                      {
+                        "name": "result",
+                        "optional": true,
+                        "typeAnnotation": {
+                          "type": "ArrayTypeAnnotation",
+                          "elementType": {
+                            "type": "AnyTypeAnnotation"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "multiSet",
+            "optional": false,
+            "typeAnnotation": {
+              "type": "FunctionTypeAnnotation",
+              "returnTypeAnnotation": {
+                "type": "VoidTypeAnnotation"
+              },
+              "params": [
+                {
+                  "name": "kvPairs",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "ArrayTypeAnnotation",
+                    "elementType": {
+                      "type": "AnyTypeAnnotation"
+                    }
+                  }
+                },
+                {
+                  "name": "callback",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "FunctionTypeAnnotation",
+                    "returnTypeAnnotation": {
+                      "type": "VoidTypeAnnotation"
+                    },
+                    "params": [
+                      {
+                        "name": "error",
+                        "optional": true,
+                        "typeAnnotation": {
+                          "type": "ArrayTypeAnnotation",
+                          "elementType": {
+                            "type": "AnyTypeAnnotation"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "multiRemove",
+            "optional": false,
+            "typeAnnotation": {
+              "type": "FunctionTypeAnnotation",
+              "returnTypeAnnotation": {
+                "type": "VoidTypeAnnotation"
+              },
+              "params": [
+                {
+                  "name": "keys",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "ArrayTypeAnnotation",
+                    "elementType": {
+                      "type": "StringTypeAnnotation"
+                    }
+                  }
+                },
+                {
+                  "name": "callback",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "FunctionTypeAnnotation",
+                    "returnTypeAnnotation": {
+                      "type": "VoidTypeAnnotation"
+                    },
+                    "params": [
+                      {
+                        "name": "error",
+                        "optional": true,
+                        "typeAnnotation": {
+                          "type": "ArrayTypeAnnotation",
+                          "elementType": {
+                            "type": "AnyTypeAnnotation"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "multiMerge",
+            "optional": false,
+            "typeAnnotation": {
+              "type": "FunctionTypeAnnotation",
+              "returnTypeAnnotation": {
+                "type": "VoidTypeAnnotation"
+              },
+              "params": [
+                {
+                  "name": "kvPairs",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "ArrayTypeAnnotation",
+                    "elementType": {
+                      "type": "AnyTypeAnnotation"
+                    }
+                  }
+                },
+                {
+                  "name": "callback",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "FunctionTypeAnnotation",
+                    "returnTypeAnnotation": {
+                      "type": "VoidTypeAnnotation"
+                    },
+                    "params": [
+                      {
+                        "name": "error",
+                        "optional": true,
+                        "typeAnnotation": {
+                          "type": "ArrayTypeAnnotation",
+                          "elementType": {
+                            "type": "AnyTypeAnnotation"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "getAllKeys",
+            "optional": false,
+            "typeAnnotation": {
+              "type": "FunctionTypeAnnotation",
+              "returnTypeAnnotation": {
+                "type": "VoidTypeAnnotation"
+              },
+              "params": [
+                {
+                  "name": "callback",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "FunctionTypeAnnotation",
+                    "returnTypeAnnotation": {
+                      "type": "VoidTypeAnnotation"
+                    },
+                    "params": [
+                      {
+                        "name": "error",
+                        "optional": true,
+                        "typeAnnotation": {
+                          "type": "ArrayTypeAnnotation",
+                          "elementType": {
+                            "type": "AnyTypeAnnotation"
+                          }
+                        }
+                      },
+                      {
+                        "name": "result",
+                        "optional": true,
+                        "typeAnnotation": {
+                          "type": "ArrayTypeAnnotation",
+                          "elementType": {
+                            "type": "AnyTypeAnnotation"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "clear",
+            "optional": false,
+            "typeAnnotation": {
+              "type": "FunctionTypeAnnotation",
+              "returnTypeAnnotation": {
+                "type": "VoidTypeAnnotation"
+              },
+              "params": [
+                {
+                  "name": "callback",
+                  "optional": false,
+                  "typeAnnotation": {
+                    "type": "FunctionTypeAnnotation",
+                    "returnTypeAnnotation": {
+                      "type": "VoidTypeAnnotation"
+                    },
+                    "params": [
+                      {
+                        "name": "error",
+                        "optional": true,
+                        "typeAnnotation": {
+                          "type": "ArrayTypeAnnotation",
+                          "elementType": {
+                            "type": "AnyTypeAnnotation"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "moduleName": "RNCAsyncStorage"
+    }
+  }
+}
