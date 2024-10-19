@@ -14,7 +14,7 @@ jest.mock('../getConnectionInfo');
 // @ts-expect-error - We don't mock all properties from WebSocket
 globalThis.WebSocket = MockWebSocket;
 
-// @ts-expect-error - TextDecoder and TextEncoder are not defined in native jest environments.
+// @ts-ignore - TextDecoder and TextEncoder are not defined in native jest environments.
 globalThis.TextDecoder ??= TextDecoder;
 globalThis.TextEncoder ??= TextEncoder;
 
