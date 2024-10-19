@@ -1,11 +1,10 @@
-package expo.modules.camera.legacy
+package expo.modules.camera.utils
 
 import androidx.exifinterface.media.ExifInterface
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.media.CamcorderProfile
 import android.os.Bundle
 
 import com.google.android.cameraview.CameraView
@@ -17,29 +16,6 @@ import java.util.*
 
 object CameraViewHelper {
   // Utilities
-  @JvmStatic
-  fun getCorrectCameraRotation(rotation: Int, facing: Int) =
-    if (facing == CameraView.FACING_FRONT) {
-      (rotation - 90 + 360) % 360
-    } else {
-      (-rotation + 90 + 360) % 360
-    }
-
-  @JvmStatic
-  fun getCamcorderProfile(cameraId: Int, quality: Int): CamcorderProfile {
-    var profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH)
-    when (quality) {
-      VIDEO_2160P -> profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_2160P)
-      VIDEO_1080P -> profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_1080P)
-      VIDEO_720P -> profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_720P)
-      VIDEO_480P -> profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_480P)
-      VIDEO_4x3 -> {
-        profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_480P)
-        profile.videoFrameWidth = 640
-      }
-    }
-    return profile
-  }
 
   @JvmStatic
   fun getExifData(exifInterface: ExifInterface): Bundle {

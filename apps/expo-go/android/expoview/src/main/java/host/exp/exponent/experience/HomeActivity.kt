@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Debug
 import com.facebook.react.runtime.ReactSurfaceView
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.application.ApplicationModule
@@ -13,7 +14,6 @@ import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.blur.BlurModule
 import expo.modules.camera.CameraViewModule
-import expo.modules.camera.legacy.CameraViewLegacyModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsPackage
@@ -84,8 +84,8 @@ open class HomeActivity : BaseExperienceActivity() {
   }
 
   override fun onResume() {
+    SoLoader.init(this, OpenSourceMergedSoMapping)
     super.onResume()
-    SoLoader.init(this, false)
   }
   //endregion Activity Lifecycle
   /**
@@ -136,7 +136,6 @@ open class HomeActivity : BaseExperienceActivity() {
         BarCodeScannerModule::class.java,
         BlurModule::class.java,
         CameraViewModule::class.java,
-        CameraViewLegacyModule::class.java,
         ClipboardModule::class.java,
         ConstantsModule::class.java,
         DeviceModule::class.java,

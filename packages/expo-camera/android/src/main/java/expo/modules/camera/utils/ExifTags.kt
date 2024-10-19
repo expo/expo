@@ -1,4 +1,4 @@
-package expo.modules.camera.legacy
+package expo.modules.camera.utils
 
 import androidx.exifinterface.media.ExifInterface
 
