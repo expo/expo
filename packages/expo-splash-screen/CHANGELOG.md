@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `preventAutoHideAsync()` broken on iOS bridgeless mode. ([#28234](https://github.com/expo/expo/pull/28234) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.27.6 - 2024-09-23
