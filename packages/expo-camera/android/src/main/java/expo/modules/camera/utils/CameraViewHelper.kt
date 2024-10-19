@@ -7,8 +7,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
 
-import com.google.android.cameraview.CameraView
-
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
