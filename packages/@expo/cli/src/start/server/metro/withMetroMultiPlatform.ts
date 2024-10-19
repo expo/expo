@@ -146,6 +146,11 @@ export function withExtendedResolver(
     getMetroBundler: () => Bundler;
   }
 ) {
+  if (isReactServerComponentsEnabled) {
+    Log.warn(
+      `Experimental React Server Components is enabled. Production exports are not supported yet.`
+    );
+  }
   if (isFastResolverEnabled) {
     Log.warn(`Experimental module resolution is enabled.`);
   }
