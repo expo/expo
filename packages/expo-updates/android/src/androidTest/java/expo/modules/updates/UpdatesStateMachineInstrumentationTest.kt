@@ -48,7 +48,6 @@ class UpdatesStateMachineInstrumentationTest {
     override var eventEmitter: EventEmitter? = null
 
     override fun sendStateMachineContextEvent(context: UpdatesStateContext) {
-
     }
   }
 
