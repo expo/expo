@@ -28,5 +28,8 @@ ReactAndroid-temp.aar
 /ios/Exponent/Supporting/Info.plist.bak
 /ios/Exponent/Supporting/Info.plist.json
 
+# Vendored Modules
+/modules/**/build
+
 # JS
 dist/
