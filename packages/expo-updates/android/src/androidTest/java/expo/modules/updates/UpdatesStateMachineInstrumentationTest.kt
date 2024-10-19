@@ -46,13 +46,9 @@ class UpdatesStateMachineInstrumentationTest {
     var lastEventType: UpdatesStateEventType? = null
 
     override var eventEmitter: EventEmitter? = null
-    override var shouldEmitJsEvents: Boolean = false
 
-    override fun sendStateChangeEvent(
-      eventType: UpdatesStateEventType,
-      context: UpdatesStateContext
-    ) {
-      lastEventType = eventType
+    override fun sendStateMachineContextEvent(context: UpdatesStateContext) {
+
     }
   }
 
