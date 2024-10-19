@@ -104,8 +104,9 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
  */
 func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
   if image.sd_isAnimated,
-    let animatedImage = image as? AnimatedImage {
-    let animatedCoder = ResizedAnimatedCoder(image: animatedImage, size: size, scale: scale)
+    let animatedImage = image as? AnimatedImage,
+    let actualCoder = animatedImage.animatedCoder {
+    let animatedCoder = ResizedAnimatedCoder(actualCoder: actualCoder, size: size, scale: scale)
     if let result = AnimatedImage(animatedCoder: animatedCoder, scale: scale) {
       return result
     }
