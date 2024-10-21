@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { createHandlersFactory } from './createHandlersFactory';
 import { Log } from '../../../../log';
+import { env } from '../../../../utils/env';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
 
 export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
@@ -16,7 +17,11 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
     logger: createLogger(chalk.bold('Debug:')),
     unstable_customInspectorMessageHandler: createHandlersFactory(metroBundler),
     unstable_experiments: {
-      enableNewDebugger: true,
+      // Enable the Network tab in React Native DevTools
+      enableNetworkInspector: true,
+      // Only enable opening the browser version of React Native DevTools when debugging.
+      // This is useful when debugging the React Native DevTools by going to `/open-debugger` in the browser.
+      enableOpenDebuggerRedirect: env.EXPO_DEBUG,
     },
   });
 

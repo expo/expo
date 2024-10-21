@@ -22,18 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPathFromState = exports.getStateFromPath = exports.addEventListener = exports.getRootURL = exports.getInitialURL = void 0;
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("../fork/extractPathFromURL");
-const getPathFromState_1 = __importDefault(require("../fork/getPathFromState"));
-exports.getPathFromState = getPathFromState_1.default;
-const getStateFromPath_1 = __importDefault(require("../fork/getStateFromPath"));
-exports.getStateFromPath = getStateFromPath_1.default;
+const getPathFromState_1 = require("../fork/getPathFromState");
+Object.defineProperty(exports, "getPathFromState", { enumerable: true, get: function () { return getPathFromState_1.getPathFromState; } });
+const getStateFromPath_1 = require("../fork/getStateFromPath");
+Object.defineProperty(exports, "getStateFromPath", { enumerable: true, get: function () { return getStateFromPath_1.getStateFromPath; } });
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 function getInitialURLWithTimeout() {
     return Promise.race([
@@ -88,6 +85,7 @@ function parseExpoGoUrlFromListener(url) {
 function addEventListener(nativeLinking) {
     return (listener) => {
         let callback;
+        const legacySubscription = nativeLinking?.legacy_subscribe?.(listener);
         if (isExpoGo) {
             // This extra work is only done in the Expo Go app.
             callback = async ({ url }) => {
@@ -110,6 +108,7 @@ function addEventListener(nativeLinking) {
         return () => {
             // https://github.com/facebook/react-native/commit/6d1aca806cee86ad76de771ed3a1cc62982ebcd7
             subscription?.remove?.();
+            legacySubscription?.();
         };
     };
 }

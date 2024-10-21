@@ -186,6 +186,7 @@ const general = [
         makePage('guides/analyzing-bundles.mdx'),
         makePage('guides/tree-shaking.mdx'),
         makePage('guides/minify.mdx'),
+        makePage('guides/why-metro.mdx'),
       ],
       { expanded: false }
     ),
@@ -422,6 +423,7 @@ const general = [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
     makePage('distribution/app-transfers.mdx'),
+    makePage('distribution/app-size.mdx'),
   ]),
   makeSection(
     'More',
@@ -492,7 +494,7 @@ const general = [
 const learn = [
   makeSection('', [makePage('tutorial/overview.mdx')]),
   makeSection(
-    'Universal app',
+    'Expo tutorial',
     [
       makePage('tutorial/introduction.mdx'),
       makePage('tutorial/create-your-first-app.mdx'),

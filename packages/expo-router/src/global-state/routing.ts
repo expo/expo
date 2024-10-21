@@ -88,12 +88,17 @@ export type LinkToOptions = {
    * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
    */
   relativeToDirectory?: boolean;
+
+  /**
+   *
+   */
+  withAnchor?: boolean;
 };
 
 export function linkTo(
   this: RouterStore,
   href: string,
-  { event, relativeToDirectory }: LinkToOptions = {}
+  { event, relativeToDirectory, withAnchor }: LinkToOptions = {}
 ) {
   if (shouldLinkExternally(href)) {
     Linking.openURL(href);
@@ -129,13 +134,14 @@ export function linkTo(
     return;
   }
 
-  return navigationRef.dispatch(getNavigateAction(state, rootState, event));
+  return navigationRef.dispatch(getNavigateAction(state, rootState, event, withAnchor));
 }
 
 function getNavigateAction(
   actionState: ResultState,
   navigationState: NavigationState,
-  type = 'NAVIGATE'
+  type = 'NAVIGATE',
+  withAnchor?: boolean
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -224,7 +230,7 @@ function getNavigateAction(
      *
      */
     if (navigationState.type === 'stack') {
-      rootPayload.key = `${rootPayload.name}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+      rootPayload.params.__EXPO_ROUTER_key = `${rootPayload.name}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
     }
   }
 
@@ -236,11 +242,29 @@ function getNavigateAction(
     type = 'JUMP_TO';
   }
 
+  if (withAnchor !== undefined) {
+    if (rootPayload.params.initial) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
+      }
+    }
+    /*
+     * The logic for initial can seen backwards depending on your perspective
+     *   True: The initialRouteName is not loaded. The incoming screen is the initial screen (default)
+     *   False: The initialRouteName is loaded. THe incoming screen is placed after the initialRouteName
+     *
+     * withAnchor flips the perspective.
+     *   True: You want the initialRouteName to load.
+     *   False: You do not want the initialRouteName to load.
+     */
+    rootPayload.params.initial = !withAnchor;
+  }
+
   return {
     type,
     target: navigationState.key,
     payload: {
-      key: rootPayload.key,
+      // key: rootPayload.key,
       name: rootPayload.screen,
       params: rootPayload.params,
     },

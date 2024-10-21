@@ -21,6 +21,10 @@ interface Promise {
 
   fun resolve(result: String) = resolve(result as Any?)
 
+  fun resolve(result: Collection<Any?>) = resolve(result as Any?)
+
+  fun resolve(result: Map<String, Any?>) = resolve(result as Any?)
+
   fun reject(code: String, message: String?, cause: Throwable?)
 
   fun reject(exception: CodedException) {
@@ -41,35 +45,35 @@ fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
       resolveMethod(value)
     }
 
-    override fun reject(code: String?, message: String?) {
+    override fun reject(code: String, message: String?) {
       expoPromise.reject(code ?: unknownCode, message, null)
     }
 
-    override fun reject(code: String?, throwable: Throwable?) {
+    override fun reject(code: String, throwable: Throwable?) {
       expoPromise.reject(code ?: unknownCode, null, throwable)
     }
 
-    override fun reject(code: String?, message: String?, throwable: Throwable?) {
+    override fun reject(code: String, message: String?, throwable: Throwable?) {
       expoPromise.reject(code ?: unknownCode, message, throwable)
     }
 
-    override fun reject(throwable: Throwable?) {
+    override fun reject(throwable: Throwable) {
       expoPromise.reject(unknownCode, null, throwable)
     }
 
-    override fun reject(throwable: Throwable?, userInfo: WritableMap?) {
+    override fun reject(throwable: Throwable, userInfo: WritableMap) {
       expoPromise.reject(unknownCode, null, throwable)
     }
 
-    override fun reject(code: String?, userInfo: WritableMap) {
+    override fun reject(code: String, userInfo: WritableMap) {
       expoPromise.reject(code ?: unknownCode, null, null)
     }
 
-    override fun reject(code: String?, throwable: Throwable?, userInfo: WritableMap?) {
+    override fun reject(code: String, throwable: Throwable?, userInfo: WritableMap) {
       expoPromise.reject(code ?: unknownCode, null, throwable)
     }
 
-    override fun reject(code: String?, message: String?, userInfo: WritableMap) {
+    override fun reject(code: String, message: String?, userInfo: WritableMap) {
       expoPromise.reject(code ?: unknownCode, message, null)
     }
 
@@ -78,7 +82,7 @@ fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
     }
 
     @Deprecated("Use reject(code, message, throwable) instead")
-    override fun reject(message: String?) {
+    override fun reject(message: String) {
       expoPromise.reject(unknownCode, message, null)
     }
   }

@@ -3,17 +3,17 @@ import com.android.build.api.variant.AndroidComponentsExtension
 
 buildscript {
   ext {
-    minSdkVersion = 23
+    minSdkVersion = 24
     targetSdkVersion = 34
-    compileSdkVersion = 34
+    compileSdkVersion = 35
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '34.0.0'
+    buildToolsVersion = '35.0.0'
     kotlinVersion = '1.9.24'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
-    ndkVersion = "26.3.11579264"
+    ndkVersion = "26.1.10909125"
   }
   repositories {
     google()
@@ -99,6 +99,7 @@ subprojects { project ->
   if (project.name == "ReactAndroid") { return; }
   if (project.name.startsWith("vendored_")) { return; }
   if (project.projectDir.toString().contains("/node_modules/")) { return; }
+  if (project.projectDir.toString().contains("/modules/")) { return; }
 
   plugins.apply("com.diffplug.spotless")
   spotless {

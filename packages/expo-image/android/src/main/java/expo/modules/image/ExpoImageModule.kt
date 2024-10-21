@@ -29,6 +29,7 @@ import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.DecodedSource
+import expo.modules.image.records.ImageLoadOptions
 import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
@@ -113,9 +114,9 @@ class ExpoImageModule : Module() {
       }
     }
 
-    AsyncFunction("loadAsync") { source: SourceMap, promise: Promise ->
+    AsyncFunction("loadAsync") { source: SourceMap, options: ImageLoadOptions?, promise: Promise ->
       CoroutineScope(Dispatchers.Main).launch {
-        ImageLoadTask(appContext, source).load(promise)
+        ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load(promise)
       }
     }
 
@@ -173,7 +174,7 @@ class ExpoImageModule : Module() {
       return@AsyncFunction try {
         val file = target.get()
         file.absolutePath
-      } catch (e: Exception) {
+      } catch (_: Exception) {
         null
       }
     }
@@ -268,7 +269,7 @@ class ExpoImageModule : Module() {
         ViewProps.BORDER_START_COLOR to Spacing.START,
         ViewProps.BORDER_END_COLOR to Spacing.END
       ) { view: ExpoImageViewWrapper, index: Int, color: Int? ->
-        val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
+        val rgbComponent = if (color == null) YogaConstants.UNDEFINED.toInt() else (color and 0x00FFFFFF)
         val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
         view.setBorderColor(index, rgbComponent, alphaComponent)
       }
@@ -290,7 +291,7 @@ class ExpoImageModule : Module() {
       }
 
       Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean? ->
-        view.accessible = accessible ?: false
+        view.accessible = accessible == true
       }
 
       Prop("accessibilityLabel") { view: ExpoImageViewWrapper, accessibilityLabel: String? ->
@@ -298,7 +299,7 @@ class ExpoImageModule : Module() {
       }
 
       Prop("focusable") { view: ExpoImageViewWrapper, isFocusable: Boolean? ->
-        view.isFocusableProp = isFocusable ?: false
+        view.isFocusableProp = isFocusable == true
       }
 
       Prop("priority") { view: ExpoImageViewWrapper, priority: Priority? ->
@@ -314,11 +315,11 @@ class ExpoImageModule : Module() {
       }
 
       Prop("allowDownscaling") { view: ExpoImageViewWrapper, allowDownscaling: Boolean? ->
-        view.allowDownscaling = allowDownscaling ?: true
+        view.allowDownscaling = allowDownscaling != false
       }
 
       Prop("autoplay") { view: ExpoImageViewWrapper, autoplay: Boolean? ->
-        view.autoplay = autoplay ?: true
+        view.autoplay = autoplay != false
       }
 
       Prop("decodeFormat") { view: ExpoImageViewWrapper, format: DecodeFormat? ->

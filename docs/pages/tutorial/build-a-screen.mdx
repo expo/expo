@@ -25,6 +25,8 @@ Once the user selects an image, they can add a sticker to it. So, let's start cr
 
 <VideoBoxLink videoId="3rcOP8xDwTQ" title="Watch: Building a screen in your universal Expo app" />
 
+---
+
 <Step label="1">
 
 ## Break down the screen
@@ -85,7 +87,7 @@ import { View, StyleSheet } from 'react-native';
 /* @tutinfo Import the <CODE>Image</CODE> component. */ import { Image } from 'expo-image'; /* @end */
 
 /* @tutinfo Import the image from the "assets/images/" directory. Since this picture is a static resource, you have to reference it using <CODE>require</CODE>. */
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 /* @end */
 
 export default function Index() {
@@ -164,7 +166,7 @@ import { StyleSheet, View } from 'react-native';
 
 /* @tutinfo */import ImageViewer from "@/components/ImageViewer"; /* @end */
 
-const PlaceholderImage = require('./assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   return (
@@ -258,15 +260,15 @@ The app displays an alert when the user taps any of the buttons on the screen. I
 import { View, StyleSheet } from "react-native";
 
 /* @tutinfo */import Button from '@/components/Button'; /* @end */
-import ImageViewer from './components/ImageViewer';
+import ImageViewer from '@/components/ImageViewer';
 
-const PlaceholderImage = require("./assets/images/background-image.png");
+const PlaceholderImage = require("@/assets/images/background-image.png");
 
 export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <ImageViewer placeholderImageSource={PlaceholderImage} />
+        <ImageViewer imgSource={PlaceholderImage} />
       </View>
       /* @tutinfo Use the reusable <CODE>Button</CODE> component to create two buttons and encapsulate them inside a <CODE>View</CODE> component. */
       <View style={styles.footerContainer}>
@@ -274,7 +276,6 @@ export default function Index() {
         <Button label="Use this photo" />
       </View>
       /* @end */
-      <StatusBar style="auto" />
     </View>
   );
 }
@@ -401,7 +402,7 @@ import { View, StyleSheet } from 'react-native';
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   return (

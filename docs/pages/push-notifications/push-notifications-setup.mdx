@@ -192,10 +192,9 @@ Using the previous example, when you are registering for push notifications, you
 
 `projectId` is automatically set when you create a development build. However, **we recommend setting it manually in your project's code**. To do so, you can use [`expo-constants`](/versions/latest/sdk/constants/) to get the `projectId` value from the app config.
 
-```js
-token = await Notifications.getExpoPushTokenAsync({
-  projectId: Constants.expoConfig.extra.eas.projectId,
-});
+```ts
+const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+const pushTokenString = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
 ```
 
 One advantage of attributing the Expo push token to your project's ID is that it doesn't change when a project is transferred between different accounts or the existing account gets renamed.

@@ -18,7 +18,7 @@ export type AudioMode = {
   /**
    * A boolean selecting if the audio session (playback or recording) should stay active even when the app goes into background.
    * > This is not available in Expo Go for iOS, it will only work in standalone apps.
-   * > To enable it for standalone apps, [follow the instructions below](#playing-or-recording-audio-in-background-ios)
+   * > To enable it for standalone apps, [follow the instructions below](#playing-or-recording-audio-in-background)
    * > to add `UIBackgroundModes` to your app configuration.
    * @default false
    */

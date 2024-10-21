@@ -17,6 +17,8 @@ We'll also use the [Reanimated](https://docs.swmansion.com/react-native-reanimat
 
 <VideoBoxLink videoId="0q48LLvTGDU" title="Watch: Adding gestures to your universal Expo app" />
 
+---
+
 <Step label="1">
 
 ## Add GestureHandlerRootView
@@ -281,6 +283,8 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
     .onStart(() => {
       if (scaleImage.value !== imageSize * 2) {
         scaleImage.value = scaleImage.value * 2;
+      } else {
+        scaleImage.value = Math.round(scaleImage.value / 2);
       }
     });
 

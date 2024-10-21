@@ -91,9 +91,13 @@ export async function listAvailableVendoredModulesAsync(
  * @returns Object with module names as keys and their versions as values.
  */
 async function listExpoGoAutoLinkingModulesAsync(): Promise<Record<string, string>> {
-  const { stdout } = await spawnAsync('npx', ['react-native', 'config'], {
-    cwd: EXPO_GO_DIR,
-  });
+  const { stdout } = await spawnAsync(
+    'npx',
+    ['expo-modules-autolinking', 'react-native-config', '--json'],
+    {
+      cwd: EXPO_GO_DIR,
+    }
+  );
   const { dependencies } = JSON.parse(stdout);
   const result = {};
   for (const [moduleName, moduleInfo] of Object.entries<Record<string, any>>(dependencies)) {

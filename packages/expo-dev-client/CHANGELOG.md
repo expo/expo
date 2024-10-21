@@ -7,6 +7,7 @@
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- Changed the exports shape, instead of using namespaces, all entities now are exported directly on package top-level. ([#31969](https://github.com/expo/expo/pull/31969) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
@@ -19,6 +20,7 @@
 ### 💡 Others
 
 - Fix homepage link in `package.json`. ([#30163](https://github.com/expo/expo/pull/30163) by [@amandeepmittal](https://github.com/amandeepmittal))
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
 
 ## 4.0.27 - 2024-09-23
 

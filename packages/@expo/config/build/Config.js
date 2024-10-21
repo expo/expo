@@ -126,7 +126,7 @@ Object.keys(_Config).forEach(function (key) {
     }
   });
 });
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 let hasWarnedAboutRootConfig = false;
 
 /**
@@ -169,7 +169,7 @@ function getSupportedPlatforms(projectRoot) {
   if (_resolveFrom().default.silent(projectRoot, 'react-native')) {
     platforms.push('ios', 'android');
   }
-  if (_resolveFrom().default.silent(projectRoot, 'react-native-web')) {
+  if (_resolveFrom().default.silent(projectRoot, 'react-dom')) {
     platforms.push('web');
   }
   return platforms;

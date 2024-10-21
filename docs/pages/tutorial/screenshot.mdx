@@ -16,6 +16,8 @@ In this chapter, we'll learn how to take a screenshot using a third-party librar
 
 <VideoBoxLink videoId="Jft3_Yfr-p4" title="Watch: Taking screenshots in your universal Expo app" />
 
+---
+
 <Step label="1">
 
 ## Install libraries
@@ -71,7 +73,7 @@ We'll use `react-native-view-shot` to allow the user to take a screenshot within
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 import { useState, useRef } from 'react';
-import { captureRef } from "react-native-view-shot";
+/* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
   /* @tutinfo Create an imageRef variable. */ const imageRef = useRef();/* @end */
@@ -82,7 +84,7 @@ export default function Index() {
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
         /* @tutinfo Add a View component to wrap the ImageViewer and EmojiSticker inside it. */<View ref={imageRef} collapsable={false}>/* @end */
-          <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
+          <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
           {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
         /* @tutinfo */</View>/* @end */
       </View>
@@ -123,7 +125,7 @@ import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
 import EmojiSticker from '@/components/EmojiSticker';
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);

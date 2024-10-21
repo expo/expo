@@ -3,11 +3,12 @@ import { useMemo } from 'react';
 import type {
   BufferOptions,
   PlayerError,
-  VideoPlayer,
-  VideoPlayerEvents,
   VideoPlayerStatus,
   VideoSource,
+  VideoPlayer,
 } from './VideoPlayer.types';
+import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
+import { VideoThumbnail } from './VideoThumbnail';
 import resolveAssetSource from './resolveAssetSource';
 
 export function useVideoPlayer(
@@ -191,9 +192,16 @@ export default class VideoPlayerWeb
     if (this._status === value) return;
 
     if (value === 'error' && this._error) {
-      this.emit('statusChange', value, this._status, this._error);
+      this.emit('statusChange', {
+        status: value,
+        oldStatus: this._status,
+        error: this._error,
+      });
     } else {
-      this.emit('statusChange', value, this._status);
+      this.emit('statusChange', {
+        status: value,
+        oldStatus: this._status,
+      });
       this._error = null;
     }
     this._status = value;
@@ -296,6 +304,10 @@ export default class VideoPlayerWeb
     this.playing = true;
   }
 
+  generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]> {
+    throw new Error('Generating video thumbnails is not supported on Web yet');
+  }
+
   _synchronizeWithFirstVideo(video: HTMLVideoElement): void {
     const firstVideo = [...this._mountedVideos][0];
     if (!firstVideo) return;
@@ -328,7 +340,10 @@ export default class VideoPlayerWeb
 
   _addListeners(video: HTMLVideoElement): void {
     video.onplay = () => {
-      this._emitOnce(video, 'playingChange', true, this.playing);
+      this._emitOnce(video, 'playingChange', {
+        isPlaying: true,
+        oldIsPlaying: this.playing,
+      });
       this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.play();
@@ -336,7 +351,10 @@ export default class VideoPlayerWeb
     };
 
     video.onpause = () => {
-      this._emitOnce(video, 'playingChange', false, this.playing);
+      this._emitOnce(video, 'playingChange', {
+        isPlaying: false,
+        oldIsPlaying: this.playing,
+      });
       this.playing = false;
       this._mountedVideos.forEach((mountedVideo) => {
         mountedVideo.pause();
@@ -344,12 +362,8 @@ export default class VideoPlayerWeb
     };
 
     video.onvolumechange = () => {
-      this._emitOnce(
-        video,
-        'volumeChange',
-        { volume: video.volume, isMuted: video.muted },
-        { volume: this.volume, isMuted: this.muted }
-      );
+      this._emitOnce(video, 'volumeChange', { volume: video.volume, oldVolume: this.volume });
+      this._emitOnce(video, 'mutedChange', { muted: video.muted, oldMuted: this.muted });
       this.volume = video.volume;
       this.muted = video.muted;
     };
@@ -369,7 +383,10 @@ export default class VideoPlayerWeb
     };
 
     video.onratechange = () => {
-      this._emitOnce(video, 'playbackRateChange', video.playbackRate, this.playbackRate);
+      this._emitOnce(video, 'playbackRateChange', {
+        playbackRate: video.playbackRate,
+        oldPlaybackRate: this.playbackRate,
+      });
       this._mountedVideos.forEach((mountedVideo) => {
         if (mountedVideo.playbackRate === video.playbackRate) return;
         this._playbackRate = video.playbackRate;
@@ -404,7 +421,7 @@ export default class VideoPlayerWeb
     };
 
     video.onloadstart = () => {
-      this._emitOnce(video, 'sourceChange', this.src, this.previousSrc);
+      this._emitOnce(video, 'sourceChange', { source: this.src, oldSource: this.previousSrc });
     };
   }
 }

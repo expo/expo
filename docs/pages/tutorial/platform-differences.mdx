@@ -20,6 +20,8 @@ In this chapter, we'll learn how to handle capturing screenshots for web browser
   title="Watch: Handling platform differences in your universal Expo app"
 />
 
+---
+
 <Step label="1">
 
 ## Install and import dom-to-image
@@ -62,7 +64,7 @@ import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
 import EmojiSticker from '@/components/EmojiSticker';
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);

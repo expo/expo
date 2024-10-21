@@ -614,7 +614,7 @@ Expo CLI will skip the `./my-module.js` dependency and assume that the developer
 
 When assets are imported, a virtual module is created to represent the data required for importing the asset.
 
-On native platforms, an asset will be a numeric ID: `1`, `2`, `3`, etc. which can be looked up using `require("@react-native/assets-registry/registry").getAssetByID(<NUMBER>)`. On web and server platforms, the asset will change depending on the file type. If the file is an image, then the asset will be `{ uri: string, width?: number, height?: number }`, otherwise the asset will be a `string` representing the remote URL for the asset.
+On native platforms, an asset will be a numeric ID: `1`, `2`, `3`, and so on, which can be looked up using `require("@react-native/assets-registry/registry").getAssetByID(<NUMBER>)`. On web and server platforms, the asset will change depending on the file type. If the file is an image, then the asset will be `{ uri: string, width?: number, height?: number }`, otherwise the asset will be a `string` representing the remote URL for the asset.
 
 The assets can be used as follows:
 

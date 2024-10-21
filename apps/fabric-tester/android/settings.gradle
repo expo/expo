@@ -3,12 +3,7 @@ pluginManagement {
 }
 plugins { id("com.facebook.react.settings") }
 
-def useUnstableCoreAutolinking = System.getenv('EXPO_UNSTABLE_CORE_AUTOLINKING')
-useUnstableCoreAutolinking = '1'
-
 extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
-  if (useUnstableCoreAutolinking == '1') {
-    println('\u001B[32mUsing expo-modules-autolinking as core autolinking source\u001B[0m')
     def command = [
       'node',
       '--no-warnings',
@@ -20,9 +15,6 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
       'android'
     ].toList()
     ex.autolinkLibrariesFromCommand(command)
-  } else {
-    ex.autolinkLibrariesFromCommand()
-  }
 }
 
 rootProject.name = 'fabric-tester'

@@ -14,7 +14,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var playbackRate: Float = 1.0 {
     didSet {
       if oldValue != playbackRate {
-        safeEmit(event: "playbackRateChange", arguments: playbackRate, oldValue)
+        let payload = PlaybackRateChangedEventPayload(playbackRate: playbackRate, oldPlaybackRate: oldValue)
+        safeEmit(event: "playbackRateChange", payload: payload)
       }
       if #available(iOS 16.0, tvOS 16.0, *) {
         pointer.defaultRate = playbackRate
@@ -40,10 +41,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var volume: Float = 1.0 {
     didSet {
       if oldValue != volume {
-        let oldVolumeEvent = VolumeEvent(volume: oldValue, isMuted: isMuted)
-        let newVolumeEvent = VolumeEvent(volume: volume, isMuted: isMuted)
-
-        safeEmit(event: "volumeChange", arguments: newVolumeEvent, oldVolumeEvent)
+        let payload = VolumeChangedEventPayload(volume: volume, oldVolume: oldValue)
+        safeEmit(event: "volumeChange", payload: payload)
       }
       pointer.volume = volume
     }
@@ -52,10 +51,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var isMuted: Bool = false {
     didSet {
       if oldValue != isMuted {
-        let oldVolumeEvent = VolumeEvent(volume: volume, isMuted: oldValue)
-        let newVolumeEvent = VolumeEvent(volume: volume, isMuted: isMuted)
-
-        safeEmit(event: "volumeChange", arguments: newVolumeEvent, oldVolumeEvent)
+        let payload = MutedChangedEventPayload(muted: isMuted, oldMuted: oldValue)
+        safeEmit(event: "mutedChange", payload: payload)
       }
       pointer.isMuted = isMuted
       VideoManager.shared.setAppropriateAudioSessionOrWarn()
@@ -197,12 +194,14 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?) {
     let errorRecord = error != nil ? PlaybackError(message: error?.localizedDescription) : nil
-    safeEmit(event: "statusChange", arguments: newStatus.rawValue, oldStatus?.rawValue, errorRecord)
+    let payload = StatusChangedEventPayload(status: newStatus, oldStatus: oldStatus, error: errorRecord)
+    safeEmit(event: "statusChange", payload: payload)
     status = newStatus
   }
 
   func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool) {
-    safeEmit(event: "playingChange", arguments: newIsPlaying, oldIsPlaying)
+    let payload = IsPlayingEventPayload(isPlaying: newIsPlaying, oldIsPlaying: oldIsPlaying)
+    safeEmit(event: "playingChange", payload: payload)
     isPlaying = newIsPlaying
 
     VideoManager.shared.setAppropriateAudioSessionOrWarn()
@@ -238,17 +237,21 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
-    safeEmit(event: "sourceChange", arguments: newVideoPlayerItem?.videoSource, oldVideoPlayerItem?.videoSource)
+    let payload = SourceChangedEventPayload(
+      source: newVideoPlayerItem?.videoSource,
+      oldSource: oldVideoPlayerItem?.videoSource
+    )
+    safeEmit(event: "sourceChange", payload: payload)
     newVideoPlayerItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
   }
 
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {
-    safeEmit(event: "timeUpdate", arguments: timeUpdate)
+    safeEmit(event: "timeUpdate", payload: timeUpdate)
   }
 
-  func safeEmit<each A: AnyArgument>(event: String, arguments: repeat each A) {
+  func safeEmit(event: String, payload: Record? = nil) {
     if self.appContext != nil {
-      self.emit(event: event, arguments: repeat each arguments)
+      self.emit(event: event, arguments: payload?.toDictionary(appContext: appContext))
     }
   }
 

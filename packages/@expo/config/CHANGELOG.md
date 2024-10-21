@@ -12,10 +12,12 @@
 - Add `resolveRelativeEntryPoint` that takes possible server root into account. ([#30633](https://github.com/expo/expo/pull/30633) by [@byCedric](https://github.com/byCedric))
 - Export `getMetroServerRoot` method for monorepo root detection with bun, npm, pnpm, and yarn. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
 - Add support for static and extending dynamic config modifications. ([#30782](https://github.com/expo/expo/pull/30782) by [@byCedric](https://github.com/byCedric))
+- Add `getMetroWorkspaceGlobs` helper to set up pnpm monorepos properly. ([#31973](https://github.com/expo/expo/pull/31973) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
 - Move entry point path modifications to Node script instead of Gradle plugin. ([#30654](https://github.com/expo/expo/pull/30654) by [@byCedric](https://github.com/byCedric))
+- Enable web as a default platform when `react-dom` is installed. ([#32149](https://github.com/expo/expo/pull/32149) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

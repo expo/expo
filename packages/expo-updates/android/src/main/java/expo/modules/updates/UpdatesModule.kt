@@ -13,7 +13,6 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
-import java.lang.ref.WeakReference
 import java.util.Date
 
 /**
@@ -40,19 +39,12 @@ class UpdatesModule : Module() {
       UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnCreate {
-      UpdatesController.bindAppContext(
-        WeakReference(appContext),
-        appContext.eventEmitter(this@UpdatesModule)
-      )
-    }
-
     OnStartObserving {
-      UpdatesController.shouldEmitJsEvents = true
+      UpdatesController.onEventListenerStartObserving(appContext.eventEmitter(this@UpdatesModule))
     }
 
     OnStopObserving {
-      UpdatesController.shouldEmitJsEvents = false
+      UpdatesController.onEventListenerStopObserving()
     }
 
     AsyncFunction("reload") { promise: Promise ->

@@ -90,6 +90,28 @@ export default class NotificationScreen extends React.Component<
           title="Present a notification immediately"
         />
         <ListButton
+          onPress={async () => {
+            await this._obtainUserFacingNotifPermissionsAsync();
+            await Notifications.setNotificationChannelAsync('high-importance', {
+              name: 'important notification',
+              importance: Notifications.AndroidImportance.MAX,
+              bypassDnd: true,
+            });
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                categoryIdentifier: 'welcome',
+                title: 'Here is a notification!',
+                body: 'This one has buttons!',
+                autoDismiss: true,
+              },
+              trigger: {
+                channelId: 'high-importance',
+              },
+            });
+          }}
+          title="Present a notification with action buttons"
+        />
+        <ListButton
           onPress={this._scheduleLocalNotificationAsync}
           title="Schedule notification for 10 seconds from now"
         />
@@ -194,7 +216,18 @@ export default class NotificationScreen extends React.Component<
     // Calling alert(message) immediately fails to show the alert on Android
     // if after backgrounding the app and then clicking on a notification
     // to foreground the app
-    setTimeout(() => Alert.alert('You clicked on the notification 🥇'), 1000);
+    setTimeout(
+      () =>
+        Alert.alert(
+          'You clicked on the notification 🥇',
+          JSON.stringify({
+            actionIdentifier: notificationResponse.actionIdentifier,
+            userText: notificationResponse.userText,
+          })
+        ),
+      1000
+    );
+    Notifications.dismissNotificationAsync(notificationResponse.notification.request.identifier);
   };
 
   private getPermissionsAsync = async () => {

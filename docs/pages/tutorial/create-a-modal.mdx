@@ -14,6 +14,8 @@ In this chapter, we'll create a modal that shows an emoji picker list.
 
 <VideoBoxLink videoId="HRAMzrBwVeo" title="Watch: Creating a modal in your universal Expo app" />
 
+---
+
 <Step label="1">
 
 ## Declare a state variable to show buttons
@@ -35,7 +37,7 @@ import { useState } from 'react';
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
@@ -219,7 +221,7 @@ import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 /* @end */
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
@@ -328,13 +330,13 @@ The modal allows the user to choose an emoji from a list of available emoji. Cre
 {/* prettier-ignore */}
 ```tsx components/EmojiPicker.tsx|collapseHeight=430
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
+import { PropsWithChildren } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-type Props = {
+type Props = PropsWithChildren<{
   isVisible: boolean;
-  children: React.ReactNode;
   onClose: () => void;
-};
+}>;
 
 export default function EmojiPicker({ isVisible, children, onClose }: Props) {
   return (
@@ -440,7 +442,7 @@ import CircleButton from '@/components/CircleButton';
 import EmojiPicker from '@/components/EmojiPicker';
 /* @end */
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
@@ -632,7 +634,7 @@ import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
 /* @end */
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
@@ -784,7 +786,7 @@ import EmojiList from '@/components/EmojiList';
 import EmojiSticker from '@/components/EmojiSticker';
 /* @end */
 
-const PlaceholderImage = require('../../assets/images/background-image.png');
+const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);

@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Added support for React Native 0.75. ([#30743](https://github.com/expo/expo/pull/30743), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Added other debuggable variants for network inspector by referring the `react.debuggableVariants`. ([#32014](https://github.com/expo/expo/pull/32014) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -27,6 +28,8 @@
 - Bumped Kotlin version to 1.9.24. ([#30199](https://github.com/expo/expo/pull/30199) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31700](https://github.com/expo/expo/pull/31700) by [@kudo](https://github.com/kudo))
 - Refactor expo-updates context injection ([#31951](https://github.com/expo/expo/pull/31951) by [@wschurman](https://github.com/wschurman))
+- Remove unused `semver` dependency. ([#32063](https://github.com/expo/expo/pull/32063) by [@kitten](https://github.com/kitten))
+- [ios] Remove appContext property from updates interface. ([#32103](https://github.com/expo/expo/pull/32103) by [@wschurman](https://github.com/wschurman))
 
 ### 📚 3rd party library updates
 

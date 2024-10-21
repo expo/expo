@@ -146,7 +146,6 @@ function getEnvPrelude(code: string): Module<MixedOutput> {
         type: 'js/script/virtual',
         data: {
           code,
-          // @ts-expect-error: typed incorrectly upstream
           lineCount: 1,
           map: [],
         },

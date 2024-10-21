@@ -1,8 +1,7 @@
-@file:Suppress("DEPRECATION")
-
 package expo.modules.notifications
 
 import android.os.Parcel
+import android.os.Bundle
 import androidx.test.filters.SmallTest
 import expo.modules.notifications.notifications.triggers.DailyTrigger
 import expo.modules.notifications.notifications.triggers.DateTrigger
@@ -15,10 +14,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 import java.util.Calendar
 
-@Suppress("DEPRECATION")
 @SmallTest
 class NotificationTriggerTest {
   private var calendarNow: Calendar = Calendar.getInstance()
@@ -96,10 +95,10 @@ class NotificationTriggerTest {
     val parcel = Parcel.obtain()
     dateTrigger.writeToParcel(parcel, 0)
     parcel.setDataPosition(0)
-    val dateTriggerFromParcel = DateTrigger(parcel)
+    val dateTriggerFromParcel = parcelableCreator<DateTrigger>().createFromParcel(parcel)
     assertEquals(dateTrigger.channelId, dateTriggerFromParcel.channelId)
-    assertEquals(dateTrigger.triggerDate, dateTriggerFromParcel.triggerDate)
-    assertEquals(calendar5MinutesFromNow.time.time, dateTriggerFromParcel.triggerDate.time)
+    assertEquals(dateTrigger.timestamp, dateTriggerFromParcel.timestamp)
+    assertEquals(calendar5MinutesFromNow.time.time, dateTriggerFromParcel.timestamp)
   }
 
   @Test
@@ -113,5 +112,110 @@ class NotificationTriggerTest {
     assertNull(timeIntervalTriggerFromParcel.channelId)
     assertFalse(timeIntervalTriggerFromParcel.isRepeating)
     assertEquals(timeIntervalTriggerFromParcel.timeInterval, 2)
+  }
+
+  @Test
+  fun testDateTriggerToBundle() {
+    val dateTrigger = DateTrigger("myChannel", calendar5MinutesFromNow.time.time)
+    val bundle = dateTrigger.toBundle()
+    assertBundleEquals(
+      mapOf(
+        "type" to "date",
+        "channelId" to "myChannel",
+        "value" to calendar5MinutesFromNow.time.time
+      ),
+      bundle
+    )
+  }
+
+  @Test
+  fun testTimeIntervalTriggerToBundle() {
+    val timeIntervalTrigger = TimeIntervalTrigger("myChannel", 300, true)
+    val bundle = timeIntervalTrigger.toBundle()
+    assertBundleEquals(
+      mapOf(
+        "type" to "timeInterval",
+        "channelId" to "myChannel",
+        "seconds" to 300L,
+        "repeats" to true
+      ),
+      bundle
+    )
+  }
+
+  @Test
+  fun testDailyTriggerToBundle() {
+    val dailyTrigger = DailyTrigger("myChannel", 14, 30)
+    val bundle = dailyTrigger.toBundle()
+    assertBundleEquals(
+      mapOf(
+        "type" to "daily",
+        "channelId" to "myChannel",
+        "hour" to 14,
+        "minute" to 30
+      ),
+      bundle
+    )
+  }
+
+  @Test
+  fun testWeeklyTriggerToBundle() {
+    val weeklyTrigger = WeeklyTrigger("myChannel", Calendar.MONDAY, 9, 11)
+    val bundle = weeklyTrigger.toBundle()
+    assertBundleEquals(
+      mapOf(
+        "type" to "weekly",
+        "channelId" to "myChannel",
+        "weekday" to Calendar.MONDAY,
+        "hour" to 9,
+        "minute" to 11
+      ),
+      bundle
+    )
+  }
+
+  @Test
+  fun testMonthlyTriggerToBundle() {
+    val monthlyTrigger = MonthlyTrigger("myChannel", 15, 12, 0)
+    val bundle = monthlyTrigger.toBundle()
+    assertBundleEquals(
+      mapOf(
+        "type" to "monthly",
+        "channelId" to "myChannel",
+        "day" to 15,
+        "hour" to 12,
+        "minute" to 0
+      ),
+      bundle
+    )
+  }
+
+  @Test
+  fun testYearlyTriggerToBundle() {
+    val yearlyTrigger = YearlyTrigger("myChannel", 1, 0, 2, 3)
+    val bundle = yearlyTrigger.toBundle()
+    assertBundleEquals(
+      mapOf(
+        "type" to "yearly",
+        "channelId" to "myChannel",
+        "day" to 1,
+        "month" to 0,
+        "hour" to 2,
+        "minute" to 3
+      ),
+      bundle
+    )
+  }
+
+  private fun assertBundleEquals(expected: Map<String, Any>, actual: Bundle) {
+    for ((key, value) in expected) {
+      when (value) {
+        is String -> assertEquals(value, actual.getString(key))
+        is Int -> assertEquals(value, actual.getInt(key))
+        is Long -> assertEquals(value, actual.getLong(key))
+        is Boolean -> assertEquals(value, actual.getBoolean(key))
+        else -> fail("Unsupported type for key $key")
+      }
+    }
   }
 }

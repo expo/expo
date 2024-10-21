@@ -33,14 +33,16 @@ const attributes = {
 
 type CodeProps = PropsWithChildren<{
   className?: string;
+  title?: string;
 }>;
 
-export function Code({ className, children }: CodeProps) {
+export function Code({ className, children, title }: CodeProps) {
   const contentRef = useRef<HTMLPreElement>(null);
   const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
 
   const rootProps = getRootCodeBlockProps(children, className);
   const codeBlockData = parseValue(rootProps?.children?.toString() ?? '');
+  const codeBlockTitle = codeBlockData?.title ?? title;
 
   const [isExpanded, setExpanded] = useState(false);
   const [collapseBound, setCollapseBound] = useState<number | undefined>(undefined);
@@ -90,9 +92,9 @@ export function Code({ className, children }: CodeProps) {
     showExpand && !isExpanded && `!overflow-hidden`,
   ];
 
-  return codeBlockData?.title ? (
+  return codeBlockTitle ? (
     <Snippet>
-      <SnippetHeader title={codeBlockData.title} Icon={getIconForFile(codeBlockData.title)}>
+      <SnippetHeader title={codeBlockTitle} Icon={getIconForFile(codeBlockTitle)}>
         <CopyAction text={cleanCopyValue(codeBlockData.value)} />
         <SettingsAction />
       </SnippetHeader>

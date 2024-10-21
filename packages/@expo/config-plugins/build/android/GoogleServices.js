@@ -43,7 +43,7 @@ function _warnings() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const DEFAULT_TARGET_PATH = './android/app/google-services.json';
 const googleServicesClassPath = 'com.google.gms:google-services';
 const googleServicesPlugin = 'com.google.gms.google-services';

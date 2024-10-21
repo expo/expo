@@ -147,6 +147,7 @@ public protocol InternalAppControllerInterface: AppControllerInterface {
   var updatesDirectory: URL? { get }
 
   var eventManager: UpdatesEventManager { get }
+  func onEventListenerStartObserving()
 
   func getConstantsForModule() -> UpdatesModuleConstants
   func requestRelaunch(
@@ -269,11 +270,12 @@ public class AppController: NSObject {
         try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory)
         _sharedInstance = EnabledAppController(config: config, database: updatesDatabase, updatesDirectory: directory)
       } catch {
+        let cause = UpdatesError.appControllerInitializationError(cause: error)
         logger.error(
-          message: "The expo-updates system is disabled due to an error during initialization: \(error.localizedDescription)",
+          cause: cause,
           code: .initializationError
         )
-        _sharedInstance = DisabledAppController(error: error)
+        _sharedInstance = DisabledAppController(error: cause)
         return
       }
     } else {
@@ -348,19 +350,13 @@ public class AppController: NSObject {
     }
   }
 
-  /**
-   For `UpdatesModule` to set the `shouldEmitJsEvents` property
-   */
-  internal static var shouldEmitJsEvents: Bool {
-    get { _sharedInstance?.eventManager.shouldEmitJsEvents ?? false }
-    set { _sharedInstance?.eventManager.shouldEmitJsEvents = newValue }
+  internal static func onEventListenerStartObserving(_ eventEmitter: EXEventEmitterService?) {
+    _sharedInstance?.eventManager.eventEmitter = eventEmitter
+    _sharedInstance?.onEventListenerStartObserving()
   }
 
-  /**
-   Binds the `AppContext` instance from `UpdatesModule`.
-   */
-  internal static func bindAppContext(_ appContext: AppContext?) {
-    _sharedInstance?.eventManager.appContext = appContext
+  internal static func onEventListenerStopObserving() {
+    _sharedInstance?.eventManager.eventEmitter = nil
   }
 }
 

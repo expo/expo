@@ -25,6 +25,10 @@ class ReactLifecycleDelegate(appContext: AppContext) : LifecycleEventListener, A
     appContextHolder.get()?.onHostPause()
   }
 
+  override fun onUserLeaveHint(activity: Activity) {
+    appContextHolder.get()?.onUserLeaveHint()
+  }
+
   override fun onHostDestroy() {
     appContextHolder.get()?.onHostDestroy()
   }

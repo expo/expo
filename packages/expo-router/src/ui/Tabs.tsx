@@ -1,5 +1,4 @@
 import {
-  DefaultNavigatorOptions,
   LinkingContext,
   ParamListBase,
   TabActionHelpers,
@@ -14,16 +13,15 @@ import {
   ReactNode,
   isValidElement,
   useContext,
+  useMemo,
 } from 'react';
 import { StyleSheet, ViewProps, View } from 'react-native';
 
 import {
+  ExpoTabsProps,
   ExpoTabsScreenOptions,
   TabNavigationEventMap,
   TabTriggerMapContext,
-  TabsDescriptorsContext,
-  TabsNavigatorContext,
-  TabsStateContext,
 } from './TabContext';
 import { isTabList } from './TabList';
 import { ExpoTabRouter, ExpoTabRouterOptions } from './TabRouter';
@@ -35,21 +33,14 @@ import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
 import { resolveHref } from '../link/href';
 import { shouldLinkExternally } from '../utils/url';
+import { NavigatorContext, NavigatorContextValue } from '../views/Navigator';
 
 export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
 
-export type UseTabsOptions = Omit<
-  DefaultNavigatorOptions<
-    ParamListBase,
-    TabNavigationState<any>,
-    ExpoTabsScreenOptions,
-    TabNavigationEventMap
-  >,
-  'children'
-> &
+export type UseTabsOptions = Omit<ExpoTabsProps, 'children'> &
   Omit<ExpoTabRouterOptions, 'initialRouteName' | 'triggerMap'>;
 
 export type TabsProps = ViewProps & {
@@ -112,12 +103,7 @@ export function useTabsWithTriggers<T extends string | object>({
     contextKey
   );
 
-  const {
-    state,
-    descriptors,
-    navigation,
-    NavigationContent: RNNavigationContent,
-  } = useNavigationBuilder<
+  const navigatorContext = useNavigationBuilder<
     TabNavigationState<any>,
     ExpoTabRouterOptions,
     TabActionHelpers<ParamListBase>,
@@ -131,15 +117,27 @@ export function useTabsWithTriggers<T extends string | object>({
     initialRouteName,
   });
 
+  const {
+    state,
+    descriptors,
+    navigation,
+    NavigationContent: RNNavigationContent,
+  } = navigatorContext;
+
+  const navigatorContextValue = useMemo<NavigatorContextValue>(
+    () => ({
+      ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
+      contextKey,
+      router: ExpoTabRouter,
+    }),
+    [navigatorContext, contextKey, ExpoTabRouter]
+  );
+
   const NavigationContent = useComponent((children: React.ReactNode) => (
     <TabTriggerMapContext.Provider value={triggerMap}>
-      <TabsNavigatorContext.Provider value={navigation}>
-        <TabsDescriptorsContext.Provider value={descriptors}>
-          <TabsStateContext.Provider value={state}>
-            <RNNavigationContent>{children}</RNNavigationContent>
-          </TabsStateContext.Provider>
-        </TabsDescriptorsContext.Provider>
-      </TabsNavigatorContext.Provider>
+      <NavigatorContext.Provider value={navigatorContextValue}>
+        <RNNavigationContent>{children}</RNNavigationContent>
+      </NavigatorContext.Provider>
     </TabTriggerMapContext.Provider>
   ));
 

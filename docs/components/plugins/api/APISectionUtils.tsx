@@ -3,7 +3,7 @@ import { shadows, theme, typography, mergeClasses } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { slug } from 'github-slugger';
-import type { ComponentType } from 'react';
+import type { ComponentType, PropsWithChildren } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
@@ -69,18 +69,25 @@ export enum TypeDocKind {
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
 
 export type MDComponents = Components;
+export type CodeComponentProps = PropsWithChildren<{
+  className?: string;
+  node: { data?: { meta?: string } };
+}>;
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => <Callout>{children}</Callout>,
-  code: ({ children, className }) =>
-    className ? (
-      <PrismCodeBlock className={className}>{children}</PrismCodeBlock>
+  code: ({ className, children, node }: CodeComponentProps) => {
+    return className ? (
+      <PrismCodeBlock className={className} title={node?.data?.meta}>
+        {children}
+      </PrismCodeBlock>
     ) : (
       <CODE css={css({ display: 'inline' })}>{children}</CODE>
-    ),
+    );
+  },
   pre: ({ children }) => <>{children}</>,
   h1: ({ children }) => <H4 hideInSidebar>{children}</H4>,
   ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
@@ -120,7 +127,6 @@ const nonLinkableTypes = [
   'B',
   'CodedError',
   'ColorValue',
-  'Component',
   'ComponentClass',
   'ComponentProps',
   'ComponentType',
@@ -131,7 +137,6 @@ const nonLinkableTypes = [
   'GeneratedHref',
   'GestureResponderEvent',
   'GetPermissionMethod',
-  'HTMLInputElement',
   'K',
   'Listener',
   'ModuleType',
@@ -146,7 +151,6 @@ const nonLinkableTypes = [
   'PermissionHookBehavior',
   'PropsWithChildren',
   'PropsWithoutRef',
-  'PureComponent',
   'React.FC',
   'RequestPermissionMethod',
   'RouteParamInput',
@@ -156,13 +160,15 @@ const nonLinkableTypes = [
   'StyleProp',
   'T',
   'TaskOptions',
+  'TEventListener',
   'TEventMap',
+  'TEventName',
   'TEventsMap',
+  'TInitialValue',
   'TOptions',
   'TParams',
   'TRoute',
   'TState',
-  'Uint8Array',
 ];
 
 /**
@@ -191,10 +197,13 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer',
   AsyncIterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
+  AVMetadata: '/versions/latest/sdk/av/#avmetadata',
   AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
+  AudioSampleCallback: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
+  Component: 'https://react.dev/reference/react/Component',
   CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   DeviceSensor: '/versions/latest/sdk/sensors',
@@ -208,6 +217,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   // File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
   HTMLAnchorElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement',
+  HTMLInputElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement',
   IterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
@@ -222,8 +232,10 @@ const hardcodedTypeLinks: Record<string, string> = {
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Platform: 'https://reactnative.dev/docs/platform',
+  Playback: '/versions/latest/sdk/av/#playback',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  PureComponent: 'https://react.dev/reference/react/PureComponent',
   ReactNode: 'https://reactnative.dev/docs/react-node',
   Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
@@ -237,6 +249,8 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance',
   SyntheticEvent: 'https://react.dev/reference/react-dom/components/common#react-event-object',
   TextProps: 'https://reactnative.dev/docs/text#props',
+  Uint8Array:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',
@@ -263,6 +277,7 @@ const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>
     NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
     SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
     SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
+    BufferOptions: '/versions/v52.0.0/sdk/video/#bufferoptions-1',
   },
   'v53.0.0': {
     EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
@@ -282,6 +297,7 @@ const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>
     SharedObject: '/versions/unversioned/sdk/expo/#sharedobject',
     SharedRef: '/versions/unversioned/sdk/expo/#sharedref',
     Href: '/versions/unversioned/sdk/router/#href-1',
+    BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
   },
 };
 
@@ -579,10 +595,10 @@ export const renderParamRow = (
   );
 };
 
-export const ParamsTableHeadRow = ({ hasDescription = true }) => (
+export const ParamsTableHeadRow = ({ hasDescription = true, mainCellLabel = 'Name' }) => (
   <TableHead>
     <Row>
-      <HeaderCell size="sm">Name</HeaderCell>
+      <HeaderCell size="sm">{mainCellLabel}</HeaderCell>
       <HeaderCell size="sm">Type</HeaderCell>
       {hasDescription && <HeaderCell size="sm">Description</HeaderCell>}
     </Row>
@@ -630,7 +646,7 @@ export const renderParams = (parameters: MethodParamData[], sdkVersion: string) 
   const hasDescription = Boolean(parameters.find(param => param.comment));
   return (
     <Table>
-      <ParamsTableHeadRow hasDescription={hasDescription} />
+      <ParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
       <tbody>{parameters?.map(p => renderParamRow(p, sdkVersion, hasDescription))}</tbody>
     </Table>
   );

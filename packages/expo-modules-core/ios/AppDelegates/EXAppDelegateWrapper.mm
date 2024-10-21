@@ -6,7 +6,6 @@
 #import <ExpoModulesCore/Swift.h>
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
-#import <ReactCommon/ReactCommon-umbrella.h>
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 #import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
 
@@ -84,9 +83,9 @@
 
   RCTRootViewFactoryConfiguration *configuration =
       [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
-                                                       newArchEnabled:self.fabricEnabled
-                                                   turboModuleEnabled:self.turboModuleEnabled
-                                                    bridgelessEnabled:self.bridgelessEnabled];
+                                                       newArchEnabled:self.newArchEnabled
+                                                   turboModuleEnabled:self.newArchEnabled
+                                                    bridgelessEnabled:self.newArchEnabled];
 
   configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
   {
@@ -104,19 +103,6 @@
 
   // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
   configuration.sourceURLForBridge = nil;
-
-  configuration.hostDidStartBlock = ^(RCTHost *_Nonnull host) {
-    [weakSelf hostDidStart:host];
-  };
-
-  configuration.hostDidReceiveJSErrorStackBlock =
-      ^(RCTHost *_Nonnull host,
-        NSArray<NSDictionary<NSString *, id> *> *_Nonnull stack,
-        NSString *_Nonnull message,
-        NSUInteger exceptionId,
-        BOOL isFatal) {
-        [weakSelf host:host didReceiveJSErrorStack:stack message:message exceptionId:exceptionId isFatal:isFatal];
-      };
 
   if ([self respondsToSelector:@selector(extraModulesForBridge:)]) {
     configuration.extraModulesForBridge = ^NSArray<id<RCTBridgeModule>> *_Nonnull(RCTBridge *_Nonnull bridge)

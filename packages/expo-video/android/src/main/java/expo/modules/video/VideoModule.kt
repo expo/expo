@@ -12,6 +12,7 @@ import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
@@ -21,8 +22,12 @@ import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.ifYogaDefinedUse
 import expo.modules.video.utils.makeYogaUndefinedIfNegative
+import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlin.time.Duration
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableReactNativeAPI
@@ -110,10 +115,8 @@ class VideoModule : Module() {
         ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
         ViewProps.BORDER_START_COLOR to Spacing.START,
         ViewProps.BORDER_END_COLOR to Spacing.END
-      ) { view: VideoView, index: Int, color: Int? ->
-        val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
-        val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.setBorderColor(index, rgbComponent, alphaComponent)
+      ) { view: VideoView, index: Int, color: Int ->
+        view.setBorderColor(index, color)
       }
 
       Prop("borderStyle") { view: VideoView, borderStyle: String? ->
@@ -133,7 +136,7 @@ class VideoModule : Module() {
       }
 
       AsyncFunction("startPictureInPicture") { view: VideoView ->
-        view.runWithPiPMisconfigurationSoftHandling(true) {
+        runWithPiPMisconfigurationSoftHandling(true) {
           view.enterPictureInPicture()
         }
       }
@@ -342,6 +345,25 @@ class VideoModule : Module() {
           ref.player.seekTo(0)
           ref.player.play()
         }
+      }
+
+      AsyncFunction("generateThumbnailsAsync") Coroutine { ref: VideoPlayer, times: List<Duration> ->
+        return@Coroutine ref.toMetadataRetriever().safeUse {
+          val bitmaps = times.map { time ->
+            appContext.backgroundCoroutineScope.async {
+              generateThumbnailAtTime(time)
+            }
+          }
+
+          bitmaps.awaitAll()
+        }
+      }
+
+      Class<VideoThumbnail> {
+        Property("width") { ref -> ref.width }
+        Property("height") { ref -> ref.height }
+        Property("requestedTime") { ref -> ref.requestedTime }
+        Property("actualTime") { ref -> ref.actualTime }
       }
     }
 

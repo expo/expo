@@ -10,7 +10,8 @@ class FileDownloaderSpec : ExpoSpec {
   override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
-    
+    var logger: UpdatesLogger!
+
     beforeEach {
       let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
       testDatabaseDir = applicationSupportDir!.appendingPathComponent("UpdatesDatabaseTests")
@@ -25,6 +26,8 @@ class FileDownloaderSpec : ExpoSpec {
       db.databaseQueue.sync {
         try! db.openDatabase(inDirectory: testDatabaseDir)
       }
+
+      logger = UpdatesLogger()
     }
     
     afterEach {
@@ -154,6 +157,7 @@ class FileDownloaderSpec : ExpoSpec {
           let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
             withDatabase: db,
             config: config,
+            logger: logger,
             launchedUpdate: launchedUpdate,
             embeddedUpdate: embeddedUpdate
           )
@@ -161,7 +165,7 @@ class FileDownloaderSpec : ExpoSpec {
           expect(extraHeaders["Expo-Embedded-Update-ID"] as? String) == embeddedUpdateUUIDString
           expect(extraHeaders["Expo-Extra-Params"] as? String).to(contain("what=\"123\""))
           expect(extraHeaders["Expo-Extra-Params"] as? String).to(contain("hello=\"world\""))
-          expect(extraHeaders["Expo-Recent-Failed-Update-IDs"] as? String).to(contain("\"\(launchedUpdateUUIDString.uppercased())\", \"\(embeddedUpdateUUIDString.uppercased())\""))
+          expect(extraHeaders["Expo-Recent-Failed-Update-IDs"] as? String).to(contain("\"\(launchedUpdateUUIDString)\", \"\(embeddedUpdateUUIDString)\""))
         }
       }
       
@@ -175,6 +179,7 @@ class FileDownloaderSpec : ExpoSpec {
           let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
             withDatabase: db,
             config: config,
+            logger: logger,
             launchedUpdate: nil,
             embeddedUpdate: nil
           )

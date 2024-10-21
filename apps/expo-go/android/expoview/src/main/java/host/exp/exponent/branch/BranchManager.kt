@@ -12,7 +12,7 @@ import io.branch.referral.Branch
 object BranchManager {
   private val TAG = BranchManager::class.java.simpleName
 
-  fun isEnabled(context: Context): Boolean {
+  private fun isEnabled(context: Context): Boolean {
     try {
       val ai = context.packageManager.getApplicationInfo(
         context.packageName,
@@ -38,7 +38,7 @@ object BranchManager {
     }
   }
 
-  fun handleLink(activity: Activity, uri: String?, sdkVersion: String?) {
+  fun handleLink(activity: Activity, uri: String?) {
     if (!isEnabled(activity)) {
       return
     }

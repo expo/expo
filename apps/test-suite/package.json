@@ -11,8 +11,8 @@
   "dependencies": {
     "@expo/html-elements": "^0.10.0",
     "@expo/styleguide-base": "^1.0.1",
-    "@react-navigation/native": "~6.0.13",
-    "@react-navigation/stack": "~6.3.2",
+    "@react-navigation/native": "7.0.0-rc.20",
+    "@react-navigation/stack": "7.0.0-rc.27",
     "async-retry": "^1.1.4",
     "expo": "~51.0.0",
     "expo-application": "~5.9.0",
@@ -51,7 +51,7 @@
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.19",
     "react": "18.3.1",
-    "react-native": "0.75.2",
+    "react-native": "0.76.0-rc.6",
     "react-native-gesture-handler": "~2.20.0",
     "sinon": "^7.1.1"
   },
