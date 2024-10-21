@@ -6,8 +6,6 @@ import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
-import expo.modules.barcodescanner.BarCodeScannerModule
-import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
@@ -90,7 +88,6 @@ import expo.modules.webbrowser.WebBrowserModule
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
-    BarCodeScannerPackage(),
     ConstantsPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
@@ -144,7 +141,6 @@ object ExperiencePackagePicker : ModulesProvider {
     // End of Notifications
     BatteryModule::class.java,
     BackgroundFetchModule::class.java,
-    BarCodeScannerModule::class.java,
     BlurModule::class.java,
     CalendarModule::class.java,
     CameraViewModule::class.java,

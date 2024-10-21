@@ -10,8 +10,6 @@ import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
-import expo.modules.barcodescanner.BarCodeScannerModule
-import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.blur.BlurModule
 import expo.modules.camera.CameraViewModule
 import expo.modules.clipboard.ClipboardModule
@@ -121,7 +119,6 @@ open class HomeActivity : BaseExperienceActivity() {
       return listOf(
         ConstantsPackage(),
         FileSystemPackage(),
-        BarCodeScannerPackage(),
         KeepAwakePackage(),
         FaceDetectorPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
@@ -133,7 +130,6 @@ open class HomeActivity : BaseExperienceActivity() {
     override fun getModulesList(): List<Class<out Module>> {
       return listOf(
         AssetModule::class.java,
-        BarCodeScannerModule::class.java,
         BlurModule::class.java,
         CameraViewModule::class.java,
         ClipboardModule::class.java,
