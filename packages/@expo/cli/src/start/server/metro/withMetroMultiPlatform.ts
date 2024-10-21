@@ -683,7 +683,8 @@ export function withExtendedResolver(
         context.unstable_enablePackageExports = true;
         context.unstable_conditionsByPlatform = {};
 
-        const isReactServerComponents = context.customResolverOptions?.environment;
+        const isReactServerComponents =
+          context.customResolverOptions?.environment === 'react-server';
 
         if (isReactServerComponents) {
           // NOTE: Align the behavior across server and client. This is a breaking change so we'll just roll it out with React Server Components.
