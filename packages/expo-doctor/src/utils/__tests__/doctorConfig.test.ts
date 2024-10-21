@@ -2,6 +2,7 @@ import {
   getReactNativeDirectoryCheckExcludes,
   getReactNativeDirectoryCheckEnabled,
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
+  getCngCheckStatus,
 } from '../doctorConfig';
 
 const exp = {
@@ -136,5 +137,29 @@ describe('getReactNativeDirectoryCheckListUnknownPackagesEnabled', () => {
         expo: { doctor: { reactNativeDirectoryCheck: { listUnknownPackages: false } } },
       })
     ).toBe(false);
+  });
+});
+
+describe('CNG check', () => {
+  const mockPackageJson = {
+    expo: {
+      doctor: {
+        cngCheckEnabled: false,
+      },
+    },
+  };
+
+  it('returns true if cngCheckEnabled is not set', () => {
+    expect(getCngCheckStatus({ ...mockPackageJson, expo: {} })).toBe(true);
+  });
+
+  it('returns false if cngCheckEnabled is set to false', () => {
+    expect(getCngCheckStatus(mockPackageJson)).toBe(false);
+  });
+
+  it('returns true if cngCheckEnabled is set to true', () => {
+    expect(
+      getCngCheckStatus({ ...mockPackageJson, expo: { doctor: { cngCheckEnabled: true } } })
+    ).toBe(true);
   });
 });
