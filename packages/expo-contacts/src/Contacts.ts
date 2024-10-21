@@ -559,6 +559,20 @@ export type Container = {
 export { PermissionStatus, PermissionResponse, PermissionExpiration };
 
 /**
+ * Displays contact details from contacts book
+ * @example
+ * ```js
+ * await Contacts.getContactsAsync(contactId);
+ * ```
+ */
+export async function displayContactAsync(contactId: string): Promise<boolean> {
+  if (!ExpoContacts.displayContactAsync) {
+    throw new UnavailabilityError('Contacts', 'displayContactAsync');
+  }
+  return await ExpoContacts.displayContactAsync(contactId);
+}
+
+/**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.
  * @returns A promise that fulfills with a `boolean`, indicating whether the Contacts API is available on the current device. It always resolves to `false` on web.
  */
