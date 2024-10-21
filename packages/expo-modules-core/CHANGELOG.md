@@ -75,6 +75,7 @@
 - Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
 - [iOS] Fixed views using the incorrect `AppContext` instance. ([#31897](https://github.com/expo/expo/pull/31897) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fixed crashes on the New Architecture when dispatching events during the props update. ([#31971](https://github.com/expo/expo/pull/31971) by [@tsapeta](https://github.com/tsapeta))
+- Fixed `registerAdditionalModuleClasses` deadlock issue on old architecture mode. ([#32209](https://github.com/expo/expo/pull/32209) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
