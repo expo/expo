@@ -1785,7 +1785,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.4):
     - React-Core
-  - react-native-skia (1.4.2):
+  - react-native-skia (1.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3051,7 +3051,7 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 516ad131c5050c06d96c20b3ddef63b966771c23
+  hermes-engine: 36f7a28f6317504b2d0523a87b29cc0544c025a4
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3097,7 +3097,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: 94195f1bf32e7f78359fa20057c97e632364a08b
   react-native-safe-area-context: f1fda705dfe14355f41933debb5932887e234cc5
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
-  react-native-skia: c825cb272f6129fe148989eaf662c302d4f60587
+  react-native-skia: 425a5610939828363e0681b8b3e994dd4f18b711
   react-native-slider: e1f4b4538f7de7417b626174874f4f58d4cf6c28
   react-native-webview: 06f91954784dde28e1210f381c791f0c5f9bd9a2
   React-nativeconfig: 6bf19f5279402e095a35ac880144c14aa9b63df4
@@ -3151,7 +3151,7 @@ SPEC CHECKSUMS:
   StripePaymentsUI: c24f990b03a68a7f6fe704b15dd487e7bb6b603e
   StripeUICore: f2d514e900c37436dc5427fdf2c29d68ab1c2935
   UMAppLoader: c34fd315863887c7961e059efd9475e056bdd72d
-  Yoga: ab232da848cdafe246b43dcddf55ea32748d3283
+  Yoga: dcf6b28b5105d538537e656bf4e239f4d87fc546
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: a55dff50a80accf78a8db0aa86be957c63fdfc01
