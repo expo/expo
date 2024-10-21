@@ -47,6 +47,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix handling of prerelease versions in dependency version checks. ([#32160](https://github.com/expo/expo/pull/32160) by [@betomoedano](https://github.com/betomoedano))
 - Improve server error stacks. ([#32098](https://github.com/expo/expo/pull/32098) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix experimental web exports for RSC. ([#32042](https://github.com/expo/expo/pull/32042) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix RSC after RN upgrade. ([#32028](https://github.com/expo/expo/pull/32028) by [@EvanBacon](https://github.com/EvanBacon))
