@@ -74,7 +74,7 @@
     "react-native-maps": "1.18.0",
     "react-native-pager-view": "^6.4.1",
     "react-native-paper": "^5.12.5",
-    "react-native-reanimated": "~3.15.4",
+    "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.11.0",
     "react-native-screens": "4.0.0-beta.12",
     "react-native-svg": "15.8.0",
