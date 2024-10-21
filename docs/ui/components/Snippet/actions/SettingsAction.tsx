@@ -26,7 +26,7 @@ export const SettingsAction = ({ ...rest }: SnippetActionProps) => {
   return (
     <Dropdown.Dropdown
       trigger={
-        <div className="contents">
+        <div className="flex h-full">
           <SnippetAction
             className="px-3 min-w-[44px]"
             leftSlot={<DotsVerticalIcon className="shrink-0 icon-md text-icon-secondary" />}
