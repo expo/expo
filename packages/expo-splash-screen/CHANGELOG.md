@@ -7,6 +7,8 @@
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
+- add customizable margin for splash screen android ([#16182](https://github.com/expo/expo/pull/16182) by [@nomi9995](https://github.com/nomi9995))
+
 
 ### 🐛 Bug fixes
 
