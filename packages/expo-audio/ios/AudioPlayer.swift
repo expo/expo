@@ -82,7 +82,6 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     arguments.merge(dict) { _, new in
       new
     }
-    print("Emitting event \(arguments)")
     self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
   }
 

@@ -21,7 +21,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       try recordingSession.setCategory(.playAndRecord, mode: .default)
       try recordingSession.setActive(true)
     } catch {
-      print("Failed to update the recording session")
+      log.info("Failed to update the recording session")
     }
   }
 
