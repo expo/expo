@@ -82,7 +82,7 @@ export function useEvent<
  * export function VideoPlayerView() {
  *   const player = useVideoPlayer(videoSource);
  *
- *   useEventListener(player, 'playingChange', ({isPlaying}) => {
+ *   useEventListener(player, 'playingChange', ({ isPlaying }) => {
  *     console.log('Player is playing:', isPlaying);
  *   });
  *
