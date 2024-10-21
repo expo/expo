@@ -5,8 +5,7 @@
   "main": "build/index.js",
   "files": [
     "build",
-    "lazy-imports-blacklist.js",
-    "react-compiler-runtime.js"
+    "lazy-imports-blacklist.js"
   ],
   "scripts": {
     "build": "expo-module build",
