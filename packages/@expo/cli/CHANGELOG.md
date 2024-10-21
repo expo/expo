@@ -75,6 +75,7 @@
 ### 💡 Others
 
 - Assert that only SPA rendering is enabled with RSC. ([#32188](https://github.com/expo/expo/pull/32188) by [@EvanBacon](https://github.com/EvanBacon))
+- Use virtual module for consistent asset registry. ([#31980](https://github.com/expo/expo/pull/31980) by [@EvanBacon](https://github.com/EvanBacon))
 - Bump `react-native-web` patch ([#32105](https://github.com/expo/expo/pull/32105) by [@EvanBacon](https://github.com/EvanBacon))
 - Stop pinging dev session with updates. ([#31717](https://github.com/expo/expo/pull/31717) by [@EvanBacon](https://github.com/EvanBacon))
 - improve export log format ([#31476](https://github.com/expo/expo/pull/31476) by [@EvanBacon](https://github.com/EvanBacon))
