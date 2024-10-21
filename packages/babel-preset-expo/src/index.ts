@@ -196,7 +196,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
-        // TODO: Update when we bump React to 18.
+        // TODO: Update when we bump React to 19.
         target: '18',
         environment: {
           enableResetCacheOnSourceFileChanges: !isProduction,
