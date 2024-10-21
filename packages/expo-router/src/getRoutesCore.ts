@@ -20,6 +20,7 @@ export type Options = {
   skipGenerated?: boolean;
   importMode?: string;
   platformRoutes?: boolean;
+  sitemap?: boolean;
   platform?: string;
 
   /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
@@ -287,7 +288,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
   // Only include the sitemap if there are routes.
   if (!options.skipGenerated) {
-    if (hasRoutes) {
+    if (hasRoutes && options.sitemap !== false) {
       appendSitemapRoute(rootDirectory, options);
     }
     appendNotFoundRoute(rootDirectory, options);

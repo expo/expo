@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -81,6 +83,7 @@ public class ViewShot implements UIBlock {
     private static final int SURFACE_VIEW_READ_PIXELS_TIMEOUT = 5;
 
     @SuppressWarnings("WeakerAccess")
+    @Retention(RetentionPolicy.SOURCE)
     @IntDef({Formats.JPEG, Formats.PNG, Formats.WEBP, Formats.RAW})
     public @interface Formats {
         int JPEG = 0; // Bitmap.CompressFormat.JPEG.ordinal();
@@ -98,6 +101,7 @@ public class ViewShot implements UIBlock {
     /**
      * Supported Output results.
      */
+    @Retention(RetentionPolicy.SOURCE)
     @StringDef({Results.BASE_64, Results.DATA_URI, Results.TEMP_FILE, Results.ZIP_BASE_64})
     public @interface Results {
         /**

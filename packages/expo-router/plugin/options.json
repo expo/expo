@@ -44,6 +44,10 @@
                     "description": "Enable or disable platform-specific routes. Defaults to `true`.",
                     "type": "boolean"
                 },
+                "sitemap": {
+                    "description": "Enable or disable automatically generated routes. Defaults to `true`.",
+                    "type": "boolean"
+                },
                 "asyncRoutes": {
                     "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
                     "oneOf": [

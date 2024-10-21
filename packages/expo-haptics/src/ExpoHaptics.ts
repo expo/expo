@@ -1,3 +1,3 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireOptionalNativeModule } from 'expo';
 
-export default requireNativeModule('ExpoHaptics');
+export default requireOptionalNativeModule('ExpoHaptics');

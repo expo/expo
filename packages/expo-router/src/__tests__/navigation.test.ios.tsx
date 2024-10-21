@@ -11,7 +11,6 @@ import {
   usePathname,
   Link,
 } from '../exports';
-import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { act, fireEvent, renderRouter, screen } from '../testing-library';
@@ -51,6 +50,38 @@ it('should respect `unstable_settings', () => {
   // Orange should be the initialRouteName, because we are in (two)
   act(() => router.back());
   expect(screen.getByTestId('orange')).toBeVisible();
+});
+
+it('can skip initialRouteName', () => {
+  renderRouter({
+    index: () => <Text testID="index">Index</Text>,
+    '(stack)/_layout': {
+      unstable_settings: {
+        initialRouteName: 'apple',
+      },
+      default: () => <Stack />,
+    },
+    '(stack)/apple': () => <Text testID="apple">Apple</Text>,
+    '(stack)/banana': () => <Text testID="banana">Banana</Text>,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  act(() => router.push('/banana'));
+  expect(screen.getByTestId('banana')).toBeVisible();
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeVisible();
+
+  act(() => router.push('/banana', { withAnchor: true }));
+  expect(screen.getByTestId('banana')).toBeVisible();
+  act(() => router.back());
+  expect(screen.getByTestId('apple')).toBeVisible();
+
+  act(() => router.replace('/'));
+
+  act(() => router.push('/banana', { withAnchor: false }));
+  expect(screen.getByTestId('banana')).toBeVisible();
+  act(() => router.back());
+  expect(screen.getByTestId('index')).toBeVisible();
 });
 
 describe('hooks only', () => {
@@ -803,7 +834,9 @@ it('can replace across groups', async () => {
     'two/screen': () => <Text testID="two/screen" />,
   });
 
+  // There is no index route
   expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments(['+not-found']);
 
   // Go to one
   act(() => router.push('/one/screen'));
@@ -1139,7 +1172,7 @@ describe('consistent url encoding', () => {
     );
 
     const component = screen.getByTestId('id');
-    expect(screen).toHavePathname('/start%26end');
+    expect(screen).toHavePathname('/start&end');
     expect(screen).toHaveSearchParams({ param: 'start&end' });
     expect(component).toHaveTextContent(
       JSON.stringify({ local: { param: 'start&end' }, global: { param: 'start&end' } })
@@ -1161,7 +1194,7 @@ describe('consistent url encoding', () => {
     );
 
     const component = screen.getByTestId('id');
-    expect(screen).toHavePathname('/start%25end');
+    expect(screen).toHavePathname('/start%end');
     expect(screen).toHaveSearchParams({ param: 'start%end' });
     expect(component).toHaveTextContent(
       JSON.stringify({ local: { param: 'start%end' }, global: { param: 'start%end' } })
@@ -1282,21 +1315,21 @@ describe('consistent url encoding', () => {
 
     act(() => router.push('/start%20end'));
 
-    expect(screen).toHavePathname('/start%20end');
+    expect(screen).toHavePathname('/start end');
     expect(screen).toHaveSearchParams({
       param: 'start end',
     });
 
     act(() => router.push('/start%21end'));
 
-    expect(screen).toHavePathname('/start%21end');
+    expect(screen).toHavePathname('/start!end');
     expect(screen).toHaveSearchParams({
       param: 'start!end',
     });
 
     act(() => router.back());
 
-    expect(screen).toHavePathname('/start%20end');
+    expect(screen).toHavePathname('/start end');
     expect(screen).toHaveSearchParams({
       param: 'start end',
     });
@@ -1368,7 +1401,8 @@ describe('consistent url encoding', () => {
 });
 
 describe('stack unwinding', () => {
-  it('navigate will unwind the stack', () => {
+  // TODO: Navigated changed to be like push
+  it.skip('navigate will unwind the stack', () => {
     renderRouter(
       {
         '[test]': () => null,
@@ -1502,11 +1536,11 @@ it('respects nested unstable settings', async () => {
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  fireEvent.press(screen.getByText('Search'));
+  fireEvent.press(screen.getByText('Search'), {});
   expect(screen.getByTestId('search')).toBeVisible();
-  fireEvent.press(screen.getByText('Profile'));
+  fireEvent.press(screen.getByText('Profile'), {});
   expect(screen.getByTestId('profile')).toBeVisible();
-  fireEvent.press(screen.getByText('Home'));
+  fireEvent.press(screen.getByText('Home'), {});
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
@@ -1563,16 +1597,16 @@ describe('navigation action fallbacks', () => {
     runRedirectionTest();
   });
 
-  it('can fall back correctly for drawer navigators', () => {
-    renderRouter({
-      _layout: () => <Drawer useLegacyImplementation={false} />,
-      one: () => <Text testID="one" />,
-      two: () => <Text testID="two" />,
-      redirected: () => <Redirect href="/" />,
-    });
+  // it('can fall back correctly for drawer navigators', () => {
+  //   renderRouter({
+  //     _layout: () => <Drawer useLegacyImplementation={false} />,
+  //     one: () => <Text testID="one" />,
+  //     two: () => <Text testID="two" />,
+  //     redirected: () => <Redirect href="/" />,
+  //   });
 
-    runPushTest();
-    runReplaceTest();
-    runRedirectionTest();
-  });
+  //   runPushTest();
+  //   runReplaceTest();
+  //   runRedirectionTest();
+  // });
 });

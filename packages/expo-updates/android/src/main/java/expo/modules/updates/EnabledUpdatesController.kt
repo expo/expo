@@ -6,14 +6,13 @@ import android.os.AsyncTask
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.events.IUpdatesEventManager
-import expo.modules.updates.events.QueueUpdatesEventManager
+import expo.modules.updates.events.UpdatesEventManager
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -41,12 +40,10 @@ class EnabledUpdatesController(
   private val updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
 ) : IUpdatesController {
-  override var appContext: WeakReference<AppContext>? = null
-
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
   private val logger = UpdatesLogger(context)
-  override val eventManager: IUpdatesEventManager = QueueUpdatesEventManager(logger)
+  override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
   private val fileDownloader = FileDownloader(context, updatesConfiguration, logger)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -117,6 +114,10 @@ class EnabledUpdatesController(
     }
   override val bundleAssetName: String?
     get() = startupProcedure.bundleAssetName
+
+  override fun onEventListenerStartObserving() {
+    stateMachine.sendContextToJS()
+  }
 
   override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
     startupProcedure.onDidCreateDevSupportManager(devSupportManager)

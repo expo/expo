@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import execa from 'execa';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
@@ -8,6 +9,8 @@ import { execute, projectRoot, getLoadedModulesAsync, bin } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
+
+jest.unmock('resolve-from');
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
@@ -94,7 +97,7 @@ it(
         bin,
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -168,7 +171,7 @@ it(
         bin,
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -245,7 +248,7 @@ it(
         bin,
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -316,7 +319,7 @@ it(
       [
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -341,7 +344,7 @@ it(
         bin,
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',

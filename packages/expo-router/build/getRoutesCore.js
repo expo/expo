@@ -212,7 +212,7 @@ function getDirectoryTree(contextModule, options) {
     }
     // Only include the sitemap if there are routes.
     if (!options.skipGenerated) {
-        if (hasRoutes) {
+        if (hasRoutes && options.sitemap !== false) {
             appendSitemapRoute(rootDirectory, options);
         }
         appendNotFoundRoute(rootDirectory, options);

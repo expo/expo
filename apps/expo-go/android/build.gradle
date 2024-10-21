@@ -13,7 +13,7 @@ buildscript {
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
-    ndkVersion = "26.3.11579264"
+    ndkVersion = "26.1.10909125"
   }
   repositories {
     google()
@@ -99,6 +99,7 @@ subprojects { project ->
   if (project.name == "ReactAndroid") { return; }
   if (project.name.startsWith("vendored_")) { return; }
   if (project.projectDir.toString().contains("/node_modules/")) { return; }
+  if (project.projectDir.toString().contains("/modules/")) { return; }
 
   plugins.apply("com.diffplug.spotless")
   spotless {

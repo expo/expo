@@ -1,10 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link } from 'expo-router/build/rsc/exports';
+import { Link } from 'expo-router';
+import { Image, Text, ScrollView } from 'react-native';
+import { unstable_headers } from 'expo-router/rsc/headers';
 
 import { Counter } from '../components/counter';
 import { Pokemon } from '../components/pokemon';
-import { Image, Text, ScrollView } from 'react-native';
-import { unstable_headers } from 'expo-router/rsc/headers';
 
 export default function IndexRoute({ path, query }) {
   const headers = unstable_headers();
