@@ -142,8 +142,8 @@ export type TimeUpdateEventPayload = {
      */
     currentOffsetFromLive: number | null;
     /**
-     * Float value indicating how far the player has buffered the video in seconds
-     * Same as the [`bufferedPosition`](#bufferetPosition) property
+     * Float value indicating how far the player has buffered the video in seconds.
+     * Same as the [`bufferedPosition`](#bufferedPosition) property.
      * @platform android
      * @platform ios
      */
