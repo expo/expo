@@ -43,7 +43,7 @@ test.describe(inputDir, () => {
 
   test('renders RSC and calls server action', async ({ page }) => {
     console.time('expo start');
-    await expo.startAsync();
+    await expo.startAsync(['--port=8086']);
     console.timeEnd('expo start');
     console.log('Server running:', expo.url);
     console.time('Eagerly bundled JS');

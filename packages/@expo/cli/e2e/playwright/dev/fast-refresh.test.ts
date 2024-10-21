@@ -159,7 +159,7 @@ export const raceOrFail = (promise: Promise<any>, timeout: number, message: stri
 
 async function openPageAndEagerlyLoadJS(expo: ExpoStartCommand, page: Page, url?: string) {
   console.time('expo start');
-  await expo.startAsync();
+  await expo.startAsync(['--port=8083']);
   console.timeEnd('expo start');
   console.log('Server running:', expo.url);
   console.time('Eagerly bundled JS');

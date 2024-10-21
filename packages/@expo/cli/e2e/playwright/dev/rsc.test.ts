@@ -69,7 +69,7 @@ test.describe(inputDir, () => {
     });
 
     // Navigate to the app
-    await page.goto(expo.url);
+    await page.goto(expo.url!);
     console.timeEnd('Open page');
 
     await serverResponsePromise;
