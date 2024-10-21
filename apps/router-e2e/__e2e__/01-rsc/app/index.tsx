@@ -3,9 +3,13 @@ import { Link } from 'expo-router/build/rsc/exports';
 
 import { Counter } from '../components/counter';
 import { Pokemon } from '../components/pokemon';
-import { Image, Text, ScrollView } from '../lib/react-native';
+import { Image, Text, ScrollView } from 'react-native';
+import { unstable_headers } from 'expo-router/rsc/headers';
 
 export default function IndexRoute({ path, query }) {
+  const headers = unstable_headers();
+  console.log('Headers:', headers);
+
   return (
     <ScrollView
       style={{ flex: 1, padding: 12 }}
@@ -20,6 +24,7 @@ export default function IndexRoute({ path, query }) {
       <Text>Platform: {process.env.EXPO_OS}</Text>
       <Text testID="secret-text">Secret: {process.env.TEST_SECRET_VALUE}</Text>
       <Text>Render: {Date.now()}</Text>
+      <Text>Headers: {JSON.stringify(Object.fromEntries(headers.entries()), null, 2)}</Text>
 
       <Image
         testID="main-image"
