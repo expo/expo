@@ -35,6 +35,8 @@ import { PlatformBundlers } from '../platformBundlers';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
+const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
+
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
 function withWebPolyfills(
@@ -155,37 +157,6 @@ export function withExtendedResolver(
 
   if (isReactCanaryEnabled) {
     Log.warn(`Experimental React Canary version is enabled.`);
-  }
-
-  let _assetRegistryPath: string | null = null;
-
-  // Fetch this lazily for testing purposes.
-  function getAssetRegistryPath() {
-    if (_assetRegistryPath) {
-      return _assetRegistryPath;
-    }
-
-    // Get the `transformer.assetRegistryPath`
-    // this needs to be unified since you can't dynamically
-    // swap out the transformer based on platform.
-    if (
-      config.transformer.assetRegistryPath &&
-      path.isAbsolute(config.transformer.assetRegistryPath)
-    ) {
-      _assetRegistryPath = fs.realpathSync(config.transformer.assetRegistryPath);
-      return _assetRegistryPath;
-    }
-
-    const assetRegistryPath = fs.realpathSync(
-      path.resolve(
-        resolveFrom(
-          config.projectRoot,
-          config.transformer.assetRegistryPath ?? '@react-native/assets-registry/registry.js'
-        )
-      )
-    );
-    _assetRegistryPath = assetRegistryPath;
-    return assetRegistryPath;
   }
 
   const defaultResolver = metroResolver.resolve;
@@ -318,6 +289,18 @@ export function withExtendedResolver(
   const idFactory =
     config.serializer?.createModuleIdFactory?.() ?? ((id: number | string): number | string => id);
 
+  const getAssetRegistryModule = () => {
+    const virtualModuleId = `\0polyfill:assets-registry`;
+    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+      virtualModuleId,
+      ASSET_REGISTRY_SRC
+    );
+    return {
+      type: 'sourceFile',
+      filePath: virtualModuleId,
+    } as const;
+  };
+
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
   const externals: {
@@ -370,7 +353,7 @@ export function withExtendedResolver(
         }
 
         const isExternal = // Extern these modules in standard Node.js environments.
-          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|@react-native\/assets-registry\/registry|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
+          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
             moduleName
           ) ||
           /^react-native-web\/dist\/exports\/(Platform|NativeEventEmitter|StyleSheet|NativeModules|DeviceEventEmitter|Text|View)$/.test(
@@ -557,21 +540,27 @@ export function withExtendedResolver(
       return null;
     },
 
-    // TODO: Reduce these as much as possible in the future.
-    // Complex post-resolution rewrites.
+    // Polyfill for asset registry
     (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      const doResolve = getStrictResolver(context, platform);
+      if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
+        return getAssetRegistryModule();
+      }
 
       if (
         platform === 'web' &&
         context.originModulePath.match(/node_modules[\\/]react-native-web[\\/]/) &&
         moduleName.includes('/modules/AssetRegistry')
       ) {
-        return {
-          type: 'sourceFile',
-          filePath: getAssetRegistryPath(),
-        };
+        return getAssetRegistryModule();
       }
+
+      return null;
+    },
+
+    // TODO: Reduce these as much as possible in the future.
+    // Complex post-resolution rewrites.
+    (context: ResolutionContext, moduleName: string, platform: string | null) => {
+      const doResolve = getStrictResolver(context, platform);
 
       const result = doResolve(moduleName);
 
