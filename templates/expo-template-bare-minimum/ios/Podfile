@@ -16,17 +16,21 @@ prepare_react_native_project!
 target 'HelloWorld' do
   use_expo_modules!
 
-  config_command = [
-    'node',
-    '--no-warnings',
-    '--eval',
-    'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
-    'react-native-config',
-    '--json',
-    '--platform',
-    'ios'
-  ]
-  config = use_native_modules!(config_command)
+  if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
+    config = use_native_modules!
+  else
+    config_command = [
+      'node',
+      '--no-warnings',
+      '--eval',
+      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+      'react-native-config',
+      '--json',
+      '--platform',
+      'ios'
+    ]
+    config = use_native_modules!(config_command)
+  end
 
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']

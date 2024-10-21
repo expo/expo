@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Refactor context injection ([#31951](https://github.com/expo/expo/pull/31951) by [@wschurman](https://github.com/wschurman))
+- [ios] Remove appContext property ([#32103](https://github.com/expo/expo/pull/32103) by [@wschurman](https://github.com/wschurman))
 
 ## 0.16.2 — 2024-05-09
 

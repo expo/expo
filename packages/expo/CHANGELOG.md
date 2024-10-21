@@ -36,6 +36,7 @@
 - Reloads DOM components WebView while app in background and browser renderer processes are gone. ([#31318](https://github.com/expo/expo/pull/31318) by [@kudo](https://github.com/kudo))
 - Add missing `types` folder from published package ([#31339](https://github.com/expo/expo/pull/31339) by [@marklawlor](https://github.com/marklawlor))
 - Fixed leaking `web-streams-polyfill` imported on web bundles for API routes. ([#31611](https://github.com/expo/expo/pull/31611) by [@byCedric](https://github.com/byCedric))
+- Fixed `@expo/dom-webview` resolving error for DOM components. ([#31983](https://github.com/expo/expo/pull/31983) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -51,6 +52,7 @@
 - Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
 - Added a default `AppEntryNotFound` component and prevent the `Invariant Violation: "main" has not been registered.` error. ([#31813](https://github.com/expo/expo/pull/31813) by [@kudo](https://github.com/kudo))
 - Decoupled the usage from `@react-native-community/cli-tools`. ([#31966](https://github.com/expo/expo/pull/31966) by [@kudo](https://github.com/kudo))
+- Promoted `DevToolsPluginClient.useTransportationNext` as default and removed the option. ([#31852](https://github.com/expo/expo/pull/31852) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

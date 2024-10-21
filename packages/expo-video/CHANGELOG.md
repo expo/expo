@@ -5,6 +5,8 @@
 ### 🛠 Breaking changes
 
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30859](https://github.com/expo/expo/pull/30859) by [@tsapeta](https://github.com/tsapeta))
+- Changed the return type of all player events to a single object for a better support of the `useEvent` hook. ([#32104](https://github.com/expo/expo/pull/32104) by [@behenate](https://github.com/behenate))
+- Separated the `volumeChange` event into `volumeChange` and `mutedChange` events. ([#32104](https://github.com/expo/expo/pull/32104) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
@@ -13,6 +15,7 @@
 - [iOS] Fixed `player.currentTime` being `NaN` when source is not provided and `player.duration` being `NaN` inside the hook callback when the source is updated. ([#31011](https://github.com/expo/expo/pull/31011) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
 - [Android] Fix not being able to select subtitles in the player. ([#31829](https://github.com/expo/expo/pull/31829) by [@fobos531](https://github.com/fobos531))
 - Added generating video thumbnails. ([#31807](https://github.com/expo/expo/pull/31807) by [@tsapeta](https://github.com/tsapeta) & [#32037](https://github.com/expo/expo/pull/32037) by [@lukmccall](https://github.com/lukmccall))
+- [Android][iOS] Add support for video artwork. ([#32129](https://github.com/expo/expo/pull/32129) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
 
 ### 🐛 Bug fixes
 

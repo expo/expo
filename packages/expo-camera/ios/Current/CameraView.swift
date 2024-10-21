@@ -15,7 +15,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   // MARK: - Properties
 
   private lazy var barcodeScanner = createBarcodeScanner()
-  private var previewLayer = PreviewView()
+  private lazy var previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
   private var photoCaptureOptions: TakePictureOptions?
@@ -152,10 +152,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   private func setupPreview() {
-    previewLayer.videoPreviewLayer.session = session
-    previewLayer.videoPreviewLayer.videoGravity = .resizeAspectFill
-    previewLayer.videoPreviewLayer.needsDisplayOnBoundsChange = true
-    addSubview(previewLayer)
+    previewLayer.videoGravity = .resizeAspectFill
+    previewLayer.needsDisplayOnBoundsChange = true
   }
 
   func initCamera() async {
@@ -389,9 +387,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       return
     }
     Task { @MainActor in
-      self.previewLayer.videoPreviewLayer.opacity = 0
+      self.previewLayer.opacity = 0
       UIView.animate(withDuration: 0.25) {
-        self.previewLayer.videoPreviewLayer.opacity = 1
+        self.previewLayer.opacity = 1
       }
     }
   }
@@ -652,9 +650,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   public override func layoutSubviews() {
     super.layoutSubviews()
-    previewLayer.videoPreviewLayer.frame = self.bounds
     self.backgroundColor = .black
-    self.layer.insertSublayer(previewLayer.videoPreviewLayer, at: 0)
+    previewLayer.frame = self.bounds
+    self.layer.insertSublayer(previewLayer, at: 0)
   }
 
   private func cleanupCamera() {
@@ -753,6 +751,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     #if targetEnvironment(simulator)
     return
     #endif
+//    self.previewLayer.layer.removeFromSuperlayer()
 
     session.beginConfiguration()
     for input in self.session.inputs {
@@ -772,11 +771,11 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   func resumePreview() {
-    previewLayer.videoPreviewLayer.connection?.isEnabled = true
+    previewLayer.connection?.isEnabled = true
   }
 
   func pausePreview() {
-    previewLayer.videoPreviewLayer.connection?.isEnabled = false
+    previewLayer.connection?.isEnabled = false
   }
 
   @objc func orientationChanged(notification: Notification) async {
@@ -787,15 +786,15 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   func changePreviewOrientation() async {
     // We shouldn't access the device orientation anywhere but on the main thread
     let videoOrientation = ExpoCameraUtils.videoOrientation(for: deviceOrientation)
-    if (previewLayer.videoPreviewLayer.connection?.isVideoOrientationSupported) == true {
+    if (previewLayer.connection?.isVideoOrientationSupported) == true {
       physicalOrientation = ExpoCameraUtils.physicalOrientation(for: deviceOrientation)
-      previewLayer.videoPreviewLayer.connection?.videoOrientation = videoOrientation
+      previewLayer.connection?.videoOrientation = videoOrientation
     }
   }
 
   private func createBarcodeScanner() -> BarcodeScanner {
     let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
-    scanner.setPreviewLayer(layer: previewLayer.videoPreviewLayer)
+    scanner.setPreviewLayer(layer: previewLayer)
     scanner.onBarcodeScanned = { [weak self] body in
       guard let self else {
         return

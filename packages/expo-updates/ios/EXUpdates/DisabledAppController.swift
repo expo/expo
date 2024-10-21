@@ -67,6 +67,10 @@ public class DisabledAppController: InternalAppControllerInterface {
     }
   }
 
+  public func onEventListenerStartObserving() {
+    stateMachine.sendContextToJS()
+  }
+
   private func launchedUpdate() -> Update? {
     return launcher?.launchedUpdate
   }

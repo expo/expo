@@ -36,7 +36,7 @@
     "@react-navigation/native": "7.0.0-rc.20",
     "@react-navigation/stack": "7.0.0-rc.27",
     "@shopify/flash-list": "1.7.1",
-    "@shopify/react-native-skia": "1.4.2",
+    "@shopify/react-native-skia": "1.5.0",
     "@stripe/stripe-react-native": "0.38.6",
     "date-fns": "^2.28.0",
     "dedent": "^0.7.0",
@@ -66,7 +66,7 @@
     "prop-types": "^15.7.2",
     "querystring": "^0.2.0",
     "react": "18.2.0",
-    "react-native": "0.76.0-rc.5",
+    "react-native": "0.76.0-rc.6",
     "react-native-fade-in-image": "^1.6.1",
     "react-native-gesture-handler": "~2.20.0",
     "react-native-infinite-scroll-view": "^0.4.5",
@@ -97,5 +97,14 @@
     "@types/react": "~18.2.79",
     "@types/semver": "^7.5.8",
     "expo-module-scripts": "^3.0.0"
+  },
+  "expo": {
+    "autolinking": {
+      "searchPaths": [
+        "./modules",
+        "./node_modules",
+        "../../node_modules"
+      ]
+    }
   }
 }
