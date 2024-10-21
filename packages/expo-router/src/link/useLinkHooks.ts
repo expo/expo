@@ -97,6 +97,9 @@ export interface LinkProps<T extends string | object>
    * @see [Resolving relative references in Mozilla's documentation](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references)
    */
   relativeToDirectory?: boolean;
+
+  /** Should this route replace the initial screen */
+  withAnchor?: boolean;
 }
 
 // Mutate the style prop to add the className on web.

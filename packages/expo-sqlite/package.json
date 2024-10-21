@@ -14,10 +14,6 @@
     "./async-storage": {
       "default": "./async-storage.js",
       "types": "./async-storage.d.ts"
-    },
-    "./next": {
-      "default": "./next.js",
-      "types": "./next.d.ts"
     }
   },
   "scripts": {

@@ -91,7 +91,7 @@ function setParams(params = {}) {
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;
-function linkTo(href, { event, relativeToDirectory } = {}) {
+function linkTo(href, { event, relativeToDirectory, withAnchor } = {}) {
     if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
         return;
@@ -115,10 +115,10 @@ function linkTo(href, { event, relativeToDirectory } = {}) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    return navigationRef.dispatch(getNavigateAction(state, rootState, event));
+    return navigationRef.dispatch(getNavigateAction(state, rootState, event, withAnchor));
 }
 exports.linkTo = linkTo;
-function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
+function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -200,6 +200,23 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE') {
     }
     if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
         type = 'JUMP_TO';
+    }
+    if (withAnchor !== undefined) {
+        if (rootPayload.params.initial) {
+            if (process.env.NODE_ENV !== 'production') {
+                console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
+            }
+        }
+        /*
+         * The logic for initial can seen backwards depending on your perspective
+         *   True: The initialRouteName is not loaded. The incoming screen is the initial screen (default)
+         *   False: The initialRouteName is loaded. THe incoming screen is placed after the initialRouteName
+         *
+         * withAnchor flips the perspective.
+         *   True: You want the initialRouteName to load.
+         *   False: You do not want the initialRouteName to load.
+         */
+        rootPayload.params.initial = !withAnchor;
     }
     return {
         type,
