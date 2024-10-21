@@ -99,9 +99,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   private func playerIsBuffering() -> Bool {
-    let isPlaying = ref.timeControlStatus == .playing
-
-    if isPlaying {
+    if ref.timeControlStatus == .playing {
       return false
     }
 
@@ -165,7 +163,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         self.ref.play()
       } else {
         self.updateStatus(with: [
-          "isPlaying": false
+          "isPlaying": false,
+          "currentTime": (self.ref.currentItem?.duration.seconds ?? 0) * 1000
         ])
       }
     }
@@ -176,7 +175,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     let interval = CMTime(seconds: updateInterval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     timeToken = ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { time in
       self.updateStatus(with: [
-        "currentPosition": time.seconds * 1000
+        "currentTime": time.seconds * 1000
       ])
     }
   }

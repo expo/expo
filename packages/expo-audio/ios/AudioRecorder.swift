@@ -12,9 +12,9 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var isPrepared = false
   private lazy var recordingSession = AVAudioSession.sharedInstance()
   
-  override init(_ pointer: AVAudioRecorder) {
-    super.init(pointer)
-    pointer.delegate = recordingDelegate
+  override init(_ ref: AVAudioRecorder) {
+    super.init(ref)
+    ref.delegate = recordingDelegate
 
     do {
       try recordingSession.setCategory(.playAndRecord, mode: .default)
@@ -45,9 +45,11 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
   
   func prepare(options: RecordingOptions?) {
+    if let options {
+      ref = AudioUtils.createRecorder(directory: recordingDirectory(), with: options)
+      ref.delegate = recordingDelegate
+    }
     ref.prepareToRecord()
-    // update the AVAudioRecorder settings
-    
     isPrepared = true
   }
   
@@ -109,6 +111,13 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "error": error?.localizedDescription,
       "url": nil
     ])
+  }
+  
+  private func recordingDirectory() -> URL? {
+    guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
+      return nil
+    }
+    return directory
   }
 
   override func sharedObjectWillRelease() {

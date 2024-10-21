@@ -165,10 +165,8 @@ public class AudioModule: Module {
     // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
-        guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
-          throw Exceptions.AppContextLost()
-        }
-        let avRecorder = AudioUtils.createRecorder(directory: directory, with: options)
+        let recordingDir = try recordingDirectory()
+        let avRecorder = AudioUtils.createRecorder(directory: recordingDir, with: options)
         let recorder = AudioRecorder(avRecorder)
         AudioComponentRegistry.shared.add(recorder)
 
@@ -236,6 +234,13 @@ public class AudioModule: Module {
         try RecordingUtils.setInput(input)
       }
     }
+  }
+  
+  private func recordingDirectory() throws -> URL {
+    guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
+      throw Exceptions.AppContextLost()
+    }
+    return directory
   }
 
   private func setIsAudioActive(_ isActive: Bool) throws {
