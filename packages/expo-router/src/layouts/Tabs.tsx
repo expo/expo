@@ -33,6 +33,7 @@ export const Tabs = withLayoutContext<
         ...screen,
         options: {
           ...options,
+          tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
           tabBarButton: (props) => {
             if (href == null) {
               return null;
@@ -56,6 +57,6 @@ export const Tabs = withLayoutContext<
     }
     return screen;
   });
-}) as React.FC<TabsProps>;
+});
 
 export default Tabs;

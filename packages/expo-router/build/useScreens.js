@@ -185,6 +185,7 @@ function screenOptionsFactory(route, options) {
         };
         // Prevent generated screens from showing up in the tab bar.
         if (route.generated) {
+            output.tabBarItemStyle = { display: 'none' };
             output.tabBarButton = () => null;
             // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
             output.drawerItemStyle = { height: 0, display: 'none' };
