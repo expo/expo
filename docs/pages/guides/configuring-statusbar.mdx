@@ -95,7 +95,7 @@ export default function Playlists() {
 }
 ```
 
-<Collapsible summary={<span>How is <CODE>expo-status-bar</CODE> different from the StatusBar component included in React Native?</span>}>
+<Collapsible summary={<>How is <CODE>expo-status-bar</CODE> different from the StatusBar component included in React Native?</>}>
 
 `expo-status-bar` builds on top of the `StatusBar` component that React Native provides to give you better defaults when you're building an app with Expo tools. For example, the `translucent` property of `expo-status-bar` defaults to `true` or, if you have changed that property in `androidStatusBar`, it will use that value instead. The default in React Native for `translucent` is always `false`, which can be confusing because when a project is created using Expo tools, the default is `true` for consistency with iOS.
 

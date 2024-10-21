@@ -70,17 +70,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Name of your app.
       </p>
       <details
-        class="emotion-1"
+        class="overflow-hidden bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
         id="bare-workflow"
       >
         <summary
-          class="group emotion-2"
+          class="group grid grid-cols-[min-content_auto_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
         >
           <div
-            class="emotion-3"
+            class="mt-[5px] ml-1.5 mr-2 self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default emotion-4"
+              class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -98,14 +98,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+            class="text-default leading-[1.6154] font-medium inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
           >
-            <span
-              class="text-default leading-[1.6154] font-medium"
-              data-text="true"
-            >
-              Bare Workflow
-            </span>
+            Bare Workflow
           </span>
           <a
             href="#bare-workflow"
@@ -137,7 +133,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-5"
+          class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -215,17 +211,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Configuration for the bottom navigation bar on Android.
       </p>
       <details
-        class="emotion-1"
+        class="overflow-hidden bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
         id="expokit"
       >
         <summary
-          class="group emotion-2"
+          class="group grid grid-cols-[min-content_auto_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
         >
           <div
-            class="emotion-3"
+            class="mt-[5px] ml-1.5 mr-2 self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default emotion-4"
+              class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -243,14 +239,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+            class="text-default leading-[1.6154] font-medium inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
           >
-            <span
-              class="text-default leading-[1.6154] font-medium"
-              data-text="true"
-            >
-              ExpoKit
-            </span>
+            ExpoKit
           </span>
           <a
             href="#expokit"
@@ -282,7 +274,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-5"
+          class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -293,17 +285,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <details
-        class="emotion-1"
+        class="overflow-hidden bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
         id="bare-workflow-1"
       >
         <summary
-          class="group emotion-2"
+          class="group grid grid-cols-[min-content_auto_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
         >
           <div
-            class="emotion-3"
+            class="mt-[5px] ml-1.5 mr-2 self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default emotion-4"
+              class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -321,14 +313,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+            class="text-default leading-[1.6154] font-medium inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
           >
-            <span
-              class="text-default leading-[1.6154] font-medium"
-              data-text="true"
-            >
-              Bare Workflow
-            </span>
+            Bare Workflow
           </span>
           <a
             href="#bare-workflow-1"
@@ -360,7 +348,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-5"
+          class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -446,17 +434,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="emotion-1"
+          class="overflow-hidden bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
           id="expokit-1"
         >
           <summary
-            class="group emotion-2"
+            class="group grid grid-cols-[min-content_auto_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
           >
             <div
-              class="emotion-3"
+              class="mt-[5px] ml-1.5 mr-2 self-baseline"
             >
               <svg
-                class="icon-sm text-icon-default emotion-4"
+                class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
                 fill="none"
                 role="img"
                 viewBox="0 0 24 24"
@@ -474,14 +462,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </div>
             <span
-              class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+              class="text-default leading-[1.6154] font-medium inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+              data-text="true"
             >
-              <span
-                class="text-default leading-[1.6154] font-medium"
-                data-text="true"
-              >
-                ExpoKit
-              </span>
+              ExpoKit
             </span>
             <a
               href="#expokit-1"
@@ -513,7 +497,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </a>
           </summary>
           <div
-            class="last:[&>*]:!mb-1 emotion-5"
+            class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
           >
             <p
               class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -758,17 +742,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Configuration for setting an array of custom intent filters in Android manifest.
       </p>
       <details
-        class="emotion-1"
+        class="overflow-hidden bg-default border border-default rounded-md p-0 mb-3 [&[open]]:shadow-xs [h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3"
         id="bare-workflow-2"
       >
         <summary
-          class="group emotion-2"
+          class="group grid grid-cols-[min-content_auto_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 cursor-pointer [&_h4]:my-0 [&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px"
         >
           <div
-            class="emotion-3"
+            class="mt-[5px] ml-1.5 mr-2 self-baseline"
           >
             <svg
-              class="icon-sm text-icon-default emotion-4"
+              class="icon-sm text-icon-default transition-transform duration-200 -rotate-90 [details[open]>summary_&]:rotate-0"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -786,14 +770,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
+            class="text-default leading-[1.6154] font-medium inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            data-text="true"
           >
-            <span
-              class="text-default leading-[1.6154] font-medium"
-              data-text="true"
-            >
-              Bare Workflow
-            </span>
+            Bare Workflow
           </span>
           <a
             href="#bare-workflow-2"
@@ -825,7 +805,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-5"
+          class="py-4 px-5 [&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
