@@ -2356,7 +2356,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSVG (15.8.0-rc.1):
+  - RNSVG (15.8.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2376,9 +2376,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.8.0-rc.1)
+    - RNSVG/common (= 15.8.0)
     - Yoga
-  - RNSVG/common (15.8.0-rc.1):
+  - RNSVG/common (15.8.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -3051,7 +3051,7 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 36f7a28f6317504b2d0523a87b29cc0544c025a4
+  hermes-engine: 8591fd98afb7f00d0441619461da0bdd116bdc5b
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3135,7 +3135,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: c374c750a0a9bacd95f5c740d146ab9428549d6b
   RNReanimated: f258d9ce122d59e36be8e516c40ed773ee46b687
   RNScreens: 01b042df69d92d82bd7f614715f0d7f8a888b3af
-  RNSVG: 08750404f92a36162a92522cc77dee437be1d257
+  RNSVG: 536cd3c866c878faf72beaba166c8b02fe2b762b
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
