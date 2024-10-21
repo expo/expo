@@ -12,7 +12,7 @@ Let's start with an example where a heading is unaligned to its document's conte
 
 Based on the search term above, the correct page appears as the last item. The search term contains all keywords that are common with the way we talk about running an EAS Build on a local computer.
 
-Using the context of a keyword (commonly used term), improves the search ranking of the document when the same search term is used:
+Using the context of a keyword (commonly used term), it improves the search ranking of the document when the same search term is used:
 
 [<img src="./assets/writing-guides/02-improved-search-doc-example.png" width="540" />](./assets/writing-guides/02-improved-search-doc-example.png)
 
