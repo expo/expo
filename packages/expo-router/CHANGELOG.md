@@ -47,7 +47,7 @@
 - Fix passing style array to `<Link />` when using `asChild`. ([#31373](https://github.com/expo/expo/pull/31373) by [@marklawlor](https://github.com/marklawlor))
 - Add `legacy_subscribe` to `+native-intent`. ([#31765](https://github.com/expo/expo/pull/31765) by [@marklawlor](https://github.com/marklawlor))
 - Fix `<Slot />` inside headless `<Tabs />` causing invalid navigation state. ([#32114](https://github.com/expo/expo/pull/32114) by [@marklawlor](https://github.com/marklawlor))
-- Ensure generated screens do not appear in default `<Tabs />`.
+- Ensure generated screens do not appear in default `<Tabs />`. ([#32180](https://github.com/expo/expo/pull/32180) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
