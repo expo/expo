@@ -36,7 +36,7 @@ test.describe(inputDir, () => {
   });
 
   test('url hash', async ({ page }) => {
-    await expo.startAsync();
+    await expo.startAsync(['--port=8085']);
     console.log('Server running:', expo.url);
     await expo.fetchAsync('/');
     page.on('console', (msg) => console.log(msg.text()));
