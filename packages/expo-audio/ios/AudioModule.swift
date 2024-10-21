@@ -188,7 +188,7 @@ public class AudioModule: Module {
       Property("uri") { recorder in
         recorder.uri
       }
-      
+
       AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
         recorder.prepare(options: options)
       }
@@ -235,7 +235,7 @@ public class AudioModule: Module {
       }
     }
   }
-  
+
   private func recordingDirectory() throws -> URL {
     guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
       throw Exceptions.AppContextLost()

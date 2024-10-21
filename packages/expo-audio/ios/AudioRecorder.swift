@@ -12,7 +12,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var isPrepared = false
   private lazy var recordingSession = AVAudioSession.sharedInstance()
   var allowsRecording = true
-  
+
   override init(_ ref: AVAudioRecorder) {
     super.init(ref)
     ref.delegate = recordingDelegate
@@ -40,11 +40,11 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   var uri: String {
     ref.url.absoluteString
   }
-  
+
   private var currentDuration: Int {
     deviceCurrentTime - startTimestamp
   }
-  
+
   func prepare(options: RecordingOptions?) {
     if let options {
       ref = AudioUtils.createRecorder(directory: recordingDirectory, with: options)
@@ -53,7 +53,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ref.prepareToRecord()
     isPrepared = true
   }
-  
+
   func startRecording() -> [String: Any] {
     if !allowsRecording {
       log.info("Recording is currently disabled")
@@ -63,14 +63,14 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     startTimestamp = Int(deviceCurrentTime)
     return getRecordingStatus()
   }
-  
+
   func stopRecording() {
     ref.stop()
     startTimestamp = 0
     previousRecordingDuration = 0
     isPrepared = false
   }
-  
+
   func pauseRecording() {
     ref.pause()
     previousRecordingDuration += currentDuration
@@ -117,7 +117,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "url": nil
     ])
   }
-  
+
   private var recordingDirectory: URL? {
     guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
       return nil
