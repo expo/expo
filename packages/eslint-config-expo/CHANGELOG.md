@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Enable node globals for `metro.config.js`
+
 ### 💡 Others
 
 ## 7.1.2 — 2024-04-24
