@@ -22,7 +22,6 @@ globalThis.__webpack_require__ = (id) => {
             throw err;
         };
     }
-    console.log([...require.getModules().keys()]);
     try {
         return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
     }

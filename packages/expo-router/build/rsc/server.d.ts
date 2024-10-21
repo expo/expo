@@ -6,8 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { ReactNode } from 'react';
-export declare const REQUEST_HEADERS = "__expo_requestHeaders";
 import type { PathSpec } from './path';
+export declare const REQUEST_HEADERS = "__expo_requestHeaders";
 type Config = any;
 type Elements = Record<string, ReactNode>;
 export type BuildConfig = {

@@ -9,9 +9,9 @@
 import { type AsyncLocalStorage } from 'node:async_hooks';
 import type { ReactNode } from 'react';
 
-export const REQUEST_HEADERS = '__expo_requestHeaders';
-
 import type { PathSpec } from './path';
+
+export const REQUEST_HEADERS = '__expo_requestHeaders';
 
 declare let globalThis: {
   __EXPO_RSC_CACHE__?: Map<string, any>;
