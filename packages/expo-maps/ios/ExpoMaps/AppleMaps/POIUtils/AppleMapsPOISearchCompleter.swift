@@ -32,7 +32,6 @@ class AppleMapsPOISearchCompleter: NSObject, SearchCompleter {
     searchCompleter.region = region
   }
 
-  @available(iOS 13.0, *)
   func setSearchCompleterFilters(filter: MKPointOfInterestFilter?) {
     searchCompleter.resultTypes = .pointOfInterest
     guard let filter = filter else {
