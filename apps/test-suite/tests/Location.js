@@ -337,13 +337,15 @@ export async function test(t) {
 
     describeWithPermissions('Location.watchPositionAsync()', () => {
       t.it('gets a result of the correct shape', async () => {
-        await new Promise(async (resolve, reject) => {
-          const subscriber = await Location.watchPositionAsync({}, (location) => {
-            testLocationShape(location);
-            subscriber.remove();
-            resolve();
+        let subscriber;
+        const location = await new Promise(async (resolve) => {
+          subscriber = await Location.watchPositionAsync({}, (location) => {
+            setTimeout(() => resolve(location));
           });
         });
+
+        subscriber.remove();
+        testLocationShape(location);
       });
 
       t.it('can be called simultaneously', async () => {
