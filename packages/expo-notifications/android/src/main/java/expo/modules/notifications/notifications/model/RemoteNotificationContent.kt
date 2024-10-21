@@ -56,7 +56,10 @@ class RemoteNotificationContent(private val remoteMessage: RemoteMessage) : INot
     }
 
   override val color: Number?
-    get() = remoteMessage.notification?.color?.let { android.graphics.Color.parseColor(it) }
+    get() {
+      val colorSource = remoteMessage.notification?.color ?: notificationData.color
+      return colorSource?.let { android.graphics.Color.parseColor(it) }
+    }
 
   // NOTE the following getter functions are here because the local notification content class has them
   // and this class conforms to the same interface.

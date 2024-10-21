@@ -4,7 +4,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /*
-* In some scenarios, data-only notifications are, in fact, presented.
+* In some scenarios, data-only push notifications are, in fact, presented.
+* The presentation preferences are taken from the data payload.
 * */
 @JvmInline
 value class NotificationData(private val data: Map<String, String>) {
@@ -46,6 +47,8 @@ value class NotificationData(private val data: Map<String, String>) {
       // most likely a boolean value that cannot be converted to a longArray
       null
     }
+
+  val color: String? get() = data["color"]
 
   val autoDismiss: Boolean
     get() = data["autoDismiss"]?.toBoolean() ?: true
