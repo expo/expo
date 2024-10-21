@@ -55,12 +55,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenLegacy'));
-    },
-    name: 'Camera (legacy)',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/Camera/CameraScreen'));
     },
     name: 'Camera',
@@ -142,13 +136,6 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/ActivityIndicatorScreen'));
     },
     name: 'ActivityIndicator',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/QRCodeScreen'));
-    },
-    name: 'QRCode',
-    options: { title: 'QR Code' },
   },
   {
     getComponent() {

@@ -1785,7 +1785,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.4):
     - React-Core
-  - react-native-skia (1.4.2):
+  - react-native-skia (1.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2586,7 +2586,7 @@ DEPENDENCIES:
   - "react-native-segmented-control (from `../../../node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/@react-native-community/slider`)"
-  - react-native-webview (from `../../../node_modules/react-native-webview`)
+  - react-native-webview (from `../modules/react-native-webview`)
   - React-nativeconfig (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/reactperflogger`)
@@ -2614,7 +2614,7 @@ DEPENDENCIES:
   - React-utils (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/utils`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
-  - "RNCAsyncStorage (from `../../../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCAsyncStorage (from `../modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../../../node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/@react-native-community/datetimepicker`)"
@@ -2887,7 +2887,7 @@ EXTERNAL SOURCES:
   react-native-slider:
     :path: "../../../node_modules/@react-native-community/slider"
   react-native-webview:
-    :path: "../../../node_modules/react-native-webview"
+    :path: "../modules/react-native-webview"
   React-nativeconfig:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -2943,7 +2943,7 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon"
   RNCAsyncStorage:
-    :path: "../../../node_modules/@react-native-async-storage/async-storage"
+    :path: "../modules/@react-native-async-storage/async-storage"
   RNCMaskedView:
     :path: "../../../node_modules/@react-native-masked-view/masked-view"
   RNCPicker:
@@ -3051,7 +3051,7 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: b11026fbd06795f73e19e53d454e50916129cde6
+  hermes-engine: 36f7a28f6317504b2d0523a87b29cc0544c025a4
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -3097,7 +3097,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: 94195f1bf32e7f78359fa20057c97e632364a08b
   react-native-safe-area-context: f1fda705dfe14355f41933debb5932887e234cc5
   react-native-segmented-control: fde795d4d9c95ebc97cd37a034eb0a7a922f1ec5
-  react-native-skia: c825cb272f6129fe148989eaf662c302d4f60587
+  react-native-skia: 425a5610939828363e0681b8b3e994dd4f18b711
   react-native-slider: e1f4b4538f7de7417b626174874f4f58d4cf6c28
   react-native-webview: 06f91954784dde28e1210f381c791f0c5f9bd9a2
   React-nativeconfig: 6bf19f5279402e095a35ac880144c14aa9b63df4

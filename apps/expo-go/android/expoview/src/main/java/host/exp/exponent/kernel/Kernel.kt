@@ -129,11 +129,6 @@ class Kernel : KernelInterface() {
   private var hasError = false
 
   private fun updateKernelRNOkHttp() {
-    if (BuildConfig.DEBUG) {
-      // FIXME: 8/9/17
-      // broke with lib versioning
-      // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    }
     ReactNativeStaticHelpers.setExponentNetwork(exponentNetwork)
   }
 
@@ -247,7 +242,7 @@ class Kernel : KernelInterface() {
           }
 
           reactNativeHost = nativeHost
-          reactHost?.onHostResume(activityContext)
+          reactHost?.onHostResume(activityContext, null)
           isRunning = true
           EventBus.getDefault().postSticky(KernelStartedRunningEvent())
           EXL.d(TAG, "Kernel started running.")

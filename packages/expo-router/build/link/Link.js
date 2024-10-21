@@ -36,7 +36,7 @@ exports.Link = (0, react_1.forwardRef)(ExpoRouterLink);
 exports.Link.resolveHref = href_1.resolveHref;
 function ExpoRouterLink({ href, replace, push, 
 // TODO: This does not prevent default on the anchor tag.
-relativeToDirectory, asChild, rel, target, download, ...rest }, ref) {
+relativeToDirectory, asChild, rel, target, download, withAnchor, ...rest }, ref) {
     // Mutate the style prop to add the className on web.
     const style = (0, useLinkHooks_1.useInteropClassName)(rest);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
@@ -52,7 +52,12 @@ relativeToDirectory, asChild, rel, target, download, ...rest }, ref) {
         event = 'PUSH';
     if (replace)
         event = 'REPLACE';
-    const props = (0, useLinkToPathProps_1.default)({ href: resolvedHref, event, relativeToDirectory });
+    const props = (0, useLinkToPathProps_1.default)({
+        href: resolvedHref,
+        event,
+        relativeToDirectory,
+        withAnchor,
+    });
     const onPress = (e) => {
         if ('onPress' in rest) {
             rest.onPress?.(e);
@@ -60,7 +65,7 @@ relativeToDirectory, asChild, rel, target, download, ...rest }, ref) {
         props.onPress(e);
     };
     const Element = asChild ? LinkSlot_1.Slot : react_native_1.Text;
-    // Avoid using createElement directly, favoring JSX, to allow tools like Nativewind to perform custom JSX handling on native.
+    // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
     return (<Element ref={ref} {...props} {...hrefAttrs} {...rest} style={style} {...react_native_1.Platform.select({
         web: {
             onClick: onPress,

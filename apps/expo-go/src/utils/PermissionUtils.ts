@@ -1,4 +1,4 @@
-import * as Camera from 'expo-camera/legacy';
+import { Camera } from 'expo-camera';
 import { Alert, Linking } from 'react-native';
 
 export async function requestCameraPermissionsAsync(): Promise<boolean> {
