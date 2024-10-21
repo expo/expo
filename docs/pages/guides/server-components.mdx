@@ -256,15 +256,32 @@ This server action can be invoked from a client component and the contents will 
 'use client';
 
 import { useLocalSearchParams } from 'expo-router';
+import * as React from 'react';
+import { Text } from 'react-native';
+
 import { renderProfile } from '@/components/server-actions';
+
+// Loading state that renders while data is being fetched.
+function Fallback() {
+  return <Text>Loading...</Text>;
+}
 
 export default function Profile() {
   const { username } = useLocalSearchParams();
   const { accessToken } = useCustomAuthProvider();
+
+  // Call the server action with the username and access token.
+  const profile = React.useMemo(
+    () => renderProfile({ username, accessToken }),
+    [username, accessToken]
+  );
+
+  // Render the profile asynchronously with React suspense and a custom loading state.
+  return <React.Suspense fallback={<Fallback />}>{profile}</React.Suspense>;
 }
 ```
 
-### Library compatibility
+## Library compatibility
 
 Not all libraries are optimized for React Server Components yet. You can use the `"use client"` directive to mark a file as a client component and use it in a server component, this can be used to temporarily workaround compatibility issues.
 
@@ -314,7 +331,7 @@ export default function Index() {
         </>
       )}
       <MyComponent />
-    </>
+    </React.Suspense>
   );
 }
 ```
@@ -439,6 +456,7 @@ Library authors can test their modules support Server Components by using `jest-
 - Server Rendering RSC payloads to HTML is not supported yet.
 - `generateStaticParams` is not yet supported.
 - HTML `form` integration with Server Actions is not supported yet (this partially works automatically, but data is not encrypted).
+- Server actions that invoke other server actions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.
 
 ## Deployment
 
