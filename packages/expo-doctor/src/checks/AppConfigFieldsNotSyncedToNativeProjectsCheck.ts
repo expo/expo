@@ -13,14 +13,12 @@ const appConfigFieldsToSyncWithNative = [
   'scheme',
   'userInterfaceStyle',
   'splash',
-  'updates',
   'orientation',
   'backgroundColor',
   'primaryColor',
   'notification',
   'androidStatusBar',
   'androidNavigationBar',
-  'jsEngine',
   'locales',
 ];
 
