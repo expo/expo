@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Enable node globals for `metro.config.js`
+- Enable node globals for `metro.config.js` ([#32203](https://github.com/expo/expo/pull/32203) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
 
