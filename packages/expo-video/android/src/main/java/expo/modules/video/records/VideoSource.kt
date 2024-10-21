@@ -35,7 +35,7 @@ class VideoSource(
       "DRMHeadersValues:${this.drm?.headers?.values?.joinToString { it }}}" +
       "NotificationDataTitle:${this.metadata?.title}" +
       "NotificationDataSecondaryText:${this.metadata?.artist}" +
-      "NotificationDataArtwork:${this.metadata?.artwork}"
+      "NotificationDataArtwork:${this.metadata?.artwork?.path}"
   }
 
   fun toMediaSource(context: Context): MediaSource {
@@ -59,8 +59,8 @@ class VideoSource(
           metadata?.let { data ->
             setTitle(data.title)
             setArtist(data.artist)
-            data.artwork?.let { artworkUrl ->
-              setArtworkUri(Uri.parse(artworkUrl))
+            data.artwork?.let {
+              setArtworkUri(it)
             }
           }
         }.build()
