@@ -237,6 +237,7 @@ const general = [
       makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
+      makePage('router/advanced/hydration.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('router/reference/hooks.mdx'),

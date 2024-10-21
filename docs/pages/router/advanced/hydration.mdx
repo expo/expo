@@ -1,0 +1,14 @@
+---
+title: Hydration
+description: Learn about how to use hydration with Expo Router
+---
+
+> Hydration is disabled in development in SDK \<52. Improved support for hydration is planned.
+
+In React, hydration refers to the process of taking a server-rendered HTML and "attaching" it to React's virtual DOM to make it fully interactive. When [Static Rendering](https://docs.expo.dev/router/reference/static-rendering/), Expo Router will render your app with [`hydrateRoot`](https://react.dev/reference/react-dom/client/hydrateRoot).
+
+## Enabling hydration in development
+
+As server rendering a React Native application is a new concept, enabling hydration in development can lead to excessive development warnings from third party libraries. For this reason, Expo Router disables hydration in development.
+
+If you need to troubleshoot a hydration error, you can enable hydration during development by setting the environment variable `EXPO_WEB_DEV_HYDRATE=true`
