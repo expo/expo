@@ -683,13 +683,28 @@ export function withExtendedResolver(
         context.unstable_enablePackageExports = true;
         context.unstable_conditionsByPlatform = {};
 
-        if (platform === 'web') {
-          // Node.js runtimes should only be importing main at the moment.
-          // This is a temporary fix until we can support the package.json exports.
-          context.mainFields = ['main', 'module'];
+        const isReactServerComponents = context.customResolverOptions?.environment;
+
+        if (isReactServerComponents) {
+          // NOTE: Align the behavior across server and client. This is a breaking change so we'll just roll it out with React Server Components.
+          // This ensures that react-server and client code both resolve `module` and `main` in the same order.
+          if (platform === 'web') {
+            // Node.js runtimes should only be importing main at the moment.
+            // This is a temporary fix until we can support the package.json exports.
+            context.mainFields = ['module', 'main'];
+          } else {
+            // In Node.js + native, use the standard main fields.
+            context.mainFields = ['react-native', 'module', 'main'];
+          }
         } else {
-          // In Node.js + native, use the standard main fields.
-          context.mainFields = ['react-native', 'main', 'module'];
+          if (platform === 'web') {
+            // Node.js runtimes should only be importing main at the moment.
+            // This is a temporary fix until we can support the package.json exports.
+            context.mainFields = ['main', 'module'];
+          } else {
+            // In Node.js + native, use the standard main fields.
+            context.mainFields = ['react-native', 'main', 'module'];
+          }
         }
 
         // Enable react-server import conditions.
