@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
-import { mergeClasses, theme, Themes, typography } from '@expo/styleguide';
-import { borderRadius, spacing } from '@expo/styleguide-base';
+import { mergeClasses, Themes } from '@expo/styleguide';
 import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon';
 import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
@@ -87,10 +85,10 @@ export function Code({ className, children, title }: CodeProps) {
     setCollapseBound(undefined);
   }
 
-  const commonClasses = [
+  const commonClasses = mergeClasses(
     wordWrap && '!whitespace-pre-wrap !break-words',
-    showExpand && !isExpanded && `!overflow-hidden`,
-  ];
+    showExpand && !isExpanded && `!overflow-hidden`
+  );
 
   return codeBlockTitle ? (
     <Snippet>
@@ -101,14 +99,13 @@ export function Code({ className, children, title }: CodeProps) {
       <SnippetContent className="p-0">
         <pre
           ref={contentRef}
-          css={STYLES_CODE_CONTAINER}
           style={{
             maxHeight: collapseBound,
           }}
-          className={mergeClasses('relative', ...commonClasses)}
+          className={mergeClasses('relative p-4 whitespace-pre', commonClasses)}
           {...attributes}>
           <code
-            css={STYLES_CODE_BLOCK}
+            className="text-2xs text-default"
             dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
           />
           {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
@@ -118,43 +115,24 @@ export function Code({ className, children, title }: CodeProps) {
   ) : (
     <pre
       ref={contentRef}
-      css={STYLES_CODE_CONTAINER}
       style={{
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'relative border border-secondary p-4 my-4 bg-subtle',
+        'whitespace-pre relative border border-secondary p-4 my-4 bg-subtle rounded-md',
         preferredTheme === Themes.DARK && 'dark-theme',
-        ...commonClasses,
-        'last:mb-0'
+        commonClasses,
+        '[p+&]:mt-0'
       )}
       {...attributes}>
-      <code css={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
+      <code
+        className="text-2xs text-default"
+        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+      />
       {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
     </pre>
   );
 }
-
-const STYLES_CODE_BLOCK = css`
-  ${typography.body.code};
-  color: ${theme.text.default};
-  white-space: inherit;
-  padding: 0;
-  margin: 0;
-`;
-
-const STYLES_CODE_CONTAINER = css`
-  white-space: pre;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  line-height: 120%;
-  border-radius: ${borderRadius.sm}px;
-  padding: ${spacing[4]}px;
-
-  table &:last-child {
-    margin-bottom: 0;
-  }
-`;
 
 type CodeBlockProps = PropsWithChildren<{
   inline?: boolean;
@@ -166,13 +144,15 @@ export const CodeBlock = ({ children, theme, className, inline = false }: CodeBl
   const Element = inline ? 'span' : 'pre';
   return (
     <Element
-      className={mergeClasses('m-0 px-1 py-1.5', inline && 'inline-flex !p-0')}
-      css={STYLES_CODE_CONTAINER}
+      className={mergeClasses('whitespace-pre m-0 px-1 py-1.5', inline && 'inline-flex !p-0')}
       {...attributes}>
       <CODE
-        className={mergeClasses('!text-[85%]', inline && 'inline-flex w-full !p-1.5', className)}
-        theme={theme}
-        css={STYLES_CODE_BLOCK}>
+        className={mergeClasses(
+          '!text-3xs text-default',
+          inline && 'block w-full !p-1.5',
+          className
+        )}
+        theme={theme}>
         {children}
       </CODE>
     </Element>

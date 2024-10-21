@@ -1,5 +1,4 @@
-import { css } from '@emotion/react';
-import { mergeClasses, theme, typography } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
 import { InfoCircleSolidIcon } from '@expo/styleguide-icons/solid/InfoCircleSolidIcon';
 import { XSquareSolidIcon } from '@expo/styleguide-icons/solid/XSquareSolidIcon';
@@ -17,7 +16,7 @@ type CalloutType = 'default' | 'warning' | 'error' | 'info';
 type CalloutProps = PropsWithChildren<{
   type?: CalloutType;
   className?: string;
-  icon?: ComponentType<any> | string;
+  icon?: ComponentType<HTMLAttributes<SVGSVGElement>> | string;
   size?: 'sm' | 'md';
 }>;
 
@@ -52,30 +51,26 @@ export const Callout = ({
 
   return (
     <blockquote
-      css={[containerStyle, getCalloutColor(finalType)]}
       className={mergeClasses(
-        'flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4',
+        'bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4',
         '[table_&]:last-of-type:mb-0',
+        '[&_code]:bg-element',
+        getCalloutColor(finalType),
         // TODO(simek): remove after migration to new components is completed
         '[&_p]:!mb-0',
+        size === 'sm' && '!text-xs',
         className
       )}
       data-testid="callout-container">
       <div
-        className={mergeClasses(
-          'select-none mt-[5px]',
-          '[table_&]:mt-[3px]',
-          size === 'sm' && 'mt-[3px]'
-        )}>
+        className={mergeClasses('select-none mt-1', '[table_&]:mt-0.5', size === 'sm' && 'mt-0.5')}>
         {typeof icon === 'string' ? (
           icon
         ) : (
           <Icon className={mergeClasses('icon-sm', getCalloutIconColor(finalType))} />
         )}
       </div>
-      <div
-        css={size === 'sm' ? contentSmStyle : contentMdStyle}
-        className={mergeClasses('text-default w-full', 'last:mb-0')}>
+      <div className={mergeClasses('text-default w-full leading-normal', 'last:mb-0')}>
         {type === finalType ? children : contentChildren.filter((_, i) => i !== 0)}
       </div>
     </blockquote>
@@ -85,11 +80,21 @@ export const Callout = ({
 function getCalloutColor(type: CalloutType) {
   switch (type) {
     case 'warning':
-      return warningColorStyle;
+      return mergeClasses(
+        'bg-warning border-warning',
+        `[&_code]:bg-palette-yellow4 [&_code]:border-palette-yellow6`,
+        `dark:[&_code]:bg-palette-yellow5 dark:[&_code]:border-palette-yellow7`
+      );
     case 'error':
-      return errorColorStyle;
+      return mergeClasses(
+        'bg-danger border-danger',
+        `[&_code]:bg-palette-red5 [&_code]:border-palette-red7`
+      );
     case 'info':
-      return infoColorStyle;
+      return mergeClasses(
+        'bg-info border-info',
+        `[&_code]:bg-palette-blue4 [&_code]:border-palette-blue6`
+      );
     default:
       return null;
   }
@@ -118,55 +123,3 @@ function getCalloutIconColor(type: CalloutType) {
       return 'text-icon-default';
   }
 }
-
-const containerStyle = css({
-  backgroundColor: theme.background.subtle,
-  border: `1px solid ${theme.border.default}`,
-
-  code: {
-    backgroundColor: theme.background.element,
-  },
-});
-
-const contentMdStyle = css({
-  ...typography.fontSizes[16],
-});
-
-const contentSmStyle = css({
-  ...typography.fontSizes[14],
-});
-
-const warningColorStyle = css({
-  backgroundColor: theme.background.warning,
-  borderColor: theme.border.warning,
-
-  code: {
-    backgroundColor: theme.palette.yellow4,
-    borderColor: theme.palette.yellow6,
-  },
-
-  '.dark-theme & code': {
-    backgroundColor: theme.palette.yellow5,
-    borderColor: theme.palette.yellow7,
-  },
-});
-
-const errorColorStyle = css({
-  backgroundColor: theme.background.danger,
-  borderColor: theme.border.danger,
-
-  code: {
-    backgroundColor: theme.palette.red5,
-    borderColor: theme.palette.red7,
-  },
-});
-
-const infoColorStyle = css({
-  backgroundColor: theme.background.info,
-  borderColor: theme.border.info,
-
-  code: {
-    backgroundColor: theme.palette.blue4,
-    borderColor: theme.palette.blue6,
-  },
-});

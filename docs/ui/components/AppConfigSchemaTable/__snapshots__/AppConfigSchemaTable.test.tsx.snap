@@ -683,7 +683,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           6 character long hex color string, eg: 
           <code
-            class="emotion-59"
+            class="!inline emotion-2"
             data-text="true"
           >
             '#000000'
@@ -845,11 +845,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Example
         </p>
         <span
-          class="m-0 px-1 py-1.5 inline-flex !p-0 emotion-74"
+          class="whitespace-pre m-0 px-1 py-1.5 inline-flex !p-0"
           data-text="true"
         >
           <code
-            class="!text-[85%] inline-flex w-full !p-1.5 emotion-75"
+            class="!text-3xs text-default block w-full !p-1.5 emotion-2"
             data-text="true"
           >
             [

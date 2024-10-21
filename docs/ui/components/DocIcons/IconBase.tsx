@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
 import { mergeClasses } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
 import type { ElementType, HTMLAttributes } from 'react';
 
 export type DocIconProps = HTMLAttributes<SVGSVGElement> & {
@@ -17,20 +15,10 @@ export const IconBase = ({ className, small, Icon, ...rest }: DocIconProps) => {
         'inline-block',
         small ? 'icon-sm' : 'icon-md',
         'text-icon-default',
+        '[table_&]:align-middle [li_&]:align-middle [li_&]:-mt-0.5',
         className
       )}
-      css={iconStyles}
       {...rest}
     />
   );
 };
-
-const iconStyles = css({
-  'table &, li &': {
-    verticalAlign: 'middle',
-  },
-
-  'li &': {
-    marginTop: -spacing[0.5],
-  },
-});

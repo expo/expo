@@ -85,7 +85,7 @@ export const mdComponents: MDComponents = {
         {children}
       </PrismCodeBlock>
     ) : (
-      <CODE css={css({ display: 'inline' })}>{children}</CODE>
+      <CODE className="!inline">{children}</CODE>
     );
   },
   pre: ({ children }) => <>{children}</>,
@@ -666,8 +666,9 @@ export const listParams = (parameters: MethodParamData[]) =>
 
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
-    <div css={defaultValueContainerStyle}>
-      <DEMI theme="secondary">Default:</DEMI> <CODE className="!text-[90%]">{defaultValue}</CODE>
+    <div className="flex items-start gap-1">
+      <DEMI theme="secondary">Default:</DEMI>
+      <CODE className="!text-[90%]">{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -1022,15 +1023,6 @@ export const STYLES_NOT_EXPOSED_HEADER = css({
   display: 'inline-block',
 
   code: {
-    marginBottom: 0,
-  },
-});
-
-const defaultValueContainerStyle = css({
-  marginTop: spacing[2],
-  marginBottom: spacing[2],
-
-  '&:last-child': {
     marginBottom: 0,
   },
 });
