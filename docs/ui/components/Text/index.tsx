@@ -69,8 +69,6 @@ export function createTextComponent(Element: TextElement, textClassName?: string
     } = props;
     const TextElementTag = tag ?? Element;
 
-    console.warn(textWeight, textTheme);
-
     return (
       <TextElementTag
         className={mergeClasses(
