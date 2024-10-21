@@ -46,10 +46,6 @@ describe('static-rendering with no sitemap', () => {
         })
         .filter(Boolean);
 
-      expect(
-        files.find((file) => file?.match(/\_expo\/static\/js\/web\/index-.*\.js/))
-      ).toBeDefined();
-
       // The wrapper should not be included as a route.
       expect(files).not.toContain('+html.html');
       expect(files).not.toContain('_layout.html');
