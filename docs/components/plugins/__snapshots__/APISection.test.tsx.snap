@@ -978,17 +978,17 @@ properties.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -1400,17 +1400,17 @@ value depending on the state of the credential.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -1642,17 +1642,17 @@ refresh operation.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -1931,17 +1931,17 @@ sign-in operation.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -2247,12 +2247,12 @@ sign-out operation.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
@@ -2538,17 +2538,17 @@ for more details.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -3000,17 +3000,17 @@ may be
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -3413,17 +3413,17 @@ for more details.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -3724,17 +3724,17 @@ for more details.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -4052,17 +4052,17 @@ for more details.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -4225,17 +4225,17 @@ OAuth 2.0 protocol
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -6987,12 +6987,12 @@ Same as
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
@@ -7699,17 +7699,17 @@ This uses both
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -8059,17 +8059,17 @@ code.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -8330,17 +8330,17 @@ in order to enable/disable the permission.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -8522,17 +8522,17 @@ in order to enable/disable the permission.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -8643,17 +8643,17 @@ in order to enable/disable the permission.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -8770,17 +8770,17 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -8936,12 +8936,12 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="even:bg-subtle even:[&_summary]:bg-element"
             >
               <th
-                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
               >
                 Parameter
               </th>
               <th
-                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
               >
                 Type
               </th>
@@ -9043,17 +9043,17 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -9319,17 +9319,17 @@ you don't get this value.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -10065,17 +10065,17 @@ exports[`APISection expo-pedometer 1`] = `
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -10652,17 +10652,17 @@ available on this device.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Parameter
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -10991,17 +10991,17 @@ On iOS, the
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -11262,17 +11262,17 @@ in order to enable/disable the permission.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
@@ -11386,12 +11386,12 @@ in order to enable/disable the permission.
               class="even:bg-subtle even:[&_summary]:bg-element"
             >
               <th
-                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
               >
                 Parameter
               </th>
               <th
-                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+                class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
               >
                 Type
               </th>
@@ -11601,17 +11601,17 @@ in order to enable/disable the permission.
             class="even:bg-subtle even:[&_summary]:bg-element"
           >
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Name
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Type
             </th>
             <th
-              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs last:border-r-0"
+              class="px-4 py-3.5 font-medium text-secondary border-r border-secondary text-left text-3xs [&_code]:text-3xs [&_code]:text-secondary last:border-r-0"
             >
               Description
             </th>
