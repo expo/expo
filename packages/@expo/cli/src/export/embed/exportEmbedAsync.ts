@@ -216,9 +216,10 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
-    const apiRoutesEnabled = exp.web?.output === 'server';
+    const apiRoutesEnabled =
+      devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
 
-    if (devServer.isReactServerComponentsEnabled || apiRoutesEnabled) {
+    if (apiRoutesEnabled) {
       await exportStandaloneServerAsync(projectRoot, devServer, {
         exp,
         pkg,
