@@ -606,13 +606,9 @@ export const ParamsTableHeadRow = ({ hasDescription = true, mainCellLabel = 'Nam
 );
 
 function createInheritPermalink(baseNestingLevel: number) {
-  return createPermalinkedComponent(
-    createTextComponent(
-      TextElement.SPAN,
-      css({ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' })
-    ),
-    { baseNestingLevel }
-  );
+  return createPermalinkedComponent(createTextComponent(TextElement.SPAN, 'text-inherit'), {
+    baseNestingLevel,
+  });
 }
 
 export const BoxSectionHeader = ({
@@ -631,10 +627,7 @@ export const BoxSectionHeader = ({
   const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : SPAN;
   return (
     <CALLOUT css={STYLES_NESTED_SECTION_HEADER} className={className}>
-      <TextWrapper
-        theme="secondary"
-        weight="medium"
-        className="text-inherit flex flex-row gap-2 items-center">
+      <TextWrapper weight="medium" className="text-secondary flex flex-row gap-2 items-center">
         {Icon && <Icon className="icon-sm text-icon-secondary" />}
         {text}
       </TextWrapper>

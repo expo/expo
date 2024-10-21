@@ -1,6 +1,4 @@
-import { css, CSSObject } from '@emotion/react';
-import { typography } from '@expo/styleguide';
-import type { CSSProperties, ComponentType, PropsWithChildren } from 'react';
+import type { ComponentType, PropsWithChildren } from 'react';
 
 import { Code as PrismCodeBlock } from '~/components/base/code';
 import { Callout } from '~/ui/components/Callout';
@@ -12,13 +10,11 @@ type Config = ConfigStyles & {
 };
 
 type ConfigStyles = {
-  css?: CSSObject;
-  style?: CSSProperties;
+  className?: string;
 };
 
 type ComponentProps = PropsWithChildren<{
   className?: string;
-  style?: CSSProperties;
 }>;
 
 const markdownStyles: Record<string, Config | null> = {
@@ -39,36 +35,32 @@ const markdownStyles: Record<string, Config | null> = {
   },
   p: {
     Component: P,
-    style: { marginBottom: '1.5ch' },
+    className: 'mb-[1.5ch]',
   },
   strong: {
     Component: BOLD,
   },
   ul: {
     Component: UL,
-    style: { marginBottom: '1.5ch', paddingLeft: `1ch` },
+    className: 'mb-[1.5ch] pl-[1ch]',
   },
   ol: {
     Component: OL,
-    style: { marginBottom: '1.5ch', paddingLeft: `1ch` },
+    className: 'mb-[1.5ch] pl-[1ch]',
   },
   li: {
     Component: LI,
   },
   hr: {
     Component: 'hr',
-    css: typography.utility.hr,
-    style: {
-      margin: `2ch 0`,
-      marginTop: '3rem',
-    },
+    className: 'border-0 bg-palette-gray6 h-px mb-[2ch] mt-12',
   },
   blockquote: {
     Component: Callout,
   },
   img: {
     Component: 'img',
-    style: { width: '100%' },
+    className: 'w-full',
   },
   code: {
     Component: CODE,
@@ -118,9 +110,9 @@ function componentName({ Component }: Config) {
 }
 
 function createMarkdownComponent(config: Config): ComponentType<ComponentProps> {
-  const { Component, css: cssClassname, style } = config;
+  const { Component, className } = config;
   const MDXComponent = (props: ComponentProps) => (
-    <Component {...props} css={css(cssClassname)} style={style}>
+    <Component {...props} className={className}>
       {props.children}
     </Component>
   );

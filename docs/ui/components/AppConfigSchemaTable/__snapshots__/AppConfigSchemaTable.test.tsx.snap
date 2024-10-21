@@ -7,7 +7,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
     >
       <p
-        class="group emotion-1"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
         data-text="true"
       >
         <a
@@ -19,7 +19,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline"
           >
             <code
-              class="!px-1.5 !text-sm emotion-2"
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
               data-text="true"
             >
               name
@@ -52,35 +52,35 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </p>
       <p
-        class="my-3 emotion-3"
+        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
         data-text="true"
       >
         Type: 
         <code
-          class="emotion-2"
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
           data-text="true"
         >
           string
         </code>
       </p>
       <p
-        class="mb-3.5 emotion-1"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
       >
         Name of your app.
       </p>
       <details
-        class="emotion-6"
+        class="emotion-1"
         id="bare-workflow"
       >
         <summary
-          class="group emotion-7"
+          class="group emotion-2"
         >
           <div
-            class="emotion-8"
+            class="emotion-3"
           >
             <svg
-              class="icon-sm text-icon-default emotion-9"
+              class="icon-sm text-icon-default emotion-4"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -101,7 +101,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
           >
             <span
-              class="emotion-10"
+              class="text-default leading-[1.6154] font-medium"
               data-text="true"
             >
               Bare Workflow
@@ -137,10 +137,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-11"
+          class="last:[&>*]:!mb-1 emotion-5"
         >
           <p
-            class="mb-3.5 emotion-1"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
             data-text="true"
           >
             Edit the 'Display Name' field in Xcode
@@ -152,7 +152,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
     >
       <p
-        class="group emotion-1"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
         data-text="true"
       >
         <a
@@ -164,7 +164,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline"
           >
             <code
-              class="!px-1.5 !text-sm emotion-2"
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
               data-text="true"
             >
               androidNavigationBar
@@ -197,35 +197,35 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </p>
       <p
-        class="my-3 emotion-3"
+        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
         data-text="true"
       >
         Type: 
         <code
-          class="emotion-2"
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
           data-text="true"
         >
           object
         </code>
       </p>
       <p
-        class="mb-3.5 emotion-1"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
       >
         Configuration for the bottom navigation bar on Android.
       </p>
       <details
-        class="emotion-6"
+        class="emotion-1"
         id="expokit"
       >
         <summary
-          class="group emotion-7"
+          class="group emotion-2"
         >
           <div
-            class="emotion-8"
+            class="emotion-3"
           >
             <svg
-              class="icon-sm text-icon-default emotion-9"
+              class="icon-sm text-icon-default emotion-4"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -246,7 +246,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
           >
             <span
-              class="emotion-10"
+              class="text-default leading-[1.6154] font-medium"
               data-text="true"
             >
               ExpoKit
@@ -282,10 +282,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-11"
+          class="last:[&>*]:!mb-1 emotion-5"
         >
           <p
-            class="mb-3.5 emotion-1"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
             data-text="true"
           >
             Set this property using AppConstants.java.
@@ -293,17 +293,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <details
-        class="emotion-6"
+        class="emotion-1"
         id="bare-workflow-1"
       >
         <summary
-          class="group emotion-7"
+          class="group emotion-2"
         >
           <div
-            class="emotion-8"
+            class="emotion-3"
           >
             <svg
-              class="icon-sm text-icon-default emotion-9"
+              class="icon-sm text-icon-default emotion-4"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -324,7 +324,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
           >
             <span
-              class="emotion-10"
+              class="text-default leading-[1.6154] font-medium"
               data-text="true"
             >
               Bare Workflow
@@ -360,10 +360,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-11"
+          class="last:[&>*]:!mb-1 emotion-5"
         >
           <p
-            class="mb-3.5 emotion-1"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
             data-text="true"
           >
             Set this property using just Xcode
@@ -374,7 +374,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
       >
         <p
-          class="group emotion-1"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
           data-text="true"
         >
           <a
@@ -386,7 +386,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="!px-1.5 !text-sm emotion-2"
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
                 data-text="true"
               >
                 visible
@@ -419,12 +419,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="my-3 emotion-3"
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
           data-text="true"
         >
           Type: 
           <code
-            class="emotion-2"
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
             data-text="true"
           >
             enum
@@ -440,23 +440,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="mb-3.5 emotion-1"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
         >
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="emotion-6"
+          class="emotion-1"
           id="expokit-1"
         >
           <summary
-            class="group emotion-7"
+            class="group emotion-2"
           >
             <div
-              class="emotion-8"
+              class="emotion-3"
             >
               <svg
-                class="icon-sm text-icon-default emotion-9"
+                class="icon-sm text-icon-default emotion-4"
                 fill="none"
                 role="img"
                 viewBox="0 0 24 24"
@@ -477,7 +477,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
             >
               <span
-                class="emotion-10"
+                class="text-default leading-[1.6154] font-medium"
                 data-text="true"
               >
                 ExpoKit
@@ -513,10 +513,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </a>
           </summary>
           <div
-            class="last:[&>*]:!mb-1 emotion-11"
+            class="last:[&>*]:!mb-1 emotion-5"
           >
             <p
-              class="mb-3.5 emotion-1"
+              class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
               data-text="true"
             >
               Set this property using Xcode.
@@ -527,7 +527,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
         >
           <p
-            class="group emotion-1"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
             data-text="true"
           >
             <a
@@ -539,7 +539,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class="inline"
               >
                 <code
-                  class="!px-1.5 !text-sm emotion-2"
+                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
                   data-text="true"
                 >
                   always
@@ -572,12 +572,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </a>
           </p>
           <p
-            class="my-3 emotion-3"
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
             data-text="true"
           >
             Type: 
             <code
-              class="emotion-2"
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
               data-text="true"
             >
               boolean
@@ -593,7 +593,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </code>
           </p>
           <p
-            class="mb-3.5 emotion-1"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
             data-text="true"
           >
             Test sub-sub-property
@@ -604,7 +604,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
       >
         <p
-          class="group emotion-1"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
           data-text="true"
         >
           <a
@@ -616,7 +616,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="!px-1.5 !text-sm emotion-2"
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
                 data-text="true"
               >
                 backgroundColor
@@ -649,12 +649,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="my-3 emotion-3"
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
           data-text="true"
         >
           Type: 
           <code
-            class="emotion-2"
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
             data-text="true"
           >
             string
@@ -670,7 +670,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="mb-3.5 emotion-1"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
         >
           Specifies the background color of the navigation bar.
@@ -678,12 +678,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         
 
         <p
-          class="mb-3.5 emotion-1"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
         >
           6 character long hex color string, eg: 
           <code
-            class="!inline emotion-2"
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !inline"
             data-text="true"
           >
             '#000000'
@@ -695,7 +695,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
     >
       <p
-        class="group emotion-1"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
         data-text="true"
       >
         <a
@@ -707,7 +707,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline"
           >
             <code
-              class="!px-1.5 !text-sm emotion-2"
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
               data-text="true"
             >
               intentFilters
@@ -740,35 +740,35 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </a>
       </p>
       <p
-        class="my-3 emotion-3"
+        class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
         data-text="true"
       >
         Type: 
         <code
-          class="emotion-2"
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
           data-text="true"
         >
           array
         </code>
       </p>
       <p
-        class="mb-3.5 emotion-1"
+        class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
         data-text="true"
       >
         Configuration for setting an array of custom intent filters in Android manifest.
       </p>
       <details
-        class="emotion-6"
+        class="emotion-1"
         id="bare-workflow-2"
       >
         <summary
-          class="group emotion-7"
+          class="group emotion-2"
         >
           <div
-            class="emotion-8"
+            class="emotion-3"
           >
             <svg
-              class="icon-sm text-icon-default emotion-9"
+              class="icon-sm text-icon-default emotion-4"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -789,7 +789,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative"
           >
             <span
-              class="emotion-10"
+              class="text-default leading-[1.6154] font-medium"
               data-text="true"
             >
               Bare Workflow
@@ -825,10 +825,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </summary>
         <div
-          class="last:[&>*]:!mb-1 emotion-11"
+          class="last:[&>*]:!mb-1 emotion-5"
         >
           <p
-            class="mb-3.5 emotion-1"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
             data-text="true"
           >
             This is set in AndroidManifest.xml directly.
@@ -839,7 +839,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="grid grid-cols-1 gap-2 mb-6"
       >
         <p
-          class="font-bold emotion-3"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary font-bold"
           data-text="true"
         >
           Example
@@ -849,7 +849,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           data-text="true"
         >
           <code
-            class="!text-3xs text-default block w-full !p-1.5 emotion-2"
+            class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] rounded-md border border-secondary bg-subtle px-1 py-0.5 !text-3xs text-default block w-full !p-1.5"
             data-text="true"
           >
             [
@@ -867,7 +867,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
       >
         <p
-          class="group emotion-1"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
           data-text="true"
         >
           <a
@@ -879,7 +879,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="!px-1.5 !text-sm emotion-2"
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
                 data-text="true"
               >
                 autoVerify
@@ -912,12 +912,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="my-3 emotion-3"
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
           data-text="true"
         >
           Type: 
           <code
-            class="emotion-2"
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
             data-text="true"
           >
             boolean
@@ -933,7 +933,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="mb-3.5 emotion-1"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
           data-text="true"
         >
           You may also use an intent filter to set your app as the default handler for links
@@ -943,7 +943,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
       >
         <p
-          class="group emotion-1"
+          class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
           data-text="true"
         >
           <a
@@ -955,7 +955,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="inline"
             >
               <code
-                class="!px-1.5 !text-sm emotion-2"
+                class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
                 data-text="true"
               >
                 data
@@ -988,12 +988,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="my-3 emotion-3"
+          class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
           data-text="true"
         >
           Type: 
           <code
-            class="emotion-2"
+            class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
             data-text="true"
           >
             array || object
@@ -1012,7 +1012,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
         >
           <p
-            class="group emotion-1"
+            class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
             data-text="true"
           >
             <a
@@ -1024,7 +1024,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class="inline"
               >
                 <code
-                  class="!px-1.5 !text-sm emotion-2"
+                  class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 !px-1.5 !text-sm"
                   data-text="true"
                 >
                   host
@@ -1057,12 +1057,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </a>
           </p>
           <p
-            class="my-3 emotion-3"
+            class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary my-3"
             data-text="true"
           >
             Type: 
             <code
-              class="emotion-2"
+              class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
               data-text="true"
             >
               string
