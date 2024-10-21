@@ -112,7 +112,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       </span>
     </p>
     <pre
-      class="whitespace-pre relative border border-secondary p-4 my-4 bg-subtle rounded-md last:mb-0"
+      class="whitespace-pre relative border border-secondary p-4 my-4 bg-subtle rounded-md [p+&]:mt-0"
       data-text="true"
     >
       <code
