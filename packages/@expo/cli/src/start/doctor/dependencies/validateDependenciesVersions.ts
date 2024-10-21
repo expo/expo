@@ -234,7 +234,7 @@ function findIncorrectDependencies(
   return incorrectDeps;
 }
 
-function isDependencyVersionIncorrect(
+export function isDependencyVersionIncorrect(
   packageName: string,
   actualVersion: string,
   expectedVersionOrRange?: string
