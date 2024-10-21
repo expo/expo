@@ -11,23 +11,26 @@ import {
   RecordingStatus,
 } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { AudioMetadata, AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
+// Update the useAudioPlayer hook to accept metadata
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null,
-  updateInterval: number = 500
+  updateInterval: number = 500,
+  enableLockScreenControls: boolean = false,
+  metadata?: AudioMetadata
 ): AudioPlayer {
   const parsedSource = resolveSource(source);
   const player = useReleasingSharedObject(
-    () => new AudioModule.AudioPlayer(parsedSource, updateInterval),
-    [JSON.stringify(parsedSource)]
+    () =>
+      new AudioModule.AudioPlayer(parsedSource, updateInterval, enableLockScreenControls, metadata),
+    [JSON.stringify(parsedSource), enableLockScreenControls, JSON.stringify(metadata)]
   );
 
   return player;
 }
-
 export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
   const currentStatus = useMemo(() => player.currentStatus, [player.id]);
   return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
