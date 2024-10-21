@@ -8,10 +8,6 @@ class DevMenuAppInstanceTest: QuickSpec {
   class MockedBridge: RCTBridge {
     var enqueueJSCallWasCalled = false
 
-    override func invalidate() {
-      // NOOP
-    }
-
     override func enqueueJSCall(_ moduleDotMethod: String!, args: [Any]!) {
       enqueueJSCallWasCalled = true
 
@@ -22,7 +18,9 @@ class DevMenuAppInstanceTest: QuickSpec {
 
   override class func spec() {
     it("checks if `sendCloseEvent` sends correct event") {
-      let mockedBridge = MockedBridge(delegate: nil, launchOptions: nil)!
+      let bridgeDelegate = MockBridgeDelegate()
+      let mockedBridge = MockedBridge(delegate: bridgeDelegate, launchOptions: nil)!
+      waitBridgeReady(bridgeDelegate: bridgeDelegate)
       let appInstance = DevMenuAppInstance(
         manager: DevMenuManager.shared,
         bridge: mockedBridge
@@ -34,7 +32,9 @@ class DevMenuAppInstanceTest: QuickSpec {
     }
 
     it("checks if js bundle was found") {
-      let mockedBridge = MockedBridge(delegate: nil, launchOptions: nil)!
+      let bridgeDelegate = MockBridgeDelegate()
+      let mockedBridge = MockedBridge(delegate: bridgeDelegate, launchOptions: nil)!
+      waitBridgeReady(bridgeDelegate: bridgeDelegate)
       let appInstance = DevMenuAppInstance(
         manager: DevMenuManager.shared,
         bridge: mockedBridge
@@ -46,7 +46,9 @@ class DevMenuAppInstanceTest: QuickSpec {
     }
 
     it("checks if extra modules was exported") {
-      let mockedBridge = MockedBridge(delegate: nil, launchOptions: nil)!
+      let bridgeDelegate = MockBridgeDelegate()
+      let mockedBridge = MockedBridge(delegate: bridgeDelegate, launchOptions: nil)!
+      waitBridgeReady(bridgeDelegate: bridgeDelegate)
       let appInstance = DevMenuAppInstance(
         manager: DevMenuManager.shared,
         bridge: mockedBridge
