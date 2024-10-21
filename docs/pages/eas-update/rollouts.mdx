@@ -1,32 +1,76 @@
 ---
 title: Rollouts
-description: Incrementally deploy updates on a new branch to a channel.
+description: Incrementally deploy updates to your users.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **info** Available from SDK 50 using [`expo-updates`](/versions/latest/sdk/updates/) 0.23.0 or above.
+A rollout allows you to roll out a change to a portion of your users in order to catch bugs or other issues before releasing that change to all your users.
 
-Rollouts incrementally deploy updates on a new branch to a specific channel. With rollouts, you can roll out updates from one branch to a percentage of end users and leave the remaining percentage of users on the current branch. This is useful when testing a new feature to minimize the risk of introducing bugs or other issues to our production environment.
+EAS provides two rollout mechanisms depending on your use case:
 
-## Start a rollout
+## Per-update rollouts
 
-To start a rollout, ensure you have EAS CLI version `4.0.0` or above installed. Then, run the following command:
+This rollout mechanism allows you to specify a percentage of users that should recieve a new update when you publish it, and then increase that percentage gradually afterwards.
+
+<Collapsible summary="How to use">
+
+### Starting a rollout
+
+To start a update-based rollout, add the `--rollout-percentage` flag to your normal `eas update` command.
+
+<Terminal cmd={['$ eas update --rollout-percentage=10']} />
+
+In this example, when published, the update will only be available to 10% of your end users.
+
+### Progressing a rollout
+
+To edit the percentage of an update-based rollout:
+
+<Terminal cmd={['$ eas update:edit']} />
+
+You will be guided through the process of selecting the update to edit and asked for the new percentage.
+
+### Ending a rollout
+
+When ending an update-based rollout, you have two options:
+- **Roll out fully**: To accomplish this end state, progress the rollout as detailed above and set the percentage to 100.
+- **Revert**: To accomplish this end state, republish the previous update by using the `eas update:republish` command.
+
+### Working with rollouts
+
+- Only one update can be rolled out on a branch at one time.
+- To see the state of the rollout, use the `eas update:list` or `eas update:view` commands.
+
+</Collapsible>
+
+## Branch-based rollouts
+
+This rollout mechanism allows you to incrementally roll out a set of updates on a new branch to a percentage of end users and leave the remaining percentage of users on the current branch.
+
+<Collapsible summary="How to use">
+
+### Starting a rollout
+
+To start a branch-based rollout, run the following command in the EAS CLI:
 
 <Terminal cmd={['$ eas channel:rollout']} />
 
 In the terminal, an interactive guide will assist you in selecting a channel, choosing a branch for the rollout, and setting the percentage of users for the rollout. To increase or decrease the rollout amount, run the command again and choose the `Edit` option to adjust the rollout percentage.
 
-## End a rollout
+### Ending a rollout
 
 Two methods are available to end a rollout when you choose the `End` option in the interactive guide:
 
-- **Republish and revert:** This option can be used once you are confident with the update served from the new branch. This will publish the update again on the old branch and users will be reverted back to it.
+- **Republish and revert:** This option can be used once you are confident with the state of the new branch. This will republish the latest updatefrom the new branch to the old branch, and all users will then be pointed to the old branch.
 - **Revert:** Choose to disregard the updates on the new branch and return users to the old branch.
 
-## Work with rollouts
+### Working with rollouts
 
 - Only one branch can be rolled out on a channel at a single time.
-- To see the state of the rollout, use the `eas channel:rollout` command. Website support is coming soon.
+- To see the state of the rollout, use the `eas channel:rollout` command.
 - When a rollout is in progress, you can publish updates to both rolled out and current branches by running `eas update --branch [branch]`, for example.
-- `eas update --channel [channel]` cannot be used when a rollout is in progress since it cannot know which branch to associate the update with.
+- `eas update --channel [channel]` cannot be used when a rollout is in progress since it cannot know which branch in the rollout to associate the update with.
+
+</Collapsible>
