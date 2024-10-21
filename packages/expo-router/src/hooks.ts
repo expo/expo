@@ -3,9 +3,8 @@ import React from 'react';
 import { LocalRouteParamsContext } from './Route';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, InternalRoute } from './types';
 
-type SearchParams = Record<string, string | string[]>;
 export function useRootNavigationState() {
   return useStoreRootState();
 }
@@ -85,11 +84,11 @@ export function useUnstableGlobalHref(): string {
  * ```
  */
 export function useSegments<
-  TSegments extends Routes | RouteSegments<Routes> = Routes,
->(): TSegments extends string ? RouteSegments<TSegments> : TSegments {
-  return useStoreRouteInfo().segments as TSegments extends string
-    ? RouteSegments<TSegments>
-    : TSegments;
+  TSegments extends InternalRoute = InternalRoute,
+>(): RouteSegments<TSegments>;
+export function useSegments<TSegments extends RouteSegments<InternalRoute>>(): TSegments;
+export function useSegments() {
+  return useStoreRouteInfo().segments;
 }
 
 /**
@@ -112,12 +111,6 @@ export function usePathname(): string {
   return useStoreRouteInfo().pathname;
 }
 
-/**
- * @hidden
- */
-export function useGlobalSearchParams<
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams>;
 /**
  * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
  * Useful for analytics or other background operations that don't draw to the screen.
@@ -144,22 +137,13 @@ export function useGlobalSearchParams<
  *
  */
 export function useGlobalSearchParams<
-  TRoute extends Routes,
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TRoute, TParams>;
-export function useGlobalSearchParams<
-  TParams1 extends SearchParams | Routes = UnknownOutputParams,
-  TParams2 extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams1, TParams2> {
-  return useStoreRouteInfo().params as RouteParams<TParams1, TParams2>;
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): TParams;
+export function useGlobalSearchParams<TRoute extends InternalRoute>(): RouteParams<TRoute>;
+export function useGlobalSearchParams() {
+  return useStoreRouteInfo().params;
 }
 
-/**
- * @hidden
- */
-export function useLocalSearchParams<
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams>;
 /**
  * Returns the URL parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
@@ -170,13 +154,10 @@ export function useLocalSearchParams<
  * @see [`useGlobalSearchParams`](#useglobalsearchparams)
  */
 export function useLocalSearchParams<
-  TRoute extends Routes,
-  TParams extends SearchParams = UnknownOutputParams,
->(): RouteParams<TRoute, TParams>;
-export function useLocalSearchParams<
-  TParams1 extends SearchParams | Routes = UnknownOutputParams,
-  TParams2 extends SearchParams = UnknownOutputParams,
->(): RouteParams<TParams1, TParams2> {
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): TParams;
+export function useLocalSearchParams<TRoute extends InternalRoute>(): RouteParams<TRoute>;
+export function useLocalSearchParams() {
   const params = React.useContext(LocalRouteParamsContext) ?? {};
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
@@ -199,7 +180,7 @@ export function useLocalSearchParams<
         }
       }
     })
-  ) as RouteParams<TParams1, TParams2>;
+  ) as any;
 }
 
 export function useSearchParams({ global = false } = {}): URLSearchParams {

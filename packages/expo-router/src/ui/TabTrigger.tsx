@@ -15,18 +15,18 @@ type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & 
   children?: ReactNode | undefined;
 };
 
-export type TabTriggerProps<T extends string | object> = PressablePropsWithoutFunctionChildren & {
+export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
   name: string;
-  href?: Href<T>;
+  href?: Href;
   /** Forward props to child component. Useful for custom wrappers. */
   asChild?: boolean;
   /** Reset the route when switching to the tab */
   reset?: SwitchToOptions['reset'] | 'onLongPress';
 };
 
-export type TabTriggerOptions<T extends string | object> = {
+export type TabTriggerOptions = {
   name: string;
-  href: Href<T>;
+  href: Href;
 };
 
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren &
@@ -37,13 +37,7 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren &
 
 const TabTriggerSlot = Slot as React.ForwardRefExoticComponent<TabTriggerSlotProps>;
 
-export function TabTrigger<T extends string | object>({
-  asChild,
-  name,
-  href,
-  reset = 'onFocus',
-  ...props
-}: TabTriggerProps<T>) {
+export function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }: TabTriggerProps) {
   const { trigger, triggerProps } = useTabTrigger({
     name,
     reset,
@@ -81,7 +75,7 @@ export function isTabTrigger(
 
 export type SwitchToOptions = { reset?: ExpoTabsResetValue };
 
-export function useTabTrigger({ name, reset, onPress, onLongPress }: TabTriggerProps<any>) {
+export function useTabTrigger({ name, reset, onPress, onLongPress }: TabTriggerProps) {
   const { state, navigation } = useNavigatorContext();
   const triggerMap = useContext(TabTriggerMapContext);
 

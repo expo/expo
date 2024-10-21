@@ -17,8 +17,8 @@ export declare function Tabs({ children, asChild, options, ...props }: TabsProps
 export type UseTabsWithChildrenOptions = UseTabsOptions & {
     children: ReactNode;
 };
-export type UseTabsWithTriggersOptions<T extends string | object> = UseTabsOptions & {
-    triggers: ScreenTrigger<T>[];
+export type UseTabsWithTriggersOptions = UseTabsOptions & {
+    triggers: ScreenTrigger[];
 };
 export declare function useTabsWithChildren({ children, ...options }: UseTabsWithChildrenOptions): {
     state: TabNavigationState<any>;
@@ -158,7 +158,7 @@ export declare function useTabsWithChildren({ children, ...options }: UseTabsWit
         children: ReactNode;
     } & import("react").RefAttributes<unknown>>;
 };
-export declare function useTabsWithTriggers<T extends string | object>({ triggers, ...options }: UseTabsWithTriggersOptions<T>): {
+export declare function useTabsWithTriggers({ triggers, ...options }: UseTabsWithTriggersOptions): {
     state: TabNavigationState<any>;
     descriptors: Record<string, import("@react-navigation/native").Descriptor<ExpoTabsScreenOptions, Omit<{
         dispatch(action: Readonly<{
@@ -191,11 +191,11 @@ export declare function useTabsWithTriggers<T extends string | object>({ trigger
         isFocused(): boolean;
         canGoBack(): boolean;
         getId(): string | undefined;
-        getParent<T_1 = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string | undefined): T_1;
+        getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string | undefined): T;
         getState(): TabNavigationState<any>;
         setStateForNextRouteNamesChange(state: TabNavigationState<any> | import("@react-navigation/native").PartialState<TabNavigationState<any>>): void;
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
-        getParent<T_2 = import("@react-navigation/native").NavigationProp<ParamListBase, string, undefined, Readonly<{
+        getParent<T_1 = import("@react-navigation/native").NavigationProp<ParamListBase, string, undefined, Readonly<{
             key: string;
             index: number;
             routeNames: string[];
@@ -203,7 +203,7 @@ export declare function useTabsWithTriggers<T extends string | object>({ trigger
             routes: import("@react-navigation/native").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
-        }>, {}, {}> | undefined>(id?: string | undefined): T_2;
+        }>, {}, {}> | undefined>(id?: string | undefined): T_1;
         setParams(params: Partial<object | undefined>): void;
         setOptions(options: Partial<ExpoTabsScreenOptions>): void;
     } & import("@react-navigation/native").EventConsumer<TabNavigationEventMap & import("@react-navigation/native").EventMapCore<TabNavigationState<any>>> & import("@react-navigation/native").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("@react-navigation/native").RouteProp<ParamListBase, string>>>;
@@ -262,7 +262,7 @@ export declare function useTabsWithTriggers<T extends string | object>({ trigger
         isFocused(): boolean;
         canGoBack(): boolean;
         getId(): string | undefined;
-        getParent<T_3 = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string | undefined): T_3;
+        getParent<T_2 = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string | undefined): T_2;
         getState(): Readonly<{
             key: string;
             index: number;

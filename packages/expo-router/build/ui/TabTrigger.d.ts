@@ -5,28 +5,28 @@ import type { Href } from '../types';
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
     children?: ReactNode | undefined;
 };
-export type TabTriggerProps<T extends string | object> = PressablePropsWithoutFunctionChildren & {
+export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
     name: string;
-    href?: Href<T>;
+    href?: Href;
     /** Forward props to child component. Useful for custom wrappers. */
     asChild?: boolean;
     /** Reset the route when switching to the tab */
     reset?: SwitchToOptions['reset'] | 'onLongPress';
 };
-export type TabTriggerOptions<T extends string | object> = {
+export type TabTriggerOptions = {
     name: string;
-    href: Href<T>;
+    href: Href;
 };
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.RefAttributes<View> & {
     isFocused?: boolean;
     href?: string;
 };
-export declare function TabTrigger<T extends string | object>({ asChild, name, href, reset, ...props }: TabTriggerProps<T>): import("react").JSX.Element;
+export declare function TabTrigger({ asChild, name, href, reset, ...props }: TabTriggerProps): import("react").JSX.Element;
 export declare function isTabTrigger(child: ReactElement<any>): child is ReactElement<ComponentProps<typeof TabTrigger>>;
 export type SwitchToOptions = {
     reset?: ExpoTabsResetValue;
 };
-export declare function useTabTrigger({ name, reset, onPress, onLongPress }: TabTriggerProps<any>): {
+export declare function useTabTrigger({ name, reset, onPress, onLongPress }: TabTriggerProps): {
     switchTab: (name: string, options?: SwitchToOptions) => void;
     getTrigger: (name: string) => {
         type: "internal";
