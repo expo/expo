@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- Re-enable `--minify` flag for ncc and add try-catch for better error handling. ([#32218](https://github.com/expo/expo/pull/32218) by [@betomoedano](https://github.com/betomoedano))
 - Fix project setup check running on EAS Build and failing ([#32106](https://github.com/expo/expo/pull/32106) by [@brentvatne](https://github.com/brentvatne))
 
 ## 1.11.1 — 2024-10-15

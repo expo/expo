@@ -232,6 +232,6 @@ export async function actionAsync(projectRoot: string) {
       Log.log(chalk.green(`Didn't find any issues with the project!`));
     }
   } catch (e: any) {
-    Log.exit(e);
+    Log.exception(e);
   }
 }
