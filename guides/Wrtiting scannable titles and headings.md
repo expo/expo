@@ -1,6 +1,6 @@
-# Writing headings optimized for search
+# Writing document titles and headings optimized for search
 
-In Expo documentation, _headings_ provide structure and reference points to help developers search and scan any document. Part of our job is to help them reach the point they need to solve their problem.
+In Expo documentation, document _titles_ and section _headings_ provide structure and reference points to help developers search and scan any document. Part of our job is to help them reach the point they need to solve their problem.
 
 Following suggestions and tips from this guide will help you to write document titles and section headings that are easy to search and make a document scannable.
 
@@ -8,13 +8,13 @@ Following suggestions and tips from this guide will help you to write document t
 
 Let's start with an example where a heading is unaligned to its document's content:
 
-[<img src="./assets/writing-guides/01-search-doc-example.png" width="600" />](./assets/writing-guides/01-search-doc-example.png)
+[<img src="./assets/writing-guides/01-search-doc-example.png" width="540" />](./assets/writing-guides/01-search-doc-example.png)
 
 Based on the search term above, the correct page appears as the last item. The search term contains all keywords that are common with the way we talk about running an EAS Build on a local computer.
 
 Using the context of a keyword (commonly used term), improves the search ranking of the document when the same search term is used:
 
-[<img src="./assets/writing-guides/02-improved-search-doc-example.png" width="600" />](./assets/writing-guides/02-improved-search-doc-example.png)
+[<img src="./assets/writing-guides/02-improved-search-doc-example.png" width="540" />](./assets/writing-guides/02-improved-search-doc-example.png)
 
 The improvement above also tells the developer about the primary purpose of the document on first glance.
 
@@ -35,7 +35,7 @@ When using multiple content types in the same document, such as a section or two
 
 ### Heading types
 
-Procedural documents:
+#### Procedural documents:
 
 - Used in quick starts, how-to guides, and tutorials
 - Write a task-based title/heading using a verb to describe the action
@@ -45,15 +45,15 @@ Procedural documents:
 
 An example of the action-based verb used in a tutorial is shown below:
 
-[<img src="./assets/writing-guides/03-procedure-example.png" width="300" />](./assets/writing-guides/03-procedure-example.png)
+[<img src="./assets/writing-guides/03-procedure-example.png" width="260" />](./assets/writing-guides/03-procedure-example.png)
 
-Non-procedural documents:
+#### Non-procedural documents:
 
 You can use noun phrases in the section headings and these phrases can start with _-ing_ verb.
 
 An example of a conceptual guide that has procedural instructions as sub-sections. It also uses a parallel structure between H2s (using _ing_) and H3s (action-based verbs):
 
-[<img src="./assets/writing-guides/04-non-procedural.png" width="300" />](./assets/writing-guides/04-non-procedural.png)
+[<img src="./assets/writing-guides/04-non-procedural.png" width="260" />](./assets/writing-guides/04-non-procedural.png)
 
 ### Heading structures
 
