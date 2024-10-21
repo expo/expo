@@ -1,8 +1,10 @@
 import ExpoModulesCore
 import Combine
 
-private let playbackStatus = "onPlaybackStatusUpdate"
-private let audioSample = "onAudioSampleUpdate"
+private enum AudioConstants {
+  static let playbackStatus = "onPlaybackStatusUpdate"
+  static let audioSample = "onAudioSampleUpdate"
+}
 
 public class AudioPlayer: SharedRef<AVPlayer> {
   let id = UUID().uuidString
@@ -76,11 +78,12 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func updateStatus(with dict: [String: Any]) {
-    var body = currentStatus()
-    body.merge(dict) { _, new in
+    var arguments = currentStatus()
+    arguments.merge(dict) { _, new in
       new
     }
-    self.emit(event: playbackStatus, arguments: body)
+    print("Emitting event \(arguments)")
+    self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
   }
 
   private func setupPublisher() {
@@ -135,7 +138,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
           return ["frames": channelData]
         }
 
-        self.emit(event: audioSample, arguments: [
+        self.emit(event: AudioConstants.audioSample, arguments: [
           "channels": channels,
           "timestamp": timestamp
         ])

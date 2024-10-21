@@ -7,15 +7,15 @@ import Recorder from './Recorder';
 import HeadingText from '../../../components/HeadingText';
 
 export default function RecordingScreen() {
-  const [recordingUri, setRecordingUri] = useState<string | undefined>(undefined);
+  const [uri, setUri] = useState<string | undefined>(undefined);
 
-  const onRecordingFinished = (recordingUri: string) => setRecordingUri(recordingUri);
+  const onRecordingFinished = (recordingUri: string) => setUri(recordingUri);
 
   const maybeRenderLastRecording = () => {
-    return recordingUri ? (
+    return uri ? (
       <>
         <HeadingText>Last recording</HeadingText>
-        <Player source={{ uri: recordingUri }} />
+        <Player source={{ uri }} />
       </>
     ) : null;
   };

@@ -12,6 +12,7 @@ type AudioPlayerProps = {
 export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   const player = useAudioPlayer(source);
   const status = useAudioPlayerStatus(player);
+  console.log({ currentStatus: status });
   const setVolume = (volume: number) => {
     player.volume = volume;
   };

@@ -267,6 +267,7 @@ public class AudioModule: Module {
       AudioComponentRegistry.shared.recorders.values.forEach { recorder in
         if recorder.isRecording {
           recorder.ref.stop()
+          recorder.allowsRecording = false
         }
       }
     }

@@ -147,7 +147,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
         <Button
           onPress={async () => {
             onDone?.('');
-            await audioRecorder.prepareToRecordAsync();
+            await audioRecorder.prepareToRecordAsync(recorderOptions);
           }}
           disabled={recorderState.canRecord}
           title="Prepare Recording"
