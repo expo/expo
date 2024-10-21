@@ -33,10 +33,16 @@ export interface SetupTypedRoutesOptions {
   projectRoot: string;
   /** Absolute expo router routes directory. */
   routerDirectory: string;
-  routerConfig: Record<string, any>;
+  plugin?: Record<string, any>;
 }
 
 export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
+  /*
+   * In SDK 51, TypedRoutes was moved out of cli and into expo-router. For now we need to support both
+   * the legacy and new versions of TypedRoutes.
+   *
+   * TODO (@marklawlor): Remove this check in SDK 53, only support Expo Router v4 and above.
+   */
   const typedRoutesModule = resolveFrom.silent(
     options.projectRoot,
     'expo-router/build/typed-routes'
@@ -46,9 +52,9 @@ export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
 
 async function typedRoutes(
   typedRoutesModulePath: any,
-  { server, metro, typesDirectory, projectRoot, routerDirectory }: SetupTypedRoutesOptions
+  { server, metro, typesDirectory, projectRoot, routerDirectory, plugin }: SetupTypedRoutesOptions
 ) {
-  /**
+  /*
    * Expo Router uses EXPO_ROUTER_APP_ROOT in multiple places to determine the root of the project.
    * In apps compiled by Metro, this code is compiled away. But Typed Routes run in NodeJS with no compilation
    * so we need to explicitly set it.
@@ -57,7 +63,7 @@ async function typedRoutes(
 
   const typedRoutesModule = require(typedRoutesModulePath);
 
-  /**
+  /*
    * Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
    */
   if (metro && server) {
@@ -71,7 +77,18 @@ async function typedRoutes(
     });
   }
 
-  typedRoutesModule.regenerateDeclarations(typesDirectory);
+  /*
+   * In SDK 52, the `regenerateDeclarations` was changed to accept plugin options.
+   * This function has an optional parameter that we cannot override, so we need to ensure the user
+   * is using a compatible version of `expo-router`. Otherwise, we will fallback to the old method.
+   *
+   * TODO(@marklawlor): In SDK53+ we should remove this check and always use the new method.
+   */
+  if ('version' in typedRoutesModule && typedRoutesModule.version >= 52) {
+    typedRoutesModule.regenerateDeclarations(typesDirectory, plugin);
+  } else {
+    typedRoutesModule.regenerateDeclarations(typesDirectory);
+  }
 }
 
 async function legacyTypedRoutes({
