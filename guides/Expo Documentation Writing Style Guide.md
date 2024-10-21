@@ -454,6 +454,6 @@ Example:
 ## References and additional resources
 
 - Learn how to set up the `expo/docs` repository locally and what the requirements are for contributing to the [expo/docs/README.md file](https://github.com/expo/expo/blob/main/docs/README.md).
-- On how to structure your document and write headings and page titles, see [Writing headings optimized for search](./Wrtiting%20scannable%20titles%20and%20headings.md)
+- On how to structure your document and write section headings or page titles, see [Writing document titles and headings optimized for search](./Wrtiting%20scannable%20titles%20and%20headings.md)
 - **External references**: This guide is by no means exhaustive. It covers the most common things that come up as we write and is mostly focused on Expo-related things. We also refer to other style guides that are exhaustive, well maintained and have become industry standards, such as the [Google developer documentation style guide](https://developers.google.com/style?hl=en).
 - General tips on [what words to avoid and during which situations](https://css-tricks.com/words-avoid-educational-writing/) when writing educational material or technical documentation.
