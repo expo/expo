@@ -20,7 +20,7 @@
 - Fixed core autolinking for react-native-maps. ([#31190](https://github.com/expo/expo/pull/31190) by [@kudo](https://github.com/kudo))
 - Fixed broken `searchPaths` from package.json. ([#31196](https://github.com/expo/expo/pull/31196) by [@kudo](https://github.com/kudo))
 - Fixed `react-native-config` error when running on CNG projects without Android native files. ([#31637](https://github.com/expo/expo/pull/31637) by [@kudo](https://github.com/kudo))
-- Fixed `react-native-config` can't resolve version of the `@react-native-community/cli-platform-android`.
+- Fixed `react-native-config` can't resolve version of the `@react-native-community/cli-platform-android`. ([#32205](https://github.com/expo/expo/pull/32205) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
