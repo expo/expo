@@ -290,7 +290,7 @@ export function withExtendedResolver(
     config.serializer?.createModuleIdFactory?.() ?? ((id: number | string): number | string => id);
 
   const getAssetRegistryModule = () => {
-    const virtualModuleId = `\0polyfill:asset-registry`;
+    const virtualModuleId = `\0polyfill:assets-registry`;
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
       virtualModuleId,
       ASSET_REGISTRY_SRC
@@ -353,7 +353,7 @@ export function withExtendedResolver(
         }
 
         const isExternal = // Extern these modules in standard Node.js environments.
-          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|@react-native\/assets-registry\/registry|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
+          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
             moduleName
           ) ||
           /^react-native-web\/dist\/exports\/(Platform|NativeEventEmitter|StyleSheet|NativeModules|DeviceEventEmitter|Text|View)$/.test(
