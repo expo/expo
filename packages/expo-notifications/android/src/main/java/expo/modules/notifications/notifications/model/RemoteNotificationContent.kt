@@ -8,7 +8,6 @@ import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.presentation.builders.downloadImage
-import org.json.JSONObject
 
 /**
  * A POJO representing a remote notification content: title, message, body, etc.
@@ -21,6 +20,8 @@ class RemoteNotificationContent(private val remoteMessage: RemoteMessage) : INot
 
   constructor(parcel: Parcel) : this(parcel.readParcelable<RemoteMessage>(RemoteMessage::class.java.classLoader)!!)
 
+  private val notificationData = NotificationData(remoteMessage.data)
+
   override suspend fun getImage(context: Context): Bitmap? {
     val uri = remoteMessage.notification?.imageUrl
     return uri?.let { downloadImage(it) }
@@ -30,30 +31,20 @@ class RemoteNotificationContent(private val remoteMessage: RemoteMessage) : INot
     return remoteMessage.notification?.imageUrl != null
   }
 
-  override val title: String?
-    get() = remoteMessage.notification?.title
+  override val title = remoteMessage.notification?.title ?: notificationData.title
 
-  override val text: String?
-    get() = remoteMessage.notification?.body
+  override val text = remoteMessage.notification?.body ?: notificationData.message
 
-  override val shouldPlayDefaultSound: Boolean
-    get() = remoteMessage.notification?.sound == null
+  override val shouldPlayDefaultSound = remoteMessage.notification?.sound == null && notificationData.shouldPlayDefaultSound
 
-  override val soundName: String?
-    get() = remoteMessage.notification?.sound
+  override val soundName = remoteMessage.notification?.sound ?: notificationData.sound
 
   override val shouldUseDefaultVibrationPattern: Boolean
-    get() = remoteMessage.notification?.defaultVibrateSettings == true
+    get() = remoteMessage.notification?.defaultVibrateSettings ?: notificationData.shouldUseDefaultVibrationPattern
 
-  override val vibrationPattern: LongArray?
-    get() = remoteMessage.notification?.vibrateTimings
+  override val vibrationPattern = remoteMessage.notification?.vibrateTimings ?: notificationData.vibrationPattern
 
-  override val body: JSONObject?
-    get() = try {
-      remoteMessage.data["body"]?.let { JSONObject(it) }
-    } catch (e: Exception) {
-      null
-    }
+  override val body = notificationData.body
 
   override val priority: NotificationPriority
     get() = when (remoteMessage.priority) {
@@ -62,24 +53,23 @@ class RemoteNotificationContent(private val remoteMessage: RemoteMessage) : INot
     }
 
   override val color: Number?
-    get() = remoteMessage.notification?.color?.let { android.graphics.Color.parseColor(it) }
+    get() {
+      val colorSource = remoteMessage.notification?.color ?: notificationData.color
+      return colorSource?.let { android.graphics.Color.parseColor(it) }
+    }
 
   // NOTE the following getter functions are here because the local notification content class has them
-  // and this class conforms to the same interface. They are not supported by FCM.
-  override val isAutoDismiss: Boolean
-    get() = remoteMessage.data["autoDismiss"]?.toBoolean() ?: true
+  // and this class conforms to the same interface.
+  // They are not supported by FCM but were previously implemented by JSONNotificationContentBuilder.java.
+  override val isAutoDismiss = notificationData.autoDismiss
 
-  override val categoryId: String?
-    get() = remoteMessage.data["categoryId"]
+  override val categoryId = notificationData.categoryId
 
-  override val isSticky: Boolean
-    get() = remoteMessage.data["sticky"]?.toBoolean() ?: false
+  override val isSticky = notificationData.isSticky
 
-  override val subtitle: String?
-    get() = remoteMessage.data["subtitle"]
+  override val subtitle: String? = notificationData.subText
 
-  override val badgeCount: Number?
-    get() = remoteMessage.data["badge"]?.toIntOrNull()
+  override val badgeCount = notificationData.badge
 
   override fun describeContents(): Int = 0
 
