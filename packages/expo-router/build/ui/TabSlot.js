@@ -6,11 +6,11 @@ const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const TabContext_1 = require("./TabContext");
 const useNavigation_1 = require("../useNavigation");
+const Navigator_1 = require("../views/Navigator");
 function useTabSlot({ detachInactiveScreens = react_native_1.Platform.OS === 'web' ||
     react_native_1.Platform.OS === 'android' ||
     react_native_1.Platform.OS === 'ios', style, renderFn = defaultTabsSlotRender, } = {}) {
-    const state = (0, react_1.useContext)(TabContext_1.TabsStateContext);
-    const descriptors = (0, react_1.useContext)(TabContext_1.TabsDescriptorsContext);
+    const { state, descriptors } = (0, Navigator_1.useNavigatorContext)();
     const focusedRouteKey = state.routes[state.index].key;
     const [loaded, setLoaded] = (0, react_1.useState)({ [focusedRouteKey]: true });
     if (!loaded[focusedRouteKey]) {
@@ -66,6 +66,7 @@ const styles = react_native_1.StyleSheet.create({
     screen: {
         flex: 1,
         position: 'relative',
+        height: '100%',
     },
     screenContainer: {
         flexShrink: 0,
