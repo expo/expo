@@ -181,6 +181,8 @@ export type VideoSource = string | number | null | {
     /**
      * Specifies information which will be displayed in the now playing notification.
      * When undefined the player will display information contained in the video metadata.
+     * @platform android
+     * @platform ios
      */
     metadata?: VideoMetadata;
     /**
@@ -199,16 +201,28 @@ export type PlayerError = {
 };
 /**
  * Contains information that will be displayed in the now playing notification when the video is playing.
+ * @platform android
+ * @platform ios
  */
 export type VideoMetadata = {
     /**
      * The title of the video.
+     * @platform android
+     * @platform ios
      */
     title?: string;
     /**
      * Secondary text that will be displayed under the title.
+     * @platform android
+     * @platform ios
      */
     artist?: string;
+    /**
+     * The uri of the video artwork.
+     * @platform android
+     * @platform ios
+     */
+    artwork?: string;
 };
 /**
  * Specifies which type of DRM to use:
