@@ -68,5 +68,11 @@ module.exports = {
         'import/order': 'off',
       },
     },
+    {
+      files: ['metro.config.js'],
+      env: {
+        node: true,
+      },
+    },
   ],
 };
