@@ -4,13 +4,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.interfaces.INotificationContent
 import expo.modules.notifications.notifications.presentation.builders.downloadImage
-import org.json.JSONArray
-import org.json.JSONObject
 
 /**
  * A POJO representing a remote notification content: title, message, body, etc.

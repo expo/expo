@@ -6,6 +6,8 @@ import org.json.JSONObject
 /*
 * In some scenarios, data-only push notifications are, in fact, presented.
 * The presentation preferences are taken from the data payload.
+*
+* https://docs.expo.dev/versions/latest/sdk/notifications/#android-push-notification-payload-specification
 * */
 @JvmInline
 value class NotificationData(private val data: Map<String, String>) {
