@@ -14,6 +14,7 @@ jobs:
       E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
       E2E_ROUTER_SRC: expo-go-dev-maestro-router
       E2E_ROUTER_EXPO_PORT: 8081
+      E2E_EXPO_GO_APP: './expo-go.app'
     steps:
       - uses: actions/checkout@v4
 
@@ -37,6 +38,9 @@ jobs:
 
       - name: Install dependencies
         run: YARN_IGNORE_SCRIPTS=true yarn --frozen-lockfile
+
+      - name: Install eas-cli
+        run: npx expo install eas-cli
 
       - uses: actions/setup-java@v4
         with:
@@ -79,6 +83,21 @@ jobs:
         run: |
           # Setup the maestro env
           echo "MAESTRO_APP_URL=exp://localhost:${E2E_ROUTER_EXPO_PORT}/--" >> $GITHUB_ENV
+
+      - name: Download latest Expo Go
+        working-directory: apps/router-e2e
+        env:
+          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
+        run: |
+          eas_JSON=${npx eas-cli build:list --platform ios --simulator --non-interactive --json}
+          eas_download=${echo $eas_JSON | jq -r '.[0].artifacts.buildUrl'}
+          echo $file_url
+          curl -o "$E2E_EXPO_GO_APP" "$eas_download"
+
+      - name: Install latest Expo Go
+        working-directory: apps/router-e2e
+        run: |
+          xcrun simctl install Booted "$E2E_EXPO_GO_APP"
 
       - name: Run Maestro iOS tests
         working-directory: apps/router-e2e
