@@ -10,13 +10,12 @@ import { useContextKey } from '../Route';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import { useSortedScreens } from '../useScreens';
 
-export const NavigatorContext = React.createContext<
-  | (ReturnType<typeof useNavigationBuilder> & {
-      contextKey: string;
-      router: RouterFactory<any, any, any>;
-    })
-  | null
->(null);
+export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
+  contextKey: string;
+  router: RouterFactory<any, any, any>;
+};
+
+export const NavigatorContext = React.createContext<NavigatorContextValue | null>(null);
 
 if (process.env.NODE_ENV !== 'production') {
   NavigatorContext.displayName = 'NavigatorContext';

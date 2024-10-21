@@ -151,10 +151,17 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         if (this._status === value)
             return;
         if (value === 'error' && this._error) {
-            this.emit('statusChange', value, this._status, this._error);
+            this.emit('statusChange', {
+                status: value,
+                oldStatus: this._status,
+                error: this._error,
+            });
         }
         else {
-            this.emit('statusChange', value, this._status);
+            this.emit('statusChange', {
+                status: value,
+                oldStatus: this._status,
+            });
             this._error = null;
         }
         this._status = value;
@@ -270,21 +277,28 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     }
     _addListeners(video) {
         video.onplay = () => {
-            this._emitOnce(video, 'playingChange', true, this.playing);
+            this._emitOnce(video, 'playingChange', {
+                isPlaying: true,
+                oldIsPlaying: this.playing,
+            });
             this.playing = true;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.play();
             });
         };
         video.onpause = () => {
-            this._emitOnce(video, 'playingChange', false, this.playing);
+            this._emitOnce(video, 'playingChange', {
+                isPlaying: false,
+                oldIsPlaying: this.playing,
+            });
             this.playing = false;
             this._mountedVideos.forEach((mountedVideo) => {
                 mountedVideo.pause();
             });
         };
         video.onvolumechange = () => {
-            this._emitOnce(video, 'volumeChange', { volume: video.volume, isMuted: video.muted }, { volume: this.volume, isMuted: this.muted });
+            this._emitOnce(video, 'volumeChange', { volume: video.volume, oldVolume: this.volume });
+            this._emitOnce(video, 'mutedChange', { muted: video.muted, oldMuted: this.muted });
             this.volume = video.volume;
             this.muted = video.muted;
         };
@@ -303,7 +317,10 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             });
         };
         video.onratechange = () => {
-            this._emitOnce(video, 'playbackRateChange', video.playbackRate, this.playbackRate);
+            this._emitOnce(video, 'playbackRateChange', {
+                playbackRate: video.playbackRate,
+                oldPlaybackRate: this.playbackRate,
+            });
             this._mountedVideos.forEach((mountedVideo) => {
                 if (mountedVideo.playbackRate === video.playbackRate)
                     return;
@@ -335,7 +352,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             this._emitOnce(video, 'playToEnd');
         };
         video.onloadstart = () => {
-            this._emitOnce(video, 'sourceChange', this.src, this.previousSrc);
+            this._emitOnce(video, 'sourceChange', { source: this.src, oldSource: this.previousSrc });
         };
     }
 }

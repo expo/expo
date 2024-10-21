@@ -49,6 +49,7 @@ function ExpoRouterLink(
     rel,
     target,
     download,
+    withAnchor,
     ...rest
   }: LinkProps<any>,
   ref: ForwardedRef<Text>
@@ -70,7 +71,12 @@ function ExpoRouterLink(
   if (push) event = 'PUSH';
   if (replace) event = 'REPLACE';
 
-  const props = useLinkToPathProps({ href: resolvedHref, event, relativeToDirectory });
+  const props = useLinkToPathProps({
+    href: resolvedHref,
+    event,
+    relativeToDirectory,
+    withAnchor,
+  });
 
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
     if ('onPress' in rest) {
@@ -81,7 +87,7 @@ function ExpoRouterLink(
 
   const Element = asChild ? Slot : Text;
 
-  // Avoid using createElement directly, favoring JSX, to allow tools like Nativewind to perform custom JSX handling on native.
+  // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
   return (
     <Element
       ref={ref}
