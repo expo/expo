@@ -7,6 +7,7 @@ import { VideoThumbnail } from './VideoThumbnail';
  * A class that represents an instance of the video player.
  */
 export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
+  constructor(source: VideoSource);
   /**
    * Boolean value whether the player is currently playing.
    * > Use `play` and `pause` methods to control the playback.
@@ -189,6 +190,26 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * @platform ios
    */
   generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
+
+  // We re-declare some of the functions from the event emitter to explicitly hide them in the docs without adding
+  // expo-video specific exceptions in the docs code.
+  /**
+   * @hidden
+   */
+  emit<EventName extends keyof VideoPlayerEvents>(
+    eventName: EventName,
+    ...args: Parameters<VideoPlayerEvents[EventName]>
+  ): void;
+
+  /**
+   * @hidden
+   */
+  startObserving?<EventName extends keyof VideoPlayerEvents>(eventName: EventName): void;
+
+  /**
+   * @hidden
+   */
+  stopObserving?<EventName extends keyof VideoPlayerEvents>(eventName: EventName): void;
 }
 
 /**
