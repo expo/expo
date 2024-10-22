@@ -11,7 +11,7 @@ import ExpoModulesCore
  * Expo Go and legacy standalone apps) via EXUpdatesService, an internal module which is overridden
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
-public final class UpdatesModule: Module {
+public final class UpdatesModule: Module, UpdatesEventManagerObserver {
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
@@ -23,12 +23,16 @@ public final class UpdatesModule: Module {
       AppController.sharedInstance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnStartObserving {
-      AppController.onEventListenerStartObserving(self.appContext?.eventEmitter)
+    OnStartObserving(EXUpdatesStateChangeEventName) {
+      AppController.setUpdatesEventManagerObserver(self)
     }
 
-    OnStopObserving {
-      AppController.onEventListenerStopObserving()
+    OnStopObserving(EXUpdatesStateChangeEventName) {
+      AppController.removeUpdatesEventManagerObserver()
+    }
+
+    OnDestroy {
+      AppController.removeUpdatesEventManagerObserver()
     }
 
     AsyncFunction("reload") { (promise: Promise) in
@@ -136,5 +140,11 @@ public final class UpdatesModule: Module {
         promise.reject(error)
       }
     }
+  }
+
+  public func onStateMachineContextEvent(context: UpdatesStateContext) {
+    sendEvent(EXUpdatesStateChangeEventName, [
+      "context": context.json
+    ])
   }
 }

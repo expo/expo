@@ -2,7 +2,11 @@
 
 import ExpoModulesCore
 
+public protocol UpdatesEventManagerObserver: AnyObject {
+  func onStateMachineContextEvent(context: UpdatesStateContext)
+}
+
 public protocol UpdatesEventManager: AnyObject {
-  var eventEmitter: EXEventEmitterService? { get set }
+  var observer: UpdatesEventManagerObserver? { get set }
   func sendStateMachineContextEvent(context: UpdatesStateContext)
 }
