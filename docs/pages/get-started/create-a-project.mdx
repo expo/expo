@@ -1,24 +1,61 @@
----
-title: Create a project
-description: Learn how to create a new Expo project.
-hideTOC: true
----
+npx create-expo-app BankToufik
+cd BankToufik
+npm install @react-navigation/native @react-navigation/native-stack axios
+import React from 'react';
+import { View, Text, Button } from 'react-native';
 
-import { Terminal } from '~/ui/components/Snippet';
+const HomeScreen = ({ navigation }) => {
+  return (
+    <View>
+      <Text>مرحبًا بك في بنك توفيق!</Text>
+      <Button title="تسجيل الدخول" onPress={() => navigation.navigate('Login')} />
+    </View>
+  );
+};
 
-System requirements:
+export default HomeScreen;
+import React from 'react';
+import { View, Text, Button } from 'react-native';
 
-- [Node.js (LTS)](https://nodejs.org/en/).
-- macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
+const LoginScreen = ({ navigation }) => {
+  return (
+    <View>
+      <Text>صفحة تسجيل الدخول</Text>
+      <Button title="الذهاب إلى لوحة التحكم" onPress={() => navigation.navigate('Dashboard')} />
+    </View>
+  );
+};
 
-We recommend starting with the default project created by `create-expo-app`. The default project includes example code to help you get started.
+export default LoginScreen;
+import React from 'react';
+import { View, Text } from 'react-native';
 
-To create a new project, run the following command:
+const DashboardScreen = () => {
+  return (
+    <View>
+      <Text>لوحة التحكم</Text>
+    </View>
+  );
+};
 
-<Terminal cmd={['$ npx create-expo-app@latest']} />
+export default DashboardScreen;
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import LoginScreen from './screens/LoginScreen';
+import DashboardScreen from './screens/DashboardScreen';
 
-> You can choose a different template by adding the [`--template` option](/more/create-expo/#--template).
+const Stack = createNativeStackNavigator();
 
-## Next step
-
-You have a project. Now it's time to set up your development environment so that you can start developing.
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+npm start
