@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '14.0.2'
+version = '15.0.0'
 
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
@@ -26,7 +26,7 @@ android {
   namespace "expo.modules.gl"
   defaultConfig {
     versionCode 31
-    versionName "14.0.2"
+    versionName "15.0.0"
 
     externalNativeBuild {
       cmake {

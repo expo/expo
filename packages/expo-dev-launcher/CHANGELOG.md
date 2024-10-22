@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 5.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30861](https://github.com/expo/expo/pull/30861) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -30,8 +40,6 @@
 - Refactor expo-updates context injection ([#31951](https://github.com/expo/expo/pull/31951) by [@wschurman](https://github.com/wschurman))
 - Remove unused `semver` dependency. ([#32063](https://github.com/expo/expo/pull/32063) by [@kitten](https://github.com/kitten))
 - [ios] Remove appContext property from updates interface. ([#32103](https://github.com/expo/expo/pull/32103) by [@wschurman](https://github.com/wschurman))
-
-### 📚 3rd party library updates
 
 ## 4.0.27 - 2024-08-23
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-file-system",
-  "version": "17.0.1",
+  "version": "18.0.0",
   "description": "Provides access to the local file system on the device.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -35,8 +35,8 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0",
-    "jest-expo": "~51.0.0"
+    "expo-module-scripts": "^4.0.0",
+    "jest-expo": "~52.0.0-preview.0"
   },
   "peerDependencies": {
     "expo": "*",

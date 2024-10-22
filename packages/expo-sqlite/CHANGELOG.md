@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 - Removed deprecated legacy expo-sqlite. ([#31766](https://github.com/expo/expo/pull/31766) by [@kudo](https://github.com/kudo))
 - Removed `next` export. ([#32184](https://github.com/expo/expo/pull/32184) by [@reichhartd](https://github.com/reichhartd))

@@ -4,14 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - [iOS][Web] Introduce a new API for image manipulation. ([#30135](https://github.com/expo/expo/pull/30135), [#30194](https://github.com/expo/expo/pull/30194) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Introduce a new API for image manipulation. ([#30232](https://github.com/expo/expo/pull/30232) by [@lukmccall](https://github.com/lukmccall))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

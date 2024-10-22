@@ -1,6 +1,6 @@
 {
   "name": "expo-face-detector",
-  "version": "12.7.1",
+  "version": "13.0.0",
   "description": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "main": "build/FaceDetector.js",
   "types": "build/FaceDetector.d.ts",
@@ -37,7 +37,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*"

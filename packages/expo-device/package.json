@@ -1,6 +1,6 @@
 {
   "name": "expo-device",
-  "version": "6.0.2",
+  "version": "7.0.0",
   "description": "A universal module that gets physical information about the device running the application",
   "main": "build/Device.js",
   "types": "build/Device.d.ts",
@@ -36,7 +36,7 @@
     "ua-parser-js": "^0.7.33"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*"

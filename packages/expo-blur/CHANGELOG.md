@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30459](https://github.com/expo/expo/pull/30459) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30459](https://github.com/expo/expo/pull/30459) by [@byCedric](https://github.com/byCedric))
 
 ## 13.0.2 — 2024-05-01
 

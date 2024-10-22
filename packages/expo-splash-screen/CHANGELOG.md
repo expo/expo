@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fixed `preventAutoHideAsync()` broken on iOS bridgeless mode. ([#28234](https://github.com/expo/expo/pull/28234) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.28.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed `preventAutoHideAsync()` broken on iOS bridgeless mode. ([#28234](https://github.com/expo/expo/pull/28234) by [@kudo](https://github.com/kudo))
 
 ## 0.27.6 - 2024-09-23
 

@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Update `@typescript-eslint` dependencies to new major version, migrate rule set. ([#31571](https://github.com/expo/expo/pull/31571) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 8.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Update `@typescript-eslint` dependencies to new major version, migrate rule set. ([#31571](https://github.com/expo/expo/pull/31571) by [@Simek](https://github.com/Simek))
 
 ## 7.1.2 — 2024-04-24
 
