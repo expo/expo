@@ -50,6 +50,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix using enums as optional arguments. ([#32147](https://github.com/expo/expo/pull/32147) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Change JS return type for kotlin `null` to be `null` instead of `undefined`. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Swift `Enumerable`s did not correctly convert to JS values. ([#30191](https://github.com/expo/expo/pull/30191) by [@vonovak](https://github.com/vonovak))
 - [jest] Fix `uuid` mock in `jest-expo`. ([#29840](https://github.com/expo/expo/pull/29840) by [@EvanBacon](https://github.com/EvanBacon))
