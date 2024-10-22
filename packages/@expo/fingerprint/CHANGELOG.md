@@ -4,13 +4,21 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.11.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - This version includes fingerprint result breaking changes. ([#31638](https://github.com/expo/expo/pull/31638) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
 - Added `useRNCoreAutolinkingFromExpo` option to support react-native core autolinking from `expo-modules-autolinking. ([#31638](https://github.com/expo/expo/pull/31638) by [@kudo](https://github.com/kudo))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

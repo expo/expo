@@ -429,7 +429,7 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (14.0.0):
     - ExpoModulesCore
-  - ExpoMaps (0.5.0):
+  - ExpoMaps (0.6.0):
     - ExpoModulesCore
     - GoogleMaps (= 7.4.0)
     - GooglePlaces (= 7.3.0)
@@ -3304,7 +3304,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: 8e37268a715b82b36fbb5e361efd5fe65a39c208
   ExpoLocation: 3aa81e9f7efc0fda4900a9e216db812dcc7cc11f
   ExpoMailComposer: 30fc9c04216fef55c5d5a9c622c01b8f357030fb
-  ExpoMaps: 8c739890dfdddb924aeb529e28520a47aa4efd0f
+  ExpoMaps: 93bc6b609c60685b591a788a20615e0921f29b40
   ExpoMediaLibrary: a85e3fcc6a85ede0ae2dae2577b8cf02d1051bbb
   ExpoModulesCore: 19cc64a73f9a617413e700e3f3632f8dff86f555
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
