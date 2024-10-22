@@ -3202,20 +3202,7 @@
     "@react-navigation/elements" "^2.0.0-rc.25"
     color "^4.2.3"
 
-"@remix-run/node@^2.12.0":
-  version "2.12.0"
-  resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.12.0.tgz#f971872e783c7f5f097139461317c59e46415b0a"
-  integrity sha512-83Jaoc6gpSuD4e6rCk7N5ZHAXNmDw4fJC+kPeDCsd6+wLtTLSi7u9Zo9/Q7moLZ3oyH+aR+LGdkxLULYv+Q6Og==
-  dependencies:
-    "@remix-run/server-runtime" "2.12.0"
-    "@remix-run/web-fetch" "^4.4.2"
-    "@web3-storage/multipart-parser" "^1.0.0"
-    cookie-signature "^1.1.0"
-    source-map-support "^0.5.21"
-    stream-slice "^0.1.2"
-    undici "^6.11.1"
-
-"@remix-run/node@^2.7.2":
+"@remix-run/node@^2.12.0", "@remix-run/node@^2.7.2":
   version "2.13.1"
   resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.13.1.tgz#572f838201a11f8d9d8ef56929eb2a2c46e0f5ea"
   integrity sha512-2ly7bENj2n2FNBdEN60ZEbNCs5dAOex/QJoo6EZ8RNFfUQxVKAZkMwfQ4ETV2SLWDgkRLj3Jo5n/dx7O2ZGhGw==
