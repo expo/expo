@@ -229,6 +229,17 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+## Using the VideoPlayer directly
+
+In most cases the [`useVideoPlayer`](#usevideoplayersource-setup) hook should be used to create a `VideoPlayer` instance, it manages the lifecycle of the player and ensures that it is properly disposed of when the component is unmounted.
+However, in some advanced use cases it might be necessary to create a `VideoPlayer` that does not get automatically destroyed when the component is unmounted. In that case, the `VideoPlayer` can be created directly using the `new` keyword.
+You need be aware of the risks that come with this approach, as it is your responsibility to call the [`release()`](#release) method when the player is no longer needed. If not handled properly this approach may lead to memory leaks.
+
+```tsx
+import { VideoPlayer } from 'expo-video';
+const player = new VideoPlayer(videoSource);
+```
+
 ## API
 
 ```js

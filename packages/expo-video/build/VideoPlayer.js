@@ -6,6 +6,11 @@ const replace = NativeVideoModule.VideoPlayer.prototype.replace;
 NativeVideoModule.VideoPlayer.prototype.replace = function (source) {
     return replace.call(this, parseSource(source));
 };
+export default class VideoPlayer extends NativeVideoModule.VideoPlayer {
+    constructor(source) {
+        super(parseSource(source));
+    }
+}
 /**
  * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
  * @param source - A video source that is used to initialize the player.
@@ -31,5 +36,4 @@ function parseSource(source) {
     }
     return source;
 }
-export default NativeVideoModule.VideoPlayer;
 //# sourceMappingURL=VideoPlayer.js.map
