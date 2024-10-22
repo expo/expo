@@ -39,9 +39,6 @@ jobs:
       - name: Install dependencies
         run: YARN_IGNORE_SCRIPTS=true yarn --frozen-lockfile
 
-      - name: Install eas-cli
-        run: npx expo install eas-cli
-
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -73,31 +70,15 @@ jobs:
           # Start the build early by starting the build in the background
           curl --silent --output /dev/null --show-error --fail $BUNDLE_URL &
 
-      - name: Fix expo-linking
-        working-directory: apps/router-e2e
+      - name: Install latest Expo Go
+        working-directory: bin
         run: |
-          # The current Expo Go does not support the expo-linking on main
-          YARN_IGNORE_SCRIPTS=true yarn add expo-linking@sdk-50
+          ./expotools client-install -p ios -s 52.0.0
 
       - name: Setup maestro env
         run: |
           # Setup the maestro env
           echo "MAESTRO_APP_URL=exp://localhost:${E2E_ROUTER_EXPO_PORT}/--" >> $GITHUB_ENV
-
-      - name: Download latest Expo Go
-        working-directory: apps/router-e2e
-        env:
-          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-        run: |
-          eas_JSON=${npx eas-cli build:list --platform ios --simulator --non-interactive --json}
-          eas_download=${echo $eas_JSON | jq -r '.[0].artifacts.buildUrl'}
-          echo $file_url
-          curl -o "$E2E_EXPO_GO_APP" "$eas_download"
-
-      - name: Install latest Expo Go
-        working-directory: apps/router-e2e
-        run: |
-          xcrun simctl install Booted "$E2E_EXPO_GO_APP"
 
       - name: Run Maestro iOS tests
         working-directory: apps/router-e2e
