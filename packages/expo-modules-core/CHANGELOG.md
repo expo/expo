@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Removed window synthesis in `EXAppDelegateWrapper` to fix crashes caused by deallocated `RCTFabricSurface`.
+
 ### 💡 Others
 
 ## 2.0.0-preview.0 — 2024-10-22
