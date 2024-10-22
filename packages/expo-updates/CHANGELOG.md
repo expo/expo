@@ -4,6 +4,26 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.26.1 — 2024-10-22
+
+### 🐛 Bug fixes
+
+- Fixed Android launch crash when R8 is enabled. ([#32226](https://github.com/expo/expo/pull/32226) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Fixed updates E2E tests. ([#32226](https://github.com/expo/expo/pull/32226) by [@kudo](https://github.com/kudo))
+
+## 0.26.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features

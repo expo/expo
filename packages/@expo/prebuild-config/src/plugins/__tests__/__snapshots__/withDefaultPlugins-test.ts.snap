@@ -1280,6 +1280,7 @@ exports[`built-in plugins introspects mods 1`] = `
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.jsEngine": "hermes",
+          "newArchEnabled": "false",
         },
         "splashScreenStoryboard": {
           "document": {
@@ -1850,6 +1851,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "gradleProperties": [
           {
+            "key": "newArchEnabled",
+            "type": "property",
+            "value": "false",
+          },
+          {
             "key": "hermesEnabled",
             "type": "property",
             "value": "true",
@@ -2289,6 +2295,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "podfileProperties": {
           "expo.jsEngine": "hermes",
+          "newArchEnabled": "false",
         },
         "splashScreenStoryboard": {
           "document": {

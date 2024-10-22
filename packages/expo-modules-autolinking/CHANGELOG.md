@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.0.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Removed the deprecated `generate-package-list` command for Apple platforms. ([#31518](https://github.com/expo/expo/pull/31518) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features

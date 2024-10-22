@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent
 
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
 import expo.modules.av.AVModule
@@ -84,6 +85,7 @@ import expo.modules.taskManager.TaskManagerModule
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.updates.UpdatesPackage
+import expo.modules.video.VideoModule
 import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
 
@@ -120,6 +122,7 @@ object ExperiencePackagePicker : ModulesProvider {
     return EXPO_MODULES_PACKAGES
   }
 
+  @OptIn(UnstableReactNativeAPI::class)
   override fun getModulesList(): List<Class<out Module>> = listOf(
     AVModule::class.java,
     ApplicationModule::class.java,
@@ -192,6 +195,7 @@ object ExperiencePackagePicker : ModulesProvider {
     TaskManagerModule::class.java,
     TrackingTransparencyModule::class.java,
     VideoThumbnailsModule::class.java,
+    VideoModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,
     BrightnessModule::class.java

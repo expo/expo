@@ -19,7 +19,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -27,7 +26,7 @@ class ImageManipulatorModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  private fun createManipulatorContext(url: URL): ImageManipulatorContext {
+  private fun createManipulatorContext(url: Uri): ImageManipulatorContext {
     val loader = suspend {
       val imageLoader = appContext.imageLoader
         ?: throw ImageLoaderNotFoundException()
@@ -55,12 +54,12 @@ class ImageManipulatorModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoImageManipulator")
 
-    Function("manipulate") { url: URL ->
+    Function("manipulate") { url: Uri ->
       createManipulatorContext(url)
     }
 
     Class<ImageManipulatorContext>("Context") {
-      Constructor { url: URL ->
+      Constructor { url: Uri ->
         createManipulatorContext(url)
       }
 
@@ -94,7 +93,8 @@ class ImageManipulatorModule : Module() {
       Property("width") { image: ImageRef -> image.ref.width }
       Property("height") { image: ImageRef -> image.ref.height }
 
-      AsyncFunction("saveAsync") Coroutine { image: ImageRef, options: ManipulateOptions ->
+      AsyncFunction("saveAsync") Coroutine { image: ImageRef, options: ManipulateOptions? ->
+        val options = options ?: ManipulateOptions()
         val path = FileUtils.generateRandomOutputPath(context, options.format)
         val compression = (options.compress * 100).toInt()
         val resultBitmap = image.ref

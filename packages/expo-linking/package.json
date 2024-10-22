@@ -1,6 +1,6 @@
 {
   "name": "expo-linking",
-  "version": "6.3.1",
+  "version": "7.0.0",
   "description": "Create and open deep links universally",
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
@@ -38,11 +38,11 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/linking",
   "dependencies": {
-    "expo-constants": "~16.0.0",
+    "expo-constants": "~17.0.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "react": "*",

@@ -108,8 +108,8 @@ type AudioSample = {
     timestamp: number;
 };
 export type AudioEvents = {
-    onPlaybackStatusUpdate(status: AudioStatus): void;
-    onAudioSampleUpdate(data: AudioSample): void;
+    playbackStatusUpdate(status: AudioStatus): void;
+    audioSampleUpdate(data: AudioSample): void;
 };
 export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     /**
@@ -173,7 +173,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     /**
      * Prepares the recording for recording.
      */
-    prepareToRecordAsync(options?: RecordingOptions): Promise<void>;
+    prepareToRecordAsync(options?: Partial<RecordingOptions>): Promise<void>;
     /**
      * Stops the recording once the specified time has elapsed.
      * @param seconds The time in seconds to stop recording at.
@@ -181,7 +181,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
     recordForDuration(seconds: number): void;
 }
 export type RecordingEvents = {
-    onRecordingStatusUpdate: (status: RecordingStatus) => void;
+    recordingStatusUpdate: (status: RecordingStatus) => void;
 };
 export {};
 //# sourceMappingURL=AudioModule.types.d.ts.map
