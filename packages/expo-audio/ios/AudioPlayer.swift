@@ -22,7 +22,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var audioProcessor: AudioTapProcessor?
   private var samplingEnabled = false
   private var tapInstalled = false
-  
+
   private var duration: Double {
     (ref.currentItem?.duration.seconds ?? 0.0) * 1000
   }
