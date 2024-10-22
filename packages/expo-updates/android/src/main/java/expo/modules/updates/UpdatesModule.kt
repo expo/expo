@@ -44,11 +44,11 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnStartObserving(UpdatesJSEvent.StateChange.eventName) {
+    OnStartObserving(UpdatesJSEvent.StateChange) {
       UpdatesController.setUpdatesEventManagerObserver(WeakReference(this@UpdatesModule))
     }
 
-    OnStopObserving(UpdatesJSEvent.StateChange.eventName) {
+    OnStopObserving(UpdatesJSEvent.StateChange) {
       UpdatesController.removeUpdatesEventManagerObserver()
     }
 
