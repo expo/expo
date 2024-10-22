@@ -354,9 +354,9 @@ async function generateIconAsync(projectRoot, {
   const baseline = foreground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
   const iconSizePx = baseline * scale;
   const image = await _jimpCompact().default.read(src);
-  const newSize = iconSizePx * 0.5;
+  const newSize = iconSizePx * 0.4;
   image.scaleToFit(newSize, newSize);
-  let background = await _jimpCompact().default.create(iconSizePx, iconSizePx, backgroundColor);
+  let background = await _jimpCompact().default.create(iconSizePx, iconSizePx, foreground ? 'transparent' : backgroundColor);
   const x = (iconSizePx - image.bitmap.width) / 2;
   const y = (iconSizePx - image.bitmap.height) / 2;
   if (borderRadiusRatio) {
