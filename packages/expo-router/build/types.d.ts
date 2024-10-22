@@ -20,6 +20,7 @@ export type NativeIntent = {
         path: string;
         initial: boolean;
     }) => Promise<string> | string;
+    legacy_subscribe?: (listener: (url: string) => void) => undefined | void | (() => void);
 };
 export type * from './typed-routes/types';
 //# sourceMappingURL=types.d.ts.map

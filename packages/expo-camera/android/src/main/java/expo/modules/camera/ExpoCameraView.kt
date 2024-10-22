@@ -536,6 +536,7 @@ class ExpoCameraView(
   }
 
   fun releaseCamera() = appContext.mainQueue.launch {
+    shouldCreateCamera = true
     cameraProvider?.unbindAll()
   }
 

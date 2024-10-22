@@ -40,7 +40,7 @@ test.beforeAll('bundle and serve', async () => {
 
   // Duplicate the index.html file for an SPA-style export.
   fs.copyFileSync(
-    path.join(projectRoot, inputDir, 'client/index.html'),
+    path.join(projectRoot, inputDir, 'server/index.html'),
     path.join(projectRoot, inputDir, 'client/second.html')
   );
 
@@ -50,7 +50,7 @@ test.beforeAll('bundle and serve', async () => {
   });
 
   console.time('npx serve');
-  await serveCmd.startAsync(['__e2e__/01-rsc/server.js', '--port=' + 3034, '--dist=' + inputDir]);
+  await serveCmd.startAsync(['serve.js', '--port=' + 3034, '--dist=' + inputDir]);
   console.timeEnd('npx serve');
   console.log('Server running:', serveCmd.url);
 });

@@ -9,6 +9,7 @@ export type Options = {
     skipGenerated?: boolean;
     importMode?: string;
     platformRoutes?: boolean;
+    sitemap?: boolean;
     platform?: string;
     /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
     getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>) => RouteNode;

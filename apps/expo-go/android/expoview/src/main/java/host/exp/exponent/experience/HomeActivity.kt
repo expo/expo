@@ -1,16 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.experience
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Debug
-import android.view.View
-import androidx.core.content.ContextCompat
-import com.facebook.react.ReactRootView
+import com.facebook.react.runtime.ReactSurfaceView
+import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
-import com.squareup.leakcanary.LeakCanary
 import de.greenrobot.event.EventBus
 import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
@@ -18,7 +14,6 @@ import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.blur.BlurModule
 import expo.modules.camera.CameraViewModule
-import expo.modules.camera.legacy.CameraViewLegacyModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsPackage
@@ -45,27 +40,20 @@ import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.webbrowser.WebBrowserModule
 import host.exp.exponent.Constants
-import host.exp.exponent.ExponentManifest
-import host.exp.exponent.RNObject
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
 import host.exp.exponent.utils.ExperienceRTLManager
-import host.exp.expoview.BuildConfig
 import org.json.JSONException
-import javax.inject.Inject
 
 open class HomeActivity : BaseExperienceActivity() {
-  @Inject
-  lateinit var exponentManifest: ExponentManifest
 
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
-    sdkVersion = RNObject.UNVERSIONED
     manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
     experienceKey = try {
       ExperienceKey.fromManifest(manifest!!)
@@ -83,11 +71,9 @@ open class HomeActivity : BaseExperienceActivity() {
     EventBus.getDefault().registerSticky(this)
     kernel.startJSKernel(this)
 
-    ExperienceRTLManager.setRTLPreferences(this, false, false)
+    ExperienceRTLManager.setRTLPreferences(this, allowRTL = false, forceRTL = false)
 
-    SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView::class.java, true)
-
-    tryInstallLeakCanary(true)
+    SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactSurfaceView::class.java, true)
   }
 
   override fun shouldCreateLoadingView(): Boolean {
@@ -98,46 +84,26 @@ open class HomeActivity : BaseExperienceActivity() {
   }
 
   override fun onResume() {
+    SoLoader.init(this, OpenSourceMergedSoMapping)
     super.onResume()
-    SoLoader.init(this, false)
   }
   //endregion Activity Lifecycle
   /**
-   * This method has been split out from onDestroy lifecycle method to [ReactNativeActivity.destroyReactInstanceManager]
+   * This method has been split out from onDestroy lifecycle method to [ReactNativeActivity.destroyReactHost]
    * and overridden here as we want to prevent destroying react instance manager when HomeActivity gets destroyed.
    * It needs to continue to live since it is needed for DevMenu to work as expected (it relies on ExponentKernelModule from that react context).
    */
-  override fun destroyReactInstanceManager() {}
-
-  private fun tryInstallLeakCanary(shouldAskForPermissions: Boolean) {
-    if (BuildConfig.DEBUG && Constants.ENABLE_LEAK_CANARY) {
-      // Leak canary needs WRITE_EXTERNAL_STORAGE permission
-      if (shouldAskForPermissions && ContextCompat.checkSelfPermission(
-          this,
-          Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) != PackageManager.PERMISSION_GRANTED
-      ) {
-        requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1248919246)
-      } else {
-        LeakCanary.install(application)
-      }
-    }
-  }
-
-  override fun onRequestPermissionsResult(
-    requestCode: Int,
-    permissions: Array<String>,
-    grantResults: IntArray
-  ) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    tryInstallLeakCanary(false)
-  }
+  override fun destroyReactHost() {}
 
   fun onEventMainThread(event: KernelStartedRunningEvent?) {
-    reactInstanceManager.assign(kernel.reactInstanceManager)
-    reactRootView.assign(kernel.reactRootView)
-    reactInstanceManager.onHostResume(this, this)
-    setReactRootView((reactRootView.get() as View))
+    reactHost = kernel.reactHost
+    reactNativeHost = kernel.reactNativeHost
+    reactSurface = kernel.surface
+
+    reactHost?.onHostResume(this, this)
+    reactSurface?.view?.let {
+      setReactRootView(it)
+    }
     finishLoading()
 
     if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
@@ -170,7 +136,6 @@ open class HomeActivity : BaseExperienceActivity() {
         BarCodeScannerModule::class.java,
         BlurModule::class.java,
         CameraViewModule::class.java,
-        CameraViewLegacyModule::class.java,
         ClipboardModule::class.java,
         ConstantsModule::class.java,
         DeviceModule::class.java,

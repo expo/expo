@@ -169,7 +169,7 @@ function getSupportedPlatforms(projectRoot) {
   if (_resolveFrom().default.silent(projectRoot, 'react-native')) {
     platforms.push('ios', 'android');
   }
-  if (_resolveFrom().default.silent(projectRoot, 'react-native-web')) {
+  if (_resolveFrom().default.silent(projectRoot, 'react-dom')) {
     platforms.push('web');
   }
   return platforms;

@@ -86,8 +86,10 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   fun setSessionAsync(session: ReadableMap, promise: Promise) {
     try {
-      val sessionJsonObject = JSONObject(session.toHashMap() as Map<*, *>?)
-      exponentSharedPreferences.updateSession(sessionJsonObject)
+      val sessionJsonObject = (session.toHashMap() as Map<*, *>?)?.let { JSONObject(it) }
+      sessionJsonObject?.let {
+        exponentSharedPreferences.updateSession(it)
+      }
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("ERR_SESSION_NOT_SAVED", "Could not save session secret", e)

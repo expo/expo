@@ -62,6 +62,7 @@ export async function exportStandaloneServerAsync(
   await exportApiRoutesStandaloneAsync(devServer, {
     files,
     platform: 'web',
+    apiRoutesOnly: true,
   });
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);

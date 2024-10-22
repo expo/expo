@@ -23,16 +23,12 @@ public final class UpdatesModule: Module {
       AppController.sharedInstance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnCreate {
-      AppController.bindAppContext(self.appContext)
-    }
-
     OnStartObserving {
-      AppController.shouldEmitJsEvents = true
+      AppController.onEventListenerStartObserving(self.appContext?.eventEmitter)
     }
 
     OnStopObserving {
-      AppController.shouldEmitJsEvents = false
+      AppController.onEventListenerStopObserving()
     }
 
     AsyncFunction("reload") { (promise: Promise) in

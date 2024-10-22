@@ -53,7 +53,7 @@ test.describe(inputDir, () => {
     const largestFile = fs.readFileSync(largest, 'utf8');
 
     // Sanity
-    expect(largestFile).toMatch(/__r\("apps\/router-e2e\/index.js"\);/);
+    expect(largestFile).toMatch(/__r\("packages\/expo-router\/entry.js"\);/);
     // This icon has been removed.
     expect(largestFile).not.toMatch(/test-icon-apple/);
     // This icon remains.

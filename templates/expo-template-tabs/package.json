@@ -27,11 +27,11 @@
     "expo-web-browser": "~13.0.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.0-rc.4",
-    "react-native-reanimated": "~3.15.0",
+    "react-native": "0.76.0-rc.6",
+    "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.11.0",
-    "react-native-screens": "4.0.0-beta.12",
-    "react-native-web": "~0.19.10"
+    "react-native-screens": "4.0.0-beta.13",
+    "react-native-web": "~0.19.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
