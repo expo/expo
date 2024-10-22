@@ -5,9 +5,9 @@ import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
-const PLAYBACK_STATUS_UPDATE = 'onPlaybackStatusUpdate';
-const AUDIO_SAMPLE_UPDATE = 'onAudioSampleUpdate';
-const RECORDING_STATUS_UPDATE = 'onRecordingStatusUpdate';
+export const PLAYBACK_STATUS_UPDATE = 'playbackStatusUpdate';
+export const AUDIO_SAMPLE_UPDATE = 'audioSampleUpdate';
+export const RECORDING_STATUS_UPDATE = 'recordingStatusUpdate';
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);
     return useReleasingSharedObject(() => new AudioModule.AudioPlayer(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);

@@ -2,8 +2,8 @@ import ExpoModulesCore
 import Combine
 
 private enum AudioConstants {
-  static let playbackStatus = "onPlaybackStatusUpdate"
-  static let audioSample = "onAudioSampleUpdate"
+  static let playbackStatus = "playbackStatusUpdate"
+  static let audioSample = "audioSampleUpdate"
 }
 
 public class AudioPlayer: SharedRef<AVPlayer> {

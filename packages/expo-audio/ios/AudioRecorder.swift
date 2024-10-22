@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-private let recordingStatus = "onRecordingStatusUpdate"
+private let recordingStatus = "recordingStatusUpdate"
 
 class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   let id = UUID().uuidString
