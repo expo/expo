@@ -2,6 +2,7 @@ import { type RouterStore } from './router-store';
 import { Href } from '../types';
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 export declare function navigate(this: RouterStore, url: Href, options?: NavigationOptions): any;
+export declare function reload(this: RouterStore): void;
 export declare function push(this: RouterStore, url: Href, options?: NavigationOptions): any;
 export declare function dismiss(this: RouterStore, count?: number): void;
 export declare function replace(this: RouterStore, url: Href, options?: NavigationOptions): any;

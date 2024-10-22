@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Document `router.reload()` for RSC mode.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

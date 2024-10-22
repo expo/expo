@@ -285,7 +285,6 @@ function getHistory() {
 
 export function useRouter_UNSTABLE(): ClassicExpoRouterType &
   RouteProps & {
-    reload: () => void;
     forward: () => void;
     prefetch: <T extends string | object>(href: Href<T>) => void;
   } {
