@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `window.location` polyfill for server requests.
+
 ## 4.0.0-preview.0 — 2024-10-22
 
 ### 🎉 New features
