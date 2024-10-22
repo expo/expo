@@ -29,9 +29,6 @@
   EXExpoAppDelegate *_expoAppDelegate;
 }
 
-// Synthesize window, so the AppDelegate can synthesize it too.
-@synthesize window = _window;
-
 - (instancetype)init
 {
   if (self = [super init]) {
