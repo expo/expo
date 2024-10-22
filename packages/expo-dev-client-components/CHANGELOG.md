@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
+
 ## 2.0.0 — 2024-10-22
 
 ### 🐛 Bug fixes
