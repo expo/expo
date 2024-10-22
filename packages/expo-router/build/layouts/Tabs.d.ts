@@ -7,7 +7,7 @@ type TabsProps = BottomTabNavigationOptions & {
 };
 export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native").DefaultNavigatorOptions<ParamListBase, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap, import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase>> & import("@react-navigation/native").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/commonjs/src/TabRouter").BackBehavior | undefined;
-} & import("@react-navigation/bottom-tabs/lib/typescript/commonjs/src/types").BottomTabNavigationConfig, "children" | "initialRouteName" | "id" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/bottom-tabs/lib/typescript/commonjs/src/types").BottomTabNavigationConfig, "children" | "initialRouteName" | "id" | "screenOptions" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -65,7 +65,7 @@ export declare const Tabs: React.ForwardRefExoticComponent<Omit<Omit<import("@re
     id?: undefined;
 }, "children"> & Partial<Pick<Omit<import("@react-navigation/native").DefaultNavigatorOptions<ParamListBase, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap, import("@react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase>> & import("@react-navigation/native").DefaultRouterOptions & {
     backBehavior?: import("@react-navigation/routers/lib/typescript/commonjs/src/TabRouter").BackBehavior | undefined;
-} & import("@react-navigation/bottom-tabs/lib/typescript/commonjs/src/types").BottomTabNavigationConfig, "children" | "initialRouteName" | "id" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/bottom-tabs/lib/typescript/commonjs/src/types").BottomTabNavigationConfig, "children" | "initialRouteName" | "id" | "screenOptions" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
