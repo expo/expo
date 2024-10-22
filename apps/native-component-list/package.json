@@ -92,7 +92,7 @@
     "expo-location": "~18.0.0",
     "expo-live-photo": "~0.0.1",
     "expo-mail-composer": "~14.0.0",
-    "expo-maps": "0.5.0",
+    "expo-maps": "0.6.0",
     "expo-media-library": "~17.0.0",
     "expo-modules-test-core": "^0.19.0",
     "expo-navigation-bar": "~4.0.0",
