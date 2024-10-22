@@ -575,7 +575,7 @@ class FileDownloader(
 
       val update = UpdateFactory.getUpdate(preManifest, responseHeaderData, extensions, configuration)
       if (!SelectionPolicies.matchesFilters(update.updateEntity!!, responseHeaderData.manifestFilters)) {
-        callback.onFailure(Exception("Manifest filters that do not manifest content for downloaded manifest"))
+        callback.onFailure(Exception("Manifest filters do not match manifest content for downloaded manifest"))
       } else {
         callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(update))
       }
