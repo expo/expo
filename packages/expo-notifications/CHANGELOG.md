@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [android] fix: allow data message to control notification appearance ([#32162](https://github.com/expo/expo/pull/32162) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 0.28.19 — 2024-10-22
+
+### 🐛 Bug fixes
+
+- [android] fix: allow data message to control notification appearance ([#32162](https://github.com/expo/expo/pull/32162) by [@vonovak](https://github.com/vonovak))
 
 ## 0.28.18 — 2024-10-01
 
