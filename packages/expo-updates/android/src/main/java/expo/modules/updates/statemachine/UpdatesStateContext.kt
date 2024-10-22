@@ -1,8 +1,6 @@
 package expo.modules.updates.statemachine
 
 import android.os.Bundle
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.WritableMap
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -113,17 +111,7 @@ class UpdatesStateContext private constructor(
     }
 
   /**
-   * Creates a WritableMap to be sent to JS on a state change.
-   */
-  val writableMap: WritableMap
-    get() {
-      val result = Arguments.createMap()
-      result.putMap("context", Arguments.fromBundle(bundle))
-      return result
-    }
-
-  /**
-   * Creates a Bundle to be returned to JS on a call to nativeStateMachineContext()
+   * Creates a Bundle to be synchronized with JS state
    */
   val bundle: Bundle
     get() {

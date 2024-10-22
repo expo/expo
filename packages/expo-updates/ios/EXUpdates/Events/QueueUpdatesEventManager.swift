@@ -9,21 +9,15 @@ internal class QueueUpdatesEventManager: UpdatesEventManager {
     self.logger = logger
   }
 
-  internal weak var eventEmitter: EXEventEmitterService?
+  internal weak var observer: (any UpdatesEventManagerObserver)?
 
   internal func sendStateMachineContextEvent(context: UpdatesStateContext) {
-    logger.info(message: "sendUpdateStateAppContext()")
-    sendEventToAppContext(EXUpdatesStateChangeEventName, body: [
-      "context": context.json
-    ])
-  }
-
-  private func sendEventToAppContext(_ eventName: String, body: [String: Any?]) {
-    guard let eventEmitter = eventEmitter else {
-      logger.info(message: "EXUpdates: Could not emit event: name = \(eventName)", code: .jsRuntimeError)
+    logger.debug(message: "Sending state machine context to observer")
+    guard let observer = observer else {
+      logger.debug(message: "Unable to send state machine context to observer, no observer", code: .jsRuntimeError)
       return
     }
-    logger.debug(message: "sendEventToAppContext: \(eventName), \(body)")
-    eventEmitter.sendEvent(withName: eventName, body: body)
+    observer.onStateMachineContextEvent(context: context)
+    logger.debug(message: "Sent state machine context to observer")
   }
 }

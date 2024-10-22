@@ -2,8 +2,8 @@ package expo.modules.updates
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
-import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.events.IUpdatesEventManager
+import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updates.statemachine.UpdatesStateEvent
@@ -13,6 +13,7 @@ import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.ref.WeakReference
 import java.lang.reflect.Field
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
@@ -43,8 +44,7 @@ class UpdatesStateMachineInstrumentationTest {
   // Test classes
   class TestStateChangeEventManager : IUpdatesEventManager {
     var lastContext: UpdatesStateContext? = null
-
-    override var eventEmitter: EventEmitter? = null
+    override var observer: WeakReference<IUpdatesEventManagerObserver>? = null
     override fun sendStateMachineContextEvent(context: UpdatesStateContext) {
       lastContext = context
     }

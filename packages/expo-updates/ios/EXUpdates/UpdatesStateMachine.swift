@@ -359,7 +359,6 @@ internal class UpdatesStateMachine {
       // Only change context if transition succeeds
       context = reducedContext(context, event)
       logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
-      // Send context to JS
       sendContextToJS()
     }
   }
