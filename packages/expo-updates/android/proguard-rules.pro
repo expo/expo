@@ -3,5 +3,5 @@
 }
 
 -keepclassmembers class com.facebook.react.devsupport.ReleaseDevSupportManager {
-  private final com.facebook.react.bridge.DefaultJSExceptionHandler mDefaultJSExceptionHandler;
+  private final com.facebook.react.bridge.DefaultJSExceptionHandler defaultJSExceptionHandler;
 }
