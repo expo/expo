@@ -15,6 +15,11 @@ interface DevMenuPreferencesInterface {
   var touchGestureEnabled: Boolean
 
   /**
+   * Whether to enable button gesture.
+   */
+  var buttonGestureEnabled: Boolean
+
+  /**
    * Whether to enable key commands.
    */
   var keyCommandsEnabled: Boolean
