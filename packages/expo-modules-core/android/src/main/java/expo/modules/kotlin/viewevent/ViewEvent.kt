@@ -46,7 +46,7 @@ open class ViewEvent<T>(
     appContext
       .callbackInvoker
       ?.emit(
-        viewId = view.id,
+        view = view,
         eventName = name,
         eventBody = convertEventBody(arg),
         coalescingKey = coalescingKey?.invoke(arg)
