@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused console log.
+
 ## 4.0.0-preview.0 — 2024-10-22
 
 ### 🛠 Breaking changes
