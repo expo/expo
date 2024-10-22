@@ -342,6 +342,27 @@ You can define the secret in your **.env** file:
 SECRET=123
 ```
 
+## Request headers
+
+You can access the request headers used to make the request to the server component using the `expo-router/rsc/headers` module.
+
+```tsx app/index.tsx
+import { unstable_headers } from 'expo-router/rsc/headers';
+
+export default async function App() {
+  const authorization = (await unstable_headers()).get('authorization');
+
+  return <Text>{authorization}</Text>;
+}
+```
+
+The `unstable_headers` function returns a promise that resolves to a read-only `Headers` object.
+
+### Key points
+
+- This API cannot be used with build-time rendering (`render: 'static'`) because the headers dynamically change based on the request. In the future, this API will assert if the output mode is `static`.
+- `unstable_headers` is server-only and cannot be used on the client. You can pass headers as props to the client component.
+
 ## Platform detection
 
 To detect which platform your code is bundled for, use the `process.env.EXPO_OS` environment variable. For example, `process.env.EXPO_OS === 'ios'`. Prefer this to `Platform.OS` as `react-native` is not fully optimized for React Server Components yet and won't work as expected.

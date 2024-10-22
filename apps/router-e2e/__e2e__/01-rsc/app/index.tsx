@@ -1,15 +1,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
 import { Image, Text, ScrollView } from 'react-native';
-import { unstable_headers } from 'expo-router/rsc/headers';
 
 import { Counter } from '../components/counter';
-import { Pokemon } from '../components/pokemon';
+// import { Pokemon } from '../components/pokemon';
 
-export default function IndexRoute({ path, query }) {
-  const headers = unstable_headers();
-  console.log('Headers:', headers);
-
+export default async function IndexRoute({ path, query }) {
   return (
     <ScrollView
       style={{ flex: 1, padding: 12 }}
@@ -24,7 +20,6 @@ export default function IndexRoute({ path, query }) {
       <Text>Platform: {process.env.EXPO_OS}</Text>
       <Text testID="secret-text">Secret: {process.env.TEST_SECRET_VALUE}</Text>
       <Text>Render: {Date.now()}</Text>
-      <Text>Headers: {JSON.stringify(Object.fromEntries(headers.entries()), null, 2)}</Text>
 
       <Image
         testID="main-image"
@@ -35,7 +30,7 @@ export default function IndexRoute({ path, query }) {
       <Ionicons name="airplane" />
       <Counter />
 
-      <Pokemon id={45} />
+      {/* <Pokemon id={45} /> */}
     </ScrollView>
   );
 }

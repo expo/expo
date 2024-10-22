@@ -160,7 +160,8 @@ export function getContext<
   return renderStore.context as RscContext;
 }
 
-export function unstable_headers(): Headers {
+/** Get the request headers used to make the server component or action request. */
+export async function unstable_headers(): Promise<Headers> {
   const headers = (getContext()[REQUEST_HEADERS] || {}) as Record<string, string>;
   return new ReadonlyHeaders(headers);
 }

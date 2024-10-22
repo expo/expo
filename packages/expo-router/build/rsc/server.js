@@ -85,7 +85,8 @@ function getContext() {
     return renderStore.context;
 }
 exports.getContext = getContext;
-function unstable_headers() {
+/** Get the request headers used to make the server component or action request. */
+async function unstable_headers() {
     const headers = (getContext()[exports.REQUEST_HEADERS] || {});
     return new ReadonlyHeaders(headers);
 }
