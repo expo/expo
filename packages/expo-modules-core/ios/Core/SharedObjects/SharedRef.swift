@@ -10,7 +10,7 @@ public protocol AnySharedRef {
  to native instances among different independent libraries.
  */
 open class SharedRef<RefType>: SharedObject, AnySharedRef {
-  public let ref: RefType
+  public var ref: RefType
 
   open var nativeRefType: String {
     "unknown"
