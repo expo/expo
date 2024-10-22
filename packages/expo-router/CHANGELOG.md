@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Document `router.reload()` for RSC mode.
+- Document `router.reload()` for RSC mode. ([#32246](https://github.com/expo/expo/pull/32246) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
