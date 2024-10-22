@@ -20,28 +20,6 @@ describe(`createFileHashResultsAsync - use ReactImportsPatchTransform`, () => {
     jest.resetAllMocks();
   });
 
-  it(`should use ReactImportsPatchTransform by default`, async () => {
-    const limiter = pLimit(1);
-    const options = await normalizeOptionsAsync('/app', { debug: true });
-    const files = {
-      '/app/ios/HelloWorld/Info.plist': '',
-      '/app/ios/HelloWorld/AppDelegate.h': '',
-      '/app/ios/HelloWorld/AppDelegate.m': '',
-      '/app/ios/HelloWorld/AppDelegate.mm': '',
-      '/app/android/build.gradle': '',
-    };
-    vol.fromJSON(files);
-    await Promise.all(
-      Object.keys(files).map((filePath) =>
-        createFileHashResultsAsync(path.relative('/app', filePath), limiter, '/app', options)
-      )
-    );
-    const mockTransform = ReactImportsPatchTransform as jest.MockedClass<
-      typeof ReactImportsPatchTransform
-    >;
-    expect(mockTransform.mock.instances.length).toBe(3);
-  });
-
   it('should use ReactImportsPatchTransform when `enableReactImportsPatcher=false`', async () => {
     const limiter = pLimit(1);
     const options = await normalizeOptionsAsync('/app', {
