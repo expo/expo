@@ -35,8 +35,8 @@ public class SplashScreenManager: NSObject {
       return
     }
 
-    DispatchQueue.main.async { [self] in
-      guard let rootView, isLoadingViewVisible() else {
+    DispatchQueue.main.async { [weak self] in
+      guard let self, let rootView, isLoadingViewVisible() else {
         return
       }
       let duration = options.duration / 1000

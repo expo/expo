@@ -41,7 +41,7 @@ function _getAndroidSplashConfig() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 // @ts-ignore
 
 const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
