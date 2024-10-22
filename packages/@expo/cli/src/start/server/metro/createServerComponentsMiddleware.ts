@@ -14,6 +14,7 @@ import { logMetroError } from './metroErrorInterface';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { memoize } from '../../../utils/fn';
+import { getIpAddress } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import {
@@ -21,7 +22,6 @@ import {
   ExpoMetroOptions,
   getMetroOptionsFromUrl,
 } from '../middleware/metroOptions';
-import { getIpAddress } from '../../../utils/ip';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
 
@@ -74,6 +74,7 @@ export function createServerComponentsMiddleware(
       try {
         return await renderRscToReadableStream({
           ...args,
+          headers: new Headers(args.headers),
           body: args.body!,
         });
       } catch (error: any) {
