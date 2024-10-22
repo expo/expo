@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  background: var(--expo-theme-background-default);
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  line-height: 1;
+}
+
 input {
   appearance: unset;
 }
@@ -9,6 +18,54 @@ input {
 #__next[aria-hidden] {
   filter: none !important;
 }
+
+/* Selections */
+
+::selection {
+  background-color: rgb(from var(--blue5) r g b / 80%);
+  color: var(--expo-theme-text-default);
+}
+
+::-moz-selection {
+  background-color: var(--blue5);
+}
+
+*:focus-visible {
+  outline: 3px solid var(--expo-theme-icon-tertiary);
+  outline-offset: 1px;
+  border-radius: 3px;
+}
+
+/* Scrollbars */
+
+div:not(#root) > ::-webkit-scrollbar {
+  width: 6px;
+  height: 5px;
+}
+
+div:not(#root) > ::-webkit-scrollbar-track {
+  background-color: transparent;
+  cursor: pointer;
+}
+
+div:not(#root) > ::-webkit-scrollbar-thumb {
+  background: var(--slate5);
+  border-radius: 6px;
+}
+
+div:not(#root) > ::-webkit-scrollbar-thumb:hover {
+  background: var(--slate6);
+}
+
+div[class*='Terminal'] > div ::-webkit-scrollbar-thumb {
+  background: var(--expo-theme-icon-quaternary);
+}
+
+div[class*='Terminal'] > div ::-webkit-scrollbar-thumb:hover {
+  background: var(--expo-theme-icon-tertiary);
+}
+
+/* Misc */
 
 .code-annotation {
   transition: 200ms ease all;
@@ -44,4 +101,35 @@ input {
   cursor: pointer;
   animation: none;
   opacity: 0.8;
+}
+
+img {
+  max-width: 768px;
+  width: 100%;
+}
+
+img.wide-image {
+  max-width: 900px;
+}
+
+img[src*="https://placehold.it/15"]
+{
+  width: 15px !important;
+  height: 15px !important;
+}
+
+.react-player > video {
+  outline: none;
+}
+
+.strike {
+  text-decoration: line-through;
+}
+
+code {
+  font-variant-ligatures: none;
+}
+
+[cmdk-input] {
+  outline: none;
 }
