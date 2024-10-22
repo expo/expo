@@ -15,6 +15,10 @@ import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
+const PLAYBACK_STATUS_UPDATE = 'onPlaybackStatusUpdate';
+const AUDIO_SAMPLE_UPDATE = 'onAudioSampleUpdate';
+const RECORDING_STATUS_UPDATE = 'onRecordingStatusUpdate';
+
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null,
   updateInterval: number = 500
@@ -28,7 +32,7 @@ export function useAudioPlayer(
 
 export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
   const currentStatus = useMemo(() => player.currentStatus, [player.id]);
-  return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
+  return useEvent(player, PLAYBACK_STATUS_UPDATE, currentStatus);
 }
 
 export function useAudioSampleListener(
@@ -40,7 +44,7 @@ export function useAudioSampleListener(
     if (!player.isAudioSamplingSupported) {
       return;
     }
-    const subscription = player.addListener('onAudioSampleUpdate', listener);
+    const subscription = player.addListener(AUDIO_SAMPLE_UPDATE, listener);
     return () => {
       subscription.remove();
     };
@@ -57,7 +61,7 @@ export function useAudioRecorder(
   }, [JSON.stringify(platformOptions)]);
 
   useEffect(() => {
-    const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
+    const subscription = recorder.addListener(RECORDING_STATUS_UPDATE, (status) => {
       statusListener?.(status);
     });
     return () => subscription.remove();

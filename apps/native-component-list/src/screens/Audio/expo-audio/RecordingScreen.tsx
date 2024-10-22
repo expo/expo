@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
 import AudioModeSelector from './AudioModeSelector';
-import Player from './AudioPlayer';
+import AudioPlayer from './AudioPlayer';
 import Recorder from './Recorder';
 import HeadingText from '../../../components/HeadingText';
 
@@ -15,7 +15,7 @@ export default function RecordingScreen() {
     return uri ? (
       <>
         <HeadingText>Last recording</HeadingText>
-        <Player source={{ uri }} />
+        <AudioPlayer source={{ uri }} />
       </>
     ) : null;
   };
