@@ -22,6 +22,10 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var audioProcessor: AudioTapProcessor?
   private var samplingEnabled = false
   private var tapInstalled = false
+  
+  private var duration: Double {
+    (ref.currentItem?.duration.seconds ?? 0.0) * 1000
+  }
 
   init(_ ref: AVPlayer, interval: Double) {
     self.interval = interval
@@ -58,8 +62,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func currentStatus() -> [String: Any] {
-    let time = ref.currentItem?.duration
-    let duration = ref.status == .readyToPlay ? (time?.seconds ?? 0.0) : 0.0
+    let duration = ref.status == .readyToPlay ? duration : 0.0
     return [
       "id": id,
       "currentTime": (ref.currentItem?.currentTime().seconds ?? 0) * 1000,
@@ -67,7 +70,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
       "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
       "mute": ref.isMuted,
-      "duration": duration * 1000,
+      "duration": duration,
       "playing": ref.timeControlStatus == .playing,
       "loop": isLooping,
       "isLoaded": ref.currentItem?.status == .readyToPlay,
@@ -166,7 +169,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       } else {
         self.updateStatus(with: [
           "isPlaying": false,
-          "currentTime": (self.ref.currentItem?.duration.seconds ?? 0) * 1000
+          "currentTime": self.duration
         ])
       }
     }
