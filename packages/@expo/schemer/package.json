@@ -1,6 +1,6 @@
 {
   "name": "@expo/schemer",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Centralized scheme validation library for Expo",
   "license": "MIT",
   "main": "./build/index.js",

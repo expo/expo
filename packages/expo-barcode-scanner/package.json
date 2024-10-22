@@ -1,6 +1,6 @@
 {
   "name": "expo-barcode-scanner",
-  "version": "14.0.0",
+  "version": "14.0.1",
   "description": "Allows scanning variety of supported barcodes both as standalone module and as extension for expo-camera. It also allows scanning barcodes from existing images.",
   "main": "build/BarCodeScanner.js",
   "types": "build/BarCodeScanner.d.ts",

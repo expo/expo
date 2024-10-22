@@ -1,6 +1,6 @@
 {
   "name": "expo-document-picker",
-  "version": "13.0.0",
+  "version": "13.0.1",
   "description": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

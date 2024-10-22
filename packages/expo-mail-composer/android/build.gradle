@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '14.0.0'
+version = '14.0.1'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.mailcomposer"
   defaultConfig {
     versionCode 17
-    versionName "14.0.0"
+    versionName "14.0.1"
   }
 }
 

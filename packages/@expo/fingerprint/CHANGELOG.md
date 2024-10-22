@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.11.1 — 2024-10-22
+
+### 💡 Others
+
 - Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
 
 ## 0.11.0 — 2024-10-22

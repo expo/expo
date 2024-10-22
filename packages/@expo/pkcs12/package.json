@@ -1,6 +1,6 @@
 {
   "name": "@expo/pkcs12",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "PKCS#12 Utilities for Node.js",
   "keywords": [
     "pkcs12"

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 15.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
 ## 15.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

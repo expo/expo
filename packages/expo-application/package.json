@@ -1,6 +1,6 @@
 {
   "name": "expo-application",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "main": "build/Application.js",
   "types": "build/Application.d.ts",

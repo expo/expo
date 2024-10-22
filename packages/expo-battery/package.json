@@ -1,6 +1,6 @@
 {
   "name": "expo-battery",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "description": "Provides battery information for the physical device, as well as corresponding event listeners.",
   "main": "build/Battery.js",
   "types": "build/Battery.d.ts",

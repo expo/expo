@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client-components",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Shared JS components and configuration for expo-dev-client",
   "main": "src/index.ts",
   "scripts": {

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Removed window synthesis in `EXAppDelegateWrapper` to fix crashes caused by deallocated `RCTFabricSurface`. ([#32233](https://github.com/expo/expo/pull/32233) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 2.0.0-preview.1 — 2024-10-22
+
+### 🐛 Bug fixes
+
+- [iOS] Removed window synthesis in `EXAppDelegateWrapper` to fix crashes caused by deallocated `RCTFabricSurface`. ([#32233](https://github.com/expo/expo/pull/32233) by [@tsapeta](https://github.com/tsapeta))
 
 ## 2.0.0-preview.0 — 2024-10-22
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-crypto",
-  "version": "14.0.0",
+  "version": "14.0.1",
   "description": "Provides cryptography primitives for Android, iOS and web.",
   "main": "build/Crypto.js",
   "types": "build/Crypto.d.ts",

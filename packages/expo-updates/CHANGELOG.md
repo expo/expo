@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.26.1 — 2024-10-22
+
+### 🐛 Bug fixes
+
 - Fixed Android launch crash when R8 is enabled. ([#32226](https://github.com/expo/expo/pull/32226) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

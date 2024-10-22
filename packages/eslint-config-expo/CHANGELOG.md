@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Enable node globals for `metro.config.js` ([#32203](https://github.com/expo/expo/pull/32203) by [@kadikraman](https://github.com/kadikraman))
-
 ### 💡 Others
+
+## 8.0.1 — 2024-10-22
+
+### 🐛 Bug fixes
+
+- Enable node globals for `metro.config.js` ([#32203](https://github.com/expo/expo/pull/32203) by [@kadikraman](https://github.com/kadikraman))
 
 ## 8.0.0 — 2024-10-22
 
