@@ -14,7 +14,6 @@ jobs:
       E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
       E2E_ROUTER_SRC: expo-go-dev-maestro-router
       E2E_ROUTER_EXPO_PORT: 8081
-      E2E_EXPO_GO_APP: './expo-go.app'
     steps:
       - uses: actions/checkout@v4
 
