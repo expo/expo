@@ -180,7 +180,7 @@ const InnerRouter = ({ routerData }) => {
         }
         else {
             // TODO: Native
-            console.log('window.scrollTo is not available');
+            // console.log('window.scrollTo is not available');
         }
     });
     const children = componentIds.reduceRight((acc, id) => (0, react_1.createElement)(RouterSlot, { route, routerData, cachedRef, id, fallback: acc }, acc), null);

@@ -252,7 +252,7 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
       });
     } else {
       // TODO: Native
-      console.log('window.scrollTo is not available');
+      // console.log('window.scrollTo is not available');
     }
   });
 
