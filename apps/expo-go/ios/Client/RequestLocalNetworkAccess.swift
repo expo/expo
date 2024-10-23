@@ -15,7 +15,7 @@ func requestLocalNetworkAuthorization() async throws -> Bool {
   let parameters = NWParameters()
   parameters.includePeerToPeer = true
   let browser = NWBrowser(for: .bonjour(type: type, domain: nil), using: parameters)
-
+  // swiftlint:disable:next closure_body_length
   return try await withTaskCancellationHandler {
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
       class LocalState {
