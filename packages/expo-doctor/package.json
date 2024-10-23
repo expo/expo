@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
-    "build:prod": "ncc build ./src/index.ts -o build/ --no-cache --no-source-map-register",
+    "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "prepare": "yarn run clean && yarn run build:prod",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
