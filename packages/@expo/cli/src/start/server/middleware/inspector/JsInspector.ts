@@ -44,6 +44,7 @@ export interface MetroInspectorProxyApp {
  */
 export async function openJsInspector(metroBaseUrl: string, app: MetroInspectorProxyApp) {
   if (!app.reactNative?.logicalDeviceId) {
+    debug('Failed to open React Native DevTools, target is missing device ID');
     return false;
   }
 
