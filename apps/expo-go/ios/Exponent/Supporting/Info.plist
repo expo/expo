@@ -56,6 +56,10 @@
 			</array>
 		</dict>
 	</array>
+  <key>NSBonjourServices</key>
+  <array>
+    <string>_preflight_check._tcp</string>
+  </array>
 	<key>CFBundleVersion</key>
 	<string>2.32.1</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
