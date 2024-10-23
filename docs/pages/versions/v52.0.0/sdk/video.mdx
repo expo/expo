@@ -1,0 +1,238 @@
+---
+title: Video (expo-video)
+description: A library that provides an API to implement video playback in apps.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-52/packages/expo-video'
+packageName: 'expo-video'
+iconUrl: '/static/images/packages/expo-video.png'
+platforms: ['android', 'ios', 'web', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
+
+`expo-video` is a cross-platform, performant video component for React Native and Expo with Web support.
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-video` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use EAS Build, then you'll need to manually configure the package.
+
+<ConfigPluginExample>
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ]
+    ],
+  }
+}
+```
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'supportsBackgroundPlayback',
+      description:
+        'A boolean value to enable background playback on iOS. If `true`, the `audio` key is added to the `UIBackgroundModes` array in the **Info.plist** file. If `false`, the key is removed. When `undefined`, the key is not modified.',
+      platform: 'ios',
+      default: 'undefined',
+    },
+    {
+      name: 'supportsPictureInPicture',
+      description:
+        'A boolean value to enable Picture-in-Picture on Android and iOS. Configures the `android:supportsPictureInPicture` property on Android and the `UIBackgroundModes` array in the **Info.plist** file on iOS. When `undefined`, the configuration is not modified.',
+      default: 'undefined',
+    },
+  ]}
+/>
+
+## Usage
+
+Here's a simple example of a video with a play and pause button.
+
+<SnackInline label='Video' dependencies={['expo-video']}>
+
+```jsx
+import { useEvent } from 'expo';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { StyleSheet, View, Button } from 'react-native';
+
+const videoSource =
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
+export default function VideoScreen() {
+  const player = useVideoPlayer(videoSource, player => {
+    player.loop = true;
+    player.play();
+  });
+
+  const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+
+  return (
+    <View style={styles.contentContainer}>
+      <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
+      <View style={styles.controlsContainer}>
+        <Button
+          title={isPlaying ? 'Pause' : 'Play'}
+          onPress={() => {
+            if (isPlaying) {
+              player.pause();
+            } else {
+              player.play();
+            }
+          }}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 50,
+  },
+  video: {
+    width: 350,
+    height: 275,
+  },
+  controlsContainer: {
+    padding: 10,
+  },
+});
+```
+
+</SnackInline>
+
+## Playing local media from the assets directory
+
+`expo-video` supports playing local media loaded using the `require` function. You can use the result as a source directly, or assign it to the `assetId` parameter of a [`VideoSource`](#videosource) if you also want to configure other properties.
+
+```tsx
+import { VideoSource } from 'expo-video';
+
+const assetId = require('./assets/bigbuckbunny.mp4');
+
+const videoSource: VideoSource = {
+  assetId,
+  metadata: {
+    title: 'Big Buck Bunny',
+    artist: 'The Open Movie Project',
+  },
+};
+
+const player1 = useVideoPlayer(assetId); // You can use the `asset` directly as a video source
+const player2 = useVideoPlayer(videoSource);
+```
+
+## Preloading videos
+
+While another video is playing, a video can be loaded before showing it in the view. This allows for quicker transitions between subsequent videos and a better user experience.
+
+To preload a video, you have to create a `VideoPlayer` with a video source. Even when the player is not connected to a `VideoView`, it will fill the buffers. Once it is connected to the `VideoView`, it will be able to start playing without buffering.
+
+In some cases, it is beneficial to preload a video later in the screen lifecycle. In that case, a `VideoPlayer` with a `null` source should be created. To start preloading, replace the player source with a video source using the `replace()` function.
+
+Here is an example of how to preload a video:
+
+<SnackInline label='Video' dependencies={['expo-video']}>
+
+```tsx
+import { useVideoPlayer, VideoView, VideoSource } from 'expo-video';
+import { useState, useCallback } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+const bigBuckBunnySource: VideoSource =
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+
+const elephantsDreamSource: VideoSource =
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
+
+export default function PreloadingVideoPlayerScreen() {
+  const player1 = useVideoPlayer(bigBuckBunnySource, player => {
+    player.play();
+  });
+
+  const player2 = useVideoPlayer(elephantsDreamSource, player => {
+    player.currentTime = 20;
+  });
+
+  const [currentPlayer, setCurrentPlayer] = useState(player1);
+
+  const replacePlayer = useCallback(async () => {
+    currentPlayer.pause();
+    if (currentPlayer === player1) {
+      setCurrentPlayer(player2);
+      player1.pause();
+      player2.play();
+    } else {
+      setCurrentPlayer(player1);
+      player2.pause();
+      player1.play();
+    }
+  }, [player1, currentPlayer]);
+
+  return (
+    <View style={styles.contentContainer}>
+      <VideoView player={currentPlayer} style={styles.video} nativeControls={false} />
+      <TouchableOpacity style={styles.button} onPress={replacePlayer}>
+        <Text style={styles.buttonText}>Replace Player</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 50,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 3,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#4630ec',
+  },
+  buttonText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#eeeeee',
+    textAlign: 'center',
+  },
+  video: {
+    width: 300,
+    height: 168.75,
+    marginVertical: 20,
+  },
+});
+```
+
+</SnackInline>
+
+## API
+
+```js
+import { VideoView, useVideoPlayer } from 'expo-video';
+```
+
+<APISection packageName="expo-video" apiName="Video" />
