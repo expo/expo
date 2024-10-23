@@ -1,10 +1,10 @@
+import { GraphQLError } from '@0no-co/graphql.web';
 import { ExpoConfig } from '@expo/config';
 import {
   isMultipartPartWithName,
   parseMultipartMixedResponseAsync,
   MultipartPart,
 } from '@expo/multipart-body-parser';
-import { GraphQLError } from 'graphql';
 import { vol } from 'memfs';
 import nullthrows from 'nullthrows';
 
