@@ -137,7 +137,7 @@ available via the provided properties.
         href="#appleauthenticationisavailableasync"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           AppleAuthentication.isAvailableAsync()
@@ -146,7 +146,7 @@ available via the provided properties.
       
 resolves to 
       <code
-        class="emotion-11"
+        class="!inline emotion-6"
         data-text="true"
       >
         true
@@ -154,7 +154,7 @@ resolves to
       . This component will render nothing if it is not available, and you will get
 a warning in development mode (
       <code
-        class="emotion-11"
+        class="!inline emotion-6"
         data-text="true"
       >
         __DEV__ === true
@@ -169,7 +169,7 @@ a warning in development mode (
     >
       The properties of this component extend from 
       <code
-        class="emotion-11"
+        class="!inline emotion-6"
         data-text="true"
       >
         View
@@ -177,21 +177,21 @@ a warning in development mode (
       ; however, you should not attempt to set
 
       <code
-        class="emotion-11"
+        class="!inline emotion-6"
         data-text="true"
       >
         backgroundColor
       </code>
        or 
       <code
-        class="emotion-11"
+        class="!inline emotion-6"
         data-text="true"
       >
         borderRadius
       </code>
        with the 
       <code
-        class="emotion-11"
+        class="!inline emotion-6"
         data-text="true"
       >
         style
@@ -199,7 +199,7 @@ a warning in development mode (
        property. This will not work and is against
 the App Store Guidelines. Instead, you should use the 
       <code
-        class="emotion-11"
+        class="!inline emotion-6"
         data-text="true"
       >
         buttonStyle
@@ -207,7 +207,7 @@ the App Store Guidelines. Instead, you should use the
        property to choose one of the
 predefined color styles and the 
       <code
-        class="emotion-11"
+        class="!inline emotion-6"
         data-text="true"
       >
         cornerRadius
@@ -225,11 +225,11 @@ button.
 not appear on the screen.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 emotion-22"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
-        class="select-none mt-[5px] [table_&]:mt-[3px]"
+        class="select-none mt-1 [table_&]:mt-0.5"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -251,14 +251,14 @@ not appear on the screen.
         </svg>
       </div>
       <div
-        class="text-default w-full last:mb-0 emotion-23"
+        class="text-default w-full leading-normal last:mb-0"
       >
         <p
           class="mb-3.5 emotion-4"
           data-text="true"
         >
           <strong
-            class="emotion-25"
+            class="emotion-23"
           >
             See:
           </strong>
@@ -279,11 +279,11 @@ for more details.
     </blockquote>
     <div>
       <p
-        class="!text-secondary !font-medium emotion-27"
+        class="!text-secondary !font-medium emotion-25"
         data-text="true"
       >
         <span
-          class="group emotion-28"
+          class="group emotion-26"
           data-text="true"
         >
           <a
@@ -328,7 +328,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-29"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-27"
       >
         <h3
           class="group emotion-2"
@@ -343,7 +343,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-31"
+                class="wrap-anywhere emotion-29"
                 data-text="true"
               >
                 buttonStyle
@@ -405,7 +405,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-29"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-27"
       >
         <h3
           class="group emotion-2"
@@ -420,7 +420,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-31"
+                class="wrap-anywhere emotion-29"
                 data-text="true"
               >
                 buttonType
@@ -482,7 +482,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-29"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-27"
       >
         <h3
           class="group emotion-2"
@@ -497,7 +497,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-31"
+                class="wrap-anywhere emotion-29"
                 data-text="true"
               >
                 cornerRadius
@@ -558,7 +558,7 @@ for more details.
           The border radius to use when rendering the button. This works similarly to
 
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             style.borderRadius
@@ -567,7 +567,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-29"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-27"
       >
         <h3
           class="group emotion-2"
@@ -582,7 +582,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-31"
+                class="wrap-anywhere emotion-29"
                 data-text="true"
               >
                 onPress
@@ -652,7 +652,7 @@ for more details.
             href="#appleauthenticationisavailableasync"
           >
             <code
-              class="emotion-11"
+              class="!inline emotion-6"
               data-text="true"
             >
               AppleAuthentication.signInAsync
@@ -663,7 +663,7 @@ in here.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-29"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-27"
       >
         <h3
           class="group emotion-2"
@@ -678,7 +678,7 @@ in here.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-31"
+                class="wrap-anywhere emotion-29"
                 data-text="true"
               >
                 style
@@ -796,14 +796,14 @@ in here.
         >
           The custom style to apply to the button. Should not include 
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             backgroundColor
           </code>
            or 
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             borderRadius
@@ -813,7 +813,7 @@ properties.
         </p>
       </div>
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -853,10 +853,10 @@ properties.
         </a>
       </h4>
       <ul
-        class="emotion-69"
+        class="emotion-67"
       >
         <li
-          class="emotion-70"
+          class="emotion-68"
           data-text="true"
         >
           <code
@@ -917,7 +917,7 @@ properties.
     </a>
   </h2>
   <div
-    class="emotion-29"
+    class="emotion-27"
   >
     <h3
       class="group emotion-2"
@@ -932,7 +932,7 @@ properties.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-76"
+            class="wrap-anywhere emotion-74"
             data-text="true"
           >
             getCredentialStateAsync(user)
@@ -1001,7 +1001,7 @@ properties.
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 user
               </strong>
@@ -1030,7 +1030,7 @@ This should come from the user field of an
                   href="#appleauthenticationcredentialstate"
                 >
                   <code
-                    class="emotion-11"
+                    class="!inline emotion-6"
                     data-text="true"
                   >
                     AppleAuthenticationCredential
@@ -1053,11 +1053,11 @@ This should come from the user field of an
     
 
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-22"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
       data-testid="callout-container"
     >
       <div
-        class="select-none mt-[5px] [table_&]:mt-[3px]"
+        class="select-none mt-1 [table_&]:mt-0.5"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -1079,7 +1079,7 @@ This should come from the user field of an
         </svg>
       </div>
       <div
-        class="text-default w-full last:mb-0 emotion-23"
+        class="text-default w-full leading-normal last:mb-0"
       >
         
 
@@ -1088,7 +1088,7 @@ This should come from the user field of an
           data-text="true"
         >
           <strong
-            class="emotion-25"
+            class="emotion-23"
           >
             Note:
           </strong>
@@ -1125,14 +1125,14 @@ This should come from the user field of an
           </g>
         </svg>
         <span
-          class="emotion-87"
+          class="emotion-83"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-88"
+        class="emotion-84"
         data-text="true"
       >
         <code
@@ -1181,7 +1181,7 @@ This should come from the user field of an
           href="#appleauthenticationcredentialstate"
         >
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             AppleAuthenticationCredentialState
@@ -1193,7 +1193,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="emotion-29"
+    class="emotion-27"
   >
     <h3
       class="group emotion-2"
@@ -1208,7 +1208,7 @@ value depending on the state of the credential.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-76"
+            class="wrap-anywhere emotion-74"
             data-text="true"
           >
             isAvailableAsync()
@@ -1273,14 +1273,14 @@ value depending on the state of the credential.
           </g>
         </svg>
         <span
-          class="emotion-87"
+          class="emotion-83"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-88"
+        class="emotion-84"
         data-text="true"
       >
         <code
@@ -1320,14 +1320,14 @@ value depending on the state of the credential.
       >
         A promise that fulfills with 
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           true
         </code>
          if the system supports Apple authentication, and 
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           false
@@ -1337,7 +1337,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="emotion-29"
+    class="emotion-27"
   >
     <h3
       class="group emotion-2"
@@ -1352,7 +1352,7 @@ value depending on the state of the credential.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-76"
+            class="wrap-anywhere emotion-74"
             data-text="true"
           >
             refreshAsync(options)
@@ -1421,7 +1421,7 @@ value depending on the state of the credential.
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 options
               </strong>
@@ -1454,7 +1454,7 @@ value depending on the state of the credential.
                   href="#appleauthenticationrefreshoptions"
                 >
                   <code
-                    class="emotion-11"
+                    class="!inline emotion-6"
                     data-text="true"
                   >
                     AppleAuthenticationRefreshOptions
@@ -1502,14 +1502,14 @@ Calling this method will show the sign in modal before actually refreshing the u
           </g>
         </svg>
         <span
-          class="emotion-87"
+          class="emotion-83"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-88"
+        class="emotion-84"
         data-text="true"
       >
         <code
@@ -1558,7 +1558,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           href="#appleauthenticationcredential"
         >
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             AppleAuthenticationCredential
@@ -1567,7 +1567,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         
 object after a successful authentication, and rejects with 
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           ERR_REQUEST_CANCELED
@@ -1578,7 +1578,7 @@ refresh operation.
     </div>
   </div>
   <div
-    class="emotion-29"
+    class="emotion-27"
   >
     <h3
       class="group emotion-2"
@@ -1593,7 +1593,7 @@ refresh operation.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-76"
+            class="wrap-anywhere emotion-74"
             data-text="true"
           >
             signInAsync(options)
@@ -1662,7 +1662,7 @@ refresh operation.
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 options
               </strong>
@@ -1701,7 +1701,7 @@ refresh operation.
                   href="#appleauthenticationsigninoptions"
                 >
                   <code
-                    class="emotion-11"
+                    class="!inline emotion-6"
                     data-text="true"
                   >
                     AppleAuthenticationSignInOptions
@@ -1754,7 +1754,7 @@ You can use
         href="#appleauthenticationcredential"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           AppleAuthenticationCredential.user
@@ -1790,14 +1790,14 @@ the user, since this remains the same for apps released by the same developer.
           </g>
         </svg>
         <span
-          class="emotion-87"
+          class="emotion-83"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-88"
+        class="emotion-84"
         data-text="true"
       >
         <code
@@ -1846,7 +1846,7 @@ the user, since this remains the same for apps released by the same developer.
           href="#appleauthenticationcredential"
         >
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             AppleAuthenticationCredential
@@ -1855,7 +1855,7 @@ the user, since this remains the same for apps released by the same developer.
         
 object after a successful authentication, and rejects with 
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           ERR_REQUEST_CANCELED
@@ -1866,7 +1866,7 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="emotion-29"
+    class="emotion-27"
   >
     <h3
       class="group emotion-2"
@@ -1881,7 +1881,7 @@ sign-in operation.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-76"
+            class="wrap-anywhere emotion-74"
             data-text="true"
           >
             signOutAsync(options)
@@ -1950,7 +1950,7 @@ sign-in operation.
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 options
               </strong>
@@ -1983,7 +1983,7 @@ sign-in operation.
                   href="#appleauthenticationsignoutoptions"
                 >
                   <code
-                    class="emotion-11"
+                    class="!inline emotion-6"
                     data-text="true"
                   >
                     AppleAuthenticationSignOutOptions
@@ -2018,7 +2018,7 @@ from using
         href="./#signinasync"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           signInAsync
@@ -2030,7 +2030,7 @@ from using
         href="./#refreshasync"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           refreshAsync
@@ -2065,14 +2065,14 @@ from using
           </g>
         </svg>
         <span
-          class="emotion-87"
+          class="emotion-83"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-88"
+        class="emotion-84"
         data-text="true"
       >
         <code
@@ -2121,7 +2121,7 @@ from using
           href="#appleauthenticationcredential"
         >
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             AppleAuthenticationCredential
@@ -2130,7 +2130,7 @@ from using
         
 object after a successful authentication, and rejects with 
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           ERR_REQUEST_CANCELED
@@ -2181,7 +2181,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="emotion-29"
+    class="emotion-27"
   >
     <h3
       class="group emotion-2"
@@ -2196,7 +2196,7 @@ sign-out operation.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-76"
+            class="wrap-anywhere emotion-74"
             data-text="true"
           >
             addRevokeListener(listener)
@@ -2260,7 +2260,7 @@ sign-out operation.
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 listener
               </strong>
@@ -2313,14 +2313,14 @@ sign-out operation.
           </g>
         </svg>
         <span
-          class="emotion-87"
+          class="emotion-83"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-88"
+        class="emotion-84"
         data-text="true"
       >
         <code
@@ -2430,7 +2430,7 @@ sign-out operation.
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           AppleAuthentication.signInAsync()
@@ -2443,7 +2443,7 @@ sign-out operation.
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           AppleAuthentication.refreshAsync()
@@ -2455,7 +2455,7 @@ sign-out operation.
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           AppleAuthentication.signOutAsync()
@@ -2465,11 +2465,11 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 emotion-22"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
-        class="select-none mt-[5px] [table_&]:mt-[3px]"
+        class="select-none mt-1 [table_&]:mt-0.5"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -2491,14 +2491,14 @@ which contains all of the pertinent user and credential information.
         </svg>
       </div>
       <div
-        class="text-default w-full last:mb-0 emotion-23"
+        class="text-default w-full leading-normal last:mb-0"
       >
         <p
           class="mb-3.5 emotion-4"
           data-text="true"
         >
           <strong
-            class="emotion-25"
+            class="emotion-23"
           >
             See:
           </strong>
@@ -2554,7 +2554,7 @@ for more details.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 authorizationCode
               </strong>
@@ -2589,7 +2589,7 @@ for more details.
                 A short-lived session token used by your app for proof of authorization when interacting with
 the app's server counterpart. Unlike 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   user
@@ -2605,7 +2605,7 @@ the app's server counterpart. Unlike
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 email
               </strong>
@@ -2639,7 +2639,7 @@ the app's server counterpart. Unlike
               >
                 The user's email address. Might not be present if you didn't request the 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   EMAIL
@@ -2658,7 +2658,7 @@ an Apple domain.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 fullName
               </strong>
@@ -2697,21 +2697,21 @@ an Apple domain.
               >
                 The user's name. May be 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   null
                 </code>
                  or contain 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   null
                 </code>
                  values if you didn't request the 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   FULL_NAME
@@ -2729,7 +2729,7 @@ your app.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 identityToken
               </strong>
@@ -2772,7 +2772,7 @@ your app.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 realUserStatus
               </strong>
@@ -2810,7 +2810,7 @@ your app.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 state
               </strong>
@@ -2844,7 +2844,7 @@ your app.
               >
                 An arbitrary string that your app provided as 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   state
@@ -2853,7 +2853,7 @@ your app.
 credential. Used to verify that the response was from the request you made. Can be used to
 avoid replay attacks. If you did not provide 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   state
@@ -2861,7 +2861,7 @@ avoid replay attacks. If you did not provide
                  when making the sign-in request, this field
 will be 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   null
@@ -2877,7 +2877,7 @@ will be
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 user
               </strong>
@@ -2965,7 +2965,7 @@ developers.
       An object representing the tokenized portions of the user's full name. Any of all of the fields
 may be 
       <code
-        class="emotion-11"
+        class="!inline emotion-6"
         data-text="true"
       >
         null
@@ -3009,7 +3009,7 @@ may be
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 familyName
               </strong>
@@ -3051,7 +3051,7 @@ may be
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 givenName
               </strong>
@@ -3093,7 +3093,7 @@ may be
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 middleName
               </strong>
@@ -3135,7 +3135,7 @@ may be
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 namePrefix
               </strong>
@@ -3177,7 +3177,7 @@ may be
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 nameSuffix
               </strong>
@@ -3219,7 +3219,7 @@ may be
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 nickname
               </strong>
@@ -3316,7 +3316,7 @@ may be
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           AppleAuthentication.refreshAsync()
@@ -3326,11 +3326,11 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 emotion-22"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
-        class="select-none mt-[5px] [table_&]:mt-[3px]"
+        class="select-none mt-1 [table_&]:mt-0.5"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3352,14 +3352,14 @@ You must include the ID string of the user whose credentials you'd like to refre
         </svg>
       </div>
       <div
-        class="text-default w-full last:mb-0 emotion-23"
+        class="text-default w-full leading-normal last:mb-0"
       >
         <p
           class="mb-3.5 emotion-4"
           data-text="true"
         >
           <strong
-            class="emotion-25"
+            class="emotion-23"
           >
             See:
           </strong>
@@ -3415,7 +3415,7 @@ for more details.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 requestedScopes
               </strong>
@@ -3453,7 +3453,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   null
@@ -3462,14 +3462,14 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   null
                 </code>
                 . Defaults to 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   []
@@ -3485,7 +3485,7 @@ requests they will be
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 state
               </strong>
@@ -3536,7 +3536,7 @@ OAuth 2.0 protocol
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 user
               </strong>
@@ -3623,7 +3623,7 @@ OAuth 2.0 protocol
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           AppleAuthentication.signInAsync()
@@ -3633,11 +3633,11 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 emotion-22"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
-        class="select-none mt-[5px] [table_&]:mt-[3px]"
+        class="select-none mt-1 [table_&]:mt-0.5"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3659,14 +3659,14 @@ None of these options are required.
         </svg>
       </div>
       <div
-        class="text-default w-full last:mb-0 emotion-23"
+        class="text-default w-full leading-normal last:mb-0"
       >
         <p
           class="mb-3.5 emotion-4"
           data-text="true"
         >
           <strong
-            class="emotion-25"
+            class="emotion-23"
           >
             See:
           </strong>
@@ -3722,7 +3722,7 @@ for more details.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 nonce
               </strong>
@@ -3771,7 +3771,7 @@ for more details.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 requestedScopes
               </strong>
@@ -3809,7 +3809,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   null
@@ -3818,14 +3818,14 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   null
                 </code>
                 . Defaults to 
                 <code
-                  class="emotion-11"
+                  class="!inline emotion-6"
                   data-text="true"
                 >
                   []
@@ -3841,7 +3841,7 @@ requests they will be
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 state
               </strong>
@@ -3947,7 +3947,7 @@ OAuth 2.0 protocol
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
-          class="emotion-11"
+          class="!inline emotion-6"
           data-text="true"
         >
           AppleAuthentication.signOutAsync()
@@ -3957,11 +3957,11 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 emotion-22"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
-        class="select-none mt-[5px] [table_&]:mt-[3px]"
+        class="select-none mt-1 [table_&]:mt-0.5"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3983,14 +3983,14 @@ You must include the ID string of the user to sign out.
         </svg>
       </div>
       <div
-        class="text-default w-full last:mb-0 emotion-23"
+        class="text-default w-full leading-normal last:mb-0"
       >
         <p
           class="mb-3.5 emotion-4"
           data-text="true"
         >
           <strong
-            class="emotion-25"
+            class="emotion-23"
           >
             See:
           </strong>
@@ -4046,7 +4046,7 @@ for more details.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 state
               </strong>
@@ -4097,7 +4097,7 @@ OAuth 2.0 protocol
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 user
               </strong>
@@ -4217,7 +4217,7 @@ OAuth 2.0 protocol
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-25"
+                class="emotion-23"
               >
                 remove
               </strong>
@@ -4360,7 +4360,7 @@ After calling this function, the listener will no longer receive any events from
           href="#appleauthenticationbutton"
         >
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             AppleAuthenticationButton
@@ -4369,11 +4369,11 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="!mb-0 !border-b-0 emotion-27"
+        class="!mb-0 !border-b-0 emotion-25"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-87"
+          class="text-inherit flex flex-row gap-2 items-center emotion-83"
           data-text="true"
         >
           AppleAuthenticationButtonStyle Values
@@ -4384,7 +4384,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -4396,7 +4396,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               WHITE
@@ -4429,7 +4429,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE ＝ 0
@@ -4445,7 +4445,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -4457,7 +4457,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               WHITE_OUTLINE
@@ -4490,7 +4490,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
@@ -4506,7 +4506,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -4518,7 +4518,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               BLACK
@@ -4551,7 +4551,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.BLACK ＝ 2
@@ -4625,7 +4625,7 @@ After calling this function, the listener will no longer receive any events from
           href="#appleauthenticationbutton"
         >
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             AppleAuthenticationButton
@@ -4634,11 +4634,11 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="!mb-0 !border-b-0 emotion-27"
+        class="!mb-0 !border-b-0 emotion-25"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-87"
+          class="text-inherit flex flex-row gap-2 items-center emotion-83"
           data-text="true"
         >
           AppleAuthenticationButtonType Values
@@ -4649,7 +4649,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -4661,7 +4661,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               SIGN_IN
@@ -4694,7 +4694,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
@@ -4710,7 +4710,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -4722,7 +4722,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               CONTINUE
@@ -4755,7 +4755,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationButtonType.CONTINUE ＝ 1
@@ -4774,7 +4774,7 @@ After calling this function, the listener will no longer receive any events from
         class="flex flex-row items-center mb-2"
       >
         <span
-          class="inline-flex items-center emotion-88"
+          class="inline-flex items-center emotion-84"
           data-text="true"
         >
           <span
@@ -4785,7 +4785,7 @@ After calling this function, the listener will no longer receive any events from
              
           </span>
           <div
-            class="!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4 select-none emotion-359"
+            class="!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4 select-none emotion-347"
           >
             <svg
               class="opacity-80 icon-xs text-palette-blue12"
@@ -4805,7 +4805,7 @@ After calling this function, the listener will no longer receive any events from
               </g>
             </svg>
             <span
-              class="emotion-360"
+              class="emotion-348"
             >
               iOS 13.2+
             </span>
@@ -4814,7 +4814,7 @@ After calling this function, the listener will no longer receive any events from
         </span>
       </div>
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -4826,7 +4826,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               SIGN_UP
@@ -4859,7 +4859,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
@@ -4933,7 +4933,7 @@ After calling this function, the listener will no longer receive any events from
           href="#appleauthenticationgetcredentialstateasyncuser"
         >
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             AppleAuthentication.getCredentialStateAsync()
@@ -4942,11 +4942,11 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 emotion-22"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-[5px] [table_&]:mt-[3px]"
+          class="select-none mt-1 [table_&]:mt-0.5"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -4968,14 +4968,14 @@ After calling this function, the listener will no longer receive any events from
           </svg>
         </div>
         <div
-          class="text-default w-full last:mb-0 emotion-23"
+          class="text-default w-full leading-normal last:mb-0"
         >
           <p
             class="mb-3.5 emotion-4"
             data-text="true"
           >
             <strong
-              class="emotion-25"
+              class="emotion-23"
             >
               See:
             </strong>
@@ -4995,11 +4995,11 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 emotion-27"
+        class="!mb-0 !border-b-0 emotion-25"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-87"
+          class="text-inherit flex flex-row gap-2 items-center emotion-83"
           data-text="true"
         >
           AppleAuthenticationCredentialState Values
@@ -5010,7 +5010,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5022,7 +5022,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               REVOKED
@@ -5055,7 +5055,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationCredentialState.REVOKED ＝ 0
@@ -5065,7 +5065,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5077,7 +5077,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               AUTHORIZED
@@ -5110,7 +5110,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationCredentialState.AUTHORIZED ＝ 1
@@ -5120,7 +5120,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5132,7 +5132,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               NOT_FOUND
@@ -5165,7 +5165,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationCredentialState.NOT_FOUND ＝ 2
@@ -5175,7 +5175,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5187,7 +5187,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               TRANSFERRED
@@ -5220,7 +5220,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationCredentialState.TRANSFERRED ＝ 3
@@ -5279,11 +5279,11 @@ for more details.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 emotion-27"
+        class="!mb-0 !border-b-0 emotion-25"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-87"
+          class="text-inherit flex flex-row gap-2 items-center emotion-83"
           data-text="true"
         >
           AppleAuthenticationOperation Values
@@ -5294,7 +5294,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5306,7 +5306,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               IMPLICIT
@@ -5339,7 +5339,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationOperation.IMPLICIT ＝ 0
@@ -5355,7 +5355,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5367,7 +5367,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               LOGIN
@@ -5400,7 +5400,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGIN ＝ 1
@@ -5410,7 +5410,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5422,7 +5422,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               REFRESH
@@ -5455,7 +5455,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationOperation.REFRESH ＝ 2
@@ -5465,7 +5465,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5477,7 +5477,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               LOGOUT
@@ -5510,7 +5510,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGOUT ＝ 3
@@ -5578,7 +5578,7 @@ for more details.
           href="#appleauthenticationsigninasyncoptions"
         >
           <code
-            class="emotion-11"
+            class="!inline emotion-6"
             data-text="true"
           >
             AppleAuthentication.signInAsync()
@@ -5589,11 +5589,11 @@ for more details.
       
 
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-22"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-[5px] [table_&]:mt-[3px]"
+          class="select-none mt-1 [table_&]:mt-0.5"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5615,7 +5615,7 @@ for more details.
           </svg>
         </div>
         <div
-          class="text-default w-full last:mb-0 emotion-23"
+          class="text-default w-full leading-normal last:mb-0"
         >
           
 
@@ -5631,11 +5631,11 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 emotion-22"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-[5px] [table_&]:mt-[3px]"
+          class="select-none mt-1 [table_&]:mt-0.5"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5657,14 +5657,14 @@ You will still need to handle null values for any fields you request.
           </svg>
         </div>
         <div
-          class="text-default w-full last:mb-0 emotion-23"
+          class="text-default w-full leading-normal last:mb-0"
         >
           <p
             class="mb-3.5 emotion-4"
             data-text="true"
           >
             <strong
-              class="emotion-25"
+              class="emotion-23"
             >
               See:
             </strong>
@@ -5684,11 +5684,11 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 emotion-27"
+        class="!mb-0 !border-b-0 emotion-25"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-87"
+          class="text-inherit flex flex-row gap-2 items-center emotion-83"
           data-text="true"
         >
           AppleAuthenticationScope Values
@@ -5699,7 +5699,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5711,7 +5711,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               FULL_NAME
@@ -5744,7 +5744,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationScope.FULL_NAME ＝ 0
@@ -5754,7 +5754,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5766,7 +5766,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               EMAIL
@@ -5799,7 +5799,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationScope.EMAIL ＝ 1
@@ -5864,11 +5864,11 @@ for more details.
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 !mb-3.5 emotion-22"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-[5px] [table_&]:mt-[3px]"
+          class="select-none mt-1 [table_&]:mt-0.5"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5890,14 +5890,14 @@ for more details.
           </svg>
         </div>
         <div
-          class="text-default w-full last:mb-0 emotion-23"
+          class="text-default w-full leading-normal last:mb-0"
         >
           <p
             class="mb-3.5 emotion-4"
             data-text="true"
           >
             <strong
-              class="emotion-25"
+              class="emotion-23"
             >
               See:
             </strong>
@@ -5917,11 +5917,11 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="!mb-0 !border-b-0 emotion-27"
+        class="!mb-0 !border-b-0 emotion-25"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-87"
+          class="text-inherit flex flex-row gap-2 items-center emotion-83"
           data-text="true"
         >
           AppleAuthenticationUserDetectionStatus Values
@@ -5932,7 +5932,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -5944,7 +5944,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               UNSUPPORTED
@@ -5977,7 +5977,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
@@ -5993,7 +5993,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -6005,7 +6005,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               UNKNOWN
@@ -6038,7 +6038,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
@@ -6054,7 +6054,7 @@ for more details.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-68"
+        class="group emotion-66"
         data-heading="true"
       >
         <a
@@ -6066,7 +6066,7 @@ for more details.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-330"
+              class="!text-inherit emotion-318"
               data-text="true"
             >
               LIKELY_REAL
@@ -6099,7 +6099,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-331"
+        class="mb-3 emotion-319"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
@@ -6164,11 +6164,11 @@ exports[`APISection expo-barcode-scanner 1`] = `
       class="[table_&]:mt-0 [table_&]:mb-3.5 [table_&]:last:mb-0 mx-[-21px] mt-[-21px] max-md-gutters:mx-[-17px]"
     >
       <blockquote
-        class="flex gap-2 rounded-md py-3 px-4 mb-4 [&_p]:!mb-0 [table_&]:last-of-type:mb-2.5 pl-6 pr-4 shadow-none rounded-b-none rounded-t-lg max-md-gutters:px-4 emotion-2"
+        class="border flex gap-2 rounded-md py-3 px-4 mb-4 bg-warning border-warning [&_code]:bg-palette-yellow4 [&_code]:border-palette-yellow6 dark:[&_code]:bg-palette-yellow5 dark:[&_code]:border-palette-yellow7 [&_p]:!mb-0 [table_&]:last-of-type:mb-2.5 pl-6 pr-4 shadow-none rounded-b-none rounded-t-lg max-md-gutters:px-4"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-[5px] [table_&]:mt-[3px]"
+          class="select-none mt-1 [table_&]:mt-0.5"
         >
           <svg
             class="icon-sm text-warning"
@@ -6190,20 +6190,20 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </svg>
         </div>
         <div
-          class="text-default w-full last:mb-0 emotion-3"
+          class="text-default w-full leading-normal last:mb-0"
         >
           <p
-            class="mb-3.5 emotion-4"
+            class="mb-3.5 emotion-2"
             data-text="true"
           >
             <strong
-              class="emotion-5"
+              class="emotion-3"
             >
               Deprecated
             </strong>
              BarCodeScanner has been deprecated and will be removed in a future SDK version. Use 
             <code
-              class="emotion-6"
+              class="!inline emotion-4"
               data-text="true"
             >
               expo-camera
@@ -6211,21 +6211,21 @@ exports[`APISection expo-barcode-scanner 1`] = `
              instead.
 See 
             <a
-              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
               href="https://expo.fyi/barcode-scanner-to-expo-camera"
               rel="noopener noreferrer"
               target="_blank"
             >
               How to migrate from 
               <code
-                class="emotion-6"
+                class="!inline emotion-4"
                 data-text="true"
               >
                 expo-barcode-scanner
               </code>
                to 
               <code
-                class="emotion-6"
+                class="!inline emotion-4"
                 data-text="true"
               >
                 expo-camera
@@ -6238,7 +6238,7 @@ for more details.
       </blockquote>
     </div>
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -6250,7 +6250,7 @@ for more details.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-11"
+            class="wrap-anywhere emotion-9"
             data-text="true"
           >
             BarCodeScanner
@@ -6283,23 +6283,23 @@ for more details.
       </a>
     </h3>
     <p
-      class="mb-3.5 emotion-4"
+      class="mb-3.5 emotion-2"
       data-text="true"
     >
       <span
-        class="emotion-13"
+        class="emotion-11"
         data-text="true"
       >
         Type:
       </span>
        
       <code
-        class="emotion-14"
+        class="emotion-4"
         data-text="true"
       >
         React.
         <a
-          class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+          class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
           href="https://react.dev/reference/react/Component"
           rel="noopener noreferrer"
           target="_blank"
@@ -6313,7 +6313,7 @@ for more details.
         </span>
         <span>
           <a
-            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
             href="#barcodescannerprops"
           >
             BarCodeScannerProps
@@ -6328,11 +6328,11 @@ for more details.
     </p>
     <div>
       <p
-        class="!text-secondary !font-medium emotion-17"
+        class="!text-secondary !font-medium emotion-15"
         data-text="true"
       >
         <span
-          class="group emotion-18"
+          class="group emotion-16"
           data-text="true"
         >
           <a
@@ -6377,10 +6377,10 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-19"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-17"
       >
         <h3
-          class="group emotion-10"
+          class="group emotion-8"
           data-heading="true"
         >
           <a
@@ -6392,7 +6392,7 @@ for more details.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-21"
+                class="wrap-anywhere emotion-19"
                 data-text="true"
               >
                 barCodeTypes
@@ -6425,7 +6425,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="mb-3.5 emotion-4"
+          class="mb-3.5 emotion-2"
           data-text="true"
         >
           <span
@@ -6440,19 +6440,19 @@ for more details.
           </span>
            
           <code
-            class="emotion-14"
+            class="emotion-4"
             data-text="true"
           >
             string[]
           </code>
         </p>
         <p
-          class="mb-3.5 emotion-4"
+          class="mb-3.5 emotion-2"
           data-text="true"
         >
           An array of bar code types. Usage: 
           <code
-            class="emotion-6"
+            class="!inline emotion-4"
             data-text="true"
           >
             BarCodeScanner.Constants.BarCodeType.&lt;codeType&gt;
@@ -6460,14 +6460,14 @@ for more details.
            where
 
           <code
-            class="emotion-6"
+            class="!inline emotion-4"
             data-text="true"
           >
             codeType
           </code>
            is one of these 
           <a
-            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
             href="#supported-formats"
           >
             listed above
@@ -6479,12 +6479,12 @@ minimize battery usage.
         
 
         <p
-          class="mb-3.5 emotion-4"
+          class="mb-3.5 emotion-2"
           data-text="true"
         >
           For example: 
           <code
-            class="emotion-6"
+            class="!inline emotion-4"
             data-text="true"
           >
             barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
@@ -6493,10 +6493,10 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-19"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-17"
       >
         <h3
-          class="group emotion-10"
+          class="group emotion-8"
           data-heading="true"
         >
           <a
@@ -6508,7 +6508,7 @@ minimize battery usage.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-21"
+                class="wrap-anywhere emotion-19"
                 data-text="true"
               >
                 onBarCodeScanned
@@ -6541,7 +6541,7 @@ minimize battery usage.
           </a>
         </h3>
         <p
-          class="mb-3.5 emotion-4"
+          class="mb-3.5 emotion-2"
           data-text="true"
         >
           <span
@@ -6556,11 +6556,11 @@ minimize battery usage.
           </span>
            
           <code
-            class="emotion-14"
+            class="emotion-4"
             data-text="true"
           >
             <a
-              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
               href="#barcodescannedcallback"
             >
               BarCodeScannedCallback
@@ -6568,13 +6568,13 @@ minimize battery usage.
           </code>
         </p>
         <p
-          class="mb-3.5 emotion-4"
+          class="mb-3.5 emotion-2"
           data-text="true"
         >
           A callback that is invoked when a bar code has been successfully scanned. The callback is
 provided with an 
           <a
-            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
             href="#barcodescannerresult"
           >
             BarCodeScannerResult
@@ -6584,11 +6584,11 @@ provided with an
         
 
         <blockquote
-          class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-38"
+          class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
           data-testid="callout-container"
         >
           <div
-            class="select-none mt-[5px] [table_&]:mt-[3px]"
+            class="select-none mt-1 [table_&]:mt-0.5"
           >
             <svg
               class="icon-sm text-icon-default"
@@ -6610,29 +6610,29 @@ provided with an
             </svg>
           </div>
           <div
-            class="text-default w-full last:mb-0 emotion-3"
+            class="text-default w-full leading-normal last:mb-0"
           >
             
 
             <p
-              class="mb-3.5 emotion-4"
+              class="mb-3.5 emotion-2"
               data-text="true"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 Note:
               </strong>
                Passing 
               <code
-                class="emotion-6"
+                class="!inline emotion-4"
                 data-text="true"
               >
                 undefined
               </code>
                to the 
               <code
-                class="emotion-6"
+                class="!inline emotion-4"
                 data-text="true"
               >
                 onBarCodeScanned
@@ -6647,10 +6647,10 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-19"
+        class="!pb-4 [&>*:last-child]:!mb-0 emotion-17"
       >
         <h3
-          class="group emotion-10"
+          class="group emotion-8"
           data-heading="true"
         >
           <a
@@ -6662,7 +6662,7 @@ data has been retrieved.
               class="inline"
             >
               <code
-                class="wrap-anywhere emotion-21"
+                class="wrap-anywhere emotion-19"
                 data-text="true"
               >
                 type
@@ -6695,7 +6695,7 @@ data has been retrieved.
           </a>
         </h3>
         <p
-          class="mb-3.5 emotion-4"
+          class="mb-3.5 emotion-2"
           data-text="true"
         >
           <span
@@ -6710,7 +6710,7 @@ data has been retrieved.
           </span>
            
           <code
-            class="emotion-14"
+            class="emotion-4"
             data-text="true"
           >
             <span>
@@ -6741,7 +6741,7 @@ data has been retrieved.
             </span>
              
             <code
-              class="emotion-14"
+              class="emotion-4"
               data-text="true"
             >
               Type.back
@@ -6749,26 +6749,26 @@ data has been retrieved.
           </span>
         </p>
         <p
-          class="mb-3.5 emotion-4"
+          class="mb-3.5 emotion-2"
           data-text="true"
         >
           Camera facing. Use one of 
           <code
-            class="emotion-6"
+            class="!inline emotion-4"
             data-text="true"
           >
             BarCodeScanner.Constants.Type
           </code>
           . Use either 
           <code
-            class="emotion-6"
+            class="!inline emotion-4"
             data-text="true"
           >
             Type.front
           </code>
            or 
           <code
-            class="emotion-6"
+            class="!inline emotion-4"
             data-text="true"
           >
             Type.back
@@ -6776,7 +6776,7 @@ data has been retrieved.
           .
 Same as 
           <code
-            class="emotion-6"
+            class="!inline emotion-4"
             data-text="true"
           >
             Camera.Constants.Type
@@ -6785,7 +6785,7 @@ Same as
         </p>
       </div>
       <h4
-        class="group emotion-55"
+        class="group emotion-51"
         data-heading="true"
       >
         <a
@@ -6825,18 +6825,18 @@ Same as
         </a>
       </h4>
       <ul
-        class="emotion-56"
+        class="emotion-52"
       >
         <li
-          class="emotion-57"
+          class="emotion-53"
           data-text="true"
         >
           <code
-            class="emotion-14"
+            class="emotion-4"
             data-text="true"
           >
             <a
-              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
               href="https://reactnative.dev/docs/view#props"
               rel="noopener noreferrer"
               target="_blank"
@@ -6889,10 +6889,10 @@ Same as
     </a>
   </h2>
   <div
-    class="emotion-19"
+    class="emotion-17"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -6904,7 +6904,7 @@ Same as
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-63"
+            class="wrap-anywhere emotion-59"
             data-text="true"
           >
             usePermissions(options)
@@ -6968,7 +6968,7 @@ Same as
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 options
               </strong>
@@ -6983,11 +6983,11 @@ Same as
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                   href="#permissionhookoptions"
                 >
                   PermissionHookOptions
@@ -7013,20 +7013,20 @@ Same as
     </div>
     <br />
     <p
-      class="mb-3.5 emotion-4"
+      class="mb-3.5 emotion-2"
       data-text="true"
     >
       Check or request permissions for the barcode scanner.
 This uses both 
       <code
-        class="emotion-6"
+        class="!inline emotion-4"
         data-text="true"
       >
         requestPermissionAsync
       </code>
        and 
       <code
-        class="emotion-6"
+        class="!inline emotion-4"
         data-text="true"
       >
         getPermissionsAsync
@@ -7060,18 +7060,18 @@ This uses both
           </g>
         </svg>
         <span
-          class="emotion-70"
+          class="emotion-66"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-71"
+        class="emotion-67"
         data-text="true"
       >
         <code
-          class="[&>span]:!text-inherit emotion-14"
+          class="[&>span]:!text-inherit emotion-4"
           data-text="true"
         >
           [
@@ -7086,7 +7086,7 @@ This uses both
             </span>
             <span>
               <a
-                class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7103,7 +7103,7 @@ This uses both
             </span>
             <span>
               <a
-                class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7125,7 +7125,7 @@ This uses both
             </span>
             <span>
               <a
-                class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7145,11 +7145,11 @@ This uses both
       class="mb-3.5 last:[&>*]:mb-0"
     >
       <p
-        class="!mt-1 emotion-17"
+        class="!mt-1 emotion-15"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-70"
+          class="text-inherit flex flex-row gap-2 items-center emotion-66"
           data-text="true"
         >
           <svg
@@ -7176,11 +7176,11 @@ This uses both
         </span>
       </p>
       <pre
-        class="relative border border-secondary p-4 my-4 bg-subtle last:mb-0 emotion-78"
+        class="whitespace-pre relative border border-secondary p-4 my-4 bg-subtle rounded-md overflow-x-auto [p+&]:mt-0"
         data-text="true"
       >
         <code
-          class="emotion-79"
+          class="text-2xs text-default"
         >
           <span
             class="token keyword"
@@ -7284,10 +7284,10 @@ This uses both
     </a>
   </h2>
   <div
-    class="emotion-19"
+    class="emotion-17"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -7299,7 +7299,7 @@ This uses both
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-63"
+            class="wrap-anywhere emotion-59"
             data-text="true"
           >
             BarCodeScanner.getPermissionsAsync()
@@ -7332,7 +7332,7 @@ This uses both
       </a>
     </h3>
     <p
-      class="mb-3.5 emotion-4"
+      class="mb-3.5 emotion-2"
       data-text="true"
     >
       Checks user's permissions for accessing the camera.
@@ -7364,22 +7364,22 @@ This uses both
           </g>
         </svg>
         <span
-          class="emotion-70"
+          class="emotion-66"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-71"
+        class="emotion-67"
         data-text="true"
       >
         <code
-          class="[&>span]:!text-inherit emotion-14"
+          class="[&>span]:!text-inherit emotion-4"
           data-text="true"
         >
           <a
-            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7393,7 +7393,7 @@ This uses both
           </span>
           <span>
             <a
-              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -7411,16 +7411,16 @@ This uses both
       class="flex flex-col mt-1.5 mb-1 pl-6"
     >
       <p
-        class="mb-3.5 emotion-4"
+        class="mb-3.5 emotion-2"
         data-text="true"
       >
         Return a promise that fulfills to an object of type 
         <a
-          class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+          class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
           href="#permissionresponse"
         >
           <code
-            class="emotion-6"
+            class="!inline emotion-4"
             data-text="true"
           >
             PermissionResponse
@@ -7431,10 +7431,10 @@ This uses both
     </div>
   </div>
   <div
-    class="emotion-19"
+    class="emotion-17"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -7446,7 +7446,7 @@ This uses both
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-63"
+            class="wrap-anywhere emotion-59"
             data-text="true"
           >
             BarCodeScanner.requestPermissionsAsync()
@@ -7479,7 +7479,7 @@ This uses both
       </a>
     </h3>
     <p
-      class="mb-3.5 emotion-4"
+      class="mb-3.5 emotion-2"
       data-text="true"
     >
       Asks the user to grant permissions for accessing the camera.
@@ -7487,19 +7487,19 @@ This uses both
     
 
     <p
-      class="mb-3.5 emotion-4"
+      class="mb-3.5 emotion-2"
       data-text="true"
     >
       On iOS this will require apps to specify the 
       <code
-        class="emotion-6"
+        class="!inline emotion-4"
         data-text="true"
       >
         NSCameraUsageDescription
       </code>
        entry in the 
       <code
-        class="emotion-6"
+        class="!inline emotion-4"
         data-text="true"
       >
         Info.plist
@@ -7533,22 +7533,22 @@ This uses both
           </g>
         </svg>
         <span
-          class="emotion-70"
+          class="emotion-66"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-71"
+        class="emotion-67"
         data-text="true"
       >
         <code
-          class="[&>span]:!text-inherit emotion-14"
+          class="[&>span]:!text-inherit emotion-4"
           data-text="true"
         >
           <a
-            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7562,7 +7562,7 @@ This uses both
           </span>
           <span>
             <a
-              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -7580,16 +7580,16 @@ This uses both
       class="flex flex-col mt-1.5 mb-1 pl-6"
     >
       <p
-        class="mb-3.5 emotion-4"
+        class="mb-3.5 emotion-2"
         data-text="true"
       >
         Return a promise that fulfills to an object of type 
         <a
-          class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+          class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
           href="#permissionresponse"
         >
           <code
-            class="emotion-6"
+            class="!inline emotion-4"
             data-text="true"
           >
             PermissionResponse
@@ -7600,10 +7600,10 @@ This uses both
     </div>
   </div>
   <div
-    class="emotion-19"
+    class="emotion-17"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -7615,7 +7615,7 @@ This uses both
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-63"
+            class="wrap-anywhere emotion-59"
             data-text="true"
           >
             BarCodeScanner.scanFromURLAsync(url, barCodeTypes)
@@ -7684,7 +7684,7 @@ This uses both
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 url
               </strong>
@@ -7693,7 +7693,7 @@ This uses both
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 string
@@ -7703,7 +7703,7 @@ This uses both
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 URL to get the image from.
@@ -7717,7 +7717,7 @@ This uses both
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 barCodeTypes
               </strong>
@@ -7732,7 +7732,7 @@ This uses both
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 string[]
@@ -7742,7 +7742,7 @@ This uses both
               class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 An array of bar code types. Defaults to all supported bar code types on
@@ -7751,11 +7751,11 @@ the platform.
               
 
               <blockquote
-                class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-38"
+                class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
                 data-testid="callout-container"
               >
                 <div
-                  class="select-none mt-[5px] [table_&]:mt-[3px]"
+                  class="select-none mt-1 [table_&]:mt-0.5"
                 >
                   <svg
                     class="icon-sm text-icon-default"
@@ -7777,16 +7777,16 @@ the platform.
                   </svg>
                 </div>
                 <div
-                  class="text-default w-full last:mb-0 emotion-3"
+                  class="text-default w-full leading-normal last:mb-0"
                 >
                   
 
                   <p
-                    class="mb-3.5 emotion-4"
+                    class="mb-3.5 emotion-2"
                     data-text="true"
                   >
                     <strong
-                      class="emotion-5"
+                      class="emotion-3"
                     >
                       Note:
                     </strong>
@@ -7803,7 +7803,7 @@ the platform.
     </div>
     <br />
     <p
-      class="mb-3.5 emotion-4"
+      class="mb-3.5 emotion-2"
       data-text="true"
     >
       Scan bar codes from the image given by the URL.
@@ -7835,22 +7835,22 @@ the platform.
           </g>
         </svg>
         <span
-          class="emotion-70"
+          class="emotion-66"
           data-text="true"
         >
           Returns:
         </span>
       </div>
       <p
-        class="emotion-71"
+        class="emotion-67"
         data-text="true"
       >
         <code
-          class="[&>span]:!text-inherit emotion-14"
+          class="[&>span]:!text-inherit emotion-4"
           data-text="true"
         >
           <a
-            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+            class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7864,7 +7864,7 @@ the platform.
           </span>
           <span>
             <a
-              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+              class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
               href="#barcodescannerresult"
             >
               BarCodeScannerResult
@@ -7883,12 +7883,12 @@ the platform.
       class="flex flex-col mt-1.5 mb-1 pl-6"
     >
       <p
-        class="mb-3.5 emotion-4"
+        class="mb-3.5 emotion-2"
         data-text="true"
       >
         A possibly empty array of objects of the 
         <code
-          class="emotion-6"
+          class="!inline emotion-4"
           data-text="true"
         >
           BarCodeScannerResult
@@ -7940,10 +7940,10 @@ code.
     </a>
   </h2>
   <div
-    class="emotion-19"
+    class="emotion-17"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -7955,7 +7955,7 @@ code.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-11"
+            class="wrap-anywhere emotion-9"
             data-text="true"
           >
             PermissionResponse
@@ -7988,17 +7988,17 @@ code.
       </a>
     </h3>
     <p
-      class="mb-3.5 emotion-4"
+      class="mb-3.5 emotion-2"
       data-text="true"
     >
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="emotion-17"
+      class="emotion-15"
       data-text="true"
     >
       <span
-        class="text-inherit flex flex-row gap-2 items-center emotion-70"
+        class="text-inherit flex flex-row gap-2 items-center emotion-66"
         data-text="true"
       >
         PermissionResponse Properties
@@ -8041,7 +8041,7 @@ code.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 canAskAgain
               </strong>
@@ -8050,7 +8050,7 @@ code.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 boolean
@@ -8060,7 +8060,7 @@ code.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 Indicates if user can be asked again for specific permission.
@@ -8076,7 +8076,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 expires
               </strong>
@@ -8085,11 +8085,11 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                   href="#permissionexpiration"
                 >
                   PermissionExpiration
@@ -8100,7 +8100,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 Determines time when the permission expires.
@@ -8114,7 +8114,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 granted
               </strong>
@@ -8123,7 +8123,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 boolean
@@ -8133,7 +8133,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 A convenience boolean that indicates if the permission is granted.
@@ -8147,7 +8147,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 status
               </strong>
@@ -8156,11 +8156,11 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                   href="#permissionstatus"
                 >
                   PermissionStatus
@@ -8171,7 +8171,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 Determines the status of the permission.
@@ -8227,7 +8227,7 @@ in order to enable/disable the permission.
     class="emotion-1"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -8239,7 +8239,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="emotion-11"
+            class="emotion-9"
             data-text="true"
           >
             BarCodeBounds
@@ -8308,7 +8308,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 origin
               </strong>
@@ -8317,11 +8317,11 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                   href="#barcodepoint"
                 >
                   BarCodePoint
@@ -8332,7 +8332,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 The origin point of the bounding box.
@@ -8346,7 +8346,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 size
               </strong>
@@ -8355,11 +8355,11 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                   href="#barcodesize"
                 >
                   BarCodeSize
@@ -8370,7 +8370,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 The size of the bounding box.
@@ -8385,7 +8385,7 @@ in order to enable/disable the permission.
     class="emotion-1"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -8397,7 +8397,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-11"
+            class="wrap-anywhere emotion-9"
             data-text="true"
           >
             BarCodeEvent
@@ -8430,22 +8430,22 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="emotion-71"
+      class="emotion-67"
       data-text="true"
     >
       <span
-        class="emotion-70"
+        class="emotion-66"
         data-text="true"
       >
         Type:
          
       </span>
       <code
-        class="text-default emotion-14"
+        class="text-default emotion-4"
         data-text="true"
       >
         <a
-          class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+          class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
           href="#barcodescannerresult"
         >
           BarCodeScannerResult
@@ -8453,7 +8453,7 @@ in order to enable/disable the permission.
       </code>
        
       <span
-        class="emotion-169"
+        class="emotion-161"
         data-text="true"
       >
         extended by
@@ -8498,7 +8498,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 target
               </strong>
@@ -8513,7 +8513,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 number
@@ -8537,7 +8537,7 @@ in order to enable/disable the permission.
     class="emotion-1"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -8549,7 +8549,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="emotion-11"
+            class="emotion-9"
             data-text="true"
           >
             BarCodeEventCallbackArguments
@@ -8618,7 +8618,7 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 nativeEvent
               </strong>
@@ -8627,11 +8627,11 @@ in order to enable/disable the permission.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                   href="#barcodeevent"
                 >
                   BarCodeEvent
@@ -8656,7 +8656,7 @@ in order to enable/disable the permission.
     class="emotion-1"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -8668,7 +8668,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="emotion-11"
+            class="emotion-9"
             data-text="true"
           >
             BarCodePoint
@@ -8701,7 +8701,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="mb-3.5 emotion-4"
+      class="mb-3.5 emotion-2"
       data-text="true"
     >
       Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
@@ -8744,7 +8744,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 x
               </strong>
@@ -8753,7 +8753,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 number
@@ -8763,12 +8763,12 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 The 
                 <code
-                  class="emotion-6"
+                  class="!inline emotion-4"
                   data-text="true"
                 >
                   x
@@ -8784,7 +8784,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 y
               </strong>
@@ -8793,7 +8793,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 number
@@ -8803,12 +8803,12 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 The 
                 <code
-                  class="emotion-6"
+                  class="!inline emotion-4"
                   data-text="true"
                 >
                   y
@@ -8825,7 +8825,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     class="emotion-1"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -8837,7 +8837,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           class="inline"
         >
           <code
-            class="emotion-11"
+            class="emotion-9"
             data-text="true"
           >
             BarCodeScannedCallback
@@ -8903,7 +8903,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
               >
                 <strong
-                  class="emotion-5"
+                  class="emotion-3"
                 >
                   params
                 </strong>
@@ -8912,11 +8912,11 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 class="p-4 border-r border-secondary text-left last:border-r-0 [&>*:last-child]:!mb-0"
               >
                 <code
-                  class="[&>span]:!text-inherit emotion-14"
+                  class="[&>span]:!text-inherit emotion-4"
                   data-text="true"
                 >
                   <a
-                    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                     href="#barcodeevent"
                   >
                     BarCodeEvent
@@ -8933,7 +8933,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     class="emotion-1"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -8945,7 +8945,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           class="inline"
         >
           <code
-            class="emotion-11"
+            class="emotion-9"
             data-text="true"
           >
             BarCodeScannerResult
@@ -9014,7 +9014,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 bounds
               </strong>
@@ -9023,11 +9023,11 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                   href="#barcodebounds"
                 >
                   BarCodeBounds
@@ -9038,12 +9038,12 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 The 
                 <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                   href="#barcodebounds"
                 >
                   BarCodeBounds
@@ -9051,7 +9051,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                  object.
 
                 <code
-                  class="emotion-6"
+                  class="!inline emotion-4"
                   data-text="true"
                 >
                   bounds
@@ -9059,7 +9059,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                  in some case will be representing an empty rectangle.
 Moreover, 
                 <code
-                  class="emotion-6"
+                  class="!inline emotion-4"
                   data-text="true"
                 >
                   bounds
@@ -9076,7 +9076,7 @@ For some types, they will represent the area used by the scanner.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 cornerPoints
               </strong>
@@ -9085,11 +9085,11 @@ For some types, they will represent the area used by the scanner.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-7"
+                  class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
                   href="#barcodepoint"
                 >
                   BarCodePoint
@@ -9101,27 +9101,27 @@ For some types, they will represent the area used by the scanner.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 Corner points of the bounding box.
 
                 <code
-                  class="emotion-6"
+                  class="!inline emotion-4"
                   data-text="true"
                 >
                   cornerPoints
                 </code>
                  is not always available and may be empty. On iOS, for 
                 <code
-                  class="emotion-6"
+                  class="!inline emotion-4"
                   data-text="true"
                 >
                   code39
                 </code>
                  and 
                 <code
-                  class="emotion-6"
+                  class="!inline emotion-4"
                   data-text="true"
                 >
                   pdf417
@@ -9138,7 +9138,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 data
               </strong>
@@ -9147,7 +9147,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 string
@@ -9157,7 +9157,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 The parsed information encoded in the bar code.
@@ -9171,7 +9171,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 type
               </strong>
@@ -9180,7 +9180,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 string
@@ -9190,7 +9190,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 The barcode type.
@@ -9205,7 +9205,7 @@ you don't get this value.
     class="emotion-1"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -9217,7 +9217,7 @@ you don't get this value.
           class="inline"
         >
           <code
-            class="emotion-11"
+            class="emotion-9"
             data-text="true"
           >
             BarCodeSize
@@ -9286,7 +9286,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 height
               </strong>
@@ -9295,7 +9295,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 number
@@ -9305,7 +9305,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 The height value.
@@ -9319,7 +9319,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <strong
-                class="emotion-5"
+                class="emotion-3"
               >
                 width
               </strong>
@@ -9328,7 +9328,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <code
-                class="[&>span]:!text-inherit emotion-14"
+                class="[&>span]:!text-inherit emotion-4"
                 data-text="true"
               >
                 number
@@ -9338,7 +9338,7 @@ you don't get this value.
               class="p-4 border-r border-secondary text-left w-fit last:border-r-0 [&>*:last-child]:!mb-0"
             >
               <p
-                class="mb-3.5 emotion-4"
+                class="mb-3.5 emotion-2"
                 data-text="true"
               >
                 The width value.
@@ -9353,7 +9353,7 @@ you don't get this value.
     class="emotion-1"
   >
     <h3
-      class="group emotion-10"
+      class="group emotion-8"
       data-heading="true"
     >
       <a
@@ -9365,7 +9365,7 @@ you don't get this value.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-11"
+            class="wrap-anywhere emotion-9"
             data-text="true"
           >
             PermissionHookOptions
@@ -9398,11 +9398,11 @@ you don't get this value.
       </a>
     </h3>
     <p
-      class="mb-3 emotion-71"
+      class="mb-3 emotion-67"
       data-text="true"
     >
       <span
-        class="emotion-70"
+        class="emotion-66"
         data-text="true"
       >
         Literal Type:
@@ -9411,11 +9411,11 @@ you don't get this value.
       multiple types
     </p>
     <p
-      class="emotion-71"
+      class="emotion-67"
       data-text="true"
     >
       <span
-        class="emotion-70"
+        class="emotion-66"
         data-text="true"
       >
         Acceptable values are:
@@ -9423,13 +9423,13 @@ you don't get this value.
       </span>
       <span>
         <code
-          class="emotion-14"
+          class="emotion-4"
           data-text="true"
         >
           PermissionHookBehavior
         </code>
         <span
-          class="emotion-236"
+          class="emotion-228"
           data-text="true"
         >
            | 
@@ -9437,7 +9437,7 @@ you don't get this value.
       </span>
       <span>
         <code
-          class="emotion-14"
+          class="emotion-4"
           data-text="true"
         >
           Options
@@ -9492,7 +9492,7 @@ you don't get this value.
       class="px-5 pt-4"
     >
       <h3
-        class="group emotion-10"
+        class="group emotion-8"
         data-heading="true"
       >
         <a
@@ -9504,7 +9504,7 @@ you don't get this value.
             class="inline"
           >
             <code
-              class="wrap-anywhere emotion-11"
+              class="wrap-anywhere emotion-9"
               data-text="true"
             >
               PermissionStatus
@@ -9537,11 +9537,11 @@ you don't get this value.
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 emotion-17"
+        class="!mb-0 !border-b-0 emotion-15"
         data-text="true"
       >
         <span
-          class="text-inherit flex flex-row gap-2 items-center emotion-70"
+          class="text-inherit flex flex-row gap-2 items-center emotion-66"
           data-text="true"
         >
           PermissionStatus Values
@@ -9552,7 +9552,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-55"
+        class="group emotion-51"
         data-heading="true"
       >
         <a
@@ -9564,7 +9564,7 @@ you don't get this value.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-245"
+              class="!text-inherit emotion-237"
               data-text="true"
             >
               DENIED
@@ -9597,13 +9597,13 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-246"
+        class="mb-3 emotion-238"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
       </code>
       <p
-        class="mb-3.5 emotion-4"
+        class="mb-3.5 emotion-2"
         data-text="true"
       >
         User has denied the permission.
@@ -9613,7 +9613,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-55"
+        class="group emotion-51"
         data-heading="true"
       >
         <a
@@ -9625,7 +9625,7 @@ you don't get this value.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-245"
+              class="!text-inherit emotion-237"
               data-text="true"
             >
               GRANTED
@@ -9658,13 +9658,13 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-246"
+        class="mb-3 emotion-238"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
       </code>
       <p
-        class="mb-3.5 emotion-4"
+        class="mb-3.5 emotion-2"
         data-text="true"
       >
         User has granted the permission.
@@ -9674,7 +9674,7 @@ you don't get this value.
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-55"
+        class="group emotion-51"
         data-heading="true"
       >
         <a
@@ -9686,7 +9686,7 @@ you don't get this value.
             class="inline"
           >
             <code
-              class="!text-inherit emotion-245"
+              class="!text-inherit emotion-237"
               data-text="true"
             >
               UNDETERMINED
@@ -9719,13 +9719,13 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="mb-3 emotion-246"
+        class="mb-3 emotion-238"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"
       </code>
       <p
-        class="mb-3.5 emotion-4"
+        class="mb-3.5 emotion-2"
         data-text="true"
       >
         User hasn't granted or denied the permission yet.
@@ -10196,7 +10196,7 @@ exports[`APISection expo-pedometer 1`] = `
           href="#pedometerresult"
         >
           <code
-            class="emotion-33"
+            class="!inline emotion-7"
             data-text="true"
           >
             PedometerResult
@@ -10224,11 +10224,11 @@ exports[`APISection expo-pedometer 1`] = `
       
 
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-36"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-[5px] [table_&]:mt-[3px]"
+          class="select-none mt-1 [table_&]:mt-0.5"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -10250,7 +10250,7 @@ exports[`APISection expo-pedometer 1`] = `
           </svg>
         </div>
         <div
-          class="text-default w-full last:mb-0 emotion-37"
+          class="text-default w-full leading-normal last:mb-0"
         >
           
 
@@ -10395,7 +10395,7 @@ a start date that is more than seven days in the past returns only the available
       >
         Returns a promise that fulfills with a 
         <code
-          class="emotion-33"
+          class="!inline emotion-7"
           data-text="true"
         >
           boolean
@@ -10649,7 +10649,7 @@ provided with a single argument that is
                   href="#pedometerresult"
                 >
                   <code
-                    class="emotion-33"
+                    class="!inline emotion-7"
                     data-text="true"
                   >
                     PedometerResult
@@ -10727,7 +10727,7 @@ provided with a single argument that is
           href="#subscription"
         >
           <code
-            class="emotion-33"
+            class="!inline emotion-7"
             data-text="true"
           >
             Subscription
@@ -10736,7 +10736,7 @@ provided with a single argument that is
          that enables you to call
 
         <code
-          class="emotion-33"
+          class="!inline emotion-7"
           data-text="true"
         >
           remove()
@@ -10746,11 +10746,11 @@ provided with a single argument that is
       
 
       <blockquote
-        class="flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_p]:!mb-0 emotion-36"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-[5px] [table_&]:mt-[3px]"
+          class="select-none mt-1 [table_&]:mt-0.5"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -10772,7 +10772,7 @@ provided with a single argument that is
           </svg>
         </div>
         <div
-          class="text-default w-full last:mb-0 emotion-37"
+          class="text-default w-full leading-normal last:mb-0"
         >
           
 
@@ -10789,7 +10789,7 @@ provided with a single argument that is
               target="_blank"
             >
               <code
-                class="emotion-33"
+                class="!inline emotion-7"
                 data-text="true"
               >
                 Health Connect API
@@ -10798,7 +10798,7 @@ provided with a single argument that is
             .
 On iOS, the 
             <code
-              class="emotion-33"
+              class="!inline emotion-7"
               data-text="true"
             >
               getStepCountAsync
@@ -10867,7 +10867,7 @@ On iOS, the
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-84"
+            class="wrap-anywhere emotion-80"
             data-text="true"
           >
             PermissionResponse
@@ -10906,7 +10906,7 @@ On iOS, the
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="emotion-86"
+      class="emotion-82"
       data-text="true"
     >
       <span
@@ -11136,7 +11136,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="emotion-103"
+    class="emotion-99"
   >
     <h3
       class="group emotion-2"
@@ -11151,7 +11151,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="emotion-84"
+            class="emotion-80"
             data-text="true"
           >
             PedometerResult
@@ -11251,7 +11251,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-103"
+    class="emotion-99"
   >
     <h3
       class="group emotion-2"
@@ -11266,7 +11266,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="emotion-84"
+            class="emotion-80"
             data-text="true"
           >
             PedometerUpdateCallback
@@ -11365,7 +11365,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-103"
+    class="emotion-99"
   >
     <h3
       class="group emotion-2"
@@ -11380,7 +11380,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="wrap-anywhere emotion-84"
+            class="wrap-anywhere emotion-80"
             data-text="true"
           >
             PermissionExpiration
@@ -11450,7 +11450,7 @@ in order to enable/disable the permission.
           'never'
         </code>
         <span
-          class="emotion-125"
+          class="emotion-121"
           data-text="true"
         >
            | 
@@ -11467,7 +11467,7 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="emotion-103"
+    class="emotion-99"
   >
     <h3
       class="group emotion-2"
@@ -11482,7 +11482,7 @@ in order to enable/disable the permission.
           class="inline"
         >
           <code
-            class="emotion-84"
+            class="emotion-80"
             data-text="true"
           >
             Subscription
@@ -11640,7 +11640,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 emotion-103"
+    class="!p-0 emotion-99"
   >
     <div
       class="px-5 pt-4"
@@ -11658,7 +11658,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="wrap-anywhere emotion-84"
+              class="wrap-anywhere emotion-80"
               data-text="true"
             >
               PermissionStatus
@@ -11691,7 +11691,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h3>
       <p
-        class="!mb-0 !border-b-0 emotion-86"
+        class="!mb-0 !border-b-0 emotion-82"
         data-text="true"
       >
         <span
@@ -11706,7 +11706,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-140"
+        class="group emotion-136"
         data-heading="true"
       >
         <a
@@ -11718,7 +11718,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="!text-inherit emotion-141"
+              class="!text-inherit emotion-137"
               data-text="true"
             >
               DENIED
@@ -11751,7 +11751,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="mb-3 emotion-142"
+        class="mb-3 emotion-138"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -11767,7 +11767,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-140"
+        class="group emotion-136"
         data-heading="true"
       >
         <a
@@ -11779,7 +11779,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="!text-inherit emotion-141"
+              class="!text-inherit emotion-137"
               data-text="true"
             >
               GRANTED
@@ -11812,7 +11812,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="mb-3 emotion-142"
+        class="mb-3 emotion-138"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -11828,7 +11828,7 @@ After calling this function, the listener will no longer receive any events from
       class="border-t border-t-secondary p-5 pb-0 pt-4"
     >
       <h4
-        class="group emotion-140"
+        class="group emotion-136"
         data-heading="true"
       >
         <a
@@ -11840,7 +11840,7 @@ After calling this function, the listener will no longer receive any events from
             class="inline"
           >
             <code
-              class="!text-inherit emotion-141"
+              class="!text-inherit emotion-137"
               data-text="true"
             >
               UNDETERMINED
@@ -11873,7 +11873,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="mb-3 emotion-142"
+        class="mb-3 emotion-138"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"

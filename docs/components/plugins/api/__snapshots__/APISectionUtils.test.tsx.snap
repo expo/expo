@@ -68,7 +68,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       target="_blank"
     >
       <code
-        class="emotion-6"
+        class="!inline emotion-6"
         data-text="true"
       >
         Install Referrer API
@@ -112,11 +112,11 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       </span>
     </p>
     <pre
-      class="relative border border-secondary p-4 my-4 bg-subtle last:mb-0 emotion-9"
+      class="whitespace-pre relative border border-secondary p-4 my-4 bg-subtle rounded-md overflow-x-auto [p+&]:mt-0"
       data-text="true"
     >
       <code
-        class="emotion-10"
+        class="text-2xs text-default"
       >
         <span
           class="token keyword"
