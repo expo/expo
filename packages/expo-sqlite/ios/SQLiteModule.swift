@@ -244,6 +244,9 @@ public final class SQLiteModule: Module {
 
   private func initDb(database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
+    if database.openOptions.enableCRSQLite {
+      crsqlite_init_from_swift(database.pointer)
+    }
     if database.openOptions.enableChangeListener {
       addUpdateHook(database)
     }
@@ -380,6 +383,10 @@ public final class SQLiteModule: Module {
     try maybeThrowForClosedDatabase(db)
     for removedStatement in maybeRemoveAllCachedStatements(database: db) {
       exsqlite3_finalize(removedStatement.pointer)
+    }
+
+    if db.openOptions.enableCRSQLite {
+      exsqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
     }
 
     let ret = exsqlite3_close(db.pointer)
