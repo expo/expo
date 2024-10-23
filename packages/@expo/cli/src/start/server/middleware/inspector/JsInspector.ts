@@ -1,9 +1,6 @@
 import type { CustomMessageHandlerConnection } from '@react-native/dev-middleware';
 import chalk from 'chalk';
 
-import { launchInspectorBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
-import { Log } from '../../../../log';
-import { env } from '../../../../utils/env';
 import { selectAsync } from '../../../../utils/prompts';
 import { pageIsSupported } from '../../metro/debugging/pageIsSupported';
 
@@ -41,18 +38,13 @@ export interface MetroInspectorProxyApp {
   };
 }
 
-let openingBrowserInstance: LaunchBrowserInstance | null = null;
-
-export function openJsInspector(metroBaseUrl: string, app: MetroInspectorProxyApp) {
-  if (env.EXPO_USE_UNSTABLE_DEBUGGER) {
-    return openExperimentalJsInspector(metroBaseUrl, app);
-  } else {
-    return openClassicJsInspector(app);
-  }
-}
-
-async function openExperimentalJsInspector(metroBaseUrl: string, app: MetroInspectorProxyApp) {
+/**
+ * Launch the React Native DevTools by executing the `POST /open-debugger` request.
+ * This endpoint is handled through `@react-native/dev-middleware`.
+ */
+export async function openJsInspector(metroBaseUrl: string, app: MetroInspectorProxyApp) {
   if (!app.reactNative?.logicalDeviceId) {
+    debug('Failed to open React Native DevTools, target is missing device ID');
     return false;
   }
 
@@ -67,34 +59,6 @@ async function openExperimentalJsInspector(metroBaseUrl: string, app: MetroInspe
   }
 
   return response.ok;
-}
-
-/**
- * Chrome DevTools UI implemented for SDK <49.
- * TODO(cedric): Remove this when we fully swap over to the new React Native JS Inspector.
- */
-async function openClassicJsInspector(app: MetroInspectorProxyApp) {
-  Log.log(chalk`{bold Debug:} Opening JavaScript inspector in the browser...`);
-
-  // To update devtoolsFrontendRev, find the full commit hash in the url:
-  // https://chromium.googlesource.com/chromium/src.git/+log/refs/tags/{CHROME_VERSION}/chrome/VERSION
-  //
-  // 1. Replace {CHROME_VERSION} with the target chrome version
-  // 2. Click the first log item in the webpage
-  // 3. The full commit hash is the desired revision
-  const devtoolsFrontendRev = 'd9568d04d7dd79269c5a655d7ada69650c5a8336'; // Chrome 100.0.4896.75
-
-  const urlBase = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsFrontendRev}/devtools_app.html`;
-  const ws = app.webSocketDebuggerUrl.replace(/^ws:\/\//, '');
-  const url = `${urlBase}?panel=console&ws=${encodeURIComponent(ws)}`;
-  await closeJsInspector();
-  openingBrowserInstance = await launchInspectorBrowserAsync(url);
-  return true;
-}
-
-export async function closeJsInspector() {
-  await openingBrowserInstance?.close();
-  openingBrowserInstance = null;
 }
 
 export async function queryInspectorAppAsync(
