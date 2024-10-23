@@ -11,41 +11,36 @@ class AppleMapsGeoJsons: GeoJsons {
 
   func setGeoJsons(geoJsonObjects: [GeoJsonObject]) {
     deleteGeoJsons()
-    if #available(iOS 13.0, *) {
-      for geoJsonObject in geoJsonObjects {
-        // swiftlint:disable force_cast force_try
-        let appleMapsObjects = try! MKGeoJSONDecoder().decode(geoJsonObject.geoJsonString.data(using: .utf8)!) as! [MKGeoJSONFeature]
-        // swiftlint:enable force_cast force_try
+    for geoJsonObject in geoJsonObjects {
+      // swiftlint:disable:next force_cast force_try force_unwrapping
+      let appleMapsObjects = try! MKGeoJSONDecoder().decode(geoJsonObject.geoJsonString.data(using: .utf8)!) as! [MKGeoJSONFeature]
 
-        for object in appleMapsObjects {
-          let geometry = object.geometry.first
-          if let polygon = geometry as? MKPolygon {
-            let expoPolygon = ExpoMKPolygon(points: polygon.points(), count: polygon.pointCount)
-            applyPolygonDefaultStyle(polygon: expoPolygon, defaultStyle: geoJsonObject.defaultStyle)
-            mapView.addOverlay(expoPolygon)
-            overlays.append(expoPolygon)
-          }
-          if let polyline = geometry as? MKPolyline {
-            let expoPolyline = ExpoMKPolyline(points: polyline.points(), count: polyline.pointCount)
-            applyPolylineDefaultStyle(polyline: expoPolyline, defaultStyle: geoJsonObject.defaultStyle)
-            mapView.addOverlay(expoPolyline)
-            overlays.append(expoPolyline)
-          }
-          if let marker = geometry as? MKPointAnnotation {
-            let expoMarker = ExpoMKColorAnnotation(
-              coordinate: CLLocationCoordinate2D(
-                latitude: marker.coordinate.latitude,
-                longitude: marker.coordinate.longitude
-              )
+      for object in appleMapsObjects {
+        let geometry = object.geometry.first
+        if let polygon = geometry as? MKPolygon {
+          let expoPolygon = ExpoMKPolygon(points: polygon.points(), count: polygon.pointCount)
+          applyPolygonDefaultStyle(polygon: expoPolygon, defaultStyle: geoJsonObject.defaultStyle)
+          mapView.addOverlay(expoPolygon)
+          overlays.append(expoPolygon)
+        }
+        if let polyline = geometry as? MKPolyline {
+          let expoPolyline = ExpoMKPolyline(points: polyline.points(), count: polyline.pointCount)
+          applyPolylineDefaultStyle(polyline: expoPolyline, defaultStyle: geoJsonObject.defaultStyle)
+          mapView.addOverlay(expoPolyline)
+          overlays.append(expoPolyline)
+        }
+        if let marker = geometry as? MKPointAnnotation {
+          let expoMarker = ExpoMKColorAnnotation(
+            coordinate: CLLocationCoordinate2D(
+              latitude: marker.coordinate.latitude,
+              longitude: marker.coordinate.longitude
             )
-            applyMarkerDefaultStyle(marker: expoMarker, defaultStyle: geoJsonObject.defaultStyle)
-            mapView.addAnnotation(expoMarker)
-            annotations.append(expoMarker)
-          }
+          )
+          applyMarkerDefaultStyle(marker: expoMarker, defaultStyle: geoJsonObject.defaultStyle)
+          mapView.addAnnotation(expoMarker)
+          annotations.append(expoMarker)
         }
       }
-    } else {
-      // Fallback on earlier versions
     }
   }
 

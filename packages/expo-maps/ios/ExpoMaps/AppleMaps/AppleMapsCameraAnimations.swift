@@ -21,23 +21,11 @@ class AppleMapsCameraAnimations {
     newCamera.heading = cameraMove.bearing ?? mapView.camera.heading
     newCamera.pitch = cameraMove.tilt ?? mapView.camera.pitch
 
-    /*
-     camera.centerCoordinateDistance is much more similar to GoogleMaps zoom when converting, but
-     only available on iOS 13+
-     */
     if let zoom = cameraMove.zoom {
       let distance = AppleMapsView.googleMapsZoomLevelToMeters(latitude: newCamera.centerCoordinate.latitude, zoom: Double(zoom))
-      if #available(iOS 13.0, *) {
-        newCamera.centerCoordinateDistance = distance
-      } else {
-        newCamera.altitude = distance * cos(Double(newCamera.pitch) * Double.pi / 180)
-      }
+      newCamera.centerCoordinateDistance = distance
     } else {
-      if #available(iOS 13.0, *) {
-        newCamera.centerCoordinateDistance = mapView.camera.centerCoordinateDistance
-      } else {
-        newCamera.altitude = mapView.camera.altitude
-      }
+      newCamera.centerCoordinateDistance = mapView.camera.centerCoordinateDistance
     }
 
     if let delta = cameraMove.latLngDelta {
