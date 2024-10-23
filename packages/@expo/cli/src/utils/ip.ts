@@ -8,10 +8,9 @@ import internalIp from 'internal-ip';
   * This is wrapped in `spawnSync` since the original `getIpAddress` utility exported
   * in this module is used synchronosly. An appropriate timeout has been set and UDP
   * ports don't send a message when opened.
-  * @throws If no address can be determined.
   */
-function getRouteAddress(): string {
-  const { status, stdout, stderr } = spawnSync(process.execPath, ['-'], {
+function getRouteAddress(): string | null {
+  const { error, status, stdout } = spawnSync(process.execPath, ['-'], {
     // This should be the cheapest method to determine the default route
     // By opening a socket to a publicly routed IP address, we let the default
     // gateway handle this socket, which means the socket's address will be
@@ -37,12 +36,12 @@ function getRouteAddress(): string {
     windowsHide: true,
   });
   // We only use the stdout as an IP, if it validates as an IP and we got a zero exit code
-  if (status && stderr) {
-    throw new Error(stderr);
+  if (status || error) {
+    return null;
   } else if (!status && typeof stdout === 'string' && isIPv4(stdout.trim())) {
     return stdout.trim();
   } else {
-    throw new Error('No route address could be determined');
+    return null;
   }
 }
 
@@ -53,6 +52,9 @@ function getIPAddress(): string | null {
   // We check the IP address we get against the available network interfaces
   // It's only an internal IP address if we have a matching address on an interface's IP assignment
   const routeAddress = getRouteAddress();
+  if (!routeAddress) {
+    return null;
+  }
   const ifaces = networkInterfaces();
   for (const iface in ifaces) {
     const assignments = ifaces[iface];
@@ -66,12 +68,6 @@ function getIPAddress(): string | null {
   return null;
 }
 
-const FALLBACK_INTERNAL_IP = '127.0.0.1';
-
 export function getIpAddress(): string {
-  try {
-    return internalIp.v4.sync() || getIPAddress() || FALLBACK_INTERNAL_IP;
-  } catch (_error) {
-    return FALLBACK_INTERNAL_IP;
-  }
+  return internalIp.v4.sync() || getIPAddress() || '127.0.0.1';
 }
