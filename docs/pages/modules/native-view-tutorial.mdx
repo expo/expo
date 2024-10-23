@@ -115,6 +115,7 @@ Now let's run the example project to make sure everything is working. We'll need
 <Terminal
   cmdCopy="cd example && npx expo run:ios"
   cmd={[
+    '# Navigate to the example directory',
     '$ cd example',
     '# Run the example app on iOS',
     '$ npx expo run:ios',
@@ -186,7 +187,21 @@ class ExpoWebView(context: Context, appContext: AppContext) : ExpoView(context, 
 
 ### Example app
 
-No changes are needed, we can rebuild and run the app and you will see the [Expo Modules API overview page](/modules/).
+No changes are required. You can rebuild and run the app using the following commands:
+
+<Terminal
+  cmdCopy="npx expo prebuild --clean && npx expo run:ios"
+  cmd={[
+    '# Prebuild the example app with the --clean flag to ensure a clean build',
+    'npx expo prebuild --clean',
+    '# Run the example app on iOS',
+    'npx expo run:ios',
+    '# Run the example app on Android',
+    'npx expo run:android',
+  ]}
+/>
+
+After that, you should be able to see the [Expo Modules API overview page](/modules/). If the changes are not reflected, try reinstalling the app.
 
 </Step>
 
@@ -273,7 +288,20 @@ export default function App() {
 }
 ```
 
-When you rebuild and run the app, you will now see the Expo homepage.
+Rebuild the example app:
+
+<Terminal
+  cmdCopy="npx expo prebuild --clean && npx expo run:ios"
+  cmd={[
+    'npx expo prebuild --clean',
+    '# Run the example app on iOS',
+    'npx expo run:ios',
+    '# Run the example app on Android',
+    'npx expo run:android',
+  ]}
+/>
+
+After that, you should be able to see the [Expo homepage](/https://expo.dev) in the WebView.
 
 </Step>
 
