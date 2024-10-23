@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump `sucrase@3.34.0` to `sucrase@0.35.0` to to remove transitive dependency on `glob@7`
+
 ## 10.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes
