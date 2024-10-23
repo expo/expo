@@ -225,19 +225,15 @@ class Kernel : KernelInterface() {
           val nativeHost = KernelReactNativeHost(
             applicationContext,
             exponentManifest,
-            KernelData(
-              kernelInitialURL,
-              localBundlePath,
-              kernelMainModuleName
-            )
+            KernelData(kernelInitialURL, localBundlePath)
           )
           val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
           reactHost = ReactHostFactory.createFromReactNativeHost(applicationContext, hostWrapper)
 
           if (nativeHost.devSupportEnabled) {
             Exponent.enableDeveloperSupport(
-              kernelDebuggerHost,
-              kernelMainModuleName
+              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost(),
+              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
             )
           }
 
@@ -267,10 +263,6 @@ class Kernel : KernelInterface() {
     }
   }
 
-  private val kernelDebuggerHost: String
-    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost()
-  private val kernelMainModuleName: String
-    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
   private val bundleUrl: String?
     get() {
       return try {
