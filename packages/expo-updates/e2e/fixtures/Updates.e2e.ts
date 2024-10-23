@@ -540,7 +540,7 @@ describe('JS API tests', () => {
     Server.stop();
   });
 
-  fit('downloads and runs update with JS API', async () => {
+  it('downloads and runs update with JS API', async () => {
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
     const hash = await Update.copyBundleToStaticFolder(
