@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for react-native 0.76 ([#32285](https://github.com/expo/expo/pull/32285) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
