@@ -1,9 +1,0 @@
-@@ -33,7 +33,7 @@
- import java.util.concurrent.Executors;
- 
- @ReactModule(name = AsyncStorageModule.NAME)
--public final class AsyncStorageModule
-+public class AsyncStorageModule
-     extends NativeAsyncStorageModuleSpec implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
- 
-   // changed name to not conflict with AsyncStorage from RN repo

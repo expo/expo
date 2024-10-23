@@ -34,7 +34,7 @@ class MailComposerModule : Module() {
           .putCcRecipients(Intent.EXTRA_CC)
           .putBccRecipients(Intent.EXTRA_BCC)
           .putSubject(Intent.EXTRA_SUBJECT)
-          .putBody(Intent.EXTRA_TEXT, options.isHtml ?: false)
+          .putBody(Intent.EXTRA_TEXT, options.isHtml == true)
           .putAttachments(
             Intent.EXTRA_STREAM,
             application

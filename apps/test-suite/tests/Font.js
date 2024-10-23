@@ -1,4 +1,4 @@
-import Constants from 'expo-constants';
+import { isRunningInExpoGo } from 'expo';
 import * as Font from 'expo-font';
 import { Platform } from 'react-native';
 
@@ -38,7 +38,9 @@ export async function test({ beforeEach, afterAll, describe, it, expect }) {
       }
       expect(error).toBeNull();
       expect(Font.isLoaded('cool-font')).toBe(true);
-      expect(Font.getLoadedFonts().length).toBe(loadedFonts.length + 1);
+      // We are loading 1 font, but it's present under 2 names `cool-font` and `CosmicSansMS`.
+      // The first one is an provided alias, the second one is a font name from the font file.
+      expect(Font.getLoadedFonts().length).toBe(loadedFonts.length + 2);
 
       // Test that the font-display css is correctly made and located in a <style/> element with ID `expo-generated-fonts`
       if (Platform.OS === 'web') {
@@ -55,7 +57,7 @@ export async function test({ beforeEach, afterAll, describe, it, expect }) {
       }
     });
 
-    if (Platform.OS !== 'web' && Constants.expoConfig.slug === 'bare-expo') {
+    if (Platform.OS !== 'web' && !isRunningInExpoGo()) {
       it(`isLoaded should support custom native fonts`, () => {
         expect(Font.isLoaded('icomoon')).toBe(true);
         expect(Font.isLoaded('NonExistedFont')).toBe(false);

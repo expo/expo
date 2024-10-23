@@ -196,9 +196,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
-        runtimeModule: 'babel-preset-expo/react-compiler-runtime.js',
-        // enableUseMemoCachePolyfill: true,
-        // compilationMode: 'infer',
+        // TODO: Update when we bump React to 19.
+        target: '18',
         environment: {
           enableResetCacheOnSourceFileChanges: !isProduction,
           ...(platformOptions['react-compiler']?.environment ?? {}),

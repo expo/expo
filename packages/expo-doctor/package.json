@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.11.2",
+  "version": "1.11.3",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
@@ -33,15 +33,15 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config": "~9.0.0",
-    "@expo/json-file": "~8.3.0",
-    "@expo/schemer": "1.5.2",
+    "@expo/config": "~10.0.0",
+    "@expo/json-file": "~9.0.0",
+    "@expo/schemer": "1.5.3",
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.8",
     "@vercel/ncc": "0.38.1",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-module-scripts": "^3.3.0",
+    "expo-module-scripts": "^4.0.0",
     "fast-glob": "^3.3.2",
     "getenv": "^1.0.0",
     "ignore": "^5.3.2",

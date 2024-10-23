@@ -1,25 +1,28 @@
 import ExpoModulesCore
 
-private let recordingStatus = "onRecordingStatusUpdate"
+private let recordingStatus = "recordingStatusUpdate"
 
 class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   let id = UUID().uuidString
   private lazy var recordingDelegate = {
     RecordingDelegate(resultHandler: self)
   }()
-  var startTimestamp = 0
-  var previousRecordingDuration = 0
+  private var startTimestamp = 0
+  private var previousRecordingDuration = 0
+  private var isPrepared = false
+  private lazy var recordingSession = AVAudioSession.sharedInstance()
+  var allowsRecording = true
 
-  override init(_ pointer: AVAudioRecorder) {
-    super.init(pointer)
-    pointer.delegate = recordingDelegate
+  override init(_ ref: AVAudioRecorder) {
+    super.init(ref)
+    ref.delegate = recordingDelegate
 
     do {
-      try AVAudioSession.sharedInstance().setCategory(.playAndRecord)
+      try recordingSession.setCategory(.playAndRecord, mode: .default)
+      try recordingSession.setActive(true)
     } catch {
-      print("Failed to set recording category")
+      log.info("Failed to update the recording session")
     }
-    ref.prepareToRecord()
   }
 
   var isRecording: Bool {
@@ -38,12 +41,48 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ref.url.absoluteString
   }
 
+  private var currentDuration: Int {
+    deviceCurrentTime - startTimestamp
+  }
+
+  func prepare(options: RecordingOptions?) {
+    if let options {
+      ref = AudioUtils.createRecorder(directory: recordingDirectory, with: options)
+      ref.delegate = recordingDelegate
+    }
+    ref.prepareToRecord()
+    isPrepared = true
+  }
+
+  func startRecording() -> [String: Any] {
+    if !allowsRecording {
+      log.info("Recording is currently disabled")
+      return [:]
+    }
+    ref.record()
+    startTimestamp = Int(deviceCurrentTime)
+    return getRecordingStatus()
+  }
+
+  func stopRecording() {
+    ref.stop()
+    startTimestamp = 0
+    previousRecordingDuration = 0
+    isPrepared = false
+  }
+
+  func pauseRecording() {
+    ref.pause()
+    previousRecordingDuration += currentDuration
+    startTimestamp = 0
+  }
+
   func getRecordingStatus() -> [String: Any] {
-    let currentDuration = isRecording ? (deviceCurrentTime - startTimestamp) : 0
+    let currentDuration = isRecording ? currentDuration : 0
     let duration = previousRecordingDuration + Int(currentDuration)
 
     var result: [String: Any] = [
-      "canRecord": true,
+      "canRecord": isPrepared,
       "isRecording": isRecording,
       "durationMillis": duration,
       "mediaServicesDidReset": false,
@@ -77,6 +116,13 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "error": error?.localizedDescription,
       "url": nil
     ])
+  }
+
+  private var recordingDirectory: URL? {
+    guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
+      return nil
+    }
+    return directory
   }
 
   override func sharedObjectWillRelease() {

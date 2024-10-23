@@ -207,6 +207,98 @@ export default function Button({ title }) {
 - Server actions can only return serializable data.
 - Server Actions run on the server and are a good place to put logic that should not be exposed to the client.
 
+### Rendering in Server Actions
+
+Server Actions in Expo Router can render React components on the server and stream back an **RSC payload** (a custom JSON-like format that's maintained by the React team) for rendering on the client. This is similar to server-side rendering (SSR) on the web,
+
+For example, the following server action will render some text:
+
+```tsx components/server-actions.tsx
+'use server';
+
+// Optional: Import "server-only" for sanity.
+import 'server-only';
+
+import { View, Image, Text } from 'react-native';
+
+export async function renderProfile({
+  username,
+  accessToken,
+}: {
+  username: string;
+  accessToken: string;
+}) {
+  // NOTE: Rate limits, GDPR, and other server-side operations can be done here.
+
+  // Fetch some data securely from an API.
+  const { name, image } = await fetch(`https://api.example.com/profile/${username}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      // Use secret environment variables securely as this code will live on the server.
+      // The EXPO_PUBLIC_ prefix is not required here.
+      'X-Secret': process.env.SECRET,
+    },
+  }).then(res => res.json());
+
+  // Render
+  return (
+    <View>
+      <Image source={{ uri: image }} />
+      <Text>{name}</Text>
+    </View>
+  );
+}
+```
+
+This server action can be invoked from a client component and the contents will be streamed back to the client:
+
+```tsx components/profile.tsx
+'use client';
+
+import { useLocalSearchParams } from 'expo-router';
+import * as React from 'react';
+import { Text } from 'react-native';
+
+import { renderProfile } from '@/components/server-actions';
+
+// Loading state that renders while data is being fetched.
+function Fallback() {
+  return <Text>Loading...</Text>;
+}
+
+export default function Profile() {
+  const { username } = useLocalSearchParams();
+  const { accessToken } = useCustomAuthProvider();
+
+  // Call the server action with the username and access token.
+  const profile = React.useMemo(
+    () => renderProfile({ username, accessToken }),
+    [username, accessToken]
+  );
+
+  // Render the profile asynchronously with React suspense and a custom loading state.
+  return <React.Suspense fallback={<Fallback />}>{profile}</React.Suspense>;
+}
+```
+
+## Library compatibility
+
+Not all libraries are optimized for React Server Components yet. You can use the `"use client"` directive to mark a file as a client component and use it in a server component, this can be used to temporarily workaround compatibility issues.
+
+For example, consider a library `react-native-unoptimized` does not ship with "use client" directives yet. You can workaround this by creating a module and re-exporting each module:
+
+```tsx lib/react-native-unoptimized.tsx
+// This directive opts the module into client-side rendering.
+'use client';
+
+// Re-exporting the imports from the library.
+export { One, Two, Three } from 'react-native-unoptimized';
+```
+
+Avoid using `export * from '...'` as this breaks some of the internals of interopting between the server and client.
+
+Modules marked with `"use client"` cannot be dot-accessed from server components. This means operations like `StyleSheet.create` or `Platform.OS` will not work on the server without further optimization in the `react-native` package.
+
 ## CSS
 
 Expo Router supports importing global CSS and CSS modules in Server Components.
@@ -364,10 +456,11 @@ Library authors can test their modules support Server Components by using `jest-
 - Server Rendering RSC payloads to HTML is not supported yet.
 - `generateStaticParams` is not yet supported.
 - HTML `form` integration with Server Actions is not supported yet (this partially works automatically, but data is not encrypted).
+- Server actions that invoke other server actions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.
 
 ## Deployment
 
-> Avoid using this feature in production as it's not stable yet. We'll streamline all of this to a single command in the future.
+> Avoid using universal server components in production as they are not stable yet. We'll streamline all of this to a single command in the future.
 
 ### Web
 
@@ -377,26 +470,4 @@ You can host the website locally with the [express server adapter](/router/refer
 
 ### Native
 
-Unlike standard native builds, React Server Components requires an additional server to be generated and hosted. This server is responsible for rendering the Server Components and serving the data to the native app. We'll generate this server code during the native build to optimize and link static assets to the binary.
-
-Set the `origin` in your app config to the URL of your server:
-
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-router",
-        {
-          // Setting this to a local server URL.
-          "origin": "http://localhost:3000"
-        }
-      ]
-    ]
-  }
-}
-```
-
-To deploy your native app to production, you'll need to build it for production with `npx expo run:android --variant release` or `npx expo run:ios --configuration Release`. This will generate the required server code to `./.expo/server/<platform>` along with building and embedding any assets that could potentially be local-first into the binary.
-
-You can host the website locally with the [express server adapter](/router/reference/api-routes/#express), substituting the **dist** directory for the `.expo/server/<platform>` directory.
+Production exports for React Server Components on native are not yet supported. This is planned for Expo SDK 53.

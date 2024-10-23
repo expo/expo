@@ -9,7 +9,6 @@ import {
   mergeLinkingOptionsAsync,
   resolveExtraBuildDependenciesAsync,
   resolveModulesAsync,
-  resolveSearchPathsAsync,
   verifySearchResults,
 } from './autolinking';
 import { type RNConfigCommandOptions, createReactNativeConfigAsync } from './reactNativeConfig';
@@ -100,19 +99,32 @@ function registerReactNativeConfigCommand() {
       ).default(process.cwd(), 'process.cwd()')
     )
     .option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false)
-    .action(async (paths, options) => {
-      if (!['android', 'ios'].includes(options.platform)) {
-        throw new Error(`Unsupported platform: ${options.platform}`);
+    .action(async (searchPaths, providedOptions) => {
+      if (!['android', 'ios'].includes(providedOptions.platform)) {
+        throw new Error(`Unsupported platform: ${providedOptions.platform}`);
       }
-      const projectRoot = path.dirname(await getProjectPackageJsonPathAsync(options.projectRoot));
-      const searchPaths = await resolveSearchPathsAsync(paths, projectRoot);
-      const providedOptions: RNConfigCommandOptions = {
-        platform: options.platform,
+      const projectRoot = path.dirname(
+        await getProjectPackageJsonPathAsync(providedOptions.projectRoot)
+      );
+      const linkingOptions = await mergeLinkingOptionsAsync<SearchOptions>(
+        searchPaths.length > 0
+          ? {
+              ...providedOptions,
+              projectRoot,
+              searchPaths,
+            }
+          : {
+              ...providedOptions,
+              projectRoot,
+            }
+      );
+      const options: RNConfigCommandOptions = {
+        platform: linkingOptions.platform,
         projectRoot,
-        searchPaths,
+        searchPaths: linkingOptions.searchPaths,
       };
-      const results = await createReactNativeConfigAsync(providedOptions);
-      if (options.json) {
+      const results = await createReactNativeConfigAsync(options);
+      if (providedOptions.json) {
         console.log(JSON.stringify(results));
       } else {
         console.log(require('util').inspect(results, false, null, true));

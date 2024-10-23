@@ -393,7 +393,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
       baseUrl,
-      hydrate: true,
+      hydrate: env.EXPO_WEB_DEV_HYDRATE,
     });
     return {
       content,
@@ -836,13 +836,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
     const isReactServerComponentsEnabled = !!exp.experiments?.reactServerComponents;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
+
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+    const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
     const reactCompiler = !!exp.experiments?.reactCompiler;
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
+
+    if (isReactServerComponentsEnabled && useServerRendering) {
+      throw new CommandError(
+        `Experimental server component support does not support 'web.output: ${exp.web!.output}' yet. Use 'web.output: "single"' during the experimental phase.`
+      );
+    }
 
     const instanceMetroOptions = {
       isExporting: !!options.isExporting,
@@ -936,6 +944,38 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
       }
 
+      if (useServerRendering || isReactServerComponentsEnabled) {
+        observeAnyFileChanges(
+          {
+            metro,
+            server,
+          },
+          (events) => {
+            if (hasApiRoutes) {
+              // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
+              // aggressively to ensure we always have the latest. The only caching we really get here is for
+              // cases where the user is making subsequent requests to the same API route without changing anything.
+              // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
+              // up for a lot of the overhead.
+              this.invalidateApiRouteCache();
+            } else if (!hasWarnedAboutApiRoutes()) {
+              for (const event of events) {
+                if (
+                  // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
+                  // API Routes are not enabled in the project.
+                  event.metadata?.type !== 'd' &&
+                  // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
+                  event.filePath.startsWith(appDir) &&
+                  isApiRouteConvention(event.filePath)
+                ) {
+                  warnInvalidWebOutput();
+                }
+              }
+            }
+          }
+        );
+      }
+
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
         this.bindRSCDevModuleInjectionHandler();
@@ -952,7 +992,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {
-        if (useServerRendering) {
+        if (!useServerRendering || isReactServerComponentsEnabled) {
+          // This MUST run last since it's the fallback.
+          middleware.use(
+            new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+          );
+        } else {
           middleware.use(
             createRouteHandlerMiddleware(this.projectRoot, {
               appDir,
@@ -965,41 +1010,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 return this.getStaticPageAsync(pathname);
               },
             })
-          );
-
-          observeAnyFileChanges(
-            {
-              metro,
-              server,
-            },
-            (events) => {
-              if (exp.web?.output === 'server') {
-                // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
-                // aggressively to ensure we always have the latest. The only caching we really get here is for
-                // cases where the user is making subsequent requests to the same API route without changing anything.
-                // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
-                // up for a lot of the overhead.
-                this.invalidateApiRouteCache();
-              } else if (!hasWarnedAboutApiRoutes()) {
-                for (const event of events) {
-                  if (
-                    // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
-                    // API Routes are not enabled in the project.
-                    event.metadata?.type !== 'd' &&
-                    // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
-                    event.filePath.startsWith(appDir) &&
-                    isApiRouteConvention(event.filePath)
-                  ) {
-                    warnInvalidWebOutput();
-                  }
-                }
-              }
-            }
-          );
-        } else {
-          // This MUST run last since it's the fallback.
-          middleware.use(
-            new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
           );
         }
       }

@@ -286,16 +286,15 @@ abstract class ReactNativeActivity :
   }
 
   override fun onResume() {
-    super.onResume()
     if (!isCrashed) {
       reactHost?.onHostResume(this, this)
       KernelNetworkInterceptor.onResume(reactHost)
     }
+    super.onResume()
   }
 
   override fun onDestroy() {
     super.onDestroy()
-    destroyReactHost()
     handler.removeCallbacksAndMessages(null)
     EventBus.getDefault().unregister(this)
   }
@@ -316,10 +315,8 @@ abstract class ReactNativeActivity :
   open val isDebugModeEnabled: Boolean
     get() = manifest?.isDevelopmentMode() ?: false
 
-  protected open fun destroyReactHost() {
+  open fun destroyReactHost() {
     if (!isCrashed) {
-      reactSurface?.stop()
-      reactSurface = null
       reactHost?.onHostDestroy()
     }
   }
@@ -595,9 +592,6 @@ abstract class ReactNativeActivity :
 
   val devSupportManager: DevSupportManager?
     get() = reactHost?.devSupportManager
-
-  val jsExecutorName: String?
-    get() = reactNativeHost?.reactInstanceManager?.jsExecutorName
 
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this

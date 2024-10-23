@@ -1,4 +1,4 @@
-import { Camera, CameraType } from 'expo-camera/legacy';
+import { Camera, CameraView } from 'expo-camera';
 import * as GL from 'expo-gl';
 import { GLView } from 'expo-gl';
 import React from 'react';
@@ -36,11 +36,11 @@ class GLCameraScreen extends React.Component<object, State> {
 
   readonly state: State = {
     zoom: 0,
-    type: CameraType.back,
+    type: 'back',
   };
 
   _rafID?: number;
-  camera?: Camera;
+  camera?: CameraView;
   glView?: GL.GLView;
   texture?: WebGLTexture;
 
@@ -124,7 +124,7 @@ class GLCameraScreen extends React.Component<object, State> {
 
   toggleFacing = () => {
     this.setState((state) => ({
-      type: state.type === CameraType.back ? CameraType.front : CameraType.back,
+      type: state.type === 'back' ? 'front' : 'back',
     }));
   };
 
@@ -143,9 +143,9 @@ class GLCameraScreen extends React.Component<object, State> {
   render() {
     return (
       <View style={styles.container}>
-        <Camera
+        <CameraView
           style={StyleSheet.absoluteFill}
-          type={this.state.type}
+          facing={this.state.type}
           zoom={this.state.zoom}
           ref={(ref) => (this.camera = ref!)}
         />
