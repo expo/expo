@@ -2989,13 +2989,6 @@
   dependencies:
     "@react-native/codegen" "0.76.0"
 
-"@react-native/babel-plugin-codegen@0.76.0-rc.6":
-  version "0.76.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@react-native/babel-plugin-codegen/-/babel-plugin-codegen-0.76.0-rc.6.tgz#9ea6fab555484648ed4d3676fe4c77e03f857c78"
-  integrity sha512-4c34f/W9iZgev7VuwCqWQPedmLbeGN+8a47D+S2GoZcpcNXadC9VoroR9lv4XRcSSk2A/SWlO4lScS8Px3+U7A==
-  dependencies:
-    "@react-native/codegen" "0.76.0-rc.6"
-
 "@react-native/babel-preset@0.76.0":
   version "0.76.0"
   resolved "https://registry.yarnpkg.com/@react-native/babel-preset/-/babel-preset-0.76.0.tgz#0a6805222c9b69a91673cf2a5763c90bb627cc32"
@@ -3047,75 +3040,10 @@
     babel-plugin-transform-flow-enums "^0.0.2"
     react-refresh "^0.14.0"
 
-"@react-native/babel-preset@0.76.0-rc.6":
-  version "0.76.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@react-native/babel-preset/-/babel-preset-0.76.0-rc.6.tgz#56ba8de0fdaab91e2679adcd718e9489687a1233"
-  integrity sha512-/ffHCxtc7KiNCDqxR0DVlXdgAkb56velLrx0j//l5SFr0f4pZYIpovEM0Y3u72ayLBVD4Wlj68rrv0BDUnsaUA==
-  dependencies:
-    "@babel/core" "^7.25.2"
-    "@babel/plugin-proposal-export-default-from" "^7.24.7"
-    "@babel/plugin-syntax-dynamic-import" "^7.8.3"
-    "@babel/plugin-syntax-export-default-from" "^7.24.7"
-    "@babel/plugin-syntax-nullish-coalescing-operator" "^7.8.3"
-    "@babel/plugin-syntax-optional-chaining" "^7.8.3"
-    "@babel/plugin-transform-arrow-functions" "^7.24.7"
-    "@babel/plugin-transform-async-generator-functions" "^7.25.4"
-    "@babel/plugin-transform-async-to-generator" "^7.24.7"
-    "@babel/plugin-transform-block-scoping" "^7.25.0"
-    "@babel/plugin-transform-class-properties" "^7.25.4"
-    "@babel/plugin-transform-classes" "^7.25.4"
-    "@babel/plugin-transform-computed-properties" "^7.24.7"
-    "@babel/plugin-transform-destructuring" "^7.24.8"
-    "@babel/plugin-transform-flow-strip-types" "^7.25.2"
-    "@babel/plugin-transform-for-of" "^7.24.7"
-    "@babel/plugin-transform-function-name" "^7.25.1"
-    "@babel/plugin-transform-literals" "^7.25.2"
-    "@babel/plugin-transform-logical-assignment-operators" "^7.24.7"
-    "@babel/plugin-transform-modules-commonjs" "^7.24.8"
-    "@babel/plugin-transform-named-capturing-groups-regex" "^7.24.7"
-    "@babel/plugin-transform-nullish-coalescing-operator" "^7.24.7"
-    "@babel/plugin-transform-numeric-separator" "^7.24.7"
-    "@babel/plugin-transform-object-rest-spread" "^7.24.7"
-    "@babel/plugin-transform-optional-catch-binding" "^7.24.7"
-    "@babel/plugin-transform-optional-chaining" "^7.24.8"
-    "@babel/plugin-transform-parameters" "^7.24.7"
-    "@babel/plugin-transform-private-methods" "^7.24.7"
-    "@babel/plugin-transform-private-property-in-object" "^7.24.7"
-    "@babel/plugin-transform-react-display-name" "^7.24.7"
-    "@babel/plugin-transform-react-jsx" "^7.25.2"
-    "@babel/plugin-transform-react-jsx-self" "^7.24.7"
-    "@babel/plugin-transform-react-jsx-source" "^7.24.7"
-    "@babel/plugin-transform-regenerator" "^7.24.7"
-    "@babel/plugin-transform-runtime" "^7.24.7"
-    "@babel/plugin-transform-shorthand-properties" "^7.24.7"
-    "@babel/plugin-transform-spread" "^7.24.7"
-    "@babel/plugin-transform-sticky-regex" "^7.24.7"
-    "@babel/plugin-transform-typescript" "^7.25.2"
-    "@babel/plugin-transform-unicode-regex" "^7.24.7"
-    "@babel/template" "^7.25.0"
-    "@react-native/babel-plugin-codegen" "0.76.0-rc.6"
-    babel-plugin-syntax-hermes-parser "^0.23.1"
-    babel-plugin-transform-flow-enums "^0.0.2"
-    react-refresh "^0.14.0"
-
 "@react-native/codegen@0.76.0":
   version "0.76.0"
   resolved "https://registry.yarnpkg.com/@react-native/codegen/-/codegen-0.76.0.tgz#32a33bea09946fb59e8459e9359b45515c0f1a93"
   integrity sha512-x0zzK1rb7ZSIAeHRcRSjRo+VtLROjln1IKnQSPLEZEdyQfWNXqgiMk59E5hW7KE6I05upqfbf85PRAb5WndXdw==
-  dependencies:
-    "@babel/parser" "^7.25.3"
-    glob "^7.1.1"
-    hermes-parser "0.23.1"
-    invariant "^2.2.4"
-    jscodeshift "^0.14.0"
-    mkdirp "^0.5.1"
-    nullthrows "^1.1.1"
-    yargs "^17.6.2"
-
-"@react-native/codegen@0.76.0-rc.6":
-  version "0.76.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@react-native/codegen/-/codegen-0.76.0-rc.6.tgz#9c33bb4d2b3e75c1333622dc3d5c6f11dcb47c4f"
-  integrity sha512-LX/qu8DdGPhkVdvAs2ManFJlhi/yW5nDM/myp3PeZGoZzNXpxzh9tLUQ8md3AKNvHXa5nrXboL5RygDb+zfceA==
   dependencies:
     "@babel/parser" "^7.25.3"
     glob "^7.1.1"
@@ -3147,11 +3075,6 @@
   resolved "https://registry.yarnpkg.com/@react-native/debugger-frontend/-/debugger-frontend-0.76.0.tgz#73a5b2b42cfbb4dd0e53f848be34304a13bf04e1"
   integrity sha512-v4J22ZN1/7BQYhYvnZYi2pzd87MmTCEnxtTiktaUOhmx3YSF47LGo1Q2UfUE5YOzoRftiJTXDKvzDbI/hqAzgg==
 
-"@react-native/debugger-frontend@0.76.0-rc.6":
-  version "0.76.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@react-native/debugger-frontend/-/debugger-frontend-0.76.0-rc.6.tgz#c764a95062af91e2ba59b79ab1fbdc8ba0bc39ee"
-  integrity sha512-7mMh5torqbSOMFnL+4m21cWwFP4MJ1uWv6d+wCPta89dYm5BMv7/M2dpogT0Xau/i6OBof09m2QwfigY9j3bAA==
-
 "@react-native/dev-middleware@0.76.0":
   version "0.76.0"
   resolved "https://registry.yarnpkg.com/@react-native/dev-middleware/-/dev-middleware-0.76.0.tgz#85d3e65b35a581fe4c5338af085bbc1e2cf25eb6"
@@ -3159,23 +3082,6 @@
   dependencies:
     "@isaacs/ttlcache" "^1.4.1"
     "@react-native/debugger-frontend" "0.76.0"
-    chrome-launcher "^0.15.2"
-    chromium-edge-launcher "^0.2.0"
-    connect "^3.6.5"
-    debug "^2.2.0"
-    nullthrows "^1.1.1"
-    open "^7.0.3"
-    selfsigned "^2.4.1"
-    serve-static "^1.13.1"
-    ws "^6.2.3"
-
-"@react-native/dev-middleware@0.76.0-rc.6":
-  version "0.76.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@react-native/dev-middleware/-/dev-middleware-0.76.0-rc.6.tgz#c2753c8da8362cb9b96a4df0c39d760061a21f5c"
-  integrity sha512-e0Py9yEnksUZEdaR9LUev/8K6WHPOLRDNbEN7l3ZJqCD1LWMaejaIr0sjFp7SPkySXBqLOlrbPFfW2G3xYc3vA==
-  dependencies:
-    "@isaacs/ttlcache" "^1.4.1"
-    "@react-native/debugger-frontend" "0.76.0-rc.6"
     chrome-launcher "^0.15.2"
     chromium-edge-launcher "^0.2.0"
     connect "^3.6.5"
@@ -3210,11 +3116,6 @@
   version "0.76.0"
   resolved "https://registry.yarnpkg.com/@react-native/normalize-colors/-/normalize-colors-0.76.0.tgz#5cf89da962bcd2680eccbbceba6144ea6cf035c3"
   integrity sha512-r+pjeIhzehb+bJUUUrztOQb+n6J9DeaLbF6waLgiHa5mFOiwP/4/iWS68inSZnnBtmXHkN2IYiMXzExx8hieWA==
-
-"@react-native/normalize-colors@0.76.0-rc.6":
-  version "0.76.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@react-native/normalize-colors/-/normalize-colors-0.76.0-rc.6.tgz#68ebb09e0c284c1acf4427b9f4125934f40ef3a9"
-  integrity sha512-IOkd80lYJcY06igiPhuUFNZj9+175ekL1H52zytL/ngV8O74/BzwkO87SRTS1FRv79chza02YcYESkoP9E2/IQ==
 
 "@react-native/normalize-colors@^0.74.1":
   version "0.74.88"
