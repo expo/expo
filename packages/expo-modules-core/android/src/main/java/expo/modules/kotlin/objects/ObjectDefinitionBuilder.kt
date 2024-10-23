@@ -511,7 +511,7 @@ open class ObjectDefinitionBuilder {
    * Creates module's lifecycle listener that is called right after all event listeners are removed for given event.
    */
   fun <T> OnStopObserving(enum: T, body: () -> Unit) where T : Enumerable, T : Enum<T> {
-    OnStartObserving(convertEnumToString(enum), body)
+    OnStopObserving(convertEnumToString(enum), body)
   }
 
   /**
