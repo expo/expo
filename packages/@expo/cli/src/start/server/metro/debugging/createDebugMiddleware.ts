@@ -67,7 +67,8 @@ function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
       // Rebroadcast the Network events to all connected debuggers
       debuggerWebsocket.clients.forEach((debuggerSocket) => {
         if (debuggerSocket.readyState === debuggerSocket.OPEN) {
-          debuggerSocket.send(data);
+          // Convert the payload from binary to string, otherwise RNDT receives binary
+          debuggerSocket.send(data.toString());
         }
       });
     });
