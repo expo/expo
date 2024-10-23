@@ -70,10 +70,6 @@ class ExpoWebViewModule : Module() {
 }
 ```
 
-```tsx src/index.ts
-export { default as WebView, Props as WebViewProps } from './ExpoWebView';
-```
-
 ```tsx src/ExpoWebView.tsx
 import { ViewProps } from 'react-native';
 import { requireNativeViewManager } from 'expo-modules-core';
@@ -86,6 +82,10 @@ const NativeView: React.ComponentType<Props> = requireNativeViewManager('ExpoWeb
 export default function ExpoWebView(props: Props) {
   return <NativeView {...props} />;
 }
+```
+
+```tsx src/index.ts
+export { default as WebView, Props as WebViewProps } from './ExpoWebView';
 ```
 
 ```ts example/App.tsx
