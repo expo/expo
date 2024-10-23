@@ -388,7 +388,6 @@ public final class SQLiteModule: Module {
     if db.openOptions.enableCRSQLite {
       exsqlite3_exec(db.pointer, "SELECT crsql_finalize()", nil, nil, nil)
     }
-
     let ret = exsqlite3_close(db.pointer)
     db.isClosed = true
 
