@@ -52,7 +52,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     currentTime: number;
     /**
-     * The total duration of the audio, in seconds.
+     * The total duration of the audio in seconds.
      */
     duration: number;
     /**
@@ -73,7 +73,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     currentStatus: AudioStatus;
     /**
-     * Resumes the player.
+     * Start playing audio.
      */
     play(): void;
     /**
@@ -90,7 +90,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      * @param rate The playback rate of the audio.
      * @param pitchCorrectionQuality The quality of the pitch correction.
      */
-    setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
+    setPlaybackRate(rate: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     /**
      *
      * @hidden
@@ -160,7 +160,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
      * @param inputUid The uid of a `RecordingInput`.
      * @return A `Promise` that is resolved if successful or rejected if not.
      */
-    setInput(input: string): void;
+    setInput(inputUid: string): void;
     /**
      * Status of the current recording.
      */
