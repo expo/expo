@@ -60,4 +60,5 @@ Pod::Spec.new do |s|
   }
 
   s.source_files = "**/*.{c,h,m,swift}"
+  s.ios.vendored_frameworks = 'crsqlite.xcframework'
 end
