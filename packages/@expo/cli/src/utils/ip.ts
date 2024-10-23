@@ -9,6 +9,7 @@ import { dirname, basename } from 'node:path';
  * This is wrapped in `spawnSync` since the original `getIpAddress` utility exported
  * in this module is used synchronosly. An appropriate timeout has been set and UDP
  * ports don't send a message when opened.
+ * @throws if `spawnSync` fails
  */
 function getRouteAddress(): string | null {
   const command = process.platform === 'win32' ? basename(process.execPath) : process.execPath;
@@ -55,7 +56,10 @@ function getRouteAddress(): string | null {
 function getRouteIPAddress(): string | null {
   // We check the IP address we get against the available network interfaces
   // It's only an internal IP address if we have a matching address on an interface's IP assignment
-  const routeAddress = getRouteAddress();
+  let routeAddress: string | null = null;
+  try {
+    routeAddress = getRouteAddress();
+  } catch {}
   if (!routeAddress) {
     return null;
   }
