@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support to disable CNG check via package.json. ([#32130](https://github.com/expo/expo/pull/32130) by [@betomoedano](https://github.com/betomoedano))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
