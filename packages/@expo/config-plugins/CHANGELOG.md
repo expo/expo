@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `withMaps` config plugin to work with new Podfile autolinking.
+
 ### 💡 Others
 
 ## 9.0.1 — 2024-10-22
