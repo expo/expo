@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [android] Add enum event support to OnStartObserving and OnStopObserving ([#32251](https://github.com/expo/expo/pull/32251) by [@wschurman](https://github.com/wschurman))
+
 ## 2.0.0-preview.1 — 2024-10-22
 
 ### 🐛 Bug fixes
