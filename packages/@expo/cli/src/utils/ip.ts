@@ -1,6 +1,7 @@
 import { isIPv4 } from 'node:net';
 import { spawnSync } from 'node:child_process';
 import { networkInterfaces } from 'node:os';
+import { dirname, basename } from 'node:path';
 import internalIp from 'internal-ip';
 
 /** Gets a route address by opening a UDP socket to a publicly routed address.
@@ -10,7 +11,8 @@ import internalIp from 'internal-ip';
   * ports don't send a message when opened.
   */
 function getRouteAddress(): string | null {
-  const { error, status, stdout } = spawnSync(process.execPath, ['-'], {
+  const command = basename(process.execPath);
+  const { error, status, stdout } = spawnSync(command, ['-'], {
     // This should be the cheapest method to determine the default route
     // By opening a socket to a publicly routed IP address, we let the default
     // gateway handle this socket, which means the socket's address will be
@@ -30,6 +32,8 @@ function getRouteAddress(): string | null {
         }
       });
     `,
+    cwd: dirname(process.execPath),
+    shell: false,
     timeout: 500,
     encoding: 'utf8',
     windowsVerbatimArguments: true,
