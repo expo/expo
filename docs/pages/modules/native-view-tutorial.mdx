@@ -454,7 +454,6 @@ Now that we have a web view, we can build a web browser UI around it. Have some 
 import { useState } from 'react';
 import { ActivityIndicator, Platform, Text, TextInput, View } from 'react-native';
 import { WebView } from 'expo-web-view';
-import { StatusBar } from 'expo-status-bar';
 
 export default function App() {
   const [inputUrl, setInputUrl] = useState('https://docs.expo.dev/modules/');
@@ -491,7 +490,6 @@ export default function App() {
         style={{ flex: 1, marginTop: 20 }}
       />
       <LoadingView isLoading={isLoading} />
-      <StatusBar style="auto" />
     </View>
   );
 }
