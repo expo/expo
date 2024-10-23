@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix optionals conversion. ([#32239](https://github.com/expo/expo/pull/32239) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 2.0.0-preview.1 — 2024-10-22
