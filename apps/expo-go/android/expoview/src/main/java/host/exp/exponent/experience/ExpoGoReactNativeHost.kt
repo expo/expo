@@ -55,7 +55,7 @@ class ExpoGoReactNativeHost(
 
 data class KernelData(
   val initialURL: String? = null,
-  val localBundlePath: String? = null,
+  val localBundlePath: String? = null
 )
 
 class KernelReactNativeHost(
