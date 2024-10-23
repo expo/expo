@@ -17,6 +17,7 @@ func requestLocalNetworkAuthorization() async throws -> Bool {
   let browser = NWBrowser(for: .bonjour(type: type, domain: nil), using: parameters)
   // swiftlint:disable:next closure_body_length
   return try await withTaskCancellationHandler {
+    // swiftlint:disable:next closure_body_length
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
       class LocalState {
         var didResume = false
