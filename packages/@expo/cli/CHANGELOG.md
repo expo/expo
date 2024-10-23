@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add fallback method for determining internal IP address.
+
 ### 💡 Others
 
 ## 0.19.0 — 2024-10-22
