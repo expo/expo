@@ -116,9 +116,9 @@ PODS:
   - FBLazyVector (0.76.0)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - hermes-engine (0.76.0-rc.6):
-    - hermes-engine/Pre-built (= 0.76.0-rc.6)
-  - hermes-engine/Pre-built (0.76.0-rc.6)
+  - hermes-engine (0.76.0):
+    - hermes-engine/Pre-built (= 0.76.0)
+  - hermes-engine/Pre-built (0.76.0)
   - libavif/core (0.11.1)
   - libavif/libdav1d (0.11.1):
     - libavif/core
@@ -1940,7 +1940,7 @@ SPEC CHECKSUMS:
   FBLazyVector: aa59bef5c46e93168bffcf3dc37ee1e176de799a
   fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
-  hermes-engine: 8d54e8b503c75afaf8f4cf61a22e2fe8e1badcde
+  hermes-engine: 9de51d2f67336348a6cd5b686330e436d1dbd522
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648

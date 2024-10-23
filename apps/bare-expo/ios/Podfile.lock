@@ -639,9 +639,9 @@ PODS:
   - GoogleMaps/Maps (7.4.0):
     - GoogleMaps/Base
   - GooglePlaces (7.3.0)
-  - hermes-engine (0.76.0-rc.6):
-    - hermes-engine/Pre-built (= 0.76.0-rc.6)
-  - hermes-engine/Pre-built (0.76.0-rc.6)
+  - hermes-engine (0.76.0):
+    - hermes-engine/Pre-built (= 0.76.0)
+  - hermes-engine/Pre-built (0.76.0)
   - libavif/core (0.11.1)
   - libavif/libdav1d (0.11.1):
     - libavif/core
@@ -3335,7 +3335,7 @@ SPEC CHECKSUMS:
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GooglePlaces: 0609463845250bbadafa1739938181e54dece439
-  hermes-engine: 8d54e8b503c75afaf8f4cf61a22e2fe8e1badcde
+  hermes-engine: 9de51d2f67336348a6cd5b686330e436d1dbd522
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
