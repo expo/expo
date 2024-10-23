@@ -119,75 +119,55 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-## Receiving events
+### Receiving events
 
-The changes in properties of the [`VideoPlayer`](#videoplayer) do not update the React state, therefore in order to display the information about the current state of the VideoPlayer it is necessary to listen to the [events](#videoplayerevents) it emits. There are a few ways to listen to events:
+The changes in properties of the [`VideoPlayer`](#videoplayer) do not update the React state, therefore in order to display the information about the current state of the VideoPlayer it is necessary to listen to the [events](#videoplayerevents) it emits.
+The event system is based on the [`EventEmitter`](../sdk/expo/#eventemitter) class and [hooks](../sdk/expo/#hooks) from the [`expo`](../sdk/expo) package. There are a few ways to listen to events:
 
 - `useEvent` hook - this hook creates a listener that will return a stateful value that can be used in a component. It also cleans up automatically when the component unmounts.
 
 ```tsx
 import { useEvent } from 'expo';
-import { useVideoPlayer } from 'expo-video';
+// ... Other imports, definition of the component, creating the player etc.
 
-export default function ListenToStatus() {
-  const player = useVideoPlayer(videoSource);
-  const { status, error } = useEvent(player, 'statusChange', { status: player.status });
-
-  // Rest of the component...
-}
+const { status, error } = useEvent(player, 'statusChange', { status: player.status });
+// Rest of the component...
 ```
 
-- `useEventListener` hook - built around the `Player.addEventListener` and `Player.removeEventListener` methods, creates an event listener with automatic cleanup.
+- `useEventListener` hook - built around the `Player.addListener` and `Player.removeListener` methods, creates an event listener with automatic cleanup.
 
 ```tsx
 import { useEventListener } from 'expo';
-import { PlayerError, useVideoPlayer } from 'expo-video';
-import { useState } from 'react';
+// ...Other imports, definition of the component, creating the player etc.
 
-export default function ListenToStatus() {
-  const player = useVideoPlayer(videoSource);
-  const [playerStatus, setPlayerStatus] = useState(player.status);
-  const [playerError, setPlayerError] = useState<PlayerError | null>(null);
+useEventListener(player, 'statusChange', ({ status, error }) => {
+  setPlayerStatus(status);
+  setPlayerError(error);
+  console.log('Player status changed: ', status);
+});
+// Rest of the component...
+```
 
-  useEventListener(player, 'statusChange', ({ status, error }) => {
+- `Player.addListener` method - this is the most flexible way to listen to events, but requires manual cleanup and more boilerplate code.
+
+```tsx
+// ...Imports, definition of the component, creating the player etc.
+
+useEffect(() => {
+  const subscription = player.addListener('statusChange', ({ status, error }) => {
     setPlayerStatus(status);
     setPlayerError(error);
     console.log('Player status changed: ', status);
   });
 
-  // Rest of the component...
-}
+  return () => {
+    subscription.remove();
+  };
+}, []);
+// Rest of the component...
 ```
 
-- `Player.addEventListener` method - this is the most flexible way to listen to events, but requires manual cleanup and more boilerplate code.
-
-```tsx
-import { useEffect, useState } from 'react';
-import { VideoPlayerEvents, useVideoPlayer, PlayerError } from 'expo-video';
-
-function ListenToStatus() {
-  const player = useVideoPlayer(videoSource);
-  const [playerStatus, setPlayerStatus] = useState(player.status);
-  const [playerError, setPlayerError] = useState<PlayerError | null>(null);
-
-  useEffect(() => {
-    const listener: VideoPlayerEvents['statusChange'] = ({ status, error }) => {
-      setPlayerStatus(status);
-      setPlayerError(error);
-      console.log('Player status changed: ', status);
-    };
-    player.addListener('statusChange', listener);
-
-    return () => {
-      player.removeListener('statusChange', listener);
-    };
-  }, []);
-
-  // Rest of the component...
-}
-```
-
-## Playing local media from the assets directory
+### Playing local media from the assets directory
 
 `expo-video` supports playing local media loaded using the `require` function. You can use the result as a source directly, or assign it to the `assetId` parameter of a [`VideoSource`](#videosource) if you also want to configure other properties.
 
@@ -208,7 +188,7 @@ const player1 = useVideoPlayer(assetId); // You can use the `asset` directly as 
 const player2 = useVideoPlayer(videoSource);
 ```
 
-## Preloading videos
+### Preloading videos
 
 While another video is playing, a video can be loaded before showing it in the view. This allows for quicker transitions between subsequent videos and a better user experience.
 
