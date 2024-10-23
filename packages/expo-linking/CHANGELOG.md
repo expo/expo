@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Add tvOS to podspec. ([#32255](https://github.com/expo/expo/pull/32255) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 7.0.0 — 2024-10-22
