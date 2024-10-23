@@ -1,22 +1,21 @@
 import Foundation
 import Network
-import OSLog
 
 private let type = "_preflight_check._tcp"
 
 /// Code taken from https://gist.github.com/mac-cain13/fa684f54a7ae1bba8669e78d28611784
-@discardableResult 
+@discardableResult
 func requestLocalNetworkAuthorization() async throws -> Bool {
   let queue = DispatchQueue(label: "host.exp.localNetworkAuthCheck")
-  
+
   let listener = try NWListener(using: NWParameters(tls: .none, tcp: NWProtocolTCP.Options()))
   listener.service = NWListener.Service(name: UUID().uuidString, type: type)
   listener.newConnectionHandler = { _ in } // Must be set or else the listener will error with POSIX error 22
-  
+
   let parameters = NWParameters()
   parameters.includePeerToPeer = true
   let browser = NWBrowser(for: .bonjour(type: type, domain: nil), using: parameters)
-  
+
   return try await withTaskCancellationHandler {
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
       class LocalState {
@@ -28,23 +27,23 @@ func requestLocalNetworkAuthorization() async throws -> Bool {
           return
         }
         local.didResume = true
-        
+
         // Teardown listener and browser
         listener.stateUpdateHandler = { _ in }
         browser.stateUpdateHandler = { _ in }
         browser.browseResultsChangedHandler = { _, _ in }
         listener.cancel()
         browser.cancel()
-        
+
         continuation.resume(with: result)
       }
-      
+
       // Do not setup listener/browser is we're already cancelled, it does work but logs a lot of very ugly errors
       if Task.isCancelled {
         resume(with: .failure(CancellationError()))
         return
       }
-      
+
       listener.stateUpdateHandler = { newState in
         switch newState {
         case .setup:
@@ -62,7 +61,7 @@ func requestLocalNetworkAuthorization() async throws -> Bool {
         }
       }
       listener.start(queue: queue)
-      
+
       browser.stateUpdateHandler = { newState in
         switch newState {
         case .setup:
@@ -84,15 +83,15 @@ func requestLocalNetworkAuthorization() async throws -> Bool {
           return
         }
       }
-      
-      browser.browseResultsChangedHandler = { results, changes in
+
+      browser.browseResultsChangedHandler = { results, _ in
         if results.isEmpty {
           return
         }
         resume(with: .success(true))
       }
       browser.start(queue: queue)
-      
+
       if Task.isCancelled {
         resume(with: .failure(CancellationError()))
         return

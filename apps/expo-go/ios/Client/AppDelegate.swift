@@ -36,7 +36,7 @@ class AppDelegate: ExpoAppDelegate {
 
     window?.makeKeyAndVisible()
   }
-  
+
   override func applicationDidBecomeActive(_ application: UIApplication) {
     super.applicationDidBecomeActive(application)
     Task {
