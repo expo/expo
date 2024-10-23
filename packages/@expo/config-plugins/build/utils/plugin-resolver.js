@@ -60,7 +60,7 @@ function resolvePluginForModule(projectRoot, pluginReference) {
     const pluginScriptFile = _resolveFrom().default.silent(projectRoot, pluginReference);
     if (pluginScriptFile) {
       return {
-        isPluginFile: false,
+        isPluginFile: pluginScriptFile.endsWith(path().sep + pluginFileName),
         filePath: pluginScriptFile
       };
     }

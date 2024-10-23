@@ -24,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- fix resolution when referring to library plugin file ([#31947](https://github.com/expo/expo/pull/31947) by [@vonovak](https://github.com/vonovak))
 - fix: more strict config plugin resolution ([#31569](https://github.com/expo/expo/pull/31569) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
