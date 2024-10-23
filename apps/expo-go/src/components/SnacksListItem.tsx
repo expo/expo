@@ -7,6 +7,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as UrlUtils from '../utils/UrlUtils';
 
 type Props = {
+  id: string;
   url: string;
   name: string;
   description?: string;
@@ -24,15 +25,16 @@ function normalizeDescription(description?: string): string | undefined {
  * the snacks list page for an account.
  */
 
-export function SnacksListItem({ description, isDraft, name, url, first, last }: Props) {
+export function SnacksListItem(snackData: Props) {
+  const { url, name, description, isDraft, first, last } = snackData;
   const theme = useExpoTheme();
 
   const handlePressProject = () => {
-    Linking.openURL(UrlUtils.normalizeUrl(url));
+    Linking.openURL(UrlUtils.normalizeSnackUrl(url));
   };
 
   const handleLongPressProject = () => {
-    const message = UrlUtils.normalizeUrl(url);
+    const message = UrlUtils.normalizeSnackUrl(url);
     Share.share({
       title: name,
       message,

@@ -32,6 +32,7 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
         return (
           <Fragment key={snack.id}>
             <SnacksListItem
+              id={snack.id}
               name={snack.name}
               description={snack.description}
               isDraft={snack.isDraft}

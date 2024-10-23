@@ -66,9 +66,12 @@ function SnackList({ data, loadMoreAsync }: Props) {
 
   const renderItem = React.useCallback(
     ({ item: snack, index }: { item: CommonSnackDataFragment; index: number }) => {
+      console.log(snack.fullName);
+      console.log(snack);
       return (
         <SnacksListItem
           key={snack.id}
+          id={snack.id}
           url={snack.fullName}
           name={snack.name}
           description={snack.description}
