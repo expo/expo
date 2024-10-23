@@ -2,7 +2,6 @@ import internalIp from 'internal-ip';
 import { spawnSync } from 'node:child_process';
 import { isIPv4 } from 'node:net';
 import { networkInterfaces } from 'node:os';
-import { dirname, basename } from 'node:path';
 
 /** Gets a route address by opening a UDP socket to a publicly routed address.
  * @privateRemarks
@@ -12,8 +11,7 @@ import { dirname, basename } from 'node:path';
  * @throws if `spawnSync` fails
  */
 function getRouteAddress(): string | null {
-  const command = process.platform === 'win32' ? basename(process.execPath) : process.execPath;
-  const { error, status, stdout } = spawnSync(command, ['-'], {
+  const { error, status, stdout } = spawnSync(process.execPath, ['-'], {
     // This should be the cheapest method to determine the default route
     // By opening a socket to a publicly routed IP address, we let the default
     // gateway handle this socket, which means the socket's address will be
@@ -33,11 +31,10 @@ function getRouteAddress(): string | null {
         }
       });
     `,
-    cwd: dirname(process.execPath),
     shell: false,
     timeout: 500,
     encoding: 'utf8',
-    windowsVerbatimArguments: true,
+    windowsVerbatimArguments: false,
     windowsHide: true,
   });
   // We only use the stdout as an IP, if it validates as an IP and we got a zero exit code
