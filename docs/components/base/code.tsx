@@ -119,7 +119,7 @@ export function Code({ className, children, title }: CodeProps) {
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'whitespace-pre relative border border-secondary p-4 my-4 bg-subtle rounded-md',
+        'whitespace-pre relative border border-secondary p-4 my-4 bg-subtle rounded-md overflow-x-auto',
         preferredTheme === Themes.DARK && 'dark-theme',
         commonClasses,
         '[p+&]:mt-0'
