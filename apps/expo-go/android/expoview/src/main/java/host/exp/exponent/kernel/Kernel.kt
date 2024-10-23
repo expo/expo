@@ -228,7 +228,7 @@ class Kernel : KernelInterface() {
             KernelData(
               kernelInitialURL,
               localBundlePath,
-              kernelMainModuleName
+              null
             )
           )
           val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
