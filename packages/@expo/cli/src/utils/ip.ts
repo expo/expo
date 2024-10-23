@@ -52,7 +52,7 @@ function getRouteAddress(): string | null {
 /** Determines the internal IP address by opening a socket, then checking the socket address against non-internal network interface assignments
   * @throws If no address can be determined.
   */
-function getIPAddress(): string | null {
+function getRouteIPAddress(): string | null {
   // We check the IP address we get against the available network interfaces
   // It's only an internal IP address if we have a matching address on an interface's IP assignment
   const routeAddress = getRouteAddress();
@@ -73,5 +73,5 @@ function getIPAddress(): string | null {
 }
 
 export function getIpAddress(): string {
-  return internalIp.v4.sync() || getIPAddress() || '127.0.0.1';
+  return internalIp.v4.sync() || getRouteIPAddress() || '127.0.0.1';
 }
