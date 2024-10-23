@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix optionals conversion. ([#32239](https://github.com/expo/expo/pull/32239) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 2.0.0-preview.0 — 2024-10-22
@@ -50,7 +52,6 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix optionals conversion. ([#32239](https://github.com/expo/expo/pull/32239) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix using enums as optional arguments. ([#32147](https://github.com/expo/expo/pull/32147) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Change JS return type for kotlin `null` to be `null` instead of `undefined`. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Swift `Enumerable`s did not correctly convert to JS values. ([#30191](https://github.com/expo/expo/pull/30191) by [@vonovak](https://github.com/vonovak))
