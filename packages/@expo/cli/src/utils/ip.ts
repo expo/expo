@@ -1,15 +1,15 @@
-import { isIPv4 } from 'node:net';
+import internalIp from 'internal-ip';
 import { spawnSync } from 'node:child_process';
+import { isIPv4 } from 'node:net';
 import { networkInterfaces } from 'node:os';
 import { dirname, basename } from 'node:path';
-import internalIp from 'internal-ip';
 
 /** Gets a route address by opening a UDP socket to a publicly routed address.
-  * @privateRemarks
-  * This is wrapped in `spawnSync` since the original `getIpAddress` utility exported
-  * in this module is used synchronosly. An appropriate timeout has been set and UDP
-  * ports don't send a message when opened.
-  */
+ * @privateRemarks
+ * This is wrapped in `spawnSync` since the original `getIpAddress` utility exported
+ * in this module is used synchronosly. An appropriate timeout has been set and UDP
+ * ports don't send a message when opened.
+ */
 function getRouteAddress(): string | null {
   const command = process.platform === 'win32' ? basename(process.execPath) : process.execPath;
   const { error, status, stdout } = spawnSync(command, ['-'], {
@@ -50,8 +50,8 @@ function getRouteAddress(): string | null {
 }
 
 /** Determines the internal IP address by opening a socket, then checking the socket address against non-internal network interface assignments
-  * @throws If no address can be determined.
-  */
+ * @throws If no address can be determined.
+ */
 function getRouteIPAddress(): string | null {
   // We check the IP address we get against the available network interfaces
   // It's only an internal IP address if we have a matching address on an interface's IP assignment
@@ -65,7 +65,11 @@ function getRouteIPAddress(): string | null {
     for (let i = 0; assignments && i < assignments.length; i++) {
       const assignment = assignments[i];
       // Only use IPv4 assigments that aren't internal
-      if (assignment.family === 'IPv4' && !assignment.internal && assignment.address === routeAddress)
+      if (
+        assignment.family === 'IPv4' &&
+        !assignment.internal &&
+        assignment.address === routeAddress
+      )
         return routeAddress;
     }
   }
