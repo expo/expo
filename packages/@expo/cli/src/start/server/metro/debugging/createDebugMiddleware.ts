@@ -5,6 +5,9 @@ import { createHandlersFactory } from './createHandlersFactory';
 import { Log } from '../../../../log';
 import { env } from '../../../../utils/env';
 import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
+import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
+
+const debug = require('debug')('expo:metro:debugging:middleware') as typeof console.log;
 
 export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
   // Load the React Native debugging tools from project
@@ -64,13 +67,25 @@ function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
 
   wss.on('connection', (networkSocket) => {
     networkSocket.on('message', (data) => {
-      // Rebroadcast the Network events to all connected debuggers
-      debuggerWebsocket.clients.forEach((debuggerSocket) => {
-        if (debuggerSocket.readyState === debuggerSocket.OPEN) {
-          // Convert the payload from binary to string, otherwise RNDT receives binary
-          debuggerSocket.send(data.toString());
+      try {
+        // Parse the network message, to determine how the message should be handled
+        const message = JSON.parse(data.toString());
+
+        if (message.method === 'Expo(Network.receivedResponseBody)' && message.params) {
+          // If its a response body, write it to the global storage
+          const { requestId, ...requestInfo } = message.params;
+          NETWORK_RESPONSE_STORAGE.set(requestId, requestInfo);
+        } else {
+          // Otherwise, directly re-broadcast the Network events to all connected debuggers
+          debuggerWebsocket.clients.forEach((debuggerSocket) => {
+            if (debuggerSocket.readyState === debuggerSocket.OPEN) {
+              debuggerSocket.send(data.toString());
+            }
+          });
         }
-      });
+      } catch (error) {
+        debug('Failed to handle Network CDP event', error);
+      }
     });
   });
 
