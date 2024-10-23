@@ -11,7 +11,7 @@ import internalIp from 'internal-ip';
   * ports don't send a message when opened.
   */
 function getRouteAddress(): string | null {
-  const command = basename(process.execPath);
+  const command = process.platform === 'win32' ? basename(process.execPath) : process.execPath;
   const { error, status, stdout } = spawnSync(command, ['-'], {
     // This should be the cheapest method to determine the default route
     // By opening a socket to a publicly routed IP address, we let the default
