@@ -124,7 +124,7 @@ function addMapsCocoaPods(src) {
     tag: 'react-native-maps',
     src,
     newSrc: `  pod 'react-native-google-maps', path: File.dirname(\`node --print "require.resolve('react-native-maps/package.json')"\`)`,
-    anchor: /use_native_modules/,
+    anchor: /config_command/,
     offset: 0,
     comment: '#'
   });
