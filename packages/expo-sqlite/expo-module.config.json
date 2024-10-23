@@ -1,10 +1,10 @@
 {
   "name": "expo-sqlite",
-  "platforms": ["ios", "android"],
-  "ios": {
-    "modules": ["SQLiteModule"]
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["SQLiteModule", "SQLiteModuleNext"]
   },
   "android": {
-    "modules": ["expo.modules.sqlite.SQLiteModule"]
+    "modules": ["expo.modules.sqlite.SQLiteModule", "expo.modules.sqlite.SQLiteModuleNext"]
   }
 }
