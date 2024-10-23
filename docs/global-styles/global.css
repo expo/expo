@@ -31,7 +31,7 @@ input {
 }
 
 *:focus-visible {
-  outline: 3px solid var(--expo-theme-icon-tertiary);
+  outline: 3px solid var(--expo-theme-icon-info);
   outline-offset: 1px;
   border-radius: 3px;
 }

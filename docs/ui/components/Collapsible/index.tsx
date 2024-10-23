@@ -76,7 +76,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
       <details
         id={heading.current.slug}
         className={mergeClasses(
-          'overflow-hidden bg-default border border-default rounded-md p-0 mb-3',
+          'bg-default border border-default rounded-md p-0 mb-3',
           '[&[open]]:shadow-xs',
           '[h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3',
           className
@@ -85,7 +85,8 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
         data-testid={testID}>
         <summary
           className={mergeClasses(
-            'group grid grid-cols-[min-content_auto_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 cursor-pointer',
+            'group grid grid-cols-[min-content_auto_min-content_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 rounded-md cursor-pointer',
+            isOpen && 'rounded-b-none',
             '[&_h4]:my-0',
             '[&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px'
           )}
@@ -101,14 +102,18 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           </div>
           <DEMI
             className={mergeClasses(
-              'inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative',
+              'inline gap-1.5 items-center scroll-m-5 mr-2 relative',
               'group-hover:text-secondary group-hover:[&_code]:text-secondary'
             )}>
             {summary}
           </DEMI>
-          <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
-            <PermalinkIcon className="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible" />
+          <LinkBase
+            href={'#' + heading.current.slug}
+            ref={heading.current.ref}
+            className="inline ml-auto">
+            <PermalinkIcon className="icon-sm inline-flex mb-auto invisible group-hover:visible group-focus-visible:visible" />
           </LinkBase>
+          <div />
         </summary>
         <div className={mergeClasses('py-4 px-5', '[&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1')}>
           {children}
