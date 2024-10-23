@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platforms      = {
     :ios => '15.1',
-    :osx => "11.0"
+    :osx => '11.0'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
