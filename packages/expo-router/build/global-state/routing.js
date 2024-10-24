@@ -27,6 +27,7 @@ exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = ex
 const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
 const non_secure_1 = require("nanoid/non-secure");
+const react_native_1 = require("react-native");
 const href_1 = require("../link/href");
 const matchers_1 = require("../matchers");
 const url_1 = require("../utils/url");
@@ -93,6 +94,9 @@ function setParams(params = {}) {
 exports.setParams = setParams;
 function linkTo(href, { event, relativeToDirectory, withAnchor } = {}) {
     if ((0, url_1.shouldLinkExternally)(href)) {
+        if (href.startsWith('//') && react_native_1.Platform.OS !== 'web') {
+            href = `https:${href}`;
+        }
         Linking.openURL(href);
         return;
     }
