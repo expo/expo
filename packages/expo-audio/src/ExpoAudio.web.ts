@@ -1,4 +1,5 @@
 import { useEvent } from 'expo';
+import { PermissionResponse } from 'expo-modules-core';
 import { useEffect, useState, useMemo } from 'react';
 
 import {
@@ -9,7 +10,7 @@ import {
   RecordingOptions,
   RecordingStatus,
 } from './Audio.types';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { AudioRecorder } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { createRecordingOptions } from './utils/options';
@@ -95,6 +96,12 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
   return await AudioModule.setAudioModeAsync(mode);
 }
 
-export { AudioModule, AudioPlayer, AudioRecorder };
-export * from './Audio.types';
-export * from './RecordingConstants';
+export async function requestRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.requestRecordingPermissionsAsync();
+}
+
+export async function getRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.getRecordingPermissionsAsync();
+}
+
+export { AudioModule };

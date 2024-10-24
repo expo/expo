@@ -1,14 +1,16 @@
 import { PermissionResponse, SharedObject } from 'expo-modules-core';
 import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStatus } from './Audio.types';
-export interface AudioModule {
+/**
+ * @hidden
+ */
+export declare class AudioModuleDefinition {
     setIsAudioActiveAsync(active: boolean): Promise<void>;
     setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
-    requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
-    getRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
+    requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
+    getRecordingPermissionsAsync(): Promise<PermissionResponse>;
     readonly AudioPlayer: typeof AudioPlayer;
     readonly AudioRecorder: typeof AudioRecorder;
 }
-export type RecordingPermissionResponse = PermissionResponse;
 export declare class AudioPlayer extends SharedObject<AudioEvents> {
     /**
      * Initializes a new audio player instance with the given source.
@@ -101,7 +103,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     remove(): void;
 }
-type AudioSample = {
+export type AudioSample = {
     channels: {
         frames: number[];
     }[];
@@ -183,5 +185,4 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
 export type RecordingEvents = {
     recordingStatusUpdate: (status: RecordingStatus) => void;
 };
-export {};
 //# sourceMappingURL=AudioModule.types.d.ts.map

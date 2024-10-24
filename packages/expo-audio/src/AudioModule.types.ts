@@ -11,17 +11,18 @@ import {
   RecordingStatus,
 } from './Audio.types';
 
-export interface AudioModule {
+/**
+ * @hidden
+ */
+export declare class AudioModuleDefinition {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
   setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
-  requestRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
-  getRecordingPermissionsAsync(): Promise<RecordingPermissionResponse>;
+  requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
+  getRecordingPermissionsAsync(): Promise<PermissionResponse>;
 
   readonly AudioPlayer: typeof AudioPlayer;
   readonly AudioRecorder: typeof AudioRecorder;
 }
-
-export type RecordingPermissionResponse = PermissionResponse;
 
 export declare class AudioPlayer extends SharedObject<AudioEvents> {
   /**
@@ -136,7 +137,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   remove(): void;
 }
 
-type AudioSample = {
+export type AudioSample = {
   channels: { frames: number[] }[];
   timestamp: number;
 };
