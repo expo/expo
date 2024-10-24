@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Exported missing types, removed unnecessary fallback and properly registered the module on Web. ([#32302](https://github.com/expo/expo/pull/32302) by [@tsapeta](https://github.com/tsapeta))
+
 ## 13.0.1 — 2024-10-22
 
 _This version does not introduce any user-facing changes._
