@@ -65,6 +65,10 @@ div[class*='Terminal'] > div ::-webkit-scrollbar-thumb:hover {
   background: var(--expo-theme-icon-tertiary);
 }
 
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
 /* Misc */
 
 .code-annotation {
