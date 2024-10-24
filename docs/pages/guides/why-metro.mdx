@@ -9,11 +9,13 @@ description: Learn why Metro is the future of universal bundling in React Native
 
 Metro is maintained by Meta, the maintainers of React, React Native, Yoga, and Hermes. It's used for developing some of the world's largest apps, ranging across all categories in the app stores.
 
+Meta engineers actively develop Metro with the express requirement of bundling all their apps, across 400k+ source files, while remaining fast and reliable.
+
 By having first-class Metro support, we ensure Expo developers have continuity across Meta's tools and get instant access to emerging features. This includes:
 
 - React Fast Refresh was [first introduced](https://reactnative.dev/blog/2019/09/18/version-0.61) as a Metro feature in 2019. The React web community adopted it the following year via Webpack.
 - Transforming JavaScript to Hermes bytecode for instant native startup.
-- React Native Dev Tools, including first-class support for [network and JS debugging](/debugging/tools/#debugging-with-chrome-devtools), is exclusively available with Metro and Hermes.
+- React Native DevTools, including first-class support for [network and JS debugging](/debugging/tools/#debugging-with-chrome-devtools), is exclusively available with Metro and Hermes.
 - React Compiler was initially rolled out as a Metro-compatible Babel plugin.
 
 New and upcoming features that are planned to come to Metro include:
@@ -61,7 +63,7 @@ While Metro is designed for universal app development, it's often compared to ot
 
 ### Browser ESM versus bundling
 
-While bundlers like Vite leverage built-in ESM support in the browser, this approach can lead to slower practical development times at medium to large scales due to thousands of cascading network requests. Metro performs bundling in local development, which is better suited for React Native's larger module count.
+While bundlers like Vite leverage built-in ESM support in the browser, this approach can lead to slower practical development times at medium to large scales due to thousands of cascading network requests. Metro performs bundling in local development, which is aligns the development results much closer to the production results and is better suited for React Native's larger module count.
 
 ### JavaScript versus native languages
 
