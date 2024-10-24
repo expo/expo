@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- [ios] Fix build failure on 0.76 ([#32330](https://github.com/expo/expo/pull/32330) by [@matinzd](https://github.com/matinzd))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
