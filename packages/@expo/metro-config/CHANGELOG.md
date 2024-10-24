@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Disable `hermesParser` and conditionally enable for files with `@flow` pragma.
+
 ### 💡 Others
 
 ## 0.19.0-preview.1 — 2024-10-22
