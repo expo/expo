@@ -1,5 +1,6 @@
-export { VideoView, isPictureInPictureSupported } from './VideoView';
-export { useVideoPlayer } from './VideoPlayer';
-export { VideoThumbnail } from './VideoThumbnail';
-export { default as VideoPlayer } from './VideoPlayer';
+export * from './VideoView';
+export { useVideoPlayer, default as VideoPlayer } from './VideoPlayer';
+export * from './VideoView.types';
+export * from './VideoThumbnail';
+export * from './VideoPlayerEvents.types';
 //# sourceMappingURL=index.js.map

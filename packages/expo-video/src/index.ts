@@ -1,10 +1,9 @@
-export { VideoView, isPictureInPictureSupported } from './VideoView';
-export { useVideoPlayer } from './VideoPlayer';
+export * from './VideoView';
+export { useVideoPlayer, default as VideoPlayer } from './VideoPlayer';
 
-export { VideoContentFit, VideoViewProps } from './VideoView.types';
-export { VideoThumbnail } from './VideoThumbnail';
+export * from './VideoView.types';
+export * from './VideoThumbnail';
 
-export { default as VideoPlayer } from './VideoPlayer';
 export {
   VideoPlayerStatus,
   VideoSource,
@@ -15,13 +14,4 @@ export {
   BufferOptions,
 } from './VideoPlayer.types';
 
-export {
-  VideoPlayerEvents,
-  StatusChangeEventPayload,
-  PlayingChangeEventPayload,
-  PlaybackRateChangeEventPayload,
-  VolumeChangeEventPayload,
-  MutedChangeEventPayload,
-  TimeUpdateEventPayload,
-  SourceChangeEventPayload,
-} from './VideoPlayerEvents.types';
+export * from './VideoPlayerEvents.types';

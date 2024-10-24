@@ -1,7 +1,7 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
 
 import NativeVideoModule from './NativeVideoModule';
-import { VideoSource } from './VideoPlayer.types';
+import { VideoPlayer, VideoSource } from './VideoPlayer.types';
 import resolveAssetSource from './resolveAssetSource';
 
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
@@ -10,11 +10,18 @@ NativeVideoModule.VideoPlayer.prototype.replace = function (source: VideoSource)
   return replace.call(this, parseSource(source));
 };
 
-export default class VideoPlayer extends NativeVideoModule.VideoPlayer {
-  constructor(source: VideoSource) {
-    super(parseSource(source));
-  }
-}
+let NativeVideoPlayer = NativeVideoModule.VideoPlayer;
+
+const oldProto = NativeVideoPlayer.prototype;
+NativeVideoPlayer = function (source: VideoSource) {
+  console.log('Called custom constructor!');
+  return new NativeVideoModule.VideoPlayer(parseSource(source));
+} as unknown as typeof VideoPlayer;
+NativeVideoPlayer.prototype = oldProto;
+// Don't keep the old constructor
+NativeVideoPlayer.prototype.constructor = NativeVideoPlayer;
+
+export default NativeVideoPlayer;
 
 /**
  * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.

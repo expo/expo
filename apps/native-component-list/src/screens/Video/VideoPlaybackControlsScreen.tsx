@@ -1,7 +1,7 @@
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { useVideoPlayer, VideoView } from 'expo-video';
-import React, { useCallback } from 'react';
+import { useVideoPlayer, VideoView, VideoPlayer } from 'expo-video';
+import React, { useCallback, useEffect } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import { bigBuckBunnySource } from './videoSources';
@@ -12,19 +12,18 @@ import TitledSwitch from '../../components/TitledSwitch';
 const playbackRates: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
 
 export default function VideoPlaybackControlsScreen() {
+  const player = new VideoPlayer(bigBuckBunnySource);
   const [loop, setLoop] = React.useState(false);
   const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
   const [preservePitch, setPreservePitch] = React.useState(true);
   const [volume, setVolume] = React.useState(1);
 
-  const player = useVideoPlayer(bigBuckBunnySource, (player) => {
-    player.volume = volume;
-    player.loop = loop;
-    player.preservesPitch = preservePitch;
-    player.showNowPlayingNotification = false;
-    player.allowsExternalPlayback = false;
+  useEffect(() => {
     player.play();
-  });
+    return () => {
+      player.release();
+    };
+  }, []);
 
   const togglePlayer = useCallback(() => {
     if (player.playing) {

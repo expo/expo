@@ -1,8 +1,6 @@
-import NativeVideoModule from './NativeVideoModule';
-import { VideoSource } from './VideoPlayer.types';
-export default class VideoPlayer extends NativeVideoModule.VideoPlayer {
-    constructor(source: VideoSource);
-}
+import { VideoPlayer, VideoSource } from './VideoPlayer.types';
+declare let NativeVideoPlayer: typeof VideoPlayer;
+export default NativeVideoPlayer;
 /**
  * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
  * @param source - A video source that is used to initialize the player.

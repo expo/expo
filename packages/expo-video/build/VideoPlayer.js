@@ -6,11 +6,16 @@ const replace = NativeVideoModule.VideoPlayer.prototype.replace;
 NativeVideoModule.VideoPlayer.prototype.replace = function (source) {
     return replace.call(this, parseSource(source));
 };
-export default class VideoPlayer extends NativeVideoModule.VideoPlayer {
-    constructor(source) {
-        super(parseSource(source));
-    }
-}
+let NativeVideoPlayer = NativeVideoModule.VideoPlayer;
+const oldProto = NativeVideoPlayer.prototype;
+NativeVideoPlayer = function (source) {
+    console.log('Called custom constructor!');
+    return new NativeVideoModule.VideoPlayer(parseSource(source));
+};
+NativeVideoPlayer.prototype = oldProto;
+// Don't keep the old constructor
+NativeVideoPlayer.prototype.constructor = NativeVideoPlayer;
+export default NativeVideoPlayer;
 /**
  * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
  * @param source - A video source that is used to initialize the player.
