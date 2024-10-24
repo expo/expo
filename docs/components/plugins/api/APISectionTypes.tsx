@@ -134,6 +134,7 @@ const renderType = (
   { name, comment, type, typeParameter }: TypeGeneralData,
   sdkVersion: string
 ): ReactNode => {
+  console.log(name, type);
   if (type.declaration) {
     // Object Types
     return (
@@ -156,6 +157,23 @@ const renderType = (
               </div>
             ))
           : null}
+      </div>
+    );
+  } else if (type.elements) {
+    return (
+      <div key={`type-tuple-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} sticky />
+        <APISectionPlatformTags comment={comment} />
+        <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
+        </H3Code>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <CALLOUT>
+          <SPAN theme="secondary" weight="medium">
+            Tuple:{' '}
+          </SPAN>
+          <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
+        </CALLOUT>
       </div>
     );
   } else if (type.types && ['union', 'intersection'].includes(type.type)) {
