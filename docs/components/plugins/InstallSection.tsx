@@ -39,7 +39,7 @@ export default function InstallSection({
           <A href={sourceCodeUrl ?? href}>additional instructions</A>{' '}
           {isExpoLibrary ? (
             <>
-              as mentioned by library's README under{' '}
+              as mentioned by the library's README under{' '}
               <DEMI>"Installation in bare React Native projects"</DEMI> section.
             </>
           ) : (
