@@ -3,7 +3,6 @@ import { BlockingSetInitialColorMode } from '@expo/styleguide';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 
 import { globalDiff } from '~/global-styles/diff';
-import { globalExtras } from '~/global-styles/extras';
 import { globalNProgress } from '~/global-styles/nprogress';
 import { globalPrism } from '~/global-styles/prism';
 import { globalTippy } from '~/global-styles/tippy';
@@ -21,7 +20,7 @@ export default class DocsDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          <Global styles={[globalNProgress, globalPrism, globalTippy, globalDiff, globalExtras]} />
+          <Global styles={[globalNProgress, globalPrism, globalTippy, globalDiff]} />
         </Head>
         <body className="text-pretty">
           <BlockingSetInitialColorMode />

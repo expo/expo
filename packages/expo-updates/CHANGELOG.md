@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.26.2 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- Move event emitting responsibility to module. ([#32248](https://github.com/expo/expo/pull/32248) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Use enum event in OnStartObserving and OnStopObserving. ([#32252](https://github.com/expo/expo/pull/32252) by [@wschurman](https://github.com/wschurman))
+
 ## 0.26.1 — 2024-10-22
 
 ### 🐛 Bug fixes

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 15.0.1 — 2024-10-24
+
+### 💡 Others
+
+- Added deprecation warning to the `Video` component. ([#32267](https://github.com/expo/expo/pull/32267) by [@tsapeta](https://github.com/tsapeta))
+
 ## 15.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

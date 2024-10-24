@@ -9,11 +9,10 @@ import ExpoModulesTestCore
 import EXManifests
 
 class TestStateChangeEventManager: UpdatesEventManager {
-  var appContext: ExpoModulesCore.AppContext? = nil
-
   var lastContext: UpdatesStateContext? = nil
+  weak var observer: (any EXUpdates.UpdatesEventManagerObserver)?
 
-  func sendUpdateStateAppContext(context: UpdatesStateContext) {
+  func sendStateMachineContextEvent(context: EXUpdates.UpdatesStateContext) {
     lastContext = context
   }
 }

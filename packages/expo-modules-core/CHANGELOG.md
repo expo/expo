@@ -8,9 +8,18 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 2.0.0-preview.2 — 2024-10-24
+
+### 🐛 Bug fixes
+
 - [iOS] Fix optionals conversion. ([#32239](https://github.com/expo/expo/pull/32239) by [@aleqsio](https://github.com/aleqsio))
+- Fixed retain cycle for `ExpoRequestCdpInterceptor`. ([#32289](https://github.com/expo/expo/pull/32289) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- [android] Add enum event support to OnStartObserving and OnStopObserving. ([#32251](https://github.com/expo/expo/pull/32251), [#32287](https://github.com/expo/expo/pull/32287) by [@wschurman](https://github.com/wschurman))
 
 ## 2.0.0-preview.1 — 2024-10-22
 

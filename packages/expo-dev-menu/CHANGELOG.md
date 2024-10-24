@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 6.0.2 — 2024-10-24
+
+### 🎉 New features
+
+- Add support for react-native 0.76 ([#32285](https://github.com/expo/expo/pull/32285) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 6.0.1 — 2024-10-22
 
 _This version does not introduce any user-facing changes._

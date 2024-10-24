@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
-import { LinkBase, shadows, theme } from '@expo/styleguide';
-import { borderRadius, spacing } from '@expo/styleguide-base';
+import { LinkBase, mergeClasses } from '@expo/styleguide';
 import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon';
 import { useRouter } from 'next/compat/router';
 import {
@@ -29,6 +27,7 @@ type CollapsibleProps = PropsWithChildren<{
    */
   open?: boolean;
   testID?: string;
+  className?: string;
 }>;
 
 const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
@@ -36,6 +35,7 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
     summary,
     testID,
     children,
+    className,
     headingManager,
     open = false,
   }: CollapsibleProps & HeadingManagerProps) => {
@@ -73,19 +73,49 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
     };
 
     return (
-      <details id={heading.current.slug} css={detailsStyle} open={isOpen} data-testid={testID}>
-        <summary css={summaryStyle} className="group" onClick={onToggle}>
-          <div css={markerWrapperStyle}>
-            <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
+      <details
+        id={heading.current.slug}
+        className={mergeClasses(
+          'bg-default border border-default rounded-md p-0 mb-3',
+          '[&[open]]:shadow-xs',
+          '[h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3',
+          className
+        )}
+        open={isOpen}
+        data-testid={testID}>
+        <summary
+          className={mergeClasses(
+            'group grid grid-cols-[min-content_auto_min-content_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 rounded-md cursor-pointer',
+            isOpen && 'rounded-b-none',
+            '[&_h4]:my-0',
+            '[&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px'
+          )}
+          onClick={onToggle}>
+          <div className="mt-[5px] ml-1.5 mr-2 self-baseline">
+            <TriangleDownIcon
+              className={mergeClasses(
+                'icon-sm text-icon-default',
+                'transition-transform duration-200 -rotate-90',
+                '[details[open]>summary_&]:rotate-0'
+              )}
+            />
           </div>
-          <span className="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative">
-            <DEMI>{summary}</DEMI>
-          </span>
-          <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
-            <PermalinkIcon className="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible" />
+          <DEMI
+            className={mergeClasses(
+              'inline gap-1.5 items-center scroll-m-5 mr-2 relative',
+              'group-hover:text-secondary group-hover:[&_code]:text-secondary'
+            )}>
+            {summary}
+          </DEMI>
+          <LinkBase
+            href={'#' + heading.current.slug}
+            ref={heading.current.ref}
+            className="inline ml-auto">
+            <PermalinkIcon className="icon-sm inline-flex mb-auto invisible group-hover:visible group-focus-visible:visible" />
           </LinkBase>
+          <div />
         </summary>
-        <div css={contentStyle} className="last:[&>*]:!mb-1">
+        <div className={mergeClasses('py-4 px-5', '[&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1')}>
           {children}
         </div>
       </details>
@@ -94,81 +124,3 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
 );
 
 export { Collapsible };
-
-const detailsStyle = css({
-  overflow: 'hidden',
-  background: theme.background.default,
-  border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.md,
-  padding: 0,
-  marginBottom: spacing[3],
-
-  '&[open]': {
-    boxShadow: shadows.xs,
-  },
-
-  'h4 + &, p + &, li > &': {
-    marginTop: spacing[3],
-  },
-});
-
-const summaryStyle = css({
-  display: 'grid',
-  gridTemplateColumns: 'min-content auto 1fr',
-  alignItems: 'center',
-  userSelect: 'none',
-  listStyle: 'none',
-  backgroundColor: theme.background.subtle,
-  padding: spacing[1.5],
-  paddingRight: spacing[3],
-  margin: 0,
-  cursor: 'pointer',
-
-  '&:hover span': {
-    color: theme.text.secondary,
-  },
-
-  '::-webkit-details-marker': {
-    display: 'none',
-  },
-
-  h4: {
-    marginTop: 0,
-    marginBottom: 0,
-  },
-
-  code: {
-    backgroundColor: theme.background.element,
-    display: 'inline',
-    fontSize: '90%',
-  },
-});
-
-const markerWrapperStyle = css({
-  alignSelf: 'baseline',
-  marginTop: 5,
-  marginLeft: spacing[1.5],
-  marginRight: spacing[2],
-});
-
-const markerStyle = css({
-  transform: 'rotate(-90deg)',
-  transition: `transform 200ms`,
-
-  // Only rotate the icon when its direct parent 'details' is open
-  'details[open] > summary &': {
-    transform: 'rotate(0)',
-  },
-});
-
-const contentStyle = css({
-  padding: `${spacing[4]}px ${spacing[5]}px`,
-
-  p: {
-    marginLeft: 0,
-  },
-
-  'pre > pre': {
-    marginTop: 0,
-  },
-});

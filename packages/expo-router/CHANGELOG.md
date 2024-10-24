@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.0-preview.1 — 2024-10-24
+
+### 💡 Others
+
 - Remove unused console log. ([#32249](https://github.com/expo/expo/pull/32249) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.0.0-preview.0 — 2024-10-22

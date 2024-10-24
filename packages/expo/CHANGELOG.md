@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 52.0.0-preview.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
 ## 52.0.0-preview.1 — 2024-10-22
 
 _This version does not introduce any user-facing changes._
@@ -71,7 +75,7 @@ _This version does not introduce any user-facing changes._
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552), [#32285](https://github.com/expo/expo/pull/32285) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 51.0.34 - 2024-09-24
 
