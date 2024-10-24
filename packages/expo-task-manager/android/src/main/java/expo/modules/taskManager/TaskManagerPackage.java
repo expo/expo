@@ -6,12 +6,12 @@ import expo.modules.core.BasePackage;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.SingletonModule;
 import expo.modules.interfaces.taskManager.TaskServiceInterface;
-import expo.modules.interfaces.taskManager.TaskServiceProviderPackage;
+import expo.modules.interfaces.taskManager.TaskServiceProviderInterface;
 
 import java.util.Collections;
 import java.util.List;
 
-public class TaskManagerPackage extends BasePackage implements TaskServiceProviderPackage {
+public class TaskManagerPackage extends BasePackage implements TaskServiceProviderInterface {
   // We'll keep a static TaskService implementation to be able to return this even
   // without the package being loaded as part of the application setup. This makes it
   // possible to start the TaskService before the app is loaded and let the task service

@@ -9,7 +9,7 @@ import expo.modules.core.interfaces.Package;
  * This is utilized when an app is launched in the background without an activity.
  * It enables running expo-task-manager JavaScript tasks in the background via the HeadlessAppLoader.
  */
-public interface TaskServiceProviderPackage extends Package {
+public interface TaskServiceProviderInterface extends Package {
   /**
    * @param context Current application context
    * @return A task service implementation that can be provided without having setup the whole app
