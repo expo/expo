@@ -14,11 +14,6 @@ PODS:
   - EXAV (15.0.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - EXBarCodeScanner (14.0.1):
-    - EXImageLoader
-    - ExpoModulesCore
-    - ZXingObjC/OneD
-    - ZXingObjC/PDF417
   - EXConstants (17.0.1):
     - ExpoModulesCore
   - EXImageLoader (5.0.0):
@@ -2485,7 +2480,6 @@ DEPENDENCIES:
   - EASClient/Tests (from `../../../packages/expo-eas-client/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
-  - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
@@ -2691,8 +2685,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-application/ios"
   EXAV:
     :path: "../../../packages/expo-av/ios"
-  EXBarCodeScanner:
-    :path: "../../../packages/expo-barcode-scanner/ios"
   EXConstants:
     :path: "../../../packages/expo-constants/ios"
   EXImageLoader:
@@ -3001,7 +2993,6 @@ SPEC CHECKSUMS:
   EASClient: 720af5473430a688e792ffa91f33d11fe72fcb89
   EXApplication: e1ad9c950c98b2b134578092c948b10b403f3ea7
   EXAV: 9773c9799767c9925547b05e41a26a0240bb8ef2
-  EXBarCodeScanner: 98bfb848dc71d57a51b8d9ab8e2cd98b95cc2ae7
   EXConstants: c74958e9232c8c2a8d27537fc555253297ff7a3c
   EXImageLoader: 759063a65ab016b836f73972d3bb25404888713d
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
@@ -3073,7 +3064,7 @@ SPEC CHECKSUMS:
   Google-Maps-iOS-Utils: cfe6a0239c7ca634b7e001ad059a6707143dc8dc
   GoogleMaps: 80ea184ed6bf44139f383a8b0e248ba3ec1cc8c9
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: b7416a9c526fba680c0c912fd5b70b8790daa71c
+  hermes-engine: 886789674268caaf9d166e08494a478346b9c1db
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
