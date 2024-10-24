@@ -9,7 +9,7 @@
     "declaration": false,
     "composite": false,
     "module": "es2020",
-    "moduleResolution": "node"
+    "moduleResolution": "node10"
   },
   "exclude": [
     "**/__mocks__/*",

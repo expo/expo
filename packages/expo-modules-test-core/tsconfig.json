@@ -1,7 +1,7 @@
 {
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
     "strict": true,
     "outDir": "./build",
     "types": ["node"],

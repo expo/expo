@@ -3,7 +3,7 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react-native",
     "lib": ["dom", "esnext"],
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
     "noEmit": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
