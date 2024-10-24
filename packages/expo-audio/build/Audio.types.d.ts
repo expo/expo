@@ -152,7 +152,7 @@ export type RecordingOptionsIos = {
      */
     outputFormat?: string | IOSOutputFormat | number;
     /**
-     * The desired audio quality. See the [`IOSAudioQuality`](#iosaudioquality) enum for all valid values.
+     * The desired audio quality. See the [`AudioQuality`](#audioquality) enum for all valid values.
      */
     audioQuality: AudioQuality | number;
     /**
