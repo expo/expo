@@ -74,19 +74,92 @@ export type WebAnchorProps = {
 export interface LinkProps<T extends string | object>
   extends Omit<TextProps, 'href'>,
     WebAnchorProps {
-  /** Path to route to. */
+  /**
+   * The path of the actual route to navigate to. It can either be:
+   * - **string**: A full path like `/profile/settings` or a relative path like `../settings`.
+   * - **object**: An object with a `pathname` and optional `params`. The `pathname` can be
+   * a full path like `/profile/settings` or a relative path like `../settings`. The
+   * params can be an object of key-value pairs.
+   *
+   * @example
+   * ```tsx Dynamic
+   * import { Link } from 'expo-router';
+   * import { View } from 'react-native';
+   *
+   * export default function Route() {
+   *  return (
+   *   <View>
+   *    <Link href="/about">About</Link>
+   *    <Link
+   *     href={{
+   *       pathname: '/user/[id]',
+   *       params: { id: 'bacon' }
+   *     }}>
+   *       View user
+   *    </Link>
+   *   </View>
+   *  );
+   *}
+   * ```
+   */
   href: Href<T>;
 
   // TODO(EvanBacon): This may need to be extracted for React Native style support.
-  /** Forward props to child component. Useful for custom buttons. */
+  /**
+   * Used to customize the `Link` component. It will forward all props to the
+   * first child of the `Link`. Do not that the child component must accept
+   * `onPress` or `onClick` props. The `href`, and `role` are also
+   * passed to the child.
+   *
+   * @example
+   * ```tsx
+   * import { Link } from 'expo-router';
+   * import { Pressable, Text } from 'react-native';
+   *
+   * export default function Route() {
+   *  return (
+   *   <View>
+   *    <Link href="/home" asChild>
+   *      <Pressable>
+   *       <Text>Home</Text>
+   *      </Pressable>
+   *    </Link>
+   *   </View>
+   *  );
+   *}
+   * ```
+   */
   asChild?: boolean;
 
-  /** Should replace the current route without adding to the history. */
+  /**
+   * Remove the current route from the history and replace
+   * it with the specified URL. This is useful for [redirects](/router/reference/redirects/).
+   */
   replace?: boolean;
-  /** Should push the current route  */
+  /**
+   * Always pushes a new route, and never pops or replaces to existing routes.
+   * You can push the current route multiple times or with new parameters.
+   *
+   * @example
+   *```tsx
+   * import { Link } from 'expo-router';
+   * import { View } from 'react-native';
+   *
+   * export default function Route() {
+   *  return (
+   *   <View>
+   *     <Link push href="/feed">Login</Link>
+   *   </View>
+   *  );
+   *}
+   * ```
+   */
   push?: boolean;
 
-  /** On web, this sets the HTML `class` directly. On native, this can be used with CSS interop tools like Nativewind. */
+  /**
+   *  On native, this can be used with CSS interop tools like Nativewind.
+   *  On web, this sets the HTML `class` directly.
+   */
   className?: string;
 
   onPress?: (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => void;
