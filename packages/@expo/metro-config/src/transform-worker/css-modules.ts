@@ -41,11 +41,11 @@ export async function transformCssModuleWeb(props: {
     // cssModules: true,
     projectRoot: props.options.projectRoot,
     minify: props.options.minify,
+    // @ts-expect-error: Added for testing against virtual file system.
+    resolver: props.options._test_resolveCss,
   });
 
   printCssWarnings(props.filename, props.src, cssResults.warnings);
-
-  const codeAsString = cssResults.code.toString();
 
   const { styles, reactNativeWeb, variables } = convertLightningCssToReactNativeWebStyleSheet(
     cssResults.exports!
@@ -55,22 +55,22 @@ export async function transformCssModuleWeb(props: {
     styles
   )},{unstable_styles:${JSON.stringify(reactNativeWeb)}},${JSON.stringify(variables)});`;
 
-  if (props.options.dev) {
-    const runtimeCss = wrapDevelopmentCSS({
-      reactServer: props.options.reactServer,
-      filename: props.filename,
-      src: codeAsString,
-    });
-
-    outputModule += '\n' + runtimeCss;
-  }
-
   const cssImports = collectCssImports(
     props.filename,
     props.src,
     cssResults.code.toString(),
     cssResults
   );
+
+  if (props.options.dev) {
+    const runtimeCss = wrapDevelopmentCSS({
+      reactServer: props.options.reactServer,
+      filename: props.filename,
+      src: cssImports.code,
+    });
+
+    outputModule += '\n' + runtimeCss;
+  }
 
   return {
     output: outputModule,
