@@ -135,6 +135,31 @@ it(`supports url with abstract imports for style attributes`, async () => {
   );
 });
 
+it(`supports url with abstract imports for style attributes in CSS module`, async () => {
+  const [, artifacts] = await serializeOptimizeAsync(
+    {
+      'index.js': `
+          import './styles.module.css';
+        `,
+      'styles.module.css': `        
+        .appIcon {
+            mask: url("data:xxx") center/100% 100% no-repeat;
+        }
+        `,
+    },
+    {
+      minify: true,
+      dev: true,
+    }
+  );
+  expect(artifacts.length).toBe(2);
+  // Ensure the HMR code contains the updates.
+  expect(artifacts[0].source).toMatch('mask:url(\\"data:xxx\\")');
+  expect(artifacts[1].source).toMatch(
+    '.EcQGha_appIcon{mask:url("data:xxx") 50%/100% 100% no-repeat}'
+  );
+});
+
 it(`asserts that local imports in attributes are not yet supported`, async () => {
   await serializeOptimizeAsync(
     {

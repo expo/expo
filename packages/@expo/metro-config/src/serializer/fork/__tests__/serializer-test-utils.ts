@@ -88,6 +88,7 @@ export async function serializeOptimizeAsync(
     optimize?: boolean;
     splitChunks?: boolean;
     minify?: boolean;
+    dev?: boolean;
   } = {}
 ) {
   return await serializeToWithGraph(
