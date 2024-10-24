@@ -296,10 +296,7 @@ function pruneCustomTransformOptions(
   if (
     transformOptions.customTransformOptions?.asyncRoutes &&
     // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
-    !(
-      filePath.match(/\/expo-router\/_ctx\.(ios|android|web)\.js$/) ||
-      filePath.match(/\/expo-router\/build\/import-mode\/index\.js$/)
-    )
+    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
   ) {
     delete transformOptions.customTransformOptions.asyncRoutes;
   }
