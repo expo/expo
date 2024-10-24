@@ -121,10 +121,10 @@ const styles = StyleSheet.create({
 
 ### Receiving events
 
-The changes in properties of the [`VideoPlayer`](#videoplayer) do not update the React state, therefore in order to display the information about the current state of the VideoPlayer it is necessary to listen to the [events](#videoplayerevents) it emits.
+The changes in properties of the [`VideoPlayer`](#videoplayer) do not update the React state. Therefore, to display the information about the current state of the `VideoPlayer`, it is necessary to listen to the [events](#videoplayerevents) it emits.
 The event system is based on the [`EventEmitter`](../sdk/expo/#eventemitter) class and [hooks](../sdk/expo/#hooks) from the [`expo`](../sdk/expo) package. There are a few ways to listen to events:
 
-- `useEvent` hook - this hook creates a listener that will return a stateful value that can be used in a component. It also cleans up automatically when the component unmounts.
+- `useEvent` hook: it creates a listener that will return a stateful value that can be used in a component. It also cleans up automatically when the component unmounts.
 
 ```tsx
 import { useEvent } from 'expo';
@@ -134,7 +134,7 @@ const { status, error } = useEvent(player, 'statusChange', { status: player.stat
 // Rest of the component...
 ```
 
-- `useEventListener` hook - built around the `Player.addListener` and `Player.removeListener` methods, creates an event listener with automatic cleanup.
+- `useEventListener` hook: built around the `Player.addListener` and `Player.removeListener` methods, creates an event listener with automatic cleanup.
 
 ```tsx
 import { useEventListener } from 'expo';
@@ -148,7 +148,7 @@ useEventListener(player, 'statusChange', ({ status, error }) => {
 // Rest of the component...
 ```
 
-- `Player.addListener` method - this is the most flexible way to listen to events, but requires manual cleanup and more boilerplate code.
+- `Player.addListener` method: this is the most flexible way to listen to events, but requires manual cleanup and more boilerplate code.
 
 ```tsx
 // ...Imports, definition of the component, creating the player etc.
