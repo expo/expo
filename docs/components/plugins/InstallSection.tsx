@@ -23,20 +23,28 @@ export default function InstallSection({
   href = getPackageLink(packageName),
 }: InstallSectionProps) {
   const { sourceCodeUrl } = usePageMetadata();
+  const isExpoLibrary = sourceCodeUrl?.includes('expo');
 
   return (
     <>
       <Terminal cmd={cmd} />
       {hideBareInstructions ? null : (
         <P>
-          If you are installing this in an{' '}
-          <A href="/bare/overview/">existing React Native app (bare workflow)</A>, start by{' '}
+          If you are installing this in an <A href="/bare/overview/">existing React Native app</A>,
+          start by{' '}
           <A href="/bare/installing-expo-modules/">
             installing <CODE>expo</CODE>
           </A>{' '}
           in your project. Then, follow the{' '}
-          <A href={sourceCodeUrl ?? href}>additional instructions</A> as mentioned by library's
-          README under <DEMI>"Installation in bare React Native projects"</DEMI> section.
+          <A href={sourceCodeUrl ?? href}>additional instructions</A>{' '}
+          {isExpoLibrary ? (
+            <>
+              as mentioned by library's README under{' '}
+              <DEMI>"Installation in bare React Native projects"</DEMI> section.
+            </>
+          ) : (
+            <>provided by the library's README or documentation.</>
+          )}
         </P>
       )}
     </>
