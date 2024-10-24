@@ -334,7 +334,7 @@ it(
         "android/app/src/main/java/com/example/minimal/MainApplication.kt",
         "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
-         "android/app/src/main/res/drawable/splashscreen_image.png",
+        "android/app/src/main/res/drawable/splashscreen_image.png",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
         "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
@@ -453,7 +453,6 @@ it(
         "android/app/src/main/java/com/example/minimal/MainApplication.kt",
         "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
-        "android/app/src/main/res/drawable/splashscreen_image.png"
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
         "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
