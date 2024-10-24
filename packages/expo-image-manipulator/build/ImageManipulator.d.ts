@@ -1,5 +1,6 @@
-import ExpoImageManipulator from './ExpoImageManipulator';
-import { Action, Context, ImageResult, SaveOptions } from './ImageManipulator.types';
+import { Action, ImageResult, SaveOptions } from './ImageManipulator.types';
+import { ImageManipulatorContext } from './ImageManipulatorContext';
+import ExpoImageManipulator from './NativeImageManipulatorModule';
 /**
  * Manipulate the image provided via `uri`. Available modifications are rotating, flipping (mirroring),
  * resizing and cropping. Each invocation results in a new file. With one invocation you can provide
@@ -14,6 +15,6 @@ import { Action, Context, ImageResult, SaveOptions } from './ImageManipulator.ty
  * Use [`ImageManipulator.manipulate`](#manipulateuri) or [`useImageManipulator`](#useimagemanipulatoruri) instead.
  */
 export declare function manipulateAsync(uri: string, actions?: Action[], saveOptions?: SaveOptions): Promise<ImageResult>;
-export declare function useImageManipulator(uri: string): Context;
+export declare function useImageManipulator(uri: string): ImageManipulatorContext;
 export { ExpoImageManipulator as ImageManipulator };
 //# sourceMappingURL=ImageManipulator.d.ts.map

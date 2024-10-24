@@ -12,3 +12,6 @@ export {
   ActionExtent,
   Action,
 } from './ImageManipulator.types';
+
+export type { ImageRef } from './ImageRef';
+export type { ImageManipulatorContext } from './ImageManipulatorContext';
