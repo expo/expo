@@ -9,6 +9,16 @@ jest.mock('../exportHermes', () => {
   };
 });
 
+const originalWarn = console.warn;
+
+beforeEach(() => {
+  console.warn = jest.fn(originalWarn);
+});
+
+afterAll(() => {
+  console.warn = originalWarn;
+});
+
 it(`supports global CSS files`, async () => {
   const [, artifacts] = await serializeOptimizeAsync({
     'index.js': `
@@ -126,23 +136,23 @@ it(`supports url with abstract imports for style attributes`, async () => {
 });
 
 it(`asserts that local imports in attributes are not yet supported`, async () => {
-  await expect(
-    serializeOptimizeAsync(
-      {
-        'index.js': `
+  await serializeOptimizeAsync(
+    {
+      'index.js': `
           import './styles.css';
         `,
-        'styles.css': `        
+      'styles.css': `        
         .container {
           background: url('./image.png');
         }
         `,
-      },
-      {
-        minify: true,
-      }
-    )
-  ).rejects.toThrowErrorMatchingSnapshot();
+    },
+    {
+      minify: true,
+    }
+  );
+
+  expect(console.warn).toHaveBeenCalledTimes(1);
 });
 
 describe('css modules', () => {
