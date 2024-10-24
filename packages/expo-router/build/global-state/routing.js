@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.navigate = void 0;
+exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
 const native_1 = require("@react-navigation/native");
 const Linking = __importStar(require("expo-linking"));
 const non_secure_1 = require("nanoid/non-secure");
@@ -39,6 +39,11 @@ function navigate(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'NAVIGATE' });
 }
 exports.navigate = navigate;
+function reload() {
+    // TODO(EvanBacon): add `reload` support.
+    throw new Error('The reload method is not implemented in the client-side router yet.');
+}
+exports.reload = reload;
 function push(url, options) {
     return this.linkTo((0, href_1.resolveHref)(url), { ...options, event: 'PUSH' });
 }
