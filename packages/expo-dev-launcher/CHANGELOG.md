@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed network inspector support for react-native 0.76. ([#32290](https://github.com/expo/expo/pull/32290) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 5.0.3 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- Fixed network inspector support for react-native 0.76. ([#32290](https://github.com/expo/expo/pull/32290) by [@kudo](https://github.com/kudo))
 
 ## 5.0.2 — 2024-10-24
 
