@@ -648,7 +648,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     previewLayer.frame = self.bounds
     self.layer.insertSublayer(previewLayer, at: 0)
   }
-  
+
   public override func removeFromSuperview() {
     super.removeFromSuperview()
     Task {
@@ -745,8 +745,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     #if targetEnvironment(simulator)
     return
     #endif
-//    self.previewLayer.removeFromSuperlayer()
-
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
