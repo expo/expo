@@ -26,7 +26,7 @@
     "react": "18.3.1",
     "react-native": "0.76.0",
     "react-native-safe-area-context": "4.11.0",
-    "react-native-screens": "4.0.0-beta.13",
+    "react-native-screens": "4.0.0-beta.14",
     "react-native-webview": "13.8.6"
   },
   "devDependencies": {
