@@ -47,7 +47,6 @@ import host.exp.exponent.kernel.ExponentError
 import host.exp.exponent.kernel.ExponentErrorMessage
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelConstants.AddedExperienceEventEvent
-import host.exp.exponent.kernel.KernelNetworkInterceptor
 import host.exp.exponent.kernel.KernelProvider
 import host.exp.exponent.kernel.services.ErrorRecoveryManager
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
@@ -62,6 +61,7 @@ import host.exp.expoview.Exponent.StartReactInstanceDelegate
 import host.exp.expoview.R
 import org.json.JSONException
 import org.json.JSONObject
+import versioned.host.exp.exponent.ExpoNetworkInterceptor
 import versioned.host.exp.exponent.ExponentDevBundleDownloadListener
 import versioned.host.exp.exponent.ExponentPackage
 import java.util.LinkedList
@@ -122,6 +122,8 @@ abstract class ReactNativeActivity :
   private var loadingView: LoadingView? = null
   private lateinit var reactContainerView: FrameLayout
   private val handler = Handler(Looper.getMainLooper())
+
+  private var networkInterceptor: ExpoNetworkInterceptor? = null
 
   protected open fun shouldCreateLoadingView(): Boolean {
     return true
@@ -279,7 +281,7 @@ abstract class ReactNativeActivity :
   override fun onPause() {
     super.onPause()
     if (!isCrashed) {
-      KernelNetworkInterceptor.onPause()
+      networkInterceptor?.onPause()
       reactHost?.onHostPause()
       // TODO: use onHostPause(activity)
     }
@@ -288,7 +290,7 @@ abstract class ReactNativeActivity :
   override fun onResume() {
     if (!isCrashed) {
       reactHost?.onHostResume(this, this)
-      KernelNetworkInterceptor.onResume(reactHost)
+      networkInterceptor?.onResume()
     }
     super.onResume()
   }
@@ -462,7 +464,13 @@ abstract class ReactNativeActivity :
     surface.start()
     reactSurface = surface
     reactHost.onHostResume(this, this)
-    KernelNetworkInterceptor.start(manifest!!, reactHost)
+
+    val buildProps = (manifest!!.getPluginProperties("expo-build-properties")?.get("android") as? Map<*, *>)
+      ?.mapKeys { it.key.toString() }
+    val enableNetworkInspector = buildProps?.get("networkInspector") as? Boolean ?: true
+    if (enableNetworkInspector && reactHost.devSupportManager.devSupportEnabled) {
+      networkInterceptor = ExpoNetworkInterceptor(Uri.parse(manifest!!.getBundleURL()))
+    }
     return reactHost
   }
 

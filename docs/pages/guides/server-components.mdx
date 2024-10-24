@@ -209,9 +209,9 @@ export default function Button({ title }) {
 
 ### Rendering in Server Actions
 
-Server Actions in Expo Router can render React components on the server and stream back an **RSC payload** (a custom JSON-like format that's maintained by the React team) for rendering on the client. This is similar to server-side rendering (SSR) on the web,
+Server Actions in Expo Router can render React components on the server and stream back an **RSC payload** (a custom JSON-like format that's maintained by the React team) for rendering on the client. This is similar to server-side rendering (SSR) on the web.
 
-For example, the following server action will render some text:
+For example, the following Server Action will render some text:
 
 ```tsx components/server-actions.tsx
 'use server';
@@ -250,7 +250,7 @@ export async function renderProfile({
 }
 ```
 
-This server action can be invoked from a client component and the contents will be streamed back to the client:
+This Server Action can be invoked from a Client Component and the contents will be streamed back to the client:
 
 ```tsx components/profile.tsx
 'use client';
@@ -276,16 +276,16 @@ export default function Profile() {
     [username, accessToken]
   );
 
-  // Render the profile asynchronously with React suspense and a custom loading state.
+  // Render the profile asynchronously with React Suspense and a custom loading state.
   return <React.Suspense fallback={<Fallback />}>{profile}</React.Suspense>;
 }
 ```
 
 ## Library compatibility
 
-Not all libraries are optimized for React Server Components yet. You can use the `"use client"` directive to mark a file as a client component and use it in a server component, this can be used to temporarily workaround compatibility issues.
+Not all libraries are optimized for React Server Components yet. You can use the `"use client" directive to mark a file as a Client Component and use it in a Server Component. This can be used to temporarily workaround compatibility issues.
 
-For example, consider a library `react-native-unoptimized` does not ship with "use client" directives yet. You can workaround this by creating a module and re-exporting each module:
+For example, consider a library `react-native-unoptimized` that does not ship with `"use client"` directives yet. You can workaround this by creating a module and re-exporting each module:
 
 ```tsx lib/react-native-unoptimized.tsx
 // This directive opts the module into client-side rendering.
@@ -297,7 +297,7 @@ export { One, Two, Three } from 'react-native-unoptimized';
 
 Avoid using `export * from '...'` as this breaks some of the internals of interopting between the server and client.
 
-Modules marked with `"use client"` cannot be dot-accessed from server components. This means operations like `StyleSheet.create` or `Platform.OS` will not work on the server without further optimization in the `react-native` package.
+Modules marked with `"use client"` cannot be dot-accessed from Server Components. This means operations like `StyleSheet.create` or `Platform.OS` will not work on the server without further optimization in the `react-native` package.
 
 ## CSS
 
@@ -481,8 +481,8 @@ Library authors can test their modules support Server Components by using `jest-
 - Server Rendering RSC payloads to HTML is not supported yet.
 - `generateStaticParams` is not yet supported.
 - HTML `form` integration with Server Actions is not supported yet (this partially works automatically, but data is not encrypted).
-- Server actions that invoke other server actions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.
 - `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
+- Server Actions that invoke other server actions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.
 
 ## Deployment
 

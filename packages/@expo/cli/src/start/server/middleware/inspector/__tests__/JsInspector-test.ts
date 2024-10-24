@@ -1,32 +1,27 @@
 import nock from 'nock';
 
-import {
-  METRO_INSPECTOR_RESPONSE_FIXTURE,
-  METRO_INSPECTOR_RESPONSE_FIXTURE_RN_74,
-} from './fixtures/metroInspectorResponse';
+import { METRO_INSPECTOR_RESPONSE_FIXTURE } from './fixtures/metroInspectorResponse';
 import { pageIsSupported } from '../../../metro/debugging/pageIsSupported';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
   queryInspectorAppAsync,
 } from '../JsInspector';
-import { launchInspectorBrowserAsync } from '../LaunchBrowser';
-
-jest.mock('fs-extra');
-jest.mock('rimraf');
-
-jest.mock('../LaunchBrowser');
 
 describe(openJsInspector, () => {
-  it('should open browser for PUT request with given app', async () => {
-    const mockLaunchBrowserAsync = launchInspectorBrowserAsync as jest.MockedFunction<
-      typeof launchInspectorBrowserAsync
-    >;
-
+  it('executes POST /open-debugger with the given app information', async () => {
     const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+
+    // The URL parameters that should be sent for the inspectable target
+    const params = new URLSearchParams();
+    params.set('appId', app.description);
+    params.set('device', app.reactNative!.logicalDeviceId!);
+    params.set('target', app.id);
+
+    const scope = nock('http://localhost:8081').post(`/open-debugger?${params}`).reply(200);
     await openJsInspector('http://localhost:8081', app);
 
-    expect(mockLaunchBrowserAsync).toHaveBeenCalled();
+    expect(scope.isDone()).toBe(true);
   });
 });
 
@@ -36,16 +31,13 @@ describe(queryAllInspectorAppsAsync, () => {
       .get('/json/list')
       .reply(200, METRO_INSPECTOR_RESPONSE_FIXTURE);
 
-    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter(
-      (app) => app.title === 'React Native Experimental (Improved Chrome Reloads)'
-    );
+    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter(pageIsSupported);
 
     const result = await queryAllInspectorAppsAsync('http://localhost:8081');
 
     expect(result.length).toBe(entities.length);
     for (let i = 0; i < result.length; ++i) {
       expect(result[i].webSocketDebuggerUrl).toBe(entities[i].webSocketDebuggerUrl);
-      expect(result[i].description).not.toBe("don't use");
     }
 
     expect(scope.isDone()).toBe(true);
@@ -54,15 +46,14 @@ describe(queryAllInspectorAppsAsync, () => {
   it('should return all available app entities for react native 0.74+', async () => {
     const scope = nock('http://localhost:8081')
       .get('/json/list')
-      .reply(200, METRO_INSPECTOR_RESPONSE_FIXTURE_RN_74);
+      .reply(200, METRO_INSPECTOR_RESPONSE_FIXTURE);
 
-    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE_RN_74.filter((app) => pageIsSupported(app));
+    const entities = METRO_INSPECTOR_RESPONSE_FIXTURE.filter((app) => pageIsSupported(app));
 
     const result = await queryAllInspectorAppsAsync('http://localhost:8081');
     expect(result.length).toBe(entities.length);
     for (let i = 0; i < result.length; ++i) {
       expect(result[i].webSocketDebuggerUrl).toBe(entities[i].webSocketDebuggerUrl);
-      expect(result[i].description).not.toBe("don't use");
     }
 
     expect(scope.isDone()).toBe(true);

@@ -1,4 +1,3 @@
-import { css, Global } from '@emotion/react';
 import { ThemeProvider } from '@expo/styleguide';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
@@ -67,16 +66,23 @@ export default function App({ Component, pageProps }: AppProps) {
           <CodeBlockSettingsProvider>
             <MDXProvider components={rootMarkdownComponents}>
               <Tooltip.Provider>
-                <Global
-                  styles={css({
-                    'html, body, kbd, button, input, select': {
-                      fontFamily: regularFont.style.fontFamily,
-                    },
-                    'code, pre, table.diff': {
-                      fontFamily: monospaceFont.style.fontFamily,
-                    },
-                  })}
-                />
+                {/* eslint-disable-next-line react/no-unknown-property */}
+                <style jsx global>{`
+                  html,
+                  body,
+                  kbd,
+                  button,
+                  input,
+                  select,
+                  tspan,
+                  text {
+                    font-family: ${regularFont.style.fontFamily}, sans-serif;
+                  }
+                  code,
+                  pre {
+                    font-family: ${monospaceFont.style.fontFamily}, monospace;
+                  }
+                `}</style>
                 <Component {...pageProps} />
               </Tooltip.Provider>
             </MDXProvider>

@@ -529,7 +529,7 @@ export interface IOS {
  */
 export interface IOSIcons {
     /**
-     * The icon that will appear for the app regardless of the user's current system appearance.
+     * The icon that will appear when neither dark nor tinted icons are used, or if they are not provided.
      */
     any?: string;
     /**

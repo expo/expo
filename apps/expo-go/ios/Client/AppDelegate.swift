@@ -36,4 +36,15 @@ class AppDelegate: ExpoAppDelegate {
 
     window?.makeKeyAndVisible()
   }
+
+  override func applicationDidBecomeActive(_ application: UIApplication) {
+    super.applicationDidBecomeActive(application)
+    Task {
+      do {
+        try await requestLocalNetworkAuthorization()
+      } catch {
+        log.error(error)
+      }
+    }
+  }
 }

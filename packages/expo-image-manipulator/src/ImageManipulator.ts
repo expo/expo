@@ -1,7 +1,8 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
 
-import ExpoImageManipulator from './ExpoImageManipulator';
-import { Action, Context, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';
+import { Action, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';
+import { ImageManipulatorContext } from './ImageManipulatorContext';
+import ExpoImageManipulator from './NativeImageManipulatorModule';
 import { validateArguments } from './validators';
 
 // @needsAudit
@@ -26,12 +27,6 @@ export async function manipulateAsync(
   validateArguments(uri, actions, saveOptions);
 
   const { format = SaveFormat.JPEG, ...rest } = saveOptions;
-
-  if (ExpoImageManipulator.manipulateAsync) {
-    // Fall back to the module on Android and web where the new API is not available yet.
-    return ExpoImageManipulator.manipulateAsync(uri, actions, { format, ...rest });
-  }
-
   const context = ExpoImageManipulator.manipulate(uri);
 
   for (const action of actions) {
@@ -57,7 +52,7 @@ export async function manipulateAsync(
   return result;
 }
 
-export function useImageManipulator(uri: string): Context {
+export function useImageManipulator(uri: string): ImageManipulatorContext {
   return useReleasingSharedObject(() => ExpoImageManipulator.manipulate(uri), [uri]);
 }
 

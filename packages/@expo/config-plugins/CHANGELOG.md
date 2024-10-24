@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 9.0.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
 ## 9.0.1 — 2024-10-22
 
 ### 💡 Others
@@ -24,10 +28,12 @@
 
 ### 🐛 Bug fixes
 
+- fix resolution when referring to library plugin file ([#31947](https://github.com/expo/expo/pull/31947) by [@vonovak](https://github.com/vonovak))
 - fix: more strict config plugin resolution ([#31569](https://github.com/expo/expo/pull/31569) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
+- improve invalid config error message ([#31936](https://github.com/expo/expo/pull/31936) by [@vonovak](https://github.com/vonovak))
 - Upgrade `glob@7` to `glob@10`. ([#29894](https://github.com/expo/expo/pull/29894) by [@byCedric](https://github.com/byCedric))
 - Deprecated the Android style method `getAppThemeLightNoActionBarGroup` and replaced it with `getAppThemeGroup`, which does not override the parent theme if its parent theme changes. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
 - Updated snapshots with iOS deployment target set to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
