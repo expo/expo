@@ -578,8 +578,6 @@ const archive = [
   makeSection('More', [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
-    makePage('archive/using-expo-client.mdx'),
-    makePage('archive/using-flipper.mdx'),
     makePage('archive/e2e-tests.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
