@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [android] Added implementation in package to look up TaskService instance from expo-modules-core
+- [android] Added implementation in package to look up TaskService instance from expo-modules-core ([#32300](https://github.com/expo/expo/pull/32300) by [@chrfalch](https://github.com/chrfalch))
 
 ## 12.0.0 — 2024-10-22
 
