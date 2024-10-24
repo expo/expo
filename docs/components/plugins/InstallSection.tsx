@@ -23,7 +23,7 @@ export default function InstallSection({
   href = getPackageLink(packageName),
 }: InstallSectionProps) {
   const { sourceCodeUrl } = usePageMetadata();
-  const isExpoLibrary = sourceCodeUrl?.includes('expo');
+  const isExpoLibrary = sourceCodeUrl?.startsWith('https://github.com/expo/expo');
 
   return (
     <>
