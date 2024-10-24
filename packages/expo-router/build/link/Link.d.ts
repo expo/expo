@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react';
 import { Href } from '../types';
 import { LinkProps, WebAnchorProps } from './useLinkHooks';
 export interface LinkComponent {
-    <T extends string | object>(props: PropsWithChildren<LinkProps<T>>): JSX.Element;
+    (props: PropsWithChildren<LinkProps>): JSX.Element;
     /** Helper method to resolve a Href object into a string. */
     resolveHref: (href: Href) => string;
 }

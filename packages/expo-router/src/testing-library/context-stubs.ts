@@ -33,7 +33,10 @@ export function inMemoryContext(context: MemoryContext) {
         Object.keys(context).map((key) => {
           const ext = path.extname(key);
           key = key.replace(/^\.\//, '');
-          return validExtensions.includes(ext) ? `./${key}` : `./${key}.js`;
+          key = key.startsWith('/') ? key : `./${key}`;
+          key = validExtensions.includes(ext) ? key : `${key}.js`;
+
+          return key;
         }),
     }
   );

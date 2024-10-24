@@ -1,6 +1,5 @@
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
-type SearchParams = Record<string, string | string[]>;
+import { RouteParams, RouteSegments, UnknownOutputParams, InternalRoute } from './types';
 export declare function useRootNavigationState(): any;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
 /** @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead, which returns a React `ref`. */
@@ -47,7 +46,8 @@ export declare function useUnstableGlobalHref(): string;
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export declare function useSegments<TSegments extends Routes | RouteSegments<Routes> = Routes>(): TSegments extends string ? RouteSegments<TSegments> : TSegments;
+export declare function useSegments<TSegments extends InternalRoute = InternalRoute>(): RouteSegments<TSegments>;
+export declare function useSegments<TSegments extends RouteSegments<InternalRoute>>(): TSegments;
 /**
  * Global selected route location without search parameters. For example, `/acme?foo=bar` -> `/acme`. Segments will be normalized: `/[id]?id=normal` -> `/normal`.
  *
@@ -65,10 +65,6 @@ export declare function useSegments<TSegments extends Routes | RouteSegments<Rou
  * ```
  */
 export declare function usePathname(): string;
-/**
- * @hidden
- */
-export declare function useGlobalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TParams>;
 /**
  * Get the globally selected query parameters, including dynamic path segments. This function will update even when the route is not focused.
  * Useful for analytics or other background operations that don't draw to the screen.
@@ -94,11 +90,8 @@ export declare function useGlobalSearchParams<TParams extends SearchParams = Unk
  * ```
  *
  */
-export declare function useGlobalSearchParams<TRoute extends Routes, TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TRoute, TParams>;
-/**
- * @hidden
- */
-export declare function useLocalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TParams>;
+export declare function useGlobalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
+export declare function useGlobalSearchParams<TRoute extends InternalRoute>(): RouteParams<TRoute>;
 /**
  * Returns the URL parameters for the contextually focused route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
  * This is useful for stacks where you may push a new screen that changes the query parameters.
@@ -108,9 +101,9 @@ export declare function useLocalSearchParams<TParams extends SearchParams = Unkn
  *
  * @see [`useGlobalSearchParams`](#useglobalsearchparams)
  */
-export declare function useLocalSearchParams<TRoute extends Routes, TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TRoute, TParams>;
+export declare function useLocalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
+export declare function useLocalSearchParams<TRoute extends InternalRoute>(): RouteParams<TRoute>;
 export declare function useSearchParams({ global }?: {
     global?: boolean | undefined;
 }): URLSearchParams;
-export {};
 //# sourceMappingURL=hooks.d.ts.map

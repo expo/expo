@@ -62,9 +62,9 @@ export type WebAnchorProps = {
 /**
  *
  */
-export interface LinkProps<T extends string | object> extends Omit<TextProps, 'href'>, WebAnchorProps {
+export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
     /** Path to route to. */
-    href: Href<T>;
+    href: Href;
     /** Forward props to child component. Useful for custom buttons. */
     asChild?: boolean;
     /** Should replace the current route without adding to the history. */
@@ -90,7 +90,7 @@ export declare function useInteropClassName(props: {
     $$css: boolean;
     __routerLinkClassName: string;
 })[] | null | undefined;
-export declare const useHrefAttrs: (props: Partial<LinkProps<any>>) => {
+export declare const useHrefAttrs: (props: Partial<LinkProps>) => {
     hrefAttrs?: any;
-} & Partial<LinkProps<any>>;
+} & Partial<LinkProps>;
 //# sourceMappingURL=useLinkHooks.d.ts.map

@@ -12,7 +12,7 @@ import { useFocusEffect } from '../useFocusEffect';
 import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
 
 export interface LinkComponent {
-  <T extends string | object>(props: PropsWithChildren<LinkProps<T>>): JSX.Element;
+  (props: PropsWithChildren<LinkProps>): JSX.Element;
   /** Helper method to resolve a Href object into a string. */
   resolveHref: (href: Href) => string;
 }
@@ -51,7 +51,7 @@ function ExpoRouterLink(
     download,
     withAnchor,
     ...rest
-  }: LinkProps<any>,
+  }: LinkProps,
   ref: ForwardedRef<Text>
 ) {
   // Mutate the style prop to add the className on web.
