@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Disable `hermesParser` and conditionally enable for files with `@flow` pragma.
+- Disable `hermesParser` and conditionally enable for files with `@flow` pragma. ([#32325](https://github.com/expo/expo/pull/32325) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
