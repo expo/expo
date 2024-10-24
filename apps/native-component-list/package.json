@@ -136,7 +136,7 @@
     "react-dom": "18.3.1",
     "react-native": "0.76.0",
     "react-native-dropdown-picker": "^5.3.0",
-    "react-native-gesture-handler": "~2.20.1",
+    "react-native-gesture-handler": "~2.20.2",
     "react-native-maps": "1.18.0",
     "react-native-pager-view": "6.4.1",
     "react-native-paper": "^5.12.5",
