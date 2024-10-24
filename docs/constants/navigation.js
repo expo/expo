@@ -576,7 +576,6 @@ const archive = [
     makePage('archive/push-notifications/notification-channels.mdx'),
   ]),
   makeSection('More', [
-    makePage('archive/expo-cli.mdx'),
     makePage('archive/managed-vs-bare.mdx'),
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
