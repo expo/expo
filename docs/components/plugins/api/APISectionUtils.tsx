@@ -214,6 +214,7 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
+  Extract: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union',
   // Conflicts with the File class from expo-file-system@next. TODO: Fix this.
   // File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
