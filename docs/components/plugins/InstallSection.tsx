@@ -36,7 +36,7 @@ export default function InstallSection({
             installing <CODE>expo</CODE>
           </A>{' '}
           in your project. Then, follow the{' '}
-          <A href={sourceCodeUrl ?? href}>additional instructions</A>{' '}
+          <A href={href ? href : sourceCodeUrl}>additional instructions</A>{' '}
           {isExpoLibrary ? (
             <>
               as mentioned by the library's README under{' '}
