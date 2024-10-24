@@ -554,11 +554,6 @@ const preview = [
 ];
 
 const archive = [
-  makeSection('Classic Builds', [
-    makePage('archive/classic-builds/building-standalone-apps.mdx'),
-    makePage('archive/classic-builds/turtle-cli.mdx'),
-    makePage('archive/classic-builds/migrating.mdx'),
-  ]),
   makeSection('Classic Updates', [
     makePage('archive/classic-updates/introduction.mdx'),
     makeSection('Guides', [
