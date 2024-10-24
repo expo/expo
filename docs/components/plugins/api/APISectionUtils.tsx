@@ -131,6 +131,7 @@ const nonLinkableTypes = [
   'ComponentProps',
   'ComponentType',
   'E',
+  'EmitterSubscription',
   'EventName',
   'EventSubscription',
   'ForwardRefExoticComponent',
