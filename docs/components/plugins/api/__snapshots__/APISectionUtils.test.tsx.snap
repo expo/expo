@@ -525,7 +525,7 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
   <span>
     <a
       class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_span]:text-link [&_code]:text-link [&_strong]:text-link [&_em]:text-link [&_b]:text-link [&_i]:text-link"
-      href="#asset"
+      href="/versions/latest/sdk/asset#asset"
     >
       Asset
     </a>
@@ -568,7 +568,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
     <span>
       <a
         class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_span]:text-link [&_code]:text-link [&_strong]:text-link [&_em]:text-link [&_b]:text-link [&_i]:text-link"
-        href="#asset"
+        href="/versions/latest/sdk/asset#asset"
       >
         Asset
       </a>
@@ -703,7 +703,11 @@ exports[`APISectionUtils.resolveTypeName query type 1`] = `
 
 exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
 <div>
-  [
+  <span
+    class="text-quaternary"
+  >
+    [
+  </span>
   <span>
     <a
       class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_span]:text-link [&_code]:text-link [&_strong]:text-link [&_em]:text-link [&_b]:text-link [&_i]:text-link"
@@ -711,12 +715,20 @@ exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
     >
       SortByKey
     </a>
-    , 
+    <span
+      class="text-quaternary"
+    >
+      , 
+    </span>
   </span>
   <span>
     boolean
   </span>
-  ]
+  <span
+    class="text-quaternary"
+  >
+    ]
+  </span>
 </div>
 `;
 

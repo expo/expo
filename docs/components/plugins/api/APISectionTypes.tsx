@@ -158,6 +158,23 @@ const renderType = (
           : null}
       </div>
     );
+  } else if (type.elements) {
+    return (
+      <div key={`type-tuple-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} sticky />
+        <APISectionPlatformTags comment={comment} />
+        <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
+        </H3Code>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <CALLOUT>
+          <SPAN theme="secondary" weight="medium">
+            Tuple:{' '}
+          </SPAN>
+          <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
+        </CALLOUT>
+      </div>
+    );
   } else if (type.types && ['union', 'intersection'].includes(type.type)) {
     const literalTypes = type.types.filter((t: TypeDefinitionData) =>
       ['literal', 'intrinsic', 'reference', 'tuple'].includes(t.type)

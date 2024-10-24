@@ -2,7 +2,7 @@
 
 'use client';
 
-import * as React from 'react';
+import { Component } from 'react';
 import { Platform, processColor, ViewProps } from 'react-native';
 
 import NativeLinearGradient from './NativeLinearGradient';
@@ -77,7 +77,7 @@ export type LinearGradientProps = ViewProps & {
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.
  */
-export class LinearGradient extends React.Component<LinearGradientProps> {
+export class LinearGradient extends Component<LinearGradientProps> {
   render() {
     const { colors, locations, start, end, dither, ...props } = this.props;
     let resolvedLocations: readonly number[] | null | undefined = locations;
@@ -103,7 +103,7 @@ export class LinearGradient extends React.Component<LinearGradientProps> {
 }
 
 function _normalizePoint(
-  point: LinearGradientPoint | null | undefined
+  point?: LinearGradientPoint | null
 ): NativeLinearGradientPoint | undefined {
   if (!point) {
     return undefined;
@@ -116,3 +116,5 @@ function _normalizePoint(
 
   return Array.isArray(point) ? point : [point.x, point.y];
 }
+
+export { NativeLinearGradientPoint };
