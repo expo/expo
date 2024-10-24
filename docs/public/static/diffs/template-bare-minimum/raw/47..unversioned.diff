@@ -88,10 +88,10 @@ index 0e77904834..0000000000
 -    ],
 -)
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 648135611c..db29fd494c 100644
+index 648135611c..84879d83ac 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
-@@ -1,221 +1,121 @@
+@@ -1,221 +1,98 @@
  apply plugin: "com.android.application"
 -
 -import com.android.build.OutputFile
@@ -176,16 +176,7 @@ index 648135611c..db29fd494c 100644
  def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
  
 -def reactNativeRoot = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath()
-+static def versionToNumber(major, minor, patch) {
-+  return patch * 100 + minor * 10000 + major * 1000000
-+}
-+
-+def getRNVersion() {
-+  def version = providers.exec {
-+    workingDir(projectDir)
-+    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
-+  }.standardOutput.asText.get().trim()
- 
+-
 -project.ext.react = [
 -    entryFile: ["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android"].execute(null, rootDir).text.trim(),
 -    enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",
@@ -193,18 +184,9 @@ index 648135611c..db29fd494c 100644
 -    cliPath: "${reactNativeRoot}/cli.js",
 -    composeSourceMapsPath: "${reactNativeRoot}/scripts/compose-source-maps.js",
 -]
-+  def coreVersion = version.split("-")[0]
-+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
- 
+-
 -apply from: new File(reactNativeRoot, "react.gradle")
-+  return versionToNumber(
-+      major,
-+      minor,
-+      patch
-+  )
-+}
-+def rnVersion = getRNVersion()
- 
+-
  /**
 - * Set this to true to create two separate APKs instead of one:
 - *   - An APK that only works on ARM devices
@@ -266,10 +248,8 @@ index 648135611c..db29fd494c 100644
 +    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
 +    // hermesFlags = ["-O", "-output-source-map"]
 +
-+    if (rnVersion >= versionToNumber(0, 75, 0)) {
-+        /* Autolinking */
-+        autolinkLibrariesWithApp()
-+    }
++    /* Autolinking */
++    autolinkLibrariesWithApp()
 +}
  
  /**
@@ -396,7 +376,7 @@ index 648135611c..db29fd494c 100644
      }
      signingConfigs {
          debug {
-@@ -233,25 +133,20 @@ android {
+@@ -233,25 +110,20 @@ android {
              // Caution! In production, you need to generate your own keystore file.
              // see https://reactnative.dev/docs/signed-apk-android.
              signingConfig signingConfigs.debug
@@ -430,7 +410,7 @@ index 648135611c..db29fd494c 100644
  }
  
  // Apply static values from `gradle.properties` to the `android.packagingOptions`
-@@ -275,88 +170,35 @@ android {
+@@ -275,88 +147,30 @@ android {
  }
  
  dependencies {
@@ -492,7 +472,7 @@ index 648135611c..db29fd494c 100644
          implementation jscFlavor
      }
  }
- 
+-
 -if (isNewArchitectureEnabled()) {
 -    // If new architecture is enabled, we let you build RN from source
 -    // Otherwise we fallback to a prebuilt .aar bundled in the NPM package.
@@ -525,10 +505,7 @@ index 648135611c..db29fd494c 100644
 -    // - Invoke gradle with `-newArchEnabled=true`
 -    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
 -    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
-+if (rnVersion < versionToNumber(0, 75, 0)) {
-+    apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
-+    applyNativeModulesAppBuildGradle(project)
- }
+-}
 diff --git a/templates/expo-template-bare-minimum/android/app/build_defs.bzl b/templates/expo-template-bare-minimum/android/app/build_defs.bzl
 deleted file mode 100644
 index fff270f8d1..0000000000
@@ -934,10 +911,10 @@ index 7deb688b07..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 new file mode 100644
-index 0000000000..5f6e05ce07
+index 0000000000..e61349d130
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,57 @@
 +package com.helloworld
 +
 +import android.app.Application
@@ -950,6 +927,7 @@ index 0000000000..5f6e05ce07
 +import com.facebook.react.ReactHost
 +import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 +import com.facebook.react.defaults.DefaultReactNativeHost
++import com.facebook.react.soloader.OpenSourceMergedSoMapping
 +import com.facebook.soloader.SoLoader
 +
 +import expo.modules.ApplicationLifecycleDispatcher
@@ -961,9 +939,10 @@ index 0000000000..5f6e05ce07
 +        this,
 +        object : DefaultReactNativeHost(this) {
 +          override fun getPackages(): List<ReactPackage> {
++            val packages = PackageList(this).packages
 +            // Packages that cannot be autolinked yet can be added manually here, for example:
 +            // packages.add(new MyReactNativePackage());
-+            return PackageList(this).packages
++            return packages
 +          }
 +
 +          override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
@@ -980,7 +959,7 @@ index 0000000000..5f6e05ce07
 +
 +  override fun onCreate() {
 +    super.onCreate()
-+    SoLoader.init(this, false)
++    SoLoader.init(this, OpenSourceMergedSoMapping)
 +    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
 +      // If you opted-in for the New Architecture, we load the native entry point for this app.
 +      load()
@@ -1525,7 +1504,7 @@ index f35d996202..5c25e728ea 100644
            The item below with state_pressed="false" and state_focused="false" causes a NullPointerException.
            NullPointerException:tempt to invoke virtual method 'android.graphics.drawable.Drawable android.graphics.drawable.Drawable$ConstantState.newDrawable(android.content.res.Resources)'
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index 8181b282cd..92ca085f6d 100644
+index 8181b282cd..e34231b2ff 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -2,64 +2,40 @@
@@ -1540,9 +1519,9 @@ index 8181b282cd..92ca085f6d 100644
 -            kotlinVersion = findProperty('android.kotlinVersion')
 -        }
 -        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
-+        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
-+        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
-+        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
++        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
++        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
++        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
 +        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
 +        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
  
@@ -1664,26 +1643,35 @@ index fab3fb6bcf..de47429c64 100644
 +# Use legacy packaging to compress native libraries in the resulting APK.
 +expo.useLegacyPackaging=false
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
-index 249e5832f0..e6441136f3 100644
+index 249e5832f0..a4b76b9530 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
-index 8fad3f5a98..6f7a6eb33e 100644
+index 8fad3f5a98..79eb9d003f 100644
 --- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 @@ -1,5 +1,7 @@
  distributionBase=GRADLE_USER_HOME
  distributionPath=wrapper/dists
 -distributionUrl=https\://services.gradle.org/distributions/gradle-7.5.1-all.zip
-+distributionUrl=https\://services.gradle.org/distributions/gradle-8.8-all.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.10.2-all.zip
 +networkTimeout=10000
 +validateDistributionUrl=true
  zipStoreBase=GRADLE_USER_HOME
  zipStorePath=wrapper/dists
 diff --git a/templates/expo-template-bare-minimum/android/gradlew b/templates/expo-template-bare-minimum/android/gradlew
-index a69d9cb6c2..b740cf1339 100755
+index a69d9cb6c2..f5feea6d6b 100755
 --- a/templates/expo-template-bare-minimum/android/gradlew
 +++ b/templates/expo-template-bare-minimum/android/gradlew
-@@ -55,7 +55,7 @@
+@@ -15,6 +15,8 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ #
++# SPDX-License-Identifier: Apache-2.0
++#
+ 
+ ##############################################################################
+ #
+@@ -55,7 +57,7 @@
  #       Darwin, MinGW, and NonStop.
  #
  #   (3) This script is generated from the Groovy template
@@ -1692,7 +1680,7 @@ index a69d9cb6c2..b740cf1339 100755
  #       within the Gradle project.
  #
  #       You can find Gradle at https://github.com/gradle/gradle/.
-@@ -80,13 +80,11 @@ do
+@@ -80,13 +82,12 @@ do
      esac
  done
  
@@ -1706,11 +1694,12 @@ index a69d9cb6c2..b740cf1339 100755
 -# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 -DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
 +# Discard cd standard output in case $CDPATH is set (https://github.com/gradle/gradle/issues/25036)
-+APP_HOME=$( cd "${APP_HOME:-./}" > /dev/null && pwd -P ) || exit
++APP_HOME=$( cd -P "${APP_HOME:-./}" > /dev/null && printf '%s
++' "$PWD" ) || exit
  
  # Use the maximum available, or set MAX_FD != -1 to use that value.
  MAX_FD=maximum
-@@ -133,22 +131,29 @@ location of your Java installation."
+@@ -133,22 +134,29 @@ location of your Java installation."
      fi
  else
      JAVACMD=java
@@ -1741,7 +1730,7 @@ index a69d9cb6c2..b740cf1339 100755
          ulimit -n "$MAX_FD" ||
              warn "Could not set maximum file descriptor limit to $MAX_FD"
      esac
-@@ -193,11 +198,15 @@ if "$cygwin" || "$msys" ; then
+@@ -193,11 +201,15 @@ if "$cygwin" || "$msys" ; then
      done
  fi
  
@@ -1763,10 +1752,19 @@ index a69d9cb6c2..b740cf1339 100755
  set -- \
          "-Dorg.gradle.appname=$APP_BASE_NAME" \
 diff --git a/templates/expo-template-bare-minimum/android/gradlew.bat b/templates/expo-template-bare-minimum/android/gradlew.bat
-index 53a6b238d4..7101f8e467 100644
+index 53a6b238d4..9b42019c79 100644
 --- a/templates/expo-template-bare-minimum/android/gradlew.bat
 +++ b/templates/expo-template-bare-minimum/android/gradlew.bat
-@@ -26,6 +26,7 @@ if "%OS%"=="Windows_NT" setlocal
+@@ -13,6 +13,8 @@
+ @rem See the License for the specific language governing permissions and
+ @rem limitations under the License.
+ @rem
++@rem SPDX-License-Identifier: Apache-2.0
++@rem
+ 
+ @if "%DEBUG%"=="" @echo off
+ @rem ##########################################################################
+@@ -26,6 +28,7 @@ if "%OS%"=="Windows_NT" setlocal
  
  set DIRNAME=%~dp0
  if "%DIRNAME%"=="" set DIRNAME=.
@@ -1774,7 +1772,7 @@ index 53a6b238d4..7101f8e467 100644
  set APP_BASE_NAME=%~n0
  set APP_HOME=%DIRNAME%
  
-@@ -42,11 +43,11 @@ set JAVA_EXE=java.exe
+@@ -42,11 +45,11 @@ set JAVA_EXE=java.exe
  %JAVA_EXE% -version >NUL 2>&1
  if %ERRORLEVEL% equ 0 goto execute
  
@@ -1791,7 +1789,7 @@ index 53a6b238d4..7101f8e467 100644
  
  goto fail
  
-@@ -56,11 +57,11 @@ set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+@@ -56,11 +59,11 @@ set JAVA_EXE=%JAVA_HOME%/bin/java.exe
  
  if exist "%JAVA_EXE%" goto execute
  
@@ -1809,51 +1807,30 @@ index 53a6b238d4..7101f8e467 100644
  goto fail
  
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index b3332319f9..c05d6f1b9d 100644
+index b3332319f9..46fda813ba 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
-@@ -1,17 +1,64 @@
+@@ -1,17 +1,38 @@
 +pluginManagement {
-+    def version = providers.exec {
-+      commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
-+    }.standardOutput.asText.get().trim()
-+    def (_, reactNativeMinor) = version.split("-")[0].tokenize('.').collect { it.toInteger() }
-+
-+    if(reactNativeMinor >= 75) {
-+      includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
-+    }
++    includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
 +}
 +plugins { id("com.facebook.react.settings") }
 +
-+def getRNMinorVersion() {
-+  def version = providers.exec {
-+    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
-+  }.standardOutput.asText.get().trim()
-+
-+  def coreVersion = version.split("-")[0]
-+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
-+
-+  return minor
-+}
-+
-+if (getRNMinorVersion() >= 75) {
-+  extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
-+    if (System.getenv('EXPO_UNSTABLE_CORE_AUTOLINKING') == '1') {
-+      println('\u001B[32mUsing expo-modules-autolinking as core autolinking source\u001B[0m')
-+      def command = [
-+        'node',
-+        '--no-warnings',
-+        '--eval',
-+        'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
-+        'react-native-config',
-+        '--json',
-+        '--platform',
-+        'android'
-+      ].toList()
-+      ex.autolinkLibrariesFromCommand(command)
-+    } else {
-+      ex.autolinkLibrariesFromCommand()
-+    }
++extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
++  if (System.getenv('EXPO_USE_COMMUNITY_AUTOLINKING') == '1') {
++    ex.autolinkLibrariesFromCommand()
++  } else {
++    def command = [
++      'node',
++      '--no-warnings',
++      '--eval',
++      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
++      'react-native-config',
++      '--json',
++      '--platform',
++      'android'
++    ].toList()
++    ex.autolinkLibrariesFromCommand(command)
 +  }
 +}
 +
@@ -1872,11 +1849,7 @@ index b3332319f9..c05d6f1b9d 100644
  
 -apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
 -applyNativeModulesSettingsGradle(settings)
-+if (getRNMinorVersion() < 75) {
-+  apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
-+  applyNativeModulesSettingsGradle(settings)
-+}
- 
+-
  include ':app'
 -includeBuild(new File(["node", "--print", "require.resolve('react-native-gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile())
 -
@@ -1900,6 +1873,18 @@ index a36a6e08d4..e1cfd57212 100644
 +    "version": "1.0.0"
    }
  }
+diff --git a/templates/expo-template-bare-minimum/babel.config.js b/templates/expo-template-bare-minimum/babel.config.js
+deleted file mode 100644
+index baac9e50ca..0000000000
+--- a/templates/expo-template-bare-minimum/babel.config.js
++++ /dev/null
+@@ -1,6 +0,0 @@
+-module.exports = function(api) {
+-  api.cache(true);
+-  return {
+-    presets: ['babel-preset-expo']
+-  };
+-};
 diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
 index 67397f65f9..05647d55c7 100644
 --- a/templates/expo-template-bare-minimum/gitignore
@@ -2259,7 +2244,7 @@ index a6e13e11ab..b27f83286d 100644
  #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
  #endif
-@@ -124,43 +59,4 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+@@ -124,43 +59,4 @@ - (void)application:(UIApplication *)application didReceiveRemoteNotification:(N
    return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
  }
  
@@ -2422,10 +2407,10 @@ index 03410dc8b3..6631ffa6f2 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 474455b90d..a50623eb05 100644
+index 474455b90d..f740040e7b 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -1,43 +1,62 @@
+@@ -1,43 +1,56 @@
  require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 -require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
@@ -2437,11 +2422,20 @@ index 474455b90d..a50623eb05 100644
 +ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
 +ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 +
-+use_autolinking_method_symbol = ('use' + '_native' + '_modules!').to_sym
-+origin_autolinking_method = self.method(use_autolinking_method_symbol)
-+self.define_singleton_method(use_autolinking_method_symbol) do |*args|
-+  if ENV['EXPO_UNSTABLE_CORE_AUTOLINKING'] == '1'
-+    Pod::UI.puts('Using expo-modules-autolinking as core autolinking source'.green)
++platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+ install! 'cocoapods',
+   :deterministic_uuids => false
+ 
++prepare_react_native_project!
++
+ target 'HelloWorld' do
+   use_expo_modules!
+-  config = use_native_modules!
+ 
+-  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
++  if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
++    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
++  else
 +    config_command = [
 +      'node',
 +      '--no-warnings',
@@ -2452,27 +2446,13 @@ index 474455b90d..a50623eb05 100644
 +      '--platform',
 +      'ios'
 +    ]
-+    origin_autolinking_method.call(config_command)
-+  else
-+    origin_autolinking_method.call()
 +  end
-+end
-+
-+platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
- install! 'cocoapods',
-   :deterministic_uuids => false
  
-+prepare_react_native_project!
-+
- target 'HelloWorld' do
-   use_expo_modules!
-+
-   config = use_native_modules!
- 
-   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
--
 -  # Flags change depending on the env values.
 -  flags = get_default_flags()
++  config = use_native_modules!(config_command)
++
++  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
 +  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
  
    use_react_native!(
@@ -2503,6 +2483,19 @@ index 474455b90d..a50623eb05 100644
  
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
+@@ -50,12 +63,4 @@ target 'HelloWorld' do
+       end
+     end
+   end
+-
+-  post_integrate do |installer|
+-    begin
+-      expo_patch_react_imports!(installer)
+-    rescue => e
+-      Pod::UI.warn e
+-    end
+-  end
+ end
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile.properties.json b/templates/expo-template-bare-minimum/ios/Podfile.properties.json
 index f6d872e81a..de9f7b7524 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile.properties.json
@@ -2527,7 +2520,7 @@ index 9430b0f9b6..07c9fce65d 100644
 +
 +module.exports = config;
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a41fdc0d8d..8ca20518e9 100644
+index a41fdc0d8d..64764d0cd9 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -2536,7 +2529,7 @@ index a41fdc0d8d..8ca20518e9 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "47.0.26",
 +  "license": "0BSD",
-+  "version": "51.0.27",
++  "version": "52.0.3",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -2549,10 +2542,10 @@ index a41fdc0d8d..8ca20518e9 100644
 -    "expo-status-bar": "~1.4.2",
 -    "react": "18.1.0",
 -    "react-native": "0.70.8"
-+    "expo": "~51.0.8",
-+    "expo-status-bar": "~1.12.1",
++    "expo": "~52.0.0-preview.3",
++    "expo-status-bar": "~2.0.0",
 +    "react": "18.3.1",
-+    "react-native": "0.75.2"
++    "react-native": "0.76.0"
    },
    "devDependencies": {
 -    "@babel/core": "^7.12.9"
