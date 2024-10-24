@@ -99,6 +99,32 @@ it(`supports url for style attributes`, async () => {
   );
 });
 
+it(`supports url with abstract imports for style attributes`, async () => {
+  const [, artifacts] = await serializeOptimizeAsync(
+    {
+      'index.js': `
+          import './styles.css';
+        `,
+      'styles.css': `        
+        .other {
+          background: url("data:image/svg+xml;charset=utf8,...");
+        }
+        .container {
+          background-image: url(/icon-mask.svg);
+          stroke: url(#edge-gradient);
+        }
+        `,
+    },
+    {
+      minify: true,
+    }
+  );
+  expect(artifacts.length).toBe(2);
+  expect(artifacts[1].source).toMatch(
+    '.other{background:url("data:image/svg+xml;charset=utf8,...")}.container{stroke:url("#edge-gradient");background-image:url("/icon-mask.svg")}'
+  );
+});
+
 it(`asserts that local imports in attributes are not yet supported`, async () => {
   await expect(
     serializeOptimizeAsync(

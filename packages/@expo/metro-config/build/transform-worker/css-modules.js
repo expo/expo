@@ -135,13 +135,15 @@ function collectCssImports(filename, originalCode, code, cssResults) {
                 }
             }
             else if (dep.type === 'url') {
-                if (isExternalUrl(dep.url)) {
-                    // Put the external URL back.
-                    code = code.replaceAll(dep.placeholder, dep.url);
-                }
-                else {
+                // Put the URL back into the code.
+                code = code.replaceAll(dep.placeholder, dep.url);
+                const isSupported = // External URL
+                 isExternalUrl(dep.url) ||
+                    // Data URL, DOM id, or public file.
+                    dep.url.match(/^(data:|[#/])/);
+                if (!isSupported) {
                     // Assert that syntax like `background: url('./img.png');` is not supported yet.
-                    throw new Error(`Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${(0, code_frame_1.default)(originalCode, dep.loc.start.line, dep.loc.start.column)}`);
+                    console.warn(`Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${(0, code_frame_1.default)(originalCode, dep.loc.start.line, dep.loc.start.column)}`);
                 }
             }
         }
