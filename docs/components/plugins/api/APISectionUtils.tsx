@@ -383,8 +383,6 @@ export const resolveTypeName = (
     target,
   } = typeDefinition;
 
-  type === 'namedTupleMember' && console.log(typeDefinition);
-
   try {
     if (name) {
       if (type === 'reference') {

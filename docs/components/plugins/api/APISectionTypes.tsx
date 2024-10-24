@@ -134,7 +134,6 @@ const renderType = (
   { name, comment, type, typeParameter }: TypeGeneralData,
   sdkVersion: string
 ): ReactNode => {
-  console.log(name, type);
   if (type.declaration) {
     // Object Types
     return (
