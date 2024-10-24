@@ -1,9 +1,25 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+protocol AnyEither: AnyArgument {
+  /**
+   An initializer with the underlying type-erased value.
+   */
+  init(_ value: Any?)
+
+  /**
+   An array of dynamic equivalents for generic either types.
+   */
+  static func dynamicTypes() -> [AnyDynamicType]
+}
+
 /*
  A convertible type wrapper for a value that should be either of two generic types.
  */
-open class Either<FirstType, SecondType>: Convertible {
+open class Either<FirstType, SecondType>: AnyEither, AnyArgument {
+  public class func getDynamicType() -> any AnyDynamicType {
+    return DynamicEitherType(eitherType: Either<FirstType, SecondType>.self)
+  }
+
   /**
    An array of dynamic equivalents for generic either types.
    */
@@ -48,18 +64,11 @@ open class Either<FirstType, SecondType>: Convertible {
     return value as? SecondType
   }
 
-  // MARK: - Convertible
-
-  public class func convert(from value: Any?, appContext: AppContext) throws -> Self {
-    let dynamicTypes = dynamicTypes()
-
-    for type in dynamicTypes {
-      // Initialize the "either" when the current type can cast given value.
-      if let value = try? type.cast(value, appContext: appContext) {
-        return Self(value)
-      }
+  public func `as`<ReturnType>(_ type: ReturnType.Type) throws -> ReturnType {
+    if let value = value as? ReturnType {
+      return value
     }
-    throw NeitherTypeException(dynamicTypes)
+    throw Conversions.CastingException<ReturnType>(value as Any)
   }
 }
 
@@ -67,6 +76,10 @@ open class Either<FirstType, SecondType>: Convertible {
  A convertible type wrapper for a value that should be either of three generic types.
  */
 open class EitherOfThree<FirstType, SecondType, ThirdType>: Either<FirstType, SecondType> {
+  override public class func getDynamicType() -> any AnyDynamicType {
+    return DynamicEitherType(eitherType: EitherOfThree<FirstType, SecondType, ThirdType>.self)
+  }
+
   override class func dynamicTypes() -> [AnyDynamicType] {
     return super.dynamicTypes() + [~ThirdType.self]
   }
@@ -90,6 +103,10 @@ open class EitherOfThree<FirstType, SecondType, ThirdType>: Either<FirstType, Se
  A convertible type wrapper for a value that should be either of four generic types.
  */
 open class EitherOfFour<FirstType, SecondType, ThirdType, FourthType>: EitherOfThree<FirstType, SecondType, ThirdType> {
+  override public class func getDynamicType() -> any AnyDynamicType {
+    return DynamicEitherType(eitherType: EitherOfFour<FirstType, SecondType, ThirdType, FourthType>.self)
+  }
+
   override class func dynamicTypes() -> [AnyDynamicType] {
     return super.dynamicTypes() + [~FourthType.self]
   }
