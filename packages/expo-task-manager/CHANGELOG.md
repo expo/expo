@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [android] Added implementation in package to look up TaskService instance from expo-modules-core
+
 ## 12.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes
