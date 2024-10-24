@@ -137,6 +137,7 @@ const nonLinkableTypes = [
   'GeneratedHref',
   'GestureResponderEvent',
   'GetPermissionMethod',
+  'InferEventParameter',
   'K',
   'Listener',
   'ModuleType',
