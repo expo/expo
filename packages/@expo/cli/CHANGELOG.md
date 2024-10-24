@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add fallback method for determining internal IP address. ([#32273](https://github.com/expo/expo/pull/32273) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.19.2 — 2024-10-24
