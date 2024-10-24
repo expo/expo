@@ -1,11 +1,30 @@
+import Jimp from 'jimp-compact';
 import { vol } from 'memfs';
 
 import fixtures from '../../../__tests__/fixtures/react-native-project';
 import { setSplashImageDrawablesAsync } from '../withAndroidSplashImages';
 
 jest.mock('fs');
+jest.mock('jimp-compact');
 
 describe(setSplashImageDrawablesAsync, () => {
+  const mockImage = {
+    bitmap: { width: 100, height: 200 },
+    clone: jest.fn().mockReturnThis(),
+    resize: jest.fn().mockReturnThis(),
+    blit: jest.fn().mockReturnThis(),
+    quality: jest.fn().mockReturnThis(),
+    writeAsync: jest.fn().mockImplementation(async (outputPath) => {
+      vol.writeFileSync(outputPath, '...');
+    }),
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Jimp.read.mockResolvedValue(mockImage);
+    Jimp.create.mockResolvedValue(mockImage);
+  });
+
   beforeAll(async () => {
     vol.fromJSON(
       {
@@ -44,6 +63,7 @@ describe(setSplashImageDrawablesAsync, () => {
           },
         },
       },
+      null,
       '/',
       100
     );
@@ -82,6 +102,7 @@ describe(setSplashImageDrawablesAsync, () => {
           },
         },
       },
+      null,
       '/',
       100
     );
@@ -106,6 +127,7 @@ describe(setSplashImageDrawablesAsync, () => {
     }
   });
   it(`sets no images`, async () => {
+    Jimp.read.mockResolvedValue(null);
     await setSplashImageDrawablesAsync(
       {
         android: {
@@ -115,7 +137,8 @@ describe(setSplashImageDrawablesAsync, () => {
           },
         },
       },
-      '/',
+      null,
+      './',
       100
     );
 

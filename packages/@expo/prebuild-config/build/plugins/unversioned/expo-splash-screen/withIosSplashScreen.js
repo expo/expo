@@ -46,16 +46,16 @@ function _withIosSplashScreenStoryboard() {
   };
   return data;
 }
-function _withIosSplashXcodeProject() {
-  const data = require("./withIosSplashXcodeProject");
-  _withIosSplashXcodeProject = function () {
+function _withIosSplashScreenStoryboardImage() {
+  const data = require("./withIosSplashScreenStoryboardImage");
+  _withIosSplashScreenStoryboardImage = function () {
     return data;
   };
   return data;
 }
-function _wtihIosSplashScreenStoryboardImage() {
-  const data = require("./wtihIosSplashScreenStoryboardImage");
-  _wtihIosSplashScreenStoryboardImage = function () {
+function _withIosSplashXcodeProject() {
+  const data = require("./withIosSplashXcodeProject");
+  _withIosSplashXcodeProject = function () {
     return data;
   };
   return data;
@@ -75,7 +75,7 @@ const withIosSplashScreen = (config, splash) => {
   debug(`config:`, splash);
   return (0, _configPlugins().withPlugins)(config, [[_withIosSplashInfoPlist().withIosSplashInfoPlist, splash], [_withIosSplashAssets().withIosSplashAssets, splash],
   // Add the image settings to the storyboard.
-  [_wtihIosSplashScreenStoryboardImage().withIosSplashScreenImage, splash],
+  [_withIosSplashScreenStoryboardImage().withIosSplashScreenImage, splash],
   // Link storyboard to xcode project.
   // TODO: Maybe fold this into the base mod.
   _withIosSplashXcodeProject().withIosSplashXcodeProject,
