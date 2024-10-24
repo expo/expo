@@ -7,7 +7,7 @@
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
-#import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
+#import <React_RuntimeApple/ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
 
 
 @interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
