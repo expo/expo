@@ -11,7 +11,7 @@ import {
   RecordingStatus,
 } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
@@ -35,10 +35,7 @@ export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
   return useEvent(player, PLAYBACK_STATUS_UPDATE, currentStatus);
 }
 
-export function useAudioSampleListener(
-  player: AudioPlayer,
-  listener: (data: { channels: { frames: number[] }[]; timestamp: number }) => void
-) {
+export function useAudioSampleListener(player: AudioPlayer, listener: (data: AudioSample) => void) {
   player.setAudioSamplingEnabled(true);
   useEffect(() => {
     if (!player.isAudioSamplingSupported) {

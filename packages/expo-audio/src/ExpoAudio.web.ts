@@ -10,7 +10,7 @@ import {
   RecordingOptions,
   RecordingStatus,
 } from './Audio.types';
-import { AudioRecorder } from './AudioModule.types';
+import { AudioRecorder, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { createRecordingOptions } from './utils/options';
@@ -40,7 +40,7 @@ export function useAudioPlayerStatus(player: AudioModule.AudioPlayerWeb): AudioS
 
 export function useAudioSampleListener(
   player: AudioModule.AudioPlayerWeb,
-  listener: (data: { channels: { frames: number[] }[]; timestamp: number }) => void
+  listener: (data: AudioSample) => void
 ) {
   player.setAudioSamplingEnabled(true);
   useEffect(() => {

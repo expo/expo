@@ -104,10 +104,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
     remove(): void;
 }
 export type AudioSample = {
-    channels: {
-        frames: number[];
-    }[];
+    channels: AudioSampleChannel[];
     timestamp: number;
+};
+export type AudioSampleChannel = {
+    frames: number[];
 };
 export type AudioEvents = {
     playbackStatusUpdate(status: AudioStatus): void;
