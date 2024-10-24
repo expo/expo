@@ -18,6 +18,7 @@ internal object ExpoGoReactNativeFeatureFlags {
 
         override fun fuseboxEnabledRelease(): Boolean =
           true
-      })
+      }
+    )
   }
 }
