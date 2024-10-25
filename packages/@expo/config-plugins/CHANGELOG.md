@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix prebuild path resolving on Windows ([#32279](https://github.com/expo/expo/pull/32279) by [@leonhh](https://github.com/leonhh))
+
 ### 💡 Others
 
 ## 9.0.2 — 2024-10-24

@@ -18,7 +18,7 @@ export type GradleProjectFile = ProjectFile<'groovy' | 'kt'>;
 
 export function getProjectFilePath(projectRoot: string, name: string): string {
   const filePath = globSync(
-    path.join(projectRoot, `android/app/src/main/java/**/${name}.@(java|kt)`)
+    path.join(projectRoot, `android/app/src/main/java/**/${name}.@(java|kt)`).replace(/\\/g, '/')
   )[0];
   assert(
     filePath,
