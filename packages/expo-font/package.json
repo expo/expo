@@ -1,6 +1,6 @@
 {
   "name": "expo-font",
-  "version": "12.0.5",
+  "version": "13.0.0",
   "description": "Load fonts at runtime and use them in React Native components.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^12.5.2",
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*",

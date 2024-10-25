@@ -23,6 +23,11 @@ export function navigate(this: RouterStore, url: Href, options?: NavigationOptio
   return this.linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
 }
 
+export function reload(this: RouterStore) {
+  // TODO(EvanBacon): add `reload` support.
+  throw new Error('The reload method is not implemented in the client-side router yet.');
+}
+
 export function push(this: RouterStore, url: Href, options?: NavigationOptions) {
   return this.linkTo(resolveHref(url), { ...options, event: 'PUSH' });
 }
@@ -88,12 +93,17 @@ export type LinkToOptions = {
    * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
    */
   relativeToDirectory?: boolean;
+
+  /**
+   *
+   */
+  withAnchor?: boolean;
 };
 
 export function linkTo(
   this: RouterStore,
   href: string,
-  { event, relativeToDirectory }: LinkToOptions = {}
+  { event, relativeToDirectory, withAnchor }: LinkToOptions = {}
 ) {
   if (shouldLinkExternally(href)) {
     Linking.openURL(href);
@@ -129,13 +139,14 @@ export function linkTo(
     return;
   }
 
-  return navigationRef.dispatch(getNavigateAction(state, rootState, event));
+  return navigationRef.dispatch(getNavigateAction(state, rootState, event, withAnchor));
 }
 
 function getNavigateAction(
   actionState: ResultState,
   navigationState: NavigationState,
-  type = 'NAVIGATE'
+  type = 'NAVIGATE',
+  withAnchor?: boolean
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -234,6 +245,24 @@ function getNavigateAction(
 
   if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
     type = 'JUMP_TO';
+  }
+
+  if (withAnchor !== undefined) {
+    if (rootPayload.params.initial) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
+      }
+    }
+    /*
+     * The logic for initial can seen backwards depending on your perspective
+     *   True: The initialRouteName is not loaded. The incoming screen is the initial screen (default)
+     *   False: The initialRouteName is loaded. THe incoming screen is placed after the initialRouteName
+     *
+     * withAnchor flips the perspective.
+     *   True: You want the initialRouteName to load.
+     *   False: You do not want the initialRouteName to load.
+     */
+    rootPayload.params.initial = !withAnchor;
   }
 
   return {

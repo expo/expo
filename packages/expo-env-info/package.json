@@ -1,6 +1,6 @@
 {
   "name": "expo-env-info",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "preferGlobal": true,
   "type": "module",
   "bin": "./build/index.js",
@@ -36,7 +36,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-env-info#readme",
   "devDependencies": {
     "@types/envinfo": "^7.8.1",
-    "expo-module-scripts": "^3.3.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"

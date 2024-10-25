@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.net.Uri
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
@@ -50,7 +49,6 @@ class UpdatesDevLauncherController(
   override val updatesDirectory: File?,
   private val updatesDirectoryException: Exception?
 ) : IUpdatesController, UpdatesInterface {
-  override var appContext: WeakReference<AppContext>? = null
   override val eventManager = NoOpUpdatesEventManager()
   override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
 
@@ -85,6 +83,10 @@ class UpdatesDevLauncherController(
 
   override val bundleAssetName: String
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
+
+  override fun onEventListenerStartObserving() {
+    // no-op for UpdatesDevLauncherController
+  }
 
   override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {}
 

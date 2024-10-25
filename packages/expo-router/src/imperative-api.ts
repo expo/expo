@@ -21,6 +21,12 @@ export type Router = {
   canDismiss: () => boolean;
   /** Update the current route query params. */
   setParams: <T extends Routes>(params: Partial<RouteParamInput<T>>) => void;
+
+  /**
+   * Reload the currently mounted route in experimental server mode. This can be used to re-fetch data.
+   * @hidden
+   */
+  reload: () => void;
 };
 
 /**
@@ -36,4 +42,5 @@ export const router: Router = {
   back: () => store.goBack(),
   canGoBack: () => store.canGoBack(),
   setParams: (params) => store.setParams(params),
+  reload: () => store.reload(),
 };

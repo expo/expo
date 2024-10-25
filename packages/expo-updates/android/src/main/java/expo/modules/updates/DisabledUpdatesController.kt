@@ -5,11 +5,10 @@ import android.content.Context
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.events.IUpdatesEventManager
-import expo.modules.updates.events.QueueUpdatesEventManager
+import expo.modules.updates.events.UpdatesEventManager
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -33,13 +32,11 @@ class DisabledUpdatesController(
   private val context: Context,
   private val fatalException: Exception?
 ) : IUpdatesController {
-  override var appContext: WeakReference<AppContext>? = null
-
   /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
 
   private val logger = UpdatesLogger(context)
-  override val eventManager: IUpdatesEventManager = QueueUpdatesEventManager(logger)
+  override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
   // disabled controller state machine can only be idle or restarting
   private val stateMachine = UpdatesStateMachine(logger, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
@@ -76,6 +73,10 @@ class DisabledUpdatesController(
 
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
+
+  override fun onEventListenerStartObserving() {
+    stateMachine.sendContextToJS()
+  }
 
   override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {}
 

@@ -4,6 +4,36 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.26.2 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- Move event emitting responsibility to module. ([#32248](https://github.com/expo/expo/pull/32248) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Use enum event in OnStartObserving and OnStopObserving. ([#32252](https://github.com/expo/expo/pull/32252) by [@wschurman](https://github.com/wschurman))
+
+## 0.26.1 — 2024-10-22
+
+### 🐛 Bug fixes
+
+- Fixed Android launch crash when R8 is enabled. ([#32226](https://github.com/expo/expo/pull/32226) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Fixed updates E2E tests. ([#32226](https://github.com/expo/expo/pull/32226) by [@kudo](https://github.com/kudo))
+
+## 0.26.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -22,6 +52,7 @@
 - Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
 - [cli] Disable console during runtime and fingeprint evaluation ([#31874](https://github.com/expo/expo/pull/31874) by [@wschurman](https://github.com/wschurman))
 - Refactor state machine event emitting and initial state ([#31819](https://github.com/expo/expo/pull/31819) by [@wschurman](https://github.com/wschurman))
+- Re-emit state on every observer observe event ([#32103](https://github.com/expo/expo/pull/32103) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
@@ -33,7 +64,7 @@
 - Move location of assetPatternsToBeBundled config key ([#31584](https://github.com/expo/expo/pull/31584) by [@wschurman](https://github.com/wschurman))
 - Refactor JS event queueing and emitting ([#31818](https://github.com/expo/expo/pull/31818, [#31854](https://github.com/expo/expo/pull/31854) by [@wschurman](https://github.com/wschurman))
 - Remove clearUpdateCacheExperimentalAsync ([#31871](https://github.com/expo/expo/pull/31871) by [@wschurman](https://github.com/wschurman))
-- Refactor errors, context injection, and error logs ([#31929](https://github.com/expo/expo/pull/31929), [#31951](https://github.com/expo/expo/pull/31951), [#31953](https://github.com/expo/expo/pull/31953), [#32009](https://github.com/expo/expo/pull/32009) by [@wschurman](https://github.com/wschurman))
+- Refactor errors, context injection, and error logs ([#31929](https://github.com/expo/expo/pull/31929), [#31951](https://github.com/expo/expo/pull/31951), [#31953](https://github.com/expo/expo/pull/31953), [#32009](https://github.com/expo/expo/pull/32009), [#32159](https://github.com/expo/expo/pull/32159) by [@wschurman](https://github.com/wschurman))
 
 ### ⚠️ Notices
 

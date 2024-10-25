@@ -31,7 +31,7 @@ describe('exports with react native canary', () => {
             E2E_ROUTER_SRC: 'react-native-canary',
             E2E_ROUTER_ASYNC: 'development',
             EXPO_USE_FAST_RESOLVER: 'true',
-            EXPO_USE_METRO_REQUIRE: '1'
+            EXPO_USE_METRO_REQUIRE: '1',
           },
         }
       );
@@ -60,7 +60,7 @@ describe('exports with react native canary', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/index-.*\.js/),
+          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.js/),
         },
       },
       version: 0,

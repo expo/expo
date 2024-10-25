@@ -4,16 +4,26 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30457](https://github.com/expo/expo/pull/30457) by [@byCedric](https://github.com/byCedric))
 - Fixed `bounds` incorrectly being returned as `boundingBox` in BarcodeScanningResult when using ExpoCameraView on Android. ([#30510](https://github.com/expo/expo/pull/30510) by [@devon94](https://github.com/devon94))
-
-### 💡 Others
 
 ## 13.0.1 — 2024-04-23
 

@@ -7,7 +7,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
     data-sidebar="true"
   >
     <p
-      class="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10 emotion-0"
+      class="text-default text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium absolute emotion-0 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10"
       data-text="true"
     >
       <svg
@@ -67,7 +67,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       href="#base-level-heading"
     >
       <p
-        class="w-full !text-secondary hocus:!text-link emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
         data-text="true"
       >
         Base level heading
@@ -79,7 +79,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       href="#level-3-subheading"
     >
       <p
-        class="w-full !text-secondary hocus:!text-link emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
         data-text="true"
       >
         Level 3 subheading
@@ -91,7 +91,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       href="#code-heading-depth-1"
     >
       <code
-        class="w-full !text-secondary hocus:!text-link truncate !text-2xs emotion-3"
+        class="text-default leading-[1.6154] w-full !text-secondary hocus:!text-link truncate !text-2xs"
         data-text="true"
       >
         Code heading depth 1

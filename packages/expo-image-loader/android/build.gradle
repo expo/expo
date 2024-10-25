@@ -15,13 +15,13 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '4.7.0'
+version = '5.0.0'
 
 android {
   namespace "expo.modules.imageloader"
   defaultConfig {
     versionCode 8
-    versionName "4.7.0"
+    versionName "5.0.0"
   }
 }
 

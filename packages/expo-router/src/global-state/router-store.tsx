@@ -17,6 +17,7 @@ import {
   dismiss,
   dismissAll,
   push,
+  reload,
   replace,
   setParams,
 } from './routing';
@@ -66,6 +67,7 @@ export class RouterStore {
   canDismiss = canDismiss.bind(this);
   setParams = setParams.bind(this);
   navigate = navigate.bind(this);
+  reload = reload.bind(this);
 
   initialize(
     context: RequireContext,

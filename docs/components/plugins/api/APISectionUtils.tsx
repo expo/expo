@@ -85,7 +85,7 @@ export const mdComponents: MDComponents = {
         {children}
       </PrismCodeBlock>
     ) : (
-      <CODE css={css({ display: 'inline' })}>{children}</CODE>
+      <CODE className="!inline">{children}</CODE>
     );
   },
   pre: ({ children }) => <>{children}</>,
@@ -131,12 +131,14 @@ const nonLinkableTypes = [
   'ComponentProps',
   'ComponentType',
   'E',
+  'EmitterSubscription',
   'EventName',
   'EventSubscription',
   'ForwardRefExoticComponent',
   'GeneratedHref',
   'GestureResponderEvent',
   'GetPermissionMethod',
+  'InferEventParameter',
   'K',
   'Listener',
   'ModuleType',
@@ -213,6 +215,7 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
+  Extract: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union',
   // Conflicts with the File class from expo-file-system@next. TODO: Fix this.
   // File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
@@ -606,13 +609,9 @@ export const ParamsTableHeadRow = ({ hasDescription = true, mainCellLabel = 'Nam
 );
 
 function createInheritPermalink(baseNestingLevel: number) {
-  return createPermalinkedComponent(
-    createTextComponent(
-      TextElement.SPAN,
-      css({ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' })
-    ),
-    { baseNestingLevel }
-  );
+  return createPermalinkedComponent(createTextComponent(TextElement.SPAN, 'text-inherit'), {
+    baseNestingLevel,
+  });
 }
 
 export const BoxSectionHeader = ({
@@ -631,10 +630,7 @@ export const BoxSectionHeader = ({
   const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : SPAN;
   return (
     <CALLOUT css={STYLES_NESTED_SECTION_HEADER} className={className}>
-      <TextWrapper
-        theme="secondary"
-        weight="medium"
-        className="text-inherit flex flex-row gap-2 items-center">
+      <TextWrapper weight="medium" className="text-secondary flex flex-row gap-2 items-center">
         {Icon && <Icon className="icon-sm text-icon-secondary" />}
         {text}
       </TextWrapper>
@@ -666,8 +662,9 @@ export const listParams = (parameters: MethodParamData[]) =>
 
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
-    <div css={defaultValueContainerStyle}>
-      <DEMI theme="secondary">Default:</DEMI> <CODE className="!text-[90%]">{defaultValue}</CODE>
+    <div className="flex items-start gap-1">
+      <DEMI theme="secondary">Default:</DEMI>
+      <CODE className="!text-[90%]">{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -1022,15 +1019,6 @@ export const STYLES_NOT_EXPOSED_HEADER = css({
   display: 'inline-block',
 
   code: {
-    marginBottom: 0,
-  },
-});
-
-const defaultValueContainerStyle = css({
-  marginTop: spacing[2],
-  marginBottom: spacing[2],
-
-  '&:last-child': {
     marginBottom: 0,
   },
 });

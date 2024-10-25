@@ -2,13 +2,14 @@ import { Slot } from '@radix-ui/react-slot';
 import { ReactNode, useContext, ReactElement, ComponentProps, useCallback } from 'react';
 import { View, StyleSheet, Pressable, PressableProps } from 'react-native';
 
-import { TabTriggerMapContext, TabsNavigatorContext, TabsStateContext } from './TabContext';
+import { TabTriggerMapContext } from './TabContext';
 import { ExpoTabsResetValue } from './TabRouter';
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { router } from '../imperative-api';
 import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
 import { stripGroupSegmentsFromPath } from '../matchers';
 import type { Href } from '../types';
+import { useNavigatorContext } from '../views/Navigator';
 
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
   children?: ReactNode | undefined;
@@ -81,9 +82,8 @@ export function isTabTrigger(
 export type SwitchToOptions = { reset?: ExpoTabsResetValue };
 
 export function useTabTrigger({ name, reset, onPress, onLongPress }: TabTriggerProps<any>) {
-  const navigation = useContext(TabsNavigatorContext);
+  const { state, navigation } = useNavigatorContext();
   const triggerMap = useContext(TabTriggerMapContext);
-  const state = useContext(TabsStateContext);
 
   const getTrigger = useCallback(
     (name: string) => {

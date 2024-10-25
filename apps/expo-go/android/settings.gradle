@@ -71,5 +71,3 @@ useExpoModules([
         'expo-network-addons',
     ]
 ])
-
-useVendoredModulesForSettingsGradle('unversioned')

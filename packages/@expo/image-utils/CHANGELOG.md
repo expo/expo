@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Properly support dark/tinted icon variant generation on Apple platforms. ([#30247](https://github.com/expo/expo/pull/30247) by [@fobos531](https://github.com/fobos531))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.6.0 — 2024-10-22
+
+### 🎉 New features
+
+- Properly support dark/tinted icon variant generation on Apple platforms. ([#30247](https://github.com/expo/expo/pull/30247) by [@fobos531](https://github.com/fobos531))
 
 ### 💡 Others
 

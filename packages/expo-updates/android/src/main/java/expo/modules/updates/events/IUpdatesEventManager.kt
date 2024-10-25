@@ -1,19 +1,13 @@
 package expo.modules.updates.events
 
-import expo.modules.kotlin.events.EventEmitter
 import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updates.statemachine.UpdatesStateEventType
+import java.lang.ref.WeakReference
 
-enum class UpdatesJSEvent(val eventName: String) {
-  StateChange("Expo.nativeUpdatesStateChangeEvent")
+interface IUpdatesEventManagerObserver {
+  fun onStateMachineContextEvent(context: UpdatesStateContext)
 }
 
 interface IUpdatesEventManager {
-  var eventEmitter: EventEmitter?
-  var shouldEmitJsEvents: Boolean
-
-  fun sendStateChangeEvent(
-    eventType: UpdatesStateEventType,
-    context: UpdatesStateContext
-  )
+  var observer: WeakReference<IUpdatesEventManagerObserver>?
+  fun sendStateMachineContextEvent(context: UpdatesStateContext)
 }

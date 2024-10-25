@@ -70,7 +70,7 @@ function AppConfigProperty({
           <span className="grid grid-cols-1 gap-2 mb-2">
             One of types:{' '}
             {type.map((oneOfType, index) => (
-              <CodeBlock className="!text-secondary" inline key={`${name}-${index}`}>
+              <CodeBlock className="!text-secondary !text-balance" inline key={`${name}-${index}`}>
                 {oneOfType}
               </CodeBlock>
             ))}

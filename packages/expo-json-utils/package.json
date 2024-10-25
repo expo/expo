@@ -1,6 +1,6 @@
 {
   "name": "expo-json-utils",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "description": "Utilities for reading JSONObjects (Android) and NSDictionaries (iOS).",
   "main": "index.js",
   "keywords": [

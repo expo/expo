@@ -1,25 +1,7 @@
-import { css } from '@emotion/react';
-import { theme, typography, shadows } from '@expo/styleguide';
-import { spacing, borderRadius } from '@expo/styleguide-base';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 
-const STYLES_SELECT = css({
-  ...typography.fontSizes[14],
-  color: theme.text.default,
-  margin: 0,
-  marginTop: spacing[1],
-  padding: `${spacing[2]}px ${spacing[3]}px`,
-  minHeight: 40,
-  borderRadius: borderRadius.md,
-  marginBottom: spacing[4],
-  width: '100%',
-  backgroundColor: theme.background.default,
-  border: `1px solid ${theme.border.default}`,
-  boxShadow: shadows.xs,
-  appearance: 'none',
-  outline: 'none',
-  cursor: 'pointer',
-});
+import { betaVersion } from '~/package.json';
+const BETA_MAJOR_VERSION = betaVersion.split('.')[0];
 
 export type VersionSelectorProps = {
   version?: string | undefined;
@@ -36,12 +18,14 @@ export const VersionSelector = ({
     <div className="relative">
       <select
         id="version-menu"
-        css={STYLES_SELECT}
+        className="text-xs text-default m-0 mt-1 px-3 py-2 min-h-[40px] w-full border border-default shadow-xs rounded-md cursor-pointer appearance-none bg-default"
         value={version}
         onChange={e => setVersion(e.target.value)}>
         {availableVersions.map(version => (
           <option key={version} value={version}>
-            {version === 'unversioned' ? 'unversioned' : `SDK ${version}`}
+            {version === 'unversioned'
+              ? 'unversioned'
+              : `SDK ${version}${version === BETA_MAJOR_VERSION ? '  (beta)' : ''}`}
           </option>
         ))}
       </select>

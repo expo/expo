@@ -32,11 +32,11 @@ enum PitchCorrectionQuality: String, Enumerable {
 
 struct RecordingOptions: Record {
   @Field var `extension`: String
-  @Field var outputFormat: String?
-  @Field var audioQuality: Int
   @Field var sampleRate: Double
   @Field var numberOfChannels: Double
   @Field var bitRate: Double
+  @Field var outputFormat: String?
+  @Field var audioQuality: Int
   @Field var bitRateStrategy: BitRateStrategy?
   @Field var bitDepthHint: Double?
   @Field var linearPCMBitDepth: Double?

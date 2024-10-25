@@ -2,6 +2,7 @@ import { LegacyEventEmitter, type EventSubscription, Platform } from 'expo-modul
 
 import PushTokenManager from './PushTokenManager';
 import { DevicePushToken } from './Tokens.types';
+import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';
 
 /**
  * A function accepting a device push token ([`DevicePushToken`](#devicepushtoken)) as an argument.
@@ -41,6 +42,7 @@ const newTokenEventName = 'onDevicePushToken';
  * ```
  */
 export function addPushTokenListener(listener: PushTokenListener): EventSubscription {
+  warnOfExpoGoPushUsage();
   const wrappingListener = ({ devicePushToken }) =>
     listener({ data: devicePushToken, type: Platform.OS });
   return tokenEmitter.addListener(newTokenEventName, wrappingListener);

@@ -1,9 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Link } from 'expo-router/build/rsc/exports';
+import { Link } from 'expo-router';
+import { Image, Text, ScrollView } from 'react-native';
 
 import { Counter } from '../components/counter';
 import { Pokemon } from '../components/pokemon';
-import { Image, Text, ScrollView } from '../lib/react-native';
 
 export default function IndexRoute({ path, query }) {
   return (

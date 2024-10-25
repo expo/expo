@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide-base';
 import { useMemo } from 'react';
 
@@ -17,11 +16,11 @@ export function TableOfContents() {
 
   return (
     <LayoutScroll ref={autoScroll.ref}>
-      <nav css={containerStyle}>
-        <CALLOUT css={titleStyle} weight="medium">
+      <nav className="block w-full p-8">
+        <CALLOUT className="mt-4 mb-1.5" weight="medium">
           On this page
         </CALLOUT>
-        <ul css={listStyle}>
+        <ul className="list-none">
           {headings.map(heading => (
             <li key={`heading-${heading.id}`} data-toc-id={heading.id}>
               <TableOfContentsLink {...heading} isActive={heading.id === activeId} />
@@ -37,33 +36,13 @@ function TableOfContentsLink({ id, element, isActive }: TableOfContentsLinkProps
   const info = useMemo(() => getHeadingInfo(element), [element]);
 
   return (
-    <A css={[linkStyle, getHeadingIndent(element)]} href={`#${id}`}>
+    <A css={[getHeadingIndent(element)]} className="block py-1.5" href={`#${id}`}>
       <CALLOUT weight={isActive ? 'medium' : 'regular'} tag="span">
         {info.text}
       </CALLOUT>
     </A>
   );
 }
-
-const containerStyle = css({
-  display: 'block',
-  width: '100%',
-  padding: spacing[8],
-});
-
-const titleStyle = css({
-  marginTop: spacing[4],
-  marginBottom: spacing[1.5],
-});
-
-const listStyle = css({
-  listStyle: 'none',
-});
-
-const linkStyle = css({
-  display: 'block',
-  padding: `${spacing[1.5]}px 0`,
-});
 
 export function getHeadingIndent(heading: HTMLHeadingElement) {
   const level = Math.max(Number(heading.tagName.slice(1)) - 2, 0);

@@ -118,25 +118,25 @@ export type RecordingOptions = {
   /**
    * The desired file extension.
    *
-   * @example `'.caf'`
+   * @example .caf
    */
   extension: string;
   /**
    * The desired sample rate.
    *
-   * @example `44100`
+   * @example 44100
    */
   sampleRate: number;
   /**
    * The desired number of channels.
    *
-   * @example `1`, `2`
+   * @example 2
    */
   numberOfChannels: number;
   /**
    * The desired bit rate.
    *
-   * @example `128000`
+   * @example 128000
    */
   bitRate: number;
   /**
@@ -162,13 +162,13 @@ export type RecordingOptionsIos = {
   /**
    * The desired file extension.
    *
-   * @example `'.caf'`
+   * @example .caf
    */
   extension?: string;
   /**
    * The desired sample rate.
    *
-   * @example `44100`
+   * @example 44100
    */
   sampleRate?: number;
   /**
@@ -186,15 +186,13 @@ export type RecordingOptionsIos = {
   /**
    * The desired bit depth hint.
    *
-   * @example
-   * `16`
+   * @example 16
    */
   bitDepthHint?: number;
   /**
    * The desired PCM bit depth.
    *
-   * @example
-   * `16`
+   * @example 16
    */
   linearPCMBitDepth?: number;
   /**
@@ -211,13 +209,13 @@ export type RecordingOptionsAndroid = {
   /**
    * The desired file extension.
    *
-   * @example `'.caf'`
+   * @example .caf
    */
   extension?: string;
   /**
    * The desired sample rate.
    *
-   * @example `44100`
+   * @example 44100
    */
   sampleRate?: number;
   /**

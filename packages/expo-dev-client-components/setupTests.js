@@ -27,5 +27,6 @@ jest.mock('react-native/Libraries/Utilities/Appearance', () => {
   return {
     __esModule: true,
     default: MockAppearance,
+    ...MockAppearance,
   };
 });

@@ -12,10 +12,15 @@
 
 - Added a ternary check to validate if the project uses EAS; if so, it displays the relevant EAS documentation. ([#32126](https://github.com/expo/expo/pull/32126) by [@betomoedano](https://github.com/betomoedano))
 
+## 1.11.3 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
 ## 1.11.2 — 2024-10-17
 
 ### 🐛 Bug fixes
 
+- Re-enable `--minify` flag for ncc and add try-catch for better error handling. ([#32218](https://github.com/expo/expo/pull/32218) by [@betomoedano](https://github.com/betomoedano))
 - Fix project setup check running on EAS Build and failing ([#32106](https://github.com/expo/expo/pull/32106) by [@brentvatne](https://github.com/brentvatne))
 
 ## 1.11.1 — 2024-10-15
