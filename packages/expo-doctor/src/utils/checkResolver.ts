@@ -8,6 +8,12 @@ import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVe
 import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { DOCTOR_CHECKS, DoctorCheck } from '../checks/checks.types';
 
+/**
+ * Resolves the checks that should be run for a given project.
+ * @param exp - The Expo config.
+ * @param pkg - The package.json config.
+ * @returns The checks that should be run.
+ */
 export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): DoctorCheck[] {
   const resolvedChecks = [...DOCTOR_CHECKS];
   const isCngCheckEnabled = getCngCheckStatus(pkg);

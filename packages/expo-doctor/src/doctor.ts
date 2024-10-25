@@ -1,16 +1,8 @@
-import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
-import semver from 'semver';
 
-import { InstalledDependencyVersionCheck } from './checks/InstalledDependencyVersionCheck';
-import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
-import {
-  DOCTOR_CHECKS,
-  DoctorCheck,
-  DoctorCheckParams,
-  DoctorCheckResult,
-} from './checks/checks.types';
-import { getCngCheckStatus, getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
+import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
+import { resolveChecksInScope } from './utils/checkResolver';
 import { env } from './utils/env';
 import { isNetworkError } from './utils/errors';
 import { isInteractive } from './utils/interactive';
@@ -19,7 +11,6 @@ import { logNewSection } from './utils/ora';
 import { endTimer, formatMilliseconds, startTimer } from './utils/timer';
 import { ltSdkVersion } from './utils/versions';
 import { warnUponCmdExe } from './warnings/windows';
-import { resolveChecksInScope } from './utils/checkResolver';
 
 interface DoctorCheckRunnerJob {
   check: DoctorCheck;
