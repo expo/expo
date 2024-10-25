@@ -34,6 +34,7 @@ _This version does not introduce any user-facing changes._
 - Fix `takePictureAsync` `quality` option when set to 0. ([#31587](https://github.com/expo/expo/pull/31587) by [@davidavz](https://github.com/davidavz))
 - [iOS] Fix crash related to `sublayers` on 0.75 and above on the new architecture. ([#32194](https://github.com/expo/expo/pull/32194) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix regression in running the cameras cleanup function. ([#32333](https://github.com/expo/expo/pull/32333) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Use an `Actor` to ensure correct order of changes to the barcode scanners outputs. ([#32353](https://github.com/expo/expo/pull/32353) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
