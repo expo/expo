@@ -7,9 +7,22 @@ import {
 } from './doctorConfig';
 import { env } from './env';
 import { Log } from './log';
+import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
+import { DirectPackageInstallCheck } from '../checks/DirectPackageInstallCheck';
+import { ExpoConfigCommonIssueCheck } from '../checks/ExpoConfigCommonIssueCheck';
+import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
+import { GlobalPackageInstalledLocallyCheck } from '../checks/GlobalPackageInstalledLocallyCheck';
+import { IllegalPackageCheck } from '../checks/IllegalPackageCheck';
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
+import { MetroConfigCheck } from '../checks/MetroConfigCheck';
+import { NativeToolingVersionCheck } from '../checks/NativeToolingVersionCheck';
+import { PackageJsonCheck } from '../checks/PackageJsonCheck';
+import { PackageManagerVersionCheck } from '../checks/PackageManagerVersionCheck';
+import { ProjectSetupCheck } from '../checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
-import { DOCTOR_CHECKS, DoctorCheck } from '../checks/checks.types';
+import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
+import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
+import { DoctorCheck } from '../checks/checks.types';
 
 /**
  * Resolves the checks that should be run for a given project.
@@ -18,7 +31,30 @@ import { DOCTOR_CHECKS, DoctorCheck } from '../checks/checks.types';
  * @returns The checks that should be run.
  */
 export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): DoctorCheck[] {
-  const resolvedChecks = [...DOCTOR_CHECKS];
+  // Standard checks
+  const resolvedChecks: DoctorCheck[] = [
+    // Project Structure Checks
+    new ProjectSetupCheck(),
+    new PackageJsonCheck(),
+    new ExpoConfigSchemaCheck(),
+    new ExpoConfigCommonIssueCheck(),
+    new MetroConfigCheck(),
+
+    // Package Management Checks
+    new PackageManagerVersionCheck(),
+    new IllegalPackageCheck(),
+    new GlobalPackageInstalledLocallyCheck(),
+    new DirectPackageInstallCheck(),
+
+    // Version Checks
+    new SupportPackageVersionCheck(),
+    new NativeToolingVersionCheck(),
+
+    // Compatibility Checks
+    new StoreCompatibilityCheck(),
+    new AppConfigFieldsNotSyncedToNativeProjectsCheck(),
+  ];
+
   const isAppConfigFieldsNotSyncedCheckEnabled = getAppConfigFieldsNotSyncedCheckStatus(pkg);
 
   if (getReactNativeDirectoryCheckEnabled(exp, pkg)) {
@@ -44,8 +80,8 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
       1
     );
 
-    Log.warn(
-      `CNG check is disabled. You can re-enable it by setting 'cngCheckEnabled' to true in package.json.`
+    Log.log(
+      'The appConfigFieldsNotSyncedCheck is disabled. Set expo.doctor.appConfigFieldsNotSyncedCheck.enabled to true to re-enable this check.'
     );
   }
 
