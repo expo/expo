@@ -210,4 +210,7 @@ It's also necessary to include supported platforms in the `platforms` array — 
 - It's also significantly faster, even though the module resolution algorithm is more complex to be more reliable and match the Node's module resolution.
 - Expo module resolution is also capable of detecting the duplicates which is a common issue in monorepos.
 - Last but not least, it integrates well with all the features offered by Expo Modules APIs.
-- If you would like to use the React Native community CLI autolinking instead of Expo's Autolinking, set `EXPO_USE_COMMUNITY_AUTOLINKING=1` and add `@react-native-community/cli` as a dev dependency to your project.
+
+### Opting out of Expo Autolinking
+
+Starting from SDK 52, Expo Autolinking comes enabled by default, if you would like to use the React Native community CLI autolinking instead, set `EXPO_USE_COMMUNITY_AUTOLINKING=1` and add `@react-native-community/cli` as a dev dependency to your project.
