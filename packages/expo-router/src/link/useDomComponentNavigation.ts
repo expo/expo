@@ -1,4 +1,3 @@
-import { IS_DOM } from 'expo/dom';
 import { addGlobalDomEventListener } from 'expo/dom/global';
 import React from 'react';
 
@@ -12,7 +11,8 @@ const ROUTER_BACK_TYPE = '$$router_goBack';
 const ROUTER_SET_PARAMS_TYPE = '$$router_setParams';
 
 function emitDomEvent(type: string, data: any = {}) {
-  if (IS_DOM) {
+  // @ts-expect-error: ReactNativeWebView is a global variable injected by the WebView
+  if (typeof ReactNativeWebView !== 'undefined') {
     (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type, data }));
     return true;
   }
@@ -43,27 +43,27 @@ export function emitDomLinkEvent(href: string, options: LinkToOptions) {
 
 export function useDomComponentNavigation(store: RouterStore) {
   React.useEffect(() => {
-    if (!IS_DOM && process.env.EXPO_OS !== 'web') {
-      return addGlobalDomEventListener<any>(({ type, data }) => {
-        switch (type) {
-          case ROUTER_LINK_TYPE:
-            store.linkTo(data.href, data.options);
-            break;
-          case ROUTER_DISMISS_ALL_TYPE:
-            store.dismissAll();
-            break;
-          case ROUTER_DISMISS_TYPE:
-            store.dismiss(data.count);
-            break;
-          case ROUTER_BACK_TYPE:
-            store.goBack();
-            break;
-          case ROUTER_SET_PARAMS_TYPE:
-            store.setParams(data.params);
-            break;
-        }
-      });
+    if (process.env.EXPO_OS === 'web') {
+      return () => {};
     }
-    return () => {};
+    return addGlobalDomEventListener<any>(({ type, data }) => {
+      switch (type) {
+        case ROUTER_LINK_TYPE:
+          store.linkTo(data.href, data.options);
+          break;
+        case ROUTER_DISMISS_ALL_TYPE:
+          store.dismissAll();
+          break;
+        case ROUTER_DISMISS_TYPE:
+          store.dismiss(data.count);
+          break;
+        case ROUTER_BACK_TYPE:
+          store.goBack();
+          break;
+        case ROUTER_SET_PARAMS_TYPE:
+          store.setParams(data.params);
+          break;
+      }
+    });
   }, [store]);
 }
