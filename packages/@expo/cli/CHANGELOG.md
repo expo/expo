@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix invalid project randomness when using Ngrok ([#32359](https://github.com/expo/expo/pull/32359) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 0.19.3 — 2024-10-25
