@@ -1,10 +1,18 @@
 import { StackActions, type NavigationState, PartialRoute } from '@react-navigation/native';
+import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
 import { nanoid } from 'nanoid/non-secure';
 
 import { type RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import {
+  emitDomDismiss,
+  emitDomDismissAll,
+  emitDomGoBack,
+  emitDomLinkEvent,
+  emitDomSetParams,
+} from '../link/useDomComponentNavigation';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
@@ -33,6 +41,9 @@ export function push(this: RouterStore, url: Href, options?: NavigationOptions) 
 }
 
 export function dismiss(this: RouterStore, count?: number) {
+  if (emitDomDismiss(count)) {
+    return;
+  }
   this.navigationRef?.dispatch(StackActions.pop(count));
 }
 
@@ -41,15 +52,26 @@ export function replace(this: RouterStore, url: Href, options?: NavigationOption
 }
 
 export function dismissAll(this: RouterStore) {
+  if (emitDomDismissAll()) {
+    return;
+  }
   this.navigationRef?.dispatch(StackActions.popToTop());
 }
 
 export function goBack(this: RouterStore) {
+  if (emitDomGoBack()) {
+    return;
+  }
   assertIsReady(this);
   this.navigationRef?.current?.goBack();
 }
 
 export function canGoBack(this: RouterStore): boolean {
+  if (IS_DOM) {
+    throw new Error(
+      'canGoBack imperative method is not supported. Pass the property to the DOM component instead.'
+    );
+  }
   // Return a default value here if the navigation hasn't mounted yet.
   // This can happen if the user calls `canGoBack` from the Root Layout route
   // before mounting a navigator. This behavior exists due to React Navigation being dynamically
@@ -62,6 +84,11 @@ export function canGoBack(this: RouterStore): boolean {
 }
 
 export function canDismiss(this: RouterStore): boolean {
+  if (IS_DOM) {
+    throw new Error(
+      'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
+    );
+  }
   let state = this.rootState;
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
@@ -81,6 +108,9 @@ export function setParams(
   this: RouterStore,
   params: Record<string, string | number | (string | number)[]> = {}
 ) {
+  if (emitDomSetParams(params)) {
+    return;
+  }
   assertIsReady(this);
   return (this.navigationRef?.current?.setParams as any)(params);
 }
@@ -105,6 +135,10 @@ export function linkTo(
   href: string,
   { event, relativeToDirectory, withAnchor }: LinkToOptions = {}
 ) {
+  if (emitDomLinkEvent(href, { event, relativeToDirectory, withAnchor })) {
+    return;
+  }
+
   if (shouldLinkExternally(href)) {
     Linking.openURL(href);
     return;

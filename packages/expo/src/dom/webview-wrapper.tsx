@@ -3,6 +3,7 @@ import React from 'react';
 import { AppState } from 'react-native';
 
 import type { BridgeMessage, DOMProps, WebViewProps, WebViewRef } from './dom.types';
+import { _emitGlobalEvent } from './global-events';
 import {
   getInjectBodySizeObserverScript,
   getInjectEventScript,
@@ -177,6 +178,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
       } else {
         dom?.onMessage?.(event);
       }
+      _emitGlobalEvent({ type, data });
     },
   });
 });

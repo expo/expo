@@ -9,6 +9,7 @@ import { NavigationContainer as UpstreamNavigationContainer } from './fork/Navig
 import { ExpoLinkingOptions } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
+import { useDomComponentNavigation } from './link/useDomComponentNavigation';
 import { RequireContext } from './types';
 import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
 import { SplashScreen } from './views/Splash';
@@ -117,6 +118,8 @@ function ContextNavigator({
     ...linking,
     serverUrl,
   });
+
+  useDomComponentNavigation(store);
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
