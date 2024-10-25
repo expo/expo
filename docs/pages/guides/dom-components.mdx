@@ -246,6 +246,40 @@ export default function App() {
 }
 ```
 
+## Routing
+
+Expo Router APIs such as `<Link />`, and `useRouter` can be used in DOM components to navigate between routes.
+
+```tsx my-component.tsx (web)
+'use dom';
+import Link from 'expo-router/link';
+
+export default function DOMComponent() {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+      <Link href="/about">About</Link>
+    </div>
+  );
+}
+```
+
+APIs that synchronously return routing info such as `useLocalSearchParams()`, `useGlobalSearchParams()`, `usePathname()`, `useSegments()`, `useRootNavigation()`, and `useRootNavigationState()` are not automatically supported. Instead, read these values outside of DOM components and supply them as props.
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+import { usePathname } from 'expo-router';
+
+export default function App() {
+  const pathname = usePathname();
+  return <DOMComponent pathname={pathname} />;
+}
+```
+
+The `router.canGoBack()` and `router.canDismiss()` functions are also unsupported and require manual marshalling, this ensures no extraneous render cycles are triggered.
+
+Avoid using standard web `<a />` anchor elements for navigation as these will change the DOM component origin in a way that users may not be able to navigate back from. Prefer launching `WebBrowser`s if you want to present external websites.
+
 ## Measuring DOM components
 
 You may want to measure the size of a DOM component and report it back to the native side (for example, native scrolling). This can be done using a `matchContents` prop or a manual native action:

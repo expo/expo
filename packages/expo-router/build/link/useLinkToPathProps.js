@@ -28,6 +28,7 @@ const react_native_1 = require("react-native");
 const expo = __importStar(require("../fork/getPathFromState-forks"));
 const router_store_1 = require("../global-state/router-store");
 const matchers_1 = require("../matchers");
+const useDomComponentNavigation_1 = require("./useDomComponentNavigation");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;
@@ -51,6 +52,9 @@ function useLinkToPathProps({ href, ...options }) {
     const { linkTo } = (0, router_store_1.useExpoRouter)();
     const onPress = (event) => {
         if (shouldHandleMouseEvent(event)) {
+            if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, options)) {
+                return;
+            }
             linkTo(href, options);
         }
     };

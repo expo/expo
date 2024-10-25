@@ -25,9 +25,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.linkTo = exports.setParams = exports.canDismiss = exports.canGoBack = exports.goBack = exports.dismissAll = exports.replace = exports.dismiss = exports.push = exports.reload = exports.navigate = void 0;
 const native_1 = require("@react-navigation/native");
+const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
 const non_secure_1 = require("nanoid/non-secure");
 const href_1 = require("../link/href");
+const useDomComponentNavigation_1 = require("../link/useDomComponentNavigation");
 const matchers_1 = require("../matchers");
 const url_1 = require("../utils/url");
 function assertIsReady(store) {
@@ -49,6 +51,9 @@ function push(url, options) {
 }
 exports.push = push;
 function dismiss(count) {
+    if ((0, useDomComponentNavigation_1.emitDomDismiss)(count)) {
+        return;
+    }
     this.navigationRef?.dispatch(native_1.StackActions.pop(count));
 }
 exports.dismiss = dismiss;
@@ -57,15 +62,24 @@ function replace(url, options) {
 }
 exports.replace = replace;
 function dismissAll() {
+    if ((0, useDomComponentNavigation_1.emitDomDismissAll)()) {
+        return;
+    }
     this.navigationRef?.dispatch(native_1.StackActions.popToTop());
 }
 exports.dismissAll = dismissAll;
 function goBack() {
+    if ((0, useDomComponentNavigation_1.emitDomGoBack)()) {
+        return;
+    }
     assertIsReady(this);
     this.navigationRef?.current?.goBack();
 }
 exports.goBack = goBack;
 function canGoBack() {
+    if (dom_1.IS_DOM) {
+        throw new Error('canGoBack imperative method is not supported. Pass the property to the DOM component instead.');
+    }
     // Return a default value here if the navigation hasn't mounted yet.
     // This can happen if the user calls `canGoBack` from the Root Layout route
     // before mounting a navigator. This behavior exists due to React Navigation being dynamically
@@ -78,6 +92,9 @@ function canGoBack() {
 }
 exports.canGoBack = canGoBack;
 function canDismiss() {
+    if (dom_1.IS_DOM) {
+        throw new Error('canDismiss imperative method is not supported. Pass the property to the DOM component instead.');
+    }
     let state = this.rootState;
     // Keep traversing down the state tree until we find a stack navigator that we can pop
     while (state) {
@@ -92,11 +109,17 @@ function canDismiss() {
 }
 exports.canDismiss = canDismiss;
 function setParams(params = {}) {
+    if ((0, useDomComponentNavigation_1.emitDomSetParams)(params)) {
+        return;
+    }
     assertIsReady(this);
     return (this.navigationRef?.current?.setParams)(params);
 }
 exports.setParams = setParams;
 function linkTo(href, { event, relativeToDirectory, withAnchor } = {}) {
+    if ((0, useDomComponentNavigation_1.emitDomLinkEvent)(href, { event, relativeToDirectory, withAnchor })) {
+        return;
+    }
     if ((0, url_1.shouldLinkExternally)(href)) {
         Linking.openURL(href);
         return;
