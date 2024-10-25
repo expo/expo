@@ -1,7 +1,10 @@
 import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import semver from 'semver';
 
-import { getCngCheckStatus, getReactNativeDirectoryCheckEnabled } from './doctorConfig';
+import {
+  getAppConfigFieldsNotSyncedCheckStatus,
+  getReactNativeDirectoryCheckEnabled,
+} from './doctorConfig';
 import { env } from './env';
 import { Log } from './log';
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
@@ -16,7 +19,7 @@ import { DOCTOR_CHECKS, DoctorCheck } from '../checks/checks.types';
  */
 export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): DoctorCheck[] {
   const resolvedChecks = [...DOCTOR_CHECKS];
-  const isCngCheckEnabled = getCngCheckStatus(pkg);
+  const isAppConfigFieldsNotSyncedCheckEnabled = getAppConfigFieldsNotSyncedCheckStatus(pkg);
 
   if (getReactNativeDirectoryCheckEnabled(exp, pkg)) {
     Log.log(
@@ -33,7 +36,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     );
   }
 
-  if (!isCngCheckEnabled) {
+  if (!isAppConfigFieldsNotSyncedCheckEnabled) {
     resolvedChecks.splice(
       resolvedChecks.findIndex(
         (check) => check.constructor.name === 'AppConfigFieldsNotSyncedToNativeProjectsCheck'

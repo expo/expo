@@ -18,20 +18,24 @@ import { gteSdkVersion } from './versions';
  *        "exclude": ["/foo/", "bar"]
  *        "listUnknownPackages": true,
  *      },
- *      "cngCheckEnabled": false
+ *      "appConfigFieldsNotSyncedCheck": {
+ *        "enabled": false
+ *      },
  *    }
  *  }
  * ```
  **/
 
-export function getDoctorConfig(pkg: any): {
+interface DoctorPackageJsonConfig {
   reactNativeDirectoryCheck?: {
     enabled?: boolean;
     exclude?: string[];
     listUnknownPackages?: boolean;
   };
-  cngCheckEnabled?: boolean;
-} {
+  appConfigFieldsNotSyncedCheck?: { enabled?: boolean };
+}
+
+export function getDoctorConfig(pkg: any): DoctorPackageJsonConfig {
   return pkg?.expo?.doctor ?? {};
 }
 
@@ -80,11 +84,11 @@ export function getReactNativeDirectoryCheckListUnknownPackagesEnabled(pkg: any)
 }
 
 /**
- * Get status of CNG check
+ * Get status of appConfigFieldsNotSyncedCheck check
  * @param pkg package.json
  * @returns true if the check is enabled, false otherwise
  */
-export function getCngCheckStatus(pkg: any): boolean {
+export function getAppConfigFieldsNotSyncedCheckStatus(pkg: any): boolean {
   const config = getDoctorConfig(pkg);
-  return config.cngCheckEnabled ?? true;
+  return config.appConfigFieldsNotSyncedCheck?.enabled ?? true;
 }
