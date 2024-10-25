@@ -145,7 +145,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(orientationChanged(notification:)),
+      selector: #selector(orientationChanged),
       name: UIDevice.orientationDidChangeNotification,
       object: nil)
     lifecycleManager?.register(self)
@@ -265,7 +265,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     session.sessionPreset = mode == .video ? pictureSize.toCapturePreset() : .photo
     addErrorNotification()
     await changePreviewOrientation()
-
     await barcodeScanner.maybeStartBarcodeScanning()
     session.commitConfiguration()
     updateCameraIsActive()
@@ -770,8 +769,10 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     previewLayer.connection?.isEnabled = false
   }
 
-  @objc func orientationChanged(notification: Notification) async {
-    await changePreviewOrientation()
+  @objc func orientationChanged() {
+    Task {
+      await changePreviewOrientation()
+    }
   }
 
   @MainActor
