@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Skipped internal bundles from debugging targets. ([#32322](https://github.com/expo/expo/pull/32322) by [@kudo](https://github.com/kudo))
+
 ## 5.0.3 — 2024-10-24
 
 ### 🐛 Bug fixes

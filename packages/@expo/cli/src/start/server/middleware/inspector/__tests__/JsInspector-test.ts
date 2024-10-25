@@ -8,6 +8,8 @@ import {
   queryInspectorAppAsync,
 } from '../JsInspector';
 
+jest.mock('../CdpClient');
+
 describe(openJsInspector, () => {
   it('executes POST /open-debugger with the given app information', async () => {
     const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
