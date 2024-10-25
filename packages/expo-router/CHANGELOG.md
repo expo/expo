@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Include `expo-router/ui` in public export. ([#32362](https://github.com/expo/expo/pull/32362) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 4.0.0-preview.2 — 2024-10-25

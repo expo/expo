@@ -44,6 +44,8 @@
     "server.d.ts",
     "tabs.js",
     "tabs.d.ts",
+    "ui.js",
+    "ui.d.ts",
     "testing-library.js",
     "testing-library.d.ts",
     "_async-server-import.js"
