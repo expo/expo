@@ -1,30 +1,30 @@
 export const LIST_OF_ANDROID_ADAPTIVE_ICON_FILES_FINAL = [
   'android/app/src/main/res/values/colors.xml',
-  'android/app/src/main/res/mipmap-mdpi/ic_launcher.png',
-  'android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png',
-  'android/app/src/main/res/mipmap-mdpi/ic_launcher_monochrome.png',
-  'android/app/src/main/res/mipmap-mdpi/ic_launcher_background.png',
-  'android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png',
-  'android/app/src/main/res/mipmap-hdpi/ic_launcher.png',
-  'android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png',
-  'android/app/src/main/res/mipmap-hdpi/ic_launcher_monochrome.png',
-  'android/app/src/main/res/mipmap-hdpi/ic_launcher_background.png',
-  'android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png',
-  'android/app/src/main/res/mipmap-xhdpi/ic_launcher.png',
-  'android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png',
-  'android/app/src/main/res/mipmap-xhdpi/ic_launcher_monochrome.png',
-  'android/app/src/main/res/mipmap-xhdpi/ic_launcher_background.png',
-  'android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png',
-  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png',
-  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png',
-  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_monochrome.png',
-  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_background.png',
-  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png',
-  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
-  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png',
-  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_monochrome.png',
-  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_background.png',
-  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png',
+  'android/app/src/main/res/mipmap-mdpi/ic_launcher.webp',
+  'android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp',
+  'android/app/src/main/res/mipmap-mdpi/ic_launcher_monochrome.webp',
+  'android/app/src/main/res/mipmap-mdpi/ic_launcher_background.webp',
+  'android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.webp',
+  'android/app/src/main/res/mipmap-hdpi/ic_launcher.webp',
+  'android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp',
+  'android/app/src/main/res/mipmap-hdpi/ic_launcher_monochrome.webp',
+  'android/app/src/main/res/mipmap-hdpi/ic_launcher_background.webp',
+  'android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.webp',
+  'android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp',
+  'android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp',
+  'android/app/src/main/res/mipmap-xhdpi/ic_launcher_monochrome.webp',
+  'android/app/src/main/res/mipmap-xhdpi/ic_launcher_background.webp',
+  'android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.webp',
+  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp',
+  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp',
+  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_monochrome.webp',
+  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_background.webp',
+  'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.webp',
+  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp',
+  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp',
+  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_monochrome.webp',
+  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_background.webp',
+  'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.webp',
   'android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml',
   'android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml',
   'assets/iconForeground.png',
@@ -34,12 +34,12 @@ export const LIST_OF_ANDROID_ADAPTIVE_ICON_FILES_FINAL = [
 
 export const ADAPTIVE_ICON_XML_WITH_BOTH = `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@mipmap/ic_launcher_background"/>
+    <background android:drawable="@drawable/ic_launcher_background"/>
     <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
 </adaptive-icon>`;
 export const ADAPTIVE_ICON_XML_WITH_BOTH_AND_MONOCHROME = `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@mipmap/ic_launcher_background"/>
+    <background android:drawable="@drawable/ic_launcher_background"/>
     <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
     <monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>
 </adaptive-icon>`;

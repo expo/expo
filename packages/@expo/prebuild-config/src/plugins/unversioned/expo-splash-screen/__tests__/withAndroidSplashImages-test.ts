@@ -1,11 +1,30 @@
+import Jimp from 'jimp-compact';
 import { vol } from 'memfs';
 
 import fixtures from '../../../__tests__/fixtures/react-native-project';
 import { setSplashImageDrawablesAsync } from '../withAndroidSplashImages';
 
 jest.mock('fs');
+jest.mock('jimp-compact');
 
 describe(setSplashImageDrawablesAsync, () => {
+  const mockImage = {
+    bitmap: { width: 100, height: 200 },
+    clone: jest.fn().mockReturnThis(),
+    resize: jest.fn().mockReturnThis(),
+    blit: jest.fn().mockReturnThis(),
+    quality: jest.fn().mockReturnThis(),
+    writeAsync: jest.fn().mockImplementation(async (outputPath) => {
+      vol.writeFileSync(outputPath, '...');
+    }),
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Jimp.read.mockResolvedValue(mockImage);
+    Jimp.create.mockResolvedValue(mockImage);
+  });
+
   beforeAll(async () => {
     vol.fromJSON(
       {
@@ -44,21 +63,23 @@ describe(setSplashImageDrawablesAsync, () => {
           },
         },
       },
-      '/'
+      null,
+      '/',
+      100
     );
 
     const images = [
-      '/android/app/src/main/res/drawable-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_image.png',
+      '/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png',
       // Dark images
-      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_image.png',
+      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_logo.png',
     ];
     const results = vol.toJSON();
     // expect(results).toBe({});
@@ -81,21 +102,23 @@ describe(setSplashImageDrawablesAsync, () => {
           },
         },
       },
-      '/'
+      null,
+      '/',
+      100
     );
 
     const images = [
-      '/android/app/src/main/res/drawable-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_image.png',
-      // Dark images
-      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_image.png',
+      '/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png',
+      // Dark logos
+      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_logo.png',
     ];
     const results = vol.toJSON();
     // expect(results).toBe({});
@@ -104,6 +127,7 @@ describe(setSplashImageDrawablesAsync, () => {
     }
   });
   it(`sets no images`, async () => {
+    Jimp.read.mockResolvedValue(null);
     await setSplashImageDrawablesAsync(
       {
         android: {
@@ -113,21 +137,23 @@ describe(setSplashImageDrawablesAsync, () => {
           },
         },
       },
-      '/'
+      null,
+      './',
+      100
     );
 
     const images = [
-      '/android/app/src/main/res/drawable-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_image.png',
-      // Dark images
-      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_image.png',
-      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_image.png',
+      '/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png',
+      // Dark logos
+      '/android/app/src/main/res/drawable-night-mdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-hdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxhdpi/splashscreen_logo.png',
+      '/android/app/src/main/res/drawable-night-xxxhdpi/splashscreen_logo.png',
     ];
     const results = vol.toJSON();
     for (const image of images) {
