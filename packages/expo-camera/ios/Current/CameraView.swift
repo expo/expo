@@ -592,12 +592,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     }
   }
 
-  public override func didMoveToWindow() {
-    if window == nil {
-      cleanupCamera()
-    }
-  }
-
   func updateSessionAudioIsMuted() async {
     session.beginConfiguration()
     defer { session.commitConfiguration() }
@@ -655,12 +649,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     self.layer.insertSublayer(previewLayer, at: 0)
   }
 
-  private func cleanupCamera() {
-    cameraShouldInit = true
-    lifecycleManager?.unregisterAppLifecycleListener(self)
+  public override func removeFromSuperview() {
+    super.removeFromSuperview()
     Task {
       await stopSession()
     }
+    lifecycleManager?.unregisterAppLifecycleListener(self)
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }
@@ -751,8 +745,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     #if targetEnvironment(simulator)
     return
     #endif
-//    self.previewLayer.layer.removeFromSuperlayer()
-
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
