@@ -7,6 +7,7 @@
  */
 import type { ReactNode } from 'react';
 import type { PathSpec } from './path';
+export declare const REQUEST_HEADERS = "__expo_requestHeaders";
 type Config = any;
 type Elements = Record<string, ReactNode>;
 export type BuildConfig = {
@@ -58,5 +59,7 @@ type RenderStore = {
 export declare const runWithRenderStore: <T>(renderStore: RenderStore, fn: () => T) => T;
 export declare function rerender(input: string, params?: unknown): void;
 export declare function getContext<RscContext extends Record<string, unknown> = Record<string, unknown>>(): RscContext;
+/** Get the request headers used to make the server component or action request. */
+export declare function unstable_headers(): Promise<Headers>;
 export {};
 //# sourceMappingURL=server.d.ts.map

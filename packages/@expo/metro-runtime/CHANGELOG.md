@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `window.location` polyfill for server requests. ([#32099](https://github.com/expo/expo/pull/32099) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 4.0.0-preview.0 — 2024-10-22
 
 ### 🎉 New features

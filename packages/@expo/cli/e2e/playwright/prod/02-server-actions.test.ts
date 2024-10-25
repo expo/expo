@@ -197,4 +197,11 @@ test.describe(inputDir, () => {
     // The new props should be represented in the server action
     await expect(page.locator('[data-testid="server-action-props"]')).toHaveText('c=1');
   });
+
+  test('renders server actions with headers', async ({ page }) => {
+    await page.goto(serveCmd.url!);
+
+    // Ensure the server date didn't change...
+    await expect(page.locator('[data-testid="server-action-headers"]')).toHaveText('headers:web');
+  });
 });
