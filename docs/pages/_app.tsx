@@ -79,7 +79,8 @@ export default function App({ Component, pageProps }: AppProps) {
                     font-family: ${regularFont.style.fontFamily}, sans-serif;
                   }
                   code,
-                  pre {
+                  pre,
+                  table.diff {
                     font-family: ${monospaceFont.style.fontFamily}, monospace;
                   }
                 `}</style>

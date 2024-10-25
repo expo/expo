@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- fix async routes in web ssr ([#32331](https://github.com/expo/expo/pull/32331) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+- Skipped internal bundles from debugging targets. ([#32322](https://github.com/expo/expo/pull/32322) by [@kudo](https://github.com/kudo))
+
+## 0.19.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
 
 ## 0.19.1 — 2024-10-24
 
@@ -120,6 +128,7 @@ _This version does not introduce any user-facing changes._
 - Update Metro type definitions to `metro@0.80.12`. ([#32007](https://github.com/expo/expo/pull/32007) by [@byCedric](https://github.com/byCedric))
 - Remove `json-schema-deref-sync` dependency. ([#32048](https://github.com/expo/expo/pull/32048) by [@kitten](https://github.com/kitten))
 - Drop the legacy Chrome debugger in favor of React Native DevTools. ([#32266](https://github.com/expo/expo/pull/32266) by [@byCedric](https://github.com/byCedric))
+- Add temporary `/inspector/network` websocket endpoint, working around Fusebox limitations. ([#32292](https://github.com/expo/expo/pull/32292) by [@byCedric](https://github.com/byCedric))
 
 ### ⚠️ Notices
 

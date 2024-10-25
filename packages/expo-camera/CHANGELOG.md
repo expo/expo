@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 16.0.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
 ## 16.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes
@@ -29,6 +33,7 @@
 - Fixed issue regarding using the "back"-facing on mobile web browswer. ([#30811](https://github.com/expo/expo/pull/30811) by [@entiendoNull](https://github.com/entiendoNull))
 - Fix `takePictureAsync` `quality` option when set to 0. ([#31587](https://github.com/expo/expo/pull/31587) by [@davidavz](https://github.com/davidavz))
 - [iOS] Fix crash related to `sublayers` on 0.75 and above on the new architecture. ([#32194](https://github.com/expo/expo/pull/32194) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix regression in running the cameras cleanup function. ([#32333](https://github.com/expo/expo/pull/32333) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

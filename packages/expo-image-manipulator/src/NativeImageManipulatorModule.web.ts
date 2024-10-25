@@ -1,4 +1,5 @@
 import { NativeModule } from 'expo';
+import { registerWebModule } from 'expo-modules-core';
 
 import ImageManipulatorContext from './web/ImageManipulatorContext.web';
 import ImageManipulatorImageRef from './web/ImageManipulatorImageRef.web';
@@ -13,4 +14,4 @@ class ImageManipulator extends NativeModule {
   }
 }
 
-export default new ImageManipulator();
+export default registerWebModule(ImageManipulator);

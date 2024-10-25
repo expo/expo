@@ -98,12 +98,12 @@ export declare function getSystemBrightnessModeAsync(): Promise<BrightnessMode>;
 export declare function setSystemBrightnessModeAsync(brightnessMode: BrightnessMode): Promise<void>;
 /**
  * Checks user's permissions for accessing system brightness.
- * @return A promise that fulfils with an object of type [PermissionResponse](#permissionrespons).
+ * @return A promise that fulfils with an object of type [PermissionResponse](#permissionresponse).
  */
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 /**
  * Asks the user to grant permissions for accessing system brightness.
- * @return A promise that fulfils with an object of type [PermissionResponse](#permissionrespons).
+ * @return A promise that fulfils with an object of type [PermissionResponse](#permissionresponse).
  */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 /**

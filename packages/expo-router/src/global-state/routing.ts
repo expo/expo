@@ -23,6 +23,11 @@ export function navigate(this: RouterStore, url: Href, options?: NavigationOptio
   return this.linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
 }
 
+export function reload(this: RouterStore) {
+  // TODO(EvanBacon): add `reload` support.
+  throw new Error('The reload method is not implemented in the client-side router yet.');
+}
+
 export function push(this: RouterStore, url: Href, options?: NavigationOptions) {
   return this.linkTo(resolveHref(url), { ...options, event: 'PUSH' });
 }
