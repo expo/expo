@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added a ternary check to validate if the project uses EAS; if so, it displays the relevant EAS documentation. ([#32126](https://github.com/expo/expo/pull/32126) by [@betomoedano](https://github.com/betomoedano))
+
 ## 1.11.3 — 2024-10-22
 
 _This version does not introduce any user-facing changes._
