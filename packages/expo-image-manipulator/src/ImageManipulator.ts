@@ -1,4 +1,5 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
+import { SharedRef } from 'expo-modules-core/types';
 
 import { Action, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';
 import { ImageManipulatorContext } from './ImageManipulatorContext';
@@ -52,8 +53,8 @@ export async function manipulateAsync(
   return result;
 }
 
-export function useImageManipulator(uri: string): ImageManipulatorContext {
-  return useReleasingSharedObject(() => ExpoImageManipulator.manipulate(uri), [uri]);
+export function useImageManipulator(source: string | SharedRef<'image'>): ImageManipulatorContext {
+  return useReleasingSharedObject(() => ExpoImageManipulator.manipulate(source), [source]);
 }
 
 export { ExpoImageManipulator as ImageManipulator };
