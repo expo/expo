@@ -2,13 +2,13 @@
 
 ## Unpublished
 
-[ios] Fix build failure on 0.76 with use frameworks ([#32341](https://github.com/expo/expo/pull/32341) by [@matinzd](https://github.com/matinzd))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- [iOS] Fix build failure on 0.76 with use frameworks. ([#32341](https://github.com/expo/expo/pull/32341) by [@matinzd](https://github.com/matinzd))
 
 ### 💡 Others
 
