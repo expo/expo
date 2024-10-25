@@ -25,6 +25,8 @@ function MyCheckbox() {
   const [checked, setChecked] = useState(false);
   return (
     <Pressable
+      /* @info Specifying a role of checkbox or switch lets screen readers understand the state set with aria-checked */role="checkbox"/* @end */
+      aria-checked={checked}
       style={[styles.checkboxBase, checked && styles.checkboxChecked]}
       onPress={() => setChecked(!checked)}>
       {checked && <Ionicons name="checkmark" size={24} color="white" />}
@@ -99,6 +101,8 @@ import { Ionicons } from '@expo/vector-icons';
 function MyCheckbox({ /* @info Define checked and onChange as props instead of state */onChange, checked/* @end */ }) {
   return (
     <Pressable
+      role="checkbox"
+      aria-checked={checked}
       style={[styles.checkboxBase, checked && styles.checkboxChecked]}
       onPress={onChange}>
       {checked && <Ionicons name="checkmark" size={24} color="white" />}
@@ -191,6 +195,8 @@ function MyCheckbox({
   /* @end */
   return (
     <Pressable
+      role="checkbox"
+      aria-checked={checked}
       style={[
         buttonStyle,
         /* @info Pass the active / inactive style props to the button based on the current checked value */ checked
