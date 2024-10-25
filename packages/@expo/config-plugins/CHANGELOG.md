@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- bring back resolution from package.json main field ([#32355](https://github.com/expo/expo/pull/32355) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 9.0.2 — 2024-10-24

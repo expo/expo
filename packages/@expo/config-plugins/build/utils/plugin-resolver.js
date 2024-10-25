@@ -73,6 +73,14 @@ function resolvePluginForModule(projectRoot, pluginReference) {
         filePath: pluginPackageFile
       };
     }
+    const packageMainEntry = _resolveFrom().default.silent(projectRoot, pluginReference);
+    if (packageMainEntry) {
+      console.warn(`${pluginReference} config plugin is being resolved from its package.json main entry (${packageMainEntry}). Please migrate to using app.plugin.js file instead.`);
+      return {
+        isPluginFile: false,
+        filePath: packageMainEntry
+      };
+    }
   }
   throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`, 'PLUGIN_NOT_FOUND');
 }

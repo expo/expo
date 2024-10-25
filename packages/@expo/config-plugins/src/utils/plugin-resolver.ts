@@ -31,6 +31,13 @@ export function resolvePluginForModule(
     if (pluginPackageFile && fileExists(pluginPackageFile)) {
       return { isPluginFile: true, filePath: pluginPackageFile };
     }
+    const packageMainEntry = resolveFrom.silent(projectRoot, pluginReference);
+    if (packageMainEntry) {
+      console.warn(
+        `${pluginReference} config plugin is being resolved from its package.json main entry (${packageMainEntry}). Please migrate to using app.plugin.js file instead.`
+      );
+      return { isPluginFile: false, filePath: packageMainEntry };
+    }
   }
 
   throw new PluginError(
