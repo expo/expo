@@ -36,6 +36,10 @@ export type TypeDefinitionData = {
   name?: string;
   type: string;
   types?: TypeDefinitionData[];
+  element?: {
+    name: string;
+    type: string;
+  };
   elements?: TypeDefinitionData[];
   elementType?: {
     name?: string;

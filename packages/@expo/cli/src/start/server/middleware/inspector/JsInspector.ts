@@ -1,6 +1,7 @@
 import type { CustomMessageHandlerConnection } from '@react-native/dev-middleware';
 import chalk from 'chalk';
 
+import { evaluateJsFromCdpAsync } from './CdpClient';
 import { selectAsync } from '../../../../utils/prompts';
 import { pageIsSupported } from '../../metro/debugging/pageIsSupported';
 
@@ -74,8 +75,19 @@ export async function queryAllInspectorAppsAsync(
 ): Promise<MetroInspectorProxyApp[]> {
   const resp = await fetch(`${metroServerOrigin}/json/list`);
   const apps: MetroInspectorProxyApp[] = transformApps(await resp.json());
-  // Only use targets with better reloading support
-  return apps.filter((app) => pageIsSupported(app));
+  const results: MetroInspectorProxyApp[] = [];
+  for (const app of apps) {
+    // Only use targets with better reloading support
+    if (!pageIsSupported(app)) {
+      continue;
+    }
+    // Hide targets that are marked as hidden from the inspector, e.g. instances from expo-dev-menu and expo-dev-launcher.
+    if (await appShouldBeIgnoredAsync(app)) {
+      continue;
+    }
+    results.push(app);
+  }
+  return results;
 }
 
 export async function promptInspectorAppAsync(apps: MetroInspectorProxyApp[]) {
@@ -123,4 +135,17 @@ function transformApps(apps: MetroInspectorProxyApp[]): MetroInspectorProxyApp[]
     }
     return app;
   });
+}
+
+const HIDE_FROM_INSPECTOR_ENV = 'globalThis.__expo_hide_from_inspector__';
+
+async function appShouldBeIgnoredAsync(app: MetroInspectorProxyApp): Promise<boolean> {
+  const hideFromInspector = await evaluateJsFromCdpAsync(
+    app.webSocketDebuggerUrl,
+    HIDE_FROM_INSPECTOR_ENV
+  );
+  debug(
+    `[appShouldBeIgnoredAsync] webSocketDebuggerUrl[${app.webSocketDebuggerUrl}] hideFromInspector[${hideFromInspector}]`
+  );
+  return hideFromInspector !== undefined;
 }

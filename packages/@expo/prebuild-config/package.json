@@ -1,6 +1,6 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "8.0.2",
+  "version": "8.0.3",
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
@@ -50,7 +50,7 @@
     "xml2js": "0.6.0"
   },
   "peerDependencies": {
-    "expo-modules-autolinking": "2.0.0-preview.0"
+    "expo-modules-autolinking": "2.0.0-preview.1"
   },
   "publishConfig": {
     "access": "public"

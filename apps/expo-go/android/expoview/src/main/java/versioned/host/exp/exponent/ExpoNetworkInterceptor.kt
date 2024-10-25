@@ -3,9 +3,11 @@
 package versioned.host.exp.exponent
 
 import android.net.Uri
+import android.util.Log
 import com.facebook.react.packagerconnection.ReconnectingWebSocket
 import expo.modules.kotlin.devtools.ExpoRequestCdpInterceptor
 import java.io.Closeable
+import java.io.IOException
 
 class ExpoNetworkInterceptor(private val appUrl: Uri) : Closeable, ExpoRequestCdpInterceptor.Delegate {
   private var metroConnection: ReconnectingWebSocket? = null
@@ -33,9 +35,17 @@ class ExpoNetworkInterceptor(private val appUrl: Uri) : Closeable, ExpoRequestCd
 
   //region ExpoRequestCdpInterceptor.Delegate implementations
   override fun dispatch(event: String) {
-    metroConnection?.sendMessage(event)
+    try {
+      metroConnection?.sendMessage(event)
+    } catch (_: IOException) {
+      Log.w(TAG, "Failed to send CDP network event")
+    }
   }
   //endregion ExpoRequestCdpInterceptor.Delegate implementations
+
+  companion object {
+    private val TAG = ExpoNetworkInterceptor::class.java.simpleName
+  }
 }
 
 private fun createMetroConnection(appUrl: Uri): ReconnectingWebSocket {

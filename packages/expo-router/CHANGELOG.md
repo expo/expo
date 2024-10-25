@@ -7,11 +7,16 @@
 ### 🎉 New features
 
 - Add support for DOM components. ([#32338](https://github.com/expo/expo/pull/32338) by [@EvanBacon](https://github.com/EvanBacon))
-- Document `router.reload()` for RSC mode. ([#32246](https://github.com/expo/expo/pull/32246) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 4.0.0-preview.2 — 2024-10-25
+
+### 🎉 New features
+
+- Document `router.reload()` for RSC mode. ([#32246](https://github.com/expo/expo/pull/32246) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.0.0-preview.1 — 2024-10-24
 
