@@ -12,11 +12,13 @@ class MetatDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCap
   private var zxingFPSProcessed = 6.0
   private let responseHandler: BarcodeScanningResponseHandler
 
-  init(settings: [String: [AVMetadataObject.ObjectType]],
-       previewLayer: AVCaptureVideoPreviewLayer?,
-       zxingBarcodeReaders: [AVMetadataObject.ObjectType: ZXReader],
-       zxingEnabled: Bool,
-       metadataResultHandler: BarcodeScanningResponseHandler) {
+  init(
+    settings: [String: [AVMetadataObject.ObjectType]],
+    previewLayer: AVCaptureVideoPreviewLayer?,
+    zxingBarcodeReaders: [AVMetadataObject.ObjectType: ZXReader],
+    zxingEnabled: Bool,
+    metadataResultHandler: BarcodeScanningResponseHandler
+  ) {
     self.settings = settings
     self.previewLayer = previewLayer
     self.zxingEnabled = zxingEnabled

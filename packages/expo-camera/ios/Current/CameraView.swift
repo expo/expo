@@ -50,7 +50,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   var isScanningBarcodes = false {
     didSet {
       Task {
-       await barcodeScanner.setIsEnabled(isScanningBarcodes)
+        await barcodeScanner.setIsEnabled(isScanningBarcodes)
       }
     }
   }
@@ -306,7 +306,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   func setBarcodeScannerSettings(settings: BarcodeSettings) {
     Task {
-     await barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+      await barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
     }
   }
 
