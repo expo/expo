@@ -471,7 +471,7 @@ function printFurtherLocalInstructions(slug: string, name: string) {
   console.log();
   console.log(`You can now import this module inside your application.`);
   console.log(`For example, you can add this line to your App.js or App.tsx file:`);
-  console.log(`${chalk.gray.italic(`import { hello } from './modules/${slug}';`)}`);
+  console.log(`${chalk.gray.italic(`import ${name} './modules/${slug}';`)}`);
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
