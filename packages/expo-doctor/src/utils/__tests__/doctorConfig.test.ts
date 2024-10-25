@@ -2,7 +2,7 @@ import {
   getReactNativeDirectoryCheckExcludes,
   getReactNativeDirectoryCheckEnabled,
   getReactNativeDirectoryCheckListUnknownPackagesEnabled,
-  getCngCheckStatus,
+  getAppConfigFieldsNotSyncedCheckStatus,
 } from '../doctorConfig';
 
 const exp = {
@@ -140,26 +140,31 @@ describe('getReactNativeDirectoryCheckListUnknownPackagesEnabled', () => {
   });
 });
 
-describe('CNG check', () => {
+describe('appConfigFieldsNotSyncedCheck', () => {
   const mockPackageJson = {
     expo: {
       doctor: {
-        cngCheckEnabled: false,
+        appConfigFieldsNotSyncedCheck: {
+          enabled: false,
+        },
       },
     },
   };
 
-  it('returns true if cngCheckEnabled is not set', () => {
-    expect(getCngCheckStatus({ ...mockPackageJson, expo: {} })).toBe(true);
+  it('returns true if appConfigFieldsNotSyncedCheckEnabled is not set', () => {
+    expect(getAppConfigFieldsNotSyncedCheckStatus({ ...mockPackageJson, expo: {} })).toBe(true);
   });
 
-  it('returns false if cngCheckEnabled is set to false', () => {
-    expect(getCngCheckStatus(mockPackageJson)).toBe(false);
+  it('returns false if appConfigFieldsNotSyncedCheckEnabled is set to false', () => {
+    expect(getAppConfigFieldsNotSyncedCheckStatus(mockPackageJson)).toBe(false);
   });
 
-  it('returns true if cngCheckEnabled is set to true', () => {
+  it('returns true if appConfigFieldsNotSyncedCheckEnabled is set to true', () => {
     expect(
-      getCngCheckStatus({ ...mockPackageJson, expo: { doctor: { cngCheckEnabled: true } } })
+      getAppConfigFieldsNotSyncedCheckStatus({
+        ...mockPackageJson,
+        expo: { doctor: { appConfigFieldsNotSyncedCheck: { enabled: true } } },
+      })
     ).toBe(true);
   });
 });
