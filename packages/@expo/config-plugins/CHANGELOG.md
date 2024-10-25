@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `withMaps` config plugin to work with new Podfile autolinking. ([#32282](https://github.com/expo/expo/pull/32282) by [@leonhh](https://github.com/leonhh))
+
 ### 💡 Others
 
 ## 9.0.2 — 2024-10-24
