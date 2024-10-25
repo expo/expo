@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash on orientation change when scanning a QR code. ([#32348](https://github.com/expo/expo/pull/32348) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 16.0.1 — 2024-10-24

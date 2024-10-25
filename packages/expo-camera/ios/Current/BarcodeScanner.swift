@@ -84,7 +84,9 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     }
 
     if metadataOutput == nil || videoDataOutput == nil {
-      await addOutputs()
+      sessionQueue.async {
+        self.addOutputs()
+      }
       if metadataOutput == nil {
         return
       }
@@ -135,7 +137,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     }
   }
 
-  private func addOutputs() async {
+  private func addOutputs() {
     session.beginConfiguration()
     defer { session.commitConfiguration() }
 
