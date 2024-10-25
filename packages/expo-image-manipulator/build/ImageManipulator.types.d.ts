@@ -1,4 +1,5 @@
 import type { NativeModule } from 'expo';
+import { SharedRef } from 'expo-modules-core/types';
 import type { ImageManipulatorContext } from './ImageManipulatorContext';
 import ImageRef from './ImageRef';
 export type ImageResult = {
@@ -114,6 +115,6 @@ export declare class ImageManipulator extends NativeModule {
     /**
      * Loads an image from the given URI and creates a new image manipulation context.
      */
-    manipulate(uri: string): ImageManipulatorContext;
+    manipulate(source: string | SharedRef<'image'>): ImageManipulatorContext;
 }
 //# sourceMappingURL=ImageManipulator.types.d.ts.map
