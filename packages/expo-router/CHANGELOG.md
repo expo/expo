@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Include `expo-router/ui` in public export.
+
 ### 💡 Others
 
 ## 4.0.0-preview.2 — 2024-10-25
