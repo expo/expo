@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed build error from `gradleAarProjects`. ([#32349](https://github.com/expo/expo/pull/32349) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 2.0.0-preview.1 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fixed build error from `gradleAarProjects`. ([#32349](https://github.com/expo/expo/pull/32349) by [@kudo](https://github.com/kudo))
 
 ## 2.0.0-preview.0 — 2024-10-22
 

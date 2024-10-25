@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Added support for image refs in `ImageManipulator.manipulate` and `useImageManipulator`. ([#32346](https://github.com/expo/expo/pull/32346) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.0.3 — 2024-10-25
+
+### 🎉 New features
+
+- [iOS] Added support for image refs in `ImageManipulator.manipulate` and `useImageManipulator`. ([#32346](https://github.com/expo/expo/pull/32346) by [@tsapeta](https://github.com/tsapeta))
 
 ## 13.0.2 — 2024-10-24
 

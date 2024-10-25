@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 6.0.3 — 2024-10-25
+
+### 🐛 Bug fixes
+
 - [iOS] Fix build failure on 0.76 with use frameworks. ([#32341](https://github.com/expo/expo/pull/32341) by [@matinzd](https://github.com/matinzd))
 
 ### 💡 Others

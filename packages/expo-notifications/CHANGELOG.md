@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.29.3 — 2024-10-25
+
+### 💡 Others
+
 - remove unused deps ([#32272](https://github.com/expo/expo/pull/32272) by [@vonovak](https://github.com/vonovak))
 
 ## 0.29.2 — 2024-10-24

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.0.0-preview.4 — 2024-10-25
+
+### 💡 Others
+
 - Added a new dynamic type dedicated for Either types. ([#32328](https://github.com/expo/expo/pull/32328) by [@tsapeta](https://github.com/tsapeta))
 
 ## 2.0.0-preview.3 — 2024-10-24

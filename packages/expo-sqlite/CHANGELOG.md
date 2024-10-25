@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added macOS support in expo-sqlite. ([#32181](https://github.com/expo/expo/pull/32181) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 15.0.1 — 2024-10-25
+
+### 🎉 New features
+
+- Added macOS support in expo-sqlite. ([#32181](https://github.com/expo/expo/pull/32181) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
 
 ## 15.0.0 — 2024-10-22
 

@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.19.3 — 2024-10-25
+
+### 🐛 Bug fixes
+
 - fix async routes in web ssr ([#32331](https://github.com/expo/expo/pull/32331) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
