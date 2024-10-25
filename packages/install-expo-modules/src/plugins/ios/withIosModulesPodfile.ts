@@ -40,16 +40,22 @@ export function updatePodfile(
   if (sdkVersion && semver.gte(sdkVersion, '52.0.0')) {
     const autolinkinRegExp = /^(\s+config\s+=\s+use_native_modules!\s*)$/m;
     const newBlock = `\
-  config_command = [
-    'node',
-    '--no-warnings',
-    '--eval',
-    'require(require.resolve(\\'expo-modules-autolinking\\', { paths: [require.resolve(\\'expo/package.json\\')] }))(process.argv.slice(1))',
-    'react-native-config',
-    '--json',
-    '--platform',
-    'ios'
-  ]
+
+  if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
+    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
+  else
+    config_command = [
+      'node',
+      '--no-warnings',
+      '--eval',
+      'require(require.resolve(\\'expo-modules-autolinking\\', { paths: [require.resolve(\\'expo/package.json\\')] }))(process.argv.slice(1))',
+      'react-native-config',
+      '--json',
+      '--platform',
+      'ios'
+    ]
+  end
+
   config = use_native_modules!(config_command)
 `;
     contents = contents.replace(autolinkinRegExp, newBlock);
