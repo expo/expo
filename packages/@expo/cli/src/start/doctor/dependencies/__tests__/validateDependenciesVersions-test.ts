@@ -309,6 +309,7 @@ describe(isDependencyVersionIncorrect, () => {
     ['3.8.3', '>=3.9.0 <4.0.0', true, 'version outside range'],
     ['4.0.0', '>=3.9.0 <=4.0.0', false, 'version equal to maximum'],
     ['3.9.0-rc.1', '>=4.0.0-rc.1', true, 'prerelease less than minimum'],
+    ['4.0.0-preview.1', '>=4.0.0-preview.1', false, 'prerelease version equal to maximum'],
   ];
 
   testCases.forEach(([actual, expected, result, description]) => {
