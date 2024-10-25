@@ -7113,7 +7113,11 @@ This uses both
           class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
           data-text="true"
         >
-          [
+          <span
+            class="text-quaternary"
+          >
+            [
+          </span>
           <span>
             <span>
               null
@@ -7131,7 +7135,11 @@ This uses both
                 PermissionResponse
               </a>
             </span>
-            , 
+            <span
+              class="text-quaternary"
+            >
+              , 
+            </span>
           </span>
           <span>
             RequestPermissionMethod
@@ -7153,7 +7161,11 @@ This uses both
             >
               &gt;
             </span>
-            , 
+            <span
+              class="text-quaternary"
+            >
+              , 
+            </span>
           </span>
           <span>
             GetPermissionMethod
@@ -7176,7 +7188,11 @@ This uses both
               &gt;
             </span>
           </span>
-          ]
+          <span
+            class="text-quaternary"
+          >
+            ]
+          </span>
         </code>
       </p>
     </div>
