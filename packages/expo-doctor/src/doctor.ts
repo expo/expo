@@ -19,6 +19,7 @@ import { logNewSection } from './utils/ora';
 import { endTimer, formatMilliseconds, startTimer } from './utils/timer';
 import { ltSdkVersion } from './utils/versions';
 import { warnUponCmdExe } from './warnings/windows';
+import { resolveChecksInScope } from './utils/checkResolver';
 
 interface DoctorCheckRunnerJob {
   check: DoctorCheck;
@@ -121,34 +122,10 @@ export async function runChecksAsync(
   );
 }
 
-export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConfig) {
-  if (getReactNativeDirectoryCheckEnabled(exp, pkg)) {
-    chalk.yellow(
-      'Enabled experimental React Native Directory checks. Unset the EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK environment variable to disable this check.'
-    );
-    DOCTOR_CHECKS.push(new ReactNativeDirectoryCheck());
-  }
-
-  if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
-    Log.log(
-      chalk.yellow(
-        'Checking dependencies for compatibility with the installed Expo SDK version is disabled. Unset the EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK environment variable to re-enable this check.'
-      )
-    );
-  } else {
-    DOCTOR_CHECKS.push(new InstalledDependencyVersionCheck());
-  }
-  return DOCTOR_CHECKS.filter(
-    (check) =>
-      exp.sdkVersion === 'UNVERSIONED' || semver.satisfies(exp.sdkVersion!, check.sdkVersionRange)
-  );
-}
-
 export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
   const projectConfig = getConfig(projectRoot);
-  const isCngCheckEnabled = getCngCheckStatus(projectConfig.pkg);
 
   // expo-doctor relies on versioned CLI, which is only available for 44+
   try {
@@ -163,28 +140,13 @@ export async function actionAsync(projectRoot: string) {
     return;
   }
 
-  const filteredChecks = getChecksInScopeForProject(projectConfig.exp, projectConfig.pkg);
+  const checksInScope = resolveChecksInScope(projectConfig.exp, projectConfig.pkg);
 
-  if (!isCngCheckEnabled) {
-    // remove CNG check from the list of checks
-    filteredChecks.splice(
-      filteredChecks.findIndex(
-        (check) => check.constructor.name === 'AppConfigFieldsNotSyncedToNativeProjectsCheck'
-      ),
-      1
-    );
-    Log.log(
-      chalk.yellow(
-        `CNG check is disabled. You can re-enable it by setting 'cngCheckEnabled' to true in package.json.`
-      )
-    );
-  }
-
-  const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
+  const spinner = startSpinner(`Running ${checksInScope.length} checks on your project...`);
 
   const checkParams = { projectRoot, ...projectConfig };
 
-  const jobs = await runChecksAsync(filteredChecks, checkParams, printCheckResultSummaryOnComplete);
+  const jobs = await runChecksAsync(checksInScope, checkParams, printCheckResultSummaryOnComplete);
 
   spinner.stop();
 
