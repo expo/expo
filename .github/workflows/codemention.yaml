@@ -9,6 +9,6 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: tobyhs/codemention@v1.3.0
+      - uses: tobyhs/codemention@v1.4.0
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}

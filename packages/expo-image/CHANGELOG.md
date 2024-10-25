@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.0.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30871](https://github.com/expo/expo/pull/30871) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -14,6 +24,7 @@
 - [Android] Added support for rendering shared image refs. ([#31098](https://github.com/expo/expo/pull/31098) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Added support for rendering shared refs of `Bitmap's`. ([#31440](https://github.com/expo/expo/pull/31440) by [@lukmccall](https://github.com/lukmccall))
 - Added `useImage` hook. ([#31171](https://github.com/expo/expo/pull/31171) by [@tsapeta](https://github.com/tsapeta))
+- Added downscaling options to `useImage` hook. ([#32113](https://github.com/expo/expo/pull/32113) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -22,6 +33,7 @@
 - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
 - [Web] Fix type incompatibility between style prop and `@types/react-native-web` ([#31150](https://github.com/expo/expo/pull/31150) by [@adamhari](https://github.com/adamhari))
 - [iOS] Fixed `isAnimated` property always returning `true`. ([#31834](https://github.com/expo/expo/pull/31834) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed `stopAnimating` broken on downscaled animated images. ([#32053](https://github.com/expo/expo/pull/32053) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

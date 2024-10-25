@@ -4,14 +4,34 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- [iOS] Added support for image refs in `ImageManipulator.manipulate` and `useImageManipulator`. ([#32346](https://github.com/expo/expo/pull/32346) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.2 — 2024-10-24
+
+### 💡 Others
+
+- Exported missing types, removed unnecessary fallback and properly registered the module on Web. ([#32302](https://github.com/expo/expo/pull/32302) by [@tsapeta](https://github.com/tsapeta))
+
+## 13.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - [iOS][Web] Introduce a new API for image manipulation. ([#30135](https://github.com/expo/expo/pull/30135), [#30194](https://github.com/expo/expo/pull/30194) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Introduce a new API for image manipulation. ([#30232](https://github.com/expo/expo/pull/30232) by [@lukmccall](https://github.com/lukmccall))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

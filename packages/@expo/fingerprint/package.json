@@ -1,6 +1,6 @@
 {
   "name": "@expo/fingerprint",
-  "version": "0.9.0",
+  "version": "0.11.1",
   "description": "A library to generate a fingerprint from a React Native project",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@types/find-up": "^4.0.0",
-    "expo-module-scripts": "^3.3.0",
+    "expo-module-scripts": "^4.0.0",
     "glob": "^10.4.2",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"

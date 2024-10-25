@@ -9,16 +9,10 @@ import ExpoModulesTestCore
 import EXManifests
 
 class TestStateChangeEventManager: UpdatesEventManager {
-  required init() {}
-
-  var appContext: ExpoModulesCore.AppContext? = nil
-  var shouldEmitJsEvents: Bool = false
-
-  var lastEventType: UpdatesStateEventType? = nil
   var lastContext: UpdatesStateContext? = nil
+  weak var observer: (any EXUpdates.UpdatesEventManagerObserver)?
 
-  func sendUpdateStateChangeEventToAppContext(_ eventType: EXUpdates.UpdatesStateEventType, context: EXUpdates.UpdatesStateContext) {
-    lastEventType = eventType
+  func sendStateMachineContextEvent(context: EXUpdates.UpdatesStateContext) {
     lastContext = context
   }
 }
@@ -38,7 +32,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
         machine.processEventForTesting(UpdatesStateEventCheck())
         expect(machine.getStateForTesting()) == .checking
-        expect(testStateChangeEventManager.lastEventType) == .check
+        expect(testStateChangeEventManager.lastContext?.isChecking) == true
 
         machine.processEventForTesting(UpdatesStateEventCheckCompleteWithUpdate(manifest: [
           "updateId": "0000-xxxx"
@@ -49,7 +43,7 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.context.latestManifest?["updateId"] as? String ?? "") == "0000-xxxx"
         expect(machine.context.isUpdateAvailable) == true
         expect(machine.context.isUpdatePending) == false
-        expect(testStateChangeEventManager.lastEventType) == .checkCompleteAvailable
+        expect(testStateChangeEventManager.lastContext?.isUpdateAvailable) == true
         let values = testStateChangeEventManager.lastContext
         expect(values?.isUpdateAvailable) == true
       }
@@ -115,7 +109,6 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.getStateForTesting()) == .checking
         // Reset the test delegate
         testStateChangeEventManager.lastContext = nil
-        testStateChangeEventManager.lastEventType = nil
 
         // In .checking state, download events should be ignored,
         // state should not change, context should not change,
@@ -123,7 +116,6 @@ class UpdatesStateMachineSpec: ExpoSpec {
         expect(machine.processEventForTesting(UpdatesStateEventDownload())).to(throwAssertion())
 
         expect(machine.getStateForTesting()) == .checking
-        expect(testStateChangeEventManager.lastEventType).to(beNil())
         expect(testStateChangeEventManager.lastContext).to(beNil())
 
         expect(
@@ -157,7 +149,6 @@ class UpdatesStateMachineSpec: ExpoSpec {
 
         expect(machine.processEventForTesting(UpdatesStateEventDownload())).to(throwAssertion())
         expect(machine.getStateForTesting()) == .idle
-        expect(testStateChangeEventManager.lastEventType).to(beNil())
         expect(testStateChangeEventManager.lastContext).to(beNil())
       }
     }

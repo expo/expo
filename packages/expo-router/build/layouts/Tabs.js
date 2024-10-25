@@ -23,6 +23,7 @@ exports.Tabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (s
                 ...screen,
                 options: {
                     ...options,
+                    tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
                     tabBarButton: (props) => {
                         if (href == null) {
                             return null;

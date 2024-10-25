@@ -1,0 +1,60 @@
+---
+title: ViewPager
+description: A component library that provides a carousel-like view to swipe through pages of content.
+sourceCodeUrl: 'https://github.com/callstack/react-native-pager-view'
+packageName: 'react-native-pager-view'
+platforms: ['android', 'ios']
+---
+
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
+
+`react-native-pager-view` exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
+
+<ContentSpotlight file="sdk/viewpager.mp4" loop={false} />
+
+## Installation
+
+<APIInstallSection href="https://github.com/callstack/react-native-pager-view#linking" />
+
+## Usage
+
+See full documentation at [callstack/react-native-pager-view](https://github.com/callstack/react-native-pager-view).
+
+## Example
+
+```jsx App.js
+import { StyleSheet, View, Text } from 'react-native';
+import PagerView from 'react-native-pager-view';
+
+export default function MyPager() {
+  return (
+    <View style={styles.container}>
+      <PagerView style={styles.container} initialPage={0}>
+        <View style={styles.page} key="1">
+          <Text>First page</Text>
+          <Text>Swipe ➡️</Text>
+        </View>
+        <View style={styles.page} key="2">
+          <Text>Second page</Text>
+        </View>
+        <View style={styles.page} key="3">
+          <Text>Third page</Text>
+        </View>
+      </PagerView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  page: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+```

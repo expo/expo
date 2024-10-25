@@ -11,6 +11,8 @@ import {
   NATIVE_ACTION,
   NATIVE_ACTION_RESULT,
 } from './injection';
+import ExpoDomWebView from './webview/ExpoDOMWebView';
+import RNWebView from './webview/RNWebView';
 
 interface Props {
   dom: DOMProps;
@@ -37,9 +39,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
     );
   }
 
-  const webView = dom.useExpoDOMWebView
-    ? require('@expo/dom-webview').WebView
-    : require('react-native-webview').WebView;
+  const webView = resolveWebView(dom?.useExpoDOMWebView ?? false);
   const webviewRef = React.useRef<WebViewRef>(null);
   const [containerStyle, setContainerStyle] = React.useState<WebViewProps['containerStyle']>(null);
 
@@ -190,6 +190,17 @@ function serializeError(error: any) {
     };
   }
   return error;
+}
+
+export function resolveWebView(useExpoDOMWebView: boolean) {
+  const webView = useExpoDOMWebView ? ExpoDomWebView : RNWebView;
+  if (webView == null) {
+    const moduleName = useExpoDOMWebView ? '@expo/dom-webview' : 'react-native-webview';
+    throw new Error(
+      `Unable to resolve the '${moduleName}' module. Make sure to install it with 'npx expo install ${moduleName}'.`
+    );
+  }
+  return webView;
 }
 
 export default RawWebView;

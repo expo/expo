@@ -120,7 +120,7 @@ class ErrorRecovery(
       }
     }
     val devSupportManagerClass = devSupportManager.javaClass
-    previousExceptionHandler = devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
+    previousExceptionHandler = devSupportManagerClass.getDeclaredField("defaultJSExceptionHandler").let { field ->
       field.isAccessible = true
       val previousValue = field[devSupportManager]
       field[devSupportManager] = defaultJSExceptionHandler
@@ -152,7 +152,7 @@ class ErrorRecovery(
       }
 
       val devSupportManagerClass = devSupportManager.javaClass
-      devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
+      devSupportManagerClass.getDeclaredField("defaultJSExceptionHandler").let { field ->
         field.isAccessible = true
         field[devSupportManager] = previousExceptionHandler
       }

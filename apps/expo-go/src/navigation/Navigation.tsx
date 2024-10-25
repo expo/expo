@@ -113,7 +113,13 @@ function SettingsStackScreen() {
       initialRouteName="Settings"
       detachInactiveScreens={shouldDetachInactiveScreens}
       screenOptions={defaultNavigationOptions(themeName)}>
-      <SettingsStack.Screen name="Settings" component={SettingsScreen} />
+      <SettingsStack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          headerBackImage: () => <></>,
+        }}
+      />
     </SettingsStack.Navigator>
   );
 }

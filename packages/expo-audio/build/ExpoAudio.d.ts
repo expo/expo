@@ -1,6 +1,9 @@
 import { AudioMode, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+export declare const PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate";
+export declare const AUDIO_SAMPLE_UPDATE = "audioSampleUpdate";
+export declare const RECORDING_STATUS_UPDATE = "recordingStatusUpdate";
 export declare function useAudioPlayer(source?: AudioSource | string | number | null, updateInterval?: number): AudioPlayer;
 export declare function useAudioPlayerStatus(player: AudioPlayer): AudioStatus;
 export declare function useAudioSampleListener(player: AudioPlayer, listener: (data: {

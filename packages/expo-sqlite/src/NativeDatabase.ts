@@ -36,6 +36,7 @@ export interface SQLiteOpenOptions {
   /**
    * Whether to enable the CR-SQLite extension.
    * @default false
+   * @deprecated CR-SQLite is no longer actively maintained. Its support is deprecated in SDK 52, and the option will be removed in SDK 53.
    */
   enableCRSQLite?: boolean;
 

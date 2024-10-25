@@ -6,7 +6,7 @@ import { selectPackagesToPublish } from './selectPackagesToPublish';
 import logger from '../../Logger';
 import { getPackageByName, Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
-import { Parcel, TaskArgs } from '../types';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan, green } = chalk;
 const MODULE_TEMPLATE_PKG_NAME = 'expo-module-template';
@@ -22,7 +22,7 @@ export const updateModuleTemplate = new Task<TaskArgs>(
     dependsOn: [selectPackagesToPublish],
     filesToStage: [`packages/${MODULE_TEMPLATE_PKG_NAME}/${TEMPLATE_PACKAGE_JSON_FILENAME}`],
   },
-  async (parcels: Parcel[]) => {
+  async (parcels: Parcel[], options: CommandOptions) => {
     logger.info('\n🆙 Updating the module template...');
 
     const dependencies = parcels.filter((parcel) =>
@@ -43,11 +43,12 @@ export const updateModuleTemplate = new Task<TaskArgs>(
       return;
     }
 
-    await updateTemplatePackageJsonAsync(moduleTemplatePkg, dependencies);
+    await updateTemplatePackageJsonAsync(options, moduleTemplatePkg, dependencies);
   }
 );
 
 async function updateTemplatePackageJsonAsync(
+  options: Pick<CommandOptions, 'canary'>,
   templatePkg: Package,
   dependencies: Parcel[]
 ): Promise<void> {
@@ -62,7 +63,7 @@ async function updateTemplatePackageJsonAsync(
       continue;
     }
 
-    const newVersionRange = '^' + newVersion;
+    const newVersionRange = options.canary ? newVersion : `^${newVersion}`;
 
     logger.log(
       `   Updating dev dependency on ${green(pkg.packageName)}:`,

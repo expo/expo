@@ -23,6 +23,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface ListElement {
+  screenName?: string;
   name: string;
   route?: string;
   isAvailable?: boolean;
@@ -98,12 +99,12 @@ export default function ComponentListScreen(props: Props) {
   const { bottom, right } = useSafeAreaInsets();
 
   const renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
-    const { route, name: exampleName, isAvailable } = item;
+    const { route, screenName, name: exampleName, isAvailable } = item;
     return (
       <LinkButton
         disabled={!isAvailable}
-        href={route ?? exampleName}
-        screenName={exampleName}
+        href={route ?? screenName ?? exampleName}
+        screenName={screenName ?? exampleName}
         style={[styles.rowTouchable]}>
         <View
           pointerEvents="none"

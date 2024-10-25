@@ -43,7 +43,7 @@ test.describe(inputDir, () => {
 
   test('renders RSC and calls server action', async ({ page }) => {
     console.time('expo start');
-    await expo.startAsync();
+    await expo.startAsync(['--port=8086']);
     console.timeEnd('expo start');
     console.log('Server running:', expo.url);
     console.time('Eagerly bundled JS');
@@ -118,7 +118,7 @@ test.describe(inputDir, () => {
     const rscPayload = new TextDecoder().decode(await response.body());
 
     expect(rscPayload)
-      .toBe(`1:I["apps/router-e2e/__e2e__/02-server-actions/lib/react-native.tsx",["/apps/router-e2e/__e2e__/02-server-actions/lib/react-native.tsx.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F02-server-actions%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"],"Text"]
+      .toBe(`1:I["node_modules/react-native-web/dist/exports/Text/index.js",["/node_modules/react-native-web/dist/exports/Text/index.js.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F02-server-actions%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"],""]
 0:{"_value":[["$","$L1",null,{"style":{"color":"darkcyan"},"testID":"server-action-props","children":"c=0"},null],["$","$L1",null,{"testID":"server-action-platform","children":"web"},null]]}
 `);
 

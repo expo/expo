@@ -6,7 +6,6 @@ import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.shell.MainReactPackage
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.kernel.KernelConfig
-import host.exp.exponent.kernel.KernelConstants
 import host.exp.expoview.Exponent
 import versioned.host.exp.exponent.ExpoReanimatedPackage
 import versioned.host.exp.exponent.ExpoTurboPackage
@@ -56,8 +55,7 @@ class ExpoGoReactNativeHost(
 
 data class KernelData(
   val initialURL: String? = null,
-  val localBundlePath: String? = null,
-  val mainModuleName: String? = null
+  val localBundlePath: String? = null
 )
 
 class KernelReactNativeHost(
@@ -84,7 +82,7 @@ class KernelReactNativeHost(
 
   override fun getJSMainModuleName(): String {
     return if (devSupportEnabled) {
-      data?.mainModuleName ?: KernelConstants.DEFAULT_APPLICATION_KEY
+      exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
     } else {
       super.getJSMainModuleName()
     }

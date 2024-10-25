@@ -629,23 +629,29 @@ describe('JS API tests', () => {
     });
     await waitForAppToBecomeVisible();
 
-    // Check state
+    // Check state on launch
     const isUpdatePending = await testElementValueAsync('state.isUpdatePending');
     const isUpdateAvailable = await testElementValueAsync('state.isUpdateAvailable');
     const latestManifestId = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback = await testElementValueAsync('state.isRollback');
-
     console.warn(`isUpdatePending = ${isUpdatePending}`);
     console.warn(`isUpdateAvailable = ${isUpdateAvailable}`);
     console.warn(`isRollback = ${isRollback}`);
     console.warn(`latestManifestId = ${latestManifestId}`);
     console.warn(`downloadedManifestId = ${downloadedManifestId}`);
+    jestExpect(isUpdateAvailable).toEqual('false');
+    jestExpect(isUpdatePending).toEqual('false');
+    jestExpect(isRollback).toEqual('false');
+    jestExpect(latestManifestId).toEqual('null');
+    jestExpect(downloadedManifestId).toEqual('null');
 
     const updatesExpoClientEmbeddedString = await testElementValueAsync('updates.expoClient');
     const constantsExpoConfigEmbeddedString = await testElementValueAsync('constants.expoConfig');
     console.warn(`updatesExpoClientEmbedded = ${updatesExpoClientEmbeddedString}`);
     console.warn(`constantsExpoConfigEmbedded = ${constantsExpoConfigEmbeddedString}`);
+    const updatesExpoConfigEmbedded = JSON.parse(updatesExpoClientEmbeddedString);
+    jestExpect(updatesExpoConfigEmbedded).not.toBeNull();
 
     // Now serve a manifest
     Server.start(Update.serverPort, protocolVersion);
@@ -660,12 +666,16 @@ describe('JS API tests', () => {
     const latestManifestId2 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId2 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback2 = await testElementValueAsync('state.isRollback');
-
     console.warn(`isUpdatePending2 = ${isUpdatePending2}`);
     console.warn(`isUpdateAvailable2 = ${isUpdateAvailable2}`);
     console.warn(`isRollback2 = ${isRollback2}`);
     console.warn(`latestManifestId2 = ${latestManifestId2}`);
     console.warn(`downloadedManifestId2 = ${downloadedManifestId2}`);
+    jestExpect(isUpdateAvailable2).toEqual('true');
+    jestExpect(isUpdatePending2).toEqual('false');
+    jestExpect(isRollback2).toEqual('false');
+    jestExpect(latestManifestId2).toEqual(manifest.id);
+    jestExpect(downloadedManifestId2).toEqual('null');
 
     // Download update and expect isUpdatePending to be true
     await pressTestButtonAsync('downloadUpdate');
@@ -676,12 +686,16 @@ describe('JS API tests', () => {
     const latestManifestId3 = await testElementValueAsync('state.latestManifest.id');
     const downloadedManifestId3 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback3 = await testElementValueAsync('state.isRollback');
-
     console.warn(`isUpdatePending3 = ${isUpdatePending3}`);
     console.warn(`isUpdateAvailable3 = ${isUpdateAvailable3}`);
     console.warn(`isRollback3 = ${isRollback3}`);
     console.warn(`latestManifestId3 = ${latestManifestId3}`);
     console.warn(`downloadedManifestId3 = ${downloadedManifestId3}`);
+    jestExpect(isUpdateAvailable3).toEqual('true');
+    jestExpect(isUpdatePending3).toEqual('true');
+    jestExpect(isRollback3).toEqual('false');
+    jestExpect(latestManifestId3).toEqual(manifest.id);
+    jestExpect(downloadedManifestId3).toEqual(manifest.id);
 
     // Terminate and relaunch app, we should be running the update, and back to the default state
     await device.terminateApp();
@@ -694,13 +708,18 @@ describe('JS API tests', () => {
     const downloadedManifestId4 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback4 = await testElementValueAsync('state.isRollback');
     const rollbackCommitTime4 = await testElementValueAsync('state.rollbackCommitTime');
-
     console.warn(`isUpdatePending4 = ${isUpdatePending4}`);
     console.warn(`isUpdateAvailable4 = ${isUpdateAvailable4}`);
     console.warn(`isRollback4 = ${isRollback4}`);
     console.warn(`latestManifestId4 = ${latestManifestId4}`);
     console.warn(`downloadedManifestId4 = ${downloadedManifestId4}`);
     console.warn(`rollbackCommitTime4 = ${rollbackCommitTime4}`);
+    jestExpect(isUpdateAvailable4).toEqual('false');
+    jestExpect(isUpdatePending4).toEqual('false');
+    jestExpect(isRollback4).toEqual('false');
+    jestExpect(latestManifestId4).toEqual('null');
+    jestExpect(downloadedManifestId4).toEqual('null');
+    jestExpect(rollbackCommitTime4).toEqual('null');
 
     const updatesExpoClientUpdateString = await testElementValueAsync('updates.expoClient');
     const constantsExpoConfigUpdateString = await testElementValueAsync('constants.expoConfig');
@@ -721,13 +740,18 @@ describe('JS API tests', () => {
     const downloadedManifestId5 = await testElementValueAsync('state.downloadedManifest.id');
     const isRollback5 = await testElementValueAsync('state.isRollback');
     const rollbackCommitTime5 = await testElementValueAsync('state.rollbackCommitTime');
-
     console.warn(`isUpdatePending5 = ${isUpdatePending5}`);
     console.warn(`isUpdateAvailable5 = ${isUpdateAvailable5}`);
     console.warn(`isRollback5 = ${isRollback5}`);
     console.warn(`latestManifestId5 = ${latestManifestId5}`);
     console.warn(`downloadedManifestId5 = ${downloadedManifestId5}`);
     console.warn(`rollbackCommitTime5 = ${rollbackCommitTime5}`);
+    jestExpect(isUpdateAvailable5).toEqual('true');
+    jestExpect(isUpdatePending5).toEqual('false');
+    jestExpect(isRollback5).toEqual('true');
+    jestExpect(latestManifestId5).toEqual('null');
+    jestExpect(downloadedManifestId5).toEqual('null');
+    jestExpect(rollbackCommitTime5).not.toEqual('null');
 
     // Terminate and relaunch app, we should be running the original bundle again, and back to the default state
     await device.terminateApp();
@@ -752,44 +776,6 @@ describe('JS API tests', () => {
     const constantsExpoConfigRollbackString = await testElementValueAsync('constants.expoConfig');
     console.warn(`updatesExpoConfigRollback = ${updatesExpoConfigRollbackString}`);
     console.warn(`constantsExpoConfigRollback = ${constantsExpoConfigRollbackString}`);
-
-    // Unpack expo config values and check them
-    const updatesExpoConfigEmbedded = JSON.parse(updatesExpoClientEmbeddedString);
-    jestExpect(updatesExpoConfigEmbedded).not.toBeNull();
-
-    // Verify correct behavior
-    // On launch
-    jestExpect(isUpdateAvailable).toEqual('false');
-    jestExpect(isUpdatePending).toEqual('false');
-    jestExpect(isRollback).toEqual('false');
-    jestExpect(latestManifestId).toEqual('null');
-    jestExpect(downloadedManifestId).toEqual('null');
-    // After check for update and getting a manifest
-    jestExpect(isUpdateAvailable2).toEqual('true');
-    jestExpect(isUpdatePending2).toEqual('false');
-    jestExpect(isRollback2).toEqual('false');
-    jestExpect(latestManifestId2).toEqual(manifest.id);
-    jestExpect(downloadedManifestId2).toEqual('null');
-    // After downloading the update
-    jestExpect(isUpdateAvailable3).toEqual('true');
-    jestExpect(isUpdatePending3).toEqual('true');
-    jestExpect(isRollback3).toEqual('false');
-    jestExpect(latestManifestId3).toEqual(manifest.id);
-    jestExpect(downloadedManifestId3).toEqual(manifest.id);
-    // After restarting
-    jestExpect(isUpdateAvailable4).toEqual('false');
-    jestExpect(isUpdatePending4).toEqual('false');
-    jestExpect(isRollback4).toEqual('false');
-    jestExpect(latestManifestId4).toEqual('null');
-    jestExpect(downloadedManifestId4).toEqual('null');
-    jestExpect(rollbackCommitTime4).toEqual('null');
-    // After check for update and getting a rollback
-    jestExpect(isUpdateAvailable5).toEqual('true');
-    jestExpect(isUpdatePending5).toEqual('false');
-    jestExpect(isRollback5).toEqual('true');
-    jestExpect(latestManifestId5).toEqual('null');
-    jestExpect(downloadedManifestId5).toEqual('null');
-    jestExpect(rollbackCommitTime5).not.toEqual('null');
 
     // Check for update, and expect isRollback to be true
     await pressTestButtonAsync('triggerParallelFetchAndDownload');

@@ -56,7 +56,7 @@
 @property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
-@property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
+@property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, strong) EXDevLauncherAppDelegate *appDelegate;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
@@ -84,7 +84,6 @@
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
-    self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     __weak __typeof(self) weakSelf = self;
@@ -323,6 +322,7 @@
 
   self.manifest = nil;
   self.manifestURL = nil;
+  self.networkInterceptor = nil;
 
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
 
@@ -576,6 +576,7 @@
     if (![bundleUrl.scheme isEqualToString:@"file"]) {
       [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
     }
+    self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
     UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
@@ -598,11 +599,6 @@
     if (backgroundColor) {
       self.window.rootViewController.view.backgroundColor = backgroundColor;
       self.window.backgroundColor = backgroundColor;
-    }
-
-    if (self.updatesInterface) {
-      ExpoBridgeModule *expoBridgeModule = [self.appBridge moduleForClass:ExpoBridgeModule.class];
-      ((id<EXUpdatesExternalInterface>)self.updatesInterface).appContext = expoBridgeModule.appContext;
     }
   });
 }

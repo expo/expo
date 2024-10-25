@@ -22,6 +22,7 @@ import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
 import expo.modules.devlauncher.rncompatibility.DevLauncherBridgeDevSupportManager
 import expo.modules.devlauncher.rncompatibility.DevLauncherBridgelessDevSupportManager
+import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import okhttp3.HttpUrl
 
@@ -53,6 +54,10 @@ fun injectReactInterceptor(
 
 private fun injectDevSupportManager(reactHost: ReactHostWrapper) {
   DevLauncherDevSupportManagerSwapper().swapDevSupportManagerImpl(reactHost)
+
+  // Swapping dev support manager overrides dev menu setup.
+  // We need to reinitialize it.
+  DevMenuManager.initializeWithReactHost(reactHost)
 }
 
 fun injectDebugServerHost(

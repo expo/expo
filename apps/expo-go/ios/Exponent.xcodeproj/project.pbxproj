@@ -32,12 +32,14 @@
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		31E8B2FD23D090E200E6C2BF /* EXClientReleaseType.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E8B2FC23D090E200E6C2BF /* EXClientReleaseType.m */; };
 		31F8E27E255F05D5005AA063 /* EXDeviceInstallationUUIDService.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F8E27D255F05D5005AA063 /* EXDeviceInstallationUUIDService.m */; };
+		402B73292CC90F7100FA17BC /* RequestLocalNetworkAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402B73282CC90F7100FA17BC /* RequestLocalNetworkAccess.swift */; };
 		4089335A2CAAF7A20095810E /* ExpoAppInstance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 408933592CAAF7A20095810E /* ExpoAppInstance.mm */; };
 		40F867AB2CA04F0B009A7E2C /* JKBigInteger.podspec.json in Resources */ = {isa = PBXBuildFile; fileRef = 40F867A02CA04F0B009A7E2C /* JKBigInteger.podspec.json */; };
 		78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D01ACD07D70095B124 /* Images.xcassets */; };
 		78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */; };
 		78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82529204F826700CBD9D9 /* EXApiV2Result.m */; };
-		837A38252A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */; };
+		8397AA3E2CC969A5000A6349 /* EXVersionedNetworkInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8397AA3D2CC96997000A6349 /* EXVersionedNetworkInterceptor.swift */; };
+		83B4FA5F2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */; };
 		84713BFB28584A0100E86B56 /* EXErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84713BFA28584A0100E86B56 /* EXErrorView.xib */; };
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
@@ -243,6 +245,7 @@
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		34656423B7AD3C99D408EF4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
+		402B73282CC90F7100FA17BC /* RequestLocalNetworkAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestLocalNetworkAccess.swift; sourceTree = "<group>"; };
 		408933582CAAF7870095810E /* ExpoAppInstance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoAppInstance.h; sourceTree = "<group>"; };
 		408933592CAAF7A20095810E /* ExpoAppInstance.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ExpoAppInstance.mm; sourceTree = "<group>"; };
 		40F867A02CA04F0B009A7E2C /* JKBigInteger.podspec.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JKBigInteger.podspec.json; sourceTree = "<group>"; };
@@ -255,8 +258,9 @@
 		78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Client.m; sourceTree = "<group>"; };
 		78D82528204F826700CBD9D9 /* EXApiV2Result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Result.h; sourceTree = "<group>"; };
 		78D82529204F826700CBD9D9 /* EXApiV2Result.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Result.m; sourceTree = "<group>"; };
-		837A38232A20D6730046BD8E /* EXVersionedNetworkInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXVersionedNetworkInterceptor.h; sourceTree = "<group>"; };
-		837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXVersionedNetworkInterceptor.m; sourceTree = "<group>"; };
+		8397AA3D2CC96997000A6349 /* EXVersionedNetworkInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXVersionedNetworkInterceptor.swift; sourceTree = "<group>"; };
+		83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXGoReactNativeFeatureFlags.mm; sourceTree = "<group>"; };
+		83B4FA602CCA98FF007374E2 /* EXGoReactNativeFeatureFlags.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXGoReactNativeFeatureFlags.h; sourceTree = "<group>"; };
 		83BF8C0E87795C6808128A31 /* Pods-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go/Pods-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
 		84713BFA28584A0100E86B56 /* EXErrorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EXErrorView.xib; sourceTree = "<group>"; };
 		8746D75D24D04B2300BFAD22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -784,12 +788,15 @@
 				F1F7433D24ABECD500EA5023 /* AppDelegate.swift */,
 				B56C65C5204768F2002B2424 /* EXHomeAppManager.h */,
 				B56C65C4204768F2002B2424 /* EXHomeAppManager.m */,
+				83B4FA602CCA98FF007374E2 /* EXGoReactNativeFeatureFlags.h */,
+				83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */,
 				B56C65C0204768F2002B2424 /* EXRootViewController.h */,
 				B56C65C1204768F2002B2424 /* EXRootViewController.m */,
 				B56C65C9204769B6002B2424 /* Menu */,
 				B2E2CCC62AA7D33E00E2260C /* HomeAppLoader.swift */,
 				B2E2CCC92AA7DAD400E2260C /* ManifestAndAssetRequestHeaders.swift */,
 				B2E2CCCF2AA7DF9C00E2260C /* HomeAppLoaderTask.swift */,
+				402B73282CC90F7100FA17BC /* RequestLocalNetworkAccess.swift */,
 			);
 			path = Client;
 			sourceTree = "<group>";
@@ -1056,8 +1063,7 @@
 				B5FB74241FF6DADB001C764B /* ScopedModule */,
 				31DBC6AA20B5B4C60049A476 /* UniversalModules */,
 				B5FB73FA1FF6DADB001C764B /* EXUnversioned.h */,
-				837A38232A20D6730046BD8E /* EXVersionedNetworkInterceptor.h */,
-				837A38242A20D7090046BD8E /* EXVersionedNetworkInterceptor.m */,
+				8397AA3D2CC96997000A6349 /* EXVersionedNetworkInterceptor.swift */,
 				B5FB73FB1FF6DADB001C764B /* EXVersionManagerObjC.h */,
 				B5FB73FC1FF6DADB001C764B /* EXVersionManagerObjC.mm */,
 				F151B1112A5C6880001BB70F /* VersionManager.swift */,
@@ -1760,6 +1766,7 @@
 				B2641CB52AB0E8DD00ACB763 /* EXEmbeddedHomeLoader.m in Sources */,
 				B5A72C2120A0D13E00974CCE /* EXCachedResource.m in Sources */,
 				B248B8812AD88337003C9C10 /* ExpoGoExpoUpdatesModule.swift in Sources */,
+				8397AA3E2CC969A5000A6349 /* EXVersionedNetworkInterceptor.swift in Sources */,
 				BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */,
 				BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */,
 				B5FB74E21FF6DADC001C764B /* EXDisabledDevMenu.mm in Sources */,
@@ -1822,6 +1829,7 @@
 				B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */,
 				0799CFDA21839B520039E97C /* EXSession.m in Sources */,
 				B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */,
+				83B4FA5F2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm in Sources */,
 				317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */,
 				31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */,
 				B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */,
@@ -1829,6 +1837,7 @@
 				B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */,
 				B5FB74E01FF6DADC001C764B /* EXDevSettingsDataSource.m in Sources */,
 				31361A5A2260B2F600662769 /* EXScopedSecureStore.m in Sources */,
+				402B73292CC90F7100FA17BC /* RequestLocalNetworkAccess.swift in Sources */,
 				B5FB74F01FF6DADC001C764B /* EXScopedBridgeModule.m in Sources */,
 				31361A612261C65A00662769 /* EXPermissionsManager.m in Sources */,
 				B248B8842AD8888C003C9C10 /* UpdatesBinding.swift in Sources */,
@@ -1836,7 +1845,6 @@
 				B52217D61F146658002241BA /* EXKernelServiceRegistry.m in Sources */,
 				B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */,
 				B5ADEE951F7DB4E000C88D2F /* EXBuildConstants.m in Sources */,
-				837A38252A20D7090046BD8E /* EXVersionedNetworkInterceptor.m in Sources */,
 				8767F97624D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m in Sources */,
 				F151B1122A5C6881001BB70F /* VersionManager.swift in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,

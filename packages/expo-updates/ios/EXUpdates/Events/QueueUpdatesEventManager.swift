@@ -9,56 +9,15 @@ internal class QueueUpdatesEventManager: UpdatesEventManager {
     self.logger = logger
   }
 
-  internal weak var appContext: AppContext?
-  internal var shouldEmitJsEvents = false {
-    didSet {
-      if shouldEmitJsEvents == true {
-        sendQueuedEventsToAppContext()
-      }
-    }
-  }
+  internal weak var observer: (any UpdatesEventManagerObserver)?
 
-  private var eventsToSendToJS: [[String: Any?]] = []
-
-  internal func sendUpdateStateChangeEventToAppContext(_ eventType: UpdatesStateEventType, context: UpdatesStateContext) {
-    logger.info(message: "sendUpdateStateChangeEventToAppContext(): type = \(eventType)")
-    sendEventToAppContext(EXUpdatesStateChangeEventName, "\(eventType)", body: [
-      "context": context.json
-    ])
-  }
-
-  private func sendEventToAppContext(_ eventName: String, _ eventType: String, body: [String: Any?]) {
-    var mutableBody = body
-    mutableBody["type"] = eventType
-
-    guard let appContext = appContext,
-      let eventEmitter = appContext.eventEmitter,
-      shouldEmitJsEvents == true else {
-      eventsToSendToJS.append([
-        "eventName": eventName,
-        "mutableBody": mutableBody
-      ])
-      logger.warn(message: "EXUpdates: Could not emit event: name = \(eventName), type = \(eventType). Event will be emitted when the appContext is available", code: .jsRuntimeError)
+  internal func sendStateMachineContextEvent(context: UpdatesStateContext) {
+    logger.debug(message: "Sending state machine context to observer")
+    guard let observer = observer else {
+      logger.debug(message: "Unable to send state machine context to observer, no observer", code: .jsRuntimeError)
       return
     }
-    logger.debug(message: "sendEventToAppContext: \(eventName), \(mutableBody)")
-    eventEmitter.sendEvent(withName: eventName, body: mutableBody)
-  }
-
-  private func sendQueuedEventsToAppContext() {
-    guard let appContext = appContext,
-      let eventEmitter = appContext.eventEmitter,
-      shouldEmitJsEvents == true else {
-      return
-    }
-    eventsToSendToJS.forEach { event in
-      guard let eventName = event["eventName"] as? String,
-        let mutableBody = event["mutableBody"] as? [String: Any?] else {
-        return
-      }
-      logger.debug(message: "sendEventToAppContext: \(eventName), \(mutableBody)")
-      eventEmitter.sendEvent(withName: eventName, body: mutableBody)
-    }
-    eventsToSendToJS = []
+    observer.onStateMachineContextEvent(context: context)
+    logger.debug(message: "Sent state machine context to observer")
   }
 }

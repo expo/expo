@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '14.0.5'
+version = '15.0.1'
 
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
@@ -34,7 +34,7 @@ android {
   namespace "expo.modules.av"
   defaultConfig {
     versionCode 24
-    versionName "14.0.5"
+    versionName "15.0.1"
 
     externalNativeBuild {
       cmake {

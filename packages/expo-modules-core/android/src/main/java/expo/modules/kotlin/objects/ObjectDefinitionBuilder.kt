@@ -18,6 +18,7 @@ import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
+import expo.modules.kotlin.modules.convertEnumToString
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.types.toArgsArray
@@ -474,6 +475,13 @@ open class ObjectDefinitionBuilder {
   }
 
   /**
+   * Creates module's lifecycle listener that is called right after the first event listener is added for given event.
+   */
+  fun <T> OnStartObserving(enum: T, body: () -> Unit) where T : Enumerable, T : Enum<T> {
+    OnStartObserving(convertEnumToString(enum), body)
+  }
+
+  /**
    * Creates module's lifecycle listener that is called right after the first event listener is added.
    */
   fun OnStartObserving(body: () -> Unit) {
@@ -497,6 +505,13 @@ open class ObjectDefinitionBuilder {
     ).also {
       eventObservers.add(it)
     }
+  }
+
+  /**
+   * Creates module's lifecycle listener that is called right after all event listeners are removed for given event.
+   */
+  fun <T> OnStopObserving(enum: T, body: () -> Unit) where T : Enumerable, T : Enum<T> {
+    OnStopObserving(convertEnumToString(enum), body)
   }
 
   /**

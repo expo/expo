@@ -1,6 +1,7 @@
 package expo.modules.kotlin.events
 
 import android.os.Bundle
+import android.view.View
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableNativeMap
@@ -96,15 +97,24 @@ open class KEventEmitterWrapper(
   override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {
     val context = reactContextHolder.get() ?: return
     UIManagerHelper.getEventDispatcherForReactTag(context, viewId)
-      ?.dispatchEvent(UIEvent(viewId, eventName, eventBody, coalescingKey))
+      ?.dispatchEvent(UIEvent(surfaceId = -1, viewId, eventName, eventBody, coalescingKey))
+  }
+
+  override fun emit(view: View, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {
+    val context = reactContextHolder.get() ?: return
+    val surfaceId = UIManagerHelper.getSurfaceId(view)
+    val viewId = view.id
+    UIManagerHelper.getEventDispatcherForReactTag(context, view.id)
+      ?.dispatchEvent(UIEvent(surfaceId, viewId, eventName, eventBody, coalescingKey))
   }
 
   private class UIEvent(
+    surfaceId: Int,
     viewId: Int,
     private val eventName: String,
     private val eventBody: WritableMap?,
     private val coalescingKey: Short?
-  ) : com.facebook.react.uimanager.events.Event<UIEvent>(viewId) {
+  ) : com.facebook.react.uimanager.events.Event<UIEvent>(surfaceId, viewId) {
     override fun getEventName(): String = normalizeEventName(eventName)
     override fun canCoalesce(): Boolean = coalescingKey != null
     override fun getCoalescingKey(): Short = coalescingKey ?: 0

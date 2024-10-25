@@ -125,54 +125,59 @@ export async function runChecksAsync(
 export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
-  const projectConfig = getConfig(projectRoot);
-
-  // expo-doctor relies on versioned CLI, which is only available for 44+
   try {
+    const projectConfig = getConfig(projectRoot);
+
+    // expo-doctor relies on versioned CLI, which is only available for 44+
     if (ltSdkVersion(projectConfig.exp, '46.0.0')) {
       Log.exit(
         chalk.red(`expo-doctor supports Expo SDK 46+. Use 'expo-cli doctor' for SDK 45 and lower.`)
       );
       return;
     }
-  } catch (e: any) {
-    Log.exit(e);
-    return;
-  }
 
-  const checksInScope = resolveChecksInScope(projectConfig.exp, projectConfig.pkg);
+    const checksInScope = resolveChecksInScope(projectConfig.exp, projectConfig.pkg);
 
-  const spinner = startSpinner(`Running ${checksInScope.length} checks on your project...`);
+    const spinner = startSpinner(`Running ${checksInScope.length} checks on your project...`);
 
-  const checkParams = { projectRoot, ...projectConfig };
+    const checkParams = { projectRoot, ...projectConfig };
 
-  const jobs = await runChecksAsync(checksInScope, checkParams, printCheckResultSummaryOnComplete);
+    const jobs = await runChecksAsync(
+      checksInScope,
+      checkParams,
+      printCheckResultSummaryOnComplete
+    );
 
-  spinner.stop();
+    spinner.stop();
 
-  const failedJobs = jobs.filter((job) => !job.result.isSuccessful);
+    const failedJobs = jobs.filter((job) => !job.result.isSuccessful);
 
-  if (failedJobs.length) {
-    if (failedJobs.some((job) => job.result.issues?.length)) {
-      Log.log();
-      Log.log(chalk.underline('Detailed check results:'));
-      Log.log();
-      // actual issues will output in order of the sequence of tests, due to rules of Promise.all()
-      failedJobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
-    }
-    // check if all checks failed due to a network error if the flag to override network errors is enabled
-    if (env.EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS) {
-      const failedJobsDueToNetworkError = failedJobs.filter((job) => isNetworkError(job.error));
-      if (failedJobsDueToNetworkError.length === failedJobs.length) {
-        Log.warn(
-          'One or more checks failed due to network errors, but EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS is enabled, so these errors will not fail Doctor. Run Doctor to retry these checks once the network is available.'
-        );
-        return;
+    if (failedJobs.length) {
+      if (failedJobs.some((job) => job.result.issues?.length)) {
+        Log.log();
+        Log.log(chalk.underline('Detailed check results:'));
+        Log.log();
+        // actual issues will output in order of the sequence of tests, due to rules of Promise.all()
+        failedJobs.forEach((job) => printFailedCheckIssueAndAdvice(job));
       }
+      // check if all checks failed due to a network error if the flag to override network errors is enabled
+      if (env.EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS) {
+        const failedJobsDueToNetworkError = failedJobs.filter((job) => isNetworkError(job.error));
+        if (failedJobsDueToNetworkError.length === failedJobs.length) {
+          Log.warn(
+            'One or more checks failed due to network errors, but EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS is enabled, so these errors will not fail Doctor. Run Doctor to retry these checks once the network is available.'
+          );
+          return;
+        }
+      }
+      Log.exit(
+        chalk.red('One or more checks failed, indicating possible issues with the project.')
+      );
+    } else {
+      Log.log();
+      Log.log(chalk.green(`Didn't find any issues with the project!`));
     }
-    Log.exit(chalk.red('One or more checks failed, indicating possible issues with the project.'));
-  } else {
-    Log.log();
-    Log.log(chalk.green(`Didn't find any issues with the project!`));
+  } catch (e: any) {
+    Log.exception(e);
   }
 }
