@@ -19,6 +19,7 @@ const homeDirectories = [
   'debugging',
   'deploy',
   'review',
+  'monitoring',
 ];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
@@ -128,6 +129,7 @@ const home = [
     makePage('deploy/app-stores-metadata.mdx'),
     makePage('deploy/send-over-the-air-updates.mdx'),
   ]),
+  makeSection('Monitor', [makePage('monitoring/monitor-your-app.mdx')]),
   makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
 
