@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Add support to disable appConfigFieldsNotSyncedCheck via package.json. ([#32130](https://github.com/expo/expo/pull/32130) by [@betomoedano](https://github.com/betomoedano))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.12.0 — 2024-10-25
+
+### 🎉 New features
+
+- Add support to disable appConfigFieldsNotSyncedCheck via package.json. ([#32130](https://github.com/expo/expo/pull/32130) by [@betomoedano](https://github.com/betomoedano))
 
 ### 💡 Others
 
