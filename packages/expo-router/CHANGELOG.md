@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Include `expo-router/ui` in public export.
+- Include `expo-router/ui` in public export. ([#32362](https://github.com/expo/expo/pull/32362) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
