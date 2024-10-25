@@ -3,7 +3,7 @@ import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderSt
 /**
  * @hidden
  */
-export declare class AudioModuleDefinition {
+export declare class NativeAudioModule {
     setIsAudioActiveAsync(active: boolean): Promise<void>;
     setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
     requestRecordingPermissionsAsync(): Promise<PermissionResponse>;

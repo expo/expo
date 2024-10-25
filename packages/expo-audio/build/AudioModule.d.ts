@@ -1,7 +1,7 @@
-import { AudioModuleDefinition } from './AudioModule.types';
+import { NativeAudioModule } from './AudioModule.types';
 /**
  * @hidden
  */
-declare const _default: AudioModuleDefinition;
+declare const _default: NativeAudioModule;
 export default _default;
 //# sourceMappingURL=AudioModule.d.ts.map
