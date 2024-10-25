@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Only add `UISupportedInterfaceOrientations~ipad` if tablet support is also enabled.
+
 ## 9.0.2 — 2024-10-24
 
 _This version does not introduce any user-facing changes._

@@ -13,13 +13,6 @@ function _iosPlugins() {
   };
   return data;
 }
-function _versions() {
-  const data = require("../utils/versions");
-  _versions = function () {
-    return data;
-  };
-  return data;
-}
 function _warnings() {
   const data = require("../utils/warnings");
   _warnings = function () {
@@ -34,18 +27,7 @@ const withRequiresFullScreen = exports.withRequiresFullScreen = (0, _iosPlugins(
 function getRequiresFullScreen(config) {
   // Yes, the property is called ios.requireFullScreen, without the s - not "requires"
   // This is confusing indeed because the actual property name does have the s
-  if (config.ios?.hasOwnProperty('requireFullScreen')) {
-    return !!config.ios.requireFullScreen;
-  } else {
-    // In SDK 43, the `requireFullScreen` default has been changed to false.
-    if ((0, _versions().gteSdkVersion)(config, '43.0.0')
-    // TODO: Uncomment after SDK 43 is released.
-    // || !config.sdkVersion
-    ) {
-      return false;
-    }
-    return true;
-  }
+  return !!config.ios?.requireFullScreen;
 }
 const iPadInterfaceKey = 'UISupportedInterfaceOrientations~ipad';
 const requiredIPadInterface = ['UIInterfaceOrientationPortrait', 'UIInterfaceOrientationPortraitUpsideDown', 'UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight'];
@@ -83,7 +65,8 @@ function resolveExistingIpadInterfaceOrientations(interfaceOrientations) {
 // Whether requires full screen on iPad
 function setRequiresFullScreen(config, infoPlist) {
   const requiresFullScreen = getRequiresFullScreen(config);
-  if (!requiresFullScreen) {
+  const isTabletEnabled = config.ios?.supportsTablet || config.ios?.isTabletOnly;
+  if (isTabletEnabled && !requiresFullScreen) {
     const existing = resolveExistingIpadInterfaceOrientations(infoPlist[iPadInterfaceKey]);
 
     // There currently exists no mechanism to safely undo this feature besides `npx expo prebuild --clear`,

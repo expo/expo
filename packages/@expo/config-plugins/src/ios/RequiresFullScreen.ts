@@ -2,7 +2,6 @@ import { ExpoConfig } from '@expo/config-types';
 
 import { InfoPlist } from './IosConfig.types';
 import { createInfoPlistPlugin } from '../plugins/ios-plugins';
-import { gteSdkVersion } from '../utils/versions';
 import { addWarningIOS } from '../utils/warnings';
 
 export const withRequiresFullScreen = createInfoPlistPlugin(
@@ -15,19 +14,7 @@ export const withRequiresFullScreen = createInfoPlistPlugin(
 export function getRequiresFullScreen(config: Pick<ExpoConfig, 'ios' | 'sdkVersion'>) {
   // Yes, the property is called ios.requireFullScreen, without the s - not "requires"
   // This is confusing indeed because the actual property name does have the s
-  if (config.ios?.hasOwnProperty('requireFullScreen')) {
-    return !!config.ios.requireFullScreen;
-  } else {
-    // In SDK 43, the `requireFullScreen` default has been changed to false.
-    if (
-      gteSdkVersion(config, '43.0.0')
-      // TODO: Uncomment after SDK 43 is released.
-      // || !config.sdkVersion
-    ) {
-      return false;
-    }
-    return true;
-  }
+  return !!config.ios?.requireFullScreen;
 }
 
 const iPadInterfaceKey = 'UISupportedInterfaceOrientations~ipad';
@@ -81,7 +68,8 @@ export function setRequiresFullScreen(
   infoPlist: InfoPlist
 ): InfoPlist {
   const requiresFullScreen = getRequiresFullScreen(config);
-  if (!requiresFullScreen) {
+  const isTabletEnabled = config.ios?.supportsTablet || config.ios?.isTabletOnly;
+  if (isTabletEnabled && !requiresFullScreen) {
     const existing = resolveExistingIpadInterfaceOrientations(infoPlist[iPadInterfaceKey]);
 
     // There currently exists no mechanism to safely undo this feature besides `npx expo prebuild --clear`,
