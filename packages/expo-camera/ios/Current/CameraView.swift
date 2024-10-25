@@ -49,7 +49,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   var isScanningBarcodes = false {
     didSet {
-      barcodeScanner.setIsEnabled(isScanningBarcodes)
+      Task {
+       await barcodeScanner.setIsEnabled(isScanningBarcodes)
+      }
     }
   }
 
@@ -145,7 +147,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(orientationChanged(notification:)),
+      selector: #selector(orientationChanged),
       name: UIDevice.orientationDidChangeNotification,
       object: nil)
     lifecycleManager?.register(self)
@@ -303,7 +305,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   func setBarcodeScannerSettings(settings: BarcodeSettings) {
-    barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+    Task {
+     await barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+    }
   }
 
   func updateResponsiveOrientation() {
@@ -770,8 +774,10 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     previewLayer.connection?.isEnabled = false
   }
 
-  @objc func orientationChanged(notification: Notification) async {
-    await changePreviewOrientation()
+  @objc func orientationChanged() {
+    Task {
+      await changePreviewOrientation()
+    }
   }
 
   @MainActor
