@@ -1,0 +1,61 @@
+---
+title: Audit logs
+description: A list of changes that happened to selected entities owned by an account.
+---
+
+## What are audit logs?
+
+Our implementation of audit logs will record actions made with Expo services by accounts. Recorded data will include what object was affected, what type of modification was made, who performed the action, and when this activity occurred.
+
+Because audit logs can only be created and never modified or deleted, they will serve as a source of truth to help monitor events and possibly debug issues occurring within accounts and products.
+
+Audit logs are available for enterprise plan customers only. Immediately after subscribing, some of the logs will become available immediately as they could have been used internally by Expo. Some other types of logs will start to be collected after the subscription is activated.
+
+They can be accessed for any account under [expo.dev/accounts/[account]/settings/audit-logs](https://expo.dev/accounts/[account]/settings/audit-logs).
+
+## Audit log use cases
+
+### Permission monitoring
+
+Audit logs can be used to track user invitations and permission changes within your organization. An example security event could include an employee account being compromised and used to invite an attacker into an organization and change their permission to admin.
+
+In this scenario, audit logs would record which employee account invited an account and modified permissions, and since audit logs are immutable, the attacker would not be able to delete this recorded history. Other organization members would be able to review the audit logs to determine which account was compromised and take action to revoke the attacker's permissions and secure the employee's account.
+
+### Access history
+
+An Expo organization account can include many projects where development access is controlled by distribution certificates assigned to individual teams. When devices are granted to join these teams, it is important to track when access is granted and removed for historical record keeping. While a device may not currently be included in an Apple team, it may be useful to see who previously had access to the team in the event of an internal security incident.
+
+The Apple devices listed within Expo's team settings will only show devices that are currently registered to an account, but with the creation of audit logs, historical modifications of Apple teams and devices can be viewed.
+
+## Where are audit logs in use?
+
+Audit logs have been enabled for several entities that will offer the highest level of action tracking. While we will be adding more entities to audit logs in the future, at the time of this blog post, we have enabled audit logs for the following entities:
+
+- Android app credentials
+- Android keystores
+- Apple devices
+- Apple distribution certificates
+- Apple provisioning profiles
+- Apple teams
+- App store connect api keys
+- Google service account keys
+- iOS app credentials
+- User permissions
+- Apps
+- Accounts
+- User invitations
+
+## Understanding Audit Logs
+
+Audit Log entries include the following fields:
+
+- Actor: the account actor that performed the particular action
+- Entity Type: The object that was modified
+- Mutation Type: The type of modification, CREATE, UPDATE, DELETE
+- Created At: When the particular action was performed
+
+Additionally, the three dots at the end of an Audit Log row can be opened to view any metadata relevant to the Audit Log.
+
+## Exporting Audit Logs
+
+Audit Logs can be exported as the following file formats: CSV, JSON, JSONL. A time range must be included in the request, with a max time range of 30 days. The exported file will include all the fields shown on the Audit Logs page except for the Message field.
