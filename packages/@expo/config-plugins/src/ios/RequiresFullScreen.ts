@@ -9,14 +9,6 @@ export const withRequiresFullScreen = createInfoPlistPlugin(
   'withRequiresFullScreen'
 );
 
-// NOTES: This is defaulted to `true` for now to match the behavior prior to SDK
-// 34, but will change to `false` in SDK +43.
-export function getRequiresFullScreen(config: Pick<ExpoConfig, 'ios' | 'sdkVersion'>) {
-  // Yes, the property is called ios.requireFullScreen, without the s - not "requires"
-  // This is confusing indeed because the actual property name does have the s
-  return !!config.ios?.requireFullScreen;
-}
-
 const iPadInterfaceKey = 'UISupportedInterfaceOrientations~ipad';
 
 const requiredIPadInterface = [
@@ -67,7 +59,7 @@ export function setRequiresFullScreen(
   config: Pick<ExpoConfig, 'ios'>,
   infoPlist: InfoPlist
 ): InfoPlist {
-  const requiresFullScreen = getRequiresFullScreen(config);
+  const requiresFullScreen = !!config.ios?.requireFullScreen;
   const isTabletEnabled = config.ios?.supportsTablet || config.ios?.isTabletOnly;
   if (isTabletEnabled && !requiresFullScreen) {
     const existing = resolveExistingIpadInterfaceOrientations(infoPlist[iPadInterfaceKey]);

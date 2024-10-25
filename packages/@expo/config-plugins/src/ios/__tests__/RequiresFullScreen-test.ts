@@ -1,14 +1,5 @@
 import * as WarningAggregator from '../../utils/warnings';
-import { getRequiresFullScreen, setRequiresFullScreen } from '../RequiresFullScreen';
-
-it(`defaults to false`, () => {
-  expect(getRequiresFullScreen({ ios: {} })).toBe(false);
-});
-
-it(`returns the given value if provided`, () => {
-  expect(getRequiresFullScreen({ ios: { requireFullScreen: false } })).toBe(false);
-  expect(getRequiresFullScreen({ ios: { requireFullScreen: true } })).toBe(true);
-});
+import { setRequiresFullScreen } from '../RequiresFullScreen';
 
 it(`sets UIRequiresFullScreen value`, () => {
   expect(setRequiresFullScreen({ ios: { requireFullScreen: true } }, {})).toMatchObject({

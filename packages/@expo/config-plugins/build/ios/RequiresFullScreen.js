@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getRequiresFullScreen = getRequiresFullScreen;
 exports.setRequiresFullScreen = setRequiresFullScreen;
 exports.withRequiresFullScreen = void 0;
 function _iosPlugins() {
@@ -21,14 +20,6 @@ function _warnings() {
   return data;
 }
 const withRequiresFullScreen = exports.withRequiresFullScreen = (0, _iosPlugins().createInfoPlistPlugin)(setRequiresFullScreen, 'withRequiresFullScreen');
-
-// NOTES: This is defaulted to `true` for now to match the behavior prior to SDK
-// 34, but will change to `false` in SDK +43.
-function getRequiresFullScreen(config) {
-  // Yes, the property is called ios.requireFullScreen, without the s - not "requires"
-  // This is confusing indeed because the actual property name does have the s
-  return !!config.ios?.requireFullScreen;
-}
 const iPadInterfaceKey = 'UISupportedInterfaceOrientations~ipad';
 const requiredIPadInterface = ['UIInterfaceOrientationPortrait', 'UIInterfaceOrientationPortraitUpsideDown', 'UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight'];
 function isStringArray(value) {
@@ -64,7 +55,7 @@ function resolveExistingIpadInterfaceOrientations(interfaceOrientations) {
 
 // Whether requires full screen on iPad
 function setRequiresFullScreen(config, infoPlist) {
-  const requiresFullScreen = getRequiresFullScreen(config);
+  const requiresFullScreen = !!config.ios?.requireFullScreen;
   const isTabletEnabled = config.ios?.supportsTablet || config.ios?.isTabletOnly;
   if (isTabletEnabled && !requiresFullScreen) {
     const existing = resolveExistingIpadInterfaceOrientations(infoPlist[iPadInterfaceKey]);
