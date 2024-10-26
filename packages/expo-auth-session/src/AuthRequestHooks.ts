@@ -44,6 +44,12 @@ export function useLoadedAuthRequest(
 ): AuthRequest | null {
   const [request, setRequest] = useState<AuthRequest | null>(null);
   const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
+  const promptString = useMemo(() => {
+    if (config.prompt) {
+      return typeof config.prompt === 'string' ? config.prompt : config.prompt.join(',');
+    }
+    return undefined;
+  }, [config.prompt]);
   const extraParamsString = useMemo(
     () => JSON.stringify(config.extraParams || {}),
     [config.extraParams]
@@ -67,12 +73,12 @@ export function useLoadedAuthRequest(
     config.clientId,
     config.redirectUri,
     config.responseType,
-    config.prompt,
     config.clientSecret,
     config.codeChallenge,
     config.state,
     config.usePKCE,
     scopeString,
+    promptString,
     extraParamsString,
   ]);
   return request;
