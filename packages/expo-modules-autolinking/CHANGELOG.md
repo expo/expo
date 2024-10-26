@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed react-native core autolinking for react-native-unistyles on Android. ([#32375](https://github.com/expo/expo/pull/32375) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.0.0-preview.1 — 2024-10-25
