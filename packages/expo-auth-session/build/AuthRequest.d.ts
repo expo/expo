@@ -41,7 +41,7 @@ export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     readonly redirectUri: string;
     readonly scopes?: string[];
     readonly clientSecret?: string;
-    readonly prompt?: Prompt;
+    readonly prompt?: Prompt | Prompt[];
     constructor(request: AuthRequestConfig);
     /**
      * Load and return a valid auth request based on the input config.

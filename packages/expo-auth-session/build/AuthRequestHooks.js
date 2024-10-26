@@ -32,6 +32,12 @@ export function useAutoDiscovery(issuerOrDiscovery) {
 export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
     const [request, setRequest] = useState(null);
     const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
+    const promptString = useMemo(() => {
+        if (config.prompt) {
+            return typeof config.prompt === 'string' ? config.prompt : config.prompt.join(',');
+        }
+        return undefined;
+    }, [config.prompt]);
     const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [config.extraParams]);
     useEffect(() => {
         let isMounted = true;
@@ -51,12 +57,12 @@ export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
         config.clientId,
         config.redirectUri,
         config.responseType,
-        config.prompt,
         config.clientSecret,
         config.codeChallenge,
         config.state,
         config.usePKCE,
         scopeString,
+        promptString,
         extraParamsString,
     ]);
     return request;
