@@ -173,7 +173,7 @@ export function linkTo(
     return;
   }
 
-  const navigateAction = getNavigateAction(state, rootState, event);
+  const navigateAction = getNavigateAction(state, rootState, event, withAnchor);
 
   if(event === 'PUSH'){
     return navigationRef.dispatch(native_1.StackActions.push(rootState.routes[0].name,{screen:navigateAction.payload.name,params:navigateAction.payload.params}));
