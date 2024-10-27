@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/next/index.ts"],"names":[],"mappings":"AAAA,cAAc,YAAY,CAAC;AAC3B,cAAc,aAAa,CAAC;AAC5B,cAAc,SAAS,CAAC","sourcesContent":["export * from './Database';\nexport * from './Statement';\nexport * from './hooks';\n"]}

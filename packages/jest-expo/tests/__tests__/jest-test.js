@@ -11,4 +11,11 @@ describe(`jest-expo/universal`, () => {
     expect(OS).toContain(Platform.OS);
     expect(OS).toMatchSnapshot();
   });
+
+  it(`injects process.env.EXPO_OS via babel-preset-expo automatically`, () => {
+    const { OS } = require('../default-extension');
+    const { Platform } = require('expo-modules-core');
+    expect(Platform.OS).toEqual(process.env.EXPO_OS);
+    expect(OS).toContain(process.env.EXPO_OS);
+  });
 });

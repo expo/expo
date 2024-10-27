@@ -23,8 +23,7 @@ describe('exports with url-polyfill', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'url-polyfill',
           E2E_ROUTER_ASYNC: 'development',
-          // TODO: Reenable this after investigating unstable_getRealPath
-          EXPO_USE_FAST_RESOLVER: 'false',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
     },
@@ -52,7 +51,7 @@ describe('exports with url-polyfill', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/index-.*\.js/),
+          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.js/),
         },
       },
       version: 0,

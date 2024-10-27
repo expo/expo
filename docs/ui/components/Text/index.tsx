@@ -1,13 +1,12 @@
 import { css, CSSObject, SerializedStyles } from '@emotion/react';
-import { theme, typography, LinkBase, LinkBaseProps } from '@expo/styleguide';
+import { theme, typography, LinkBase, LinkBaseProps, mergeClasses } from '@expo/styleguide';
 import { spacing, borderRadius } from '@expo/styleguide-base';
 import * as React from 'react';
 
 import { TextComponentProps, TextElement } from './types';
 
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
-import Permalink from '~/components/Permalink';
-import { durations } from '~/ui/foundations/durations';
+import { Permalink } from '~/ui/components/Permalink';
 
 export { AnchorContext } from './withAnchor';
 
@@ -25,10 +24,12 @@ export const createPermalinkedComponent = (
   options?: {
     baseNestingLevel?: number;
     sidebarType?: HeadingType;
+    iconSize?: 'sm' | 'xs';
+    className?: string;
   }
 ) => {
-  const { baseNestingLevel, sidebarType = HeadingType.Text } = options || {};
-  return ({ children, level, id, ...props }: PermalinkedComponentProps) => {
+  const { baseNestingLevel, iconSize = 'sm', sidebarType = HeadingType.Text } = options || {};
+  return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = React.Children.map(children, child => {
       if (React.isValidElement(child) && child?.props?.href) {
         isDev &&
@@ -42,7 +43,15 @@ export const createPermalinkedComponent = (
     });
     const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;
     return (
-      <Permalink nestingLevel={nestingLevel} additionalProps={{ ...props, sidebarType }} id={id}>
+      <Permalink
+        nestingLevel={nestingLevel}
+        additionalProps={{
+          ...props,
+          sidebarType,
+          iconSize,
+          className: mergeClasses(className, options?.className),
+        }}
+        id={id}>
         <BaseComponent>{cleanChildren}</BaseComponent>
       </Permalink>
     );
@@ -91,16 +100,6 @@ const baseTextStyle = css({
   color: theme.text.default,
 });
 
-const link = css({
-  cursor: 'pointer',
-  textDecoration: 'none',
-
-  ':hover': {
-    transition: durations.hover,
-    opacity: 0.8,
-  },
-});
-
 const linkStyled = css({
   ...typography.utility.anchor,
 
@@ -123,7 +122,6 @@ const linkStyled = css({
 const codeStyle = css({
   borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
-  verticalAlign: 'initial',
   wordBreak: 'unset',
 });
 
@@ -142,11 +140,11 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
-const codeInHeaderStyle = { '& code': { fontSize: '95%' } };
+const codeInHeaderStyle = { '& code': { fontSize: '90%' } };
 
 const h1Style = {
   ...h1,
-  fontWeight: 600,
+  fontWeight: 700,
   marginTop: spacing[2],
   marginBottom: spacing[2],
   ...codeInHeaderStyle,
@@ -154,7 +152,7 @@ const h1Style = {
 
 const h2Style = {
   ...h2,
-  fontWeight: 600,
+  fontWeight: 700,
   marginTop: spacing[8],
   marginBottom: spacing[3.5],
   '& a:focus-visible': { outlineOffset: spacing[1] },
@@ -164,8 +162,8 @@ const h2Style = {
 const h3Style = {
   ...h3,
   fontWeight: 600,
-  marginTop: spacing[6],
-  marginBottom: spacing[2.5],
+  marginTop: spacing[7],
+  marginBottom: spacing[3],
   '& a:focus-visible': { outlineOffset: spacing[1] },
   ...codeInHeaderStyle,
 };
@@ -174,7 +172,7 @@ const h4Style = {
   ...h4,
   fontWeight: 600,
   marginTop: spacing[6],
-  marginBottom: spacing[1.5],
+  marginBottom: spacing[2],
   ...codeInHeaderStyle,
 };
 
@@ -189,6 +187,13 @@ const h5Style = {
 const paragraphStyle = {
   strong: {
     wordBreak: 'break-word',
+  },
+};
+
+const delStyle = {
+  textDecoration: 'line-through',
+  '& code': {
+    textDecoration: 'line-through',
   },
 };
 
@@ -216,6 +221,8 @@ export const CAPTION = createTextComponent(TextElement.P, css(typography.body.ca
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
 export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
 export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));
+export const SPAN = createTextComponent(TextElement.SPAN, css(typography.body.callout));
+
 export const UL = createTextComponent(
   TextElement.UL,
   css([typography.body.ul, { listStyle: 'disc' }])
@@ -230,15 +237,17 @@ export const KBD = createTextComponent(
   css([typography.utility.pre as CSSObject, kbdStyle])
 );
 export const MONOSPACE = createTextComponent(TextElement.CODE);
+export const DEL = createTextComponent(TextElement.DEL, css(delStyle));
 
 const isExternalLink = (href?: string) => href?.includes('://');
 
 export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferrer?: boolean }) => {
-  const { isStyled, openInNewTab, shouldLeakReferrer, ...rest } = props;
+  const { isStyled, openInNewTab, shouldLeakReferrer, className, ...rest } = props;
 
   return (
     <LinkBase
-      css={[link, !isStyled && linkStyled]}
+      css={[!isStyled && linkStyled]}
+      className={mergeClasses('cursor-pointer decoration-0 hocus:opacity-80', className)}
       {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
       openInNewTab={(!shouldLeakReferrer && openInNewTab) ?? isExternalLink(props.href)}
       {...rest}

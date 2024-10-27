@@ -15,6 +15,7 @@ describe('_getBundleStatusMessage', () => {
     log: jest.fn(),
     persistStatus: jest.fn(),
     status: jest.fn(),
+    flush: jest.fn(),
   });
   reporter._getElapsedTime = jest.fn(() => 100);
   reporter._bundleTimers.set(buildID, 0);
@@ -58,7 +59,51 @@ describe('_getBundleStatusMessage', () => {
           'in_progress'
         )
       )
-    ).toMatchInlineSnapshot(`"Server ./index.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.0% ( 50/100)"`);
+    ).toMatchSnapshot();
+  });
+  it(`should format standard progress for a React Server invocation`, () => {
+    const msg = stripAnsi(
+      reporter._getBundleStatusMessage(
+        {
+          bundleDetails: asBundleDetails({
+            entryFile: './index.js',
+            platform: 'ios',
+            buildID,
+            customTransformOptions: {
+              environment: 'react-server',
+            },
+          }),
+          ratio: 0.5,
+          totalFileCount: 100,
+          transformedFileCount: 50,
+        },
+        'in_progress'
+      )
+    );
+    expect(msg).toMatchSnapshot();
+    expect(msg).toMatch(/iOS/);
+  });
+  it(`should format standard progress for a web-based React Server invocation`, () => {
+    const msg = stripAnsi(
+      reporter._getBundleStatusMessage(
+        {
+          bundleDetails: asBundleDetails({
+            entryFile: './index.js',
+            platform: 'web',
+            buildID,
+            customTransformOptions: {
+              environment: 'react-server',
+            },
+          }),
+          ratio: 0.5,
+          totalFileCount: 100,
+          transformedFileCount: 50,
+        },
+        'in_progress'
+      )
+    );
+    expect(msg).toMatchSnapshot();
+    expect(msg).toMatch(/Web/);
   });
 
   it(`should format standard progress at 0%`, () => {
@@ -97,7 +142,7 @@ describe('_getBundleStatusMessage', () => {
           'done'
         )
       )
-    ).toMatchInlineSnapshot(`"Android Bundling complete 100ms"`);
+    ).toMatchInlineSnapshot(`"Android Bundled 0.0ms ./index.js (100 modules)"`);
   });
   it(`should format failed loading`, () => {
     expect(
@@ -116,7 +161,7 @@ describe('_getBundleStatusMessage', () => {
           'failed'
         )
       )
-    ).toMatchInlineSnapshot(`"Android Bundling failed 100ms"`);
+    ).toMatchInlineSnapshot(`"Android Bundling failed 0.0ms ./index.js (100 modules)"`);
   });
 });
 

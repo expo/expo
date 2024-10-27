@@ -4,7 +4,7 @@ description: A guide on using @react-native-google-signin/google-signin library 
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 The [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) library provides different ways, such as Firebase and Google API, to integrate Google authentication in your Expo app. It also provides native sign-in buttons and supports various authentication methods (standard, server-side validation, and offline access). You can use the library in your project by adding the [config plugin](/config-plugins/introduction/) in the [app config](/versions/latest/config/app/).
 
@@ -20,7 +20,7 @@ See `@react-native-google-signin/google-signin` documentation for instructions o
 
 <BoxLink
   title="React Native Google Sign In: Expo installation instructions"
-  href="https://github.com/react-native-google-signin/google-signin#expo-installation"
+  href="https://react-native-google-signin.github.io/docs/setting-up/expo"
 />
 
 ## Configure Google project for Android and iOS
@@ -29,7 +29,7 @@ Below are instructions on how to configure your Google project for Android and i
 
 ### Upload app to Google Play Store
 
-We recommend uploading the app to the Google Play Store if your app still needs to be in production. It is not necessary to upload the complete app if your project is still in the development process. Upload a single instance of your app. This will allow you to sign your app with the required certificates, such as the SHA-1 certificate fingerprint, which is required to provide when configuring the Google project for Android. To learn more about the app submission process, see the guides below in the order they are specified:
+We recommend uploading the app to the Google Play Store if your app still needs to be in production. It is not necessary to upload the complete app if your project is still in the development process. Upload a single instance of your app. This will allow you to sign your app with the required certificates, such as the SHA-1 certificate fingerprint, which is required when configuring the Google project for Android. To learn more about the app submission process, see the guides below in the order they are specified:
 
 <BoxLink title="Create your first EAS Build" href="/build/setup/" />
 
@@ -47,22 +47,11 @@ Once you have uploaded your app, you can provide an SHA-1 certificate fingerprin
 
 ### With Firebase
 
-#### Android
-
-For more instructions on how to configure your Google project for Android with Firebase:
+For more instructions on how to configure your Google project for Android and iOS with Firebase:
 
 <BoxLink
   title="Firebase"
-  href="https://github.com/react-native-google-signin/google-signin/blob/master/docs/get-config-file.md"
-/>
-
-#### iOS
-
-For more instructions on how to configure your Google project for iOS with Firebase:
-
-<BoxLink
-  title="Firebase"
-  href="https://github.com/react-native-google-signin/google-signin/blob/master/docs/get-config-file.md"
+  href="https://react-native-google-signin.github.io/docs/setting-up/expo#expo-and-firebase"
 />
 
 #### Upload google-services.json and GoogleService-Info.plist to EAS
@@ -84,7 +73,7 @@ For more instructions on how to configure your Google project for Android with G
 
 <BoxLink
   title="Configure a Google API Console project"
-  href="https://developers.google.com/identity/sign-in/android/start#configure-a-google-api-console-project"
+  href="https://developers.google.com/identity/android-credential-manager#configure-a-google-api-console-project"
 />
 
 #### iOS
@@ -98,10 +87,10 @@ For iOS, if you use Google API instead of Firebase, you'll need to generate an O
 
 After you have created the iOS client id, you'll also need to provide the iOS URL scheme value in the app config. You can find the value in the Google API console under **API and Services** > **Credentials** > **OAuth 2.0 Client IDs** > **name of your iOS client id** > **Additional information** > **iOS URL scheme**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Getting iOS URL scheme value from Google API console."
   src="/static/images/guides/ios-url-scheme.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 Then, add the iOS URL scheme value in the app config under [`ios.infoPlist`](/versions/latest/config/app/#infoplist) as shown below:

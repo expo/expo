@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import * as path from 'path';
 import slugify from 'slugify';
 
-import UserSettings from '../../api/user/UserSettings';
+import { getSettingsDirectory } from '../../api/user/UserSettings';
 import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { delayAsync, resolveWithTimeout } from '../../utils/delay';
@@ -51,7 +51,8 @@ export class AsyncNgrok {
     return [
       // NOTE: https://github.com/expo/expo/pull/16556#discussion_r822944286
       await this.getProjectRandomnessAsync(),
-      slugify(username),
+      // Strip out periods from the username to avoid subdomain issues with SSL certificates.
+      slugify(username, { remove: /\./ }),
       // Use the port to distinguish between multiple tunnels (webpack, metro).
       String(this.port),
     ];
@@ -59,7 +60,7 @@ export class AsyncNgrok {
 
   /** Exposed for testing. */
   async _getProjectHostnameAsync(): Promise<string> {
-    return [...(await this._getIdentifyingUrlSegmentsAsync()), NGROK_CONFIG.domain].join('.');
+    return `${(await this._getIdentifyingUrlSegmentsAsync()).join('-')}.${NGROK_CONFIG.domain}`;
   }
 
   /** Exposed for testing. */
@@ -157,14 +158,13 @@ export class AsyncNgrok {
   ): Promise<string | false> {
     try {
       // Global config path.
-      const configPath = path.join(UserSettings.getDirectory(), 'ngrok.yml');
+      const configPath = path.join(getSettingsDirectory(), 'ngrok.yml');
       debug('Global config path:', configPath);
       const urlProps = await this._getConnectionPropsAsync();
 
       const url = await instance.connect({
         ...urlProps,
         authtoken: NGROK_CONFIG.authToken,
-        proto: 'http',
         configPath,
         onStatusChange(status) {
           if (status === 'closed') {

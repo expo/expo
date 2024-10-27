@@ -52,8 +52,8 @@
 
 - (nonnull EXJavaScriptValue *)getProperty:(nonnull NSString *)name
 {
-  std::shared_ptr<jsi::Value> value = std::make_shared<jsi::Value>(_jsObjectPtr->getProperty(*[_runtime get], [name UTF8String]));
-  return [[EXJavaScriptValue alloc] initWithRuntime:_runtime value:value];
+  return [[EXJavaScriptValue alloc] initWithRuntime:_runtime
+                                              value:_jsObjectPtr->getProperty(*[_runtime get], [name UTF8String])];
 }
 
 - (nonnull NSArray<NSString *> *)getPropertyNames
@@ -76,7 +76,7 @@
   jsi::Runtime *runtime = [_runtime get];
   jsi::Object *jsThis = _jsObjectPtr.get();
 
-  expo::common::definePropertyOnJSIObject(*runtime, jsThis, [name UTF8String], std::move(*[descriptor get]));
+  expo::common::defineProperty(*runtime, jsThis, [name UTF8String], std::move(*[descriptor get]));
 }
 
 - (void)defineProperty:(nonnull NSString *)name value:(nullable id)value options:(EXJavaScriptObjectPropertyDescriptor)options
@@ -87,7 +87,7 @@
   jsi::Object descriptor = [self preparePropertyDescriptorWithOptions:options];
   descriptor.setProperty(*runtime, "value", expo::convertObjCObjectToJSIValue(*runtime, value));
 
-  expo::common::definePropertyOnJSIObject(*runtime, jsThis, [name UTF8String], std::move(descriptor));
+  expo::common::defineProperty(*runtime, jsThis, [name UTF8String], std::move(descriptor));
 }
 
 #pragma mark - WeakObject
@@ -111,10 +111,17 @@
   if ([object isKindOfClass:EXJavaScriptObject.class]) {
     jsi::Runtime *runtime = [_runtime get];
     jsi::Object *a = _jsObjectPtr.get();
-    jsi::Object *b = [object get];
+    jsi::Object *b = [(EXJavaScriptObject *)object get];
     return jsi::Object::strictEquals(*runtime, *a, *b);
   }
   return false;
+}
+
+#pragma mark - Memory pressure
+
+- (void)setExternalMemoryPressure:(size_t)size
+{
+  _jsObjectPtr->setExternalMemoryPressure(*[_runtime get], size);
 }
 
 #pragma mark - Private helpers

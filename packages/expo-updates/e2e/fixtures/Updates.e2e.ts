@@ -13,7 +13,6 @@ const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 const checkNumAssetsAsync = async () => {
   await element(by.id('readAssetFiles')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
   await waitFor(element(by.id('activity')))
     .not.toBeVisible()
     .withTimeout(2000);
@@ -23,7 +22,6 @@ const checkNumAssetsAsync = async () => {
 
 const clearNumAssetsAsync = async () => {
   await element(by.id('clearAssetFiles')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
   await waitFor(element(by.id('activity')))
     .not.toBeVisible()
     .withTimeout(2000);
@@ -44,9 +42,30 @@ const waitForAsynchronousTaskCompletion = async (timeout: number = 1000) => {
     .withTimeout(timeout);
 };
 
+const waitForExpectationAsync = async (
+  expectation: () => void,
+  { timeout, interval }: { timeout: number; interval: number }
+) => {
+  const maxTries = Math.ceil(timeout / interval);
+  let tryNumber = 0;
+  while (true) {
+    tryNumber += 1;
+
+    try {
+      expectation();
+      return;
+    } catch (e) {
+      if (tryNumber >= maxTries) {
+        throw e;
+      }
+    }
+
+    await setTimeout(interval);
+  }
+};
+
 const readLogEntriesAsync = async () => {
   await element(by.id('readLogEntries')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
   await waitFor(element(by.id('activity')))
     .not.toBeVisible()
     .withTimeout(2000);
@@ -59,18 +78,10 @@ const readLogEntriesAsync = async () => {
   }
 };
 
-const clearLogEntriesAsync = async () => {
-  await element(by.id('clearLogEntries')).tap();
-  await setTimeout(20 * TIMEOUT_BIAS);
-  await waitFor(element(by.id('activity')))
-    .not.toBeVisible()
-    .withTimeout(2000);
-};
-
 const waitForAppToBecomeVisible = async () => {
   await waitFor(element(by.id('updateString')))
     .toBeVisible()
-    .withTimeout(2000);
+    .withTimeout(3000);
 };
 
 describe('Basic tests', () => {
@@ -81,7 +92,7 @@ describe('Basic tests', () => {
 
   it('starts app, stops, and starts again', async () => {
     console.warn(`Platform = ${platform}`);
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
+
     Server.start(Update.serverPort, protocolVersion);
     await device.installApp();
     await device.launchApp({
@@ -101,8 +112,39 @@ describe('Basic tests', () => {
     await device.terminateApp();
   });
 
+  it('reloads', async () => {
+    Server.start(Update.serverPort, protocolVersion);
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+
+      // The ReactContext is required by detox synchronization on Android.
+      // However ReactContext will be changed after the app is reloaded.
+      // All future tests will be blocked after reloading, so we need to disable synchronization for reload tests.
+      launchArgs: device.getPlatform() === 'android' ? { detoxEnableSynchronization: 0 } : {},
+    });
+    await waitForAppToBecomeVisible();
+
+    const isReloadingBefore = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingBefore).toBe('false');
+    const startTimeBefore = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeBefore).toBeGreaterThan(0);
+
+    await pressTestButtonAsync('reload');
+
+    // wait 3 seconds for reload to complete
+    // it's delayed 2 seconds after the button press in the client so the button press finish registers in detox
+    await setTimeout(3000);
+
+    const isReloadingAfter = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingAfter).toBe('false');
+    const startTimeAfter = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeAfter).toBeGreaterThan(startTimeBefore);
+
+    await device.terminateApp();
+  });
+
   it('initial request includes correct update-id headers', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     Server.start(Update.serverPort);
     await device.installApp();
     await device.launchApp({
@@ -118,7 +160,6 @@ describe('Basic tests', () => {
   });
 
   it('downloads and runs update, and updates current-update-id header', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
     const hash = await Update.copyBundleToStaticFolder(
@@ -148,6 +189,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
@@ -167,7 +215,6 @@ describe('Basic tests', () => {
   });
 
   it('does not run update with incorrect hash', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle-invalid-hash.js';
     const newNotifyString = 'test-update-invalid-hash';
     await Update.copyBundleToStaticFolder(projectRoot, bundleFilename, newNotifyString, platform);
@@ -193,6 +240,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app to verify the new update isn't used
@@ -204,7 +258,6 @@ describe('Basic tests', () => {
   });
 
   it('update with bad asset hash yields expected log entry', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle2.js';
     const newNotifyString = 'test-update-2';
     const hash = await Update.copyBundleToStaticFolder(
@@ -249,11 +302,19 @@ describe('Basic tests', () => {
     await device.launchApp({
       newInstance: true,
     });
-    // give the app time to load the new update in the background
+
     await waitForAppToBecomeVisible();
     const message = await testElementValueAsync('updateString');
     jestExpect(message).toBe('test');
 
+    // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(4),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
@@ -283,7 +344,6 @@ describe('Basic tests', () => {
   });
 
   it('downloads and runs update with multiple assets', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle2.js';
     const newNotifyString = 'test-update-2';
     const hash = await Update.copyBundleToStaticFolder(
@@ -332,6 +392,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(4),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
@@ -344,7 +411,6 @@ describe('Basic tests', () => {
 
   // important for usage accuracy
   it('does not download any assets for an older update', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle-old.js';
     const hash = await Update.copyBundleToStaticFolder(
       projectRoot,
@@ -373,6 +439,7 @@ describe('Basic tests', () => {
     jestExpect(firstMessage).toBe('test');
 
     // give the app time to load the new update in the background (i.e. to make sure it doesn't)
+    await setTimeout(5000);
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(0);
 
     // restart the app and make sure it's still running the initial update
@@ -383,7 +450,6 @@ describe('Basic tests', () => {
   });
 
   it('supports rollbacks', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-3';
     const hash = await Update.copyBundleToStaticFolder(
@@ -413,6 +479,13 @@ describe('Basic tests', () => {
     jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
@@ -468,7 +541,6 @@ describe('JS API tests', () => {
   });
 
   it('downloads and runs update with JS API', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
     const hash = await Update.copyBundleToStaticFolder(
@@ -496,6 +568,8 @@ describe('JS API tests', () => {
     jestExpect(isEmbedded).toEqual('true');
     const checkAutomatically = await testElementValueAsync('checkAutomatically');
     jestExpect(checkAutomatically).toEqual('ON_LOAD');
+    const launchDuration = await testElementValueAsync('launchDuration');
+    jestExpect(parseInt(launchDuration, 10)).toBeGreaterThan(0);
 
     // Test extra params
     await pressTestButtonAsync('setExtraParams');
@@ -531,7 +605,6 @@ describe('JS API tests', () => {
   });
 
   it('Receives state machine change events', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
     const hash = await Update.copyBundleToStaticFolder(
@@ -609,14 +682,6 @@ describe('JS API tests', () => {
     console.warn(`isRollback3 = ${isRollback3}`);
     console.warn(`latestManifestId3 = ${latestManifestId3}`);
     console.warn(`downloadedManifestId3 = ${downloadedManifestId3}`);
-
-    // Test native context reader
-    await pressTestButtonAsync('readNativeStateContext');
-    await waitForAsynchronousTaskCompletion();
-
-    const nativeStateContextString = await testElementValueAsync('nativeStateContextString');
-    const nativeStateContext = JSON.parse(nativeStateContextString);
-    console.warn(`nativeStateContext = ${JSON.stringify(nativeStateContext, null, 2)}`);
 
     // Terminate and relaunch app, we should be running the update, and back to the default state
     await device.terminateApp();
@@ -697,38 +762,34 @@ describe('JS API tests', () => {
     jestExpect(isUpdateAvailable).toEqual('false');
     jestExpect(isUpdatePending).toEqual('false');
     jestExpect(isRollback).toEqual('false');
-    jestExpect(latestManifestId).toEqual('');
-    jestExpect(downloadedManifestId).toEqual('');
+    jestExpect(latestManifestId).toEqual('null');
+    jestExpect(downloadedManifestId).toEqual('null');
     // After check for update and getting a manifest
     jestExpect(isUpdateAvailable2).toEqual('true');
     jestExpect(isUpdatePending2).toEqual('false');
     jestExpect(isRollback2).toEqual('false');
     jestExpect(latestManifestId2).toEqual(manifest.id);
-    jestExpect(downloadedManifestId2).toEqual('');
+    jestExpect(downloadedManifestId2).toEqual('null');
     // After downloading the update
     jestExpect(isUpdateAvailable3).toEqual('true');
     jestExpect(isUpdatePending3).toEqual('true');
     jestExpect(isRollback3).toEqual('false');
     jestExpect(latestManifestId3).toEqual(manifest.id);
     jestExpect(downloadedManifestId3).toEqual(manifest.id);
-    // native state context values
-    jestExpect(nativeStateContext.latestManifest?.id).toEqual(manifest.id);
-    jestExpect(nativeStateContext.isUpdateAvailable).toBe(true);
-    jestExpect(nativeStateContext.isUpdatePending).toBe(true);
     // After restarting
     jestExpect(isUpdateAvailable4).toEqual('false');
     jestExpect(isUpdatePending4).toEqual('false');
     jestExpect(isRollback4).toEqual('false');
-    jestExpect(latestManifestId4).toEqual('');
-    jestExpect(downloadedManifestId4).toEqual('');
-    jestExpect(rollbackCommitTime4).toEqual('');
+    jestExpect(latestManifestId4).toEqual('null');
+    jestExpect(downloadedManifestId4).toEqual('null');
+    jestExpect(rollbackCommitTime4).toEqual('null');
     // After check for update and getting a rollback
     jestExpect(isUpdateAvailable5).toEqual('true');
     jestExpect(isUpdatePending5).toEqual('false');
     jestExpect(isRollback5).toEqual('true');
-    jestExpect(latestManifestId5).toEqual('');
-    jestExpect(downloadedManifestId5).toEqual('');
-    jestExpect(rollbackCommitTime5).not.toEqual('');
+    jestExpect(latestManifestId5).toEqual('null');
+    jestExpect(downloadedManifestId5).toEqual('null');
+    jestExpect(rollbackCommitTime5).not.toEqual('null');
 
     // Check for update, and expect isRollback to be true
     await pressTestButtonAsync('triggerParallelFetchAndDownload');
@@ -738,84 +799,6 @@ describe('JS API tests', () => {
       'didCheckAndDownloadHappenInParallel'
     );
     jestExpect(didCheckAndDownloadHappenInParallel).toEqual('false');
-  });
-
-  it('Receives expected events when update available on start', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
-    const bundleFilename = 'bundle1.js';
-    const newNotifyString = 'test-update-1';
-    const hash = await Update.copyBundleToStaticFolder(
-      projectRoot,
-      bundleFilename,
-      newNotifyString,
-      platform
-    );
-    const manifest = Update.getUpdateManifestForBundleFilename(
-      new Date(),
-      hash,
-      'test-update-1-key',
-      bundleFilename,
-      [],
-      projectRoot
-    );
-    // Launch app
-    await device.installApp();
-    await device.launchApp({
-      newInstance: true,
-    });
-    await waitForAppToBecomeVisible();
-
-    const lastUpdateEventType = await testElementValueAsync('lastUpdateEventType');
-    // Server is not running, so error received
-    console.warn(`lastUpdateEventType = ${lastUpdateEventType}`);
-
-    // Error should be surfaced in checkError
-    const checkErrorMessage = await testElementValueAsync('state.checkError');
-    console.warn(`checkErrorMessage = ${checkErrorMessage}`);
-
-    // Start server with no update available directive,
-    // then restart app, we should get "No update available" event
-    let lastUpdateEventType2 = '';
-    let checkErrorMessage2 = '';
-    if (protocolVersion === 1) {
-      Server.start(Update.serverPort, protocolVersion);
-      const directive = Update.getNoUpdateAvailableDirective();
-      await Server.serveSignedDirective(directive, projectRoot);
-      await device.terminateApp();
-      await device.launchApp();
-      await waitForAppToBecomeVisible();
-      await readLogEntriesAsync();
-
-      lastUpdateEventType2 = await testElementValueAsync('lastUpdateEventType');
-      checkErrorMessage2 = await testElementValueAsync('state.checkError');
-      console.warn(`lastUpdateEventType2 = ${lastUpdateEventType2}`);
-      console.warn(`checkErrorMessage2 = ${checkErrorMessage2}`);
-      Server.stop();
-    }
-
-    // Relaunch app after server has an update,
-    // we should get the 'update available' event
-    Server.start(Update.serverPort, protocolVersion);
-    await Server.serveSignedManifest(manifest, projectRoot);
-    await device.terminateApp();
-    await device.launchApp();
-    await waitForAppToBecomeVisible();
-
-    const lastUpdateEventType3 = await testElementValueAsync('lastUpdateEventType');
-    const checkErrorMessage3 = await testElementValueAsync('state.checkError');
-    console.warn(`lastUpdateEventType3 = ${lastUpdateEventType3}`);
-    console.warn(`checkErrorMessage3 = ${checkErrorMessage3}`);
-
-    // Test passes if all the event types seen are the expected ones
-    // This test not working on Android in 0.72 in the CI environment, so disable it for now.
-    if (platform === 'ios') {
-      jestExpect(lastUpdateEventType).toEqual('error');
-      jestExpect(lastUpdateEventType2).toEqual('noUpdateAvailable');
-      jestExpect(lastUpdateEventType3).toEqual('updateAvailable');
-      jestExpect(checkErrorMessage).toEqual('Could not connect to the server.');
-      jestExpect(checkErrorMessage2).toEqual('');
-      jestExpect(checkErrorMessage3).toEqual('');
-    }
   });
 });
 
@@ -838,7 +821,7 @@ describe('Asset deletion recovery tests', () => {
     // Simplest scenario; only one update (embedded) is loaded, then assets are cleared from
     // internal storage. The app is then relaunched with the same embedded update.
     // DatabaseLauncher should copy all the missing assets and run the update as normal.
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
+
     Server.start(Update.serverPort, protocolVersion);
 
     // Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -898,7 +881,7 @@ describe('Asset deletion recovery tests', () => {
     // internal storage. Then we install a NEW build with a NEW embedded update but that includes
     // some of the same assets. When we launch this new build, DatabaseLauncher should still copy
     // the missing assets and run the update as normal.
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
+
     Server.start(Update.serverPort, protocolVersion);
 
     // Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -952,7 +935,6 @@ describe('Asset deletion recovery tests', () => {
     // (including at least one -- the bundle -- not part of the embedded update), make sure the
     // update runs, then clear assets from internal storage. When we relaunch the app,
     // DatabaseLauncher should re-download the missing assets and run the update as normal.
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
 
     // Prepare to host update manifest and assets from the test runner
     const bundleFilename = 'bundle-assets.js';
@@ -997,6 +979,13 @@ describe('Asset deletion recovery tests', () => {
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
 
     // give the app time to load the new update in the background
+    await waitForExpectationAsync(
+      () => jestExpect(Server.getRequestedStaticFilesLength()).toBe(1),
+      {
+        timeout: 10000,
+        interval: 1000,
+      }
+    );
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // only the bundle should be new
 
     // Stop and restart the app so it will launch the new update. Immediately send it a message to
@@ -1023,8 +1012,14 @@ describe('Asset deletion recovery tests', () => {
     // Verify all the assets -- including the JS bundle from the update (which wasn't in the
     // embedded update) -- have been restored. Additionally verify from the server side that the
     // updated bundle was re-downloaded.
+    // With asset exclusion, on Android, the number of assets found may be greater than the number in the manifest,
+    // as the total will include embedded assets that were copied.
     numAssets = await checkNumAssetsAsync();
-    jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    if (platform === 'ios') {
+      jestExpect(numAssets).toBe(manifest.assets.length + 1);
+    } else {
+      jestExpect(numAssets).toBeGreaterThanOrEqual(manifest.assets.length + 1);
+    }
     updateID = await testElementValueAsync('updateID');
     jestExpect(updateID).toEqual(manifest.id);
     jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary

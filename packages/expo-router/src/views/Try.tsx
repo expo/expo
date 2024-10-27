@@ -1,6 +1,9 @@
-import React from 'react';
+'use client';
 
-import { SplashScreen } from './Splash';
+import * as SplashScreen from 'expo-splash-screen';
+import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
+
+import { MetroServerError } from '../rsc/router/errors';
 
 /** Props passed to a page's `ErrorBoundary` export. */
 export type ErrorBoundaryProps = {
@@ -10,12 +13,11 @@ export type ErrorBoundaryProps = {
   error: Error;
 };
 
-// No way to access `getDerivedStateFromError` from a functional component afaict.
-export class Try extends React.Component<
-  {
-    catch: React.ComponentType<ErrorBoundaryProps>;
-    children: React.ReactNode;
-  },
+// No way to access `getDerivedStateFromError` from a function component afaict.
+export class Try extends Component<
+  PropsWithChildren<{
+    catch: ComponentType<ErrorBoundaryProps>;
+  }>,
   { error?: Error }
 > {
   state = { error: undefined };
@@ -23,6 +25,11 @@ export class Try extends React.Component<
   static getDerivedStateFromError(error: Error) {
     // Force hide the splash screen if an error occurs.
     SplashScreen.hideAsync();
+
+    if (__DEV__ && error instanceof MetroServerError) {
+      // Throw up to the LogBox.
+      return null;
+    }
 
     return { error };
   }

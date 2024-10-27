@@ -1,6 +1,6 @@
 {
   "name": "@expo/server",
-  "version": "0.2.0",
+  "version": "0.5.0-preview.0",
   "description": "Server API for Expo Router projects",
   "main": "build/index.js",
   "scripts": {
@@ -26,17 +26,18 @@
   "files": [
     "build",
     "adapter",
+    "install.d.ts",
     "install.js"
   ],
   "dependencies": {
-    "@remix-run/node": "^1.19.3",
+    "@remix-run/node": "^2.12.0",
     "abort-controller": "^3.0.0",
     "debug": "^4.3.4",
     "source-map-support": "~0.5.21"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
-    "@netlify/functions": "^1.4.0"
+    "@netlify/functions": "^1.4.0",
+    "@types/express": "^4.17.17"
   },
   "publishConfig": {
     "access": "public"

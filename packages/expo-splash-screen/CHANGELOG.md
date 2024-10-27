@@ -10,6 +10,80 @@
 
 ### 💡 Others
 
+## 0.28.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed `preventAutoHideAsync()` broken on iOS bridgeless mode. ([#28234](https://github.com/expo/expo/pull/28234) by [@kudo](https://github.com/kudo))
+
+## 0.27.6 - 2024-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.5 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.4 — 2024-05-03
+
+### 💡 Others
+
+- No-op when native module is not installed ([#28599](https://github.com/expo/expo/pull/28599) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.27.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Fixed white screen flickering when using expo-updates with longer `fallbackToCacheTimeout`. ([#28227](https://github.com/expo/expo/pull/28227) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 0.26.4 - 2024-01-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.2 - 2024-01-10
+
+### 🐛 Bug fixes
+
+- Fixed return value of the `preventAutoHideAsync` function. ([#26348](https://github.com/expo/expo/pull/26348) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 0.26.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.0 — 2023-12-12
+
+### 💡 Others
+
+- Removed 'The current activity is no longer available' warning on Android. ([#25608](https://github.com/expo/expo/pull/25608) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.25.0 — 2023-11-14
 
 ### 🛠 Breaking changes

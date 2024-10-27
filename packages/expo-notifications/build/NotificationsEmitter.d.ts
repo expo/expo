@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { Notification, NotificationResponse } from './Notifications.types';
 export declare const DEFAULT_ACTION_IDENTIFIER = "expo.modules.notifications.actions.DEFAULT";
 /**
@@ -25,7 +25,7 @@ export declare const DEFAULT_ACTION_IDENTIFIER = "expo.modules.notifications.act
  * ```
  * @header listen
  */
-export declare function addNotificationReceivedListener(listener: (event: Notification) => void): Subscription;
+export declare function addNotificationReceivedListener(listener: (event: Notification) => void): EventSubscription;
 /**
  * Listeners registered by this method will be called whenever some notifications have been dropped by the server.
  * Applicable only to Firebase Cloud Messaging which we use as a notifications service on Android. It corresponds to `onDeletedMessages()` callback.
@@ -34,7 +34,7 @@ export declare function addNotificationReceivedListener(listener: (event: Notifi
  * @return A [`Subscription`](#subscription) object represents the subscription of the provided listener.
  * @header listen
  */
-export declare function addNotificationsDroppedListener(listener: () => void): Subscription;
+export declare function addNotificationsDroppedListener(listener: () => void): EventSubscription;
 /**
  * Listeners registered by this method will be called whenever a user interacts with a notification (for example, taps on it).
  * @param listener A function accepting notification response ([`NotificationResponse`](#notificationresponse)) as an argument.
@@ -61,15 +61,25 @@ export declare function addNotificationsDroppedListener(listener: () => void): S
  * ```
  * @header listen
  */
-export declare function addNotificationResponseReceivedListener(listener: (event: NotificationResponse) => void): Subscription;
+export declare function addNotificationResponseReceivedListener(listener: (event: NotificationResponse) => void): EventSubscription;
 /**
  * Removes a notification subscription returned by an `addNotificationListener` call.
  * @param subscription A subscription returned by `addNotificationListener` method.
  * @header listen
  */
-export declare function removeNotificationSubscription(subscription: Subscription): void;
+export declare function removeNotificationSubscription(subscription: EventSubscription): void;
 /**
- * @header listen
+ * Gets the notification response that was received most recently
+ * (a notification response designates an interaction with a notification, such as tapping on it).
+ *
+ * - `null` - if no notification response has been received yet
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  */
 export declare function getLastNotificationResponseAsync(): Promise<NotificationResponse | null>;
+export declare function clearLastNotificationResponseAsync(): Promise<void>;
+/**
+ * @hidden
+ */
+export declare function addNotificationResponseClearedListener(listener: () => void): EventSubscription;
 //# sourceMappingURL=NotificationsEmitter.d.ts.map

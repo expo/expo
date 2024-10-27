@@ -1,0 +1,96 @@
+name: Router Maestro E2E
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/router-e2e.yml
+      - packages/@expo/cli/**
+      - packages/expo-router/**
+
+jobs:
+  expo-go-dev-maestro-router:
+    runs-on: macos-12
+    env:
+      E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
+      E2E_ROUTER_SRC: expo-go-dev-maestro-router
+      E2E_ROUTER_EXPO_PORT: 8081
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      # Find and restore Yarn's global cache
+      # See: https://github.com/actions/cache/blob/main/examples.md#node---yarn
+      - name: 🔍 Find Yarn Cache
+        id: yarn-cache
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - name: ♻️ Restore Yarn Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-cache-
+
+      - name: Install dependencies
+        run: YARN_IGNORE_SCRIPTS=true yarn --frozen-lockfile
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Maestro
+        run: |
+          export MAESTRO_VERSION=1.36.0
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+
+      - name: Start Expo CLI
+        working-directory: apps/router-e2e
+        run: |
+          # Run the Expo Dev Server in the background
+          node ../../packages/@expo/cli/build/bin/cli start --ios --port $E2E_ROUTER_EXPO_PORT &
+          sleep 10
+
+      - name: Preload Expo bundle
+        run: |
+          # Get the bundle URL
+          echo $E2E_ROUTER_EXPO_SERVER
+          BUNDLE_INFO=$(curl --silent --show-error --fail -H "Content-Type: multipart/mixed" -H "expo-platform: ios" "http://localhost:${E2E_ROUTER_EXPO_PORT}")
+          BUNDLE_URL=$(echo $BUNDLE_INFO | jq -r ".launchAsset.url")
+
+          # Start the build early by starting the build in the background
+          curl --silent --output /dev/null --show-error --fail $BUNDLE_URL &
+
+      - name: Install latest Expo Go
+        working-directory: bin
+        run: |
+          ./expotools client-install -p ios -s 52.0.0
+
+      - name: Setup maestro env
+        run: |
+          # Setup the maestro env
+          echo "MAESTRO_APP_URL=exp://localhost:${E2E_ROUTER_EXPO_PORT}/--" >> $GITHUB_ENV
+
+      - name: Run Maestro iOS tests
+        working-directory: apps/router-e2e
+        env:
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 360000
+        run: |
+          # Run the Expo Dev Server in the background
+          maestro test launch-tests.yml --no-ansi --format=junit --debug-output .logs
+
+      - name: Log output
+        if: ${{ failure() }}
+        working-directory: apps/router-e2e/.logs/.maestro/tests
+        run: |
+          cd $(find . -type d -name "202*"  | head -n 1)
+          cat maestro.log
+          exit 1

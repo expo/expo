@@ -4,14 +4,36 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
 import fs from 'fs';
+import Metro from 'metro';
 import path from 'path';
 import prettyBytes from 'pretty-bytes';
 
-import { BundleAssetWithFileHashes } from './fork-bundleAsync';
 import { Log } from '../log';
+import { env } from '../utils/env';
+
+const BLT = '\u203A';
+
+export type BundleOptions = {
+  entryPoint: string;
+  platform: 'android' | 'ios' | 'web';
+  dev?: boolean;
+  minify?: boolean;
+  bytecode: boolean;
+  sourceMapUrl?: string;
+  sourcemaps?: boolean;
+};
+
+export type BundleAssetWithFileHashes = Metro.AssetData & {
+  fileHashes: string[]; // added by the hashAssets asset plugin
+};
+
+export type BundleOutput = {
+  artifacts: SerialAsset[];
+  assets: readonly BundleAssetWithFileHashes[];
+};
 
 export type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
 
@@ -20,20 +42,25 @@ export type Asset = ManifestAsset | BundleAssetWithFileHashes;
 export type ExportAssetDescriptor = {
   contents: string | Buffer;
   originFilename?: string;
-  // An identifier for grouping together variations of the same asset.
+  /** An identifier for grouping together variations of the same asset. */
   assetId?: string;
-
-  // Expo Router route path for formatting the HTML output.
+  /** Expo Router route path for formatting the HTML output. */
   routeId?: string;
+  /** Expo Router API route path for formatting the server function output. */
+  apiRouteId?: string;
+  /** Expo Router route path for formatting the RSC output. */
+  rscId?: string;
+  /** A key for grouping together output files by server- or client-side. */
+  targetDomain?: 'server' | 'client';
 };
 
 export type ExportAssetMap = Map<string, ExportAssetDescriptor>;
 
 export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: string) {
-  fs.mkdirSync(path.join(outputDir), { recursive: true });
   if (!files.size) {
     return;
   }
+  fs.mkdirSync(path.join(outputDir), { recursive: true });
 
   // Test fixtures:
   // Log.log(
@@ -42,16 +69,21 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   //   )
   // );
 
-  const fileEntries = [...files.entries()];
   const assetEntries: [string, ExportAssetDescriptor][] = [];
+  const apiRouteEntries: [string, ExportAssetDescriptor][] = [];
   const routeEntries: [string, ExportAssetDescriptor][] = [];
+  const rscEntries: [string, ExportAssetDescriptor][] = [];
   const remainingEntries: [string, ExportAssetDescriptor][] = [];
 
-  fileEntries.forEach((asset) => {
+  let hasServerOutput = false;
+  for (const asset of files.entries()) {
+    hasServerOutput = hasServerOutput || asset[1].targetDomain === 'server';
     if (asset[1].assetId) assetEntries.push(asset);
     else if (asset[1].routeId != null) routeEntries.push(asset);
+    else if (asset[1].apiRouteId != null) apiRouteEntries.push(asset);
+    else if (asset[1].rscId != null) rscEntries.push(asset);
     else remainingEntries.push(asset);
-  });
+  }
 
   const groups = groupBy(assetEntries, ([, { assetId }]) => assetId!);
 
@@ -67,44 +99,44 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     return size;
   };
 
-  if (routeEntries.length) {
-    const plural = routeEntries.length === 1 ? '' : 's';
+  // TODO: If any Expo Router is used, then use a new style which is more simple:
+  // `chalk.gray(/path/to/) + chalk.cyan('route')`
+  // | index.html (1.2kb)
+  // | /path
+  //   | other.html (1.2kb)
 
-    Log.log('');
-    Log.log(chalk.bold`Exporting ${routeEntries.length} static route${plural}:`);
+  const isExpoRouter = routeEntries.length;
 
-    for (const [, assets] of routeEntries.sort((a, b) => a[0].length - b[0].length)) {
-      const id = assets.routeId!;
-      Log.log('/' + (id === '' ? chalk.gray(' (index)') : id), sizeStr(assets.contents));
-    }
-  }
+  // Phase out printing all the assets as users can simply check the file system for more info.
+  const showAdditionalInfo = !isExpoRouter || env.EXPO_DEBUG;
 
   const assetGroups = [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0])) as [
     string,
     [string, ExportAssetDescriptor][],
   ][];
 
-  if (assetGroups.length) {
-    const totalAssets = assetGroups.reduce((sum, [, assets]) => sum + assets.length, 0);
-    const plural = totalAssets === 1 ? '' : 's';
+  if (showAdditionalInfo) {
+    if (assetGroups.length) {
+      const totalAssets = assetGroups.reduce((sum, [, assets]) => sum + assets.length, 0);
 
-    Log.log('');
-    Log.log(chalk.bold`Exporting ${totalAssets} asset${plural}:`);
+      Log.log('');
+      Log.log(chalk.bold`${BLT} Assets (${totalAssets}):`);
 
-    for (const [assetId, assets] of assetGroups) {
-      const averageContentSize =
-        assets.reduce((sum, [, { contents }]) => sum + contentSize(contents), 0) / assets.length;
-      Log.log(
-        assetId,
-        chalk.gray(
-          `(${[
-            assets.length > 1 ? `${assets.length} variations` : '',
-            `${prettyBytes(averageContentSize)}`,
-          ]
-            .filter(Boolean)
-            .join(' | ')})`
-        )
-      );
+      for (const [assetId, assets] of assetGroups) {
+        const averageContentSize =
+          assets.reduce((sum, [, { contents }]) => sum + contentSize(contents), 0) / assets.length;
+        Log.log(
+          assetId,
+          chalk.gray(
+            `(${[
+              assets.length > 1 ? `${assets.length} variations` : '',
+              `${prettyBytes(averageContentSize)}`,
+            ]
+              .filter(Boolean)
+              .join(' | ')})`
+          )
+        );
+      }
     }
   }
 
@@ -124,8 +156,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
 
   [...bundles.entries()].forEach(([platform, assets]) => {
     Log.log('');
-    const plural = assets.length === 1 ? '' : 's';
-    Log.log(chalk.bold`Exporting ${assets.length} bundle${plural} for ${platform}:`);
+    Log.log(chalk.bold`${BLT} ${platform} bundles (${assets.length}):`);
 
     const allAssets = assets.sort((a, b) => a[0].localeCompare(b[0]));
     while (allAssets.length) {
@@ -142,13 +173,61 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     }
   });
 
-  if (other.length) {
+  if (showAdditionalInfo && other.length) {
     Log.log('');
-    const plural = other.length === 1 ? '' : 's';
-    Log.log(chalk.bold`Exporting ${other.length} file${plural}:`);
+    Log.log(chalk.bold`${BLT} Files (${other.length}):`);
 
     for (const [filePath, asset] of other.sort((a, b) => a[0].localeCompare(b[0]))) {
       Log.log(filePath, sizeStr(asset.contents));
+    }
+  }
+
+  if (rscEntries.length) {
+    Log.log('');
+    Log.log(chalk.bold`${BLT} React Server Components (${rscEntries.length}):`);
+
+    for (const [filePath, assets] of rscEntries.sort((a, b) => a[0].length - b[0].length)) {
+      const id = assets.rscId!;
+      Log.log(
+        '/' + (id === '' ? chalk.gray(' (index)') : id),
+        sizeStr(assets.contents),
+        chalk.gray(filePath)
+      );
+    }
+  }
+
+  if (routeEntries.length) {
+    Log.log('');
+    Log.log(chalk.bold`${BLT} Static routes (${routeEntries.length}):`);
+
+    for (const [, assets] of routeEntries.sort((a, b) => a[0].length - b[0].length)) {
+      const id = assets.routeId!;
+      Log.log('/' + (id === '' ? chalk.gray(' (index)') : id), sizeStr(assets.contents));
+    }
+  }
+
+  if (apiRouteEntries.length) {
+    const apiRoutesWithoutSourcemaps = apiRouteEntries.filter(
+      (route) => !route[0].endsWith('.map')
+    );
+    Log.log('');
+    Log.log(chalk.bold`${BLT} API routes (${apiRoutesWithoutSourcemaps.length}):`);
+
+    for (const [apiRouteFilename, assets] of apiRoutesWithoutSourcemaps.sort(
+      (a, b) => a[0].length - b[0].length
+    )) {
+      const id = assets.apiRouteId!;
+      const hasSourceMap = apiRouteEntries.find(
+        ([filename, route]) =>
+          filename !== apiRouteFilename &&
+          route.apiRouteId === assets.apiRouteId &&
+          filename.endsWith('.map')
+      );
+      Log.log(
+        id === '' ? chalk.gray(' (index)') : id,
+        sizeStr(assets.contents),
+        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+      );
     }
   }
 
@@ -157,8 +236,10 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   await Promise.all(
     [...files.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(async ([file, { contents }]) => {
-        const outputPath = path.join(outputDir, file);
+      .map(async ([file, { contents, targetDomain }]) => {
+        // NOTE: Only use `targetDomain` if we have at least one server asset
+        const domain = (hasServerOutput && targetDomain) || '';
+        const outputPath = path.join(outputDir, domain, file);
         await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
         await fs.promises.writeFile(outputPath, contents);
       })
@@ -184,46 +265,25 @@ export function getFilesFromSerialAssets(
   {
     includeSourceMaps,
     files = new Map(),
+    platform,
+    isServerHosted = platform === 'web',
   }: {
     includeSourceMaps: boolean;
     files?: ExportAssetMap;
+    platform?: string;
+    isServerHosted?: boolean;
   }
 ) {
   resources.forEach((resource) => {
+    if (resource.type === 'css-external') {
+      return;
+    }
     files.set(resource.filename, {
       contents: resource.source,
       originFilename: resource.originFilename,
+      targetDomain: isServerHosted ? 'client' : undefined,
     });
   });
 
   return files;
-}
-
-export function modifyBundlesWithSourceMaps(
-  filename: string,
-  source: string,
-  includeSourceMaps: boolean
-): string {
-  if (filename.endsWith('.js')) {
-    // If the bundle ends with source map URLs then update them to point to the correct location.
-
-    // TODO: baseUrl support
-    const normalizedFilename = '/' + filename.replace(/^\/+/, '');
-    // Ref: https://developer.chrome.com/blog/sourcemaps/#sourceurl-and-displayname-in-action-eval-and-anonymous-functions
-    //# sourceMappingURL=//localhost:8085/index.map?platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
-    //# sourceURL=http://localhost:8085/index.bundle//&platform=web&dev=false&hot=false&lazy=true&minify=true&resolver.environment=client&transform.environment=client&serializer.output=static
-    return source.replace(/^\/\/# (sourceMappingURL|sourceURL)=.*$/gm, (...props) => {
-      if (includeSourceMaps) {
-        // TODO: Drop sourceURL when the name is the same as the file output location.
-        if (props[1] === 'sourceURL') {
-          return `//# ${props[1]}=` + normalizedFilename;
-        } else if (props[1] === 'sourceMappingURL') {
-          const mapName = normalizedFilename + '.map';
-          return `//# ${props[1]}=` + mapName;
-        }
-      }
-      return '';
-    });
-  }
-  return source;
 }

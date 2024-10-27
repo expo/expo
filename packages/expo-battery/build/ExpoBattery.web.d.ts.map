@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoBattery.web.d.ts","sourceRoot":"","sources":["../src/ExpoBattery.web.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,YAAY,EAAE,MAAM,iBAAiB,CAAC;;;;4BA0Cf,QAAQ,MAAM,CAAC;4BAOf,QAAQ,YAAY,CAAC;;;;AAjBrD,wBAoCE"}
+{"version":3,"file":"ExpoBattery.web.d.ts","sourceRoot":"","sources":["../src/ExpoBattery.web.ts"],"names":[],"mappings":"AAEA,OAAO,EAAsB,YAAY,EAAE,MAAM,iBAAiB,CAAC;;;4BAsCnC,QAAQ,MAAM,CAAC;4BAOf,QAAQ,YAAY,CAAC;;;;AAbrD,wBAgCE"}

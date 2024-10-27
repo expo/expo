@@ -83,10 +83,6 @@ function getHeadElements(): {
 }
 
 export default {
-  get name(): string {
-    return 'ExpoFontLoader';
-  },
-
   async unloadAllAsync(): Promise<void> {
     if (!Platform.isDOMAvailable) return;
 
@@ -124,6 +120,14 @@ export default {
 
   resetServerContext() {
     serverContext.clear();
+  },
+
+  getLoadedFonts(): string[] {
+    if (typeof window === 'undefined') {
+      return [...serverContext.values()].map(({ name }) => name);
+    }
+    const rules = getFontFaceRules();
+    return rules.map(({ rule }) => rule.style.fontFamily);
   },
 
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {

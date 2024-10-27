@@ -1,9 +1,9 @@
-import { StyleProp, ViewStyle, ViewProps } from 'react-native';
+import type { StyleProp, ViewStyle, ViewProps } from 'react-native';
 
 // @needsAudit
 export declare type AppleAuthenticationButtonProps = ViewProps & {
   /**
-   * The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#isavailableasync)
+   * The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#appleauthenticationisavailableasync)
    * in here.
    */
   onPress: () => void;
@@ -252,7 +252,7 @@ export enum AppleAuthenticationUserDetectionStatus {
 
 // @needsAudit
 /**
- * An enum whose values control which pre-defined text to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton).
+ * An enum whose values control which pre-defined text to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationbutton).
  */
 export enum AppleAuthenticationButtonType {
   /**
@@ -272,7 +272,7 @@ export enum AppleAuthenticationButtonType {
 
 // @needsAudit
 /**
- * An enum whose values control which pre-defined color scheme to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton).
+ * An enum whose values control which pre-defined color scheme to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationbutton).
  */
 export enum AppleAuthenticationButtonStyle {
   /**

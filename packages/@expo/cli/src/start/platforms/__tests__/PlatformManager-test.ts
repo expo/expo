@@ -39,7 +39,8 @@ describe('openAsync', () => {
       ensureExpoGoAsync: jest.fn(),
       activateWindowAsync: jest.fn(),
       openUrlAsync: jest.fn(),
-      isAppInstalledAsync: jest.fn(async () => isAppInstalled),
+      getExpoGoAppId: jest.fn(() => 'host.exp.exponent'),
+      isAppInstalledAndIfSoReturnContainerPathForIOSAsync: jest.fn(async () => isAppInstalled),
     } as unknown as DeviceManager<unknown>;
     const resolveDeviceAsync = jest.fn(async () => device);
 
@@ -91,12 +92,12 @@ describe('openAsync', () => {
     expect(getExpoGoUrl).toHaveBeenCalledTimes(1);
 
     // Ensure we don't make the expensive call to check if the app is installed.
-    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(0);
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenCalledTimes(0);
 
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'host.exp.exponent' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -120,13 +121,16 @@ describe('openAsync', () => {
     expect(getExpoGoUrl).toHaveBeenCalledTimes(0);
 
     // Ensure we check if the app is installed (once!).
-    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(1);
-    expect(device.isAppInstalledAsync).toHaveBeenNthCalledWith(1, 'dev.bacon.app');
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenNthCalledWith(
+      1,
+      'dev.bacon.app'
+    );
 
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'host.exp.exponent' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -151,13 +155,16 @@ describe('openAsync', () => {
     expect(getExpoGoUrl).toHaveBeenCalledTimes(1);
 
     // Ensure we check if the app is installed (once!).
-    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(1);
-    expect(device.isAppInstalledAsync).toHaveBeenNthCalledWith(1, 'dev.bacon.app');
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenNthCalledWith(
+      1,
+      'dev.bacon.app'
+    );
 
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'host.exp.exponent' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -185,7 +192,7 @@ describe('openAsync', () => {
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'host.exp.exponent' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -235,11 +242,14 @@ describe('openAsync', () => {
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(0);
 
     // But does check the custom dev client
-    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(1);
-    expect(device.isAppInstalledAsync).toHaveBeenNthCalledWith(1, 'dev.bacon.app');
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenNthCalledWith(
+      1,
+      'dev.bacon.app'
+    );
 
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'dev.bacon.app' });
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
@@ -265,8 +275,11 @@ describe('openAsync', () => {
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(0);
 
     // But does check the custom dev client
-    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(1);
-    expect(device.isAppInstalledAsync).toHaveBeenNthCalledWith(1, 'dev.bacon.app');
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenNthCalledWith(
+      1,
+      'dev.bacon.app'
+    );
 
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(0);
     expect(device.openUrlAsync).toHaveBeenCalledTimes(0);
@@ -298,11 +311,14 @@ describe('openAsync', () => {
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(0);
 
     // But does check the custom dev client
-    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(1);
-    expect(device.isAppInstalledAsync).toHaveBeenNthCalledWith(1, 'dev.bacon.app');
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAndIfSoReturnContainerPathForIOSAsync).toHaveBeenNthCalledWith(
+      1,
+      'dev.bacon.app'
+    );
 
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
-    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'dev.bacon.app' });
 
     expect(manager._resolveAlternativeLaunchUrl).toBeCalledTimes(1);
 

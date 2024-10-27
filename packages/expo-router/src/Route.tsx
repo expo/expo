@@ -1,3 +1,5 @@
+'use client';
+
 import React, { ReactNode, useContext } from 'react';
 
 import type { ErrorBoundaryProps } from './exports';
@@ -17,6 +19,8 @@ export type LoadedRoute = {
 };
 
 export type RouteNode = {
+  /** The type of RouteNode */
+  type: 'route' | 'api' | 'layout';
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => Partial<LoadedRoute>;
   /** Loaded initial route name. */
@@ -33,9 +37,14 @@ export type RouteNode = {
   generated?: boolean;
   /** Internal screens like the directory or the auto 404 should be marked as internal. */
   internal?: boolean;
+  /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
+  entryPoints?: string[];
 };
 
 const CurrentRouteContext = React.createContext<RouteNode | null>(null);
+export const LocalRouteParamsContext = React.createContext<
+  Record<string, string | undefined> | undefined
+>({});
 
 if (process.env.NODE_ENV !== 'production') {
   CurrentRouteContext.displayName = 'RouteNode';
@@ -55,8 +64,20 @@ export function useContextKey(): string {
 }
 
 /** Provides the matching routes and filename to the children. */
-export function Route({ children, node }: { children: ReactNode; node: RouteNode }) {
-  return <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>;
+export function Route({
+  children,
+  node,
+  route,
+}: {
+  children: ReactNode;
+  node: RouteNode;
+  route?: { params: Record<string, string | undefined> };
+}) {
+  return (
+    <LocalRouteParamsContext.Provider value={route?.params}>
+      <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
+    </LocalRouteParamsContext.Provider>
+  );
 }
 
 export { sortRoutesWithInitial, sortRoutes };

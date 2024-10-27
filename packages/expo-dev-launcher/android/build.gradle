@@ -1,72 +1,23 @@
-import groovy.json.JsonSlurper
-
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-if (expoModulesCorePlugin.exists()) {
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-}
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
   }
-
-  // Ensures backward compatibility
-  ext.getKotlinVersion = {
-    if (ext.has("kotlinVersion")) {
-      ext.kotlinVersion()
-    } else {
-      ext.safeExtGet("kotlinVersion", "1.8.10")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-  }
 }
 
 android {
-  // Remove this if and it's contents, when support for SDK49 is dropped
-  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 34)
-    
-    defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 34)
-    }
-
-    lintOptions {
-      abortOnError false
-    }
-  }
   namespace "expo.modules.devlauncher"
   defaultConfig {
-    minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 9
-    versionName "3.4.0"
-  }
-
-
-  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
-    compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.majorVersion
-    }
+    versionName "5.0.1"
   }
 
   buildTypes {
@@ -81,21 +32,18 @@ android {
   }
 
   sourceSets {
+    def rnVersion = getRNVersion()
+    main {
+      java {
+        if (rnVersion >= versionToNumber(0, 74, 0)) {
+          srcDirs += "src/react-native-74/main"
+        }
+      }
+    }
     debug {
       java {
-        srcDirs += "src/expo-45"
-
-        def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 72, 0)) {
-          srcDirs += "src/react-native-72"
-        } else if (rnVersion >= versionToNumber(0, 69, 0)) {
-          srcDirs += "src/react-native-69"
-        }
-
-        if (projectIncludesExpoUpdates()) {
-          srcDirs += 'src/with-updates'
-        } else {
-          srcDirs += 'src/without-updates'
+        if (rnVersion >= versionToNumber(0, 74, 0)) {
+          srcDirs += "src/react-native-74/debug"
         }
       }
     }
@@ -107,11 +55,6 @@ android {
   buildFeatures {
     buildConfig true
     viewBinding true
-  }
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
-    }
   }
 }
 
@@ -130,18 +73,13 @@ repositories {
 }
 
 dependencies {
-  implementation project(":expo-modules-core")
   implementation project(":expo-dev-menu-interface")
   implementation project(":expo-manifests")
   implementation project(":expo-updates-interface")
   implementation project(":expo-dev-menu")
 
-  if (projectIncludesExpoUpdates()) {
-    implementation project(":expo-updates")
-  }
-
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'  // From node_modules
+  implementation 'com.facebook.react:react-android'
+  implementation 'com.facebook.soloader:soloader:0.11.0'
 
   implementation 'commons-io:commons-io:2.6'
 
@@ -154,10 +92,9 @@ dependencies {
   api "androidx.appcompat:appcompat:1.1.0"
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
 
   def koinVersion = "3.4.0"
 
@@ -178,7 +115,10 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getNodeModulesPackageVersion(packageName, overridePropName) {
-  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute(null, projectDir).text.trim()
+  def nodeModulesVersion = providers.exec {
+    workingDir(projectDir)
+    commandLine("node", "-e", "console.log(require('$packageName/package.json').version);")
+  }.standardOutput.asText.get().trim()
   def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]
@@ -193,17 +133,4 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
 
 def getRNVersion() {
   return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
-}
-
-def getExpoPackageVersion() {
-  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
-}
-
-def projectIncludesExpoUpdates() {
-  try {
-    def version = getNodeModulesPackageVersion("expo-updates", "expoUpdatesVersion")
-    return version != null
-  } catch (Exception e) {
-    return false
-  }
 }

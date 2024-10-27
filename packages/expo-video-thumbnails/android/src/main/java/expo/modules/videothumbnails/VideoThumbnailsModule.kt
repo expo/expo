@@ -32,15 +32,17 @@ class VideoThumbnailsModule : Module() {
     Name("ExpoVideoThumbnails")
 
     AsyncFunction("getThumbnail") { sourceFilename: String, options: VideoThumbnailOptions, promise: Promise ->
-      if (URLUtil.isFileUrl(sourceFilename) && !isAllowedToRead(Uri.decode(sourceFilename).replace("file://", ""))) {
-        throw ThumbnailFileException()
-      }
-
       withModuleScope(promise) {
-        val thumbnail = GetThumbnail(sourceFilename, options, context).execute()
-          ?: throw GenerateThumbnailException()
-
         try {
+          if (!URLUtil.isValidUrl(sourceFilename)) throw InvalidSourceFilenameException()
+
+          if (URLUtil.isFileUrl(sourceFilename) && !isAllowedToRead(Uri.decode(sourceFilename).replace("file://", ""))) {
+            throw ThumbnailFileException()
+          }
+
+          val thumbnail = GetThumbnail(sourceFilename, options, context).execute()
+            ?: throw GenerateThumbnailException()
+
           val path = FileUtilities.generateOutputPath(context.cacheDir, "VideoThumbnails", "jpg")
           FileOutputStream(path).use { outputStream ->
             thumbnail.compress(Bitmap.CompressFormat.JPEG, (options.quality * 100).toInt(), outputStream)
@@ -69,24 +71,36 @@ class VideoThumbnailsModule : Module() {
     }
   }
 
-  private class GetThumbnail(private val sourceFilename: String, private val videoOptions: VideoThumbnailOptions, private val context: Context) {
-    fun execute(): Bitmap? {
-      val retriever = MediaMetadataRetriever()
+  private class GetThumbnail(
+    private val sourceFilename: String,
+    private val videoOptions: VideoThumbnailOptions,
+    private val context: Context
+  ) {
+    fun execute(): Bitmap? = MediaMetadataRetriever()
+      .use { retriever ->
+        try {
+          if (URLUtil.isFileUrl(sourceFilename)) {
+            retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
+          } else if (URLUtil.isContentUrl(sourceFilename)) {
+            val fileUri = Uri.parse(sourceFilename)
+            context.contentResolver.openFileDescriptor(fileUri, "r")?.use { parcelFileDescriptor ->
+              FileInputStream(parcelFileDescriptor.fileDescriptor).use { inputStream ->
+                retriever.setDataSource(inputStream.fd)
+              }
+            }
+          } else {
+            retriever.setDataSource(sourceFilename, videoOptions.headers)
+          }
 
-      if (URLUtil.isFileUrl(sourceFilename)) {
-        retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
-      } else if (URLUtil.isContentUrl(sourceFilename)) {
-        val fileUri = Uri.parse(sourceFilename)
-        val fileDescriptor = context.contentResolver.openFileDescriptor(fileUri, "r")!!.fileDescriptor
-        FileInputStream(fileDescriptor).use { inputStream ->
-          retriever.setDataSource(inputStream.fd)
+          return retriever.getFrameAtTime(
+            videoOptions.time.toLong() * 1000,
+            MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+          )
+        } catch (e: Exception) {
+          Log.e(ERROR_TAG, "Unable to retrieve source file")
+          return null
         }
-      } else {
-        retriever.setDataSource(sourceFilename, videoOptions.headers)
       }
-
-      return retriever.getFrameAtTime(videoOptions.time.toLong() * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-    }
   }
 
   private fun isAllowedToRead(url: String): Boolean {

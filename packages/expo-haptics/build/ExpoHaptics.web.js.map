@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoHaptics.web.js","sourceRoot":"","sources":["../src/ExpoHaptics.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,aAAa,CAAC;IACvB,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExpoHaptics';\n  },\n};\n"]}

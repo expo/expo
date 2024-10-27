@@ -87,7 +87,7 @@ export async function prebuildAsync(
   const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
 
   // Create native projects from template.
-  const { hasNewProjectFiles, needsPodInstall, changedDependencies } =
+  const { hasNewProjectFiles, needsPodInstall, templateChecksum, changedDependencies } =
     await updateFromTemplateAsync(projectRoot, {
       exp,
       pkg,
@@ -142,6 +142,7 @@ export async function prebuildAsync(
     await profile(configureProjectAsync)(projectRoot, {
       platforms: options.platforms,
       exp,
+      templateChecksum,
     });
     configSyncingStep.succeed('Finished prebuild');
   } catch (error) {

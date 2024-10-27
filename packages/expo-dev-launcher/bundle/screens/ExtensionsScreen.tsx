@@ -14,6 +14,7 @@ import {
 import * as React from 'react';
 import { Linking, RefreshControl, ScrollView } from 'react-native';
 
+import { ExtensionsStackParamList } from './ExtensionsStack';
 import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
@@ -25,7 +26,6 @@ import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useUser, useUserActions } from '../providers/UserContextProvider';
 import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
-import { ExtensionsStackParamList } from './ExtensionsStack';
 
 type ExtensionsScreenProps = {
   navigation: StackNavigationProp<ExtensionsStackParamList>;
@@ -130,7 +130,6 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
               <Spacer.Vertical size="medium" />
               <EASUpdatesPreview
                 navigation={navigation}
-                isLoading={isLoading}
                 branches={branches}
                 emptyBranches={emptyBranches}
                 incompatibleBranches={incompatibleBranches}
@@ -215,7 +214,6 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
 }
 
 type EASUpdatesPreviewProps = ExtensionsScreenProps & {
-  isLoading: boolean;
   branches: Branch[];
   emptyBranches: Branch[];
   incompatibleBranches: Branch[];
@@ -223,7 +221,6 @@ type EASUpdatesPreviewProps = ExtensionsScreenProps & {
 
 function EASUpdatesPreview({
   navigation,
-  isLoading,
   branches,
   emptyBranches,
   incompatibleBranches,
@@ -281,13 +278,13 @@ function EASUpdatesPreview({
     );
   }
 
-  // no compatiable branches
+  // no compatible branches
   if (branches.length === 0) {
     return (
       <View mx="medium">
         <View px="small">
           <Heading size="small" color="secondary">
-            EAS Updates
+            EAS Update
           </Heading>
         </View>
         <Spacer.Vertical size="small" />
@@ -301,7 +298,7 @@ function EASUpdatesPreview({
     <View mx="medium">
       <View py="small" px="small">
         <Heading size="small" color="secondary">
-          EAS Updates
+          EAS Update
         </Heading>
       </View>
       {branches?.slice(0, 2).map((branch, index, arr) => {

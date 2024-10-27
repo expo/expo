@@ -1,25 +1,3 @@
-/**
- * @deprecated The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
- * These APIs are deprecated and will be removed in a future release corresponding with SDK 51.
- * Use [`useUpdates()`](#useupdates) instead.
- */
-export var UpdateEventType;
-(function (UpdateEventType) {
-    /**
-     * A new update has finished downloading to local storage. If you would like to start using this
-     * update at any point before the user closes and restarts the app on their own, you can call
-     * [`Updates.reloadAsync()`](#reloadasync) to launch this new update.
-     */
-    UpdateEventType["UPDATE_AVAILABLE"] = "updateAvailable";
-    /**
-     * No updates are available, and the most up-to-date update is already running.
-     */
-    UpdateEventType["NO_UPDATE_AVAILABLE"] = "noUpdateAvailable";
-    /**
-     * An error occurred trying to fetch the latest update.
-     */
-    UpdateEventType["ERROR"] = "error";
-})(UpdateEventType || (UpdateEventType = {}));
 export var UpdateCheckResultNotAvailableReason;
 (function (UpdateCheckResultNotAvailableReason) {
     /**
@@ -47,7 +25,7 @@ export var UpdateCheckResultNotAvailableReason;
     UpdateCheckResultNotAvailableReason["ROLLBACK_NO_EMBEDDED"] = "rollbackNoEmbeddedConfiguration";
 })(UpdateCheckResultNotAvailableReason || (UpdateCheckResultNotAvailableReason = {}));
 /**
- * The possible code values for expo-updates log entries
+ * The possible code values for `expo-updates` log entries
  */
 export var UpdatesLogEntryCode;
 (function (UpdatesLogEntryCode) {
@@ -60,10 +38,11 @@ export var UpdatesLogEntryCode;
     UpdatesLogEntryCode["UPDATE_FAILED_TO_LOAD"] = "UpdateFailedToLoad";
     UpdatesLogEntryCode["ASSETS_FAILED_TO_LOAD"] = "AssetsFailedToLoad";
     UpdatesLogEntryCode["JS_RUNTIME_ERROR"] = "JSRuntimeError";
+    UpdatesLogEntryCode["INITIALIZATION_ERROR"] = "InitializationError";
     UpdatesLogEntryCode["UNKNOWN"] = "Unknown";
 })(UpdatesLogEntryCode || (UpdatesLogEntryCode = {}));
 /**
- * The possible log levels for expo-updates log entries
+ * The possible log levels for `expo-updates` log entries
  */
 export var UpdatesLogEntryLevel;
 (function (UpdatesLogEntryLevel) {
@@ -75,8 +54,10 @@ export var UpdatesLogEntryLevel;
     UpdatesLogEntryLevel["FATAL"] = "fatal";
 })(UpdatesLogEntryLevel || (UpdatesLogEntryLevel = {}));
 /**
- * The possible settings that determine if expo-updates will check for updates on app startup.
- * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+ * The possible settings that determine if `expo-updates` will check for updates on app startup.
+ * By default, Expo will check for updates every time the app is loaded.
+ * Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error.
+ * Set this to `NEVER` to completely disable automatic checking.
  */
 export var UpdatesCheckAutomaticallyValue;
 (function (UpdatesCheckAutomaticallyValue) {
@@ -89,7 +70,7 @@ export var UpdatesCheckAutomaticallyValue;
      */
     UpdatesCheckAutomaticallyValue["ON_ERROR_RECOVERY"] = "ON_ERROR_RECOVERY";
     /**
-     * Only checks for updates when the app starts and has a WiFi connection.
+     * Only checks for updates when the app starts and has a Wi-Fi connection.
      */
     UpdatesCheckAutomaticallyValue["WIFI_ONLY"] = "WIFI_ONLY";
     /**

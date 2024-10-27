@@ -1,4 +1,4 @@
-import { Platform, Subscription } from 'expo-modules-core';
+import { Platform, type EventSubscription } from 'expo-modules-core';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { ScrollView, Text, SafeAreaView } from 'react-native';
@@ -10,16 +10,14 @@ interface State {
   orientationLock?: ScreenOrientation.OrientationLock;
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class ScreenOrientationScreen extends React.Component<{}, State> {
+export default class ScreenOrientationScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'ScreenOrientation',
   };
 
   readonly state: State = {};
 
-  listener?: Subscription;
+  listener?: EventSubscription;
 
   async componentDidMount() {
     this.listener = ScreenOrientation.addOrientationChangeListener(

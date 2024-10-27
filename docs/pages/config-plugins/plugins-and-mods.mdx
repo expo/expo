@@ -4,10 +4,7 @@ description: Learn about what are plugins and mods when creating a config plugin
 ---
 
 import { YesIcon, NoIcon, WarningIcon } from '~/ui/components/DocIcons';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Plugins are **synchronous** functions that accept an [`ExpoConfig`](/versions/latest/config/app/) and return a modified [`ExpoConfig`](/versions/latest/config/app/).
 
@@ -70,7 +67,7 @@ You may want to create a plugin in a different file, here's how:
 - The root file can be any JS file or a file named **app.plugin.js** in the root of a Node module.
 - The file should export a function that satisfies the [`ConfigPlugin`](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76) type.
 - Plugins should be transpiled for Node environments ahead of time!
-  - They should support the versions of Node that [Expo supports](/get-started/installation/#requirements) (LTS).
+  - They should support the versions of Node that [Expo supports](/get-started/create-a-project/) (LTS).
   - No `import/export` keywords, use `module.exports` in the shipped plugin file.
   - Expo only transpiles the user's initial `app.config` file, anything more would require a bundler which would add too many "opinions" for a config file.
 
@@ -131,16 +128,6 @@ withPlugins(config, [
   withDelta,
 ]);
 ```
-
-<Collapsible summary="Using SDK 46 or lower?">
-
-For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
-
-```js app.config.js
-const { withPlugins } = require('@expo/config-plugins');
-```
-
-</Collapsible>
 
 To support JSON configs, we also added the `plugins` array which just uses `withPlugins` under the hood.
 Here is the same config as above, but even simpler:
@@ -221,6 +208,7 @@ The following default mods are provided by the mod compiler for common file mani
 | `mods.ios.entitlements`      |        -        | Modify the **ios/&lt;name&gt;/&lt;product-name&gt;.entitlements** as JSON (parsed with [`@expo/plist`][expo-plist]).                |
 | `mods.ios.expoPlist`         |        -        | Modify the **ios/&lt;ame&gt;/Expo.plist** as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`][expo-plist]).          |
 | `mods.ios.xcodeproj`         |        -        | Modify the **ios/&lt;name&gt;.xcodeproj** as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)). |
+| `mods.ios.podfile`           |        -        | Modify the **ios/Podfile** as a string.                                                                                             |
 | `mods.ios.podfileProperties` |        -        | Modify the **ios/Podfile.properties.json** as JSON.                                                                                 |
 | `mods.ios.appDelegate`       | <WarningIcon /> | Modify the **ios/&lt;name&gt;/AppDelegate.m** as a string.                                                                          |
 
@@ -258,6 +246,7 @@ Instead you should use the helper mods provided by `expo/config-plugins`:
 | `mods.ios.entitlements`      | `withEntitlementsPlist` |        -        |
 | `mods.ios.expoPlist`         | `withExpoPlist`         |        -        |
 | `mods.ios.xcodeproj`         | `withXcodeProject`      |        -        |
+| `mods.ios.podfile`           | `withPodfile`           |        -        |
 | `mods.ios.podfileProperties` | `withPodfileProperties` |        -        |
 | `mods.ios.appDelegate`       | `withAppDelegate`       | <WarningIcon /> |
 
@@ -276,18 +265,16 @@ A mod plugin gets passed a `config` object with additional properties `modResult
 Say you wanted to write a mod to update the Xcode Project's "product name":
 
 ```ts my-config-plugin.ts
-import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+import { ConfigPlugin, withXcodeProject, IOSConfig } from 'expo/config-plugins';
 
-const withCustomProductName: ConfigPlugin = (config, customName) => {
+const withCustomProductName: ConfigPlugin<string> = (config, customName) => {
   return withXcodeProject(
     config,
     async (
       /* @info <b>{ modResults, modRequest }</b> */ config
       /* @end */
     ) => {
-      const xcodeProject = config.modResults;
-      xcodeProject.productName = customName;
-
+      config.modResults = IOSConfig.Name.setProductName({ name: customName }, config.modResults);
       return config;
     }
   );
@@ -303,16 +290,6 @@ const config = {
 /// Use the plugin
 export default withCustomProductName(config, 'new_name');
 ```
-
-<Collapsible summary="Using SDK 46 or lower?">
-
-For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
-
-```js
-const { ConfigPlugin, withXcodeProject } = require('@expo/config-plugins');
-```
-
-</Collapsible>
 
 ### Experimental functionality
 
@@ -498,20 +475,11 @@ Here is what the serialized config would look like:
 ## Why app.plugin.js for plugins
 
 Config resolution searches for a file named **app.plugin.js** first when a Node module ID is provided as a plugin.
-This is because Node environments are often different to iOS, Android, or web JS environments and therefore require different transpilation presets (ex: `module.exports` instead of `import/export`).
+This is because Node environments are often different to Android, iOS, or web JS environments and therefore require different transpilation presets (for example, `module.exports` instead of `import/export`).
 
 Because of this reasoning, the root of a Node module is searched instead of right next to the **index.js**.
 Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**,
 if app config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
-
-## Next step
-
-<BoxLink
-  title="Development and debugging"
-  description="Learn about development best practices and debugging techniques for app config plugins."
-  href="/config-plugins/development-and-debugging"
-  Icon={BookOpen02Icon}
-/>
 
 [xml2js]: https://www.npmjs.com/package/xml2js
 [expo-plist]: https://www.npmjs.com/package/@expo/plist

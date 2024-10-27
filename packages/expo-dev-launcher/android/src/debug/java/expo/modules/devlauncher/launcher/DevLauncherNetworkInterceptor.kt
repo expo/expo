@@ -2,12 +2,13 @@
 
 package expo.modules.devlauncher.launcher
 
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.Inspector
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.devsupport.DevServerHelper
+import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.InspectorPackagerConnection
 import expo.modules.devlauncher.DevLauncherController
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.kotlin.devtools.ExpoRequestCdpInterceptor
 import java.io.Closeable
 import java.lang.ref.WeakReference
@@ -16,20 +17,20 @@ import java.lang.reflect.Method
 
 internal class DevLauncherNetworkInterceptor(controller: DevLauncherController) : Closeable, ExpoRequestCdpInterceptor.Delegate {
   private val weakController = WeakReference(controller)
-  private var reactInstanceHashCode: Int = 0
+  private var reactHostHashCode: Int = 0
   private var _inspectorPackagerConnection: InspectorPackagerConnectionWrapper? = null
 
   private val inspectorPackagerConnection: InspectorPackagerConnectionWrapper
     get() {
-      val reactInstanceManager = requireNotNull(weakController.get()?.appHost?.reactInstanceManager)
-      if (reactInstanceHashCode != reactInstanceManager.hashCode()) {
+      val reactHost = requireNotNull(weakController.get()?.appHost)
+      if (reactHostHashCode != reactHost.hashCode()) {
         _inspectorPackagerConnection?.clear()
         _inspectorPackagerConnection = null
-        reactInstanceHashCode = 0
+        reactHostHashCode = 0
       }
       if (_inspectorPackagerConnection == null) {
-        _inspectorPackagerConnection = InspectorPackagerConnectionWrapper(reactInstanceManager)
-        reactInstanceHashCode = reactInstanceManager.hashCode()
+        _inspectorPackagerConnection = InspectorPackagerConnectionWrapper(reactHost)
+        reactHostHashCode = reactHost.hashCode()
       }
       return requireNotNull(_inspectorPackagerConnection)
     }
@@ -42,7 +43,7 @@ internal class DevLauncherNetworkInterceptor(controller: DevLauncherController) 
    * Returns true when it is allowed to send CDP events
    */
   private fun shouldEmitEvents(): Boolean {
-    return DevLauncherController.wasInitialized() && weakController.get()?.appHost?.reactInstanceManager?.lifecycleState == LifecycleState.RESUMED
+    return DevLauncherController.wasInitialized() && weakController.get()?.appHost?.lifecycleState == LifecycleState.RESUMED
   }
 
   //region Closeable implementations
@@ -63,7 +64,7 @@ internal class DevLauncherNetworkInterceptor(controller: DevLauncherController) 
 /**
  * A `InspectorPackagerConnection` wrapper to expose private members with reflection
  */
-internal class InspectorPackagerConnectionWrapper constructor(reactInstanceManager: ReactInstanceManager) {
+internal class InspectorPackagerConnectionWrapper constructor(reactHost: ReactHostWrapper) {
   private var inspectorPackagerConnectionWeak: WeakReference<InspectorPackagerConnection> = WeakReference(null)
   private val devServerHelperWeak: WeakReference<DevServerHelper>
   private val inspectorPackagerConnectionField: Field
@@ -84,8 +85,8 @@ internal class InspectorPackagerConnectionWrapper constructor(reactInstanceManag
     }
 
   init {
-    val devSupportManager = reactInstanceManager.devSupportManager
-    val devSupportManagerBaseClass: Class<*> = devSupportManager.javaClass.superclass
+    val devSupportManager = requireNotNull(reactHost.devSupportManager)
+    val devSupportManagerBaseClass = DevSupportManagerBase::class.java
     val mDevServerHelperField = devSupportManagerBaseClass.getDeclaredField("mDevServerHelper")
     mDevServerHelperField.isAccessible = true
     val devServerHelper = mDevServerHelperField[devSupportManager]

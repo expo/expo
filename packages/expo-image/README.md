@@ -21,33 +21,43 @@ A cross-platform, performant image component for React Native and Expo.
 
 ## Supported image formats
 
-|   Format   | Android | iOS |                        Web                        |
-| :--------: | :-----: | :-: | :-----------------------------------------------: |
-|    WebP    |   ✅    | ✅  |   ✅ [~96% adoption](https://caniuse.com/webp)    |
-| PNG / APNG |   ✅    | ✅  | ✅ / ✅ [~96% adoption](https://caniuse.com/apng) |
-|    AVIF    |   ✅    | ✅  |   ⏳ [~79% adoption](https://caniuse.com/avif)    |
-|    HEIC    |   ✅    | ✅  |  ❌ [not adopted yet](https://caniuse.com/heif)   |
-|    JPEG    |   ✅    | ✅  |                        ✅                         |
-|    GIF     |   ✅    | ✅  |                        ✅                         |
-|    SVG     |   ✅    | ✅  |                        ✅                         |
-|    ICO     |   ✅    | ✅  |                        ✅                         |
-|    ICNS    |   ❌    | ✅  |                        ❌                         |
+|   Format   | Android | iOS |                      Web                       |
+| :--------: | :-----: | :-: | :--------------------------------------------: |
+|    WebP    |   ✅    | ✅  |                       ✅                       |
+| PNG / APNG |   ✅    | ✅  |                       ✅                       |
+|    AVIF    |   ✅    | ✅  |                       ✅                       |
+|    HEIC    |   ✅    | ✅  | ❌ [not adopted yet](https://caniuse.com/heif) |
+|    JPEG    |   ✅    | ✅  |                       ✅                       |
+|    GIF     |   ✅    | ✅  |                       ✅                       |
+|    SVG     |   ✅    | ✅  |                       ✅                       |
+|    ICO     |   ✅    | ✅  |                       ✅                       |
+|    ICNS    |   ❌    | ✅  |                       ❌                       |
 
 # API documentation
 
-- [Documentation for the latest release](https://docs.expo.dev/versions/unversioned/sdk/image/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/image/)
 
-# Installation
+# Installation in managed Expo projects
 
-> Currently `expo-image` can be used only with [development builds](https://docs.expo.dev/develop/development-builds/introduction/), in Expo Go, and bare React Native apps with [configured Expo modules](https://docs.expo.dev/bare/installing-expo-modules/).
-> It is not available with Snack yet.
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/image/).
 
-Add the package to your dependencies with the following commands:
+# Installation in bare React Native projects
+
+For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
+
+### Add the package to your npm dependencies
 
 ```
 npx expo install expo-image
-npx pod-install
 ```
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
+
+### Configure for Android
+
+No additional setup necessary.
 
 # Contributing
 

@@ -1,8 +1,7 @@
 import { Picker } from '@react-native-picker/picker';
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
-import chunk from 'lodash/chunk';
-import React from 'react';
+import { useReducer } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import DeprecatedHeading from '../components/DeprecatedHeading';
@@ -42,38 +41,44 @@ function HooksLocalizationSection() {
   );
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class LocalizationScreen extends React.Component<{}, State> {
-  static navigationOptions = {
-    title: 'Localization',
-  };
+function lodashChunk(array: any[], size: number) {
+  const chunked = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunked.push(array.slice(i, i + size));
+  }
+  return chunked;
+}
 
-  readonly state: State = {
+LocalizationScreen.navigationOptions = {
+  title: 'Localization',
+};
+
+export default function LocalizationScreen() {
+  const [state, setState] = useReducer((s: State, a: Partial<State>) => ({ ...s, ...a }), {
     currentLocale: Localization.locale,
     preferredLocales: Localization.locales,
     isoCurrencyCodes: Localization.isoCurrencyCodes,
-  };
+  });
 
-  queryPreferredLocales = async () => {
+  const queryPreferredLocales = async () => {
     const preferredLocales = Localization.locales;
     const currentLocale = Localization.locale;
-    this.setState({ preferredLocales, currentLocale });
+    setState({ preferredLocales, currentLocale });
   };
 
-  queryCurrencyCodes = async () => {
-    if (this.state.isoCurrencyCodes.length === 0) {
+  const queryCurrencyCodes = async () => {
+    if (state.isoCurrencyCodes.length === 0) {
       const isoCurrencyCodes = Localization.isoCurrencyCodes;
-      this.setState({ isoCurrencyCodes });
+      setState({ isoCurrencyCodes });
     }
   };
 
-  prettyFormatCurrency = () => {
+  const prettyFormatCurrency = () => {
     let buffer = '';
     let seenCount = 0;
-    const sample = this.state.isoCurrencyCodes.slice(0, 100);
-    const grouped = chunk(sample, 10);
-    let drilldownIndex = 0;
+    const sample = state.isoCurrencyCodes.slice(0, 100);
+    const grouped = lodashChunk(sample, 10);
+    let drillDownIndex = 0;
     let currentColumn = 0;
     while (true) {
       while (true) {
@@ -81,69 +86,68 @@ export default class LocalizationScreen extends React.Component<{}, State> {
         if (currentColumn === grouped.length) {
           currentColumn = 0;
           buffer += '\n';
-          drilldownIndex++;
+          drillDownIndex++;
           continue;
         }
-        buffer += `${grouped[currentColumn][drilldownIndex]}\t`;
+        buffer += `${grouped[currentColumn][drillDownIndex]}\t`;
         seenCount++;
         currentColumn++;
       }
     }
   };
 
-  changeLocale = (locale: string) => {
+  const changeLocale = (locale: string) => {
     i18n.locale = locale;
-    this.setState({ locale });
+    setState({ locale });
   };
-  render() {
-    return (
-      <ScrollView>
-        <View style={styles.container}>
-          <HooksLocalizationSection />
 
-          <HeadingText>Locales in Preference Order</HeadingText>
-          <MonoText>{JSON.stringify(Localization.getLocales(), null, 2)}</MonoText>
+  return (
+    <ScrollView>
+      <View style={styles.container}>
+        <HooksLocalizationSection />
 
-          <HeadingText>Calendars in Preference Order</HeadingText>
-          <MonoText>{JSON.stringify(Localization.getCalendars(), null, 2)}</MonoText>
+        <HeadingText>Locales in Preference Order</HeadingText>
+        <MonoText>{JSON.stringify(Localization.getLocales(), null, 2)}</MonoText>
 
-          <HeadingText>Localization Table</HeadingText>
-          <Picker
-            style={styles.picker}
-            selectedValue={this.state.locale}
-            onValueChange={(value) => this.changeLocale(`${value}`)}>
-            <Picker.Item label="🇺🇸 English" value="en" />
-            <Picker.Item label="🇪🇸 Spanish" value="es" />
-          </Picker>
+        <HeadingText>Calendars in Preference Order</HeadingText>
+        <MonoText>{JSON.stringify(Localization.getCalendars(), null, 2)}</MonoText>
 
-          <View style={styles.languageBox}>
-            <View style={styles.row}>
-              <Text>Exists in Both: </Text>
-              <Text>{this.state.currentLocale ? i18n.t('phrase') : ''}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text>Default Case Only: </Text>
-              <Text>{this.state.currentLocale ? i18n.t('default') : ''}</Text>
-            </View>
+        <HeadingText>Localization Table</HeadingText>
+        <Picker
+          style={styles.picker}
+          selectedValue={state.locale}
+          onValueChange={(value) => changeLocale(`${value}`)}>
+          <Picker.Item label="🇺🇸 English" value="en" />
+          <Picker.Item label="🇪🇸 Spanish" value="es" />
+        </Picker>
+
+        <View style={styles.languageBox}>
+          <View style={styles.row}>
+            <Text>Exists in Both: </Text>
+            <Text>{state.currentLocale ? i18n.t('phrase') : ''}</Text>
           </View>
-
-          <DeprecatedHeading>Current Locale</DeprecatedHeading>
-          <MonoText>{JSON.stringify(this.state.currentLocale, null, 2)}</MonoText>
-          <DeprecatedHeading>Locales in Preference Order</DeprecatedHeading>
-          <ListButton title="Show preferred Locales" onPress={this.queryPreferredLocales} />
-          {this.state.preferredLocales && this.state.preferredLocales.length > 0 && (
-            <MonoText>{JSON.stringify(this.state.preferredLocales, null, 2)}</MonoText>
-          )}
-
-          <DeprecatedHeading>Currency Codes</DeprecatedHeading>
-          <ListButton title="Show first 100 currency codes" onPress={this.queryCurrencyCodes} />
-          {this.state.isoCurrencyCodes && this.state.isoCurrencyCodes.length > 0 && (
-            <MonoText>{this.prettyFormatCurrency()}</MonoText>
-          )}
+          <View style={styles.row}>
+            <Text>Default Case Only: </Text>
+            <Text>{state.currentLocale ? i18n.t('default') : ''}</Text>
+          </View>
         </View>
-      </ScrollView>
-    );
-  }
+
+        <DeprecatedHeading>Current Locale</DeprecatedHeading>
+        <MonoText>{JSON.stringify(state.currentLocale, null, 2)}</MonoText>
+        <DeprecatedHeading>Locales in Preference Order</DeprecatedHeading>
+        <ListButton title="Show preferred Locales" onPress={queryPreferredLocales} />
+        {state.preferredLocales && state.preferredLocales.length > 0 && (
+          <MonoText>{JSON.stringify(state.preferredLocales, null, 2)}</MonoText>
+        )}
+
+        <DeprecatedHeading>Currency Codes</DeprecatedHeading>
+        <ListButton title="Show first 100 currency codes" onPress={queryCurrencyCodes} />
+        {state.isoCurrencyCodes && state.isoCurrencyCodes.length > 0 && (
+          <MonoText>{prettyFormatCurrency()}</MonoText>
+        )}
+      </View>
+    </ScrollView>
+  );
 }
 const styles = StyleSheet.create({
   row: {

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveSearchPathsAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathAsync = void 0;
+exports.resolveSearchPathsAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathSync = exports.getProjectPackageJsonPathAsync = void 0;
 const find_up_1 = __importDefault(require("find-up"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
@@ -19,15 +19,26 @@ async function getProjectPackageJsonPathAsync(projectRoot) {
 }
 exports.getProjectPackageJsonPathAsync = getProjectPackageJsonPathAsync;
 /**
+ * Synchronous version of {@link getProjectPackageJsonPathAsync}.
+ */
+function getProjectPackageJsonPathSync(projectRoot) {
+    const result = find_up_1.default.sync('package.json', { cwd: projectRoot });
+    if (!result) {
+        throw new Error(`Couldn't find "package.json" up from path "${projectRoot}"`);
+    }
+    return result;
+}
+exports.getProjectPackageJsonPathSync = getProjectPackageJsonPathSync;
+/**
  * Merges autolinking options from different sources (the later the higher priority)
  * - options defined in package.json's `expo.autolinking` field
- * - platform-specific options from the above (e.g. `expo.autolinking.ios`)
+ * - platform-specific options from the above (e.g. `expo.autolinking.apple`)
  * - options provided to the CLI command
  */
 async function mergeLinkingOptionsAsync(providedOptions) {
     const packageJson = require(await getProjectPackageJsonPathAsync(providedOptions.projectRoot));
     const baseOptions = packageJson.expo?.autolinking;
-    const platformOptions = providedOptions.platform && baseOptions?.[providedOptions.platform];
+    const platformOptions = getPlatformOptions(providedOptions.platform, baseOptions);
     const finalOptions = Object.assign({}, baseOptions, platformOptions, providedOptions);
     // Makes provided paths absolute or falls back to default paths if none was provided.
     finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths, providedOptions.projectRoot);
@@ -78,5 +89,14 @@ async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
     const projectRoot = packageJsonPath != null ? path_1.default.join(packageJsonPath, '..') : cwd;
     const resolvedPath = path_1.default.resolve(projectRoot, nativeModulesDir || 'modules');
     return fs_extra_1.default.existsSync(resolvedPath) ? resolvedPath : null;
+}
+/**
+ * Gets the platform-specific autolinking options from the base options.
+ */
+function getPlatformOptions(platform, options) {
+    if (platform === 'apple') {
+        return options?.apple ?? options?.ios ?? {};
+    }
+    return options?.[platform] ?? {};
 }
 //# sourceMappingURL=mergeLinkingOptions.js.map

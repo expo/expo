@@ -18,14 +18,14 @@ export function dedupSources(sources: HashSource[], projectRoot: string): HashSo
     );
     if (duplicatedItemIndex >= 0) {
       const duplicatedItem = newSources[duplicatedItemIndex];
-      debug(`Skipping duplicated source: ${source}`);
+      debug(`Skipping duplicated source: ${JSON.stringify(source)}`);
       if (shouldSwapSource) {
         newSources[duplicatedItemIndex] = {
           ...source,
           reasons: [...source.reasons, ...duplicatedItem.reasons],
         };
       } else {
-        duplicatedItem.reasons.push(...source.reasons);
+        duplicatedItem.reasons = [...duplicatedItem.reasons, ...source.reasons];
       }
     } else {
       newSources.push(source);

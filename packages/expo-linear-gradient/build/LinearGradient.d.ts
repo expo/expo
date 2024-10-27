@@ -18,12 +18,14 @@ export type LinearGradientPoint = {
 } | NativeLinearGradientPoint;
 export type LinearGradientProps = ViewProps & {
     /**
-     * An array of colors that represent stops in the gradient. At least two colors are required
+     * A readonly array of colors that represent stops in the gradient. At least two colors are required
      * (for a single-color background, use the `style.backgroundColor` prop on a `View` component).
+     *
+     * For TypeScript to know the provided array has 2 or more values, it should be provided "inline" or typed `as const`.
      */
-    colors: string[];
+    colors: readonly [string, string, ...string[]];
     /**
-     * An array that contains `number`s ranging from `0` to `1`, inclusive, and is the same length as the `colors` property.
+     * A readonly array that contains `number`s ranging from `0` to `1`, inclusive, and is the same length as the `colors` property.
      * Each number indicates a color-stop location where each respective color should be located.
      * If not specified, the colors will be distributed evenly across the gradient.
      *
@@ -35,7 +37,7 @@ export type LinearGradientProps = ViewProps & {
      * > The color-stop locations must be ascending from least to greatest.
      * @default []
      */
-    locations?: number[] | null;
+    locations?: readonly [number, number, ...number[]] | null;
     /**
      * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will start `10%` from the left and `20%` from the top.
      *
@@ -50,11 +52,18 @@ export type LinearGradientProps = ViewProps & {
      * @default { x: 0.5, y: 1.0 }
      */
     end?: LinearGradientPoint | null;
+    /**
+     * Enables or disables paint dithering. Dithering can reduce the gradient color banding issue.
+     * Setting `false` may improve gradient rendering performance.
+     * @default true
+     * @platform android
+     */
+    dither?: boolean;
 };
 /**
  * Renders a native view that transitions between multiple colors in a linear direction.
  */
 export declare class LinearGradient extends React.Component<LinearGradientProps> {
-    render(): JSX.Element;
+    render(): React.JSX.Element;
 }
 //# sourceMappingURL=LinearGradient.d.ts.map

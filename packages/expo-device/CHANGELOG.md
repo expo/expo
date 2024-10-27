@@ -10,6 +10,51 @@
 
 ### 💡 Others
 
+## 7.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- [iOS] Added some missing entries for 2024 Apple devices. ([#31970](https://github.com/expo/expo/pull/31970) by [@fobos531](https://github.com/fobos531))
+
+## 6.0.2 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- `Device.productName` now returns `Build.PRODUCT` instead of `Build.DEVICE`. ([#27230](https://github.com/expo/expo/pull/27230) by [@alex-fournier](https://github.com/alex-fournier))
+
+### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 5.9.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 5.9.2 - 2024-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.9.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
 ## 5.9.0 — 2023-11-14
 
 ### 🛠 Breaking changes

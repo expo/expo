@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.23.0",
+  "version": "0.26.1",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -9,14 +9,12 @@
     "expo-updates": "bin/cli.js"
   },
   "scripts": {
-    "build:cli": "tsc -p tsconfig.cli.json",
-    "test:cli": "jest --config jest.cli.config.js",
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "npm run build:cli && expo-module prepare",
-    "prepublishOnly": "npm run build:cli && expo-module prepublishOnly",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
   "keywords": [
@@ -40,28 +38,34 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.5",
-    "@expo/config": "~8.4.0",
-    "@expo/config-plugins": "~7.7.0",
+    "@expo/config": "~10.0.0",
+    "@expo/config-plugins": "~9.0.0",
+    "@expo/fingerprint": "^0.11.0",
+    "@expo/spawn-async": "^1.7.2",
     "arg": "4.1.0",
     "chalk": "^4.1.2",
-    "expo-eas-client": "~0.11.0",
-    "expo-manifests": "~0.12.0",
-    "expo-structured-headers": "~3.7.0",
-    "expo-updates-interface": "~0.15.0",
+    "expo-eas-client": "~0.13.0",
+    "expo-manifests": "~0.15.0",
+    "expo-structured-headers": "~4.0.0",
+    "expo-updates-interface": "~1.0.0",
+    "fast-glob": "^3.3.2",
     "fbemitter": "^3.0.0",
+    "ignore": "^5.3.1",
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
-    "@types/node": "^17.0.15",
+    "@types/node": "^18.19.34",
     "@types/node-forge": "^1.0.0",
-    "expo-module-scripts": "^3.0.0",
-    "express": "^4.17.2",
+    "expo-module-scripts": "^4.0.0",
+    "express": "^4.19.2",
     "form-data": "^4.0.0",
+    "fs-extra": "~8.1.0",
     "memfs": "^3.2.0",
     "xstate": "^4.37.2"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*"
   }
 }

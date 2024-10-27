@@ -1,4 +1,7 @@
 // @needsAudit
+/**
+ * @deprecated To set media types available in the image picker use an array of [`MediaType`](#mediatype) instead.
+ */
 export var MediaTypeOptions;
 (function (MediaTypeOptions) {
     /**
@@ -151,7 +154,7 @@ export var UIImagePickerPresentationStyle;
      * The default presentation style chosen by the system.
      * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
      *
-     * @platform ios 13+
+     * @platform ios
      */
     UIImagePickerPresentationStyle["AUTOMATIC"] = "automatic";
 })(UIImagePickerPresentationStyle || (UIImagePickerPresentationStyle = {}));

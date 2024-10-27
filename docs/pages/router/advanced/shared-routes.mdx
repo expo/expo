@@ -5,22 +5,20 @@ hideTOC: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-To match the same URL with different layouts, use [**groups**](/routing/layouts#groups) with overlapping child routes. This pattern is very common in native apps. For example, in the Twitter app, a profile can be viewed in every tab (such as home, search, and profile). However, there is only one URL that is required to access this route.
+To match the same URL with different layouts, use [**groups**](/router/layouts#groups) with overlapping child routes. This pattern is very common in native apps. For example, in the X app, a profile can be viewed in every tab (such as home, search, and profile). However, there is only one URL that is required to access this route.
 
-In the example below, **app/\_layout.js** is the tab bar and each route has its own header. The **app/(profile)/[user].js** route is shared between each tab.
+In the example below, **app/\_layout.tsx** is the tab bar and each route has its own header. The **app/(profile)/[user].tsx** route is shared between each tab.
 
 <FileTree
   files={[
-    'app/_layout.js',
-    'app/(home)/_layout.js',
-    'app/(home)/[user].js',
-    'app/(search)/_layout.js',
-    'app/(search)/[user].js',
-    'app/(profile)/_layout.js',
-    'app/(profile)/[user].js',
+    'app/_layout.tsx',
+    'app/(home)/_layout.tsx',
+    'app/(home)/[user].tsx',
+    'app/(search)/_layout.tsx',
+    'app/(search)/[user].tsx',
+    'app/(profile)/_layout.tsx',
+    'app/(profile)/[user].tsx',
   ]}
 />
 
@@ -32,11 +30,11 @@ Shared routes can be navigated directly by including the group name in the route
 
 > Array syntax is an advanced concept that is unique to native app development.
 
-Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group. For example, `app/(home,search)/[user].js` &mdash; creates `app/(home)/[user].js` and `app/(search)/[user].js` in memory.
+Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group. For example, `app/(home,search)/[user].tsx` &mdash; creates `app/(home)/[user].tsx` and `app/(search)/[user].tsx` in memory.
 
 To distinguish between the two routes use a layout's `segment` prop:
 
-```jsx app/(home,search)/_layout.js
+```tsx app/(home,search)/_layout.tsx
 export default function DynamicLayout({ segment }) {
   if (segment === '(search)') {
     return <SearchStack />;
@@ -45,12 +43,3 @@ export default function DynamicLayout({ segment }) {
   return <Stack />;
 }
 ```
-
-## Next steps
-
-<BoxLink
-  title="Router Settings"
-  Icon={BookOpen02Icon}
-  description="Learn how to configure layouts with static properties in Expo Router."
-  href="/router/advanced/router-settings/"
-/>

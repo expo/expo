@@ -33,13 +33,16 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
   external fun getTypedArray(): JavaScriptTypedArray
 
   private external fun <T : Any?> jniGetFunction(): JavaScriptFunction<T>
+
   @PublishedApi
   internal fun <T : Any?> internalJniGetFunction(): JavaScriptFunction<T> = jniGetFunction()
+
   inline fun <reified ReturnType : Any?> getFunction(): JavaScriptFunction<ReturnType> {
     return internalJniGetFunction<ReturnType>().apply {
       returnType = typeOf<ReturnType>()
     }
   }
+
   @JvmName("getVoidFunction")
   fun getFunction(): JavaScriptFunction<Unit> {
     return internalJniGetFunction<Unit>().apply {

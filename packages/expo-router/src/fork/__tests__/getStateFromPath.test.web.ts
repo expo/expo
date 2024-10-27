@@ -1,9 +1,7 @@
-import { configFromFs } from '../../utils/mockState';
-import getPathFromState from '../getPathFromState';
-import getStateFromPath, {
-  stripBaseUrl,
-  getUrlWithReactNavigationConcessions,
-} from '../getStateFromPath';
+import { getMockConfig } from '../../testing-library';
+import { getPathFromState } from '../getPathFromState';
+import { getStateFromPath } from '../getStateFromPath';
+import { getUrlWithReactNavigationConcessions, stripBaseUrl } from '../getStateFromPath-forks';
 
 beforeEach(() => {
   delete process.env.EXPO_BASE_URL;
@@ -45,13 +43,13 @@ describe('baseUrl', () => {
     process.env.EXPO_BASE_URL = '/expo/prefix';
 
     const path = '/expo/prefix/bar';
-    const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
+    const config = getMockConfig(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 
     expect(getStateFromPath<object>(path, config)).toEqual({
-      routes: [{ name: '', state: { routes: [{ name: 'bar', path: '/bar' }] } }],
+      routes: [{ name: 'bar', path: '/bar' }],
     });
 
-    expect(getPathFromState(getStateFromPath<object>(path, config), config)).toBe(
+    expect(getPathFromState(getStateFromPath<object>(path, config)!, config)).toBe(
       '/expo/prefix/bar'
     );
   });
@@ -59,12 +57,12 @@ describe('baseUrl', () => {
   it('has baseUrl and state that does not match', () => {
     process.env.EXPO_BASE_URL = '/expo';
     const path = '/bar';
-    const config = configFromFs(['_layout.tsx', 'bar.tsx', 'index.tsx']);
+    const config = getMockConfig(['_layout.tsx', 'bar.tsx', 'index.tsx']);
 
     expect(getStateFromPath<object>(path, config)).toEqual({
-      routes: [{ name: '', state: { routes: [{ name: 'bar', path: '/bar' }] } }],
+      routes: [{ name: 'bar', path: '/bar' }],
     });
-    expect(getPathFromState(getStateFromPath<object>(path, config), config)).toBe('/expo/bar');
+    expect(getPathFromState(getStateFromPath<object>(path, config)!, config)).toBe('/expo/bar');
   });
 });
 
@@ -100,47 +98,59 @@ describe(getUrlWithReactNavigationConcessions, () => {
       );
     });
   });
-
-  [
-    ['', ''],
-    ['https://acme.com/hello/world/?foo=bar#123', 'https://acme.com/hello/world/?foo=bar'],
-    ['/foobar#123', '/foobar'],
-  ].forEach(([url, expected]) => {
-    it(`returns the pathname without hash for ${url}`, () => {
-      expect(getUrlWithReactNavigationConcessions(url).inputPathnameWithoutHash).toBe(expected);
-    });
-  });
 });
 
-it(`strips hashes`, () => {
-  expect(
-    getStateFromPath('/hello#123', {
-      screens: {
-        hello: 'hello',
-      },
-    } as any)
-  ).toEqual({
-    routes: [
-      {
-        name: 'hello',
-        path: '/hello',
-      },
-    ],
-  });
-
-  expect(getStateFromPath('/hello#123', configFromFs(['[hello].js']))).toEqual({
-    routes: [
-      {
-        name: '[hello]',
-        params: {
+describe('hash', () => {
+  it(`parses hashes`, () => {
+    expect(
+      getStateFromPath('/hello#123', {
+        screens: {
           hello: 'hello',
         },
-        path: '/hello',
-      },
-    ],
+      } as any)
+    ).toEqual({
+      routes: [
+        {
+          name: 'hello',
+          path: '/hello#123',
+          params: {
+            '#': '123',
+          },
+        },
+      ],
+    });
   });
 
-  // TODO: Test rest params
+  it('parses hashes with dynamic routes', () => {
+    expect(getStateFromPath('/hello#123', getMockConfig(['[hello]']))).toEqual({
+      routes: [
+        {
+          name: '[hello]',
+          params: {
+            hello: 'hello',
+            '#': '123',
+          },
+          path: '/hello#123',
+        },
+      ],
+    });
+  });
+
+  it('parses hashes with query params', () => {
+    expect(getStateFromPath('/?#123', getMockConfig(['index']))).toEqual({
+      routes: [
+        {
+          name: 'index',
+          path: '/?#123',
+          params: {
+            '#': '123',
+          },
+        },
+      ],
+    });
+
+    // TODO: Test rest params
+  });
 });
 
 it(`supports spaces`, () => {
@@ -159,12 +169,12 @@ it(`supports spaces`, () => {
     ],
   });
 
-  expect(getStateFromPath('/hello%20world', configFromFs(['[hello world].js']))).toEqual({
+  expect(getStateFromPath('/hello%20world', getMockConfig(['[hello world]']))).toEqual({
     routes: [
       {
         name: '[hello world]',
         params: {
-          'hello world': 'hello%20world',
+          'hello world': 'hello world',
         },
         path: '/hello%20world',
       },
@@ -174,22 +184,26 @@ it(`supports spaces`, () => {
   // TODO: Test rest params
 });
 
-it(`matches unmatched existing groups against 404`, () => {
+it(`matches against dynamic groups`, () => {
+  /*
+   * This will match (app)/([user])/[user]/index with a user = '(explore)'
+   * It may appear that '(explore)' is a group name but there is not value to match '[user]'
+   * So it doesn't match any routes in the '(explore)' group
+   * Therefore, '(explore)' is used as the value for '[user]'
+   */
   expect(
     getStateFromPath(
       '/(app)/(explore)',
-      configFromFs([
-        '+not-found.js',
+      getMockConfig([
+        '+not-found',
+        '(app)/_layout',
+        '(app)/(explore)/_layout',
+        '(app)/(explore)/[user]/index',
+        '(app)/(explore)/explore',
 
-        '(app)/_layout.tsx',
-
-        '(app)/(explore)/_layout.tsx',
-        '(app)/(explore)/[user]/index.tsx',
-        '(app)/(explore)/explore.tsx',
-
-        '(app)/([user])/_layout.tsx',
-        '(app)/([user])/[user]/index.tsx',
-        '(app)/([user])/explore.tsx',
+        '(app)/([user])/_layout',
+        '(app)/([user])/[user]/index',
+        '(app)/([user])/explore',
       ])
     )
   ).toEqual({
@@ -225,7 +239,7 @@ it(`adds dynamic route params from all levels of the path`, () => {
     getStateFromPath(
       '/foo/bar/baz/other',
 
-      configFromFs([
+      getMockConfig([
         '[foo]/_layout.tsx',
         '[foo]/bar/_layout.tsx',
         '[foo]/bar/[baz]/_layout.tsx',
@@ -265,6 +279,69 @@ it(`adds dynamic route params from all levels of the path`, () => {
             },
           ],
         },
+      },
+    ],
+  });
+});
+
+it(`handles not-found routes`, () => {
+  expect(getStateFromPath('/missing-page', getMockConfig(['+not-found', 'index']))).toEqual({
+    routes: [
+      {
+        name: '+not-found',
+        params: {
+          'not-found': ['missing-page'],
+        },
+        path: '/missing-page',
+      },
+    ],
+  });
+});
+
+it(`handles query params`, () => {
+  expect(
+    getStateFromPath('/?test=true&hello=world&array=1&array=2', getMockConfig(['index.tsx']))
+  ).toEqual({
+    routes: [
+      {
+        name: 'index',
+        params: {
+          test: 'true',
+          hello: 'world',
+          array: ['1', '2'],
+        },
+        path: '/?test=true&hello=world&array=1&array=2',
+      },
+    ],
+  });
+});
+
+it(`handles query params`, () => {
+  expect(
+    getStateFromPath('/?test=true&hello=world&array=1&array=2', getMockConfig(['index.tsx']))
+  ).toEqual({
+    routes: [
+      {
+        name: 'index',
+        params: {
+          test: 'true',
+          hello: 'world',
+          array: ['1', '2'],
+        },
+        path: '/?test=true&hello=world&array=1&array=2',
+      },
+    ],
+  });
+});
+
+it(`prioritizes hoisted index routes over dynamic groups`, () => {
+  expect(
+    getStateFromPath('/(one)', getMockConfig(['(one,two)/index.tsx', '(one,two)/[slug].tsx']))
+  ).toEqual({
+    routes: [
+      {
+        name: '(one)/index',
+        path: '',
       },
     ],
   });

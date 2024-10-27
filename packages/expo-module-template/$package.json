@@ -12,7 +12,7 @@
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "open:ios": "open -a \"Xcode\" example/ios",
+    "open:ios": "xed example/ios",
     "open:android": "open -a \"Android Studio\" example/android"
   },
   "keywords": [
@@ -31,8 +31,8 @@
   "dependencies": {},
   "devDependencies": {
     "@types/react": "^18.0.25",
-    "expo-module-scripts": "^3.3.0",
-    "expo-modules-core": "^1.10.0"
+    "expo-module-scripts": "^4.0.0",
+    "expo-modules-core": "^2.0.0-preview.1"
   },
   "peerDependencies": {
     "expo": "*",

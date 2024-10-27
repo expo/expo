@@ -3,7 +3,6 @@ import jestExpect from 'expect';
 import { setTimeout } from 'timers/promises';
 
 const platform = device.getPlatform();
-const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 const testElementValueAsync = async (testID: string) => {
   const attributes: any = await element(by.id(testID)).getAttributes();
@@ -15,7 +14,7 @@ const pressTestButtonAsync = async (testID: string) => await element(by.id(testI
 const waitForAppToBecomeVisible = async () => {
   await waitFor(element(by.id('updateString')))
     .toBeVisible()
-    .withTimeout(2000);
+    .withTimeout(3000);
 };
 
 describe('Basic tests', () => {
@@ -25,7 +24,6 @@ describe('Basic tests', () => {
 
   it('starts app, shows info when updates are disabled', async () => {
     console.warn(`Platform = ${platform}`);
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
@@ -34,7 +32,7 @@ describe('Basic tests', () => {
 
     jestExpect(await testElementValueAsync('updateString')).toBe('test');
     jestExpect(await testElementValueAsync('updateID')).toBeTruthy();
-    jestExpect(await testElementValueAsync('runtimeVersion')).toBe('');
+    jestExpect(await testElementValueAsync('runtimeVersion')).toBe('null');
     jestExpect(await testElementValueAsync('checkAutomatically')).toBe('NEVER');
     jestExpect(await testElementValueAsync('isEmbeddedLaunch')).toBe('false');
     jestExpect(await testElementValueAsync('availableUpdateID')).toBe('undefined');
@@ -43,6 +41,37 @@ describe('Basic tests', () => {
     await pressTestButtonAsync('callJSAPI');
     await setTimeout(2000);
     jestExpect(await testElementValueAsync('lastJSAPIErrorMessage')).toBe('true');
+
+    await device.terminateApp();
+  });
+
+  it('reloads', async () => {
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+
+      // The ReactContext is required by detox synchronization on Android.
+      // However ReactContext will be changed after the app is reloaded.
+      // All future tests will be blocked after reloading, so we need to disable synchronization for reload tests.
+      launchArgs: device.getPlatform() === 'android' ? { detoxEnableSynchronization: 0 } : {},
+    });
+    await waitForAppToBecomeVisible();
+
+    const isReloadingBefore = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingBefore).toBe('false');
+    const startTimeBefore = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeBefore).toBeGreaterThan(0);
+
+    await pressTestButtonAsync('reload');
+
+    // wait 3 seconds for reload to complete
+    // it's delayed 2 seconds after the button press in the client so the button press finish registers in detox
+    await setTimeout(3000);
+
+    const isReloadingAfter = await testElementValueAsync('isReloading');
+    jestExpect(isReloadingAfter).toBe('false');
+    const startTimeAfter = parseInt(await testElementValueAsync('startTime'), 10);
+    jestExpect(startTimeAfter).toBeGreaterThan(startTimeBefore);
 
     await device.terminateApp();
   });

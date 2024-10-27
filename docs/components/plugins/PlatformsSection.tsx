@@ -1,8 +1,8 @@
-import { StatusWaitingIcon } from '@expo/styleguide-icons';
+import { StatusWaitingIcon } from '@expo/styleguide-icons/custom/StatusWaitingIcon';
 
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, H4 } from '~/ui/components/Text';
 
 const platforms = [
@@ -53,7 +53,7 @@ type PlatformProps = Omit<Props, 'title'>;
 const PlatformsSection = (props: Props) => (
   <>
     <H4 className="mb-1">{props.title || 'Platform Compatibility'}</H4>
-    <Table layout={TableLayout.Fixed}>
+    <Table className="table-fixed max-sm-gutters:table-auto">
       <TableHead>
         <Row>
           {platforms.map(({ title }) => (

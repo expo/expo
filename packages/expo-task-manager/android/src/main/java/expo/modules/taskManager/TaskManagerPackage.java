@@ -3,7 +3,6 @@ package expo.modules.taskManager;
 import android.content.Context;
 
 import expo.modules.core.BasePackage;
-import expo.modules.core.ExportedModule;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.SingletonModule;
 

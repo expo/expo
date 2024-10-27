@@ -1,55 +1,41 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
-  AutoFocus,
-  BarCodePoint,
-  BarCodeScanningResult,
-  Camera,
+  BarcodePoint,
+  BarcodeScanningResult,
+  CameraView,
   CameraCapturedPicture,
+  CameraMode,
   CameraType,
   FlashMode,
   PermissionStatus,
-  WhiteBalance,
+  Camera,
+  FocusMode,
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Svg from 'react-native-svg';
 
 import GalleryScreen from './GalleryScreen';
-import { face, landmarks } from '../../components/Face';
 
-const flashModeOrder = {
-  off: FlashMode.on,
-  on: FlashMode.auto,
-  auto: FlashMode.torch,
-  torch: FlashMode.off,
+const flashModeOrder: Record<string, FlashMode> = {
+  off: 'on',
+  on: 'auto',
+  auto: 'off',
 };
 
 const flashIcons: Record<string, string> = {
   off: 'flash-off',
   on: 'flash',
   auto: 'flash-outline',
-  torch: 'flashlight',
 };
 
-const wbOrder: Record<string, WhiteBalance> = {
-  auto: WhiteBalance.sunny,
-  sunny: WhiteBalance.cloudy,
-  cloudy: WhiteBalance.shadow,
-  shadow: WhiteBalance.fluorescent,
-  fluorescent: WhiteBalance.incandescent,
-  incandescent: WhiteBalance.auto,
-};
-
-const wbIcons: Record<string, string> = {
-  auto: 'white-balance-auto',
-  sunny: 'white-balance-sunny',
-  cloudy: 'cloud',
-  shadow: 'umbrella-beach',
-  fluorescent: 'white-balance-iridescent',
-  incandescent: 'white-balance-incandescent',
+const volumeIcons: Record<string, string> = {
+  on: 'volume-high',
+  off: 'volume-mute',
 };
 
 const photos: CameraCapturedPicture[] = [];
@@ -57,55 +43,86 @@ const photos: CameraCapturedPicture[] = [];
 interface State {
   flash: FlashMode;
   zoom: number;
-  autoFocus: AutoFocus;
-  type: CameraType;
-  depth: number;
-  whiteBalance: WhiteBalance;
-  ratio: string;
-  ratios: any[];
+  facing: CameraType;
   barcodeScanning: boolean;
-  faceDetecting: boolean;
-  faces: any[];
-  cornerPoints?: BarCodePoint[];
+  mute: boolean;
+  torchEnabled: boolean;
+  cornerPoints?: BarcodePoint[];
+  mirror?: boolean;
+  autoFocus: FocusMode;
   barcodeData: string;
   newPhotos: boolean;
+  previewPaused: boolean;
   permissionsGranted: boolean;
+  micPermissionsGranted: boolean;
   permission?: PermissionStatus;
-  pictureSize?: any;
-  pictureSizes: any[];
+  micPermission?: PermissionStatus;
+  pictureSize?: string;
+  pictureSizes: string[];
   pictureSizeId: number;
   showGallery: boolean;
   showMoreOptions: boolean;
-  mode: string;
+  mode: CameraMode;
   recording: boolean;
 }
 
+function Gestures({ children }: { children: React.ReactNode }) {
+  const doubleTapGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .numberOfTaps(2)
+        .maxDuration(250)
+        .onStart(() => {
+          console.log('doubleTapGesture > onStart');
+        }),
+    []
+  );
+
+  const longPressGesture = useMemo(
+    () =>
+      Gesture.LongPress()
+        .minDuration(750)
+        .onStart(() => {
+          console.log('longPressGesture > onStart');
+        }),
+    []
+  );
+
+  if (Platform.OS === 'web') {
+    return children;
+  }
+
+  return (
+    <GestureDetector gesture={Gesture.Race(doubleTapGesture, longPressGesture)}>
+      {children}
+    </GestureDetector>
+  );
+}
 export default class CameraScreen extends React.Component<object, State> {
+  camera? = React.createRef<CameraView>();
+
   readonly state: State = {
-    flash: FlashMode.off,
+    flash: 'off',
     zoom: 0,
-    autoFocus: AutoFocus.on,
-    type: CameraType.back,
-    depth: 0,
-    whiteBalance: WhiteBalance.auto,
-    ratio: '16:9',
-    ratios: [],
+    facing: 'back',
     barcodeScanning: false,
-    faceDetecting: false,
-    faces: [],
+    torchEnabled: false,
     cornerPoints: undefined,
+    mute: false,
+    mirror: false,
     barcodeData: '',
+    autoFocus: 'off',
     newPhotos: false,
+    previewPaused: false,
     permissionsGranted: false,
-    pictureSizes: [],
-    pictureSizeId: 0,
+    micPermissionsGranted: false,
     showGallery: false,
     showMoreOptions: false,
+    pictureSizes: [],
+    pictureSizeId: 0,
     mode: 'picture',
     recording: false,
   };
-
-  camera?: Camera;
 
   componentDidMount() {
     if (Platform.OS !== 'web') {
@@ -113,6 +130,10 @@ export default class CameraScreen extends React.Component<object, State> {
     }
     Camera.requestCameraPermissionsAsync().then(({ status }) => {
       this.setState({ permission: status, permissionsGranted: status === 'granted' });
+    });
+
+    Camera.requestMicrophonePermissionsAsync().then(({ status }) => {
+      this.setState({ micPermission: status, micPermissionsGranted: status === 'granted' });
     });
   }
 
@@ -124,8 +145,6 @@ export default class CameraScreen extends React.Component<object, State> {
     }
   }
 
-  getRatios = async () => this.camera!.getSupportedRatiosAsync();
-
   toggleView = () =>
     this.setState((state) => ({ showGallery: !state.showGallery, newPhotos: false }));
 
@@ -133,100 +152,43 @@ export default class CameraScreen extends React.Component<object, State> {
 
   toggleFacing = () =>
     this.setState((state) => ({
-      type: state.type === CameraType.back ? CameraType.front : CameraType.back,
+      facing: state.facing === 'back' ? 'front' : 'back',
     }));
 
   toggleFlash = () => this.setState((state) => ({ flash: flashModeOrder[state.flash] }));
 
-  setRatio = (ratio: string) => this.setState({ ratio });
+  togglePreviewPaused = () => this.setState((state) => ({ previewPaused: !state.previewPaused }));
 
-  toggleWB = () => this.setState((state) => ({ whiteBalance: wbOrder[state.whiteBalance] }));
+  toggleTorch = () => this.setState((state) => ({ torchEnabled: !state.torchEnabled }));
 
-  toggleFocus = () =>
-    this.setState((state) => ({
-      autoFocus: state.autoFocus === AutoFocus.on ? AutoFocus.off : AutoFocus.on,
-    }));
+  toggleMute = () => this.setState((state) => ({ mute: !state.mute }));
+
+  toggleMirror = () => this.setState((state) => ({ mirror: !state.mirror }));
 
   zoomOut = () => this.setState((state) => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
 
   zoomIn = () => this.setState((state) => ({ zoom: state.zoom + 0.1 > 1 ? 1 : state.zoom + 0.1 }));
 
-  setFocusDepth = (depth: number) => this.setState({ depth });
-
   toggleBarcodeScanning = () =>
     this.setState((state) => ({ barcodeScanning: !state.barcodeScanning }));
 
-  toggleFaceDetection = () => this.setState((state) => ({ faceDetecting: !state.faceDetecting }));
-
-  takePicture = async () => {
-    if (this.camera) {
-      await this.camera.takePictureAsync({ onPictureSaved: this.onPictureSaved });
-    }
-  };
-
-  recordVideo = async () => {
-    if (this.camera) {
-      this.setState((state) => ({ recording: !state.recording }));
-      if (this.state.recording) {
-        this.camera.stopRecording();
-        return Promise.resolve();
-      } else {
-        return await this.camera.recordAsync();
-      }
-    }
-  };
-
-  takeVideo = async () => {
-    const result = await this.recordVideo();
-    if (result?.uri) {
-      await FileSystem.moveAsync({
-        from: result.uri,
-        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
-      });
-    }
-  };
-
-  changeMode = () => {
-    this.setState((state) => ({ mode: state.mode === 'picture' ? 'video' : 'picture' }));
-  };
-
-  handleMountError = ({ message }: { message: string }) => console.error(message);
-
-  onPictureSaved = async (photo: CameraCapturedPicture) => {
-    if (Platform.OS === 'web') {
-      photos.push(photo);
-    } else {
-      await FileSystem.moveAsync({
-        from: photo.uri,
-        to: `${FileSystem.documentDirectory}photos/${Date.now()}.jpg`,
-      });
-    }
-    this.setState({ newPhotos: true });
-  };
-
-  onBarCodeScanned = (code: BarCodeScanningResult) => {
-    console.log('Found: ', code);
-    this.setState(() => ({
-      barcodeData: code.data,
-      cornerPoints: code.cornerPoints,
+  toggleFocus = () =>
+    this.setState((state) => ({
+      autoFocus: state.autoFocus === 'on' ? 'off' : 'on',
     }));
-  };
-
-  onFacesDetected = ({ faces }: { faces: any }) => this.setState({ faces });
 
   collectPictureSizes = async () => {
-    if (this.camera) {
-      const { ratio } = this.state;
-      const pictureSizes = (await this.camera.getAvailablePictureSizesAsync(ratio)) || [];
-      let pictureSizeId = 0;
-      if (Platform.OS === 'ios') {
-        pictureSizeId = pictureSizes.indexOf('High');
-      } else {
-        // returned array is sorted in ascending order - default size is the largest one
-        pictureSizeId = pictureSizes.length - 1;
-      }
-      this.setState({ pictureSizes, pictureSizeId, pictureSize: pictureSizes[pictureSizeId] });
+    if (this.state.pictureSizes.length > 0) {
+      return;
     }
+    const pictureSizes = (await this.camera?.current?.getAvailablePictureSizesAsync()) || [];
+    let pictureSizeId = 0;
+    if (Platform.OS === 'ios') {
+      pictureSizeId = pictureSizes.indexOf('Photo');
+    } else {
+      pictureSizeId = pictureSizes.length - 1;
+    }
+    this.setState({ pictureSizes, pictureSizeId, pictureSize: pictureSizes[pictureSizeId] });
   };
 
   previousPictureSize = () => this.changePictureSize(1);
@@ -248,21 +210,72 @@ export default class CameraScreen extends React.Component<object, State> {
     });
   };
 
+  takePicture = async () => {
+    await this.camera?.current?.takePictureAsync({
+      onPictureSaved: this.onPictureSaved,
+      shutterSound: !this.state.mute,
+    });
+  };
+
+  recordVideo = async () => {
+    this.setState((state) => ({ recording: !state.recording }));
+    if (this.state.recording) {
+      this.camera?.current?.stopRecording();
+      return Promise.resolve();
+    } else {
+      return this.camera?.current?.recordAsync();
+    }
+  };
+
+  takeVideo = async () => {
+    const result = await this.recordVideo();
+    this.setState((state) => ({ recording: !state.recording }));
+    if (result?.uri) {
+      await FileSystem.moveAsync({
+        from: result.uri,
+        to: `${FileSystem.documentDirectory}photos/${Date.now()}.${result.uri.split('.')[1]}`,
+      });
+    }
+  };
+
+  updatePreviewState = () => {
+    if (this.state.previewPaused) {
+      this.camera?.current?.resumePreview();
+    } else {
+      this.camera?.current?.pausePreview();
+    }
+    this.togglePreviewPaused();
+  };
+
+  changeMode = () => {
+    this.setState((state) => ({ mode: state.mode === 'picture' ? 'video' : 'picture' }));
+  };
+
+  handleMountError = ({ message }: { message: string }) => console.error(message);
+
+  onPictureSaved = async (photo: CameraCapturedPicture) => {
+    if (Platform.OS === 'web') {
+      photos.push(photo);
+    } else {
+      await FileSystem.moveAsync({
+        from: photo.uri,
+        to: `${FileSystem.documentDirectory}photos/${Date.now()}.jpg`,
+      });
+    }
+    this.setState({ newPhotos: true });
+  };
+
+  onBarcodeScanned = (code: BarcodeScanningResult) => {
+    console.log('Found: ', code);
+    this.setState(() => ({
+      barcodeData: code.data,
+      cornerPoints: code.cornerPoints,
+    }));
+  };
+
   renderGallery() {
     return <GalleryScreen onPress={this.toggleView} />;
   }
-
-  renderFaces = () => (
-    <View style={styles.facesContainer} pointerEvents="none">
-      {this.state.faces.map(face)}
-    </View>
-  );
-
-  renderLandmarks = () => (
-    <View style={styles.facesContainer} pointerEvents="none">
-      {this.state.faces.map(landmarks)}
-    </View>
-  );
 
   renderNoPermissions = () => (
     <View style={styles.noPermissions}>
@@ -287,11 +300,18 @@ export default class CameraScreen extends React.Component<object, State> {
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
         <Ionicons name={flashIcons[this.state.flash] as any} size={28} color="white" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleWB}>
-        <MaterialCommunityIcons
-          name={wbIcons[this.state.whiteBalance] as any}
-          size={32}
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMute}>
+        <Ionicons
+          name={volumeIcons[this.state.mute ? 'off' : 'on'] as any}
+          size={28}
           color="white"
+        />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleTorch}>
+        <Ionicons
+          name="flashlight"
+          size={28}
+          color={this.state.torchEnabled ? 'white' : '#858585'}
         />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFocus}>
@@ -302,6 +322,20 @@ export default class CameraScreen extends React.Component<object, State> {
           ]}>
           AF
         </Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMirror}>
+        <MaterialCommunityIcons
+          name="mirror"
+          size={24}
+          color={this.state.mirror ? 'white' : '#858585'}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.toggleButton} onPress={this.updatePreviewState}>
+        {this.state.previewPaused ? (
+          <AntDesign name="playcircleo" size={24} color="white" />
+        ) : (
+          <AntDesign name="pausecircleo" size={24} color="white" />
+        )}
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleMoreOptions}>
         <MaterialCommunityIcons name="dots-horizontal" size={32} color="white" />
@@ -326,7 +360,7 @@ export default class CameraScreen extends React.Component<object, State> {
             <MaterialCommunityIcons name="stop-circle" size={64} color="red" />
           ) : (
             <Ionicons
-              name="ios-radio-button-on"
+              name="radio-button-on"
               size={64}
               color={this.state.mode === 'picture' ? 'white' : 'red'}
             />
@@ -345,19 +379,13 @@ export default class CameraScreen extends React.Component<object, State> {
   renderMoreOptions = () => (
     <View style={styles.options}>
       <View style={styles.detectors}>
-        <TouchableOpacity onPress={this.toggleFaceDetection}>
-          <MaterialCommunityIcons
-            name="face-recognition"
-            size={32}
-            color={this.state.faceDetecting ? 'white' : '#858585'}
-          />
-        </TouchableOpacity>
         <TouchableOpacity onPress={this.toggleBarcodeScanning}>
           <MaterialCommunityIcons
             name="barcode-scan"
             size={32}
             color={this.state.barcodeScanning ? 'white' : '#858585'}
           />
+          <Text style={{ color: this.state.barcodeScanning ? 'white' : '#858585' }}>Code</Text>
         </TouchableOpacity>
       </View>
 
@@ -378,8 +406,8 @@ export default class CameraScreen extends React.Component<object, State> {
     </View>
   );
 
-  renderBarCode = () => {
-    const origin: BarCodePoint | undefined = this.state.cornerPoints
+  renderBarcode = () => {
+    const origin: BarcodePoint | undefined = this.state.cornerPoints
       ? this.state.cornerPoints[0]
       : undefined;
     return (
@@ -392,8 +420,8 @@ export default class CameraScreen extends React.Component<object, State> {
 
         <Svg.Polygon
           points={this.state.cornerPoints?.map((coord) => `${coord.x},${coord.y}`).join(' ')}
-          stroke="green"
-          strokeWidth={10}
+          stroke="red"
+          strokeWidth={5}
         />
       </Svg.Svg>
     );
@@ -401,35 +429,34 @@ export default class CameraScreen extends React.Component<object, State> {
 
   renderCamera = () => (
     <View style={{ flex: 1 }}>
-      <Camera
-        ref={(ref) => (this.camera = ref!)}
-        style={styles.camera}
-        onCameraReady={this.collectPictureSizes}
-        type={this.state.type}
-        flashMode={FlashMode[this.state.flash]}
-        autoFocus={AutoFocus[this.state.autoFocus]}
-        zoom={this.state.zoom}
-        whiteBalance={WhiteBalance[this.state.whiteBalance]}
-        ratio={this.state.ratio}
-        pictureSize={this.state.pictureSize}
-        onMountError={this.handleMountError}
-        onFacesDetected={this.state.faceDetecting ? this.onFacesDetected : undefined}
-        faceDetectorSettings={{
-          tracking: true,
-        }}
-        barCodeScannerSettings={{
-          barCodeTypes: [
-            BarCodeScanner.Constants.BarCodeType.qr,
-            BarCodeScanner.Constants.BarCodeType.pdf417,
-          ],
-        }}
-        onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
-        {this.renderTopBar()}
-        {this.renderBottomBar()}
-      </Camera>
-      {this.state.faceDetecting && this.renderFaces()}
-      {this.state.faceDetecting && this.renderLandmarks()}
-      {this.state.barcodeScanning && this.renderBarCode()}
+      <Gestures>
+        <CameraView
+          ref={this.camera}
+          style={styles.camera}
+          onCameraReady={this.collectPictureSizes}
+          responsiveOrientationWhenOrientationLocked
+          enableTorch={this.state.torchEnabled}
+          autofocus={this.state.autoFocus}
+          facing={this.state.facing}
+          animateShutter
+          mirror={this.state.mirror}
+          pictureSize={this.state.pictureSize}
+          flash={this.state.flash}
+          active
+          mode={this.state.mode}
+          mute={this.state.mute}
+          zoom={this.state.zoom}
+          videoQuality="1080p"
+          onMountError={this.handleMountError}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr', 'pdf417'],
+          }}
+          onBarcodeScanned={this.state.barcodeScanning ? this.onBarcodeScanned : undefined}>
+          {this.renderTopBar()}
+          {this.renderBottomBar()}
+        </CameraView>
+      </Gestures>
+      {this.state.barcodeScanning && this.renderBarcode()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>
   );
@@ -554,7 +581,7 @@ const styles = StyleSheet.create({
   },
   barcode: {
     position: 'absolute',
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: 'red',
   },
 });

@@ -1,24 +1,18 @@
-import { EventSubscription } from 'fbemitter';
-import type { UpdateEvent, UpdatesNativeStateChangeEvent } from './Updates.types';
+import type { UpdatesNativeStateChangeEvent, UpdatesNativeStateMachineContext } from './Updates.types';
+export declare let latestContext: UpdatesNativeStateMachineContext;
 /**
- * @deprecated Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- * This API is deprecated and will be removed in a future release corresponding with SDK 51.
- * Use [`useUpdates()`](#useupdates) instead.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
- */
-export declare function addListener(listener: (event: UpdateEvent) => void): EventSubscription;
-/**
+ * Add listener for state change events
  * @hidden
  */
-export declare const addUpdatesStateChangeListener: (listener: (event: UpdatesNativeStateChangeEvent) => void) => EventSubscription;
+export declare const addUpdatesStateChangeListener: (listener: (event: UpdatesNativeStateChangeEvent) => void) => import("fbemitter").EventSubscription;
 /**
+ * Allows JS test to emit a simulated native state change event (used in unit testing)
  * @hidden
  */
-export declare const emitStateChangeEvent: (event: UpdatesNativeStateChangeEvent) => void;
+export declare const emitTestStateChangeEvent: (event: UpdatesNativeStateChangeEvent) => void;
+/**
+ * Allows JS test to reset latest context (and sequence number)
+ * @hidden
+ */
+export declare const resetLatestContext: () => void;
 //# sourceMappingURL=UpdatesEmitter.d.ts.map

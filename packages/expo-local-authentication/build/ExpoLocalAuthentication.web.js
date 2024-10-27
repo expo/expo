@@ -1,8 +1,5 @@
 import { SecurityLevel } from './LocalAuthentication.types';
 export default {
-    get name() {
-        return 'ExpoLocalAuthentication';
-    },
     async hasHardwareAsync() {
         return false;
     },

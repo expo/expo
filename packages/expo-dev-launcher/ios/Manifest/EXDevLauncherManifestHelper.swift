@@ -7,13 +7,17 @@ public class EXDevLauncherManifestHelper: NSObject {
   private static func defaultOrientationForOrientationMask(_ orientationMask: UIInterfaceOrientationMask) -> UIInterfaceOrientation {
     if orientationMask.contains(.all) {
       return UIInterfaceOrientation.unknown
-    } else  if orientationMask.contains(.portrait) {
+    }
+    if orientationMask.contains(.portrait) {
       return UIInterfaceOrientation.portrait
-    } else if orientationMask.contains(.landscapeLeft) {
+    }
+    if orientationMask.contains(.landscapeLeft) {
       return UIInterfaceOrientation.landscapeLeft
-    } else if orientationMask.contains(.landscapeRight) {
+    }
+    if orientationMask.contains(.landscapeRight) {
       return UIInterfaceOrientation.landscapeRight
-    } else if orientationMask.contains(.portraitUpsideDown) {
+    }
+    if orientationMask.contains(.portraitUpsideDown) {
       return UIInterfaceOrientation.portraitUpsideDown
     }
 
@@ -54,7 +58,6 @@ public class EXDevLauncherManifestHelper: NSObject {
   }
 
   @objc
-  @available(iOS 12.0, *)
   public static func exportManifestUserInterfaceStyle(_ userInterfaceStyle: String?) -> UIUserInterfaceStyle {
     switch userInterfaceStyle {
       case "light":

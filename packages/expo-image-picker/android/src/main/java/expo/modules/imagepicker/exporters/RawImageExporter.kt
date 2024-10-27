@@ -11,7 +11,7 @@ class RawImageExporter : ImageExporter {
   override suspend fun exportAsync(
     source: Uri,
     output: File,
-    contentResolver: ContentResolver,
+    contentResolver: ContentResolver
   ): ImageExportResult {
     copyFile(source, output, contentResolver)
     val exifInterface = ExifInterface(output.absolutePath)
@@ -29,7 +29,7 @@ class RawImageExporter : ImageExporter {
     return ImageExportResult(
       width,
       height,
-      output,
+      output
     )
   }
 }

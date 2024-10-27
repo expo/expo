@@ -1,9 +1,9 @@
 import type { PackagerAsset } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
-import { PixelRatio } from 'react-native';
+import { PixelRatio, NativeModules } from 'react-native';
 
 import AssetSourceResolver from './AssetSourceResolver';
-import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';
+import { getManifest2, manifestBaseUrl } from './PlatformUtils';
 
 // @docsMissing
 export type AssetMetadata = Pick<
@@ -20,10 +20,6 @@ export type AssetSource = {
   hash: string;
 };
 
-// Fast lookup check if asset map has any overrides in the manifest.
-// This value will always be either null or an absolute URL, e.g. `https://expo.dev/`
-const assetMapOverride = getManifest().assetMapOverride;
-
 /**
  * Selects the best file for the given asset (ex: choosing the best scale for images) and returns
  * a { uri, hash } pair for the specific asset file.
@@ -31,27 +27,15 @@ const assetMapOverride = getManifest().assetMapOverride;
  * If the asset isn't an image with multiple scales, the first file is selected.
  */
 export function selectAssetSource(meta: AssetMetadata): AssetSource {
-  // Override with the asset map in manifest if available
-  if (assetMapOverride && assetMapOverride.hasOwnProperty(meta.hash)) {
-    meta = { ...meta, ...assetMapOverride[meta.hash] };
-  }
-
   // This logic is based on that of AssetSourceResolver, with additional support for file hashes and
   // explicitly provided URIs
   const scale = AssetSourceResolver.pickScale(meta.scales, PixelRatio.get());
   const index = meta.scales.findIndex((s) => s === scale);
-  const hash = meta.fileHashes ? meta.fileHashes[index] || meta.fileHashes[0] : meta.hash;
+  const hash = meta.fileHashes ? (meta.fileHashes[index] ?? meta.fileHashes[0]) : meta.hash;
 
   // Allow asset processors to directly provide the URL to load
-  const uri = meta.fileUris ? meta.fileUris[index] || meta.fileUris[0] : meta.uri;
+  const uri = meta.fileUris ? (meta.fileUris[index] ?? meta.fileUris[0]) : meta.uri;
   if (uri) {
-    return { uri: resolveUri(uri), hash };
-  }
-
-  // Check if the assetUrl was overridden in the manifest
-  const assetUrlOverride = getManifest().assetUrlOverride;
-  if (assetUrlOverride) {
-    const uri = pathJoin(assetUrlOverride, hash);
     return { uri: resolveUri(uri), hash };
   }
 
@@ -75,9 +59,6 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
 
   const devServerUrl = manifest2?.extra?.expoGo?.developer
     ? 'http://' + manifest2.extra.expoGo.debuggerHost
-    : // For assets during development, we use the development server's URL origin
-    getManifest().developer
-    ? getManifest().bundleUrl
     : null;
   if (devServerUrl) {
     const baseUrl = new URL(meta.httpServerLocation + suffix, devServerUrl);
@@ -90,11 +71,16 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     };
   }
 
-  // Production CDN URIs are based on each asset file hash
-  return {
-    uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`,
-    hash,
-  };
+  // Temporary fallback for loading assets in Expo Go home
+  if (NativeModules.ExponentKernel) {
+    return { uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`, hash };
+  }
+
+  // In correctly configured apps, we arrive here if the asset is locally available on disk due to
+  // being managed by expo-updates, and `getLocalAssetUri(hash)` must return a local URI for this
+  // hash. Since the asset is local, we don't have a remote URL and specify an invalid URL (an empty
+  // string) as a placeholder.
+  return { uri: '', hash };
 }
 
 /**
@@ -105,31 +91,4 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
 export function resolveUri(uri: string): string {
   // `manifestBaseUrl` is always an absolute URL or `null`.
   return manifestBaseUrl ? new URL(uri, manifestBaseUrl).href : uri;
-}
-
-// A very cheap path canonicalization like path.join but without depending on a `path` polyfill.
-export function pathJoin(...paths: string[]): string {
-  // Start by simply combining paths, without worrying about ".." or "."
-  const combined = paths
-    .map((part, index) => {
-      if (index === 0) {
-        return part.trim().replace(/\/*$/, '');
-      }
-      return part.trim().replace(/(^\/*|\/*$)/g, '');
-    })
-    .filter((part) => part.length > 0)
-    .join('/')
-    .split('/');
-
-  // Handle ".." and "." in paths
-  const resolved: string[] = [];
-  for (const part of combined) {
-    if (part === '..') {
-      resolved.pop(); // Remove the last element from the result
-    } else if (part !== '.') {
-      resolved.push(part);
-    }
-  }
-
-  return resolved.join('/');
 }

@@ -1,15 +1,15 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import inquirer from 'inquirer';
 import path from 'path';
 
-import { podInstallAsync, Podspec, readPodspecAsync } from '../CocoaPods';
-import { IOS_DIR } from '../Constants';
-import logger from '../Logger';
-import { arrayize, searchFilesAsync } from '../Utils';
 import { copyVendoredFilesAsync } from './common';
 import { VendoringModuleConfig } from './types';
+import { podInstallAsync, Podspec, readPodspecAsync } from '../CocoaPods';
+import { EXPO_GO_IOS_DIR } from '../Constants';
+import logger from '../Logger';
+import { arrayize, searchFilesAsync } from '../Utils';
 
 export async function vendorAsync(
   sourceDirectory: string,
@@ -55,8 +55,8 @@ export async function vendorAsync(
   logger.log('📄 Generating %s', chalk.magenta(podspecJsonFile));
 
   if (await promptToReinstallPodsAsync()) {
-    logger.log('♻️  Reinstalling pods at %s', chalk.magenta(IOS_DIR));
-    await podInstallAsync(IOS_DIR, {
+    logger.log('♻️  Reinstalling pods at %s', chalk.magenta(EXPO_GO_IOS_DIR));
+    await podInstallAsync(EXPO_GO_IOS_DIR, {
       noRepoUpdate: true,
     });
   }
@@ -102,5 +102,5 @@ function createFilesPatterns(podspec: Podspec): string[] {
     );
   }
 
-  return result;
+  return result.filter(Boolean);
 }

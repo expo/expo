@@ -1,7 +1,7 @@
 {
   "name": "expo-crypto",
-  "version": "12.8.0",
-  "description": "Expo universal module for crypto",
+  "version": "14.0.1",
+  "description": "Provides cryptography primitives for Android, iOS and web.",
   "main": "build/Crypto.js",
   "types": "build/Crypto.d.ts",
   "sideEffects": false,
@@ -42,7 +42,7 @@
     "base64-js": "^1.3.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*"

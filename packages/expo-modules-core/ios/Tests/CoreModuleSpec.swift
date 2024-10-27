@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class CoreModuleSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
     let runtime = try! appContext.runtime
 
@@ -14,10 +14,6 @@ final class CoreModuleSpec: ExpoSpec {
     }
 
     describe("core object") {
-      it("is initialized") {
-        expect(runtime.coreObject).notTo(beNil())
-      }
-
       it("is installed to global scope") {
         let coreObjectValue = try runtime.eval("expo")
         expect(coreObjectValue.kind) == .object

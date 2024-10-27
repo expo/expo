@@ -5,50 +5,85 @@ hideTOC: true
 description: An introduction to EAS Update which is a hosted service for projects using the expo-updates library.
 ---
 
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 **EAS Update** is a hosted service that serves updates for projects using the [`expo-updates`](/versions/latest/sdk/updates) library.
 
-EAS Update makes fixing small bugs and pushing quick fixes a snap in between app store submissions. It accomplishes this by allowing an end-user's app to swap out the non-native parts of their app (for example, JS, styling, and image changes) with a new update that contains bug fixes and other updates.
+EAS Update makes fixing small bugs and pushing quick fixes a snap in between app store submissions. It accomplishes this by enabling an app to update its own non-native pieces (such as JS, styling, and images) over-the-air.
 
-All apps running the `expo-updates` library have the ability to receive updates. To start using EAS Update, continue to the [Getting Started](/eas-update/getting-started) guide.
+All apps that include the `expo-updates` library have the ability to receive updates.
 
-> Still, using Classic Updates? We moved those docs to [the archive](/archive/classic-updates/introduction).
+- To start using EAS Update, continue to the [Getting Started](/eas-update/getting-started) guide.
+- For a complete tutorial of using EAS Update with other EAS services, refer to the [EAS Tutorial](/tutorial/eas/introduction/).
 
-## Pitch
+## JS API for update management
 
-### Improve user experience
+<ContentSpotlight
+  alt="Updates JS API"
+  src="/static/images/eas-update/frontpage/critical-update.png"
+  className="max-w-[480px]"
+/>
 
-EAS Update allows you to release hotfixes and enhancements in response to user feedback or market trends. It helps you keep users engaged and satisfied with your app. Don't wait for the next planned update or manual update request.
+The updates [JavaScript API](/versions/unversioned/sdk/updates/) includes a React hook called `useUpdates()`. This hook provides detailed information about the currently running update and any new updates that are available or have been downloaded. In addition, you can view any errors that were encountered during the update process to help you debug any issues while the app is attempting to update.
 
-### Broad compatibility
+The API also provides methods such as `checkForUpdateAsync()` and `fetchUpdateAsync()` which allows you to control when your app checks for and downloads updates.
 
-EAS Update works with vanilla React Native apps. All you need to do is install the lightweight `expo` npm package as a prerequisite, making it a compelling alternative to solutions such as [Codepush](/eas-update/codepush).
+## Insight tracking
 
-### Tailored for Expo
+<ContentSpotlight
+  alt="Website dashboard deployment insights"
+  src="/static/images/eas-update/frontpage/insights.png"
+  className="max-w-[640px]"
+/>
 
-EAS Update is designed for Expo apps, making integration easy and workflows efficient. Use the website UIs to check app status and debug, especially for developers using EAS Build.
+You'll get a [deployments dashboard](https://expo.dev/accounts/[account]/projects/[project]/deployments) that helps visualize which updates are being sent to builds. Updates work in concert with [insights](/eas-insights/introduction/) to provide data on the adoption rates of your updates with your users.
 
-### Customizable update strategies
+## Republish for reverting mistakes
 
-Apply updates through [`expo-updates` API](/versions/latest/sdk/updates) and [app config](/versions/latest/config/app/#updates) if the default behavior is not suitable for you. You will always have the upper hand in shaping the update process without compromising your users' experience.
+<ContentSpotlight
+  alt="Republishing button on an update"
+  src="/static/images/eas-update/frontpage/republish.png"
+  className="max-w-[480px]"
+/>
+
+If an update isn't performing as expected, you can [republish](/eas-update/eas-cli/#republish-a-previous-update-within-a-branch) a previous, stable version on top of the problematic one, much like a new "commit" in version control systems.
 
 ## Get started
 
 <BoxLink
   title="Get started with EAS Update"
-  description="Get started with EAS Update and use it in your project."
-  href="/eas-update/getting-started"
+  description="Learn how to get started with the setup required to configure and use EAS Update in your project."
+  href="/eas-update/getting-started/"
+  Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="Publish an update"
+  description="Learn how to publish an update to a specific branch with EAS Update."
+  href="/eas-update/getting-started/#publish-an-update"
+  Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="Preview updates"
+  description="View your teammate's changes with EAS Update."
+  href="/eas-update/develop-faster/"
+  Icon={LayersTwo02Icon}
 />
 
 <BoxLink
   title="Use GitHub Actions"
   description="Publish an update and preview with a QR code after a commit."
-  href="/eas-update/github-actions"
+  href="/eas-update/github-actions/"
+  Icon={LayersTwo02Icon}
 />
 
 <BoxLink
-  title="Develop faster"
-  description="View your teammate's changes with EAS Update."
-  href="/eas-update/develop-faster"
+  title="Migrate from CodePush"
+  description="Learn how to migrate from CodePush to EAS Update."
+  href="/eas-update/codepush/"
+  Icon={LayersTwo02Icon}
 />

@@ -7,9 +7,16 @@ import {
   AuthenticationType,
   LocalAuthenticationResult,
   SecurityLevel,
+  BiometricsSecurityLevel,
 } from './LocalAuthentication.types';
 
-export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel };
+export {
+  LocalAuthenticationOptions,
+  AuthenticationType,
+  LocalAuthenticationResult,
+  SecurityLevel,
+  BiometricsSecurityLevel,
+};
 
 // @needsAudit
 /**
@@ -92,7 +99,12 @@ export async function authenticateAsync(
   }
 
   const promptMessage = options.promptMessage || 'Authenticate';
-  const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
+  const cancelLabel = options.cancelLabel || 'Cancel';
+  const result = await ExpoLocalAuthentication.authenticateAsync({
+    ...options,
+    promptMessage,
+    cancelLabel,
+  });
 
   return result;
 }

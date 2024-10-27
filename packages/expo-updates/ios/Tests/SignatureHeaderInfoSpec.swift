@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import EXUpdates
 
 class SignatureHeaderInfoSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("parseSignatureHeader") {
       it("ParsesCodeSigningInfo") {
         let codeSigningInfo = try SignatureHeaderInfo.parseSignatureHeader(signatureHeader: "sig=\"12345\", keyid=\"test\", alg=\"rsa-v1_5-sha256\"")

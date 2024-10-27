@@ -11,7 +11,7 @@ export interface ExpoConfig {
      */
     description?: string;
     /**
-     * The friendly URL name for publishing. For example, `myAppName` will refer to the `expo.dev/@project-owner/myAppName` project.
+     * A URL-friendly name for your project that is unique across your account.
      */
     slug: string;
     /**
@@ -27,21 +27,14 @@ export interface ExpoConfig {
      */
     originalFullName?: string;
     /**
-     * Defaults to `unlisted`. `unlisted` hides the project from search results. `hidden` restricts access to the project page to only the owner and other users that have been granted access. Valid values: `public`, `unlisted`, `hidden`.
-     */
-    privacy?: 'public' | 'unlisted' | 'hidden';
-    /**
      * The Expo sdkVersion to run the project on. This should line up with the version specified in your package.json.
      */
     sdkVersion?: string;
     /**
-     * **Note: Don't use this property unless you are sure what you're doing**
-     *
-     * The runtime version associated with this manifest.
-     * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+     * Property indicating compatibility between a build's native code and an OTA update.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
     /**
      * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
@@ -72,7 +65,7 @@ export interface ExpoConfig {
      */
     primaryColor?: string;
     /**
-     * Local path or remote URL to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo app.
+     * Local path or remote URL to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo Go app.
      */
     icon?: string;
     /**
@@ -170,19 +163,23 @@ export interface ExpoConfig {
         [k: string]: any;
     };
     /**
-     * Configuration for how and when the app should request OTA JavaScript updates
+     * Configuration for the expo-updates library
      */
     updates?: {
         /**
-         * If set to false, your standalone app will never download any code, and will only use code bundled locally on the device. In that case, all updates to your app must be submitted through app store review. Defaults to true. (Note: This will not work out of the box with ExpoKit projects)
+         * Whether the updates system will run. Defaults to true. If set to false, builds will only use code and assets bundled at time of build.
          */
         enabled?: boolean;
         /**
-         * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+         * By default, expo-updates will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to disable automatic checking. Valid values: `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, `NEVER`
          */
         checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD' | 'WIFI_ONLY' | 'NEVER';
         /**
-         * How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app. Defaults to 0. Must be between 0 and 300000 (5 minutes).
+         * Whether to load the embedded update. Defaults to true. If set to false, an update will be fetched at launch. When set to false, ensure that `checkAutomatically` is set to `ON_LOAD` and `fallbackToCacheTimeout` is large enough for the initial remote update to download. This should not be used in production.
+         */
+        useEmbeddedUpdate?: boolean;
+        /**
+         * How long (in ms) to wait for the app to check for and fetch a new update upon launch before falling back to the most recent update already present on the device. Defaults to 0. Must be between 0 and 300000 (5 minutes). If the startup update check takes longer than this value, any update downloaded during the check will be applied upon the next app launch.
          */
         fallbackToCacheTimeout?: number;
         /**
@@ -190,7 +187,7 @@ export interface ExpoConfig {
          */
         url?: string;
         /**
-         * Local path of a PEM-formatted X.509 certificate used for requiring and verifying signed Expo updates
+         * Local path of a PEM-formatted X.509 certificate used for verifying codesigned updates. When provided, all updates downloaded by expo-updates must be signed.
          */
         codeSigningCertificate?: string;
         /**
@@ -198,7 +195,7 @@ export interface ExpoConfig {
          */
         codeSigningMetadata?: {
             /**
-             * Algorithm used to generate manifest code signing signature.
+             * Algorithm used to generate manifest code signing signature. Valid values: `rsa-v1_5-sha256`
              */
             alg?: 'rsa-v1_5-sha256';
             /**
@@ -207,11 +204,15 @@ export interface ExpoConfig {
             keyid?: string;
         };
         /**
-         * Extra HTTP headers to include in HTTP requests made by `expo-updates`. These may override preset headers.
+         * Extra HTTP headers to include in HTTP requests made by `expo-updates` when fetching manifests or assets. These may override preset headers.
          */
         requestHeaders?: {
             [k: string]: any;
         };
+        /**
+         * Array of glob patterns specifying which files should be included in updates. Glob patterns are relative to the project root. A value of `['**']` will match all asset files within the project root. When not supplied all asset files will be included. Example: Given a value of `['app/images/** /*.png', 'app/fonts/** /*.woff']` all `.png` files in all subdirectories of `app/images` and all `.woff` files in all subdirectories of `app/fonts` will be included in updates.
+         */
+        assetPatternsToBeBundled?: string[];
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -222,7 +223,7 @@ export interface ExpoConfig {
         };
     };
     /**
-     * An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.dev/guides/offline-support/)
+     * @deprecated Follow [the guide to select and exclude assets](https://docs.expo.dev/eas-update/asset-selection/) for EAS Update instead. An array of file glob strings which point to assets that will be bundled within your standalone app binary. Read more in the [Offline Support guide](https://docs.expo.dev/guides/offline-support/)
      */
     assetBundlePatterns?: string[];
     /**
@@ -234,16 +235,13 @@ export interface ExpoConfig {
      * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
+    /**
+     * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
+     */
+    newArchEnabled?: boolean;
     ios?: IOS;
     android?: Android;
     web?: Web;
-    /**
-     * Configuration for scripts to run to hook into the publish process
-     */
-    hooks?: {
-        postPublish?: PublishHook[];
-        postExport?: PublishHook[];
-    };
     /**
      * Enable experimental features that may be unstable, unsupported, or removed without deprecation notices.
      */
@@ -268,6 +266,18 @@ export interface ExpoConfig {
          * Enables Turbo Modules, which are a type of native modules that use a different way of communicating between JS and platform code. When installing a Turbo Module you will need to enable this experimental option (the library still needs to be a part of Expo SDK already, like react-native-reanimated v2). Turbo Modules do not support remote debugging and enabling this option will disable remote debugging.
          */
         turboModules?: boolean;
+        /**
+         * Experimentally use a vendored canary build of React for testing upcoming features.
+         */
+        reactCanary?: boolean;
+        /**
+         * Experimentally enable React Compiler.
+         */
+        reactCompiler?: boolean;
+        /**
+         * Experimentally enable React Server Components support in Expo CLI and Expo Router.
+         */
+        reactServerComponents?: boolean;
     };
     /**
      * Internal properties for developer tools
@@ -305,6 +315,10 @@ export interface Splash {
  */
 export interface IOS {
     /**
+     * The Apple development team ID to use for all native targets. You can find your team ID in [the Apple Developer Portal](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/).
+     */
+    appleTeamId?: string;
+    /**
      * The manifest for the iOS version of your app will be written to this path during publish.
      */
     publishManifestPath?: string;
@@ -325,11 +339,11 @@ export interface IOS {
      */
     backgroundColor?: string;
     /**
-     * Local path or remote URL to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
+     * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., dark, tinted) can be provided. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
      *
-     *  Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
+     * Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo Go app.
      */
-    icon?: string;
+    icon?: string | IOSIcons;
     /**
      * URL to your app on the Apple App Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
      */
@@ -401,6 +415,41 @@ export interface IOS {
         [k: string]: any;
     };
     /**
+     * Dictionary of privacy manifest definitions to add to your app's native PrivacyInfo.xcprivacy file. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files)
+     */
+    privacyManifests?: {
+        /**
+         * A list of required reasons of why your app uses restricted API categories. [Learn more](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api)
+         */
+        NSPrivacyAccessedAPITypes?: {
+            /**
+             * A string that identifies the category of required reason APIs your app uses
+             */
+            NSPrivacyAccessedAPIType: string;
+            /**
+             * A list of reasons for a specific category.
+             */
+            NSPrivacyAccessedAPITypeReasons: string[];
+        }[];
+        /**
+         * A list of domains that your app uses for tracking.
+         */
+        NSPrivacyTrackingDomains?: string[];
+        /**
+         * A Boolean that indicates whether your app or third-party SDK uses data for tracking.
+         */
+        NSPrivacyTracking?: boolean;
+        /**
+         * A list of collected data types that your app uses.
+         */
+        NSPrivacyCollectedDataTypes?: {
+            NSPrivacyCollectedDataType: string;
+            NSPrivacyCollectedDataTypeLinked: boolean;
+            NSPrivacyCollectedDataTypeTracking: boolean;
+            NSPrivacyCollectedDataTypePurposes: string[];
+        }[];
+    };
+    /**
      * An array that contains Associated Domains for the standalone app. [Learn more](https://developer.apple.com/documentation/safariservices/supporting_associated_domains).
      */
     associatedDomains?: string[];
@@ -465,14 +514,32 @@ export interface IOS {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
-     * **Note: Don't use this property unless you are sure what you're doing**
-     *
-     * The runtime version associated with this manifest for the iOS platform. If provided, this will override the top level runtimeVersion key.
-     * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+     * A Boolean value that indicates whether the iOS app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
+    /**
+     * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
+}
+/**
+ * Configuration that is specific to the iOS platform icons.
+ */
+export interface IOSIcons {
+    /**
+     * The icon that will appear for the app regardless of the user's current system appearance.
+     */
+    any?: string;
+    /**
+     * The icon that will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     */
+    dark?: string;
+    /**
+     * The icon that will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     */
+    tinted?: string;
 }
 /**
  * Configuration that is specific to the Android platform.
@@ -503,7 +570,7 @@ export interface Android {
      */
     userInterfaceStyle?: 'light' | 'dark' | 'automatic';
     /**
-     * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
+     * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo Go app.
      */
     icon?: string;
     /**
@@ -532,53 +599,7 @@ export interface Android {
      */
     playStoreUrl?: string;
     /**
-     * List of permissions used by the standalone app.
-     *
-     *  To use ONLY the following minimum necessary permissions and none of the extras supported by Expo in a default managed app, set `permissions` to `[]`. The minimum necessary permissions do not require a Privacy Policy when uploading to Google Play Store and are:
-     * • receive data from Internet
-     * • view network connections
-     * • full network access
-     * • change your audio settings
-     * • prevent device from sleeping
-     *
-     *  To use ALL permissions supported by Expo by default, do not specify the `permissions` key.
-     *
-     *   To use the minimum necessary permissions ALONG with certain additional permissions, specify those extras in `permissions`, e.g.
-     *
-     *  `[ "CAMERA", "ACCESS_FINE_LOCATION" ]`.
-     *
-     *   You can specify the following permissions depending on what you need:
-     *
-     * - `ACCESS_COARSE_LOCATION`
-     * - `ACCESS_FINE_LOCATION`
-     * - `ACCESS_BACKGROUND_LOCATION`
-     * - `CAMERA`
-     * - `RECORD_AUDIO`
-     * - `READ_CONTACTS`
-     * - `WRITE_CONTACTS`
-     * - `READ_CALENDAR`
-     * - `WRITE_CALENDAR`
-     * - `READ_EXTERNAL_STORAGE`
-     * - `WRITE_EXTERNAL_STORAGE`
-     * - `USE_FINGERPRINT`
-     * - `USE_BIOMETRIC`
-     * - `WRITE_SETTINGS`
-     * - `VIBRATE`
-     * - `READ_PHONE_STATE`
-     * - `FOREGROUND_SERVICE`
-     * - `WAKE_LOCK`
-     * - `com.anddoes.launcher.permission.UPDATE_COUNT`
-     * - `com.android.launcher.permission.INSTALL_SHORTCUT`
-     * - `com.google.android.c2dm.permission.RECEIVE`
-     * - `com.google.android.gms.permission.ACTIVITY_RECOGNITION`
-     * - `com.google.android.providers.gsf.permission.READ_GSERVICES`
-     * - `com.htc.launcher.permission.READ_SETTINGS`
-     * - `com.htc.launcher.permission.UPDATE_SHORTCUT`
-     * - `com.majeur.launcher.permission.UPDATE_BADGE`
-     * - `com.sec.android.provider.badge.permission.READ`
-     * - `com.sec.android.provider.badge.permission.WRITE`
-     * - `com.sonyericsson.home.permission.BROADCAST_BADGE`
-     *
+     * A list of permissions to add to the app `AndroidManifest.xml` during prebuild. For example: `['android.permission.SCHEDULE_EXACT_ALARM']`
      */
     permissions?: string[];
     /**
@@ -586,7 +607,7 @@ export interface Android {
      */
     blockedPermissions?: string[];
     /**
-     * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `GoogleService-Info.plist` file for configuring Firebase. Including this key automatically enables FCM in your standalone app.
+     * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `google-services.json` file for configuring Firebase. Including this key automatically enables FCM in your standalone app.
      */
     googleServicesFile?: string;
     /**
@@ -741,13 +762,14 @@ export interface Android {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
-     * **Note: Don't use this property unless you are sure what you're doing**
-     *
-     * The runtime version associated with this manifest for the Android platform. If provided, this will override the top level runtimeVersion key.
-     * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+     * A Boolean value that indicates whether the Android app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
+    /**
+     * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprintExperimental';
+        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
 }
 export interface AndroidIntentFiltersData {
@@ -785,9 +807,9 @@ export interface AndroidIntentFiltersData {
  */
 export interface Web {
     /**
-     * Sets the rendering method for the web app for both `expo start` and `expo export`. `static` statically renders HTML files for every route in the `app/` directory, which is available only in Expo Router apps. `single` outputs a Single Page Application (SPA), with a single `index.html` in the output folder, and has no statically indexable HTML. Defaults to `single`.
+     * Sets the export method for the web app for both `expo start` and `expo export`. `static` statically renders HTML files for every route in the `app/` directory, which is available only in Expo Router apps. `single` outputs a Single Page Application (SPA), with a single `index.html` in the output folder, and has no statically indexable HTML. `server` outputs static HTML, and API Routes for hosting with a custom Node.js server. Defaults to `single`.
      */
-    output?: 'single' | 'static';
+    output?: 'single' | 'static' | 'server';
     /**
      * Relative path of an image to use for your app's favicon.
      */
@@ -886,15 +908,8 @@ export interface Web {
         [k: string]: any;
     };
     /**
-     * Sets the bundler to use for the web platform. Only supported in the local CLI `npx expo`.
+     * Sets the bundler to use for the web platform. Only supported in the local CLI `npx expo`. Defaults to `webpack` if the `@expo/webpack-config` package is installed, if not, it defaults to `metro`.
      */
     bundler?: 'webpack' | 'metro';
-    [k: string]: any;
-}
-export interface PublishHook {
-    file?: string;
-    config?: {
-        [k: string]: any;
-    };
     [k: string]: any;
 }

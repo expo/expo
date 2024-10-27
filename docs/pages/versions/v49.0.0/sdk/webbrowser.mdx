@@ -24,7 +24,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label="Basic WebBrowser usage" dependencies={["expo-web-browser", "expo-constants"]}>
 
 ```jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Text, View, StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 /* @hide */
@@ -46,7 +46,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -56,14 +55,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#ecf0f1',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
 
 ### Handling deep links from the WebBrowser
 
-If you use the `WebBrowser` window for authentication or another use case where you want to pass information back into your app through a deep link, add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [`dismissBrowser`](#webbrowserdismissbrowser). It will not automatically be dismissed when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. Read more about it in [Linking](/guides/linking#handling-links).
+If you use the `WebBrowser` window for authentication or another use case where you want to pass information back into your app through a deep link, add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [`dismissBrowser`](#webbrowserdismissbrowser). It will not automatically be dismissed when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. Read more about it in [Linking](/linking/into-your-app/#handle-urls).
 
 ## API
 
@@ -77,7 +75,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 ### `ERR_WEB_BROWSER_REDIRECT`
 
-**Web only:** The window cannot complete the redirect request because the invoking window doesn't have a reference to it's parent. This can happen if the parent window was reloaded.
+**Web only:** The window cannot complete the redirect request because the invoking window doesn't have a reference to its parent. This can happen if the parent window was reloaded.
 
 ### `ERR_WEB_BROWSER_BLOCKED`
 
@@ -89,6 +87,4 @@ You're method can still run in an async function but there cannot be any long ru
 
 ### `ERR_WEB_BROWSER_CRYPTO`
 
-**Web only:** The current environment doesn't support crypto. Ensure you are running from a secure origin (https).
-
-> **Tip:** You can run `npx expo start --web --https` to open your web page in a secure development environment.
+**Web only:** The current environment doesn't support crypto. Ensure you are running from a secure origin (localhost/https).

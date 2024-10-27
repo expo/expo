@@ -15,18 +15,9 @@
     "privacy": "unlisted",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
-    "web": {
-      "build": {
-        "babel": {
-          "root": "./",
-          "include": ["test-suite", "native-component-list", "bare-expo"]
-        }
-      }
-    },
+    "userInterfaceStyle": "automatic",
     "android": {
-      "scheme": [
-        "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"
-      ],
+      "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000020"
@@ -40,8 +31,13 @@
       ],
       "bundleIdentifier": "dev.expo.Payments",
       "supportsTablet": true,
-      "requireFullScreen": false
-
+      "requireFullScreen": false,
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.dev.expo.Payments"]
+      }
+    },
+    "web": {
+      "bundler": "metro"
     },
     "notification": {
       "serviceWorkerPath": "/expo-service-worker.js",
@@ -51,6 +47,53 @@
       "eas": {
         "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774"
       }
-    }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
+    },
+    "plugins": [
+      "expo-video",
+      "expo-background-fetch",
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/icomoon.ttf"]
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "isAndroidBackgroundLocationEnabled": true,
+          "isIosBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/ic_stat_notifications.png",
+          "color": "#4630EB",
+          "sounds": ["./assets/notification.wav"]
+        }
+      ],
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "Allow Expo projects to use data for tracking the user or the device"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true
+          }
+        }
+      ],
+      "./plugins/withAndroidNetworkSecurityConfig",
+      "./plugins/withBenchmarkModules"
+    ]
   }
 }

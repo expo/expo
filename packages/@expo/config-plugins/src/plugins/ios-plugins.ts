@@ -5,7 +5,7 @@ import type { XcodeProject } from 'xcode';
 import { withMod } from './withMod';
 import type { ConfigPlugin, Mod } from '../Plugin.types';
 import type { ExpoPlist, InfoPlist } from '../ios/IosConfig.types';
-import type { AppDelegateProjectFile } from '../ios/Paths';
+import type { AppDelegateProjectFile, PodfileProjectFile } from '../ios/Paths';
 import { get } from '../utils/obj';
 import { addWarningIOS } from '../utils/warnings';
 
@@ -174,6 +174,20 @@ export const withXcodeProject: ConfigPlugin<Mod<XcodeProject>> = (config, action
   return withMod(config, {
     platform: 'ios',
     mod: 'xcodeproj',
+    action,
+  });
+};
+
+/**
+ * Provides the Podfile for modification.
+ *
+ * @param config
+ * @param action
+ */
+export const withPodfile: ConfigPlugin<Mod<PodfileProjectFile>> = (config, action) => {
+  return withMod(config, {
+    platform: 'ios',
+    mod: 'podfile',
     action,
   });
 };

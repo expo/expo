@@ -1,5 +1,4 @@
 import { Android, ExpoConfig, IOS } from '@expo/config-types';
-import * as Fingerprint from '@expo/fingerprint';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import fs from 'fs';
 import { boolish } from 'getenv';
@@ -13,6 +12,8 @@ export type ExpoConfigUpdates = Pick<
   ExpoConfig,
   'sdkVersion' | 'owner' | 'runtimeVersion' | 'updates' | 'slug'
 >;
+
+export const FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';
 
 export function getExpoUpdatesPackageVersion(projectRoot: string): string | null {
   const expoUpdatesPackageJsonPath = resolveFrom.silent(projectRoot, 'expo-updates/package.json');
@@ -83,28 +84,44 @@ export async function getRuntimeVersionAsync(
   }
 
   if (typeof runtimeVersion === 'string') {
+    if (runtimeVersion === FINGERPRINT_RUNTIME_VERSION_SENTINEL) {
+      throw new Error(
+        `${FINGERPRINT_RUNTIME_VERSION_SENTINEL} is a reserved value for runtime version. To use a fingerprint runtime version, use the "fingerprint" runtime version policy.`
+      );
+    }
     return runtimeVersion;
-  } else if (runtimeVersion.policy === 'appVersion') {
+  } else if (!runtimeVersion.policy) {
+    throw new Error(
+      `"${runtimeVersion}" is not a valid runtime version. Only a string or a runtime version policy is supported.`
+    );
+  } else if (runtimeVersion.policy === 'fingerprint') {
+    return FINGERPRINT_RUNTIME_VERSION_SENTINEL;
+  } else {
+    return await resolveRuntimeVersionPolicyAsync(runtimeVersion.policy, config, platform);
+  }
+}
+
+export async function resolveRuntimeVersionPolicyAsync(
+  policy: 'appVersion' | 'nativeVersion' | 'sdkVersion',
+  config: Pick<ExpoConfig, 'version' | 'sdkVersion'> & {
+    android?: Pick<Android, 'versionCode'>;
+    ios?: Pick<IOS, 'buildNumber'>;
+  },
+  platform: 'android' | 'ios'
+): Promise<string> {
+  if (policy === 'appVersion') {
     return getAppVersion(config);
-  } else if (runtimeVersion.policy === 'nativeVersion') {
+  } else if (policy === 'nativeVersion') {
     return getNativeVersion(config, platform);
-  } else if (runtimeVersion.policy === 'sdkVersion') {
+  } else if (policy === 'sdkVersion') {
     if (!config.sdkVersion) {
       throw new Error("An SDK version must be defined when using the 'sdkVersion' runtime policy.");
     }
     return getRuntimeVersionForSDKVersion(config.sdkVersion);
-  } else if (runtimeVersion.policy === 'fingerprintExperimental') {
-    console.warn(
-      "Use of the experimental 'fingerprintExperimental' runtime policy may result in unexpected system behavior."
-    );
-    return await Fingerprint.createProjectHashAsync(projectRoot);
+  } else {
+    // fingerprint is resolvable only at build time (not in config plugin).
+    throw new Error(`"${policy}" is not a valid runtime version policy type.`);
   }
-
-  throw new Error(
-    `"${
-      typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
-    }" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`
-  );
 }
 
 export function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): string | null {
@@ -118,6 +135,14 @@ export function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): b
   }
 
   return getUpdateUrl(config) !== null;
+}
+
+export function getUpdatesUseEmbeddedUpdate(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
+  if (config.updates?.useEmbeddedUpdate !== undefined) {
+    return config.updates.useEmbeddedUpdate;
+  }
+
+  return true;
 }
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {

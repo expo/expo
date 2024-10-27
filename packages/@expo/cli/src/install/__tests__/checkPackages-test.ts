@@ -1,6 +1,5 @@
 import { getConfig } from '@expo/config';
 
-import { asMock } from '../../__tests__/asMock';
 import { Log } from '../../log';
 import {
   getVersionedDependenciesAsync,
@@ -37,8 +36,8 @@ jest.mock('@expo/config', () => ({
 
 describe(checkPackagesAsync, () => {
   it(`checks packages and exits when packages are invalid`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(false);
-    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([
+    jest.mocked(confirmAsync).mockResolvedValueOnce(false);
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce([
       {
         packageName: 'react-native',
         packageType: 'dependencies',
@@ -66,9 +65,9 @@ describe(checkPackagesAsync, () => {
   });
 
   it(`notifies when dependencies are on exclude list`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(false);
+    jest.mocked(confirmAsync).mockResolvedValueOnce(false);
     // @ts-expect-error
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getConfig).mockReturnValueOnce({
       pkg: {
         expo: {
           install: {
@@ -82,7 +81,7 @@ describe(checkPackagesAsync, () => {
         slug: 'my-app',
       },
     });
-    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce([
       {
         packageName: 'expo-av',
         packageType: 'dependencies',
@@ -104,8 +103,8 @@ describe(checkPackagesAsync, () => {
   });
 
   it(`checks packages and exits with zero if all are valid`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(false);
-    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([]);
+    jest.mocked(confirmAsync).mockResolvedValueOnce(false);
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce([]);
     await expect(
       checkPackagesAsync('/', {
         packages: ['react-native'],
@@ -141,7 +140,7 @@ describe(checkPackagesAsync, () => {
       },
     ];
 
-    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce(issues);
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce(issues);
 
     await checkPackagesAsync('/', {
       packages: ['react-native', 'expo'],

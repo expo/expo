@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, ViewStyle, ImageStyle, TextStyle } from 'react-native';
+import { StyleSheet, type ViewStyle, type ImageStyle, type TextStyle } from 'react-native';
 
 import { useTheme } from './useExpoTheme';
 

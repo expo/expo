@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`allows destructuring in the catch block 1`] = `
+"Object.defineProperty(exports, "__esModule", { value: true });exports.App = App;var _jsxRuntime = require("react/jsx-runtime");function App() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  var foo = () => {
+    try {
+      console.log('hey');
+    } catch (_ref) {var message = _ref.message;
+      // NOTE(EvanBacon): React compiler throws:
+      // (BuildHIR::lowerAssignment) Could not find binding for declaration.
+      console.error(message);
+    }
+  };
+  return /*#__PURE__*/(0, _jsxRuntime.jsx)("div", { children: "Hello" });
+}"
+`;
+
+exports[`supports functions with discarded return values in try/catch blocks that run in memos 1`] = `
+"Object.defineProperty(exports, "__esModule", { value: true });exports.useSideEffectMayThrow = useSideEffectMayThrow;var _react = require("react");
+
+function SIDE_EFFECT_MAY_THROW() {}
+
+// NOTE(EvanBacon): React compiler throws:
+// Cannot read properties of undefined (reading 'preds')
+function useSideEffectMayThrow() {var t0;try {
+
+
+    SIDE_EFFECT_MAY_THROW();
+    t0 = true;} catch {
+
+    t0 = false;}return t0;}"
+`;
+
+exports[`supports memoizing 1`] = `
+"var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));var _reactCompilerRuntime = require("react-compiler-runtime");var _vectorIcons = require("@expo/vector-icons");
+var _expoAppLoading = _interopRequireDefault(require("expo-app-loading"));
+var _expoAsset = require("expo-asset");
+var _react = _interopRequireWildcard(require("react"));
+var _reactNative = require("react-native");var _jsxRuntime = require("react/jsx-runtime");function _getRequireWildcardCache(e) {if ("function" != typeof WeakMap) return null;var r = new WeakMap(),t = new WeakMap();return (_getRequireWildcardCache = function (e) {return e ? t : r;})(e);}function _interopRequireWildcard(e, r) {if (!r && e && e.__esModule) return e;if (null === e || "object" != typeof e && "function" != typeof e) return { default: e };var t = _getRequireWildcardCache(r);if (t && t.has(e)) return t.get(e);var n = { __proto__: null },a = Object.defineProperty && Object.getOwnPropertyDescriptor;for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) {var i = a ? Object.getOwnPropertyDescriptor(e, u) : null;i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u];}return n.default = e, t && t.set(e, n), n;}
+
+function App() {var $ = (0, _reactCompilerRuntime.c)(5);
+  var _useState = (0, _react.useState)(false),_useState2 = (0, _slicedToArray2.default)(_useState, 2),assetsAreLoaded = _useState2[0],setAssetsAreLoaded = _useState2[1];var t0;var t1;if ($[0] === Symbol.for("react.memo_cache_sentinel")) {
+
+    t0 = () => {
+      loadAssetsAsync(setAssetsAreLoaded);};
+    t1 = [];$[0] = t0;$[1] = t1;} else {t0 = $[0];t1 = $[1];}(0, _react.useEffect)(t0, t1);if (!
+
+  assetsAreLoaded) {var _t;if ($[2] === Symbol.for("react.memo_cache_sentinel")) {
+      _t = /*#__PURE__*/(0, _jsxRuntime.jsx)(_expoAppLoading.default, {});$[2] = _t;} else {_t = $[2];}return _t;}var t2;if ($[3] !== assetsAreLoaded) {
+
+
+    t2 = !assetsAreLoaded ? /*#__PURE__*/
+    (0, _jsxRuntime.jsx)(_expoAppLoading.default, {}) : /*#__PURE__*/
+
+    (0, _jsxRuntime.jsx)(_reactNative.View, { style: styles.container, children: /*#__PURE__*/
+      (0, _jsxRuntime.jsx)(_vectorIcons.Ionicons, { name: "md-options", size: 28 }) }
+    );$[3] = assetsAreLoaded;$[4] = t2;} else {t2 = $[4];}return t2;}function
+
+
+
+loadAssetsAsync(_x) {return _loadAssetsAsync.apply(this, arguments);}function _loadAssetsAsync() {_loadAssetsAsync = (0, _asyncToGenerator2.default)(function* (
+  setAssetsAreLoaded)
+  {
+    try {
+      yield _expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
+    } finally {
+      setAssetsAreLoaded(true);
+    }
+  });return _loadAssetsAsync.apply(this, arguments);}
+
+var styles = _reactNative.StyleSheet.create({
+  container: {
+    flex: 1
+  }
+});"
+`;

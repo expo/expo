@@ -35,6 +35,7 @@ public extension Optional {
   }
 }
 
+// swiftlint:disable identifier_name
 /**
  * Download status that indicates whether or under what conditions an
  * update is able to be launched.
@@ -71,10 +72,20 @@ public enum UpdateStatus: Int {
    */
   case StatusDevelopment = 6
 }
+// swiftlint:enable identifier_name
 
-@objc(EXUpdatesUpdateError)
-public enum UpdateError: Int, Error {
-  case invalidExpoProtocolVersion
+public enum UpdateError: Error, Sendable, LocalizedError {
+  case invalidExpoProtocolVersion(protocolVersion: Int)
+  case legacyManifestInstantiationInvalid
+
+  public var errorDescription: String? {
+    switch self {
+    case let .invalidExpoProtocolVersion(protocolVersion):
+      return "Invalid Expo Updates protocol version: \(protocolVersion)"
+    case .legacyManifestInstantiationInvalid:
+      return "This version of expo-updates can no longer load legacy manifests"
+    }
+  }
 }
 
 @objc(EXUpdatesUpdate)
@@ -135,33 +146,29 @@ public class Update: NSObject {
     config: UpdatesConfig,
     database: UpdatesDatabase
   ) throws -> Update {
-    let protocolVersion = responseHeaderData.protocolVersion
+    guard let protocolVersion = responseHeaderData.protocolVersion else {
+      throw UpdateError.legacyManifestInstantiationInvalid
+    }
     switch protocolVersion {
-    case nil:
-      return LegacyUpdate.update(
-        withLegacyManifest: LegacyManifest(rawManifestJSON: withManifest),
-        config: config,
-        database: database
-      )
     case 0, 1:
-      return NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: withManifest),
+      return ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: withManifest),
         extensions: extensions,
         config: config,
         database: database
       )
     default:
-      throw UpdateError.invalidExpoProtocolVersion
+      throw UpdateError.invalidExpoProtocolVersion(protocolVersion: protocolVersion)
     }
   }
 
   public static func update(
-    withEmbeddedManifest: [String: Any],
+    withRawEmbeddedManifest: [String: Any],
     config: UpdatesConfig,
     database: UpdatesDatabase?
-  ) -> BareUpdate {
-    return BareUpdate.update(
-      withBareManifest: BareManifest(rawManifestJSON: withEmbeddedManifest),
+  ) -> EmbeddedUpdate {
+    return EmbeddedUpdate.update(
+      withEmbeddedManifest: EmbeddedManifest(rawManifestJSON: withRawEmbeddedManifest),
       config: config,
       database: database
     )

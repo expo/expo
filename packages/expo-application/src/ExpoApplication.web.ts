@@ -1,7 +1,4 @@
 export default {
-  get name(): string {
-    return 'ExpoApplication';
-  },
   get applicationName(): null {
     return null;
   },

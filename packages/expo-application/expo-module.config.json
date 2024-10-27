@@ -1,6 +1,6 @@
 {
-  "platforms": ["ios", "android", "web"],
-  "ios": {
+  "platforms": ["apple", "android", "web"],
+  "apple": {
     "modules": ["ApplicationModule"]
   },
   "android": {

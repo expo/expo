@@ -93,7 +93,10 @@ object MediaLibraryUtils {
               val columnId = filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID)
               val id = filesToDelete.getLong(columnId)
               val assetUri = ContentUris.withAppendedId(EXTERNAL_CONTENT_URI, id)
-              context.contentResolver.delete(assetUri, null)
+              val rowsDeleted = context.contentResolver.delete(assetUri, null)
+              if (rowsDeleted == 0) {
+                throw AssetFileException("Could not delete file.")
+              }
             } else {
               val dataColumnIndex = filesToDelete.getColumnIndex(MediaStore.MediaColumns.DATA)
               val filePath = filesToDelete.getString(dataColumnIndex)
@@ -101,7 +104,8 @@ object MediaLibraryUtils {
               if (file.delete()) {
                 context.contentResolver.delete(
                   EXTERNAL_CONTENT_URI,
-                  "${MediaStore.MediaColumns.DATA}=?", arrayOf(filePath)
+                  "${MediaStore.MediaColumns.DATA}=?",
+                  arrayOf(filePath)
                 )
               } else {
                 throw AssetFileException("Could not delete file.")
@@ -114,7 +118,8 @@ object MediaLibraryUtils {
     } catch (e: SecurityException) {
       promise.reject(
         ERROR_UNABLE_TO_SAVE_PERMISSION,
-        "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e
+        "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.",
+        e
       )
     } catch (e: Exception) {
       e.printStackTrace()
@@ -136,7 +141,6 @@ object MediaLibraryUtils {
 
   // Used in albums and migrations only - consider moving it there
   fun getAssetsById(context: Context, vararg assetsId: String?): List<AssetFile> {
-
     val path = arrayOf(
       MediaStore.MediaColumns._ID,
       MediaStore.MediaColumns.DATA,

@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter, CodedError } from 'expo-modules-core';
+import { CodedError, NativeModule, registerWebModule } from 'expo-modules-core';
 import { VoiceQuality } from './Speech.types';
 //https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/text
 const MAX_SPEECH_INPUT_LENGTH = 32767;
@@ -17,10 +17,7 @@ async function getVoices() {
         };
     });
 }
-export default {
-    get name() {
-        return 'ExponentSpeech';
-    },
+class ExpoSpeech extends NativeModule {
     async speak(id, text, options) {
         if (text.length > MAX_SPEECH_INPUT_LENGTH) {
             throw new CodedError('ERR_SPEECH_INPUT_LENGTH', 'Speech input text is too long! Limit of input length is: ' + MAX_SPEECH_INPUT_LENGTH);
@@ -57,21 +54,21 @@ export default {
             message.onboundary = options.onBoundary;
         }
         message.onstart = (nativeEvent) => {
-            SyntheticPlatformEmitter.emit('Exponent.speakingStarted', { id, nativeEvent });
+            this.emit('Exponent.speakingStarted', { id, nativeEvent });
         };
         message.onend = (nativeEvent) => {
-            SyntheticPlatformEmitter.emit('Exponent.speakingDone', { id, nativeEvent });
+            this.emit('Exponent.speakingDone', { id, nativeEvent });
         };
         message.onpause = (nativeEvent) => {
-            SyntheticPlatformEmitter.emit('Exponent.speakingStopped', { id, nativeEvent });
+            this.emit('Exponent.speakingStopped', { id, nativeEvent });
         };
         message.onerror = (nativeEvent) => {
-            SyntheticPlatformEmitter.emit('Exponent.speakingError', { id, nativeEvent });
+            this.emit('Exponent.speakingError', { id, nativeEvent });
         };
         message.text = text;
         window.speechSynthesis.speak(message);
         return message;
-    },
+    }
     async getVoices() {
         const voices = await getVoices();
         return voices.map((voice) => ({
@@ -83,19 +80,20 @@ export default {
             name: voice.name,
             voiceURI: voice.voiceURI,
         }));
-    },
+    }
     async isSpeaking() {
         return window.speechSynthesis.speaking;
-    },
+    }
     async stop() {
         return window.speechSynthesis.cancel();
-    },
+    }
     async pause() {
         return window.speechSynthesis.pause();
-    },
+    }
     async resume() {
         return window.speechSynthesis.resume();
-    },
-    maxSpeechInputLength: MAX_SPEECH_INPUT_LENGTH,
-};
+    }
+    maxSpeechInputLength = MAX_SPEECH_INPUT_LENGTH;
+}
+export default registerWebModule(ExpoSpeech);
 //# sourceMappingURL=ExponentSpeech.web.js.map

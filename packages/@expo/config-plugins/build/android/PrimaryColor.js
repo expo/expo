@@ -48,7 +48,7 @@ const withPrimaryColorStyles = config => {
   return (0, _androidPlugins().withAndroidStyles)(config, config => {
     config.modResults = (0, _Styles().assignStylesValue)(config.modResults, {
       add: !!getPrimaryColor(config),
-      parent: (0, _Styles().getAppThemeLightNoActionBarGroup)(),
+      parent: (0, _Styles().getAppThemeGroup)(),
       name: COLOR_PRIMARY_KEY,
       value: `@color/${COLOR_PRIMARY_KEY}`
     });
@@ -57,7 +57,6 @@ const withPrimaryColorStyles = config => {
 };
 exports.withPrimaryColorStyles = withPrimaryColorStyles;
 function getPrimaryColor(config) {
-  var _config$primaryColor;
-  return (_config$primaryColor = config.primaryColor) !== null && _config$primaryColor !== void 0 ? _config$primaryColor : DEFAULT_PRIMARY_COLOR;
+  return config.primaryColor ?? DEFAULT_PRIMARY_COLOR;
 }
 //# sourceMappingURL=PrimaryColor.js.map

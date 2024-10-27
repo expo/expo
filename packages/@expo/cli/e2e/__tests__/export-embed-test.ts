@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import execa from 'execa';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
@@ -8,6 +9,8 @@ import { execute, projectRoot, getLoadedModulesAsync, bin } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
+
+jest.unmock('resolve-from');
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
@@ -27,12 +30,6 @@ it('loads expected modules by default', async () => {
     `require('../../build/src/export/embed').expoExportEmbed`
   );
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/export/embed/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
@@ -66,6 +63,7 @@ it('runs `npx expo export:embed --help`', async () => {
         --asset-catalog-dest <string>          Directory to create an iOS Asset Catalog for images
         --unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default
         --reset-cache                          Removes cached files
+        --eager                                Eagerly export the bundle with default options
         -v, --verbose                          Enables debug logging
         --config <string>                      Path to the CLI configuration file
         --read-global-cache                    Try to fetch transformed JS code from the global cache, if configured.
@@ -99,7 +97,7 @@ it(
         bin,
         'export:embed',
         '--entry-file',
-        path.join(projectRoot, './index.js'),
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
         '--bundle-output',
         `./${output}/output.js`,
         '--assets-dest',
@@ -114,8 +112,10 @@ it(
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       }
     );
@@ -142,6 +142,268 @@ it(
       'assets/__packages/expo-router/assets/pkg.png',
       'assets/assets/icon.png',
       'output.js',
+    ]);
+
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    expect(outputJS.slice(0, 5)).toBe('var _');
+
+    // Ensure no `//# sourceURL=` comment
+    expect(outputJS).not.toContain('//# sourceURL=');
+    // Ensure `//# sourceMappingURL=output.js.map`
+    expect(outputJS).not.toContain('//# sourceMappingURL=');
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo export:embed --platform ios` with source maps',
+  async () => {
+    const projectRoot = ensureTesterReady('static-rendering');
+    const output = 'dist-export-embed-source-maps';
+    await fs.remove(path.join(projectRoot, output));
+    await fs.ensureDir(path.join(projectRoot, output));
+
+    await execa(
+      'node',
+      [
+        bin,
+        'export:embed',
+        '--entry-file',
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'ios',
+        '--dev',
+        'false',
+        '--sourcemap-output',
+        `./${output}/output.js.map`,
+        '--sourcemap-sources-root',
+        projectRoot,
+      ],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: '1',
+        },
+      }
+    );
+
+    const outputDir = path.join(projectRoot, output);
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    expect(outputJS.slice(0, 5)).toBe('var _');
+    // Ensure no `//# sourceURL=` comment
+    expect(outputJS).not.toContain('//# sourceURL=');
+    // Ensure `//# sourceMappingURL=output.js.map`
+    expect(outputJS).toContain('//# sourceMappingURL=output.js.map');
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toEqual([
+      'assets/__e2e__/static-rendering/sweet.ttf',
+      'assets/__packages/expo-router/assets/error.png',
+      'assets/__packages/expo-router/assets/file.png',
+      'assets/__packages/expo-router/assets/forward.png',
+      'assets/__packages/expo-router/assets/pkg.png',
+      'assets/assets/icon.png',
+      'output.js',
+      'output.js.map',
+    ]);
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo export:embed --platform ios` with a robot user',
+  async () => {
+    const projectRoot = ensureTesterReady('react-native-canary');
+    const output = 'dist-export-embed-robot-user';
+    await fs.remove(path.join(projectRoot, output));
+    await fs.ensureDir(path.join(projectRoot, output));
+
+    await execa(
+      'node',
+      [
+        bin,
+        'export:embed',
+        '--entry-file',
+        resolveRelativeEntryPoint(projectRoot, { platform: 'ios' }),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'ios',
+        '--dev',
+        'false',
+      ],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          E2E_ROUTER_SRC: 'react-native-canary',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: '1',
+
+          // Most important part:
+          // NOTE(EvanBacon): This is a robot user token for an expo-managed account that can authenticate with view-only permission.
+          // The token is not secret and can be used to authenticate with the Expo API.
+          EXPO_TOKEN: '4awlFlcNYg7qOFa8J3a7d5Uaph8FaTsD1SP2xWEf',
+
+          // Ensure EXPO_OFFLINE is not set!
+          // EXPO_OFFLINE
+        },
+        // stdio: 'inherit',
+      }
+    );
+
+    const outputDir = path.join(projectRoot, output);
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    expect(outputJS.slice(0, 5)).toBe('var _');
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toEqual([
+      'assets/__packages/expo-router/assets/error.png',
+      'assets/__packages/expo-router/assets/file.png',
+      'assets/__packages/expo-router/assets/forward.png',
+      'assets/__packages/expo-router/assets/pkg.png',
+      'output.js',
+    ]);
+  },
+  120 * 1000
+);
+
+it(
+  'runs `npx expo export:embed --platform android` with source maps',
+  async () => {
+    const projectRoot = ensureTesterReady('static-rendering');
+    const output = 'dist-export-embed-source-maps-android';
+    await fs.remove(path.join(projectRoot, output));
+    await fs.ensureDir(path.join(projectRoot, output));
+
+    console.log(
+      [
+        'export:embed',
+        '--entry-file',
+        resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'android',
+        '--dev',
+        'false',
+        '--sourcemap-output',
+        path.join(projectRoot, `./${output}/output.js.map`),
+        '--sourcemap-sources-root',
+        projectRoot,
+      ].join(' ')
+    );
+
+    const res = await execa(
+      'node',
+
+      // yarn expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
+      // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
+      [
+        bin,
+        'export:embed',
+        '--entry-file',
+        resolveRelativeEntryPoint(projectRoot, { platform: 'android' }),
+        '--bundle-output',
+        `./${output}/output.js`,
+        '--assets-dest',
+        output,
+        '--platform',
+        'android',
+        '--dev',
+        'false',
+        '--sourcemap-output',
+        path.join(projectRoot, `./${output}/output.js.map`),
+        '--sourcemap-sources-root',
+        projectRoot,
+      ],
+      {
+        cwd: projectRoot,
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_ASYNC: 'development',
+          EXPO_USE_FAST_RESOLVER: '1',
+        },
+      }
+    );
+
+    // Ensure no unexpected errors/warnings are thrown.
+    expect(res.stderr).toBe('Experimental module resolution is enabled.');
+
+    const outputDir = path.join(projectRoot, output);
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+
+    // Ensure output.js is a utf8 encoded file
+    const outputJS = fs.readFileSync(path.join(outputDir, 'output.js'), 'utf8');
+    expect(outputJS.slice(0, 5)).toBe('var _');
+    // Ensure no `//# sourceURL=` comment
+    expect(outputJS).not.toContain('//# sourceURL=');
+    // Ensure `//# sourceMappingURL=output.js.map`
+    expect(outputJS).toContain('//# sourceMappingURL=output.js.map');
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toEqual([
+      'drawable-mdpi/__packages_exporouter_assets_error.png',
+      'drawable-mdpi/__packages_exporouter_assets_file.png',
+      'drawable-mdpi/__packages_exporouter_assets_forward.png',
+      'drawable-mdpi/__packages_exporouter_assets_pkg.png',
+      'drawable-mdpi/assets_icon.png',
+      'output.js',
+      'output.js.map',
+      'raw/__e2e___staticrendering_sweet.ttf',
     ]);
   },
   // Could take 45s depending on how fast npm installs

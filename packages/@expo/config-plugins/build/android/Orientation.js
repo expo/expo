@@ -21,10 +21,8 @@ function _androidPlugins() {
   };
   return data;
 }
-const SCREEN_ORIENTATION_ATTRIBUTE = 'android:screenOrientation';
-exports.SCREEN_ORIENTATION_ATTRIBUTE = SCREEN_ORIENTATION_ATTRIBUTE;
-const withOrientation = (0, _androidPlugins().createAndroidManifestPlugin)(setAndroidOrientation, 'withOrientation');
-exports.withOrientation = withOrientation;
+const SCREEN_ORIENTATION_ATTRIBUTE = exports.SCREEN_ORIENTATION_ATTRIBUTE = 'android:screenOrientation';
+const withOrientation = exports.withOrientation = (0, _androidPlugins().createAndroidManifestPlugin)(setAndroidOrientation, 'withOrientation');
 function getOrientation(config) {
   return typeof config.orientation === 'string' ? config.orientation : null;
 }

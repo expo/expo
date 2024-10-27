@@ -1,15 +1,15 @@
 package expo.modules.devmenu
 
 import android.os.Bundle
-import com.facebook.react.ReactInstanceManager
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 
 object DevMenuDevSettings {
-  fun getDevSettings(reactInstanceManager: ReactInstanceManager): Bundle {
-    val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactInstanceManager)
+  fun getDevSettings(reactHost: ReactHostWrapper): Bundle {
+    val devDelegate = DevMenuDevToolsDelegate(DevMenuManager, reactHost)
     val devSettings = devDelegate.devSettings
 
-    val jsBundleURL = reactInstanceManager.devSupportManager.jsBundleURLForRemoteDebugging
+    val jsBundleURL = reactHost.devSupportManager?.jSBundleURLForRemoteDebugging ?: ""
 
     if (devSettings != null) {
       return Bundle().apply {
@@ -24,7 +24,7 @@ object DevMenuDevSettings {
         putBoolean(
           "isJSInspectorAvailable",
           run {
-            val jsExecutorName = reactInstanceManager.jsExecutorName
+            val jsExecutorName = reactHost.jsExecutorName
             jsExecutorName.contains("Hermes") || jsExecutorName.contains("V8")
           }
         )

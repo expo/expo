@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 
-import { asMock } from '../../../../__tests__/asMock';
 import {
   collectMissingPackages,
   getMissingPackagesAsync,
@@ -53,7 +52,7 @@ describe(getMissingPackagesAsync, () => {
 
   it('gets missing packages', async () => {
     const projectRoot = '/test-project';
-    asMock(getCombinedKnownVersionsAsync).mockResolvedValue({
+    jest.mocked(getCombinedKnownVersionsAsync).mockResolvedValue({
       'react-native': '1.0.0',
       'react-dom': '420.0.0',
       react: '420.0.0',

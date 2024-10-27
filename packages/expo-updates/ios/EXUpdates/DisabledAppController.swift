@@ -10,29 +10,49 @@ import ExpoModulesCore
  * - Configuration errors (missing required configuration)
  */
 public class DisabledAppController: InternalAppControllerInterface {
-  public private(set) var isStarted: Bool = false // this is always false for disabled controllers
+  public let isActiveController = false
+  private var isStarted: Bool = false
+  private var startupStartTime: DispatchTime?
+  private var startupEndTime: DispatchTime?
 
-  public weak var bridge: AnyObject?
+  private var launchDuration: Double? {
+    return startupStartTime.let({ start in
+      startupEndTime.let { end in
+        Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
+      }
+    })
+  }
 
   public weak var delegate: AppControllerDelegate?
 
-  internal private(set) var isEmergencyLaunch: Bool = false
-  private let initializationError: Error?
+  private let logger = UpdatesLogger()
+
+  public let eventManager: UpdatesEventManager
+
+  // disabled controller state machine can only be idle or restarting
+  private let stateMachine: UpdatesStateMachine
+
+  private let initializationError: UpdatesError?
   private var launcher: AppLauncher?
-  private let isMissingRuntimeVersion: Bool
 
   public let updatesDirectory: URL? = nil // internal for E2E test
 
-  required init(error: Error?, isMissingRuntimeVersion: Bool) {
+  required init(error: UpdatesError?) {
     self.initializationError = error
-    self.isEmergencyLaunch = error != nil
-    self.isMissingRuntimeVersion = isMissingRuntimeVersion
+    self.eventManager = QueueUpdatesEventManager(logger: self.logger)
+    self.stateMachine = UpdatesStateMachine(eventManager: self.eventManager, validUpdatesStateValues: [UpdatesStateValue.idle, UpdatesStateValue.restarting])
   }
 
   public func start() {
+    precondition(!isStarted, "AppController:start should only be called once per instance")
+    isStarted = true
+    startupStartTime = DispatchTime.now()
+
     let launcherNoDatabase = AppLauncherNoDatabase()
     launcher = launcherNoDatabase
     launcherNoDatabase.launchUpdate()
+
+    startupEndTime = DispatchTime.now()
 
     delegate.let { _ in
       DispatchQueue.main.async { [weak self] in
@@ -43,8 +63,12 @@ public class DisabledAppController: InternalAppControllerInterface {
     }
 
     if let initializationError = self.initializationError {
-      ErrorRecovery.writeErrorOrExceptionToLog(initializationError)
+      ErrorRecovery.writeErrorOrExceptionToLog(initializationError, logger)
     }
+  }
+
+  public func onEventListenerStartObserving() {
+    stateMachine.sendContextToJS()
   }
 
   private func launchedUpdate() -> Update? {
@@ -58,16 +82,17 @@ public class DisabledAppController: InternalAppControllerInterface {
   public func getConstantsForModule() -> UpdatesModuleConstants {
     return UpdatesModuleConstants(
       launchedUpdate: launchedUpdate(),
+      launchDuration: launchDuration,
       embeddedUpdate: nil,
-      isEmergencyLaunch: self.isEmergencyLaunch,
+      emergencyLaunchException: self.initializationError,
       isEnabled: false,
-      releaseChannel: UpdatesConfig.ReleaseChannelDefaultValue,
       isUsingEmbeddedAssets: launcher?.isUsingEmbeddedAssets() ?? false,
       runtimeVersion: nil,
       checkOnLaunch: CheckAutomaticallyConfig.Never,
       requestHeaders: [:],
       assetFilesMap: launcher?.assetFilesMap,
-      isMissingRuntimeVersion: self.isMissingRuntimeVersion
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false,
+      initialContext: stateMachine.context
     )
   }
 
@@ -75,28 +100,33 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    let procedure = RecreateReactContextProcedure(triggerReloadCommandListenersReason: "Requested by JavaScript - Updates.reloadAsync()") {
+      successBlockArg()
+    } errorBlock: { error in
+      errorBlockArg(error)
+    }
+    stateMachine.queueExecution(stateMachineProcedure: procedure)
   }
 
   public func checkForUpdate(
-    success successBlockArg: @escaping (RemoteCheckResult) -> Void,
+    success successBlockArg: @escaping (CheckForUpdateResult) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("Updates.checkForUpdateAsync()"))
   }
 
   public func fetchUpdate(
     success successBlockArg: @escaping (FetchUpdateResult) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("Updates.fetchUpdateAsync()"))
   }
 
   public func getExtraParams(
     success successBlockArg: @escaping ([String: String]?) -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("Updates.getExtraParamsAsync()"))
   }
 
   public func setExtraParam(
@@ -105,13 +135,6 @@ public class DisabledAppController: InternalAppControllerInterface {
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
   ) {
-    errorBlockArg(UpdatesDisabledException())
-  }
-
-  public func getNativeStateMachineContext(
-    success successBlockArg: @escaping (UpdatesStateContext) -> Void,
-    error errorBlockArg: @escaping (ExpoModulesCore.Exception) -> Void
-  ) {
-    errorBlockArg(UpdatesDisabledException())
+    errorBlockArg(UpdatesDisabledException("Updates.setExtraParamAsync()"))
   }
 }

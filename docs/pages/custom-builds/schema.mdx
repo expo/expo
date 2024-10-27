@@ -5,10 +5,10 @@ description: A reference of configuration options for custom builds with EAS Bui
 maxHeadingDepth: 5
 ---
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
-> **Warning** This functionality is in preview, under active development, and likely to change.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 Creating custom workflows for EAS Build helps customize the build process for your project.
 
@@ -24,7 +24,7 @@ Defined to describe a custom workflow. All config options to create a workflow a
 
 The name of your workflow that is used to identify the workflow in the build logs. EAS Build uses this property to display the name of your workflow in the dashboard.
 
-For example, the workflow's name is `Run tests`:
+For example, the workflow name is `Run tests`:
 
 ```yaml
 build:
@@ -40,7 +40,7 @@ build:
 
 ### `steps`
 
-Steps are used to describe a list of actions either in the form of commands or function calls. These actions are executed when a workflow runs on EAS Build. You can define single or multiple steps in a workflow. However, it is **required** to define at least one step per workflow.
+Steps are used to describe a list of actions, either in the form of commands or function calls. These actions are executed when a workflow runs on EAS Build. You can define single or multiple steps in a workflow. However, it is **required** to define at least one step per workflow.
 
 Each step is configured with the following properties:
 
@@ -110,9 +110,70 @@ build:
     # @end #
 ```
 
+#### Sharing environment variables with other steps
+
+Environment variables exported (using `export`) in one step's `command` are not automatically exposed to other steps. To share an environment variable with other steps, use the `set-env` executable.
+
+`set-env` expects to be called with two arguments: environment variable's name and value. For example, `set-env NPM_TOKEN "abcdef"` will expose `$NPM_TOKEN` variable with value `abcdef` to other steps.
+
+> **Note:** Variables shared with `set-env` are not automatically exported locally. You need to call `export` yourself.
+
+```yaml
+build:
+  name: Shared environment variable example
+  steps:
+    - run:
+        name: Set environment variables
+        command: |
+          set -x
+
+          # Set variable
+          ENV_TEST_LOCAL="present-only-in-current-shell-context"
+          # Set and export variable
+          export ENV_TEST_LOCAL_EXPORT="present-in-current-step"
+          # Set shared EAS Workflow variable
+          set-env ENV_TEST_SET_ENV "present-in-following-steps"
+
+          # Will print "ENV_TEST_LOCAL: present-only-in-current-shell-context"
+          # because current shell has access to this local variable.
+          echo "ENV_TEST_LOCAL: $ENV_TEST_LOCAL"
+
+          # Will print "ENV_TEST_LOCAL_EXPORT: present-in-current-step"
+          # because export also sets the local variable value.
+          echo "ENV_TEST_LOCAL_EXPORT: $ENV_TEST_LOCAL_EXPORT"
+
+          # Will "ENV_TEST_SET_ENV: "
+          # because set-env does not set or export variables.
+          echo "ENV_TEST_SET_ENV: $ENV_TEST_SET_ENV"
+
+          # Will only print LOCALLY_EXPORTED_ENV,
+          # because it is the only export-ed variable.
+          env | grep ENV_TEST_
+    - run:
+        name: Check variables values in next step
+        command: |
+          set -x
+
+          # Will print "ENV_TEST_LOCAL: ", because ENV_TEST_LOCAL
+          # is only a local variable in previous step.
+          echo "ENV_TEST_LOCAL: $ENV_TEST_LOCAL"
+
+          # Will print "ENV_TEST_LOCAL_EXPORT: "
+          # because export does not share a variable to other steps.
+          echo "ENV_TEST_LOCAL_EXPORT: $ENV_TEST_LOCAL_EXPORT"
+
+          # Will print "ENV_TEST_SET_ENV: present-in-following-steps"
+          # because set-env "exported" variable to other steps.
+          echo "ENV_TEST_SET_ENV: $ENV_TEST_SET_ENV"
+
+          # Will only print ENV_TEST_SET_ENV,
+          # because set-env "exported" it to other steps.
+          env | grep ENV_TEST_
+```
+
 #### `steps[].run.name`
 
-The name that is used in build logs to display the name of the step.
+The name used in build logs to display the name of the step.
 
 #### `steps[].run.command`
 
@@ -499,7 +560,7 @@ functions:
     # @end #
 ```
 
-Learn more about building and using custom TypeScript/JavaScript functions [here](/custom-builds/functions/).
+> [Learn more about building and using custom TypeScript/JavaScript functions](/custom-builds/functions/).
 
 ### `functions.[function_name].shell`
 
@@ -570,9 +631,281 @@ EAS provides a set of built-in reusable functions that you can use in a workflow
 
 > **info** **Tip:** Any function that is built-in and provided by EAS must start with the `eas/` prefix.
 
+#### `eas/build`
+
+The all-in-one function that encapsulates the entire EAS Build build process. It resolves the best build workflow configuration based on your build profile's settings from [**eas.json**](/eas/json/).
+
+It's ideal for people who want to have the build done without worrying about altering and configuring the build process manually. It can be a great starting point for your custom build configuration if you are interested in using other custom steps before or after the build process and you don't want to change the build process itself.
+
+```yaml example.yml
+build:
+  name: Run a build using a single command
+  steps:
+    - eas/build
+```
+
+To have more control over the build process and customize it as per your requirements, see the following custom functions and steps that run in the background by `eas/build`. They are executed as a build process based on your build profile's configuration.
+
+##### Android
+
+When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcredentials):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/use_npm_token`](#easuse_npm_token)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/resolve_build_config`](#easresolve_build_config)
+- [`eas/prebuild`](#easprebuild)
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/run_gradle`](#easrun_gradle)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+When a build configuration uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/use_npm_token`](#easuse_npm_token)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/resolve_build_config`](#easresolve_build_config)
+- [`eas/prebuild`](#easprebuild)
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/inject_android_credentials`](#easinject_android_credentials)
+- [`eas/configure_android_version`](#easconfigure_android_version)
+- [`eas/run_gradle`](#easrun_gradle)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+##### iOS
+
+When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcredentials) or [`simulator`](/eas/json/#simulator):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/use_npm_token`](#easuse_npm_token)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/resolve_build_config`](#easresolve_build_config)
+- [`eas/prebuild`](#easprebuild)
+- Install pods using the `pod install` command
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
+- [`eas/run_fastlane`](#easrun_fastlane)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+When a build configuration uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
+
+- [`eas/checkout`](#eascheckout)
+- [`eas/use_npm_token`](#easuse_npm_token)
+- [`eas/install_node_modules`](#easinstall_node_modules)
+- [`eas/resolve_build_config`](#easresolve_build_config)
+- [`eas/resolve_apple_team_id_from_credentials`](#easresolve_apple_team_id_from_credentials)
+- [`eas/prebuild`](#easprebuild)
+- Install pods using the `pod install` command
+- [`eas/configure_eas_update`](#easconfigure_eas_update)
+- [`eas/configure_ios_credentials`](#easconfigure_ios_credentials)
+- [`eas/configure_ios_version`](#easconfigure_ios_version)
+- [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
+- [`eas/run_fastlane`](#easrun_fastlane)
+- [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+
+You can replace the `eas/build` command call by using these steps in your YAML configuration file:
+
+<BoxLink
+  title="ios-simulator-build.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an iOS simulator build in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/ios-simulator-build.yml"
+/>
+<BoxLink
+  title="ios-credentials-build.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an iOS build with credentials in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/ios-build-with-credentials.yml"
+/>
+<BoxLink
+  title="android-build-without-credentials.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an Android build without credentials in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/android-build-without-credentials.yml"
+/>
+<BoxLink
+  title="android-build-with-credentials.yml"
+  description="View the steps executed behind the scenes by the `eas/build` function for an Android build with credentials in our example repository."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-custom-builds-example/blob/main/.eas/build/android-build-with-credentials.yml"
+/>
+
+##### Known limitations
+
+- It doesn't accept any inputs, and the resolved build process will be configured based on your build profile from [**eas.json**](/eas/json/).
+- The build process produced by `eas/build` is not configurable and you can't customize it. If you need to customize the build process, use the subset of functions and steps that are executed behind the scenes by this function and configure them manually in the YAML configuration file, as shown in the examples above.
+
+#### `eas/maestro_test`
+
+All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
+
+> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024/08-29-c3d-default) for more information.
+
+| Input       | Type     | Description                                                                                                                                                                                                                        |
+| ----------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `flow_path` | `string` | Path (or multiple paths, each in a separate line) to [Maestro flows](https://maestro.mobile.dev/getting-started/writing-your-first-flow) to run.                                                                                   |
+| `app_path`  | `string` | Path (or regex pattern) to the emulator/simulator app that should be tested. If not provided, it defaults to **android/app/build/outputs/\*\*/\*.apk** for Android and to **ios/build/Build/Products/\*simulator/\*.app** for iOS. |
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # @info #
+    - eas/maestro_test:
+        inputs:
+          flow_path: |
+            maestro/sign_in.yaml
+            maestro/create_post.yaml
+            maestro/sign_out.yaml
+    # @end #
+```
+
+```yaml test-ios-simulator-app.yml
+build:
+  name: Build and test iOS simulator app
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/maestro_test:
+        app_path: ./fixtures/my_app.app
+        inputs:
+          flow_path: |
+            maestro/sign_in.yaml
+            maestro/create_post.yaml
+            maestro/sign_out.yaml
+    # @end #
+```
+
+```yaml test-android-emulator-app.yml
+build:
+  name: Build and test Android emulator app
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/maestro_test:
+        app_path: ./fixtures/my_app.apk
+        inputs:
+          flow_path: |
+            maestro/sign_in.yaml
+            maestro/create_post.yaml
+            maestro/sign_out.yaml
+    # @end #
+```
+
+Behind the scenes, it uses:
+
+- [`eas/install_maestro`](#easinstall_maestro) to install Maestro
+- [`eas/start_android_emulator`](#easstart_android_emulator) to start an Android Emulator if needed
+- [`eas/start_ios_simulator`](#easstart_ios_simulator) to start an iOS Simulator if needed
+- Custom `run` to install **.apk** to the running Android Emulator and **.app** to iOS Simulator
+- Series of `run` to execute `maestro test` for each of the provided flows
+- [`eas/upload_artifact`](#easupload_artifact) to upload Maestro test artifacts as build artifact
+
+> **Warning** We have observed that Maestro tests often time out if run on images with Xcode 15.0 or 15.2. Use the `latest` image to avoid any issues.
+
+If you need to customize the Maestro version, run a specific Android Emulator or iOS Simulator, or upload multiple build artifacts you will need to write this series of steps yourself.
+
+<Collapsible summary={<>An example Android workflow with <code>eas/maestro_test</code> expanded</>}>
+
+```yaml build-and-test-android-expanded.yml
+build:
+  name: Build and test (Android, expanded)
+  steps:
+    - eas/build
+    # @info #
+    - eas/install_maestro
+    - eas/start_android_emulator:
+        inputs:
+          system_package_name: system-images;android-34;default;x86_64
+    - run:
+        command: |
+          # shopt -s globstar is necessary to add /**/ support
+          shopt -s globstar
+          # shopt -s nullglob is necessary not to try to install
+          # SEARCH_PATH literally if there are no matching files.
+          shopt -s nullglob
+
+          SEARCH_PATH="android/app/build/outputs/**/*.apk"
+          FILES_FOUND=false
+
+          for APP_PATH in $SEARCH_PATH; do
+            FILES_FOUND=true
+            echo "Installing \\"$APP_PATH\\""
+            adb install "$APP_PATH"
+          done
+
+          if ! $FILES_FOUND; then
+            echo "No files found matching \\"$SEARCH_PATH\\". Are you sure you've built an Emulator app?"
+            exit 1
+          fi
+    - run:
+        command: |
+          maestro test maestro/flow.yaml
+    - eas/upload_artifact:
+        name: Upload test artifact
+        if: ${ always() }
+        inputs:
+          type: build-artifact
+          path: ${ eas.env.HOME }/.maestro/tests
+    # @end #
+```
+
+</Collapsible>
+
+<Collapsible summary={<>An example iOS workflow with <code>eas/maestro_test</code> expanded</>}>
+
+```yaml build-and-test-ios-expanded.yml
+build:
+name: Build and test (iOS, expanded)
+steps:
+  - eas/build
+  # @info #
+  - eas/install_maestro
+  - eas/start_ios_simulator
+  - run:
+      command: |
+        # shopt -s nullglob is necessary not to try to install
+        # SEARCH_PATH literally if there are no matching files.
+        shopt -s nullglob
+
+        SEARCH_PATH="ios/build/Build/Products/*simulator/*.app"
+        FILES_FOUND=false
+
+        for APP_PATH in $SEARCH_PATH; do
+          FILES_FOUND=true
+          echo "Installing \\"$APP_PATH\\""
+          xcrun simctl install booted "$APP_PATH"
+        done
+
+        if ! $FILES_FOUND; then
+          echo "No files found matching \\"$SEARCH_PATH\\". Are you sure you've built a Simulator app?"
+          exit 1
+        fi
+  - run:
+      command: |
+        maestro test maestro/flow.yaml
+  - eas/upload_artifact:
+      name: Upload test artifact
+      if: ${ always() }
+      inputs:
+        type: build-artifact
+        path: ${ eas.env.HOME }/.maestro/tests
+# @end #
+```
+
+</Collapsible>
+
+<BoxLink
+  title="eas/maestro_test source code"
+  description="View the source code for the eas/maestro_test function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functionGroups/maestroTest.ts"
+/>
+
 #### `eas/checkout`
 
-Checks out you project source files.
+Checks out your project source files.
 
 For example, a workflow with the following `steps` will check out the project and list the files in the **assets** directory:
 
@@ -595,7 +928,7 @@ build:
 
 #### `eas/use_npm_token`
 
-Configures node package managers (npm, pnpm, or Yarn) for use with private packages, published either to npm or private registry.
+Configures node package managers (npm, pnpm, or Yarn) for use with private packages, published either to npm or a private registry.
 Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
 
 ```yaml example.yml
@@ -639,9 +972,26 @@ build:
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
 />
 
+#### `eas/resolve_build_config`
+
+Resolves and prints the build configuration. If the build has been triggered by the GitHub integration, it will update the current `job` and `metadata` context values. It should be called after installing the dependencies because the config may be influenced by config plugins.
+
+This function is automatically executed by the [`eas/build`](#easbuild) function group.
+
+<BoxLink
+  title="eas/resolve_build_config source code"
+  description="View the source code for the eas/resolve_build_config function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/resolveBuildConfig.ts"
+/>
+
+#### `eas/get_credentials_for_build_triggered_by_github_integration`
+
+> **warning** **Deprecated:** Replace this step with [`eas/resolve_build_config`](#easresolve_build_config).
+
 #### `eas/resolve_apple_team_id_from_credentials`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Resolves the Apple team ID value based on build credentials provided in the `inputs.credentials`. The resolved Apple team ID is stored in the `outputs.apple_team_id` output value.
 
@@ -660,10 +1010,10 @@ build:
           apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
 ```
 
-| Property             | Description                                                                                                                                                                                              |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`               | The name of the step in the reusable function that shows in the build logs. Defaults to `Resolve Apple team ID from credentials`.                                                                        |
-| `inputs.credentials` | **json** Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS. |
+| Property             | Type     | Description                                                                                                                                                                                     |
+| -------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`               | `string` | The name of the step in the reusable function that shows in the build logs. Defaults to `Resolve Apple team ID from credentials`.                                                               |
+| `inputs.credentials` | `json`   | Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS. |
 
 <BoxLink
   title="eas/resolve_apple_team_id_from_credentials source code"
@@ -703,11 +1053,11 @@ build:
     # @end #
 ```
 
-| Property               | Description                                                                                                                                          |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                 | The name of the step in the reusable function that shows in the build logs. Defaults to `Prebuild`.                                                  |
-| `inputs.clean`         | **boolean** Optional input defining whether the function should use `--clean` flag when running the command. Defaults to false                       |
-| `inputs.apple_team_id` | **boolean** Optional input defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
+| Property               | Type      | Description                                                                                                                              |
+| ---------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                 | -         | The name of the step in the reusable function that shows in the build logs. Defaults to `Prebuild`.                                      |
+| `inputs.clean`         | `boolean` | Optional input defining whether the function should use `--clean` flag when running the command. Defaults to false                       |
+| `inputs.apple_team_id` | `boolean` | Optional input defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
 
 <BoxLink
   title="eas/prebuild source code"
@@ -718,7 +1068,7 @@ build:
 
 #### `eas/configure_eas_update`
 
-> **Warning** To use this function you need to have EAS Update configured for your project
+> **Warning** To use this function you need to have EAS Update configured for your project.
 
 Configures runtime version and release channel for your build.
 
@@ -749,11 +1099,11 @@ build:
     # @end #
 ```
 
-| Property                 | Description                                                                                                                                                                         |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                   | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure EAS Update`.                                                                     |
-| `inputs.runtime_version` | **string** Optional input defining runtime version which should be configured for the build. Defaults to `${ eas.job.version.runtimeVersion }` or natively defined runtime version. |
-| `inputs.channel`         | **string** Optional input defining channel which should be configured for the build. Defaults to `${ eas.job.updates.channel }`.                                                    |
+| Property                 | Type     | Description                                                                                                                                                              |
+| ------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`                   | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure EAS Update`.                                                          |
+| `inputs.runtime_version` | `string` | Optional input defining runtime version which should be configured for the build. Defaults to `${ eas.job.version.runtimeVersion }` or natively defined runtime version. |
+| `inputs.channel`         | `string` | Optional input defining channel which should be configured for the build. Defaults to `${ eas.job.updates.channel }`.                                                    |
 
 <BoxLink
   title="eas/configure_eas_update source code"
@@ -764,7 +1114,7 @@ build:
 
 #### `eas/inject_android_credentials`
 
-> **Warning** This function is only available for Android builds
+> **Warning** This function is only available for Android builds.
 
 Configures Android keystore with credentials on the builder and injects app signing config using these credentials into gradle config.
 
@@ -780,10 +1130,10 @@ build:
     # @end #
 ```
 
-| Property             | Description                                                                                                                                                                                                      |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`               | The name of the step in the reusable function that shows in the build logs. Defaults to `Inject Android credentials`.                                                                                            |
-| `inputs.credentials` | **json** Optional input defining the app credentials for your Android build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for Android. |
+| Property             | Type   | Description                                                                                                                                                                                             |
+| -------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`               | -      | The name of the step in the reusable function that shows in the build logs. Defaults to `Inject Android credentials`.                                                                                   |
+| `inputs.credentials` | `json` | Optional input defining the app credentials for your Android build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for Android. |
 
 <BoxLink
   title="eas/inject_android_credentials source code"
@@ -794,7 +1144,7 @@ build:
 
 #### `eas/configure_ios_credentials`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Configures iOS credentials on the builder. Modifies the configuration of the Xcode project by assigning provisioning profiles to the targets.
 
@@ -815,11 +1165,11 @@ build:
     # @end #
 ```
 
-| Property                     | Description                                                                                                                                                                                                                |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                       | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS credentials`.                                                                                                       |
-| `inputs.build_configuration` | **string** Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
-| `inputs.credentials`         | **json** Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                   |
+| Property                     | Type     | Description                                                                                                                                                                                                     |
+| ---------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                       | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS credentials`.                                                                                            |
+| `inputs.build_configuration` | `string` | Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
+| `inputs.credentials`         | `json`   | Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                 |
 
 <BoxLink
   title="eas/configure_ios_credentials source code"
@@ -830,7 +1180,7 @@ build:
 
 #### `eas/configure_android_version`
 
-> **Warning** This function is only available for Android builds
+> **Warning** This function is only available for Android builds.
 
 Configures the version of your Android app. It's used to set a version when using [remote app version management](/build-reference/app-versions/).
 
@@ -867,11 +1217,11 @@ build:
     # @end #
 ```
 
-| Property              | Description                                                                                                             |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `name`                | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure Android version`.    |
-| `inputs.version_code` | **string** Optional input defining `versionCode` of your Android build. Defaults to `${ eas.job.version.versionCode }`  |
-| `inputs.version_name` | **string** Optional input defining `versionName` of your Android build. Defaults to `${ eas.job.version.versionName }`. |
+| Property              | Type     | Description                                                                                                          |
+| --------------------- | -------- | -------------------------------------------------------------------------------------------------------------------- |
+| `name`                | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure Android version`. |
+| `inputs.version_code` | `string` | Optional input defining `versionCode` of your Android build. Defaults to `${ eas.job.version.versionCode }`          |
+| `inputs.version_name` | `string` | Optional input defining `versionName` of your Android build. Defaults to `${ eas.job.version.versionName }`.         |
 
 <BoxLink
   title="eas/configure_android_version source code"
@@ -882,7 +1232,7 @@ build:
 
 #### `eas/configure_ios_version`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Configures the version of your iOS app. It's used to set a version when using [remote app version management](/build-reference/app-versions/).
 
@@ -929,13 +1279,13 @@ build:
     # @end #
 ```
 
-| Property                     | Description                                                                                                                                                                                                                |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                       | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS version`.                                                                                                           |
-| `inputs.build_number`        | **string** Optional input defining the build number (`CFBundleVersion`) of your iOS build. Defaults to `${ eas.job.version.buildNumber }`                                                                                  |
-| `inputs.app_version`         | **string** Optional input defining the app version (`CFBundleShortVersionString`) of your iOS build. Defaults to `${ eas.job.version.appVersion }`.                                                                        |
-| `inputs.build_configuration` | **string** Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
-| `inputs.credentials`         | **json** Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                   |
+| Property                     | Type     | Description                                                                                                                                                                                                     |
+| ---------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                       | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Configure iOS version`.                                                                                                |
+| `inputs.build_number`        | `string` | Optional input defining the build number (`CFBundleVersion`) of your iOS build. Defaults to `${ eas.job.version.buildNumber }`                                                                                  |
+| `inputs.app_version`         | `string` | Optional input defining the app version (`CFBundleShortVersionString`) of your iOS build. Defaults to `${ eas.job.version.appVersion }`.                                                                        |
+| `inputs.build_configuration` | `string` | Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. |
+| `inputs.credentials`         | `json`   | Optional input defining the app credentials for your iOS build. Defaults to `${ eas.job.secrets.buildCredentials }`. Needs to comply to `${ eas.job.secrets.buildCredentials }` schema for iOS.                 |
 
 <BoxLink
   title="eas/configure_ios_version source code"
@@ -946,7 +1296,7 @@ build:
 
 #### `eas/run_gradle`
 
-> **Warning** This function is only available for Android builds
+> **Warning** This function is only available for Android builds.
 
 Runs a Gradle command to build an Android app.
 
@@ -980,10 +1330,10 @@ build:
     # @end #
 ```
 
-| Property         | Description                                                                                                                                                                                        |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`           | The name of the step in the reusable function that shows in the build logs. Defaults to `Run gradle`.                                                                                              |
-| `inputs.command` | **string** Optional input defining the Gradle command to run to build the Android app. If not specified it is resolved based on the build configuration and contents of the `${ eas.job }` object. |
+| Property         | Type     | Description                                                                                                                                                                             |
+| ---------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Run gradle`.                                                                                   |
+| `inputs.command` | `string` | Optional input defining the Gradle command to run to build the Android app. If not specified it is resolved based on the build configuration and contents of the `${ eas.job }` object. |
 
 <BoxLink
   title="eas/run_gradle source code"
@@ -994,7 +1344,7 @@ build:
 
 #### `eas/generate_gymfile_from_template`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Generates a [`Gymfile`](https://docs.fastlane.tools/actions/gym/#gymfile) used to build the iOS app using Fastlane from a template.
 
@@ -1063,7 +1413,7 @@ build:
     - eas/configure_eas_update
     - eas/configure_ios_credentials
     # @info #
-    - eas/generate_gymfile_template:
+    - eas/generate_gymfile_from_template:
         inputs:
           credentials: ${ eas.job.secrets.buildCredentials }
     # @end #
@@ -1077,7 +1427,7 @@ build:
     - eas/install_node_modules
     - eas/prebuild
     # @info #
-    - eas/generate_gymfile_template
+    - eas/generate_gymfile_from_template
     # @end #
 ```
 
@@ -1098,7 +1448,7 @@ build:
     - eas/configure_eas_update
     - eas/configure_ios_credentials
     # @info #
-    - eas/generate_gymfile_template:
+    - eas/generate_gymfile_from_template:
         inputs:
           credentials: ${ eas.job.secrets.buildCredentials }
           extra:
@@ -1132,26 +1482,26 @@ build:
         # @end #
 ```
 
-| Property                     | Description                                                                                                                                                                                                                                                                         |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                       | The name of the step in the reusable function that shows in the build logs. Defaults to `Generate Gymfile from template`.                                                                                                                                                           |
-| `inputs.template`            | **string** Optional input defining the Gymfile template which should be used. If not specified one out of two default templates will be used depending on whether the `inputs.credentials` value is specified.                                                                      |
-| `inputs.credentials`         | **json** Optional input defining the app credentials for your iOS build. If specified `KEYCHAIN_PATH`, `EXPORT_METHOD`, and `PROFILES` values will be provided to the template.                                                                                                     |
-| `inputs.build_configuration` | **string** Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. Corresponds to the `BUILD_CONFIGURATION` template value. |
-| `inputs.scheme`              | **string** Optional input defining the Xcode project's scheme which should be used for the build. Defaults to `${ eas.job.scheme }` or if not specified is resolved to the first scheme found in the Xcode project. Corresponds to the `SCHEME` template value.                     |
-| `inputs.clean`               | **boolean** Optional input defining whether the Xcode project should be cleaned before the build. Defaults to `true`. Corresponds to `CLEAN` template variable.                                                                                                                     |
-| `inputs.extra`               | **json** Optional input defining extra values which should be provided to the template.                                                                                                                                                                                             |
+| Property                     | Type      | Description                                                                                                                                                                                                                                                              |
+| ---------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`                       | -         | The name of the step in the reusable function that shows in the build logs. Defaults to `Generate Gymfile from template`.                                                                                                                                                |
+| `inputs.template`            | `string`  | Optional input defining the Gymfile template which should be used. If not specified one out of two default templates will be used depending on whether the `inputs.credentials` value is specified.                                                                      |
+| `inputs.credentials`         | `json`    | Optional input defining the app credentials for your iOS build. If specified `KEYCHAIN_PATH`, `EXPORT_METHOD`, and `PROFILES` values will be provided to the template.                                                                                                   |
+| `inputs.build_configuration` | `string`  | Optional input defining the Xcode project's Build Configuration. Defaults to `${ eas.job.buildConfiguration }` or if not specified is resolved to `Debug` for development client or `Release` for other builds. Corresponds to the `BUILD_CONFIGURATION` template value. |
+| `inputs.scheme`              | `string`  | Optional input defining the Xcode project's scheme which should be used for the build. Defaults to `${ eas.job.scheme }` or if not specified is resolved to the first scheme found in the Xcode project. Corresponds to the `SCHEME` template value.                     |
+| `inputs.clean`               | `boolean` | Optional input defining whether the Xcode project should be cleaned before the build. Defaults to `true`. Corresponds to `CLEAN` template variable.                                                                                                                      |
+| `inputs.extra`               | `json`    | Optional input defining extra values which should be provided to the template.                                                                                                                                                                                           |
 
 <BoxLink
   title="eas/generate_gymfile_from_template source code"
-  description="View the source code for the eas/generate_gymfile_template function on GitHub."
+  description="View the source code for the eas/generate_gymfile_from_template function on GitHub."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/generateGymfileFromTemplate.ts"
 />
 
 #### `eas/run_fastlane`
 
-> **Warning** This function is only available for iOS builds
+> **Warning** This function is only available for iOS builds.
 
 Runs [`fastlane gym`](https://docs.fastlane.tools/actions/gym/#gym) command against the [`Gymfile`](https://docs.fastlane.tools/actions/gym/#gymfile) located in the `ios` project directory to build the iOS app.
 
@@ -1169,7 +1519,7 @@ build:
           apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
     - eas/configure_eas_update
     - eas/configure_ios_credentials
-    - eas/generate_gymfile_template:
+    - eas/generate_gymfile_from_template:
         inputs:
           credentials: ${ eas.job.secrets.buildCredentials }
     # @info #
@@ -1185,7 +1535,7 @@ build:
     - eas/install_node_modules
     - eas/prebuild
     - eas/configure_eas_update
-    - eas/generate_gymfile_template
+    - eas/generate_gymfile_from_template
     # @info #
     - eas/run_fastlane
     # @end #
@@ -1200,9 +1550,9 @@ build:
 
 #### `eas/find_and_upload_build_artifacts`
 
-> **Warning** You can currently upload each artifact type only once per workflow.
+> **Warning** **You can currently upload each artifact type only once per workflow.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML workflow if you need to call it there.
 
-Automatically finds and uploads application archive, other build artifacts, and Xcode logs looking at default locations and respecting `${ eas.job.buildArtifactPaths }` setting. Uploads found artifacts to the EAS servers.
+Automatically finds and uploads application archive, additional build artifacts, and Xcode logs from the default locations and using the [`buildArtifactPaths`](/eas/json#buildartifactpaths) configuration. Uploads found artifacts to the EAS servers.
 
 ```yaml example.yml
 build:
@@ -1218,7 +1568,7 @@ build:
           apple_team_id: ${ steps.resolve_apple_team_id_from_credentials.apple_team_id }
     - eas/configure_eas_update
     - eas/configure_ios_credentials
-    - eas/generate_gymfile_template:
+    - eas/generate_gymfile_from_template:
         inputs:
           credentials: ${ eas.job.secrets.buildCredentials }
     - eas/run_fastlane
@@ -1235,7 +1585,7 @@ build:
     - eas/install_node_modules
     - eas/prebuild
     - eas/configure_eas_update
-    - eas/generate_gymfile_template
+    - eas/generate_gymfile_from_template
     - eas/run_fastlane
     # @info #
     - eas/find_and_upload_build_artifacts
@@ -1264,9 +1614,9 @@ build:
 
 #### `eas/upload_artifact`
 
-Uploads a build artifact.
+Uploads build artifacts from provided paths.
 
-> **Warning** You can currently upload each artifact type only once per workflow.
+> **Warning** **You can currently upload each artifact type only once per workflow.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML workflow if you need to call it there.
 
 For example, a workflow with the following `steps` will upload an artifact to the EAS servers:
 
@@ -1281,23 +1631,239 @@ build:
         inputs:
           path: fixtures/app-debug.apk
     - eas/upload_artifact:
-        name: Upload build artifact
+        name: Upload artifacts
         inputs:
           type: build-artifact
-          path: assets/icon.png
+          path: |
+            assets/*.jpg
+            assets/*.png
 ```
 
-| Property      | Description                                                                                                                                                     |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`        | The name of the step in the reusable function that shows in the build logs.                                                                                     |
-| `inputs.path` | **string** Required. The path to the artifact that is uploaded to the EAS servers.                                                                              |
-| `inputs.type` | **string** The type of artifact that is uploaded to the EAS servers. Allowed values: `application-archive`, `build-artifact`. Defaults to `application-archive` |
+| Input  | Type     | Description                                                                                                                                                                                                                    |
+| ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `path` | `string` | Required. Path or newline-delimited list of paths to the artifacts to upload to EAS servers. You can use `*` wildcard and other [glob patterns that `fast-glob` supports](https://github.com/mrmlnc/fast-glob#pattern-syntax). |
+| `type` | `string` | The type of artifact that is uploaded to the EAS servers. Allowed values are `application-archive` and `build-artifact`. Defaults to `application-archive`.                                                                    |
 
 <BoxLink
   title="eas/upload_artifact source code"
   description="View the source code for the eas/upload_artifact function on GitHub."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/uploadArtifact.ts"
+/>
+
+#### `eas/install_maestro`
+
+Makes sure [Maestro](https://maestro.mobile.dev), the mobile UI testing framework, is installed along with all its dependencies.
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # ... simulator/emulator setup
+    # @info #
+    - eas/install_maestro:
+        # @end #
+        inputs:
+          # @info If you need to, you can provide the Maestro version to install. #
+          maestro_version: 1.35.0
+          # @end #
+    - run:
+        command: maestro test flows/signin.yml
+    - eas/upload_artifact:
+        name: Upload Maestro artifacts
+        inputs:
+          type: build-artifact
+          path: ${ eas.env.HOME }/.maestro/tests
+```
+
+| Input             | Type     | Description                                                                                                           |
+| ----------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| `maestro_version` | `string` | Maestro version to install (for example, 1.35.0). If not provided, `install_maestro` will install the latest version. |
+
+<BoxLink
+  title="eas/install_maestro source code"
+  description="View the source code for the eas/install_maestro function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installMaestro.ts"
+/>
+
+#### `eas/start_android_emulator`
+
+Starts an Android Emulator you can use to test your apps on. Only available when running a build for Android.
+
+> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024/08-29-c3d-default) for more information.
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # @info #
+    - eas/start_android_emulator:
+        inputs:
+          system_image_package: system-images;android-30;default;x86_64
+    # @end #
+    # ... Maestro setup and tests
+```
+
+| Input                  | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `device_name`          | `string` | Name for the created device. You can customize it if starting multiple emulators.                                                                                                                                                                                                                                                                                                                                                                       |
+| `system_image_package` | `string` | Android package path to use for the emulator. For example, `system-images;android-30;default;x86_64`.<br />To get a list of available system images, run [`sdkmanager --list`](https://developer.android.com/tools/sdkmanager#list) on a local computer. VMs run on x86_64 architecture, so always choose `x86_64` package variants. The [`sdkmanager` tool](https://developer.android.com/tools/sdkmanager) comes from Android SDK command-line tools. |
+
+<BoxLink
+  title="eas/start_android_emulator source code"
+  description="View the source code for the eas/start_android_emulator function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/startAndroidEmulator.ts"
+/>
+
+#### `eas/start_ios_simulator`
+
+Starts an iOS Simulator you can use to test your apps on. Only available when running a build for iOS.
+
+```yaml build-and-test.yml
+build:
+  name: Build and test
+  steps:
+    - eas/build
+    # @info #
+    - eas/start_ios_simulator
+    # @end #
+    # ... Maestro setup and tests
+```
+
+| Input               | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `device_identifier` | `string` | Name or UDID of the Simulator you want to start. Examples include `iPhone [XY] Pro`, `AEF997BB-222C-4379-89BA-D21070B1D787`.<br />**Note:** Available Simulators are different for every image. If you change the image, the Simulator for a given name may become unavailable. For instance, an Xcode 14 image will have iPhone 14 Simulators, while an Xcode 15 image will have iPhone 15 simulators. In general, we encourage not providing this input. See [runner images](/build/eas-json/#selecting-a-base-image) for more information. |
+
+<BoxLink
+  title="eas/start_ios_simulator source code"
+  description="View the source code for the eas/start_ios_simulator function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/startIosSimulator.ts"
+/>
+
+#### `eas/send_slack_message`
+
+Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel.
+The message can be specified as plain text or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
+With both cases, you can reference build job properties and [use other steps outputs](#use-output-from-one-step-to-another) in the message for dynamic evaluation.
+For example, `'Build URL: ${ eas.job.expoBuildUrl }'`, `Build finished with status: ${ steps.run_fastlane.status_text }`, `Build failed with error: ${ steps.run_gradle.error_text }`.
+Either "message" or "payload" has to be specified, but not both.
+
+```yaml send-slack-message.yml
+build:
+  name: Slack your team from custom build
+  steps:
+    # @info #
+    - eas/send_slack_message:
+        name: Send Slack message to a given webhook URL
+        inputs:
+          message: 'This is a message to plain input URL'
+          slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
+    # @end #
+    - eas/send_slack_message:
+        name: Send Slack message to a default webhook URL from SLACK_HOOK_URL secret
+        inputs:
+          message: 'This is a test message to default URL from SLACK_HOOK_URL secret'
+    - eas/send_slack_message:
+        name: Send Slack message to a webhook URL from specified secret
+        inputs:
+          message: 'This is a test message to a URL from specified secret'
+          slack_hook_url: ${ eas.env.ANOTHER_SLACK_HOOK_URL }
+
+    - eas/build
+    - eas/send_slack_message:
+        if: ${ always() }
+        name: Send Slack message when the build finishes (Android)
+        inputs:
+          message: |
+            This is a test message when Android build finishes
+            Status: `${ steps.run_gradle.status_text }`
+            Link: `${ eas.job.expoBuildUrl }`
+    - eas/send_slack_message:
+        if: ${ always() }
+        name: Send Slack message when the build finishes (iOS)
+        inputs:
+          message: |
+            This is a test message when iOS build finishes
+            Status: `${ steps.run_fastlane.status_text }`
+            Link: `${ eas.job.expoBuildUrl }`
+    - eas/send_slack_message:
+        if: ${ failure() }
+        name: Send Slack message when the build fails (Android)
+        inputs:
+          message: |
+            This is a test message when Android build fails
+            Error: `${ steps.run_gradle.error_text }`
+    - eas/send_slack_message:
+        if: ${ failure() }
+        name: Send Slack message when the build fails (iOS)
+        inputs:
+          message: |
+            This is a test message when iOS build fails
+            Error: `${ steps.run_fastlane.error_text }`
+    - eas/send_slack_message:
+        if: ${ success() }
+        name: Send Slack message when the build succeeds
+        inputs:
+          message: |
+            This is a test message when build succeeds
+    - eas/send_slack_message:
+        if: ${ always() }
+        name: Send Slack message with Slack Block Kit layout
+        inputs:
+          payload:
+            blocks:
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: |-
+                    Hello, Sir Developer
+
+                     *Your build has finished!*
+              - type: divider
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: |-
+                    *${ eas.env.EAS_BUILD_ID }*
+                    *Status:* `${ steps.run_gradle.status_text }`
+                    *Link:* `${ eas.job.expoBuildUrl }`
+                accessory:
+                  type: image
+                  image_url: [your_image_url]
+                  alt_text: alt text for image
+              - type: divider
+              - type: actions
+                elements:
+                  - type: button
+                    text:
+                      type: plain_text
+                      text: 'Do a thing :rocket:'
+                      emoji: true
+                    value: a_thing
+                  - type: button
+                    text:
+                      type: plain_text
+                      text: 'Do another thing :x:'
+                      emoji: true
+                    value: another_thing
+```
+
+| Input            | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                        |
+| `payload`        | `string` | The contents of the message you want to send defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                 |
+| `slack_hook_url` | `string` | The URL of the previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${ eas.env.ANOTHER_SLACK_HOOK_URL }`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide `slack_hook_url` input). |
+
+<BoxLink
+  title="eas/send_slack_message source code"
+  description="View the source code for the eas/send_slack_message function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
 />
 
 ### Using built-in EAS functions to build an app
@@ -1474,7 +2040,7 @@ build:
 
 ## Override values in a `build`
 
-You can override values for following properties:
+You can override values for the following properties:
 
 - `working_directory`
 - `name`

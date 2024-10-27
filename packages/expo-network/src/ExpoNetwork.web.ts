@@ -1,4 +1,23 @@
-import { NetworkState, NetworkStateType } from './Network.types';
+import { EventEmitter } from 'expo-modules-core';
+
+import { type NetworkEvents, NetworkState, NetworkStateType } from './Network.types';
+
+const emitter = new EventEmitter<NetworkEvents>();
+const onNetworkStateEventName = 'onNetworkStateChanged';
+
+function getNetworkState(): NetworkState {
+  const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
+  return {
+    type: isOnline ? NetworkStateType.UNKNOWN : NetworkStateType.NONE,
+    isConnected: isOnline,
+    isInternetReachable: isOnline,
+  };
+}
+
+function updateNetworkState() {
+  const state = getNetworkState();
+  emitter.emit(onNetworkStateEventName, state);
+}
 
 export default {
   async getIpAddressAsync(): Promise<string> {
@@ -11,11 +30,14 @@ export default {
     }
   },
   async getNetworkStateAsync(): Promise<NetworkState> {
-    const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
-    return {
-      type: isOnline ? NetworkStateType.UNKNOWN : NetworkStateType.NONE,
-      isConnected: isOnline,
-      isInternetReachable: isOnline,
-    };
+    return getNetworkState();
+  },
+  startObserving() {
+    window.addEventListener('online', updateNetworkState);
+    window.addEventListener('offline', updateNetworkState);
+  },
+  stopObserving() {
+    window.removeEventListener('online', updateNetworkState);
+    window.removeEventListener('offline', updateNetworkState);
   },
 };

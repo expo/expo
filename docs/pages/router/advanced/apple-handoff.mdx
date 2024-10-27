@@ -3,10 +3,10 @@ title: Apple Handoff
 description: Learn how to seamlessly continue app navigation across Apple devices with Expo Router and Apple Handoff.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { Terminal } from '~/ui/components/Snippet';
 
-Apple Handoff is a feature that enables users to continue browsing your app or website on another device. Expo Router v2 automates all of the runtime routing for this feature. However, the one-time configuration must be set up manually.
+Apple Handoff is a feature that enables users to continue browsing your app or website on another device. Expo Router automates all of the runtime routing for this feature. However, the one-time configuration must be set up manually.
 
 In Expo Router, the underlying iOS API (`NSUserActivity`) requires a `webpageUrl` which the OS recommends as the current URL for switching to your app. The `expo-router/head` component has an optional native module that can automatically set the `webpageUrl` to the currently focused route in Expo Router.
 
@@ -57,9 +57,9 @@ See [Universal Link debugging](/guides/deep-linking#debugging) guide to test han
 
 ### Expo Head setup
 
-Ensure you set the Handoff origin in your `app.config.js` file using the `expo-router` config plugin. This is the URL that will be used for the `webpageUrl` when the user switches to your app.
+Ensure you set the Handoff origin in your `app.config.tsx` file using the `expo-router` config plugin. This is the URL that will be used for the `webpageUrl` when the user switches to your app.
 
-```js app.config.js
+```tsx app.config.tsx
 // Be sure to change this to be unique to your project.
 process.env.EXPO_TUNNEL_SUBDOMAIN = 'bacon-router-sandbox';
 
@@ -107,7 +107,7 @@ In development, you must start the website **before installing the app on your d
 
 In any route that you want to support handoff, use the `Head` component from `expo-router/head`:
 
-```jsx app/index.js
+```tsx app/index.tsx
 import Head from 'expo-router/head';
 import { Text } from 'react-native';
 
@@ -136,21 +136,18 @@ The `expo-router/head` component supports the following meta tags:
 
 You may want to switch the values between platforms, for that you can use **Platform.select**:
 
-```jsx app/index.tsx
+{/* prettier-ignore */}
+```tsx app/index.tsx
 import Head from 'expo-router/head';
 
 export default function App() {
   return (
-    <>
-      <Head>
-        <meta
-          property="og:url"
-          /* @info */
-          content={Platform.select({ web: 'https://expo.dev', default: null })}
-          /* @end */
-        />
-      </Head>
-    </>
+    <Head>
+      <meta
+        property="og:url"
+        content={/* @info */Platform.select({ web: 'https://expo.dev', default: null })/* @end */}
+      />
+    </Head>
   );
 }
 ```
@@ -172,7 +169,7 @@ You can test the Apple App Site Association file (**public/.well-known/apple-app
 
 If you're having issues, the best thing you can do is enable the most aggressive handoff settings in your app. This ensures that any possible route is linkable. You can do this by making sure that **public/.well-known/apple-app-site-association** file matches all routes:
 
-```json title=public/.well-known/apple-app-site-association
+```json public/.well-known/apple-app-site-association
 {
   "applinks": {
     "details": [
@@ -194,7 +191,7 @@ In the application, ensure you are not rendering the `<Head />` element conditio
 
 Ensure you can access the Ngrok URL (for example, via the browser), before installing the app on your device. If you can't access the URL, the OS will not be able to find the file and handoff will not work.
 
-`npx expo run:ios` and Xcode will both codesign your app when associated domains is setup, this is required for handoff and universal links to work.
+`npx expo run:ios` and Xcode will both codesign your app when associated domains is set up, this is required for handoff and universal links to work.
 
 Handoff between your Mac and iPhone/iPad is not supported in the Expo Go app. You must build and install your app on your device.
 
@@ -209,7 +206,7 @@ Your **public/.well-known/apple-app-site-association** must be served from a sec
 
 Check your **ios&#x2f;project&#x2f;project.entitlements** file, under the `com.apple.developer.associated-domains` key. This should contain the same domains as your web server/website. The URL cannot contain a protocol (`https://`) or additional pathname, query parameters, or fragments.
 
-### Still Stuck?
+### Still stuck
 
 > This is an important but very difficult feature to set up. Expo Router automates many of the moving parts, Expo CLI automates much of the configuration and hosting. However, hardware settings can still be misconfigured.
 

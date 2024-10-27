@@ -1,93 +1,74 @@
-diff --git a/android/app/src/main/java/com/myapp/MainActivity.java b/android/app/src/main/java/com/myapp/MainActivity.java
-index 557797a..2ccae2e 100644
---- a/android/app/src/main/java/com/myapp/MainActivity.java
-+++ b/android/app/src/main/java/com/myapp/MainActivity.java
+diff --git a/android/app/src/main/java/com/myapp/MainActivity.kt b/android/app/src/main/java/com/myapp/MainActivity.kt
+index cb23b47..13beb08 100644
+--- a/android/app/src/main/java/com/myapp/MainActivity.kt
++++ b/android/app/src/main/java/com/myapp/MainActivity.kt
 @@ -1,4 +1,5 @@
- package com.myapp;
-+import expo.modules.ReactActivityDelegateWrapper;
+ package com.myapp
++import expo.modules.ReactActivityDelegateWrapper
 
- import com.facebook.react.ReactActivity;
- import com.facebook.react.ReactActivityDelegate;
-@@ -23,13 +24,13 @@ public class MainActivity extends ReactActivity {
+ import com.facebook.react.ReactActivity
+ import com.facebook.react.ReactActivityDelegate
+@@ -18,5 +19,5 @@ class MainActivity : ReactActivity() {
+    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
     */
-   @Override
-   protected ReactActivityDelegate createReactActivityDelegate() {
--    return new DefaultReactActivityDelegate(
-+    return new ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, new DefaultReactActivityDelegate(
-         this,
-         getMainComponentName(),
-         // If you opted-in for the New Architecture, we enable the Fabric Renderer.
-         DefaultNewArchitectureEntryPoint.getFabricEnabled(), // fabricEnabled
-         // If you opted-in for the New Architecture, we enable Concurrent React (i.e. React 18).
-         DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
--        );
-+        ));
-   }
+   override fun createReactActivityDelegate(): ReactActivityDelegate =
+-      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
++      ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled))
  }
-diff --git a/android/app/src/main/java/com/myapp/MainApplication.java b/android/app/src/main/java/com/myapp/MainApplication.java
-index fd8ec88..73cbea8 100644
---- a/android/app/src/main/java/com/myapp/MainApplication.java
-+++ b/android/app/src/main/java/com/myapp/MainApplication.java
+diff --git a/android/app/src/main/java/com/myapp/MainApplication.kt b/android/app/src/main/java/com/titoz/MainApplication.kt
+index 9fdd6df..2a521ff 100644
+--- a/android/app/src/main/java/com/myapp/MainApplication.kt
++++ b/android/app/src/main/java/com/myapp/MainApplication.kt
 @@ -1,4 +1,7 @@
- package com.myapp;
-+import android.content.res.Configuration;
-+import expo.modules.ApplicationLifecycleDispatcher;
-+import expo.modules.ReactNativeHostWrapper;
+ package com.myapp
++import android.content.res.Configuration
++import expo.modules.ApplicationLifecycleDispatcher
++import expo.modules.ReactNativeHostWrapper
 
- import android.app.Application;
- import com.facebook.react.PackageList;
-@@ -13,7 +16,7 @@ import java.util.List;
- public class MainApplication extends Application implements ReactApplication {
+ import android.app.Application
+ import com.facebook.react.PackageList
+@@ -14,7 +17,7 @@ import com.facebook.soloader.SoLoader
+ class MainApplication : Application(), ReactApplication {
 
-   private final ReactNativeHost mReactNativeHost =
--      new DefaultReactNativeHost(this) {
-+      new ReactNativeHostWrapper(this, new DefaultReactNativeHost(this) {
-         @Override
-         public boolean getUseDeveloperSupport() {
-           return BuildConfig.DEBUG;
-@@ -42,7 +45,7 @@ public class MainApplication extends Application implements ReactApplication {
-         protected Boolean isHermesEnabled() {
-           return BuildConfig.IS_HERMES_ENABLED;
-         }
--      };
-+      });
+   override val reactNativeHost: ReactNativeHost =
+-      object : DefaultReactNativeHost(this) {
++      ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
+         override fun getPackages(): List<ReactPackage> =
+             PackageList(this).packages.apply {
+               // Packages that cannot be autolinked yet can be added manually here, for example:
+@@ -27,10 +30,10 @@ class MainApplication : Application(), ReactApplication {
 
-   @Override
-   public ReactNativeHost getReactNativeHost() {
-@@ -58,5 +61,12 @@ public class MainApplication extends Application implements ReactApplication {
-       DefaultNewArchitectureEntryPoint.load();
+         override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
+         override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
+-      }
++      })
+
+   override val reactHost: ReactHost
+-    get() = getDefaultReactHost(applicationContext, reactNativeHost)
++    get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
+
+   override fun onCreate() {
+     super.onCreate()
+@@ -39,5 +42,11 @@ class MainApplication : Application(), ReactApplication {
+       // If you opted-in for the New Architecture, we load the native entry point for this app.
+       load()
      }
-     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-+    ApplicationLifecycleDispatcher.onApplicationCreate(this);
++    ApplicationLifecycleDispatcher.onApplicationCreate(this)
 +  }
 +
-+  @Override
-+  public void onConfigurationChanged(Configuration newConfig) {
-+    super.onConfigurationChanged(newConfig);
-+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig);
++  override fun onConfigurationChanged(newConfig: Configuration) {
++    super.onConfigurationChanged(newConfig)
++    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
    }
  }
-diff --git a/android/build.gradle b/android/build.gradle
-index 67d887b..f63636a 100644
---- a/android/build.gradle
-+++ b/android/build.gradle
-@@ -15,7 +15,7 @@ buildscript {
-         mavenCentral()
-     }
-     dependencies {
--        classpath("com.android.tools.build:gradle:7.3.1")
-+        classpath("com.android.tools.build:gradle:7.4.1")
-         classpath("com.facebook.react:react-native-gradle-plugin")
-     }
- }
 diff --git a/android/settings.gradle b/android/settings.gradle
-index 546e701..9f61409 100644
+index dd91c04..6b7789d 100644
 --- a/android/settings.gradle
 +++ b/android/settings.gradle
 @@ -2,3 +2,6 @@ rootProject.name = 'myapp'
  apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
  include ':app'
- includeBuild('../node_modules/react-native-gradle-plugin')
+ includeBuild('../node_modules/@react-native/gradle-plugin')
 +
 +apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 +useExpoModules()

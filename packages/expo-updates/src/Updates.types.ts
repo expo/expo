@@ -1,28 +1,6 @@
-import { NewManifest, BareManifest } from 'expo-manifests';
+import { ExpoUpdatesManifest, EmbeddedManifest } from 'expo-manifests';
 
-export type Manifest = NewManifest | BareManifest;
-
-/**
- * @deprecated The types of update-related events, used with `addListener()` and `useUpdateEvents()`.
- * These APIs are deprecated and will be removed in a future release corresponding with SDK 51.
- * Use [`useUpdates()`](#useupdates) instead.
- */
-export enum UpdateEventType {
-  /**
-   * A new update has finished downloading to local storage. If you would like to start using this
-   * update at any point before the user closes and restarts the app on their own, you can call
-   * [`Updates.reloadAsync()`](#reloadasync) to launch this new update.
-   */
-  UPDATE_AVAILABLE = 'updateAvailable',
-  /**
-   * No updates are available, and the most up-to-date update is already running.
-   */
-  NO_UPDATE_AVAILABLE = 'noUpdateAvailable',
-  /**
-   * An error occurred trying to fetch the latest update.
-   */
-  ERROR = 'error',
-}
+export type Manifest = ExpoUpdatesManifest | EmbeddedManifest;
 
 export enum UpdateCheckResultNotAvailableReason {
   /**
@@ -140,7 +118,7 @@ export type UpdateCheckResultFailure = UpdateCheckResultNotAvailable;
 export type UpdateFetchResultSuccess = {
   /**
    * Whether the fetched update is new (that is, a different version than what's currently running).
-   * False when roll back to embedded is true.
+   * Always `true` when `isRollBackToEmbedded` is `false`.
    */
   isNew: true;
   /**
@@ -159,7 +137,7 @@ export type UpdateFetchResultSuccess = {
 export type UpdateFetchResultFailure = {
   /**
    * Whether the fetched update is new (that is, a different version than what's currently running).
-   * False when roll back to embedded is true.
+   * Always `false` when `isRollBackToEmbedded` is `true`.
    */
   isNew: false;
   /**
@@ -175,10 +153,10 @@ export type UpdateFetchResultFailure = {
 /**
  * The roll back to embedded result of fetching a new update.
  */
-type UpdateFetchResultRollBackToEmbedded = {
+export type UpdateFetchResultRollBackToEmbedded = {
   /**
    * Whether the fetched update is new (that is, a different version than what's currently running).
-   * False when roll back to embedded is true.
+   * Always `false` when `isRollBackToEmbedded` is `true`.
    */
   isNew: false;
   /**
@@ -200,26 +178,7 @@ export type UpdateFetchResult =
   | UpdateFetchResultRollBackToEmbedded;
 
 /**
- * An object that is passed into each event listener when an auto-update check occurs.
- */
-export type UpdateEvent = {
-  /**
-   * Type of the event.
-   */
-  type: UpdateEventType;
-  /**
-   * If `type` is `Updates.UpdateEventType.UPDATE_AVAILABLE`, the manifest of the newly downloaded
-   * update, and `undefined` otherwise.
-   */
-  manifest?: Manifest;
-  /**
-   * If `type` is `Updates.UpdateEventType.ERROR`, the error message, and `undefined` otherwise.
-   */
-  message?: string;
-};
-
-/**
- * An object representing a single log entry from expo-updates logging on the client.
+ * An object representing a single log entry from `expo-updates` logging on the client.
  */
 export type UpdatesLogEntry = {
   /**
@@ -231,7 +190,7 @@ export type UpdatesLogEntry = {
    */
   message: string;
   /**
-   * One of the defined code values for expo-updates log entries.
+   * One of the defined code values for `expo-updates` log entries.
    */
   code: UpdatesLogEntryCode;
   /**
@@ -247,13 +206,13 @@ export type UpdatesLogEntry = {
    */
   assetId?: string;
   /**
-   * If present, an iOS or Android native stack trace associated with this log entry.
+   * If present, an Android or iOS native stack trace associated with this log entry.
    */
   stacktrace?: string[];
 };
 
 /**
- * The possible code values for expo-updates log entries
+ * The possible code values for `expo-updates` log entries
  */
 export enum UpdatesLogEntryCode {
   NONE = 'None',
@@ -265,11 +224,12 @@ export enum UpdatesLogEntryCode {
   UPDATE_FAILED_TO_LOAD = 'UpdateFailedToLoad',
   ASSETS_FAILED_TO_LOAD = 'AssetsFailedToLoad',
   JS_RUNTIME_ERROR = 'JSRuntimeError',
+  INITIALIZATION_ERROR = 'InitializationError',
   UNKNOWN = 'Unknown',
 }
 
 /**
- * The possible log levels for expo-updates log entries
+ * The possible log levels for `expo-updates` log entries
  */
 export enum UpdatesLogEntryLevel {
   TRACE = 'trace',
@@ -281,8 +241,10 @@ export enum UpdatesLogEntryLevel {
 }
 
 /**
- * The possible settings that determine if expo-updates will check for updates on app startup.
- * By default, Expo will check for updates every time the app is loaded. Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error. Set this to `NEVER` to completely disable automatic checking. Must be one of `ON_LOAD` (default value), `ON_ERROR_RECOVERY`, `WIFI_ONLY`, or `NEVER`
+ * The possible settings that determine if `expo-updates` will check for updates on app startup.
+ * By default, Expo will check for updates every time the app is loaded.
+ * Set this to `ON_ERROR_RECOVERY` to disable automatic checking unless recovering from an error.
+ * Set this to `NEVER` to completely disable automatic checking.
  */
 export enum UpdatesCheckAutomaticallyValue {
   /**
@@ -294,7 +256,7 @@ export enum UpdatesCheckAutomaticallyValue {
    */
   ON_ERROR_RECOVERY = 'ON_ERROR_RECOVERY',
   /**
-   * Only checks for updates when the app starts and has a WiFi connection.
+   * Only checks for updates when the app starts and has a Wi-Fi connection.
    */
   WIFI_ONLY = 'WIFI_ONLY',
   /**
@@ -303,7 +265,6 @@ export enum UpdatesCheckAutomaticallyValue {
   NEVER = 'NEVER',
 }
 
-// @docsMissing
 /**
  * @hidden
  */
@@ -318,11 +279,11 @@ export type UpdatesNativeStateRollback = {
 };
 
 /**
+ * The native state machine context, either read directly from a native module method,
+ * or received in a state change event. Used internally by this module and not exported publicly.
  * @hidden
  */
 export type UpdatesNativeStateMachineContext = {
-  // The native state machine context, either read directly from a native module method,
-  // or received in a state change event. Used internally by this module and not exported publicly.
   isUpdateAvailable: boolean;
   isUpdatePending: boolean;
   isChecking: boolean;
@@ -334,6 +295,7 @@ export type UpdatesNativeStateMachineContext = {
   checkError?: Error;
   downloadError?: Error;
   lastCheckForUpdateTime?: Date;
+  sequenceNumber: number;
 };
 
 /**

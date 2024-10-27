@@ -1,4 +1,4 @@
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
@@ -41,7 +41,7 @@ function useLoadedPhotos() {
 
 export default function GalleryScreen(props: TouchableOpacityProps & { photos?: string[] }) {
   const photos = useLoadedPhotos();
-  return <LoadedGalleryScreen {...props} photos={photos.length ? photos : props.photos ?? []} />;
+  return <LoadedGalleryScreen {...props} photos={photos.length ? photos : (props.photos ?? [])} />;
 }
 
 class LoadedGalleryScreen extends React.Component<

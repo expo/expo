@@ -1,15 +1,22 @@
 import { css } from '@emotion/react';
 import { LinkBase, shadows, theme } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { TriangleDownIcon } from '@expo/styleguide-icons';
+import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon';
 import { useRouter } from 'next/compat/router';
-import type { PropsWithChildren, ReactNode } from 'react';
-import React from 'react';
+import {
+  type ComponentType,
+  type PropsWithChildren,
+  type ReactNode,
+  useRef,
+  useState,
+  useEffect,
+  MouseEventHandler,
+} from 'react';
 
-import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
+import { PermalinkIcon } from '~/ui/components/Permalink';
 import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
@@ -24,58 +31,63 @@ type CollapsibleProps = PropsWithChildren<{
   testID?: string;
 }>;
 
-const Collapsible: React.FC<CollapsibleProps> = withHeadingManager(
-  (props: CollapsibleProps & HeadingManagerProps) => {
-    const { summary, testID, children } = props;
-
-    const router = useRouter();
-    const { asPath } = router || {};
-
-    // expand collapsible if the current hash matches the heading
-    React.useEffect(() => {
-      if (asPath) {
-        const splitUrl = asPath.split('#');
-        const hash = splitUrl.length ? splitUrl[1] : undefined;
-        if (hash && hash === heading.current.slug) {
-          setOpen(true);
-        }
-      }
-    }, [asPath]);
-
+const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
+  ({
+    summary,
+    testID,
+    children,
+    headingManager,
+    open = false,
+  }: CollapsibleProps & HeadingManagerProps) => {
     // track open state so we can collapse header if it is set to open by the URL hash
-    const [open, setOpen] = React.useState<boolean>(props.open ?? false);
-
-    const onToggle = (event: { preventDefault: () => void }) => {
-      event.preventDefault();
-      setOpen(!open);
-    };
-
-    const onClickIcon = (event: { stopPropagation?: () => void }) => {
-      event.stopPropagation && event.stopPropagation();
-      if (!open) {
-        setOpen(true);
-      }
-    };
+    const [isOpen, setIsOpen] = useState<boolean>(open);
+    const router = useRouter();
 
     // HeadingManager is used to generate a slug that corresponds to the collapsible summary.
     // These are normally generated for MD (#) headings, but Collapsible doesn't have those.
     // This is a ref because identical tags will keep incrementing the number if it is not.
-    const heading = React.useRef(props.headingManager.addHeading(summary, 1, undefined));
+    const heading = useRef(headingManager.addHeading(summary, 1, undefined));
+
+    // expand collapsible if the current hash matches the heading
+    useEffect(() => {
+      if (router?.asPath) {
+        const splitUrl = router.asPath.split('#');
+        const hash = splitUrl.length ? splitUrl[1] : undefined;
+        if (hash && hash === heading.current.slug) {
+          setIsOpen(true);
+        }
+      }
+    }, []);
+
+    const onToggle: MouseEventHandler<HTMLElement> = event => {
+      // Detect if we are clicking the PermalinkIcon. Probably a better way to do this?
+      if (event.target instanceof SVGElement) {
+        if (!isOpen) {
+          setIsOpen(true);
+        }
+      } else {
+        setIsOpen(!isOpen);
+        // Ensure that the collapsible opens nicely on the first click
+        event.preventDefault();
+      }
+    };
 
     return (
-      <details id={heading.current.slug} css={detailsStyle} open={open} data-testid={testID}>
-        <summary css={summaryStyle} onClick={onToggle}>
+      <details id={heading.current.slug} css={detailsStyle} open={isOpen} data-testid={testID}>
+        <summary css={summaryStyle} className="group" onClick={onToggle}>
           <div css={markerWrapperStyle}>
             <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
           </div>
-          <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
+          <span className="inline-flex gap-1.5 items-center scroll-m-5 mr-2 relative">
             <DEMI>{summary}</DEMI>
-            <span css={STYLES_PERMALINK_ICON}>
-              <PermalinkIcon onClick={onClickIcon} />
-            </span>
+          </span>
+          <LinkBase href={'#' + heading.current.slug} ref={heading.current.ref}>
+            <PermalinkIcon className="icon-sm inline-flex invisible group-hover:visible group-focus-visible:visible" />
           </LinkBase>
         </summary>
-        <div css={contentStyle}>{children}</div>
+        <div css={contentStyle} className="last:[&>*]:!mb-1">
+          {children}
+        </div>
       </details>
     );
   }
@@ -101,8 +113,8 @@ const detailsStyle = css({
 });
 
 const summaryStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
+  display: 'grid',
+  gridTemplateColumns: 'min-content auto 1fr',
   alignItems: 'center',
   userSelect: 'none',
   listStyle: 'none',
@@ -143,11 +155,14 @@ const markerStyle = css({
   transform: 'rotate(-90deg)',
   transition: `transform 200ms`,
 
-  'details[open] &': { transform: 'rotate(0)' },
+  // Only rotate the icon when its direct parent 'details' is open
+  'details[open] > summary &': {
+    transform: 'rotate(0)',
+  },
 });
 
 const contentStyle = css({
-  padding: `${spacing[4]}px ${spacing[5]}px 0`,
+  padding: `${spacing[4]}px ${spacing[5]}px`,
 
   p: {
     marginLeft: 0,
@@ -157,23 +172,3 @@ const contentStyle = css({
     marginTop: 0,
   },
 });
-
-const STYLES_PERMALINK_ICON = css`
-  cursor: pointer;
-  vertical-align: middle;
-  display: inline-block;
-  width: 1.2em;
-  height: 1em;
-  padding: 0 0.2em;
-  visibility: hidden;
-
-  a:hover &,
-  a:focus-visible & {
-    visibility: visible;
-  }
-
-  svg {
-    width: 100%;
-    height: auto;
-  }
-`;

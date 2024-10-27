@@ -29,8 +29,7 @@ export const expoLogin: Command = async (argv) => {
         `-u, --username <string>  Username`,
         `-p, --password <string>  Password`,
         `--otp <string>           One-time password from your 2FA device`,
-        // hiding from help until SSO is public
-        // `-s, --sso                Log in with SSO`,
+        `-s, --sso                Log in with SSO`,
         `-h, --help               Usage info`,
       ].join('\n')
     );

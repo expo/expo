@@ -22,6 +22,7 @@ public:
 
   // sqlite3 bindings
   int sqlite3_bind_parameter_index(const std::string &name);
+  int sqlite3_clear_bindings();
   int sqlite3_column_count();
   std::string sqlite3_column_name(int index);
   int sqlite3_finalize();
@@ -34,9 +35,7 @@ public:
   jni::local_ref<jni::JArrayList<jni::JObject>> getColumnValues();
 
 private:
-  explicit NativeStatementBinding(
-      jni::alias_ref<NativeStatementBinding::jhybridobject> jThis)
-      : javaPart_(jni::make_global(jThis)) {}
+  explicit NativeStatementBinding(jni::alias_ref<NativeStatementBinding::jhybridobject> jThis) {}
 
   jni::local_ref<jni::JObject> getColumnValue(int index);
 
@@ -48,8 +47,7 @@ private:
   friend HybridBase;
   friend NativeDatabaseBinding;
 
-  jni::global_ref<NativeStatementBinding::javaobject> javaPart_;
-  sqlite3_stmt *stmt;
+  exsqlite3_stmt *stmt;
 };
 
 /**

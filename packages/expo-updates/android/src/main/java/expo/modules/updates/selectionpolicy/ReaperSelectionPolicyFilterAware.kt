@@ -1,6 +1,7 @@
 package expo.modules.updates.selectionpolicy
 
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.db.enums.UpdateStatus
 import org.json.JSONObject
 
 /**
@@ -50,6 +51,8 @@ class ReaperSelectionPolicyFilterAware : ReaperSelectionPolicy {
     } else if (nextNewestUpdate != null) {
       updatesToDelete.remove(nextNewestUpdate)
     }
-    return updatesToDelete
+
+    // don't delete embedded update
+    return updatesToDelete.filter { it.status != UpdateStatus.EMBEDDED }
   }
 }

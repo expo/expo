@@ -39,7 +39,6 @@ const CanvasWrapper: React.FunctionComponent<
 
   function updateCanvasSize(): void {
     const canvas = _canvasRef.current;
-    // eslint-disable-next-line no-undef
     if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
       const size = getSize();
       const scale = PixelRatio.get();

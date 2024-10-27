@@ -15,6 +15,8 @@ const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 
 const EVENT_THROTTLE_MS = 500;
 
+let warnedAboutDeprecation = false;
+
 // @needsAudit
 /**
  * Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
@@ -62,9 +64,16 @@ export type BarCodeScannerResult = {
    */
   type: string;
   /**
-   * The information encoded in the bar code.
+   * The parsed information encoded in the bar code.
    */
   data: string;
+  /**
+   * The raw information encoded in the bar code.
+   * May be different from `data` depending on the barcode type.
+   * @platform android
+   * @hidden
+   */
+  raw?: string;
   /**
    * The [BarCodeBounds](#barcodebounds) object.
    * `bounds` in some case will be representing an empty rectangle.
@@ -120,6 +129,12 @@ export type BarCodeScannerProps = ViewProps & {
   onBarCodeScanned?: BarCodeScannedCallback;
 };
 
+/**
+ * @deprecated
+ * BarCodeScanner has been deprecated and will be removed in a future SDK version. Use `expo-camera` instead.
+ * See [How to migrate from `expo-barcode-scanner` to `expo-camera`](https://expo.fyi/barcode-scanner-to-expo-camera)
+ * for more details.
+ */
 export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   lastEvents: { [key: string]: any } = {};
   lastEventsTimes: { [key: string]: any } = {};
@@ -137,6 +152,15 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     type: Type.back,
     barCodeTypes: Object.values(BarCodeType),
   };
+
+  componentDidMount(): void {
+    if (!warnedAboutDeprecation) {
+      console.warn(
+        'BarCodeScanner has been deprecated and will be removed in a future SDK version. Please use `expo-camera` instead. See https://expo.fyi/barcode-scanner-to-expo-camera for more details on how to migrate'
+      );
+      warnedAboutDeprecation = true;
+    }
+  }
 
   // @needsAudit
   /**

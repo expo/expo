@@ -3,17 +3,14 @@ title: Stripe
 description: A library that provides access to native APIs for integrating Stripe payments.
 sourceCodeUrl: 'https://github.com/stripe/stripe-react-native'
 packageName: '@stripe/stripe-react-native'
+platforms: ['android', 'ios']
 ---
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
 
 Expo includes support for [`@stripe/stripe-react-native`](https://github.com/stripe/stripe-react-native), which allows you to build delightful payment experiences in your native Android and iOS apps using React Native and Expo. This library provides powerful and customizable UI screens and elements that can be used out-of-the-box to collect your users' payment details.
 
 > Migrating from Expo's `expo-payments-stripe` module? [Learn more about how to transition to the new `@stripe/stripe-react-native` library](https://github.com/expo/fyi/blob/main/payments-migration-guide.md#how-to-migrate-from-expo-payments-stripe-to-the-new-stripestripe-react-native-library).
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -23,12 +20,12 @@ Each Expo SDK version requires a specific `@stripe/stripe-react-native` version.
 
 ### Config plugin setup (optional)
 
-If you're using EAS Build, you can do most of your Stripe setup using the `@stripe/stripe-react-native` [config plugin](/config-plugins/introduction/). To setup, just add the config plugin to the `plugins` array of your **app.json** or **app.config.js** as shown below, then rebuild the app.
+If you're using EAS Build, you can do most of your Stripe setup using the `@stripe/stripe-react-native` [config plugin](/config-plugins/introduction/). To set up, just add the config plugin to the `plugins` array of your **app.json** or **app.config.js** as shown below, then rebuild the app.
 
-```json
+```json app.json
 {
   "expo": {
-    ...
+    /* @hide ... */ /* @end */
     "plugins": [
       [
         "@stripe/stripe-react-native",
@@ -42,7 +39,7 @@ If you're using EAS Build, you can do most of your Stripe setup using the `@stri
 }
 ```
 
-- **merchantIdentifier**: iOS only. This is the Apple merchant ID obtained [here](https://stripe.com/docs/apple-pay?platform=react-native). Otherwise, Apple Pay will not work as expected. If you have multiple merchantIdentifiers, you can set them in an array.
+- **merchantIdentifier**: iOS only. This is the [Apple merchant ID obtained here](https://stripe.com/docs/apple-pay?platform=react-native). Otherwise, Apple Pay will not work as expected. If you have multiple merchantIdentifiers, you can set them in an array.
 - **enableGooglePay**: Android only. Boolean indicating whether or not Google Pay is enabled. Defaults to `false`.
 
 ## Example
@@ -53,7 +50,7 @@ Under the hood, that example connects to [this Glitch server code](https://glitc
 
 ## Usage
 
-For usage information and detailed documentation, please refer to:
+For usage information and detailed documentation, see the following resources:
 
 - [Stripe's React Native SDK reference](https://stripe.dev/stripe-react-native/api-reference/index.html)
 - [Stripe's React Native GitHub repo](https://github.com/stripe/stripe-react-native)
@@ -75,18 +72,35 @@ urlScheme:
     : Linking.createURL(''),
 ```
 
-[Linking.createURL](/versions/latest/sdk/linking.mdx#linkingcreateurlpath-options) will ensure you're using the proper scheme, whether you're running in Expo Go or your production app. `'/--/'` is necessary in Expo Go because it indicates that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
+[`Linking.createURL()`](/versions/latest/sdk/linking/#createurloptions) will ensure you're using the proper scheme, whether you're running in Expo Go or your production app. `'/--/'` is necessary in Expo Go because it indicates that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
+
+#### PaymentSheet localization on iOS
+
+On Android, the translation of `PaymentSheet` is automatically detected based on a device's language settings.
+
+On iOS, you must enable `CFBundleAllowMixedLocalizations` and add the preferred language using `CFBundleLocalizations` under [`ios.infoPlist`](/versions/latest/config/app/#infoplist) in the app config:
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleLocalizations": ["fr"]
+        /* @hide ... */ /* @end */
+      }
+      /* @hide ... */ /* @end */
+    }
+  }
+}
+```
 
 ## Limitations
 
-### Standalone apps
-
-`@stripe/stripe-react-native` is supported in Expo Go on Android and iOS out of the box, **however**, for iOS, it is only available for standalone apps built with [EAS Build](/build/introduction), and not for apps built on the classic build system- `expo build:ios`. Android apps built with `expo build:android` _will_ have access to the `@stripe/stripe-react-native` library.
-
 ### Google Pay
 
-Google Pay **is not** supported in [Expo Go](https://expo.dev/expo-go). To use Google Pay, you must create a [development build](/develop/development-builds/create-a-build/). This can be done with [EAS Build](/build/introduction), or locally by running `npx expo run:android`.
+Google Pay **is not** supported in [Expo Go](https://expo.dev/go). To use Google Pay, you must create a [development build](/develop/development-builds/create-a-build/). This can be done with [EAS Build](/build/introduction), or locally by running `npx expo run:android`.
 
 ### Apple Pay
 
-Apple Pay **is not** supported in [Expo Go](https://expo.dev/expo-go). To use Apple Pay, you must create a [development build](/develop/development-builds/create-a-build/). This can be done with [EAS Build](/build/introduction), or locally by running `npx expo run:ios`.
+Apple Pay **is not** supported in [Expo Go](https://expo.dev/go). To use Apple Pay, you must create a [development build](/develop/development-builds/create-a-build/). This can be done with [EAS Build](/build/introduction), or locally by running `npx expo run:ios`.

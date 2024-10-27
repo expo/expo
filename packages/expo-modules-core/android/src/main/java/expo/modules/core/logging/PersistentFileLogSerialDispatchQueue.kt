@@ -20,6 +20,8 @@ internal class PersistentFileLogSerialDispatchQueue {
   // and running them as needed
   @OptIn(DelicateCoroutinesApi::class)
   private val queueRunner = GlobalScope.launch {
-    while (true) { channel.receive()() }
+    while (true) {
+      channel.receive()()
+    }
   }
 }

@@ -11,7 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-**`expo-keep-awake`** provides a React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
+`expo-keep-awake` provides a React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -25,7 +25,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <SnackInline label='Keep Awake hook' dependencies={['expo-keep-awake']}>
 
-```javascript
+```jsx
 import { useKeepAwake } from 'expo-keep-awake';
 import React from 'react';
 import { Text, View } from 'react-native';
@@ -48,7 +48,7 @@ export default function KeepAwakeExample() {
 
 <SnackInline label='Keep Awake functions' dependencies={['expo-keep-awake']}>
 
-```javascript
+```jsx
 import { activateKeepAwake, deactivateKeepAwake } from 'expo-keep-awake';
 import React from 'react';
 import { Button, View } from 'react-native';

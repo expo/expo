@@ -6,20 +6,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-interface InternalJSONMutator {
-  @Throws(JSONException::class)
-  fun updateJSON(json: JSONObject)
-}
-
 abstract class Manifest(protected val json: JSONObject) {
-  @Deprecated(message = "Strive for manifests to be immutable")
-  @Throws(JSONException::class)
-  fun mutateInternalJSONInPlace(internalJSONMutator: InternalJSONMutator) {
-    json.apply {
-      internalJSONMutator.updateJSON(this)
-    }
-  }
-
   @Deprecated(message = "Prefer to use specific field getters")
   fun getRawJson(): JSONObject = json
 
@@ -235,7 +222,7 @@ abstract class Manifest(protected val json: JSONObject) {
   @Throws(JSONException::class, IllegalArgumentException::class)
   fun getPluginProperties(packageName: String): Map<String, Any>? {
     val pluginsRawValue = getExpoClientConfigRootObject()?.getNullable<JSONArray>("plugins") ?: return null
-    val plugins = PluginType.fromRawArrayValue(pluginsRawValue) ?: return null
+    val plugins = PluginType.fromRawArrayValue(pluginsRawValue)
     return plugins.filterIsInstance<PluginType.WithProps>()
       .firstOrNull { it.plugin.first == packageName }
       ?.plugin?.second
@@ -244,14 +231,16 @@ abstract class Manifest(protected val json: JSONObject) {
   companion object {
     @JvmStatic fun fromManifestJson(manifestJson: JSONObject): Manifest {
       return when {
+        // TODO(wschurman): remove error in a few major releases after SDK 51 when it's unlikely classic updates
+        // may erroneously be served
         manifestJson.has("releaseId") -> {
-          LegacyManifest(manifestJson)
+          throw Exception("Legacy manifests are no longer supported")
         }
         manifestJson.has("metadata") -> {
-          NewManifest(manifestJson)
+          ExpoUpdatesManifest(manifestJson)
         }
         else -> {
-          BareManifest(manifestJson)
+          EmbeddedManifest(manifestJson)
         }
       }
     }

@@ -1,25 +1,29 @@
-import { css } from '@emotion/react';
-import { theme, typography, shadows } from '@expo/styleguide';
-import { borderRadius, spacing } from '@expo/styleguide-base';
+import { mergeClasses } from '@expo/styleguide';
 import type { PropsWithChildren } from 'react';
 
 import { TableHeaders } from './TableHeaders';
-import { TableLayout, TextAlign } from './types';
+import { TextAlign } from './types';
 
 type TableProps = PropsWithChildren<{
   headers?: string[];
   headersAlign?: TextAlign[];
-  layout?: TableLayout;
+  className?: string;
 }>;
 
-export const Table = ({
-  children,
-  headers = [],
-  headersAlign,
-  layout = TableLayout.Auto,
-}: TableProps) => (
-  <div css={tableWrapperStyle}>
-    <table css={[tableStyle, { tableLayout: layout }]}>
+export const Table = ({ children, headers = [], headersAlign, className }: TableProps) => (
+  <div className="table-wrapper border border-default rounded-md overflow-y-hidden overflow-x-auto mb-4 shadow-xs">
+    <table
+      className={mergeClasses(
+        'w-full border-0 rounded-none text-xs text-default',
+        '[&_p]:text-xs',
+        '[&_li]:text-xs',
+        '[&_span]:text-xs',
+        '[&_code_span]:text-inherit',
+        '[&_strong]:text-xs',
+        '[&_blockquote_div]:text-xs',
+        '[&_blockquote_code]:px-1 [&_blockquote_code]:py-0',
+        className
+      )}>
       {headers.length ? (
         <>
           <TableHeaders headers={headers} headersAlign={headersAlign} />
@@ -31,49 +35,3 @@ export const Table = ({
     </table>
   </div>
 );
-
-export const tableWrapperStyle = css({
-  border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.md,
-  overflowY: 'hidden',
-  overflowX: 'auto',
-  marginBottom: spacing[4],
-  boxShadow: shadows.xs,
-
-  '::-webkit-scrollbar': {
-    height: 6,
-  },
-
-  '::-webkit-scrollbar-track': {
-    background: theme.background.default,
-    borderBottomLeftRadius: borderRadius.md,
-    borderBottomRightRadius: borderRadius.md,
-  },
-
-  '::-webkit-scrollbar-thumb': {
-    background: theme.background.element,
-    borderRadius: borderRadius.md,
-
-    ':hover': {
-      background: theme.background.hover,
-    },
-  },
-});
-
-const tableStyle = css({
-  ...typography.fontSizes[14],
-  width: '100%',
-  border: 0,
-  borderRadius: 0,
-  marginBottom: 0,
-  borderCollapse: 'collapse',
-  color: theme.text.default,
-
-  'blockquote div, li, p, strong': {
-    ...typography.fontSizes[14],
-  },
-
-  'blockquote code': {
-    padding: `0 ${spacing[1]}px`,
-  },
-});

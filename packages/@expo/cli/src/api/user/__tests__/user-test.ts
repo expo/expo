@@ -7,7 +7,7 @@ import {
   getDevelopmentCodeSigningDirectory,
 } from '../../../utils/codesigning';
 import { getExpoApiBaseUrl } from '../../endpoint';
-import UserSettings from '../UserSettings';
+import { getSession } from '../UserSettings';
 import { getSessionUsingBrowserAuthFlowAsync } from '../expoSsoLauncher';
 import {
   Actor,
@@ -160,10 +160,10 @@ describe(logoutAsync, () => {
   it('removes the session secret', async () => {
     mockLoginRequest();
     await loginAsync({ username: 'USERNAME', password: 'PASSWORD' });
-    expect(UserSettings.getSession()?.sessionSecret).toBe('SESSION_SECRET');
+    expect(getSession()?.sessionSecret).toBe('SESSION_SECRET');
 
     await logoutAsync();
-    expect(UserSettings.getSession()?.sessionSecret).toBeUndefined();
+    expect(getSession()?.sessionSecret).toBeUndefined();
   });
 
   it('removes code signing data', async () => {

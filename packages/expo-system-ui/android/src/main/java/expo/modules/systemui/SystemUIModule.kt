@@ -14,8 +14,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 const val PREFERENCE_KEY = "expoRootBackgroundColor"
 
 class SystemUIModule : Module() {
-  private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val prefs: SharedPreferences
@@ -50,8 +48,8 @@ class SystemUIModule : Module() {
       setBackgroundColor(color ?: systemBackgroundColor)
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getBackgroundColorAsync") {
-      val background = currentActivity.window.decorView.background
+    AsyncFunction<String?>("getBackgroundColorAsync") {
+      val background = appContext.throwingActivity.window.decorView.background
       return@AsyncFunction if (background is ColorDrawable) {
         colorToHex((background.mutate() as ColorDrawable).color)
       } else {
@@ -61,7 +59,7 @@ class SystemUIModule : Module() {
   }
 
   private fun setBackgroundColor(color: Int) {
-    val rootView = currentActivity.window?.decorView
+    val rootView = appContext.throwingActivity.window?.decorView
     val colorInt = Color.parseColor(colorToHex(color))
     rootView?.setBackgroundColor(colorInt)
   }

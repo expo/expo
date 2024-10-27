@@ -8,10 +8,7 @@ import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 
 async function canOpenURL(url: string): Promise<boolean> {
-  if (
-    Constants.appOwnership === AppOwnership.Expo ||
-    Constants.appOwnership === AppOwnership.Guest
-  ) {
+  if (Constants.appOwnership === AppOwnership.Expo) {
     return true;
   }
   return Linking.canOpenURL(url);

@@ -78,7 +78,7 @@ export default function App() {
       />
       <Text style={styles.titleText}>Updates JS API test</Text>
       <Text> </Text>
-      <Text>{runTypeMessage}</Text>
+      <Text>{`App.tsx.embedded: ${runTypeMessage}`}</Text>
       <Text> </Text>
       {fontError ? (
         <Text>{`Font error: ${fontError}`}</Text>

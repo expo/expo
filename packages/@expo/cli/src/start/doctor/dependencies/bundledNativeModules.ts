@@ -22,9 +22,12 @@ export type BundledNativeModules = Record<string, string>;
  */
 export async function getVersionedNativeModulesAsync(
   projectRoot: string,
-  sdkVersion: string
+  sdkVersion: string,
+  options: {
+    skipRemoteVersions?: boolean;
+  } = {}
 ): Promise<BundledNativeModules> {
-  if (sdkVersion !== 'UNVERSIONED' && !env.EXPO_OFFLINE) {
+  if (sdkVersion !== 'UNVERSIONED' && !env.EXPO_OFFLINE && !options.skipRemoteVersions) {
     try {
       debug('Fetching bundled native modules from the server...');
       return await getNativeModuleVersionsAsync(sdkVersion);

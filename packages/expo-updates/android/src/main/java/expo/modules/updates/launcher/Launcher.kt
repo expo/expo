@@ -29,7 +29,7 @@ interface Launcher {
   val bundleAssetName: String?
 
   /**
-   * Exported to JS through [UpdatesModule] for use by the expo-asset package. Used to map
+   * Exported to JS through the [UpdatesModule] for use by the expo-asset package. Used to map
    * references to `require`d assets to files on disk.
    */
   val localAssetFiles: Map<AssetEntity, String>?

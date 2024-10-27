@@ -1,6 +1,18 @@
 import { ExpoModuleConfig } from './ExpoModuleConfig';
 
-export type SupportedPlatform = 'ios' | 'android' | 'web' | 'devtools';
+export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools';
+
+/**
+ * Options that can be passed through `expo.autolinking` config in the package.json file.
+ */
+export type AutolinkingOptions = {
+  searchPaths?: string[] | null;
+  ignorePaths?: string[] | null;
+  exclude?: string[] | null;
+  flags?: Record<string, any>;
+} & {
+  [key in SupportedPlatform]?: AutolinkingOptions;
+};
 
 export interface SearchOptions {
   // Available in the CLI
@@ -32,9 +44,10 @@ export interface GenerateOptions extends ResolveOptions {
   empty?: boolean;
 }
 
-export interface PatchReactImportsOptions {
-  podsRoot: string;
-  dryRun: boolean;
+export interface GenerateModulesProviderOptions extends ResolveOptions {
+  target: string;
+  entitlement?: string;
+  packages: string[];
 }
 
 export type PackageRevision = {
@@ -58,11 +71,16 @@ export interface ModuleAndroidPluginInfo {
   sourceDir: string;
 }
 
+export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDescriptor {
+  projectDir: string;
+}
+
 export interface ModuleDescriptorAndroid {
   packageName: string;
   projects: ModuleAndroidProjectInfo[];
   plugins?: ModuleAndroidPluginInfo[];
   modules: string[];
+  aarProjects?: ModuleAndroidAarProjectInfo[];
 }
 
 export interface ModuleIosPodspecInfo {
@@ -108,6 +126,62 @@ export interface AndroidGradlePluginDescriptor {
   sourceDir: string;
 }
 
+export interface AndroidGradleAarProjectDescriptor {
+  /**
+   * Gradle project name
+   */
+  name: string;
+
+  /**
+   * Path to the AAR file
+   */
+  aarFilePath: string;
+}
+
+/**
+ * Represents a raw config specific to Apple platforms.
+ */
+export type RawModuleConfigApple = {
+  /**
+   * Names of Swift native modules classes to put to the generated modules provider file.
+   */
+  modules?: string[];
+
+  /**
+   * Names of Swift native modules classes to put to the generated modules provider file.
+   * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
+   */
+  modulesClassNames?: string[];
+
+  /**
+   * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
+   */
+  appDelegateSubscribers?: string[];
+
+  /**
+   * Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
+   */
+  reactDelegateHandlers?: string[];
+
+  /**
+   * Podspec relative path.
+   * To have multiple podspecs, string array type is also supported.
+   */
+  podspecPath?: string | string[];
+
+  /**
+   * Swift product module name. If empty, the pod name is used for Swift imports.
+   * To have multiple modules, string array is also supported.
+   */
+  swiftModuleName?: string | string[];
+
+  /**
+   * Whether this module will be added only to the debug configuration.
+   * Defaults to false.
+   */
+  debugOnly?: boolean;
+};
+
 /**
  * Represents a raw config from `expo-module.json`.
  */
@@ -118,48 +192,16 @@ export interface RawExpoModuleConfig {
   platforms?: SupportedPlatform[];
 
   /**
-   * iOS-specific config.
+   * A config for all Apple platforms.
    */
-  ios?: {
-    /**
-     * Names of Swift native modules classes to put to the generated modules provider file.
-     */
-    modules?: string[];
+  apple?: RawModuleConfigApple;
 
-    /**
-     * Names of Swift native modules classes to put to the generated modules provider file.
-     * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
-     */
-    modulesClassNames?: string[];
-
-    /**
-     * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
-     */
-    appDelegateSubscribers?: string[];
-
-    /**
-     * Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
-     */
-    reactDelegateHandlers?: string[];
-
-    /**
-     * Podspec relative path.
-     * To have multiple podspecs, string array type is also supported.
-     */
-    podspecPath?: string | string[];
-
-    /**
-     * Swift product module name. If empty, the pod name is used for Swift imports.
-     * To have multiple modules, string array is also supported.
-     */
-    swiftModuleName?: string | string[];
-
-    /**
-     * Whether this module will be added only to the debug configuration.
-     * Defaults to false.
-     */
-    debugOnly?: boolean;
-  };
+  /**
+   * The legacy config previously used for iOS platform. For backwards compatibility it's used as the fallback for `apple`.
+   * Also due to backwards compatibility, it includes the deprecated `modulesClassNames` field.
+   * @deprecated As the module can now support more than iOS platform, use the generic `apple` config instead.
+   */
+  ios?: RawModuleConfigApple;
 
   /**
    * Android-specific config.
@@ -186,6 +228,11 @@ export interface RawExpoModuleConfig {
      * Gradle plugins.
      */
     gradlePlugins?: AndroidGradlePluginDescriptor[];
+
+    /**
+     * Gradle projects containing AAR files.
+     */
+    gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
   };
 
   /**
@@ -197,4 +244,70 @@ export interface RawExpoModuleConfig {
      */
     webpageRoot: string;
   };
+}
+
+interface AndroidMavenRepositoryPasswordCredentials {
+  username: string;
+  password: string;
+}
+
+interface AndroidMavenRepositoryHttpHeaderCredentials {
+  name: string;
+  value: string;
+}
+
+interface AndroidMavenRepositoryAWSCredentials {
+  accessKey: string;
+  secretKey: string;
+  sessionToken?: string;
+}
+
+type AndroidMavenRepositoryCredentials =
+  | AndroidMavenRepositoryPasswordCredentials
+  | AndroidMavenRepositoryHttpHeaderCredentials
+  | AndroidMavenRepositoryAWSCredentials;
+
+export interface AndroidMavenRepository {
+  /**
+   * The URL of the Maven repository.
+   */
+  url: string;
+  /**
+   * The credentials to use when accessing the Maven repository.
+   * May be of type PasswordCredentials, HttpHeaderCredentials, or AWSCredentials.
+   *
+   * @see the authentication schemes section of [Gradle documentation](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:authentication_schemes) for more information.
+   */
+  credentials?: AndroidMavenRepositoryCredentials;
+  /**
+   * The authentication scheme to use when accessing the Maven repository.
+   */
+  authentication?: 'basic' | 'digest' | 'header';
+}
+
+interface ApplePod {
+  name: string;
+  version?: string;
+  configurations?: string[];
+  modular_headers?: boolean;
+  source?: string;
+  path?: string;
+  podspec?: string;
+  testspecs?: string[];
+  git?: string;
+  branch?: string;
+  tag?: string;
+  commit?: string;
+}
+
+export type ExtraDependencies = AndroidMavenRepository[] | ApplePod[];
+
+/**
+ * Represents code signing entitlements passed to the `ExpoModulesProvider` for Apple platforms.
+ */
+export interface AppleCodeSignEntitlements {
+  /**
+   * @see https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_security_application-groups
+   */
+  appGroups?: string[];
 }

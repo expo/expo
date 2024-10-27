@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import type { FunctionComponent } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { FlatList, RectButton } from 'react-native-gesture-handler';
 
 import AppleStyleSwipeableRow from './GestureHandler/AppleStyleSwipeableRow';
 import GmailStyleSwipeableRow from './GestureHandler/GmailStyleSwipeableRow';
 
-const Row: React.FunctionComponent<{ item: Item }> = ({ item }) => (
+const Row: FunctionComponent<{ item: Item }> = ({ item }) => (
   <RectButton style={styles.rectButton} onPress={() => Alert.alert(item.from)}>
     <Text style={styles.fromText}>{item.from}</Text>
     <Text numberOfLines={2} style={styles.messageText}>
@@ -15,7 +15,7 @@ const Row: React.FunctionComponent<{ item: Item }> = ({ item }) => (
   </RectButton>
 );
 
-const SwipeableRow: React.FunctionComponent<{ item: Item; index: number }> = ({ item, index }) => {
+const SwipeableRow: FunctionComponent<{ item: Item; index: number }> = ({ item, index }) => {
   if (index % 2 === 0) {
     return (
       <AppleStyleSwipeableRow>
@@ -31,24 +31,23 @@ const SwipeableRow: React.FunctionComponent<{ item: Item; index: number }> = ({ 
   }
 };
 
-export default class GestureHandlerSwipeableScreen extends Component {
-  static navigationOptions = {
-    title: 'Swipeable Rows',
-  };
-
-  render() {
-    return (
-      <FlatList
-        data={DATA}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        renderItem={({ item, index }: { item: Item; index: number }) => (
-          <SwipeableRow item={item} index={index} />
-        )}
-        keyExtractor={(_, index) => index.toString()}
-      />
-    );
-  }
+export default function GestureHandlerSwipeableScreen() {
+  return (
+    <FlatList
+      data={DATA}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      // Type 'ListRenderItemInfo<unknown>' is not assignable to type '{ item: Item; index: number; }'.
+      renderItem={({ item, index }: { item: Item; index: number }) => (
+        <SwipeableRow item={item} index={index} />
+      )}
+      keyExtractor={(_, index) => index.toString()}
+    />
+  );
 }
+
+GestureHandlerSwipeableScreen.navigationOptions = {
+  title: 'Swipeable Rows',
+};
 
 const styles = StyleSheet.create({
   rectButton: {

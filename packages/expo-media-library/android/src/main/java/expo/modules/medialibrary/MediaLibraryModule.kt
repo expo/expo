@@ -5,6 +5,7 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_MEDIA_AUDIO
 import android.Manifest.permission.READ_MEDIA_IMAGES
 import android.Manifest.permission.READ_MEDIA_VIDEO
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -47,13 +48,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 class MediaLibraryModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
-
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
   private var imagesObserver: MediaStoreContentObserver? = null
   private var videosObserver: MediaStoreContentObserver? = null
@@ -66,25 +65,27 @@ class MediaLibraryModule : Module() {
       return@Constants mapOf(
         "MediaType" to MediaType.getConstants(),
         "SortBy" to SortBy.getConstants(),
-        "CHANGE_LISTENER_NAME" to LIBRARY_DID_CHANGE_EVENT,
+        "CHANGE_LISTENER_NAME" to LIBRARY_DID_CHANGE_EVENT
       )
     }
 
     Events(LIBRARY_DID_CHANGE_EVENT)
 
-    AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, promise: Promise ->
+    AsyncFunction("requestPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
+      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
       askForPermissionsWithPermissionsManager(
         appContext.permissions,
-        promise,
-        *getManifestPermissions(writeOnly)
+        MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
+        *getManifestPermissions(writeOnly, granularPermissions)
       )
     }
 
-    AsyncFunction("getPermissionsAsync") { writeOnly: Boolean, promise: Promise ->
+    AsyncFunction("getPermissionsAsync") { writeOnly: Boolean, permissions: List<GranularPermission>?, promise: Promise ->
+      val granularPermissions = permissions ?: listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
       getPermissionsWithPermissionsManager(
         appContext.permissions,
-        promise,
-        *getManifestPermissions(writeOnly)
+        MediaLibraryPermissionPromiseWrapper(granularPermissions, promise, WeakReference(context)),
+        *getManifestPermissions(writeOnly, granularPermissions)
       )
     }
 
@@ -108,7 +109,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("addAssetsToAlbumAsync") { assetsId: List<String>, albumId: String, copyToAlbum: Boolean, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             AddAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum, promise)
               .execute()
@@ -120,7 +121,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("removeAssetsFromAlbumAsync") { assetsId: List<String>, albumId: String, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             RemoveAssetsFromAlbum(context, assetsId.toTypedArray(), albumId, promise)
               .execute()
@@ -132,7 +133,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("deleteAssetsAsync") { assetsId: List<String>, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             DeleteAssets(context, assetsId.toTypedArray(), promise)
               .execute()
@@ -142,19 +143,7 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("deleteAssetsAsync") { assetsId: List<String>, promise: Promise ->
-      throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
-          withModuleScope(promise) {
-            DeleteAssets(context, assetsId.toTypedArray(), promise)
-              .execute()
-          }
-        }
-        runActionWithPermissions(assetsId, action)
-      }
-    }
-
-    AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
+    AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>?/* unused on android atm */, promise: Promise ->
       throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAssetInfo(context, assetId, promise).execute()
@@ -162,7 +151,7 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("getAlbumsAsync") { _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
+    AsyncFunction("getAlbumsAsync") { _: Map<String, Any?>?/* unused on android atm */, promise: Promise ->
       throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAlbums(context, promise).execute()
@@ -181,7 +170,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("createAlbumAsync") { albumName: String, assetId: String, copyAsset: Boolean, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             CreateAlbum(context, albumName, assetId, copyAsset, promise)
               .execute()
@@ -193,7 +182,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("deleteAlbumsAsync") { albumIds: List<String>, promise: Promise ->
       throwUnlessPermissionsGranted {
-        val action = actionIfUserGrantedPermission {
+        val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
             DeleteAlbums(context, albumIds, promise)
               .execute()
@@ -247,7 +236,7 @@ class MediaLibraryModule : Module() {
         return@AsyncFunction
       }
 
-      val action = actionIfUserGrantedPermission {
+      val action = actionIfUserGrantedPermission(promise) {
         moduleCoroutineScope.launch {
           MigrateAlbum(context, assets, albumDir.name, promise)
             .execute()
@@ -350,11 +339,16 @@ class MediaLibraryModule : Module() {
     get() = hasWritePermissions()
 
   @SuppressLint("InlinedApi")
-  private fun getManifestPermissions(writeOnly: Boolean): Array<String> {
+  private fun getManifestPermissions(writeOnly: Boolean, granularPermissions: List<GranularPermission>): Array<String> {
     // ACCESS_MEDIA_LOCATION should not be requested if it's absent in android-manifest
+    // If only audio permission is requested, we don't need to request media location permissions
     val shouldAddMediaLocationAccess =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-        MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION)
+        MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION) &&
+        !(
+          Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            granularPermissions.count() == 1 && granularPermissions.contains(GranularPermission.AUDIO)
+          )
 
     val shouldAddWriteExternalStorage =
       Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
@@ -362,31 +356,34 @@ class MediaLibraryModule : Module() {
 
     val shouldAddGranularPermissions =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-        listOf(READ_MEDIA_AUDIO, READ_MEDIA_VIDEO, READ_MEDIA_IMAGES)
-          .all { MediaLibraryUtils.hasManifestPermission(context, it) }
+        granularPermissions.all { MediaLibraryUtils.hasManifestPermission(context, it.toManifestPermission()) }
 
+    val shouldIncludeGranular = shouldAddGranularPermissions && !writeOnly
     return listOfNotNull(
       WRITE_EXTERNAL_STORAGE.takeIf { shouldAddWriteExternalStorage },
       READ_EXTERNAL_STORAGE.takeIf { !writeOnly && !shouldAddGranularPermissions },
       ACCESS_MEDIA_LOCATION.takeIf { shouldAddMediaLocationAccess },
-      *getGranularPermissions(writeOnly, shouldAddGranularPermissions)
+      *getGranularPermissions(shouldIncludeGranular, granularPermissions)
     ).toTypedArray()
   }
 
   @SuppressLint("InlinedApi")
-  private fun getGranularPermissions(writeOnly: Boolean, shouldAdd: Boolean): Array<String> {
-    val addPermission = !writeOnly && shouldAdd
-    return listOfNotNull(
-      READ_MEDIA_IMAGES.takeIf { addPermission },
-      READ_MEDIA_VIDEO.takeIf { addPermission },
-      READ_MEDIA_AUDIO.takeIf { addPermission }
-    ).toTypedArray()
+  private fun getGranularPermissions(shouldIncludeGranular: Boolean, granularPermissions: List<GranularPermission>): Array<String> {
+    return if (shouldIncludeGranular) {
+      listOfNotNull(
+        READ_MEDIA_IMAGES.takeIf { granularPermissions.contains(GranularPermission.PHOTO) },
+        READ_MEDIA_VIDEO.takeIf { granularPermissions.contains(GranularPermission.VIDEO) },
+        READ_MEDIA_AUDIO.takeIf { granularPermissions.contains(GranularPermission.AUDIO) }
+      ).toTypedArray()
+    } else {
+      arrayOf()
+    }
   }
 
   private inline fun throwUnlessPermissionsGranted(isWrite: Boolean = true, block: () -> Unit) {
     val missingPermissionsCondition = if (isWrite) isMissingWritePermission else isMissingPermissions
-    val missingPermissionsMessage = if (isWrite) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
     if (missingPermissionsCondition) {
+      val missingPermissionsMessage = if (isWrite) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
       throw PermissionsException(missingPermissionsMessage)
     }
     block()
@@ -397,15 +394,23 @@ class MediaLibraryModule : Module() {
   }
 
   private fun hasReadPermissions(): Boolean {
-    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO)
-    } else {
-      arrayOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
-    }
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      val permissions = mutableListOf(READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        permissions.add(READ_MEDIA_VISUAL_USER_SELECTED)
+      }
 
-    return appContext.permissions
-      ?.hasGrantedPermissions(*permissions)
-      ?.not() ?: false
+      // Android will only return albums that the user allowed access to.
+      permissions.map { permission ->
+        appContext.permissions
+          ?.hasGrantedPermissions(permission) ?: false
+      }.any { it }.not()
+    } else {
+      val permissions = arrayOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
+      appContext.permissions
+        ?.hasGrantedPermissions(*permissions)
+        ?.not() ?: false
+    }
   }
 
   private fun hasWritePermissions() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -433,7 +438,7 @@ class MediaLibraryModule : Module() {
 
         try {
           awaitingAction = action
-          currentActivity.startIntentSenderForResult(
+          appContext.throwingActivity.startIntentSenderForResult(
             deleteRequest.intentSender,
             WRITE_REQUEST_CODE,
             null,
@@ -445,18 +450,22 @@ class MediaLibraryModule : Module() {
           awaitingAction = null
           throw e
         }
+        // the action will be called when permissions are granted
+        return
       }
     }
     action.runWithPermissions(true)
   }
 
   private fun actionIfUserGrantedPermission(
+    promise: Promise,
     block: () -> Unit
   ) = Action { permissionsWereGranted ->
     if (!permissionsWereGranted) {
-      throw PermissionsException(ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
+      promise.reject(PermissionsException(ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE))
+    } else {
+      block()
     }
-    block()
   }
 
   private inner class MediaStoreContentObserver(handler: Handler, private val mMediaType: Int) :
@@ -482,7 +491,7 @@ class MediaLibraryModule : Module() {
     private fun getAssetsTotalCount(mediaType: Int): Int =
       context.contentResolver.query(
         EXTERNAL_CONTENT_URI,
-        null,
+        arrayOf(),
         "${MediaStore.Files.FileColumns.MEDIA_TYPE} == $mediaType",
         null,
         null

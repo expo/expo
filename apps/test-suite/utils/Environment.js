@@ -8,9 +8,5 @@ export function isDeviceFarm() {
 }
 
 export function isInteractive() {
-  return !isDeviceFarm() && !isDetox();
-}
-
-export function isDetox() {
-  return global.DETOX;
+  return !isDeviceFarm();
 }

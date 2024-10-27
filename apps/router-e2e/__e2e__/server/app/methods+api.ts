@@ -1,44 +1,42 @@
-import { ExpoResponse } from 'expo-router/server';
-
 /** @type {import('expo-router/server').RequestHandler} */
 export function GET() {
-  return ExpoResponse.json({
+  return new Response(JSON.stringify({
     method: 'get',
-  });
+  }));
 }
 
 export function POST() {
-  return ExpoResponse.json({
+  return new Response(JSON.stringify({
     method: 'post',
-  });
+  }));
 }
 
 export function PUT() {
-  return ExpoResponse.json({
+  return new Response(JSON.stringify({
     method: 'put',
-  });
+  }));
 }
 
 export function DELETE() {
-  return ExpoResponse.json({
+  return new Response(JSON.stringify({
     method: 'delete',
-  });
+  }));
 }
 
 export function PATCH() {
-  return ExpoResponse.json({
+  return new Response(JSON.stringify({
     method: 'patch',
-  });
+  }));
 }
 
 export function HEAD() {
-  return ExpoResponse.json({
+  return new Response(JSON.stringify({
     method: 'head',
-  });
+  }));
 }
 
 export function OPTIONS() {
-  return ExpoResponse.json({
+  return new Response(JSON.stringify({
     method: 'options',
-  });
+  }));
 }

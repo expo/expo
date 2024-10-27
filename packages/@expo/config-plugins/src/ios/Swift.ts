@@ -3,8 +3,8 @@ import path from 'path';
 
 import { getAppDelegate, getSourceRoot } from './Paths';
 import { withBuildSourceFile } from './XcodeProjectFile';
-import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 import { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
 
 const templateBridgingHeader = `//

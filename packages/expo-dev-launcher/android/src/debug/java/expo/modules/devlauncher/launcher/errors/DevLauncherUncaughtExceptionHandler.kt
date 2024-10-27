@@ -102,8 +102,8 @@ class DevLauncherUncaughtExceptionHandler(
   private fun tryToSendExceptionToBundler(exception: Throwable) {
     if (
       controller.mode != DevLauncherController.Mode.APP ||
-      !controller.appHost.hasInstance() ||
-      controller.appHost.reactInstanceManager.currentReactContext === null
+      !controller.appHost.hasInstance ||
+      controller.appHost.currentReactContext === null
     ) {
       return
     }
@@ -124,8 +124,9 @@ class DevLauncherUncaughtExceptionHandler(
   private fun getWebSocketUrl(): Uri {
     // URL structure replicates
     // https://github.com/facebook/react-native/blob/0.69-stable/Libraries/Utilities/HMRClient.js#L164
+    val devSupportManager = requireNotNull(controller.appHost.devSupportManager)
     return Uri
-      .parse(controller.appHost.reactInstanceManager.devSupportManager.sourceUrl)
+      .parse(devSupportManager.sourceUrl)
       .buildUpon()
       .path("hot")
       .clearQuery()

@@ -4,7 +4,7 @@ description: Learn about Continuous Native Generation (CNG) and how it works.
 sidebar_title: Continuous Native Generation
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 A single native project on its own is complicated to maintain, scale, and update. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies.
 
@@ -39,10 +39,10 @@ Expo Config Plugins have first-class support for building locally and adding to 
   aria-label="Expo Config Plugins downloads"
   href="http://www.npmtrends.com/@expo/config-plugins"
   target="_blank">
-  <ImageSpotlight
+  <ContentSpotlight
     alt="Expo Config Plugins downloads."
     src="https://img.shields.io/npm/dm/@expo/config-plugins.svg?style=flat-square&labelColor=gray&color=33CC12&label=Downloads"
-    style={{ maxWidth: 180 }}
+    className="max-w-[180px]"
   />
 </a>
 
@@ -70,7 +70,7 @@ This pattern has been proven to work in the React Native community in the follow
 
 ### Upgrades
 
-React Native developers who don't use **Continuous Native Generation** have reported that upgrading their apps to the latest version of React Native is the number one weakness of the library as per [React Native Survey (2022)](https://results.stateofreactnative.com/opinions/opinions_pain_points).
+React Native developers who don't use **Continuous Native Generation** have reported that upgrading their apps to the latest version of React Native is the number one weakness of the library as per [React Native Survey (2022)](https://results.2022.stateofreactnative.com/opinions/#opinions_pain_points).
 
 When using CNG, the upgrade process simply involves upgrading the npm dependencies, app config, and re-running `npx expo prebuild --clean`.
 

@@ -9,7 +9,7 @@ export type PowerState = {
    */
   batteryState: BatteryState;
   /**
-   * A boolean value, `true` if lowPowerMode is on, `false` if lowPowerMode is off
+   * A boolean value, `true` if lowPowerMode is on, `false` if lowPowerMode is off.
    */
   lowPowerMode: boolean;
 };
@@ -17,19 +17,19 @@ export type PowerState = {
 // @needsAudit
 export enum BatteryState {
   /**
-   * if the battery state is unknown or inaccessible.
+   * If the battery state is unknown or inaccessible.
    */
   UNKNOWN = 0,
   /**
-   * if battery is not charging or discharging.
+   * If battery is not charging or discharging.
    */
   UNPLUGGED,
   /**
-   * if battery is charging.
+   * If battery is charging.
    */
   CHARGING,
   /**
-   * if the battery level is full.
+   * If the battery level is full.
    */
   FULL,
 }
@@ -53,7 +53,16 @@ export type BatteryStateEvent = {
 // @needsAudit
 export type PowerModeEvent = {
   /**
-   * A boolean value, `true` if lowPowerMode is on, `false` if lowPowerMode is off
+   * A boolean value, `true` if lowPowerMode is on, `false` if lowPowerMode is off.
    */
   lowPowerMode: boolean;
+};
+
+/**
+ * @hidden
+ */
+export type BatteryEvents = {
+  'Expo.batteryLevelDidChange'(event: BatteryLevelEvent);
+  'Expo.batteryStateDidChange'(event: BatteryStateEvent);
+  'Expo.powerModeDidChange'(event: PowerModeEvent);
 };

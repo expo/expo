@@ -65,7 +65,7 @@ function _iosPlugins() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const withGoogle = config => {
   return (0, _iosPlugins().withInfoPlist)(config, config => {
     config.modResults = setGoogleConfig(config, config.modResults, config.modRequest);
@@ -92,17 +92,15 @@ function readGoogleServicesInfoPlist(relativePath, {
   return _plist().default.parse(contents);
 }
 function getGoogleSignInReversedClientId(config, modRequest) {
-  var _infoPlist$REVERSED_C;
   const googleServicesFileRelativePath = getGoogleServicesFile(config);
   if (googleServicesFileRelativePath === null) {
     return null;
   }
   const infoPlist = readGoogleServicesInfoPlist(googleServicesFileRelativePath, modRequest);
-  return (_infoPlist$REVERSED_C = infoPlist.REVERSED_CLIENT_ID) !== null && _infoPlist$REVERSED_C !== void 0 ? _infoPlist$REVERSED_C : null;
+  return infoPlist.REVERSED_CLIENT_ID ?? null;
 }
 function getGoogleServicesFile(config) {
-  var _config$ios$googleSer, _config$ios;
-  return (_config$ios$googleSer = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.googleServicesFile) !== null && _config$ios$googleSer !== void 0 ? _config$ios$googleSer : null;
+  return config.ios?.googleServicesFile ?? null;
 }
 function setGoogleSignInReversedClientId(config, infoPlist, modRequest) {
   const reversedClientId = getGoogleSignInReversedClientId(config, modRequest);

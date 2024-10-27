@@ -12,18 +12,21 @@ object SystemUI {
     successCallback: () -> Unit,
     failureCallback: (reason: String) -> Unit
   ) {
-
     val mode = if (style == null) {
       AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-    } else when (style) {
-      "automatic" -> {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-          AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-        } else AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+    } else {
+      when (style) {
+        "automatic" -> {
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+          } else {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+          }
+        }
+        "dark" -> AppCompatDelegate.MODE_NIGHT_YES
+        "", "light" -> AppCompatDelegate.MODE_NIGHT_NO
+        else -> return failureCallback("Invalid user interface style: \"$style\"")
       }
-      "dark" -> AppCompatDelegate.MODE_NIGHT_YES
-      "", "light" -> AppCompatDelegate.MODE_NIGHT_NO
-      else -> return failureCallback("Invalid user interface style: \"$style\"")
     }
     AppCompatDelegate.setDefaultNightMode(mode)
     successCallback()

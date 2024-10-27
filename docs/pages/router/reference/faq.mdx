@@ -8,7 +8,7 @@ sidebar_title: FAQ
 
 If you set up a modal or another screen that is expected to have a back button, then you'll need to add [`unstable_settings`](/router/advanced/router-settings/) to the route's layout to ensure the initial route is configured. Initial routes are somewhat unique to mobile apps and therefore fit awkwardly in the system &mdash; improvements pending.
 
-```jsx app/_layout.tsx
+```tsx app/_layout.tsx
 export const unstable_settings = {
   initialRouteName: 'index',
 };
@@ -46,7 +46,7 @@ If file-based routing isn't right for your project, you can drop down to React N
 
 ## How do I server-render my Expo Router website?
 
-Basic static rendering (SSG) is supported in Expo Router v2. Server-side rendering currently requires custom infrastructure to set up.
+Basic static rendering (SSG) is supported in Expo Router. Server-side rendering currently requires custom infrastructure to set up.
 
 ## Can I use React Navigation?
 

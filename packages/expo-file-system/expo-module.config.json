@@ -1,11 +1,21 @@
 {
-  "name": "expo-file-system",
-  "platforms": ["ios", "android"],
-  "ios": {
-    "modules": ["FileSystemModule"],
-    "appDelegateSubscribers": ["FileSystemBackgroundSessionHandler"]
+  "platforms": [
+    "apple",
+    "android"
+  ],
+  "apple": {
+    "modules": [
+      "FileSystemModule",
+      "FileSystemNextModule"
+    ],
+    "appDelegateSubscribers": [
+      "FileSystemBackgroundSessionHandler"
+    ]
   },
   "android": {
-    "modules": ["expo.modules.filesystem.FileSystemModule"]
+    "modules": [
+      "expo.modules.filesystem.FileSystemModule",
+      "expo.modules.filesystem.next.FileSystemNextModule"
+    ]
   }
 }

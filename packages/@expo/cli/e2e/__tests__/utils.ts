@@ -23,7 +23,12 @@ export function getTemporaryPath() {
 }
 
 export function execute(...args: string[]) {
-  return execa('node', [bin, ...args], { cwd: projectRoot });
+  return execaLog('node', [bin, ...args], { cwd: projectRoot });
+}
+
+export function execaLog(command: string, args: string[], options: execa.Options) {
+  //   console.log(`Running: ${command} ${args.join(' ')}`);
+  return execa(command, args, options);
 }
 
 export function getRoot(...args: string[]) {
@@ -179,15 +184,21 @@ export async function createFromFixtureAsync(
 // Set this to true to enable caching and prevent rerunning yarn installs
 const testingLocally = !process.env.CI;
 
-export async function setupTestProjectAsync(
+export async function setupTestProjectWithOptionsAsync(
   name: string,
   fixtureName: string,
-  sdkVersion: string = '49.0.0'
+  {
+    reuseExisting = testingLocally,
+    sdkVersion = '51.0.0',
+  }: {
+    sdkVersion?: string;
+    reuseExisting?: boolean;
+  } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
   const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
     dirName: name,
-    reuseExisting: testingLocally,
+    reuseExisting,
     fixtureName,
   });
 
@@ -239,4 +250,40 @@ export async function getPageHtml(output: string, route: string) {
 export function getRouterE2ERoot(): string {
   const root = path.join(__dirname, '../../../../../apps/router-e2e');
   return root;
+}
+
+export function getHtmlHelpers(outputDir: string) {
+  async function getScriptTagsAsync(name: string) {
+    const tags = (await getPageHtml(outputDir, name))
+      .querySelectorAll('script')
+      // Remove scripts without a src attribute
+      .filter((script) => !!script.attributes.src)
+      .map((script) => {
+        expect(fs.existsSync(path.join(outputDir, script.attributes.src))).toBe(true);
+
+        return script.attributes.src;
+      });
+
+    ensureEntryChunk(tags[0]);
+
+    return tags;
+  }
+
+  function ensureEntryChunk(relativePath: string) {
+    expect(fs.readFileSync(path.join(outputDir, relativePath), 'utf8')).toMatch(
+      /__BUNDLE_START_TIME__/
+    );
+  }
+
+  return {
+    getScriptTagsAsync,
+  };
+}
+
+export function expectChunkPathMatching(name: string) {
+  return expect.stringMatching(
+    new RegExp(
+      `_expo\\/static\\/js\\/web\\/${name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}-.*\\.js`
+    )
+  );
 }

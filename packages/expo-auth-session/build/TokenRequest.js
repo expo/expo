@@ -111,7 +111,7 @@ export class TokenResponse {
         return !(TokenResponse.isTokenFresh(this) || !this.refreshToken);
     }
 }
-class Request {
+export class Request {
     request;
     constructor(request) {
         this.request = request;
@@ -129,7 +129,7 @@ class Request {
 /**
  * A generic token request.
  */
-class TokenRequest extends Request {
+export class TokenRequest extends Request {
     grantType;
     clientId;
     clientSecret;

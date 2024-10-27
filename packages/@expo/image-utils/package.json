@@ -1,0 +1,54 @@
+{
+  "name": "@expo/image-utils",
+  "version": "0.6.0",
+  "description": "A package used by Expo CLI for processing images",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "expo-module tsc",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module clean && yarn run build",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+    "typecheck": "expo-module typecheck",
+    "watch": "expo-module tsc --watch --preserveWatchOutput"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/image-utils"
+  },
+  "keywords": [
+    "json"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/%40expo/image-utils#readme",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@expo/spawn-async": "^1.7.2",
+    "chalk": "^4.0.0",
+    "fs-extra": "9.0.0",
+    "getenv": "^1.0.0",
+    "jimp-compact": "0.16.1",
+    "parse-png": "^2.1.0",
+    "resolve-from": "^5.0.0",
+    "semver": "^7.6.0",
+    "temp-dir": "~2.0.0",
+    "unique-string": "~2.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "@types/getenv": "^0.7.0",
+    "@types/semver": "^6.0.0",
+    "expo-module-scripts": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

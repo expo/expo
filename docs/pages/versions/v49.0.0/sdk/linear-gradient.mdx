@@ -11,7 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-**`expo-linear-gradient`** provides a native React view that transitions between multiple colors in a linear direction.
+`expo-linear-gradient` provides a native React view that transitions between multiple colors in a linear direction.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -24,7 +24,6 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Linear Gradient' dependencies={['expo-linear-gradient']}>
 
 ```tsx
-import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -46,7 +45,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -72,7 +70,6 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
-/* @end */
 ```
 
 </SnackInline>

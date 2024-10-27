@@ -12,11 +12,34 @@ body:
     attributes:
       label: Minimal reproducible example
       description: |
-        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project.
+        A link to a GitHub repository containing a minimal reproducible example. This repository should include as little code as possible and not include extraneous dependencies. The most effective reproducible examples are created by starting a new project from scratch and adding in only the necessary pieces to reproduce the issue. Do not share your entire project.
+        List the steps you took to generate the reproducible example within that repository in the README or the summary field below along with any instructions needed to run the project.
         You should also test your issue against the latest SDK version to ensure that it hasn't already been resolved.
-        Sharing a link to a GitHub repository or [Snack](https://snack.expo.dev/) are best. Include any instructions to run the project in the README or the summary field below.
-        If a reproducible demo is not provided, your issue will be closed.
+        If a reproducible example is not provided, your issue will be closed.
         [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: What platform(s) does this occur on?
+      multiple: true
+      options:
+        - Android
+        - iOS
+        - Web
+    validations:
+      required: false
+  - type: dropdown
+    attributes:
+      label: Where did you reproduce the issue?
+      multiple: true
+      options:
+        - in a development build
+        - in Expo Go
+        - in a standalone app
+        - on web
+      description: |
+        If you are reporting an issue within your standalone app that is not reproducible in Expo Go, you should test your code in a [development build](https://docs.expo.dev/develop/development-builds/introduction/) before submitting an issue. A development build is a much more accurate representation of how your standalone app will work, and many such issues can be resolved by troubleshooting with a development build.
     validations:
       required: true
   - type: markdown
@@ -36,5 +59,13 @@ body:
     attributes:
       label: Environment
       description: Run the `npx expo-env-info` command and paste its output in the field below.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expo Doctor Diagnostics
+      description: Run the `npx expo-doctor@latest` command on your minimal reproduction and paste its output in the field below. If Doctor reports any errors, fix them before submitting the issue.
+      render: text
     validations:
       required: true

@@ -190,8 +190,9 @@ export abstract class BundlerDevServer {
     return {
       // Create a mock server
       server: {
-        close: () => {
+        close: (callback: () => void) => {
           this.instance = null;
+          callback?.();
         },
         addListener() {},
       },
@@ -226,9 +227,11 @@ export abstract class BundlerDevServer {
     ) {
       await this._startTunnelAsync();
     }
-    await this.startDevSessionAsync();
 
-    this.watchConfig();
+    if (!options.isExporting) {
+      await this.startDevSessionAsync();
+      this.watchConfig();
+    }
   }
 
   protected abstract getConfigModuleIds(): string[];
@@ -252,26 +255,12 @@ export abstract class BundlerDevServer {
   protected async startDevSessionAsync() {
     // This is used to make Expo Go open the project in either Expo Go, or the web browser.
     // Must come after ngrok (`startTunnelAsync`) setup.
-    this.devSession?.stopNotifying?.();
     this.devSession = new DevelopmentSession(
       this.projectRoot,
       // This URL will be used on external devices so the computer IP won't be relevant.
       this.isTargetingNative()
         ? this.getNativeRuntimeUrl()
-        : this.getDevServerUrl({ hostType: 'localhost' }),
-      () => {
-        // TODO: This appears to be happening consistently after an hour.
-        // We should investigate why this is happening and fix it on our servers.
-        // Log.error(
-        //   chalk.red(
-        //     '\nAn unexpected error occurred while updating the Dev Session API. This project will not appear in the "Development servers" section of the Expo Go app until this process has been restarted.'
-        //   )
-        // );
-        // Log.exception(error);
-        this.devSession?.closeAsync().catch((error) => {
-          debug('[dev-session] error closing: ' + error.message);
-        });
-      }
+        : this.getDevServerUrl({ hostType: 'localhost' })
     );
 
     await this.devSession.startAsync({
@@ -328,11 +317,16 @@ export abstract class BundlerDevServer {
           debug(`Stopping dev server (bundler: ${this.name})`);
 
           if (this.instance?.server) {
+            // Check if server is even running.
             this.instance.server.close((error) => {
               debug(`Stopped dev server (bundler: ${this.name})`);
               this.instance = null;
               if (error) {
-                reject(error);
+                if ('code' in error && error.code === 'ERR_SERVER_NOT_RUNNING') {
+                  resolve();
+                } else {
+                  reject(error);
+                }
               } else {
                 resolve();
               }
@@ -364,7 +358,7 @@ export abstract class BundlerDevServer {
 
   public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
     return this.isDevClient
-      ? this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl()
+      ? (this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl())
       : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
   }
 
@@ -379,6 +373,18 @@ export abstract class BundlerDevServer {
       return `${location.protocol}://localhost:${location.port}`;
     }
     return location.url ?? null;
+  }
+
+  public getDevServerUrlOrAssert(options: { hostType?: 'localhost' } = {}): string {
+    const instance = this.getDevServerUrl(options);
+    if (!instance) {
+      throw new CommandError(
+        'DEV_SERVER',
+        `Cannot get the dev server URL before the server has started - bundler[${this.name}]`
+      );
+    }
+
+    return instance;
   }
 
   /** Get the base URL for JS inspector */
@@ -405,7 +411,7 @@ export abstract class BundlerDevServer {
     if (launchTarget === 'desktop') {
       const serverUrl = this.getDevServerUrl({ hostType: 'localhost' });
       // Allow opening the tunnel URL when using Metro web.
-      const url = this.name === 'metro' ? this.getTunnelUrl() ?? serverUrl : serverUrl;
+      const url = this.name === 'metro' ? (this.getTunnelUrl() ?? serverUrl) : serverUrl;
       await openBrowserAsync(url!);
       return { url };
     }
@@ -416,9 +422,9 @@ export abstract class BundlerDevServer {
   }
 
   /** Open the dev server in a runtime. */
-  public async openCustomRuntimeAsync(
+  public async openCustomRuntimeAsync<T extends BaseOpenInCustomProps = BaseOpenInCustomProps>(
     launchTarget: keyof typeof PLATFORM_MANAGERS,
-    launchProps: Partial<BaseOpenInCustomProps> = {},
+    launchProps: Partial<T> = {},
     resolver: BaseResolveDeviceProps<any> = {}
   ) {
     const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';

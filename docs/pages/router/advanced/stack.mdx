@@ -1,19 +1,28 @@
 ---
 title: Stack
-description: Learn how to use the Stack Layout in Expo Router.
+description: Learn how to use the Stack navigator in Expo Router.
 ---
 
-import { FileTree } from '~/ui/components/FileTree';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { FileTree } from '~/ui/components/FileTree';
 
-The `Stack` Layout in Expo Router wraps the [Native Stack Navigator](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation, not to be confused with the legacy [JS Stack Navigator](https://reactnavigation.org/docs/stack-navigator).
+A stack navigator is the foundational way of navigating between routes in an app. On Android, a stacked route animates on top of the current screen. On iOS, a stacked route animates from the right. Expo Router provides a `Stack` navigation component that creates a navigation stack and allows you to add new routes in your app.
 
-<FileTree files={['app/_layout.js', 'app/index.js', 'app/detail.js']} />
+This guide provides information on how you can create a `Stack` navigator in your project and customize an individual route's options and header.
 
-To create a `Stack` layout with two screens as shown in the file structure above:
+## Get started
 
-```js app/_layout.js
+You can use file-based routing to create a stack navigator. Here's an example file structure:
+
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/details.tsx']} />
+
+This file structure produces a layout where the `index` route is the first route in the stack, and the `details` route is pushed on top of the `index` route when navigated.
+
+You can use the **app/\_layout.tsx** file to define your app's `Stack` navigator with these two routes:
+
+```tsx app/_layout.tsx
 import { Stack } from 'expo-router/stack';
 
 export default function Layout() {
@@ -21,11 +30,63 @@ export default function Layout() {
 }
 ```
 
-## Configure header bar
+## Screen options and header configuration
 
-Use the `screenOptions` prop to configure the header bar.
+### Statically configure route options
 
-```jsx app/_layout.js
+You can use the `<Stack.Screen name={routeName} />` component in the layout component route to statically configure a route's options. This is also useful for [tabs](/router/advanced/tabs/) or [drawers](/router/advanced/drawer/) as they need an icon defined ahead of time.
+
+```tsx app/_layout.tsx|collapseHeight=440
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack
+      /* @info <A href="https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens">Click for more information on available <CODE>screenOptions</CODE> from React Navigation documentation</A>.*/
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#f4511e',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+      }}>
+      /* @end */
+      {/* Optionally configure static options outside the route.*/}
+      <Stack.Screen name="home" options={{}} />
+    </Stack>
+  );
+}
+```
+
+As an alternative to the `<Stack.Screen>` component, you can use [`navigation.setOptions()`](https://reactnavigation.org/docs/navigation-prop/#setoptions) to configure a route's options from within the route's component file.
+
+```tsx app/index.tsx
+import { Stack, useNavigation } from 'expo-router';
+import { Text, View } from 'react-native';
+import { useEffect } from 'react';
+
+export default function Home() {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Home Screen</Text>
+    </View>
+  );
+}
+```
+
+### Configure header bar
+
+You can configure the header bar for all routes in a `Stack` navigator by using the `screenOptions` prop. This is useful for setting a common header style across all routes.
+
+```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -45,36 +106,35 @@ export default function Layout() {
 }
 ```
 
-You can use a layout's Screen component to configure the header bar dynamically from within the route. This is good for interactions that change the UI.
+To configure the header bar dynamically for an individual route, use that navigator's `<Stack.Screen>` component in the routes's file. This is useful for interactions that change the UI.
 
-```jsx app/home.js
+```tsx app/index.tsx
 import { Link, Stack } from 'expo-router';
-import { Image, Text, View } from 'react-native';
+import { Image, Text, View, StyleSheet } from 'react-native';
 
 function LogoTitle() {
   return (
-    <Image
-      style={{ width: 50, height: 50 }}
-      source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
-    />
+    <Image style={styles.image} source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }} />
   );
 }
 
 export default function Home() {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={styles.container}>
       <Stack.Screen
         options={{
-          // https://reactnavigation.org/docs/headers#setting-the-header-title
+          /* @info <A href="https://reactnavigation.org/docs/headers/#adjusting-header-stylesheader-styles">Click for more information on adjusting header styles from React Navigation documentation</A>.*/
           title: 'My home',
-          // https://reactnavigation.org/docs/headers#adjusting-header-styles
           headerStyle: { backgroundColor: '#f4511e' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontWeight: 'bold',
           },
-          // https://reactnavigation.org/docs/headers#replacing-the-title-with-a-custom-component
+          /* @end */
+
+          /* @info <A href="https://reactnavigation.org/docs/headers/#replacing-the-title-with-a-custom-component">Click for more information on replacing a title with a custom component from React Navigation documentation</A>.*/
           headerTitle: props => <LogoTitle {...props} />,
+          /* @end */
         }}
       />
       <Text>Home Screen</Text>
@@ -82,20 +142,36 @@ export default function Home() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: 50,
+    height: 50,
+  },
+});
 ```
 
-You can use the imperative API `router.setParams()` function to configure the route dynamically.
+### Set screen options dynamically
 
-```jsx app/details.js
-import { View, Text } from 'react-native';
+To configure a route's option dynamically, you can always use the `<Stack.Screen>` component in that route's file.
+
+As an alternative, you can also use the [imperative API's `router.setParams()`](/router/navigating-pages/#imperative-navigation) function to configure the route dynamically.
+
+```tsx app/details.tsx
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
 
 export default function Details() {
   const router = useRouter();
   const params = useLocalSearchParams();
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={styles.container}>
       <Stack.Screen
         options={{
           title: params.name,
@@ -110,130 +186,211 @@ export default function Details() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 ```
 
-As an alternative to the `<Stack.Screen>` component, you can use [`navigation.setOptions()`](https://reactnavigation.org/docs/navigation-prop/#setoptions) to configure screen options from within the component.
+### Header buttons
 
-```jsx app/home.js
-import { Stack, useNavigation } from 'expo-router';
-import { Text, View } from 'react-native';
+You can add buttons to the header by using the `headerLeft` and `headerRight` options. These options accept a React component that renders in the header.
 
-export default function Home() {
-  const navigation = useNavigation();
-
-  React.useEffect(() => {
-    navigation.setOptions({ headerShown: false });
-  }, [navigation]);
-
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
-  );
-}
-```
-
-## Header buttons
-
-With the following file structure:
-
-<FileTree files={['app/_layout.js', 'app/home.js']} />
-
-You can use the `<Stack.Screen name={routeName} />` component in the layout component route to statically configure screen options. This is useful for tab bars or drawers which need to have an icon defined ahead of time.
-
-```jsx app/_layout.js
+```tsx app/index.tsx
 import { Stack } from 'expo-router';
-
-export default function Layout() {
-  return (
-    <Stack
-      // https://reactnavigation.org/docs/headers#sharing-common-options-across-screens
-      /* @info */
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: '#f4511e',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
-      }}>
-      /* @end */
-      {/* Optionally configure static options outside the route. */}
-      /* @info */
-      <Stack.Screen name="home" options={{}} />
-      /* @end */
-    </Stack>
-  );
-}
-```
-
-Use the `<Stack.Screen />` component in the child route to dynamically configure options.
-
-```jsx app/home.js
-import { Button, Text, Image } from 'react-native';
-/* @info */
-import { Stack } from 'expo-router';
-/* @end */
+import { Button, Text, Image, StyleSheet } from 'react-native';
+import { useState } from 'react';
 
 function LogoTitle() {
   return (
-    <Image
-      style={{ width: 50, height: 50 }}
-      source={require('@expo/snack-static/react-native-logo.png')}
-    />
+    <Image style={styles.image} source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }} />
   );
 }
 
 export default function Home() {
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = useState(0);
 
   return (
     <>
-      /* @info */
       <Stack.Screen
         options={{
           headerTitle: props => <LogoTitle {...props} />,
           headerRight: () => <Button onPress={() => setCount(c => c + 1)} title="Update count" />,
         }}
       />
-      /* @end */
       <Text>Count: {count}</Text>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  image: {
+    width: 50,
+    height: 50,
+  },
+});
 ```
 
 ## Custom push behavior
 
-By default, the `Stack` will deduplicate pages when pushing a route that is already in the stack. For example, if you push the same profile twice, the second push will be ignored. You can change the pushing behavior by providing a custom `getId` function to the `Stack.Screen`.
+By default, the `Stack` navigator removes duplicate screens when pushing a route that is already in the stack. For example, if you push the same screen twice, the second push will be ignored. You can change this push behavior by providing a custom `getId()` function to the `<Stack.Screen>`.
 
-<FileTree files={['app/_layout.js', 'app/[user].js']} />
+For example, the `index` route in the following layout structure shows a list of different user profiles in the app. Let's make the `[details]` route a [dynamic route](/router/create-pages/#dynamic-routes) so that the app user can navigate to see a profile's details.
 
-You can use the `<Stack.Screen name="[user]" getId={} />` component in the layout component route to modify the pushing behavior. In the following example, the `getId` function pushes a new page every time the user navigates to a profile.
+<FileTree
+  files={[
+    'app/_layout.tsx',
+    'app/index.tsx',
+    ['app/[details].tsx', "matches dynamic paths like '/details1'"],
+  ]}
+/>
 
-```jsx app/_layout.js
+The `Stack` navigator will push a new screen every time the app user navigates to a different profile but will fail. If you provide a `getId()` function that returns a new ID every time, the `Stack` will push a new screen every time the app user navigates to a profile.
+
+You can use the `<Stack.Screen name="[profile]" getId={}>` component in the layout component route to modify the push behavior:
+
+```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
   return (
     <Stack>
       <Stack.Screen
-        name="[user]"
-        /* @info Returning a new ID everytime will cause every page to push. */
-        getId={({ params }) => String(Date.now())}
-        /* @end */
+        name="[profile]"
+        getId={
+          /* @info Returning a new ID every time will cause every page to push. */
+          ({ params }) => String(Date.now())
+          /* @end */
+        }
       />
     </Stack>
   );
 }
 ```
 
-## JavaScript stack with `@react-navigation/stack`
+## Removing stack screens
 
-Expo Router uses the `@react-navigation/native-stack` package for the `<Stack />` layout. However, you can also use the JavaScript-powered `@react-navigation/stack` library instead to create a custom layout component that wraps the `@react-navigation/stack` library.
+There are different actions you can use to dismiss and remove one or many routes from a stack.
 
-In the following example, `JsStack` component is created using `@react-navigation/stack` library:
+### `dismiss` action
+
+Dismisses the last screen in the closest stack. If the current screen is the only route in the stack, it will dismiss the entire stack.
+
+You can optionally pass a positive number to dismiss up to that specified number of screens.
+
+Dismiss is different from `back` as it targets the closest stack and not the current navigator. If you have nested navigators, calling `dismiss` will take you back multiple screens.
+
+{/* prettier-ignore */}
+```tsx app/settings.tsx
+import { Button, View } from 'react-native';
+/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+import { useRouter } from 'expo-router';
+/* @end */
+
+export default function Settings() {
+  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  const router = useRouter();
+  /* @end */
+
+  const handleDismiss = (count: number) => {
+    /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back. */
+    router.dismiss(count)
+    /* @end */
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      /* @info Trigger the handler method on a touchable or button component. */
+      <Button title="Go to first screen" onPress={() => handleDismiss(3)} />
+      /* @end */
+    </View>
+  );
+}
+```
+
+### `dismissAll` action
+
+To return to the first screen in the closest stack. This is similar to [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action.
+
+For example, the `home` route is the first screen, and the `settings` is the last. To go from `settings` to `home` route you'll have to go back to `details`. However, using the `dismissAll` action, you can go from `settings` to `home` and dismiss any screen in between.
+
+{/* prettier-ignore */}
+```tsx app/settings.tsx
+import { Button, View, Text } from 'react-native';
+/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+import { useRouter } from 'expo-router';
+/* @end */
+
+export default function Settings() {
+  /* @info Access the router from the <CODE>useRouter</CODE> hook. */
+  const router = useRouter();
+  /* @end */
+
+  const handleDismissAll = () => {
+    /* @info In the handler method, call <CODE>router.dismissAll</CODE> to go back to the first screen in a stack. */
+    router.dismissAll()
+    /* @end */
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      /* @info Trigger the handler method on a touchable or button component. */
+      <Button title="Go to first screen" onPress={handleDismissAll} />
+      /* @end */
+    </View>
+  );
+}
+```
+
+### `canDismiss` action
+
+To check if it is possible to dismiss the current screen. Returns `true` if the router is within a stack with more than one screen in the stack's history.
+
+{/* prettier-ignore */}
+```tsx app/settings.tsx|collapseHeight=410
+import { Button, View } from 'react-native';
+/* @info Import <CODE>useRouter</CODE> from Expo Router. */
+import { useRouter } from 'expo-router';
+/* @end */
+
+export default function Settings() {
+  /* @info Access the router from <CODE>useRouter</CODE> hook. */
+  const router = useRouter();
+  /* @end */
+
+  const handleDismiss = (count: number) => {
+    /* @info Check if we can dismiss. */
+    if (router.canDismiss()) {
+      /* @info In the handler method, call <CODE>router.dismiss</CODE> to go back to. */
+      router.dismiss(count)
+      /* @end */
+    }
+    /* @end */
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      /* @info Trigger the handler method on a touchable or button component. */
+      <Button title="Maybe dismiss" onPress={() => handleDismiss()} />
+      /* @end */
+    </View>
+  );
+}
+```
+
+## Relation with Native Stack Navigator
+
+The `Stack` navigator in Expo Router wraps the [Native Stack Navigator](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation. Options available in the Native Stack Navigator are all available in the `Stack` navigator in Expo Router.
+
+### JavaScript stack with @react-navigation/stack
+
+You can also use the JavaScript-powered `@react-navigation/stack` library to create a custom layout component by wrapping this library with the `withLayoutContext`.
+
+In the following example, `JsStack` component is defined using `@react-navigation/stack` library:
 
 ```tsx layouts/js-stack.tsx
 import { ParamListBase, StackNavigationState } from '@react-navigation/native';
@@ -254,9 +411,10 @@ export const JsStack = withLayoutContext<
 >(Navigator);
 ```
 
-You can then use the `JsStack` component in your app.
+After defining the `JsStack` component, you can use it in your app:
 
-```tsx app/_layout.js
+{/* prettier-ignore */}
+```tsx app/_layout.tsx
 import { JsStack } from '../layouts/js-stack';
 
 export default function Layout() {
@@ -264,7 +422,8 @@ export default function Layout() {
     <JsStack
       screenOptions={
         {
-          // Refer to the React Navigation docs https://reactnavigation.org/docs/stack-navigator
+          /* @hide ... */
+          /* @end */
         }
       }
     />
@@ -274,59 +433,11 @@ export default function Layout() {
 
 For more information on available options, see [`@react-navigation/stack` documentation](https://reactnavigation.org/docs/stack-navigator).
 
-## `popToTop` action
-
-By default, the screens in a `Stack` are pushed or popped to the next or the previous screen. To return to the first screen in the existing stack, the [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action can be used from any screen.
-
-For example, a stack has three screens &mdash; `home`, `details`, and `settings`. The following layout describes the order of the screens in a stack.
-
-<FileTree files={['app/_layout.js', 'app/home.js', 'app/details.js', 'app/settings.js']} />
-
-The `home` screen is the first screen, and the `settings` is the last. To go from `settings` to `home` screen you'll have to go back to `details`. However, using the `popToTop` action, you can go from `settings` to `home` and dismiss any screen in between.
-
-It is accessible through [`StackActions`](https://reactnavigation.org/docs/stack-actions) from the React Navigation library and dispatched using [`navigation`](/router/reference/hooks/#usenavigation) prop.
-
-{/* prettier-ignore */}
-```jsx app/settings.js
-import { Button, View, Text } from "react-native";
-/* @info Import useNavigation from Expo Router and StackActions from React Navigation library. */
-import { useNavigation } from "expo-router";
-import { StackActions } from "@react-navigation/native";
-/* @end */
-
-export default function Settings() {
-  /* @info Access the underlying navigation prop from useNavigation hook. */
-  const navigation = useNavigation();
-  /* @end */
-
-  const handlePopToTop = () => {
-    /* @info In handle method, dispatch the Stack popToTop() to go back to the first screen in a stack. */
-    navigation.dispatch(StackActions.popToTop());
-    /* @end */
-  };
-
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      /* @info Trigger the handler method on a touchable/button component */
-      <Button title="Go to first screen" onPress={handlePopToTop} />
-      /* @end */
-    </View>
-  );
-}
-```
-
-## Next steps
+## More
 
 <BoxLink
-  title="Native Stack Navigator: Options"
+  title="Native Stack Navigator options"
   Icon={BookOpen02Icon}
-  description="For a list of all options, see React Navigation's documentation."
+  description="For a list of all options available in the stack layout, see React Navigation's documentation."
   href="https://reactnavigation.org/docs/native-stack-navigator#options"
-/>
-
-<BoxLink
-  title="Tabs layout"
-  Icon={BookOpen02Icon}
-  description="Learn how to use Tabs layout in Expo Router."
-  href="/router/advanced/tabs"
 />

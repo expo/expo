@@ -1,6 +1,5 @@
 import { getConfig, getProjectConfigDescriptionWithPaths, ProjectConfig } from '@expo/config';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { stripAnsi } from '../../../../utils/ansi';
 import {
@@ -74,8 +73,8 @@ describe('_shouldSetupWebSupportAsync', () => {
   const projectRoot = '/test-project';
 
   it('skips setup due to platform exclusion', async () => {
-    asMock(getProjectConfigDescriptionWithPaths).mockReturnValueOnce('app.json');
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getProjectConfigDescriptionWithPaths).mockReturnValueOnce('app.json');
+    jest.mocked(getConfig).mockReturnValueOnce({
       pkg: {},
       rootConfig: {
         expo: {
@@ -92,8 +91,8 @@ describe('_shouldSetupWebSupportAsync', () => {
   });
 
   it('should setup web support', async () => {
-    asMock(getProjectConfigDescriptionWithPaths).mockReturnValueOnce('app.json');
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getProjectConfigDescriptionWithPaths).mockReturnValueOnce('app.json');
+    jest.mocked(getConfig).mockReturnValueOnce({
       pkg: {},
       rootConfig: {
         expo: {},

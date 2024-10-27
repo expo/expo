@@ -81,18 +81,19 @@ class ClipboardFileProvider : ContentProvider() {
     return "application/octet-stream"
   }
 
-  override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
-    val projection = projection ?: defaultProjectionColumns
+  override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor {
+    val finalProjection = projection ?: defaultProjectionColumns
     val file: File = strategy.getFileForUri(uri)
-    var columns = arrayOfNulls<String>(projection.size)
-    var values = arrayOfNulls<Any>(projection.size)
+    var columns = arrayOfNulls<String>(finalProjection.size)
+    var values = arrayOfNulls<Any>(finalProjection.size)
     var i = 0
-    for (column in projection) {
+    for (column in finalProjection) {
       when (column) {
         OpenableColumns.DISPLAY_NAME -> {
           columns[i] = OpenableColumns.DISPLAY_NAME
           values[i++] = file.name
         }
+
         OpenableColumns.SIZE -> {
           columns[i] = OpenableColumns.SIZE
           values[i++] = file.length()
@@ -223,10 +224,12 @@ class ClipboardFileProvider : ContentProvider() {
         val externalFilesDirs: Array<File> = context.getExternalFilesDirs(null)
         externalFilesDirs.takeIf { it.isNotEmpty() }?.let { it[0] }
       }
+
       TAG_EXTERNAL_CACHE -> {
         val externalCacheDirs: Array<File> = context.externalCacheDirs
         externalCacheDirs.takeIf { it.isNotEmpty() }?.let { it[0] }
       }
+
       else -> null
     }
 
@@ -309,9 +312,9 @@ class ClipboardFileProvider : ContentProvider() {
       for (root in roots.entries) {
         val rootPath = root.value.path
         if (path.startsWith(rootPath) && (
-          mostSpecific == null ||
-            rootPath.length > mostSpecific.value.path.length
-          )
+            mostSpecific == null ||
+              rootPath.length > mostSpecific.value.path.length
+            )
         ) {
           mostSpecific = root
         }
@@ -348,7 +351,7 @@ class ClipboardFileProvider : ContentProvider() {
       } catch (e: IOException) {
         throw java.lang.IllegalArgumentException("Failed to resolve canonical path for $file")
       }
-      if (!file.path.startsWith(root.path)) {
+      if (!file.startsWith(root)) {
         throw SecurityException("Resolved path jumped beyond configured root")
       }
       return file

@@ -75,7 +75,7 @@ runs:
   steps:
     - name: ♻️ Restore workspace node modules
       if: inputs.yarn-workspace == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: workspace-modules-cache
       with:
         # See "workspaces" → "packages" in the root package.json for the source of truth of
@@ -84,7 +84,6 @@ runs:
           node_modules
           apps/*/node_modules
           apps/*/__generated__/AppEntry.js
-          home/node_modules
           packages/*/node_modules
           packages/@expo/*/node_modules
           react-native-lab/react-native/node_modules
@@ -92,7 +91,7 @@ runs:
 
     - name: ♻️ Restore /tools node modules and bins
       if: inputs.yarn-tools == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: tools-modules-cache
       with:
         path: |
@@ -101,21 +100,21 @@ runs:
 
     - name: ♻️ Restore /docs node modules
       if: inputs.yarn-docs == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: docs-modules-cache
       with:
         path: docs/node_modules
         key: ${{ runner.os }}-docs-modules-${{ hashFiles('docs/yarn.lock') }}
     - name: ♻️ Restore Docs Next cache
       if: inputs.yarn-docs == 'true' && steps.docs-modules-cache.outputs.cache-hit == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: docs/.next/cache
         key: ${{ runner.os }}-docs-next-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/next.config.js') }}
 
     - name: ♻️ Restore ios/Pods from cache
       if: inputs.ios-pods == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: ios-pods-cache
       with:
         path: ios/Pods
@@ -123,7 +122,7 @@ runs:
 
     - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
       if: inputs.bare-expo-pods == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: bare-expo-pods-cache
       with:
         path: apps/bare-expo/ios/Pods
@@ -131,7 +130,7 @@ runs:
 
     - name: ♻️ Restore apps/native-tests/ios/Pods from cache
       if: inputs.native-tests-pods == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: native-tests-pods-cache
       with:
         path: apps/native-tests/ios/Pods
@@ -139,11 +138,11 @@ runs:
 
     - name: ♻️ Restore Gradle cache
       if: inputs.ndk == 'true' || inputs.gradle == 'true'
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/actions/setup-gradle@v3
 
     - name: ♻️ Restore Android NDK from cache
       if: inputs.ndk == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: cache-android-ndk
       with:
         path: /usr/local/lib/android/sdk/ndk/${{ inputs.ndk-version }}/
@@ -159,7 +158,7 @@ runs:
       run: echo "sha256=$(git lfs ls-files | openssl dgst -sha256)" >> $GITHUB_OUTPUT
       shell: bash
     - name: ♻️ Restore Git LFS cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       if: inputs.git-lfs == 'true'
       with:
         path: .git/lfs
@@ -167,7 +166,7 @@ runs:
 
     - name: ♻️ Restore hermes-engine AAR cache
       if: inputs.hermes-engine-aar == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: android/prebuiltHermes
         key: hermes-engine-aar-v2-${{ hashFiles('react-native-lab/react-native/packages/react-native/sdks/.hermesversion') }}
@@ -206,7 +205,7 @@ runs:
       run: echo "REACT_NATIVE_DOWNLOADS_DIR=$HOME/.gradle/react-native-downloads" >> $GITHUB_ENV
     - name: ♻️ Restore Gradle downloads cache for React Native libraries
       if: inputs.react-native-gradle-downloads == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
         key: gradle-downloads-${{ hashFiles('yarn.lock') }}

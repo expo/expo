@@ -29,7 +29,6 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.taskManager.TaskManagerInterface
@@ -71,8 +70,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private lateinit var mSensorManager: SensorManager
   private lateinit var mUIManager: UIManager
   private lateinit var mLocationProvider: FusedLocationProviderClient
-  private lateinit var mTaskManager: TaskManagerInterface
-  private lateinit var mActivityProvider: ActivityProvider
 
   private var mGravity: FloatArray = FloatArray(9)
   private var mGeomagnetic: FloatArray = FloatArray(9)
@@ -82,16 +79,17 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private var mLastUpdate: Long = 0
   private var mGeocoderPaused = false
 
+  private val mTaskManager: TaskManagerInterface by lazy {
+    return@lazy appContext.legacyModule<TaskManagerInterface>()
+      ?: throw TaskManagerNotFoundException()
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoLocation")
 
     OnCreate {
       mContext = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       mUIManager = appContext.legacyModule<UIManager>() ?: throw MissingUIManagerException()
-      mTaskManager = appContext.legacyModule<TaskManagerInterface>()
-        ?: throw TaskManagerNotFoundException()
-      mActivityProvider = appContext.legacyModule<ActivityProvider>()
-        ?: throw MissingActivityManagerException()
       mLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
       mSensorManager = mContext.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
         ?: throw SensorManagerUnavailable()
@@ -159,7 +157,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       return@AsyncFunction getCurrentPositionAsync(options, promise)
     }
 
-    AsyncFunction("getProviderStatusAsync") {
+    AsyncFunction<LocationProviderStatus>("getProviderStatusAsync") {
       val state = SmartLocation.with(mContext).location().state()
 
       return@AsyncFunction LocationProviderStatus().apply {
@@ -251,7 +249,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
     }
 
-    AsyncFunction("hasServicesEnabledAsync") {
+    AsyncFunction<Boolean>("hasServicesEnabledAsync") {
       return@AsyncFunction LocationHelpers.isAnyProviderAvailable(mContext)
     }
 
@@ -269,6 +267,10 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
       if (!AppForegroundedSingleton.isForegrounded && options.foregroundService != null) {
         throw ForegroundServiceStartNotAllowedException()
+      }
+
+      if (!hasForegroundServicePermissions()) {
+        throw ForegroundServicePermissionsException()
       }
 
       mTaskManager.registerTask(taskName, LocationTaskConsumer::class.java, options.toMutableMap())
@@ -333,7 +335,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
 
       locationPermission.android = PermissionDetailsLocationAndroid(
-        scope = accuracy,
         accuracy = accuracy
       )
 
@@ -465,12 +466,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
    * Triggers system's dialog to ask the user to enable settings required for given location request.
    */
   private fun resolveUserSettingsForRequest(locationRequest: LocationRequest) {
-    val activity = mActivityProvider.currentActivity
-    if (activity == null) {
-      // Activity not found. It could have been called in a headless mode.
-      executePendingRequests(Activity.RESULT_CANCELED)
-      return
-    }
     val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
     val client = LocationServices.getSettingsClient(mContext)
     val task = client.checkLocationSettings(builder.build())
@@ -486,7 +481,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         try {
           val resolvable = e as ResolvableApiException
           mUIManager.registerActivityEventListener(this@LocationModule)
-          resolvable.startResolutionForResult(activity, CHECK_SETTINGS_REQUEST_CODE)
+          resolvable.startResolutionForResult(appContext.throwingActivity, CHECK_SETTINGS_REQUEST_CODE)
         } catch (e: SendIntentException) {
           // Ignore the error.
           executePendingRequests(Activity.RESULT_CANCELED)
@@ -522,7 +517,8 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
     }
     mSensorManager.registerListener(
-      this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+      this,
+      mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
       SensorManager.SENSOR_DELAY_NORMAL
     )
     mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
@@ -719,8 +715,22 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       val canAccessFineLocation = it.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
       val canAccessCoarseLocation = it.hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
       return !canAccessFineLocation && !canAccessCoarseLocation
-    }
-    return true
+    } ?: throw Exceptions.AppContextLost()
+  }
+
+  private fun hasForegroundServicePermissions(): Boolean {
+    appContext.permissions?.let {
+      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        val canAccessForegroundServiceLocation = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
+        canAccessForegroundService && canAccessForegroundServiceLocation
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val canAccessForegroundService = it.hasGrantedPermissions(Manifest.permission.FOREGROUND_SERVICE)
+        canAccessForegroundService
+      } else {
+        true
+      }
+    } ?: throw Exceptions.AppContextLost()
   }
 
   /**
@@ -749,7 +759,9 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         return it.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
       }
       throw NoPermissionsModuleException()
-    } else true
+    } else {
+      true
+    }
   }
 
   /**

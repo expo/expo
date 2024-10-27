@@ -1,0 +1,140 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+import com.android.build.api.variant.AndroidComponentsExtension
+
+buildscript {
+  ext {
+    minSdkVersion = 24
+    targetSdkVersion = 34
+    compileSdkVersion = 35
+
+    dbFlowVersion = '4.2.4'
+    buildToolsVersion = '35.0.0'
+    kotlinVersion = '1.9.24'
+    gradleDownloadTaskVersion = '5.0.1'
+    repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
+
+    ndkVersion = "26.1.10909125"
+  }
+  repositories {
+    google()
+    mavenCentral()
+  }
+  dependencies {
+    classpath expoLibs.android.gradle.plugin
+    classpath 'com.google.gms:google-services:4.3.5'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.6'
+    classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+
+    classpath "com.facebook.react:react-native-gradle-plugin"
+  }
+}
+
+plugins {
+   alias libs.plugins.android.application apply false
+   alias libs.plugins.android.library apply false
+   alias libs.plugins.kotlin.android apply false
+   alias libs.plugins.download apply false
+}
+
+// We don't need linter on turtle.
+plugins {
+  id "com.diffplug.spotless" version "6.23.3"
+}
+
+def reactProperties = new Properties()
+file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+
+allprojects {
+  repositories {
+    // For non-detach
+    maven {
+      url "$rootDir/maven"
+    }
+    // For old expoviews to work
+    maven {
+      url "$rootDir/versioned-abis/maven"
+    }
+    google()
+    mavenCentral {
+      // We don't want to fetch react-native from Maven Central as there are
+      // older versions over there.
+      content {
+        excludeGroup "com.facebook.react"
+      }
+    }
+    maven {
+      // Local Maven repo containing AARs with JSC built for Android
+      url "$rootDir/../../../node_modules/jsc-android/dist"
+    }
+    maven {
+      // Local expo-camera Maven repo containing our slightly modified
+      // Google's cameraview from expo/cameraview.
+      url "$rootDir/../../../packages/expo-camera/android/maven"
+    }
+    flatDir {
+      dirs 'libs'
+      // dirs project(':expoview').file('libs')
+    }
+    maven { url "https://jitpack.io" }
+
+    // Want this last so that we never end up with a stale cache
+    mavenLocal()
+  }
+
+  configurations.all {
+    resolutionStrategy.force(
+      libs.fresco,
+      libs.fresco.imagepipeline.okhttp3,
+      libs.fresco.ui.common
+    )
+  }
+}
+
+// This var needs to be defined outside any "remove_from_here" comment blocks
+// because the "*/" in there could affect the resulted code by closing the comment to early.
+def ktlintTarget = '**/*.kt'
+
+subprojects { project ->
+  if (project.name == "ReactAndroid") { return; }
+  if (project.name.startsWith("vendored_")) { return; }
+  if (project.projectDir.toString().contains("/node_modules/")) { return; }
+  if (project.projectDir.toString().contains("/modules/")) { return; }
+
+  plugins.apply("com.diffplug.spotless")
+  spotless {
+    // note that spotless config is currently duplicated in bare-expo too
+    kotlin {
+      target(ktlintTarget)
+      // TODO: (barthap) Replace this with raw string when dropped shell app macros
+      // The star "*" signs interferes with slash "/" and treated wildcard path as comment ¯\_(ツ)_/¯
+      targetExclude(["**", "versioned/host/exp/exponent/modules/api", "**", "*.kt"].join("/"))
+      ktlint("1.0.1")
+        .editorConfigOverride([
+          "ktlint_standard_no-wildcard-imports"           : "disabled",
+          "ktlint_standard_import-ordering"               : "disabled",
+          "ktlint_standard_filename"                      : "disabled",
+          "ktlint_standard_property-naming"               : "disabled",
+          "ktlint_standard_discouraged-comment-location"  : "disabled",
+          "ktlint_standard_comment-wrapping"              : "disabled",
+          "ktlint_standard_function-naming"               : "disabled",
+          "ktlint_standard_class-naming"                  : "disabled",
+          "ktlint_standard_package-name"                  : "disabled",
+          "ktlint_standard_multiline-expression-wrapping" : "disabled",
+          "charset"                  : "utf-8",
+          "end_of_line"              : "lf",
+          "indent_size"              : "2",
+          "continuation_indent_size" : "2",
+          "indent_style"             : "space",
+          "insert_final_newline"     : "true",
+          "tab_width"                : "2",
+          "trim_trailing_whitespace" : "true",
+          "ij_kotlin_allow_trailing_comma_on_call_site": "false",
+          "ij_kotlin_allow_trailing_comma": "false"
+        ])
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+  }
+}

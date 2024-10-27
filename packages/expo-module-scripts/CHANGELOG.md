@@ -10,6 +10,63 @@
 
 ### 💡 Others
 
+## 4.0.0 — 2024-10-22
+
+### 🎉 New features
+
+- Add `DOM.Iterable` to TypeScript libs to support `FormData`. ([#31117](https://github.com/expo/expo/pull/31117) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for passing `platform` and `isServer` to the Babel caller to support `process.env.EXPO_OS` and other standard Expo CLI transforms in Jest. ([#29429](https://github.com/expo/expo/pull/29429) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Detect workspace root for monorepos using pnpm. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Show meaningful error when podspecPath is not defined. ([#20789](https://github.com/expo/expo/pull/20789) by [@deggertsen](https://github.com/deggertsen))
+- Add experimental `__rsc_tests__` directory to npm ignore. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))
+- Update `commander` dependency. ([#29603](https://github.com/expo/expo/pull/29603) by [@Simek](https://github.com/Simek))
+- Update `glob@7` to `glob@10`. ([#29931](https://github.com/expo/expo/pull/29931) by [@byCedric](https://github.com/byCedric))
+- Add temporary workaround for deprecated `react-test-renderer@19`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
+
+## 3.5.2 - 2024-05-29
+
+### 🎉 New features
+
+- Add support for building scripts directory (similar to cli, utils, and plugins). ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
+
+## 3.5.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 3.5.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add support for package cli and utils subpackages (like plugins). ([#27083](https://github.com/expo/expo/pull/27083) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- Use appropriate version of `tsc` when executing `expo-module build` in monorepos with multiple typescript versions installed ([#27779](https://github.com/expo/expo/pull/27779) by [@peter.jozsa](https://github.com/peter.jozsa)
+
+### 💡 Others
+
+- Target Node 18 in the Babel CLI preset. ([#26847](https://github.com/expo/expo/pull/26847) by [@simek](https://github.com/simek))
+- Update Babel dependencies to the latest version from `7.23` releases. ([#26525](https://github.com/expo/expo/pull/26525) by [@simek](https://github.com/simek))
+
+## 3.4.1 - 2024-02-01
+
+### 🐛 Bug fixes
+
+- Use `node18` tsconfig in `expo-module-scripts` to match the dependencies. ([#26738](https://github.com/expo/expo/pull/26738)) by ([@krystofwoldrich](https://github.com/krystofwoldrich)) ([#26738](https://github.com/expo/expo/pull/26738) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+## 3.4.0 — 2023-12-12
+
+### 🎉 New features
+
+- Add Node-specific Babel and Jest configurations. ([#25458](https://github.com/expo/expo/pull/25458) by [@byCedric](https://github.com/byCedric))
+- Add Node override in ESLint config for root configuration files. ([#25767](https://github.com/expo/expo/pull/25767) by [@byCedric](https://github.com/byCedric))
+
 ## 3.3.0 — 2023-11-14
 
 ### 🐛 Bug fixes

@@ -1,70 +1,63 @@
-// @ts-nocheck
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Button, StyleSheet, TextInput, View } from 'react-native';
 import { Screen, ScreenContainer } from 'react-native-screens';
 
-export class LazyTabs extends React.Component<{ renderScreen: (key: string) => JSX.Element }> {
-  state = {
-    screens: ['azure'],
-    active: 'azure',
-  };
+function LazyTabs({
+  active,
+  renderScreen,
+}: {
+  active: string;
+  renderScreen: (key: string) => JSX.Element;
+}) {
+  const [screens, setScreens] = useState<string[]>(['azure']);
 
-  goto = (key: string) => {
-    let { screens } = this.state;
-    if (screens.indexOf(key) === -1) {
-      screens = [...screens, key];
+  useEffect(() => {
+    if (!screens.includes(active)) {
+      setScreens([...screens, active]);
     }
-    this.setState({ active: key, screens });
-  };
+  }, [screens, active]);
 
-  renderScreen = (key: string) => {
-    const active = key === this.state.active ? 1 : 0;
-    return (
-      <Screen style={StyleSheet.absoluteFill} key={key} activityState={active}>
-        {this.props.renderScreen(key)}
-      </Screen>
-    );
-  };
-
-  render() {
-    return (
-      <ScreenContainer style={styles.container}>
-        {this.state.screens.map(this.renderScreen)}
-      </ScreenContainer>
-    );
-  }
+  return (
+    <ScreenContainer style={styles.container}>
+      {screens.map((key: string) => {
+        return (
+          <Screen style={StyleSheet.absoluteFill} key={key} activityState={key === active ? 1 : 0}>
+            {renderScreen(key)}
+          </Screen>
+        );
+      })}
+    </ScreenContainer>
+  );
 }
 
-class App extends React.Component {
-  tabs?: LazyTabs;
+export default function App() {
+  const [active, setActive] = useState('azure');
 
-  renderScreen = (key: string) => {
-    const color = key;
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: color,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <TextInput placeholder="Hello" style={styles.textInput} />
+  return (
+    <View style={styles.container}>
+      <LazyTabs
+        active={active}
+        renderScreen={(color: string) => {
+          return (
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: color,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <TextInput placeholder="Hello" style={styles.textInput} />
+            </View>
+          );
+        }}
+      />
+      <View style={styles.tabbar}>
+        <Button title="azure" onPress={() => setActive('azure')} />
+        <Button title="pink" onPress={() => setActive('pink')} />
+        <Button title="cyan" onPress={() => setActive('cyan')} />
       </View>
-    );
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <LazyTabs ref={(tabs) => (this.tabs = tabs!)} renderScreen={this.renderScreen} />
-        <View style={styles.tabbar}>
-          <Button title="azure" onPress={() => this.tabs!.goto('azure')} />
-          <Button title="pink" onPress={() => this.tabs!.goto('pink')} />
-          <Button title="cyan" onPress={() => this.tabs!.goto('cyan')} />
-        </View>
-      </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -89,5 +82,3 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
 });
-
-export default App;

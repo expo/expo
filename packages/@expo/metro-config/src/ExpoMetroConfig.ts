@@ -1,10 +1,10 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
-import { getBareExtensions } from '@expo/config/paths';
+import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
-import { Reporter } from 'metro';
+import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
 import { stableHash } from 'metro-cache';
 import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import os from 'os';
@@ -14,10 +14,11 @@ import resolveFrom from 'resolve-from';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
 import { FileStore } from './file-store';
-import { getModulesPaths, getServerRoot } from './getModulesPaths';
+import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { JSModule } from './serializer/getCssDeps';
+import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { importMetroConfig } from './traveling/metro-config';
@@ -41,6 +42,18 @@ export interface DefaultConfigOptions {
    * is subject to change, and native support for CSS Modules may be added in the future during a non-major SDK release.
    */
   isCSSEnabled?: boolean;
+
+  /**
+   * **Experimental:** Modify premodules before a code asset is serialized
+   *
+   * This is an experimental feature and may change in the future. The underlying implementation
+   * is subject to change.
+   */
+  unstable_beforeAssetSerializationPlugins?: ((serializationInput: {
+    graph: ReadOnlyGraph<MixedOutput>;
+    premodules: Module[];
+    debugId?: string;
+  }) => Module[])[];
 }
 
 function getAssetPlugins(projectRoot: string): string[] {
@@ -50,7 +63,11 @@ function getAssetPlugins(projectRoot: string): string[] {
     throw new Error(`The required package \`expo-asset\` cannot be found`);
   }
 
-  return [hashAssetFilesPath];
+  return [
+    // Use relative path to ensure maximum cache hits.
+    // This is resolved here https://github.com/facebook/metro/blob/ec584b9cc2b8356356a4deacb7e1d5c83f243c3a/packages/metro/src/Assets.js#L271
+    'expo-asset/tools/hashAssetFiles',
+  ];
 }
 
 let hasWarnedAboutExotic = false;
@@ -89,9 +106,47 @@ function patchMetroGraphToSupportUncachedModules() {
   }
 }
 
+function createNumericModuleIdFactory(): (path: string) => number {
+  const fileToIdMap = new Map();
+  let nextId = 0;
+  return (modulePath: string) => {
+    let id = fileToIdMap.get(modulePath);
+    if (typeof id !== 'number') {
+      id = nextId++;
+      fileToIdMap.set(modulePath, id);
+    }
+    return id;
+  };
+}
+
+function createStableModuleIdFactory(root: string): (path: string) => number {
+  const fileToIdMap = new Map<string, string>();
+  // This is an absolute file path.
+  return (modulePath: string): number => {
+    // TODO: We may want a hashed version for production builds in the future.
+    let id = fileToIdMap.get(modulePath);
+    if (id == null) {
+      // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+      if (modulePath == null) {
+        id = 'MODULE_NOT_FOUND';
+      } else if (isVirtualModule(modulePath)) {
+        // Virtual modules should be stable.
+        id = modulePath;
+      } else if (path.isAbsolute(modulePath)) {
+        id = path.relative(root, modulePath);
+      } else {
+        id = modulePath;
+      }
+      fileToIdMap.set(modulePath, id);
+    }
+    // @ts-expect-error: we patch this to support being a string.
+    return id;
+  };
+}
+
 export function getDefaultConfig(
   projectRoot: string,
-  { mode, isCSSEnabled = true }: DefaultConfigOptions = {}
+  { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
 ): InputConfigT {
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
@@ -104,22 +159,13 @@ export function getDefaultConfig(
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
     console.log(
-      chalk.gray(`\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} is no longer supported.`)
+      chalk.gray(
+        `\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`
+      )
     );
   }
 
   const reactNativePath = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
-
-  try {
-    // Set the `EXPO_METRO_CACHE_KEY_VERSION` variable for use in the custom babel transformer.
-    // This hack is used because there doesn't appear to be anyway to resolve
-    // `babel-preset-fbjs` relative to the project root later (in `metro-expo-babel-transformer`).
-    const babelPresetFbjsPath = resolveFrom(projectRoot, 'babel-preset-fbjs/package.json');
-    process.env.EXPO_METRO_CACHE_KEY_VERSION = String(require(babelPresetFbjsPath).version);
-  } catch {
-    // noop -- falls back to a hardcoded value.
-  }
-
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
@@ -140,7 +186,6 @@ export function getDefaultConfig(
 
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
-  // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = getModulesPaths(projectRoot);
   if (env.EXPO_DEBUG) {
     console.log();
@@ -157,6 +202,7 @@ export function getDefaultConfig(
     console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log();
   }
+
   const {
     // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
     // This prints a giant React logo which is less accessible to users on smaller terminals.
@@ -167,6 +213,8 @@ export function getDefaultConfig(
   const cacheStore = new FileStore<any>({
     root: path.join(os.tmpdir(), 'metro-cache'),
   });
+
+  const serverRoot = getMetroServerRoot(projectRoot);
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
@@ -185,7 +233,9 @@ export function getDefaultConfig(
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Add default support for `expo-image` file types.
-          ['heic', 'avif']
+          ['heic', 'avif'],
+          // Add default support for `expo-sqlite` file types.
+          ['db']
         )
         .filter((assetExt) => !sourceExts.includes(assetExt)),
       sourceExts,
@@ -197,13 +247,29 @@ export function getDefaultConfig(
       additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
     },
     serializer: {
+      isThirdPartyModule(module) {
+        // Block virtual modules from appearing in the source maps.
+        if (isVirtualModule(module.path)) return true;
+
+        // Generally block node modules
+        if (/(?:^|[/\\])node_modules[/\\]/.test(module.path)) {
+          // Allow the expo-router/entry and expo/AppEntry modules to be considered first party so the root of the app appears in the trace.
+          return !module.path.match(/[/\\](expo-router[/\\]entry|expo[/\\]AppEntry)/);
+        }
+        return false;
+      },
+
+      createModuleIdFactory: env.EXPO_USE_METRO_REQUIRE
+        ? createStableModuleIdFactory.bind(null, serverRoot)
+        : createNumericModuleIdFactory,
+
       getModulesRunBeforeMainModule: () => {
         const preModules: string[] = [
           // MUST be first
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
-        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/build/winter');
+        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter');
         if (stdRuntime) {
           preModules.push(stdRuntime);
         }
@@ -217,25 +283,39 @@ export function getDefaultConfig(
 
         return preModules;
       },
-      getPolyfills: () => require('@react-native/js-polyfills')(),
+      getPolyfills: ({ platform }) => {
+        // Do nothing for nullish platforms.
+        if (!platform) {
+          return [];
+        }
+
+        if (platform === 'web') {
+          return [
+            // Ensure that the error-guard polyfill is included in the web polyfills to
+            // make metro-runtime work correctly.
+            require.resolve('@react-native/js-polyfills/error-guard'),
+          ];
+        }
+
+        // Native behavior.
+        return require('@react-native/js-polyfills')();
+      },
     },
     server: {
       rewriteRequestUrl: getRewriteRequestUrl(projectRoot),
       port: Number(env.RCT_METRO_PORT) || 8081,
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.
-      unstable_serverRoot: getServerRoot(projectRoot),
+      unstable_serverRoot: serverRoot,
     },
     symbolicator: {
       customizeFrame: getDefaultCustomizeFrame(),
     },
-    transformerPath: isCSSEnabled
-      ? // Custom worker that adds CSS support for Metro web.
-        require.resolve('./transform-worker/transform-worker')
-      : metroDefaultValues.transformerPath,
-
+    transformerPath: require.resolve('./transform-worker/transform-worker'),
+    // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
+      unstable_renameRequire: false,
       // @ts-expect-error: not on type.
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg.browserslist
@@ -244,37 +324,31 @@ export function getDefaultConfig(
       sassVersion,
       // Ensure invalidation when the version changes due to the Babel plugin.
       reanimatedVersion,
-
+      // Ensure invalidation when using identical projects in monorepos
+      _expoRelativeProjectRoot: path.relative(serverRoot, projectRoot),
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
+      // See: https://github.com/facebook/react-native/blob/v0.73.0/packages/metro-config/index.js#L72-L74
+      // TODO: The absolute path breaks invalidates caching across devices.
+      asyncRequireModulePath: resolveFrom(
+        reactNativePath,
+        metroDefaultValues.transformer.asyncRequireModulePath
+      ),
       assetRegistryPath: '@react-native/assets-registry/registry',
       assetPlugins: getAssetPlugins(projectRoot),
+      hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
           experimentalImportSupport: false,
-          inlineRequires: true,
+          inlineRequires: false,
         },
       }),
     },
   });
 
-  return withExpoSerializers(metroConfig);
-}
-
-export async function loadAsync(
-  projectRoot: string,
-  { reporter, ...metroOptions }: LoadOptions = {}
-): Promise<MetroConfig> {
-  let defaultConfig = getDefaultConfig(projectRoot);
-  if (reporter) {
-    defaultConfig = { ...defaultConfig, reporter };
-  }
-
-  const { loadConfig } = importMetroConfig(projectRoot);
-
-  return await loadConfig({ cwd: projectRoot, projectRoot, ...metroOptions }, defaultConfig);
+  return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 
 // re-export for use in config files.

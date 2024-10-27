@@ -6,7 +6,7 @@ on:
       pullNumber:
         description: 'Number of the pull request to review'
         required: true
-  pull_request:
+  pull_request_target:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.pullNumber || github.event.number }}
@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -31,15 +31,16 @@ jobs:
       ### To update SwiftLint, uncomment steps below, download the artifact and update that package.
       # - name: 👷 Build and install SwiftLint
       #   run: |
-      #     git clone https://github.com/realm/SwiftLint.git --branch 0.52.2 --depth 1
+      #     git clone https://github.com/realm/SwiftLint.git --branch 0.57.0 --depth 1
       #     cd SwiftLint
       #     swift build -c release
       #     cp .build/release/swiftlint /usr/local/bin/
       # - name: 📦 Make an artifact
-      #   uses: actions/upload-artifact@v2
+      #   uses: actions/upload-artifact@v4
       #   with:
       #     name: swiftlint
       #     path: SwiftLint/.build
+      #     include-hidden-files: true
 
       - name: 🔬 Reviewing a pull request
         run: expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}

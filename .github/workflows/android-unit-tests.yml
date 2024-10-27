@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/android-unit-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       - packages/**/android/**
       - tools/**
@@ -15,7 +15,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/android-unit-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       - packages/**/android/**
       - tools/**
@@ -35,17 +35,17 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=1024m
     steps:
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: 👀 Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -61,15 +61,16 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🚨 Run Spotless lint check
-        working-directory: android
-        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
+      - name: 💅 Run Spotless lint check
+        working-directory: apps/expo-go/android
+        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` from `apps/expo-go/android` to automatically fix formatting.' && exit 1; }
       - name: 🎸 Run native Android unit tests
+        if: always()
         timeout-minutes: 30
         run: expotools native-unit-tests --platform android
       - name: 💾 Save test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: packages/**/build/test-results/**/*xml

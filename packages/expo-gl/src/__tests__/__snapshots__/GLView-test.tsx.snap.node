@@ -6,15 +6,7 @@ exports[`renders static 1`] = `
   dir={null}
 >
   <canvas
-    style={
-      {
-        "bottom": "0px",
-        "left": "0px",
-        "position": "absolute",
-        "right": "0px",
-        "top": "0px",
-      }
-    }
+    className="r-bottom-1p0dtai r-left-1d2f490 r-position-u8s1d r-right-zchlnj r-top-ipm5af"
   />
 </div>
 `;

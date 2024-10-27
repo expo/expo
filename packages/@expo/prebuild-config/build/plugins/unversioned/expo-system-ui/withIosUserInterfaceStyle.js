@@ -13,15 +13,13 @@ function _iosPlugins() {
   };
   return data;
 }
-const withIosUserInterfaceStyle = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setUserInterfaceStyle, {
+const withIosUserInterfaceStyle = exports.withIosUserInterfaceStyle = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setUserInterfaceStyle, {
   infoPlistProperty: 'UIUserInterfaceStyle',
   expoConfigProperty: 'userInterfaceStyle | ios.userInterfaceStyle',
   expoPropertyGetter: getUserInterfaceStyle
 }, 'withIosUserInterfaceStyle');
-exports.withIosUserInterfaceStyle = withIosUserInterfaceStyle;
 function getUserInterfaceStyle(config) {
-  var _ref, _config$ios$userInter, _config$ios;
-  return (_ref = (_config$ios$userInter = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.userInterfaceStyle) !== null && _config$ios$userInter !== void 0 ? _config$ios$userInter : config.userInterfaceStyle) !== null && _ref !== void 0 ? _ref : 'light';
+  return config.ios?.userInterfaceStyle ?? config.userInterfaceStyle ?? 'light';
 }
 function setUserInterfaceStyle(config, {
   UIUserInterfaceStyle,

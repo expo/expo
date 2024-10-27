@@ -4,10 +4,11 @@ sidebar_title: Setup
 description: Learn how to setup push notifications, get credentials for development and production, and test sending push notifications.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BoxLink } from '~/ui/components/BoxLink';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 To utilize Expo's push notification service, you must configure your app by installing a set of libraries, implementing functions to handle notifications, and setting up credentials for Android and iOS. Once you have completed the steps mentioned in this guide, you'll be able to test sending and receiving notifications on a device.
 
@@ -15,6 +16,13 @@ To get the client-side ready for push notifications, the following things are re
 
 - The user's permission to send them push notifications.
 - The user's [`ExpoPushToken`](/versions/latest/sdk/notifications/#expopushtoken).
+
+<br />
+<Collapsible summary="Do you want to use FCMv1/APNs directly, instead of through the Expo push notification service?">
+
+You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic. Learn how to ["Send notifications with FCMv1 and APNs"](/push-notifications/sending-notifications-custom/).
+
+</Collapsible>
 
 ## Prerequisites
 
@@ -40,7 +48,7 @@ Run the following command to install the `expo-notifications`, `expo-device` and
 
 The code below shows a working example of how to register for, send, and receive push notifications in a React Native app. Copy and paste it into your project:
 
-```jsx App.js
+```tsx App.tsx
 import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
@@ -57,8 +65,8 @@ Notifications.setNotificationHandler({
 });
 /* @end */
 
-// Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
-async function sendPushNotification(expoPushToken) {
+/* @info Sends a notification to Expo. Can also use Expo's push notification tool at https://expo.dev/notifications. */
+async function sendPushNotification(expoPushToken: string) {
   const message = {
     to: expoPushToken,
     sound: 'default',
@@ -77,11 +85,14 @@ async function sendPushNotification(expoPushToken) {
     body: JSON.stringify(message),
   });
 }
+/* @end */
+
+function handleRegistrationError(errorMessage: string) {
+  alert(errorMessage);
+  throw new Error(errorMessage);
+}
 
 async function registerForPushNotificationsAsync() {
-  let token;
-
-  /* @info On Android, you need to specify a channel. */
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
       name: 'default',
@@ -90,11 +101,8 @@ async function registerForPushNotificationsAsync() {
       lightColor: '#FF231F7C',
     });
   }
-  /* @end */
 
-  /* @info You should make sure the app is running on a physical device since push notifications don't work on an emulator/simulator. */
   if (Device.isDevice) {
-    /* @end */
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
@@ -102,52 +110,66 @@ async function registerForPushNotificationsAsync() {
       finalStatus = status;
     }
     if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
+      handleRegistrationError('Permission not granted to get push token for push notification!');
       return;
     }
-    /* @info This provides the ExpoPushToken which is attributed based on the ID of the project. */
-    token = await Notifications.getExpoPushTokenAsync({
-      projectId: Constants.expoConfig.extra.eas.projectId,
-    });
-    /* @end */
-    console.log(token);
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+    if (!projectId) {
+      handleRegistrationError('Project ID not found');
+    }
+    try {
+      /* @info This fetches the Expo push token (if not previously fetched), which is unique to this device and projectID. */
+      const pushTokenString = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+      /* @end */
+      console.log(pushTokenString);
+      return pushTokenString;
+    } catch (e: unknown) {
+      handleRegistrationError(`${e}`);
+    }
   } else {
-    alert('Must use physical device for Push Notifications');
+    handleRegistrationError('Must use physical device for push notifications');
   }
-
-  return token.data;
 }
 
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    /* @info Gets the push token and displays it in the UI, or in case of an error, displays the error message. */
+    registerForPushNotificationsAsync()
+      .then(token => setExpoPushToken(token ?? ''))
+      .catch((error: any) => setExpoPushToken(`${error}`));
+    /* @end */
 
-    /* @info This listener is fired whenever a notification is received while the app is foregrounded. */
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
-    /* @end */
 
-    /* @info This listener is fired whenever a user taps on or interacts with a notification (works when an app is foregrounded, backgrounded, or killed). */
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
     });
-    /* @end */
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
-      Notifications.removeNotificationSubscription(responseListener.current);
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
-      <Text>Your expo push token: {expoPushToken}</Text>
+      <Text>Your Expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>
         <Text>Body: {notification && notification.request.content.body}</Text>
@@ -170,10 +192,9 @@ Using the previous example, when you are registering for push notifications, you
 
 `projectId` is automatically set when you create a development build. However, **we recommend setting it manually in your project's code**. To do so, you can use [`expo-constants`](/versions/latest/sdk/constants/) to get the `projectId` value from the app config.
 
-```js
-token = await Notifications.getExpoPushTokenAsync({
-  projectId: Constants.expoConfig.extra.eas.projectId,
-});
+```ts
+const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+const pushTokenString = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
 ```
 
 One advantage of attributing the Expo push token to your project's ID is that it doesn't change when a project is transferred between different accounts or the existing account gets renamed.
@@ -182,94 +203,29 @@ One advantage of attributing the Expo push token to your project's ID is that it
 
 <Step label="3">
 
-## Get Credentials for development builds
+## Get credentials for development builds
 
 For Android and iOS, there are different requirements to set up your credentials.
 
-### Android
+<Tabs tabs={["Android", "iOS"]}>
+  <Tab>
+    For Android, you need to configure **Firebase Cloud Messaging (FCM) V1** to get credentials and set up your Expo project.
 
-For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get your credentials and set up your Expo project. It is required for all Android apps using Expo SDK.
+    Follow the steps in [Add Android FCM V1 credentials](/push-notifications/fcm-credentials) to set up your credentials.
 
-> **warning** FCM is not currently available for `expo-notifications` on iOS.
+  </Tab>
+  <Tab>
+    > **warning** A paid Apple Developer Account is required to generate credentials.
 
-#### Setting up FCM
+    For iOS, make sure you have [registered your iOS device](/develop/development-builds/create-a-build/#create-a-development-build-for-the-device) on which you want to test before running the `eas build` command for the first time.
 
-1. To create a Firebase project, go to the [Firebase console](https://console.firebase.google.com/) and click on **Add project**.
+    If you create a development build for the first time, you'll be asked to enable push notifications. Answer yes to the following questions when prompted by the EAS CLI:
 
-2. In the console, click the setting icon next to **Project overview** and open **Project settings**. Then, under **Your apps**, click the Android icon to open **Add Firebase to your Android app** and follow the steps. **Make sure that the Android package name you enter is the same as the value of `android.package` from your app.json.**
+    - Setup Push Notifications for your project
+    - Generating a new Apple Push Notifications service key
 
-3. After registering the app, download the **google-services.json** file and place it in your project's root directory.
-
-   > The **google-services.json** file contains unique and non-secret identifiers of your Firebase project. For more information, see [Understand Firebase Projects](https://firebase.google.com/docs/projects/learn-more#config-files-objects).
-
-4. In **app.json**, add an `android.googleServicesFile` field with the relative path to the downloaded **google-services.json** file. If you placed it in the root directory, the path is:
-
-   ```json app.json
-   {
-     "android": {
-       "googleServicesFile": "./google-services.json"
-     }
-   }
-   ```
-
-5. For push notifications to work correctly, Firebase requires the API key to either be unrestricted (the key can call any API) or have access to both **Firebase Cloud Messaging API** and **Firebase Installations API**. The API key is found under the `client.api_key.current_key` field in **google-services.json** file:
-
-   ```json google-services.json
-   {
-     "client": [
-       {
-         "api_key": [
-           {
-             "current_key": "<your Google Cloud Platform API key>"
-           }
-         ]
-       }
-     ]
-   }
-   ```
-
-6. Firebase also creates an API key in the Google Cloud Platform Credentials console with a name like **Android key (auto-created by Firebase)**. This could be a different key than the one found in **google-services.json**.
-
-7. To be sure that both the `current_key` and the **Android key** in the Credentials console are the same, go to the [Google Cloud API Credentials console](https://console.cloud.google.com/apis/credentials) and click on **Show key** to verify their value. It will be marked as **unrestricted**.
-
-   > Firebase projects with multiple Android apps might contain duplicated data under the `client` array in the **google-services.json**. This can cause issues when the app is fetching the push notification token. **Make sure to only have one client object with the correct keys and metadata in google-services.json**.
-
-Now you can re-build the development build using the `eas build` command. At this point, if you need to create a development build, see [create a development build for a device](/develop/development-builds/create-a-build/#create-a-development-build-for-the-device).
-
-#### Upload server credentials
-
-For Expo to send push notifications from our servers and use your credentials, you'll have to upload your secret server key to your project's Expo dashboard.
-
-1. In the Firebase console, next to **Project overview**, click gear icon to open **Project settings**.
-
-2. Click on the **Cloud Messaging** tab in the Settings pane.
-
-3. Copy the token listed next to the **Server key**.
-
-   > Server Key is only available in **Cloud Messaging API (Legacy)**, which is disabled by default. <br/> Enable it by clicking the three-dot menu > **Manage API in Google Cloud Console** and following the steps in the console. Once the legacy messaging API is enabled, you should see Server Key in that section.
-
-   <ImageSpotlight
-     alt="Getting the server key from Firebase console's Cloud messaging tab."
-     src="/static/images/notifications/server-key-from-fcm.jpg"
-     style={{ maxWidth: 760 }}
-   />
-
-4. In your [Expo account's](https://expo.dev/) dashboard, select your project, and click on **Credentials** in the navigation menu. Then, click on your **Application Identifier** that follows the pattern: `com.company.app`.
-
-5. Under **Service Credentials** > **FCM Server Key**, click **Add a FCM Server Key** > **Google Cloud Messaging Token** and add the **Server key** from **step 3**.
-
-> Expo Notifications only supports the **Cloud Messaging API (Legacy)** key at this time. This key is deprecated by Firebase. However, it will continue to work until June 30, 2024. We will provide information on migrating to the new v1 key in the future.
-
-### iOS
-
-> **warning** A paid Apple Developer Account is required to generate credentials.
-
-For iOS, make sure you have [registered your iOS device](/develop/development-builds/create-a-build/#create-a-development-build-for-the-device) on which you want to test before running the `eas build` command for the first time.
-
-If you create a development build for the first time, you'll be asked to enable push notifications. Answer yes to the following questions when prompted by the EAS CLI:
-
-- Setup Push Notifications for your project
-- Generating a new Apple Push Notifications service key
+  </Tab>
+</Tabs>
 
 <br />
 
@@ -278,14 +234,13 @@ If you create a development build for the first time, you'll be asked to enable 
 </Step>
 
 <Step label="4">
-
 ## Test using the push notifications tool
 
 After creating and installing the development build, you can use [Expo's push notifications tool](https://expo.dev/notifications) to quickly send a test notification to your device.
 
 1. Start the development server for your project:
 
-   <Terminal cmd={['$ npx expo start --dev-client']} />
+   <Terminal cmd={['$ npx expo start']} />
 
 2. Open the development build on your device.
 
@@ -293,26 +248,17 @@ After creating and installing the development build, you can use [Expo's push no
 
 4. Click on the **Send a Notification** button.
 
-<ImageSpotlight
-  alt="Expo push notifications tool overview."
-  src="/static/images/notifications/push-notifications-tool-overview.png"
-  style={{ maxWidth: 1200 }}
-/>
+   <ContentSpotlight
+     alt="Expo push notifications tool overview."
+     src="/static/images/notifications/push-notifications-tool-overview.png"
+     className="max-w-screen-xl"
+   />
 
 After sending the notification from the tool, you should see the notification on your device. Below is an example of an Android device receiving a push notification.
 
-<ImageSpotlight
-  alt="An Android device receiving a push notification."
-  src="/static/images/notifications/notification-on-android.png"
-  style={{ maxWidth: 360 }}
-/>
-
+  <ContentSpotlight
+    alt="An Android device receiving a push notification."
+    src="/static/images/notifications/notification-on-android.png"
+    className="max-w-[280px]"
+  />
 </Step>
-
-## Next step
-
-<BoxLink
-  title="Send notifications using Expo's Push API"
-  description="Learn how to set your back-end using Expo's Push API, implementation practices, common errors and security best practices."
-  href="/push-notifications/sending-notifications"
-/>

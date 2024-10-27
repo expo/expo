@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, Platform, Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import MonoText from '../components/MonoText';
@@ -13,63 +13,45 @@ function incrementColor(color: string, step: number) {
   return `#${'0'.repeat(6 - newIntColor.length)}${newIntColor}`;
 }
 
-type State = {
-  count: number;
-  colorTop: string;
-  colorBottom: string;
-};
+export default function LinearGradientScreen() {
+  const [count, setCount] = React.useState(0);
+  const [colorTop, setColorTop] = React.useState('#000000');
+  const [colorBottom, setColorBottom] = React.useState('#cccccc');
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class LinearGradientScreen extends React.Component<{}, State> {
-  static navigationOptions = {
-    title: 'LinearGradient',
-  };
-
-  state = {
-    count: 0,
-    colorTop: '#000000',
-    colorBottom: '#cccccc',
-  };
-
-  _interval?: ReturnType<typeof setInterval>;
-
-  componentDidMount() {
-    this._interval = setInterval(() => {
-      this.setState((state) => ({
-        count: state.count + 1,
-        colorTop: incrementColor(state.colorTop, 1),
-        colorBottom: incrementColor(state.colorBottom, -1),
-      }));
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((count) => count + 1);
+      setColorTop((colorTop) => incrementColor(colorTop, 1));
+      setColorBottom((colorBottom) => incrementColor(colorBottom, -1));
     }, 100);
-  }
 
-  componentWillUnmount() {
-    clearInterval(this._interval);
-  }
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
-  render() {
-    const location = Math.sin(this.state.count / 100) * 0.5;
-    const position = Math.sin(this.state.count / 100);
-    return (
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          alignItems: 'stretch',
-          paddingVertical: 10,
-        }}>
-        <AnimatedLinearGradient
-          style={{ display: 'none' }}
-          colors={[this.state.colorTop, this.state.colorBottom]}
-        />
-        <ColorsTest colors={[this.state.colorTop, this.state.colorBottom]} />
-        <LocationsTest locations={[location, 1.0 - location]} />
-        <ControlPointTest start={[position, 0]} />
-        {Platform.OS !== 'web' && <SnapshotTest />}
-      </ScrollView>
-    );
-  }
+  const location = Math.sin(count / 100) * 0.5;
+  const position = Math.abs(Math.sin(count / 100));
+
+  return (
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{
+        alignItems: 'stretch',
+        paddingVertical: 10,
+      }}>
+      <AnimatedLinearGradient style={{ display: 'none' }} colors={[colorTop, colorBottom]} />
+      <ColorsTest colors={[colorTop, colorBottom]} />
+      <LocationsTest locations={[location, 1.0 - location]} />
+      <ControlPointTest start={[position, 0]} />
+      {Platform.OS !== 'web' && <SnapshotTest />}
+    </ScrollView>
+  );
 }
+
+LinearGradientScreen.navigationOptions = {
+  title: 'LinearGradient',
+};
 
 const Container: React.FunctionComponent<{ title: string; children?: React.ReactNode }> = ({
   title,
@@ -131,7 +113,7 @@ const ControlPointTest: React.FunctionComponent<{
   );
 };
 
-const ColorsTest = ({ colors }: { colors: string[] }) => {
+const ColorsTest = ({ colors }: { colors: [string, string, ...string[]] }) => {
   const info = colors.map((value) => `"${value}"`).join(', ');
   return (
     <Container title="Colors">
@@ -141,7 +123,9 @@ const ColorsTest = ({ colors }: { colors: string[] }) => {
   );
 };
 
-const LocationsTest: React.FunctionComponent<{ locations: number[] }> = ({ locations }) => {
+const LocationsTest: React.FunctionComponent<{ locations: [number, number, ...number[]] }> = ({
+  locations,
+}) => {
   const locationsInfo = locations.map((location) => +location.toFixed(2)).join(', ');
   return (
     <Container title="Locations">

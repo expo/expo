@@ -1,9 +1,10 @@
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 
 import { spawnAsync, spawnJSONCommandAsync, SpawnOptions } from './Utils';
 
 export const EXPO_DEVELOPERS_TEAM_NAME = 'expo:developers';
+export const EXPO_BOT_ACCOUNT_NAME = 'expo-bot';
 
 export type PackageViewType = null | {
   name: string;
@@ -37,6 +38,26 @@ export type ProfileType = null | {
     mode: string;
   };
   [key: string]: unknown;
+};
+
+/**
+ * Represents an object returned by `npm pack --json`.
+ */
+export type PackResult = {
+  id: string;
+  name: string;
+  version: string;
+  size: number;
+  unpackedSize: number;
+  shasum: string;
+  integrity: string;
+  filename: string;
+  files: {
+    path: string;
+    size: number;
+    mode: number;
+  }[];
+  entryCount: number;
 };
 
 /**
@@ -89,22 +110,48 @@ export async function downloadPackageTarballAsync(
 }
 
 /**
+ * Creates a tarball from a package.
+ */
+export async function packToTarballAsync(packageDir: string): Promise<PackResult> {
+  const [result] = await spawnJSONCommandAsync<PackResult[]>(
+    'npm',
+    ['pack', '--json', '--foreground-scripts=false'],
+    {
+      cwd: packageDir,
+    }
+  );
+  return result;
+}
+
+type PublishOptions = {
+  source?: string;
+  tagName?: string;
+  dryRun?: boolean;
+  spawnOptions?: SpawnOptions;
+};
+
+/**
  * Publishes a package at given directory to the global npm registry.
  */
 export async function publishPackageAsync(
   packageDir: string,
-  tagName: string = 'latest',
-  dryRun: boolean = false,
-  spawnOptions: SpawnOptions = {}
+  options: PublishOptions = {}
 ): Promise<void> {
-  const args = ['publish', '--tag', tagName, '--access', 'public'];
+  const args = [
+    'publish',
+    options.source ?? '.',
+    '--tag',
+    options.tagName ?? 'latest',
+    '--access',
+    'public',
+  ];
 
-  if (dryRun) {
+  if (options.dryRun) {
     args.push('--dry-run');
   }
   await spawnAsync('npm', args, {
     cwd: packageDir,
-    ...spawnOptions,
+    ...options.spawnOptions,
   });
 }
 
@@ -114,16 +161,21 @@ export async function publishPackageAsync(
 export async function addTagAsync(
   packageName: string,
   version: string,
-  tagName: string
+  tagName: string,
+  spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync('npm', ['dist-tag', 'add', `${packageName}@${version}`, tagName]);
+  await spawnAsync('npm', ['dist-tag', 'add', `${packageName}@${version}`, tagName], spawnOptions);
 }
 
 /**
  * Removes package's tag with given name.
  */
-export async function removeTagAsync(packageName: string, tagName: string): Promise<void> {
-  await spawnAsync('npm', ['dist-tag', 'rm', packageName, tagName]);
+export async function removeTagAsync(
+  packageName: string,
+  tagName: string,
+  spawnOptions?: SpawnOptions
+): Promise<void> {
+  await spawnAsync('npm', ['dist-tag', 'rm', packageName, tagName], spawnOptions);
 }
 
 /**
@@ -131,6 +183,23 @@ export async function removeTagAsync(packageName: string, tagName: string): Prom
  */
 export async function getTeamMembersAsync(teamName: string): Promise<string[]> {
   return await spawnJSONCommandAsync('npm', ['team', 'ls', teamName, '--json']);
+}
+
+type TeamPackagesRecord = Record<string, 'read-only' | 'read-write'>;
+
+/**
+ * Resolves to a dictionary of packages and their access level added to the team.
+ */
+export async function getTeamPackagesAsync(
+  teamName: string = EXPO_DEVELOPERS_TEAM_NAME
+): Promise<TeamPackagesRecord> {
+  return await spawnJSONCommandAsync<TeamPackagesRecord>('npm', [
+    'access',
+    'list',
+    'packages',
+    teamName,
+    '--json',
+  ]);
 }
 
 /**

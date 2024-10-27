@@ -4,16 +4,12 @@ import SDWebImage
 import ExpoModulesCore
 
 /**
- Checks if the image is animated and returns an SDAnimatedImage if it does. Otherwise returns the UIImage.
+ An exception to throw when it its not possible to generate a blurhash for a given URL.
  */
-func createAnimatedIfNeeded(image: UIImage?, data: Data?) -> UIImage? {
-  let isAnimated = image?.sd_isAnimated ?? false
-
-  if isAnimated, let data = data {
-    return SDAnimatedImage(data: data)
+public final class BlurhashGenerationException: Exception {
+  override public var reason: String {
+    "Unable to generate blurhash, make sure the image exists at the given URL"
   }
-
-  return image
 }
 
 func cacheTypeToString(_ cacheType: SDImageCacheType) -> String {
@@ -62,7 +58,7 @@ func imageFormatToMediaType(_ format: SDImageFormat) -> String? {
 /**
  Calculates the ideal size that fills in the container size while maintaining the source aspect ratio.
  */
-func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double, contentFit: ContentFit) -> CGSize {
+func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double = 1.0, contentFit: ContentFit) -> CGSize {
   switch contentFit {
   case .contain:
     let aspectRatio = min(containerSize.width / contentPixelSize.width, containerSize.height / contentPixelSize.height)
@@ -106,20 +102,17 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
 /**
  Resizes the animated image to fit in the given size and scale.
  */
-func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) async -> UIImage {
-  // For animated images, the `images` member is non-nil and represents an array of animation frames.
-  if let images = image.images {
-    // Resize each animation frame separately.
-    let resizedImages = await concurrentMap(images) { image in
-      return resize(image: image, toSize: size, scale: scale)
-    }
-
-    // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
-    // so it should never happen in our case, but let's handle it gracefully.
-    if let animatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
-      return animatedImage
+func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
+  if image.sd_isAnimated,
+    let animatedImage = image as? AnimatedImage,
+    let actualCoder = animatedImage.animatedCoder {
+    let animatedCoder = ResizedAnimatedCoder(actualCoder: actualCoder, size: size, scale: scale)
+    if let result = AnimatedImage(animatedCoder: animatedCoder, scale: scale) {
+      return result
     }
   }
+
+  // fallback to a resized static image
   return resize(image: image, toSize: size, scale: scale)
 }
 
@@ -174,6 +167,49 @@ func createCacheKeyFilter(_ cacheKey: String?) -> SDWebImageCacheKeyFilter? {
   return SDWebImageCacheKeyFilter { _ in
     return cacheKey
   }
+}
+
+/**
+ Creates a default image context based on the source and the cache policy.
+ */
+func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCachePolicy = .disk) -> SDWebImageContext {
+  var context = SDWebImageContext()
+
+  // Modify URL request to add headers.
+  if let headers = source.headers {
+    context[.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headers)
+  }
+
+  // Allow for custom cache key. If not specified in the source, its uri is used as the key.
+  context[.cacheKeyFilter] = createCacheKeyFilter(source.cacheKey)
+
+  // Tell SDWebImage to use our own class for animated formats,
+  // which has better compatibility with the UIImage and fixes issues with the image duration.
+  context[.animatedImageClass] = AnimatedImage.self
+
+  // Assets from the bundler have `scale` prop which needs to be passed to the context,
+  // otherwise they would be saved in cache with scale = 1.0 which may result in
+  // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
+  context[.imageScaleFactor] = source.scale
+
+  // Set which cache can be used to query and store the downloaded image.
+  // We want to store only original images (without transformations).
+  context[.queryCacheType] = SDImageCacheType.none.rawValue
+  context[.storeCacheType] = SDImageCacheType.none.rawValue
+
+  if source.isCachingAllowed {
+    let sdCacheType = cachePolicy.toSdCacheType().rawValue
+    context[.originalQueryCacheType] = sdCacheType
+    context[.originalStoreCacheType] = sdCacheType
+  } else {
+    context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
+    context[.originalStoreCacheType] = SDImageCacheType.none.rawValue
+  }
+
+  // Some loaders (e.g. blurhash) may need access to the source.
+  context[ImageView.contextSourceKey] = source
+
+  return context
 }
 
 extension CGSize {

@@ -41,9 +41,16 @@ export type BarCodeScannerResult = {
      */
     type: string;
     /**
-     * The information encoded in the bar code.
+     * The parsed information encoded in the bar code.
      */
     data: string;
+    /**
+     * The raw information encoded in the bar code.
+     * May be different from `data` depending on the barcode type.
+     * @platform android
+     * @hidden
+     */
+    raw?: string;
     /**
      * The [BarCodeBounds](#barcodebounds) object.
      * `bounds` in some case will be representing an empty rectangle.
@@ -90,6 +97,12 @@ export type BarCodeScannerProps = ViewProps & {
      */
     onBarCodeScanned?: BarCodeScannedCallback;
 };
+/**
+ * @deprecated
+ * BarCodeScanner has been deprecated and will be removed in a future SDK version. Use `expo-camera` instead.
+ * See [How to migrate from `expo-barcode-scanner` to `expo-camera`](https://expo.fyi/barcode-scanner-to-expo-camera)
+ * for more details.
+ */
 export declare class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     lastEvents: {
         [key: string]: any;
@@ -108,6 +121,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         type: any;
         barCodeTypes: unknown[];
     };
+    componentDidMount(): void;
     /**
      * Checks user's permissions for accessing the camera.
      * @return Return a promise that fulfills to an object of type [`PermissionResponse`](#permissionresponse).
@@ -141,7 +155,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
      * code.
      */
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<BarCodeScannerResult[]>;
-    render(): JSX.Element;
+    render(): React.JSX.Element;
     /**
      * @hidden
      */

@@ -1,18 +1,16 @@
 import { SnackLogo } from '@expo/styleguide';
-import {
-  BuildIcon,
-  Grid01Icon,
-  Settings01Icon,
-  EasSubmitIcon,
-  CredentialIcon,
-  Key01Icon,
-  LayersTwo02Icon,
-  BranchIcon,
-  Cube02Icon,
-  Dataflow03Icon,
-  DataIcon,
-  Smartphone01Icon,
-} from '@expo/styleguide-icons';
+import { BranchIcon } from '@expo/styleguide-icons/custom/BranchIcon';
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+import { CredentialIcon } from '@expo/styleguide-icons/custom/CredentialIcon';
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { Smartphone01Icon } from '@expo/styleguide-icons/custom/Smartphone01Icon';
+import { Cube02Icon } from '@expo/styleguide-icons/outline/Cube02Icon';
+import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+import { Key01Icon } from '@expo/styleguide-icons/outline/Key01Icon';
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
 import type { ComponentType, HTMLAttributes } from 'react';
 
 export type ExpoItemType = {

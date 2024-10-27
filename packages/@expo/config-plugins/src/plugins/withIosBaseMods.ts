@@ -62,6 +62,15 @@ const defaultProviders = {
     },
     async write() {},
   }),
+  finalized: provider<unknown>({
+    getFilePath() {
+      return '';
+    },
+    async read() {
+      return {};
+    },
+    async write() {},
+  }),
   // Append a rule to supply AppDelegate data to mods on `mods.ios.appDelegate`
   appDelegate: provider<Paths.AppDelegateProjectFile>({
     getFilePath({ modRequest: { projectRoot } }) {
@@ -263,6 +272,20 @@ const defaultProviders = {
       }
 
       await writeFile(filePath, plist.build(sortObject(config.modResults)));
+    },
+  }),
+
+  podfile: provider<Paths.PodfileProjectFile>({
+    getFilePath({ modRequest: { projectRoot } }) {
+      return Paths.getPodfilePath(projectRoot);
+    },
+    // @ts-expect-error
+    async read(filePath) {
+      // Note(cedric): this file is ruby, which is a 1-value subset of AppleLanguage and fails the type check
+      return Paths.getFileInfo(filePath);
+    },
+    async write(filePath, { modResults: { contents } }) {
+      await writeFile(filePath, contents);
     },
   }),
 

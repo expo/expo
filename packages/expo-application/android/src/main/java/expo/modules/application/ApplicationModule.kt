@@ -29,7 +29,7 @@ class ApplicationModule : Module() {
         "applicationName" to applicationName,
         "applicationId" to packageName,
         "nativeApplicationVersion" to versionName,
-        "nativeBuildVersion" to versionCode.toString(),
+        "nativeBuildVersion" to versionCode.toString()
       )
     }
 
@@ -37,7 +37,7 @@ class ApplicationModule : Module() {
       Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    AsyncFunction("getInstallationTimeAsync") {
+    AsyncFunction<Double>("getInstallationTimeAsync") {
       val packageManager = context.packageManager
       val packageName = context.packageName
       packageManager
@@ -46,7 +46,7 @@ class ApplicationModule : Module() {
         .toDouble()
     }
 
-    AsyncFunction("getLastUpdateTimeAsync") {
+    AsyncFunction<Double>("getLastUpdateTimeAsync") {
       val packageManager = context.packageManager
       val packageName = context.packageName
       packageManager
@@ -110,7 +110,8 @@ private fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
     } else {
-      @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
+      @Suppress("DEPRECATION")
+      getPackageInfo(packageName, flags)
     }
   } catch (e: PackageManager.NameNotFoundException) {
     throw ApplicationPackageNameNotFoundException(e)
@@ -120,6 +121,7 @@ private fun getLongVersionCode(info: PackageInfo): Long {
   return if (Build.VERSION.SDK_INT >= 28) {
     info.longVersionCode
   } else {
-    @Suppress("DEPRECATION") info.versionCode.toLong()
+    @Suppress("DEPRECATION")
+    info.versionCode.toLong()
   }
 }

@@ -1,6 +1,22 @@
 import { createBundleUrlPath, getMetroDirectBundleOptions } from '../metroOptions';
 
 describe(getMetroDirectBundleOptions, () => {
+  it(`asserts unsupported options: using bytecode on web`, () => {
+    expect(() =>
+      getMetroDirectBundleOptions({
+        bytecode: true,
+        platform: 'web',
+      })
+    ).toThrowError(/Cannot use bytecode with the web platform/);
+  });
+  it(`asserts unsupported options: using bytecode without hermes`, () => {
+    expect(() =>
+      getMetroDirectBundleOptions({
+        bytecode: true,
+      })
+    ).toThrowError(/Bytecode is only supported with the Hermes engine/);
+  });
+
   it(`returns basic options`, () => {
     expect(
       getMetroDirectBundleOptions({
@@ -12,7 +28,7 @@ describe(getMetroDirectBundleOptions, () => {
       })
     ).toEqual({
       customResolverOptions: {},
-      customTransformOptions: { preserveEnvVars: false, baseUrl: '/foo/' },
+      customTransformOptions: { baseUrl: '/foo/' },
       serializerOptions: {},
       dev: true,
       entryFile: '/index.js',
@@ -30,12 +46,14 @@ describe(getMetroDirectBundleOptions, () => {
         platform: 'ios',
         serializerIncludeMaps: true,
         isExporting: false,
+        bytecode: false,
+        reactCompiler: false,
       })
     ).toEqual({
       sourceUrl:
         'http://localhost:8081/index.js.bundle?platform=ios&dev=true&hot=false&serializer.map=true',
       customResolverOptions: {},
-      customTransformOptions: { preserveEnvVars: false },
+      customTransformOptions: {},
       serializerOptions: {
         includeSourceMaps: true,
       },
@@ -83,6 +101,6 @@ describe(createBundleUrlPath, () => {
         lazy: true,
         isExporting: true,
       })
-    ).toEqual('/index.bundle?platform=ios&dev=true&hot=false');
+    ).toEqual('/index.bundle?platform=ios&dev=true&hot=false&resolver.exporting=true');
   });
 });

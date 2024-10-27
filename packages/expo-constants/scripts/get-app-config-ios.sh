@@ -22,4 +22,14 @@ PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_CONSTANTS_PACKAGE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
 
-"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$DEST/$RESOURCE_BUNDLE_NAME"
+if [ "$BUNDLE_FORMAT" == "shallow" ]; then
+  RESOURCE_DEST="$DEST/$RESOURCE_BUNDLE_NAME"
+elif [ "$BUNDLE_FORMAT" == "deep" ]; then
+  RESOURCE_DEST="$DEST/$RESOURCE_BUNDLE_NAME/Contents/Resources"
+  mkdir -p "$RESOURCE_DEST"
+else
+  echo "Unsupported bundle format: $BUNDLE_FORMAT"
+  exit 1
+fi
+
+"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST"

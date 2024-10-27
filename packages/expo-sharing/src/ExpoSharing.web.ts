@@ -3,9 +3,6 @@ import { UnavailabilityError } from 'expo-modules-core';
 type ShareOptions = { title?: string; text?: string; url?: string };
 
 export default {
-  get name(): string {
-    return 'ExpoSharing';
-  },
   async isAvailableAsync(): Promise<boolean> {
     if (typeof navigator === 'undefined') {
       return false;

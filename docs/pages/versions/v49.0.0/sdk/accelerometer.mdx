@@ -8,9 +8,8 @@ iconUrl: '/static/images/packages/expo-sensors.png'
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { SnackInline } from '~/ui/components/Snippet';
-
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
 `Accelerometer` from `expo-sensors` provides access to the device accelerometer sensor(s) and associated listeners to respond to changes in acceleration in three-dimensional space, meaning any movement or vibration.
 
@@ -25,7 +24,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 <SnackInline label="Basic Accelerometer usage" dependencies={['expo-sensors']}>
 
 ```jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 
@@ -75,7 +74,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -103,7 +101,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
 });
-/* @end */
 ```
 
 </SnackInline>

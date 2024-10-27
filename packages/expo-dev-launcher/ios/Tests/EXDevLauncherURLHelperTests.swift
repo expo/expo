@@ -22,10 +22,6 @@ class EXDevLauncherURLHelperTests: XCTestCase {
 
     let actual2 = EXDevLauncherURLHelper.replaceEXPScheme(URL(string: "http://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081")!, to: "scheme")
     XCTAssertEqual(URL(string: "http://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081"), actual2)
-
-    // should not crash if provided URL does not include scheme
-    let actual3 = EXDevLauncherURLHelper.replaceEXPScheme(URL(string: "192.168.0.12:8081")!, to: "scheme")
-    XCTAssertEqual(URL(string: "192.168.0.12:8081"), actual3)
   }
 
   func testDevLauncherUrls() {

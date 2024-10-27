@@ -1,13 +1,11 @@
 import { mergeClasses } from '@expo/styleguide';
-import { ChevronDownIcon } from '@expo/styleguide-icons';
+import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { A, FOOTNOTE, CALLOUT } from '~/ui/components/Text';
 
 const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
-
-// TODO(cedric): move this to a generic select input, so we can reuse it in the color scheme selector
 
 export function ApiVersionSelect() {
   const { version, hasVersion, setVersion } = usePageApiVersion();
@@ -30,7 +28,7 @@ export function ApiVersionSelect() {
         </label>
         <select
           id="api-version-select"
-          className="absolute opacity-0 inset-0 w-full h-full text-xs cursor-pointer"
+          className="absolute opacity-0 inset-0 size-full text-xs cursor-pointer"
           value={version}
           onChange={event => setVersion(event.target.value)}>
           {VERSIONS.map(version => (
@@ -48,13 +46,18 @@ export function ApiVersionSelect() {
   );
 }
 
-function versionToText(version: string): string {
+export function versionToText(version: string): string {
   if (version === 'unversioned') {
-    return 'Unversioned';
+    return 'Next (unversioned)';
   } else if (version === 'latest') {
-    return `${versionToText(LATEST_VERSION)} (latest)`;
+    return `${formatSdkVersion(LATEST_VERSION)} (latest)`;
   } else if (BETA_VERSION && version === BETA_VERSION.toString()) {
-    return `${versionToText(BETA_VERSION.toString())} (beta)`;
+    return `${formatSdkVersion(BETA_VERSION.toString())} (beta)`;
   }
+
+  return formatSdkVersion(version);
+}
+
+function formatSdkVersion(version: string): string {
   return `SDK ${version.substring(1, 3)}`;
 }

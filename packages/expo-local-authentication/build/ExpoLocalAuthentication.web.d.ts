@@ -1,6 +1,5 @@
 import { AuthenticationType, SecurityLevel } from './LocalAuthentication.types';
 declare const _default: {
-    readonly name: string;
     hasHardwareAsync(): Promise<boolean>;
     isEnrolledAsync(): Promise<boolean>;
     getEnrolledLevelAsync(): Promise<SecurityLevel>;

@@ -6,8 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.MediaTypes
 import expo.modules.imagepicker.UNLIMITED_SELECTION
@@ -26,16 +26,20 @@ import java.io.Serializable
  * @see [androidx.activity.result.contract.ActivityResultContracts.GetMultipleContents]
  */
 internal class ImageLibraryContract(
-  private val appContextProvider: AppContextProvider,
+  private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<ImageLibraryContractOptions, ImagePickerContractResult> {
   private val contentResolver: ContentResolver
     get() = appContextProvider.appContext.reactContext?.contentResolver
       ?: throw Exceptions.ReactContextLost()
 
   override fun createIntent(context: Context, input: ImageLibraryContractOptions): Intent {
+    if (input.options.legacy) {
+      return createLegacyIntent(input.options)
+    }
+
     val request = PickVisualMediaRequest.Builder()
       .setMediaType(
-        when (input.options.mediaTypes) {
+        when (input.options.nativeMediaTypes) {
           MediaTypes.VIDEOS -> {
             PickVisualMedia.VideoOnly
           }
@@ -79,11 +83,17 @@ internal class ImageLibraryContract(
     } else {
       intent?.takeIf { resultCode == Activity.RESULT_OK }?.getAllDataUris()?.let { uris ->
         if (input.options.allowsMultipleSelection) {
-          ImagePickerContractResult.Success(
-            uris.map { uri ->
-              uri.toMediaType(contentResolver) to uri
+          val results = uris.map { uri ->
+            uri.toMediaType(contentResolver) to uri
+          }.let {
+            if (input.options.selectionLimit > 0) {
+              it.take(input.options.selectionLimit)
+            } else {
+              it
             }
-          )
+          }
+
+          ImagePickerContractResult.Success(results)
         } else {
           if (intent.data != null) {
             intent.data?.let { uri ->
@@ -98,6 +108,22 @@ internal class ImageLibraryContract(
           }
         }
       } ?: ImagePickerContractResult.Error
+    }
+
+  private fun createLegacyIntent(options: ImagePickerOptions) = Intent(Intent.ACTION_GET_CONTENT)
+    .addCategory(Intent.CATEGORY_OPENABLE)
+    .setType("*/*")
+    .putExtra(
+      Intent.EXTRA_MIME_TYPES,
+      when (options.nativeMediaTypes) {
+        MediaTypes.IMAGES -> arrayOf("image/*")
+        MediaTypes.VIDEOS -> arrayOf("video/*")
+        else -> arrayOf("image/*", "video/*")
+      }
+    ).apply {
+      if (options.allowsMultipleSelection) {
+        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+      }
     }
 }
 

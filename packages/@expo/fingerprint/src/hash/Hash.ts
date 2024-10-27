@@ -3,16 +3,24 @@ import { createReadStream } from 'fs';
 import fs from 'fs/promises';
 import pLimit from 'p-limit';
 import path from 'path';
+import { pipeline, type Readable } from 'stream';
 
+import { ReactImportsPatchTransform } from './ReactImportsPatcher';
 import type {
+  DebugInfoDir,
+  DebugInfoFile,
   Fingerprint,
   FingerprintSource,
   HashResult,
+  HashResultContents,
+  HashResultDir,
+  HashResultFile,
   HashSource,
   HashSourceContents,
   NormalizedOptions,
 } from '../Fingerprint.types';
-import { isIgnoredPath } from '../utils/Path';
+import { isIgnoredPathWithMatchObjects } from '../utils/Path';
+import { nonNullish } from '../utils/Predicates';
 import { profile } from '../utils/Profile';
 
 /**
@@ -63,6 +71,7 @@ export async function createFingerprintSourceAsync(
       break;
     case 'dir':
       result = await profile(
+        options,
         createDirHashResultsAsync,
         `createDirHashResultsAsync(${source.filePath})`
       )(source.filePath, limiter, projectRoot, options);
@@ -71,7 +80,11 @@ export async function createFingerprintSourceAsync(
       throw new Error('Unsupported source type');
   }
 
-  return { ...source, hash: result?.hex ?? null };
+  return {
+    ...source,
+    hash: result?.hex ?? null,
+    ...(options.debug ? { debugInfo: result?.debugInfo } : undefined),
+  };
 }
 
 /**
@@ -82,11 +95,11 @@ export async function createFileHashResultsAsync(
   limiter: pLimit.Limit,
   projectRoot: string,
   options: NormalizedOptions
-): Promise<HashResult | null> {
+): Promise<HashResultFile | null> {
   // Backup code for faster hashing
   /*
   return limiter(async () => {
-    if (isIgnoredPath(filePath, options.ignorePaths)) {
+    if (isIgnoredPathWithMatchObjects(filePath, options.ignorePathMatchObjects)) {
       return null;
     }
 
@@ -106,18 +119,37 @@ export async function createFileHashResultsAsync(
   */
 
   return limiter(() => {
-    return new Promise<HashResult | null>((resolve, reject) => {
-      if (isIgnoredPath(filePath, options.ignorePaths)) {
+    return new Promise<HashResultFile | null>((resolve, reject) => {
+      if (isIgnoredPathWithMatchObjects(filePath, options.ignorePathMatchObjects)) {
         return resolve(null);
       }
 
       let resolved = false;
       const hasher = createHash(options.hashAlgorithm);
-      const stream = createReadStream(path.join(projectRoot, filePath));
+      let stream: Readable = createReadStream(path.join(projectRoot, filePath), {
+        highWaterMark: 1024,
+      });
+      if (
+        options.enableReactImportsPatcher &&
+        options.platforms.includes('ios') &&
+        (filePath.endsWith('.h') || filePath.endsWith('.m') || filePath.endsWith('.mm'))
+      ) {
+        const transform = new ReactImportsPatchTransform();
+        stream = pipeline(stream, transform, (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+      }
       stream.on('close', () => {
         if (!resolved) {
           const hex = hasher.digest('hex');
-          resolve({ id: filePath, hex });
+          resolve({
+            type: 'file',
+            id: filePath,
+            hex,
+            ...(options.debug ? { debugInfo: { path: filePath, hash: hex } } : undefined),
+          });
           resolved = true;
         }
       });
@@ -141,38 +173,55 @@ export async function createDirHashResultsAsync(
   projectRoot: string,
   options: NormalizedOptions,
   depth: number = 0
-): Promise<HashResult | null> {
-  if (isIgnoredPath(dirPath, options.ignorePaths)) {
+): Promise<HashResultDir | null> {
+  if (isIgnoredPathWithMatchObjects(dirPath, options.ignorePathMatchObjects)) {
     return null;
   }
   const dirents = (await fs.readdir(path.join(projectRoot, dirPath), { withFileTypes: true })).sort(
     (a, b) => a.name.localeCompare(b.name)
   );
-  const promises: Promise<HashResult | null>[] = [];
-  for (const dirent of dirents) {
-    if (dirent.isDirectory()) {
-      const filePath = path.join(dirPath, dirent.name);
-      promises.push(createDirHashResultsAsync(filePath, limiter, projectRoot, options, depth + 1));
-    } else if (dirent.isFile()) {
-      const filePath = path.join(dirPath, dirent.name);
-      promises.push(createFileHashResultsAsync(filePath, limiter, projectRoot, options));
-    }
-  }
 
-  const hasher = createHash(options.hashAlgorithm);
-  const results = (await Promise.all(promises)).filter(
-    (result): result is HashResult => result != null
-  );
+  const results = (
+    await Promise.all(
+      dirents.map(async (dirent) => {
+        if (dirent.isDirectory()) {
+          const filePath = path.join(dirPath, dirent.name);
+          return await createDirHashResultsAsync(
+            filePath,
+            limiter,
+            projectRoot,
+            options,
+            depth + 1
+          );
+        } else if (dirent.isFile()) {
+          const filePath = path.join(dirPath, dirent.name);
+          return await createFileHashResultsAsync(filePath, limiter, projectRoot, options);
+        }
+
+        return null;
+      })
+    )
+  ).filter(nonNullish);
   if (results.length === 0) {
     return null;
   }
+
+  const hasher = createHash(options.hashAlgorithm);
+
+  const children: (DebugInfoFile | DebugInfoDir | undefined)[] = [];
   for (const result of results) {
     hasher.update(result.id);
     hasher.update(result.hex);
+    children.push(result.debugInfo);
   }
   const hex = hasher.digest('hex');
 
-  return { id: dirPath, hex };
+  return {
+    type: 'dir',
+    id: dirPath,
+    hex,
+    ...(options.debug ? { debugInfo: { path: dirPath, children, hash: hex } } : undefined),
+  };
 }
 
 /**
@@ -181,9 +230,14 @@ export async function createDirHashResultsAsync(
 export async function createContentsHashResultsAsync(
   source: HashSourceContents,
   options: NormalizedOptions
-): Promise<HashResult> {
+): Promise<HashResultContents> {
   const hex = createHash(options.hashAlgorithm).update(source.contents).digest('hex');
-  return { id: source.id, hex };
+  return {
+    type: 'contents',
+    id: source.id,
+    hex,
+    ...(options.debug ? { debugInfo: { hash: hex } } : undefined),
+  };
 }
 
 /**

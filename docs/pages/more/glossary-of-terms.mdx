@@ -1,21 +1,21 @@
 ---
 title: Glossary of terms
-description: List of non-obvious terms used withing the documentation, related to Expo or cross-platform development in general.
+description: List of non-obvious terms used within the documentation, related to Expo or cross-platform development in general.
 ---
 
 ### Android
 
-The mobile operating system sponsored by Google for use with **Android** devices.
+The mobile operating system that is sponsored by Google for use with **Android** devices.
 
 ### App config
 
-A file named **app.json**, **app.config.json**, **app.config.js**, or **app.config.ts** in the root of a project directory. For more information, see [app config configuration](/workflow/configuration/).
+A file named **app.json**, **app.config.json**, **app.config.js**, or **app.config.ts** in the root project directory. For more information, see [app config configuration](/workflow/configuration/).
 
 This file is used for the following purposes:
 
 - To configure how [Expo CLI](#expo-cli) works.
 - Generate a project's public [manifest](#manifest) in EAS Update (think **index.html** but for native apps).
-- Add Expo [config plugins](#config-plugin) and configure how `npx expo prebuild` generates native code.
+- List Expo [config plugins](#config-plugin) which influence how `npx expo prebuild` generates native code.
 
 ### app.json
 
@@ -23,7 +23,7 @@ An [app config](#app-config) file.
 
 ### Apple capabilities
 
-Cloud services provided by Apple. These services must be enabled for an application in the [Apple Developer Portal](#apple-developer-portal).
+Cloud services that are provided by Apple. These services must be enabled for an application in the [Apple Developer Portal](#apple-developer-portal).
 
 ### Apple Developer Portal
 
@@ -50,9 +50,19 @@ Transpiler used for removing language features that aren't available in the runt
 
 Projects can configure how Babel is used by modifying the **babel.config.js** file in the project directory. This file is optional when using [Expo CLI](#expo-cli). Expo projects should extend the default Babel preset [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
 
+### Bare workflow
+
+Describes the approach when the native projects (in the **android** and **ios** directories) are versioned in Git and maintained manually. It's typical for **existing "bare" React Native apps** where you manually make changes to the native projects. There is freedom to customize them but also high maintenance overhead.
+
+This is in contrast to using [app config and prebuild](/workflow/prebuild), where the native projects are not versioned. Instead, they are generated on demand using the `npx expo prebuild`, which is the [recommended approach](/workflow/prebuild/#pitch).
+
+### Bun
+
+A JavaScript runtime and a drop-in alternative for Node.js. For more information about usage with Expo and EAS, see [using Bun](/guides/using-bun/) guide.
+
 ### CocoaPods
 
-The iOS package manager used to link native modules to the native iOS project. This package manager is configured using the **ios/Podfile** and updated when a user runs `pod install` in the **ios** directory.
+The iOS package manager that is used to link native modules to the native iOS project. This package manager is configured using the **ios/Podfile** file and updated when a user runs `pod install` in the **ios** directory.
 
 ### Community Autolinking
 
@@ -70,15 +80,13 @@ Async functions that are appended to the [app config](#app-config) for use in [P
 
 A JavaScript function that is used to append [config mods](#config-mods) to the [app Config](#app-config) for use in [Prebuild](#prebuild). For more information, see [Config Plugins](/config-plugins/introduction/).
 
+### Continuous Native Generation (CNG)
+
+An abstract concept that describes the process of generating native projects from a set of inputs. In the context of Expo, CNG is implemented via the [`prebuild`](#prebuild) command. See [CNG](/workflow/continuous-native-generation/) and [Expo Prebuild](/workflow/prebuild/) for more information.
+
 ### create-expo-app
 
-A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed.
-
-This package can be used by running any of the following commands:
-
-- `npx create-expo-app`
-- `yarn create expo-app`
-- `npm create expo-app`
+A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed. See [`create-expo-app` reference](/more/create-expo/) for more information.
 
 ### create-react-native-app
 
@@ -94,9 +102,15 @@ This package can be used by running any of the following commands:
 
 Config [modifiers](#config-mods) that apply unstable changes to a native project during [prebuild](#prebuild). Using these modifiers is unpredictable and prone to breaking changes between major version bumps in [Expo SDK](#expo-sdk).
 
+### Development build
+
+A development build is a debug build of your app that contains the `expo-dev-client` package. It's like an evolution of [Expo Go](#expo-go) which doesn't have Expo Go's limitations and can be customized to your application's needs.
+
+This is the recommended approach for building production-grade apps with Expo. For more information, see [Development builds](/get-started/set-up-your-environment/?mode=development-build).
+
 ### Dev clients
 
-A [native runtime](#native-runtime) that has been built in development mode. These builds often include the `expo-dev-client` [native module](#native-module) for improved debugging.
+`expo-dev-client` is a library that allows you to create a development build and includes useful development tools. You might also come across "custom dev client", a synonym for [Development builds](#development-build).
 
 ### Development server
 
@@ -106,7 +120,7 @@ The development server is typically hosted on `http://localhost:8081`. It hosts 
 
 ### EAS
 
-[Expo Application Services (EAS)](/eas) are deeply-integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction) and [EAS Submit](/submit/introduction).
+[Expo Application Services (EAS)](/eas) are deeply integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction), [EAS Submit](/submit/introduction) and [EAS Update](/eas-update/introduction).
 
 ### EAS CLI
 
@@ -135,11 +149,11 @@ The entry point usually refers to the initial JavaScript file used to load an ap
 
 ### Experience
 
-A synonym for app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
+A synonym for an app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
 
 ### Expo Autolinking
 
-The original [Autolinking](#autolinking) system that is designed for projects using `expo-modules-core`. This system links modules based on the existence of an **expo-module.config.json** in the library's root directory.
+The original [Autolinking](#autolinking) system is designed for projects using `expo-modules-core`. This system links modules based on the existence of an **expo-module.config.json** in the library's root directory.
 
 ### Expo CLI
 
@@ -151,11 +165,13 @@ The former name for the [Expo Go](#expo-go) app.
 
 ### Expo export
 
-Refers to the command `npx expo export` from [Expo CLI](#expo-cli). This command is used to bundle the application JavaScript and assets, then export them into a static folder that can be uploaded to a hosting service like [EAS Update](#eas-update), and embedded in a [native runtime](#native-runtime) for offline use.
+Refers to the command `npx expo export` from [Expo CLI](#expo-cli). This command is used to bundle the app's JavaScript and assets, and then export them into a static folder that can be uploaded to a hosting service like [EAS Update](#eas-update), and embedded in a [native runtime](#native-runtime) for offline use.
 
 ### Expo Go
 
-The Android and iOS app that runs React Native apps. When you want to run your app outside of the Expo Go app and deploy it to the app stores, you can build a [Standalone App](#standalone-app).
+The Android and iOS app that serves as a sandbox for learning and experimenting with React Native.
+
+Due to its limitations (such as the inability to include custom native code), it's not recommended for building and distributing production apps. Instead, use a [development build](#development-build).
 
 ### Expo install
 
@@ -173,19 +189,19 @@ A collection of [npm](#npm) packages containing [native modules](#native-module)
 - The interface is completely written in [TypeScript](#typescript).
 - All packages in the Expo SDK work with each other and can safely be compiled together.
 - Any package in the SDK can be used in any [React Native](#react-native) app, with minimal, shared setup. [Learn more](/bare/installing-expo-modules/).
-- All packages are [open source](https://github.com/expo/expo/tree/main/packages) and can be freely customized. Many popular community React Native packages started as forks of packages in the Expo SDK.
+- All packages are [open source](https://github.com/expo/expo/tree/main/packages) and can be freely customized.
 
 ### Expo start
 
-Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command is used to start a local [development server](#development-server) that a [client](#expo-client) connects to to interact with the [Metro bundler](#metro-bundler).
+Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command is used to start a local [development server](#development-server) that a [client](#expo-client) connects to interact with the [Metro bundler](#metro-bundler).
 
 ### Fabric
 
-The React Native rendering system is used to create and manage native views. This package supports [Android](#android) and [iOS](#iOS). For more information, see [Fabric Renderer](https://reactnative.dev/architecture/fabric-renderer).
+The React Native rendering system which is used to create and manage native views. For more information, see [Fabric Renderer](https://reactnative.dev/architecture/fabric-renderer).
 
 ### Flipper
 
-A mobile app debugger. We do not enable Flipper in the default [Prebuild](#prebuild) template due to instability concerns. For more information, see [Flipper documentation](https://fbflipper.com/).
+A mobile app debugger used internally at Meta. It was previously recommended for use with React Native, but the integration is now deprecated and no longer supported by the React Native team [(RFC-0641)](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0641-decoupling-flipper-from-react-native-core.md).
 
 ### FYI
 
@@ -197,11 +213,11 @@ The package `expo-cli` was installed globally on the user's machine and used acr
 
 ### Gradle
 
-Gradle is a build automation tool for multi-language software development. It controls the development process in the tasks of compilation and packaging to testing, deployment, and publishing.
+Gradle is a build automation tool for multi-language software development. It's used to build Android apps. It controls the development process in the tasks of compilation and packaging to testing, deployment, and publishing.
 
 ### Hermes engine
 
-A [JavaScript engine](#javascript-engine) developed by [Meta](#meta) for use with [React Native](#react-native). Hermes uses Bytecode to improve startup time. Hermes is better at debugging than [JavaScriptCore](#javascriptcore-engine) as it implements parts of the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
+A [JavaScript engine](#javascript-engine) developed by [Meta](#meta) specifically for use with [React Native](#react-native). Hermes features ahead-of-time static optimization and compact bytecode to improve performance with focus on mobile devices, and is the default JS engine.
 
 ### iOS
 
@@ -209,23 +225,23 @@ The operating system used on iPhone, iPad, and Apple TV. [Expo Go](#expo-go) cur
 
 ### JavaScript engine
 
-A native package that can evaluate JavaScript on-device. In React Native we often use [JavaScriptCore](#javascriptcore-engine). Other options include [Hermes](#hermes-engine) by [Meta](#meta), and V8 by Google.
+A native package that can evaluate JavaScript on-device. In React Native, we predominantly use [Hermes](#hermes-engine) by [Meta](#meta). Other options include [JavaScriptCore](#javascriptcore-engine) by Apple, and V8 by Google.
 
 ### JavaScriptCore engine
 
-A [JavaScript engine](#javascript-engine) developed by Apple and built-in to [iOS](#ios). React for [Android](#android) also uses a version of JavaScriptCore for parity. Debugging with JavaScriptCore is less sophisticated than V8 or [Hermes](#hermes-engine) which implement the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
+A [JavaScript engine](#javascript-engine) developed by Apple and built-in to [iOS](#ios). React Native for [Android](#android) also can use a version of JavaScriptCore for parity. Debugging with JavaScriptCore is less sophisticated than V8 or [Hermes](#hermes-engine) which implement the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
 
 ### Linking
 
-Linking can mean [deep linking into apps similar to how you link to websites on the web](/guides/linking) or [autolinking](#autolinking).
+Linking can mean [deep linking into apps similar to how you link to websites on the web](/linking/overview/) or [autolinking](#autolinking).
 
 ### Local Expo CLI
 
-The package `@expo/cli` is installed with the `expo` package. This is sometimes referred to as the "Versioned Expo CLI" because it is installed inside of the user's project as opposed to the now deprecated `expo-cli` which was installed globally.
+The package `@expo/cli` is installed with the `expo` package. This is sometimes referred to as the "Versioned Expo CLI" because it is installed inside the user's project as opposed to the now deprecated `expo-cli` which was installed globally.
 
 ### Manifest
 
-An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest). It provides information that Expo Go needs to know how to run the app and other relevant data. For more information, see [Expo Go](/get-started/expo-go/#manifest).
+An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest). It provides information that Expo Go needs to know how to run the app and other relevant data.
 
 ### Meta
 
@@ -233,7 +249,7 @@ Formerly Facebook, Meta is the group that develops [React Native](#react-native)
 
 ### Metro bundler
 
-The bundler used for converting JavaScript files and assets into a format that runs on a native client. This bundler is maintained by [Meta](#meta) and used exclusively for React Native apps. For more information, see [Metro documentation](https://facebook.github.io/metro).
+The bundler used for converting JavaScript files and assets into a format that runs on a [native runtime](#native-runtime). This bundler is maintained by [Meta](#meta) and used for React Native (including web) apps. For more information, see [Metro documentation](https://metrobundler.dev/).
 
 ### Metro Config
 
@@ -241,7 +257,7 @@ The **metro.config.js** file used to configure [Metro bundler](#metro-bundler). 
 
 ### Monorepo
 
-A project that has multiple sub-projects which are all linked together via the package manager. A monorepo is a great way to link custom native packages to your application.
+A project that has multiple sub-projects which are all linked together via the package manager. A monorepo is a great way to maintain codebase for a cross-platform app.
 
 ### Native directory
 
@@ -253,7 +269,7 @@ A module written in native code that exposes native platform functionality to th
 
 ### Native runtime
 
-A native application containing a [JavaScript engine](#javascript-engine), and is capable of running a React application. This includes [Expo Go](#expo-go), [dev clients](#dev-clients), [standalone apps](#standalone-app), and even web browsers like Chrome.
+A native application containing a [JavaScript engine](#javascript-engine), and is capable of running a React application. This includes [Expo Go](#expo-go), [development build](#development-build), [standalone apps](#standalone-app), and even web browsers like Chrome.
 
 ### npm
 
@@ -265,7 +281,7 @@ Automates the process of installing, upgrading, configuring, and removing librar
 
 ### Platform extensions
 
-Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enable users to substitute files on a per-platform basis given a specific filename. For example, if a project has a **./index.js** file and a **./index.ios.js** file, then the **index.ios.js** will be used when bundling for iOS, and the **index.js** file will be used when bundling for all other platforms.
+Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enables users to substitute files on a per-platform basis given a specific filename. For example, if a project has a **.index.js** file and a **.index.ios.js** file, then the **index.ios.js** will be used when bundling for iOS, and the **index.js** file will be used when bundling for all other platforms.
 
 By default, platform extensions are resolved in `@expo/metro-config` using the following formula:
 
@@ -279,14 +295,11 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 
 The process of generating the temporary native **android** and **ios** folders for a React Native project based on the [app config](#app-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
 
-See also:
-
-- [Prebuild template](#prebuild-template).
-- [Autolinking](#autolinking).
+See [Prebuild template](#prebuild-template) and [Autolinking](#autolinking) for further information.
 
 ### Prebuild template
 
-The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [app config](#app-config) and run the [Config mods](#config-mods) which modify various files in the template.
+The React Native project template is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` evaluates the [app config](#app-config) and runs the [Config mods](#config-mods) which modify various files in the template.
 
 Although the template can be changed by using the `npx expo prebuild --template /path/to/template` flag, the default prebuild template contains important initial defaults that the `npx expo prebuild` command makes assumptions about.
 
@@ -302,7 +315,7 @@ We use the word "publish" as a synonym for "deploy". When you publish an app, it
 
 ### React Native Web
 
-A high-performing abstraction on top of `react-dom` which enables core primitives from [React Native](#react-native) to run in the browser. React Native for web (also known as RNW) was developed at Twitter and is currently used for their main website https://twitter.com. [Expo SDK](#expo-sdk) and [Expo CLI](#expo-cli) have first-class support for RNW.
+A high-performing abstraction on top of `react-dom` that enables core primitives from [React Native](#react-native) to run in the browser. React Native for web (RNW) was developed at X and is currently used for their [main website](https://x.com). [Expo SDK](#expo-sdk) and [Expo CLI](#expo-cli) have first-class support for RNW.
 
 ### React Navigation
 
@@ -310,7 +323,9 @@ The preferred navigation library for React Native apps, developed and sponsored 
 
 ### Remote Debugging
 
-Remote Debugging (also known as Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit being you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
+Remote Debugging is a deprecated way of debugging React Native apps. A better alternative today is to use [Hermes](#hermes-engine), as you can connect Chrome Dev Tools to it.
+
+Also known as Async Chrome Debugging, it was an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over a websocket to the native device.
 
 ### Simulator
 
@@ -318,7 +333,7 @@ An emulator for iOS devices that you can run on macOS (or in [Snack](#snack)) to
 
 ### Slug
 
-We use the word "slug" in [**app.json**](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.dev/@community/native-component-list) app lives at https://expo.dev/@community/native-component-list and the slug is native-component-list.
+`slug` in the [app config]((#appjson) is a URL-friendly name for your project. It is unique across your Expo account.
 
 ### Snack
 
@@ -326,11 +341,11 @@ We use the word "slug" in [**app.json**](#appjson) to refer to the name to use f
 
 ### Software Mansion
 
-A development agency in Krakow, Poland. Maintainers of `react-native-gesture-handler`, `react-native-screens`, and `react-native-reanimated`. The platform team at Expo is compromised of a number of contractors from Software Mansion. All of Software Mansion's core React Native libraries are supported in [Expo Go](#expo-go).
+A development agency in Kraków, Poland. Maintainers of `react-native-gesture-handler`, `react-native-screens`, and `react-native-reanimated`. The platform team at Expo is composed of a number of contractors from Software Mansion. All of Software Mansion's core React Native libraries are supported in [Expo Go](#expo-go).
 
 ### Standalone app
 
-An application binary that can be submitted to the Android Play Store or iOS App Store. For more information, see [Building Standalone Apps](/archive/classic-updates/building-standalone-apps).
+Synonymous with "Production build". An application binary that can be submitted to the Google Play Store or Apple App Store. For more information, see [Build your project for app stores](/deploy/build-project/) or [Run builds locally or on your own infrastructure](/build-reference/local-builds/).
 
 ### Store Config
 
@@ -342,23 +357,23 @@ The Swift and Kotlin API for writing React Native modules. This API is provided 
 
 ### TypeScript
 
-TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale. The Expo SDK is written in TypeScript, we highly recommend using it. For more information, see our [TypeScript guide](/guides/typescript/).
+TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale. The Expo SDK is written in TypeScript, and we highly recommend using it. For more information, see our [TypeScript guide](/guides/typescript/).
 
 ### Updates
 
 Traditionally, apps for Android and iOS are updated by submitting an updated binary to the App and Play stores. Updates allow you to push an update to your app without the overhead of submitting a new release to the stores. For more information, see [Publishing](/eas-update/introduction) documentation.
 
-### VS Code Expo
+### VS Code Expo Tools
 
 The VS Code extension for improving the developer experience of working with app config files. This extension provides autocomplete and intellisense for the [app config](#app-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). For more information, see the [VS Code Expo Tools extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools).
 
 ### Watchman
 
-The file watcher used by [Metro](#metro-bundler) to perform hot reloads during development. Watchman contains native code and may cause issues when installed globally. Watchman is maintained by [Meta](#meta) and used in Jest.
+The file watcher used by [Metro](#metro-bundler) to perform hot reloads during development. Watchman contains native code and may cause issues when installed globally. Watchman is maintained by [Meta](#meta).
 
 ### webpack
 
-The bundler used by [Expo CLI](#expo-cli) for developing [`react-native-web`](#react-native-web) apps.
+The deprecated bundler used by [Expo CLI](#expo-cli) for developing [`react-native-web`](#react-native-web) apps.
 
 ### Yarn
 
@@ -370,4 +385,4 @@ The [monorepo](#monorepo) solution we recommend for Expo users. See [Working wit
 
 ### Yoga
 
-A native cross-platform library used by React Native internally to provide FlexBox support to native views. React Native styles are passed to Yoga to layout and style elements on the screen. For more information, see [Yoga](https://github.com/facebook/yoga) documentation.
+A native cross-platform library used by React Native internally to provide [CSS FlexBox](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox) support to native views. React Native styles are passed to Yoga to lay out and style elements on the screen. For more information, see [Yoga](https://github.com/facebook/yoga) documentation.

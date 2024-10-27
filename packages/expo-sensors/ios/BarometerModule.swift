@@ -23,6 +23,14 @@ public final class BarometerModule: Module {
     }
 
     OnStartObserving {
+      if CMAltimeter.authorizationStatus() == .notDetermined {
+        if #available(iOS 17.4, *) {
+          // There's a bug in iOS 17.4 where the motion permissions popup won't display
+          // even when the NSMotionUsageDescription is in the plist while using the altimeter.
+          CMSensorRecorder().recordAccelerometer(forDuration: 0.1)
+        }
+      }
+
       altimeter.startRelativeAltitudeUpdates(to: operationQueue) { [weak self] data, _ in
         guard let data else {
           return
@@ -30,7 +38,8 @@ public final class BarometerModule: Module {
         self?.sendEvent(EVENT_BAROMETER_DID_UPDATE, [
           // Given pressure needs to be converted from kPa to hPa
           "pressure": data.pressure.doubleValue * 10.0,
-          "relativeAltitude": data.relativeAltitude.doubleValue
+          "relativeAltitude": data.relativeAltitude.doubleValue,
+          "timestamp": data.timestamp
         ])
       }
     }

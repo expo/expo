@@ -20,7 +20,8 @@ function setICloudEntitlements(config, { iCloudContainerEnvironment }, { 'com.ap
         entitlements['com.apple.developer.ubiquity-container-identifiers'] = [
             `iCloud.${config.ios.bundleIdentifier}`,
         ];
-        entitlements['com.apple.developer.ubiquity-kvstore-identifier'] = `$(TeamIdentifierPrefix)${config.ios.bundleIdentifier}`;
+        entitlements['com.apple.developer.ubiquity-kvstore-identifier'] =
+            `$(TeamIdentifierPrefix)${config.ios.bundleIdentifier}`;
         entitlements['com.apple.developer.icloud-services'] = ['CloudDocuments'];
     }
     return entitlements;

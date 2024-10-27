@@ -1,6 +1,6 @@
 {
   "name": "expo-build-properties",
-  "version": "0.11.0",
+  "version": "0.13.0",
   "description": "Config plugin to customize native build properties on prebuild",
   "main": "build/withBuildProperties.js",
   "types": "build/withBuildProperties.d.ts",
@@ -32,10 +32,10 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/build-properties",
   "dependencies": {
     "ajv": "^8.11.0",
-    "semver": "^7.5.3"
+    "semver": "^7.6.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*"

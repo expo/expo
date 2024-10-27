@@ -16,7 +16,7 @@ Start by initializing a new Expo module project using `create-expo-module`, whic
 
 <Terminal cmd={['$ npx create-expo-module expo-native-configuration']} />
 
-We will use the name `expo-native-configuration`/`ExpoNativeConfiguration` for the project. You can name it whatever you like.
+We will use the name `expo-native-configuration`/`ExpoNativeConfiguration` for the project. You can name it whatever you like.
 
 ## 2. Set up our workspace
 
@@ -66,7 +66,7 @@ class ExpoNativeConfigurationModule : Module() {
 }
 ```
 
-```typescript src/index.ts
+```ts src/index.ts
 import ExpoNativeConfigurationModule from './ExpoNativeConfigurationModule';
 
 export function getApiKey(): string {
@@ -74,7 +74,7 @@ export function getApiKey(): string {
 }
 ```
 
-```typescript example/App.tsx
+```tsx example/App.tsx
 import * as ExpoNativeConfiguration from 'expo-native-configuration';
 import { Text, View } from 'react-native';
 
@@ -116,28 +116,28 @@ We should see a screen with a text saying `API key: api-key`. Now let's develop 
 
 ## 4. Creating a new config plugin
 
-Let's start developing our new config plugin. Plugins are synchronous functions that accept an `ExpoConfig` and return a modified `ExpoConfig`. By convention, these functions are prefixed by the word `with`. We will name our plugin `withMyApiKey`. Feel free to call it whatever you like, as long as it follows the convention.
+Let's start developing our new config plugin. Plugins are synchronous functions that accept an `ExpoConfig` and return a modified `ExpoConfig`. By convention, these functions are prefixed by the word `with`. We will name our plugin `withMyApiKey`. Feel free to call it whatever you like, as long as it follows the convention.
 
 Here is an example of how a basic config plugin function looks:
 
-```javascript
+```js
 const withMyApiKey = config => {
   return config;
 };
 ```
 
-Additionally, you can use `mods`, which are async functions that modify files in native projects such as source code or configuration (plist, xml) files. The `mods` object is different from the rest of the app config because it doesn't get serialized after the initial reading. This means you can use it to perform actions *during* code generation.
+Additionally, you can use `mods`, which are async functions that modify files in native projects such as source code or configuration (plist, xml) files. The `mods` object is different from the rest of the app config because it doesn't get serialized after the initial reading. This means you can use it to perform actions _during_ code generation.
 
 However, there are a few considerations that we should follow when writing config plugins:
 
-- Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added.
-- `plugins` are always invoked when the config is read by the `expo/config` method `getConfig`. However, `mods` are only invoked during the "syncing" phase of `npx expo prebuild`.
+- Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added.
+- `plugins` are always invoked when the config is read by the `expo/config` method `getConfig`. However, `mods` are only invoked during the "syncing" phase of `npx expo prebuild`.
 
-> Although not required, we can use [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts) to make plugin development easier — it provides a recommended default configuration for TypeScript and Jest. For more information, see [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin).
+> Although not required, we can use [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts) to make plugin development easier — it provides a recommended default configuration for TypeScript and Jest. For more information, see [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin).
 
-Let's start by creating our plugin with this minimal boilerplate. This will create a **plugin** folder where we will write the plugin in TypeScript and add a **app.plugin.js** file in the project root, which will be the entry file for the plugin.
+Let's start by creating our plugin with this minimal boilerplate. This will create a **plugin** folder where we will write the plugin in TypeScript and add an **app.plugin.js** file in the project root, which will be the entry file for the plugin.
 
-1. Create a **plugin/tsconfig.json** file:
+1. Create a **plugin/tsconfig.json** file:
 
    ```json plugin/tsconfig.json
    {
@@ -153,7 +153,7 @@ Let's start by creating our plugin with this minimal boilerplate. This will crea
 
 2. Create a **plugin/src/index.ts** file for our plugin:
 
-   ```typescript plugin/src/index.ts
+   ```ts plugin/src/index.ts
    import { ConfigPlugin } from 'expo/config-plugins';
 
    const withMyApiKey: ConfigPlugin = config => {
@@ -164,9 +164,9 @@ Let's start by creating our plugin with this minimal boilerplate. This will crea
    export default withMyApiKey;
    ```
 
-3. Finally, create an **app.plugin.js** file in the root directory. That will configure the entry file for our plugin:
+3. Finally, create an **app.plugin.js** file in the root directory. That will configure the entry file for our plugin:
 
-   ```javascript app.plugin.js
+   ```js app.plugin.js
    module.exports = require('./plugin/build');
    ```
 
@@ -181,7 +181,7 @@ At the root of your project, run `npm run build plugin` to start the TypeScript 
 }
 ```
 
-Now when running `npx expo prebuild` inside our **example** folder we should see our 'my custom plugin’ console.log statement in the terminal.
+Now when running `npx expo prebuild` inside our **example** folder we should see our 'my custom plugin' console.log statement in the terminal.
 
 <Terminal cmd={['$ cd example', '$ npx expo prebuild --clean']} />
 
@@ -189,7 +189,7 @@ To inject our custom API keys into **AndroidManifest.xml** and **Info.plist** we
 
 As the name suggests, `withInfoPlist` allows us to read and modify **Info.plist** values. Using the `modResults` property, we can add custom values as demonstrated in the code snippet below:
 
-```typescript
+```ts
 const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
   config = withInfoPlist(config, config => {
     config.modResults['MY_CUSTOM_API_KEY'] = apiKey;
@@ -200,9 +200,9 @@ const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
 };
 ```
 
-Similarly, we can use `withAndroidManifest` to modify the **AndroidManifest.xml** file. In this case, we will utilize `AndroidConfig` helpers to add a meta data item to the main application:
+Similarly, we can use `withAndroidManifest` to modify the **AndroidManifest.xml** file. In this case, we will utilize `AndroidConfig` helpers to add a metadata item to the main application:
 
-```typescript
+```ts
 const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
   config = withAndroidManifest(config, config => {
     const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
@@ -221,7 +221,7 @@ const withMyApiKey: ConfigPlugin<{ apiKey: string }> = (config, { apiKey }) => {
 
 We can create our custom plugin by merging everything into a single function:
 
-```typescript plugin/src/index.ts
+```ts plugin/src/index.ts
 import {
   withInfoPlist,
   withAndroidManifest,

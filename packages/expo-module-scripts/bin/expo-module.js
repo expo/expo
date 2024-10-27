@@ -1,30 +1,28 @@
 #!/usr/bin/env node
 'use strict';
 
-const commander = require('commander');
+const { program } = require('commander');
 const process = require('process');
 
-commander
-  // Common scripts
-  .command('configure', `Generate common configuration files`)
-  .command('readme', `Generate README`)
-  .command(
-    'typecheck',
-    `Type check the source TypeScript without emitting JS and watch for file changes`
-  )
-  .command('build', `Compile the source JS or TypeScript and watch for file changes`)
-  .command('lint', `Lint the files for syntax errors, style guidance, and common warnings`)
-  .command('test', `Run unit tests with an interactive watcher`)
-  .command('clean', `Removes compiled files`)
+program.command('configure', `Generate common configuration files`);
+program.command('readme', `Generate README`);
+program.command(
+  'typecheck',
+  `Type check the source TypeScript without emitting JS and watch for file changes`
+);
+program.command('build', `Compile the source JS or TypeScript and watch for file changes`);
+program.command('lint', `Lint the files for syntax errors, style guidance, and common warnings`);
+program.command('test', `Run unit tests with an interactive watcher`);
+program.command('clean', `Removes compiled files`);
 
-  // Lifecycle scripts
-  .command('prepare', `Scripts to run during the "prepare" phase`)
-  .command('prepublishOnly', `Scripts to run during the "prepublishOnly" phase`)
+// Lifecycle scripts
+program.command('prepare', `Scripts to run during the "prepare" phase`);
+program.command('prepublishOnly', `Scripts to run during the "prepublishOnly" phase`);
 
-  // Pass-through scripts
-  .command('babel', `Runs Babel CLI with the given arguments`)
-  .command('eslint', `Runs ESLint with the given arguments`)
-  .command('jest', `Runs Jest with the given arguments`)
-  .command('tsc', `Runs tsc with the given arguments`)
+// Pass-through scripts
+program.command('babel', `Runs Babel CLI with the given arguments`);
+program.command('eslint', `Runs ESLint with the given arguments`);
+program.command('jest', `Runs Jest with the given arguments`);
+program.command('tsc', `Runs tsc with the given arguments`);
 
-  .parse(process.argv);
+program.parse(process.argv);

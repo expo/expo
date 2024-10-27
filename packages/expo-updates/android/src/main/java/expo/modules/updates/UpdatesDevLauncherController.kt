@@ -3,13 +3,16 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import com.facebook.react.ReactInstanceManager
+import android.net.Uri
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.events.NoOpUpdatesEventManager
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
@@ -17,15 +20,18 @@ import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import org.json.JSONObject
 import java.io.File
+import java.lang.ref.WeakReference
 
 /**
  * Main entry point to expo-updates in development builds with expo-dev-client. Similar to EnabledUpdatesController
@@ -41,18 +47,19 @@ class UpdatesDevLauncherController(
   private val context: Context,
   initialUpdatesConfiguration: UpdatesConfiguration?,
   override val updatesDirectory: File?,
-  private val updatesDirectoryException: Exception?,
-  private val isMissingRuntimeVersion: Boolean
+  private val updatesDirectoryException: Exception?
 ) : IUpdatesController, UpdatesInterface {
-  override val isEmergencyLaunch = updatesDirectoryException != null
+  override val eventManager = NoOpUpdatesEventManager()
+  override var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>? = null
 
   private var launcher: Launcher? = null
+
+  private val logger = UpdatesLogger(context)
 
   private var previousUpdatesConfiguration: UpdatesConfiguration? = null
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
 
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
-  private val fileDownloader = FileDownloader(context)
 
   private var mSelectionPolicy: SelectionPolicy? = null
   private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -77,10 +84,20 @@ class UpdatesDevLauncherController(
   override val bundleAssetName: String
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {}
+  override fun onEventListenerStartObserving() {
+    // no-op for UpdatesDevLauncherController
+  }
+
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {}
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {}
+
+  override fun onReactInstanceException(exception: java.lang.Exception) {}
+
+  override val isActiveController = false
 
   override fun start() {
-    throw Exception("IUpdatesController.start should not be called in dev client")
+    // no-op for UpdatesDevLauncherController
   }
 
   val launchedUpdate: UpdateEntity?
@@ -96,25 +113,28 @@ class UpdatesDevLauncherController(
     launcher = null
   }
 
+  override val runtimeVersion: String?
+    get() = updatesConfiguration?.getRuntimeVersion()
+
+  override val updateUrl: Uri?
+    get() = updatesConfiguration?.updateUrl
+
   /**
    * Fetch an update using a dynamically generated configuration object (including a potentially
    * different update URL than the one embedded in the build).
    */
   override fun fetchUpdateWithConfiguration(
     configuration: HashMap<String, Any>,
-    context: Context,
     callback: UpdatesInterface.UpdateCallback
   ) {
-    if (updatesDirectory == null) {
-      callback.onFailure(updatesDirectoryException!!)
+    val newUpdatesConfiguration: UpdatesConfiguration
+    try {
+      newUpdatesConfiguration = createUpdatesConfiguration(configuration)
+    } catch (e: Exception) {
+      callback.onFailure(e)
       return
     }
-
-    if (!UpdatesConfiguration.canCreateValidConfiguration(context, configuration)) {
-      callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
-      return
-    }
-    val newUpdatesConfiguration = UpdatesConfiguration(context, configuration)
+    check(updatesDirectory != null)
 
     // since controller is a singleton, save its config so we can reset to it if our request fails
     previousUpdatesConfiguration = updatesConfiguration
@@ -122,9 +142,11 @@ class UpdatesDevLauncherController(
 
     setDevelopmentSelectionPolicy()
 
+    val fileDownloader = FileDownloader(context, updatesConfiguration!!, logger)
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,
+      logger,
       databaseHolder.database,
       fileDownloader,
       updatesDirectory,
@@ -145,7 +167,7 @@ class UpdatesDevLauncherController(
           callback.onSuccess(null)
           return
         }
-        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, context, callback)
+        launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, callback)
       }
 
       override fun onAssetLoaded(
@@ -168,10 +190,40 @@ class UpdatesDevLauncherController(
           )
         }
 
-        val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(updateManifest.manifest.getRawJson()))
+        val update = updateResponse.manifestUpdateResponsePart?.update ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(update.manifest.getRawJson()))
       }
     })
+  }
+
+  override fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>): Boolean {
+    return try {
+      createUpdatesConfiguration(configuration)
+      true
+    } catch (e: Exception) {
+      logger.error("Invalid updates configuration", e, UpdatesErrorCode.InitializationError)
+      false
+    }
+  }
+
+  @Throws(Exception::class)
+  private fun createUpdatesConfiguration(configuration: HashMap<String, Any>): UpdatesConfiguration {
+    if (updatesDirectory == null) {
+      throw updatesDirectoryException!!
+    }
+
+    return when (UpdatesConfiguration.getUpdatesConfigurationValidationResult(context, configuration)) {
+      UpdatesConfigurationValidationResult.VALID -> UpdatesConfiguration(context, configuration)
+      UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object is not enabled")
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_URL -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL")
+      }
+      UpdatesConfigurationValidationResult.INVALID_MISSING_RUNTIME_VERSION -> {
+        throw Exception("Failed to load update: UpdatesConfiguration object must include a valid runtime version")
+      }
+    }
   }
 
   private fun setDevelopmentSelectionPolicy() {
@@ -190,7 +242,7 @@ class UpdatesDevLauncherController(
   private fun launchUpdate(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
-    context: Context,
+    fileDownloader: FileDownloader,
     callback: UpdatesInterface.UpdateCallback
   ) {
     // ensure that we launch the update we want, even if it isn't the latest one
@@ -208,13 +260,15 @@ class UpdatesDevLauncherController(
     )
 
     val launcher = DatabaseLauncher(
+      context,
       configuration,
       updatesDirectory!!,
       fileDownloader,
-      selectionPolicy
+      selectionPolicy,
+      logger
     )
     launcher.launch(
-      databaseHolder.database, context,
+      databaseHolder.database,
       object : Launcher.LauncherCallback {
         override fun onFailure(e: Exception) {
           databaseHolder.releaseDatabase()
@@ -227,13 +281,10 @@ class UpdatesDevLauncherController(
           databaseHolder.releaseDatabase()
           this@UpdatesDevLauncherController.launcher = launcher
           callback.onSuccess(object : UpdatesInterface.Update {
-            override fun getManifest(): JSONObject {
-              return launcher.launchedUpdate!!.manifest
-            }
-
-            override fun getLaunchAssetPath(): String {
-              return launcher.launchAssetFile!!
-            }
+            override val manifest: JSONObject
+              get() = launcher.launchedUpdate!!.manifest
+            override val launchAssetPath: String
+              get() = launcher.launchAssetFile!!
           })
           runReaper()
         }
@@ -267,43 +318,41 @@ class UpdatesDevLauncherController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launchedUpdate,
-      embeddedUpdate = updatesConfiguration?.let { EmbeddedManifest.get(context, it) }?.updateEntity,
-      isEmergencyLaunch = isEmergencyLaunch,
+      launchDuration = null,
+      embeddedUpdate = null, // no embedded update in debug builds
+      emergencyLaunchException = updatesDirectoryException,
       isEnabled = true,
-      releaseChannel = updatesConfiguration?.releaseChannel ?: "default",
       isUsingEmbeddedAssets = isUsingEmbeddedAssets,
       runtimeVersion = updatesConfiguration?.runtimeVersionRaw ?: "1",
       checkOnLaunch = updatesConfiguration?.checkOnLaunch ?: UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS,
       requestHeaders = updatesConfiguration?.requestHeaders ?: mapOf(),
       localAssetFiles = localAssetFiles,
-      isMissingRuntimeVersion = isMissingRuntimeVersion,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = true,
+      initialContext = UpdatesStateContext()
     )
   }
 
   override fun relaunchReactApplicationForModule(
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot reload update in a development client"))
-  }
-
-  override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
-    callback.onSuccess(UpdatesStateContext())
+    this.updatesInterfaceCallbacks?.get()?.onRequestRelaunch()
+    callback.onSuccess(Unit)
   }
 
   override fun checkForUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot check for update in a development client"))
+    callback.onFailure(NotAvailableInDevClientException("Updates.checkForUpdateAsync() is not supported in development builds."))
   }
 
   override fun fetchUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot fetch update in a development client"))
+    callback.onFailure(NotAvailableInDevClientException("Updates.fetchUpdateAsync() is not supported in development builds."))
   }
 
   override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot get extra params in a development client"))
+    callback.onFailure(NotAvailableInDevClientException("Updates.getExtraParamsAsync() is not supported in development builds."))
   }
 
   override fun setExtraParam(
@@ -311,6 +360,10 @@ class UpdatesDevLauncherController(
     value: String?,
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(NotAvailableInDevClientException("Cannot set extra params in a development client"))
+    callback.onFailure(NotAvailableInDevClientException("Updates.setExtraParamAsync() is not supported in development builds."))
+  }
+
+  companion object {
+    private val TAG = UpdatesDevLauncherController::class.java.simpleName
   }
 }

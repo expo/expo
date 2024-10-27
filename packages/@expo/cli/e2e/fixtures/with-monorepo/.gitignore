@@ -1,0 +1,11 @@
+# Expo related folders
+.expo
+
+# Node package managers
+node_modules
+bun.lockb
+yarn.lock
+package-lock.json
+
+# Build folders
+dist

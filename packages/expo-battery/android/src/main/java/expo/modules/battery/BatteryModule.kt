@@ -19,7 +19,10 @@ internal const val POWER_MODE_EVENT_NAME = "Expo.powerModeDidChange"
 
 class BatteryModule : Module() {
   enum class BatteryState(val value: Int) : Enumerable {
-    UNKNOWN(0), UNPLUGGED(1), CHARGING(2), FULL(3);
+    UNKNOWN(0),
+    UNPLUGGED(1),
+    CHARGING(2),
+    FULL(3)
   }
 
   override fun definition() = ModuleDefinition {
@@ -49,11 +52,11 @@ class BatteryModule : Module() {
       unregisterBroadcastReceivers(context)
     }
 
-    AsyncFunction("getBatteryLevelAsync") {
+    AsyncFunction<Float>("getBatteryLevelAsync") {
       val batteryIntent = context.applicationContext.registerReceiver(
         null,
         IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-      ) ?: return@AsyncFunction -1
+      ) ?: return@AsyncFunction -1f
 
       val level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
       val scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
@@ -66,7 +69,7 @@ class BatteryModule : Module() {
       return@AsyncFunction batteryLevel
     }
 
-    AsyncFunction("getBatteryStateAsync") {
+    AsyncFunction<Int>("getBatteryStateAsync") {
       val batteryIntent = context.applicationContext.registerReceiver(
         null,
         IntentFilter(Intent.ACTION_BATTERY_CHANGED)
@@ -76,11 +79,11 @@ class BatteryModule : Module() {
       return@AsyncFunction batteryStatusNativeToJS(status).value
     }
 
-    AsyncFunction("isLowPowerModeEnabledAsync") {
+    AsyncFunction<Boolean>("isLowPowerModeEnabledAsync") {
       isLowPowerModeEnabled
     }
 
-    AsyncFunction("isBatteryOptimizationEnabledAsync") {
+    AsyncFunction<Boolean>("isBatteryOptimizationEnabledAsync") {
       val packageName = context.applicationContext.packageName
       val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as? PowerManager
       return@AsyncFunction powerManager?.isIgnoringBatteryOptimizations(packageName) == false

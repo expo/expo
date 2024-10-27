@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "expo-home",
+    "description": "",
+    "owner": "expo-home-dev",
+    "slug": "home",
+    "privacy": "unlisted",
+    "sdkVersion": "52.0.0",
+    "version": "52.0.0",
+    "orientation": "portrait",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "primaryColor": "#cccccc",
+    "icon": "https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png",
+    "updates": {
+      "checkAutomatically": "NEVER",
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/e3ec11de-308d-48c3-9f4c-c07d90733495"
+    },
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "host.exp.exponent"
+    },
+    "android": {
+      "package": "host.exp.exponent"
+    },
+    "androidStatusBar": {
+      "barStyle": "dark-content"
+    },
+    "scheme": "exp",
+    "jsEngine": "hermes",
+    "extra": {
+      "eas": {
+        "projectId": "e3ec11de-308d-48c3-9f4c-c07d90733495"
+      }
+    },
+    "runtimeVersion": "52.0.0"
+  }
+}

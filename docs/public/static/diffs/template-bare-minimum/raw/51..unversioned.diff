@@ -1,0 +1,243 @@
+diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
+index a4b0833035..db29fd494c 100644
+--- a/templates/expo-template-bare-minimum/android/app/build.gradle
++++ b/templates/expo-template-bare-minimum/android/app/build.gradle
+@@ -41,12 +41,12 @@ react {
+     bundleCommand = "export:embed"
+ 
+     /* Folders */
+-    //   The root of your project, i.e. where "package.json" lives. Default is '..'
+-    // root = file("../")
+-    //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
+-    // reactNativeDir = file("../node_modules/react-native")
+-    //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
+-    // codegenDir = file("../node_modules/@react-native/codegen")
++     //   The root of your project, i.e. where "package.json" lives. Default is '../..'
++    // root = file("../../")
++    //   The folder where the react-native NPM package is. Default is ../../node_modules/react-native
++    // reactNativeDir = file("../../node_modules/react-native")
++    //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen
++    // codegenDir = file("../../node_modules/@react-native/codegen")
+ 
+     /* Variants */
+     //   The list of variants to that are debuggable. For those we're going to
+@@ -144,6 +144,9 @@ android {
+             useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+         }
+     }
++    androidResources {
++        ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
++    }
+ }
+ 
+ // Apply static values from `gradle.properties` to the `android.packagingOptions`
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+index 5217550826..9a8e058010 100644
+--- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
++++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+@@ -18,7 +18,7 @@
+     </intent>
+   </queries>
+ 
+-  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
++  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true">
+     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
+index 932bf7b34b..92ca085f6d 100644
+--- a/templates/expo-template-bare-minimum/android/build.gradle
++++ b/templates/expo-template-bare-minimum/android/build.gradle
+@@ -6,7 +6,7 @@ buildscript {
+         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
+         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
+         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
+-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
++        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
+ 
+         ndkVersion = "26.1.10909125"
+     }
+diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
+index 40220def8d..de47429c64 100644
+--- a/templates/expo-template-bare-minimum/android/gradle.properties
++++ b/templates/expo-template-bare-minimum/android/gradle.properties
+@@ -22,9 +22,6 @@ org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m
+ # https://developer.android.com/topic/libraries/support-library/androidx-rn
+ android.useAndroidX=true
+ 
+-# Automatically convert third-party libraries to use AndroidX
+-android.enableJetifier=true
+-
+ # Enable AAPT2 PNG crunching
+ android.enablePngCrunchInReleaseBuilds=true
+ 
+diff --git a/templates/expo-template-bare-minimum/android/gradlew b/templates/expo-template-bare-minimum/android/gradlew
+index 1aa94a4269..b740cf1339 100755
+--- a/templates/expo-template-bare-minimum/android/gradlew
++++ b/templates/expo-template-bare-minimum/android/gradlew
+@@ -55,7 +55,7 @@
+ #       Darwin, MinGW, and NonStop.
+ #
+ #   (3) This script is generated from the Groovy template
+-#       https://github.com/gradle/gradle/blob/HEAD/subprojects/plugins/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
++#       https://github.com/gradle/gradle/blob/HEAD/platforms/jvm/plugins-application/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
+ #       within the Gradle project.
+ #
+ #       You can find Gradle at https://github.com/gradle/gradle/.
+diff --git a/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts b/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts
+deleted file mode 100644
+index b4f6668e9e..0000000000
+--- a/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts
++++ /dev/null
+@@ -1,19 +0,0 @@
+-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+-
+-plugins {
+-    kotlin("jvm") version "1.9.24"
+-    id("java-gradle-plugin")
+-}
+-
+-repositories {
+-    mavenCentral()
+-}
+-
+-gradlePlugin {
+-    plugins {
+-        create("reactSettingsPlugin") {
+-            id = "com.facebook.react.settings"
+-            implementationClass = "expo.plugins.ReactSettingsPlugin"
+-        }
+-    }
+-}
+diff --git a/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt b/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt
+deleted file mode 100644
+index c54f6c7a6a..0000000000
+--- a/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt
++++ /dev/null
+@@ -1,10 +0,0 @@
+-package expo.plugins
+-
+-import org.gradle.api.Plugin
+-import org.gradle.api.initialization.Settings
+-
+-class ReactSettingsPlugin : Plugin<Settings> {
+-  override fun apply(settings: Settings) {
+-    // Do nothing, just register the plugin.
+-  }
+-}
+diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
+index 80b1bc3267..c05d6f1b9d 100644
+--- a/templates/expo-template-bare-minimum/android/settings.gradle
++++ b/templates/expo-template-bare-minimum/android/settings.gradle
+@@ -1,15 +1,13 @@
+ pluginManagement {
+-  def version = providers.exec {
+-    commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
+-  }.standardOutput.asText.get().trim()
+-  def (_, reactNativeMinor, reactNativePatch) = version.split("-")[0].tokenize('.').collect { it.toInteger() }
++    def version = providers.exec {
++      commandLine("node", "-e", "console.log(require('react-native/package.json').version);")
++    }.standardOutput.asText.get().trim()
++    def (_, reactNativeMinor) = version.split("-")[0].tokenize('.').collect { it.toInteger() }
+ 
+-  includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
+-  if(reactNativeMinor == 74 && reactNativePatch <= 3){
+-    includeBuild("react-settings-plugin")
+-  }
++    if(reactNativeMinor >= 75) {
++      includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
++    }
+ }
+-
+ plugins { id("com.facebook.react.settings") }
+ 
+ def getRNMinorVersion() {
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
+index f945940c25..1ccb9b422d 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
+@@ -287,7 +287,7 @@
+ 					"FB_SONARKIT_ENABLED=1",
+ 				);
+ 				INFOPLIST_FILE = HelloWorld/Info.plist;
+-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
++				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+ 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+ 				MARKETING_VERSION = 1.0;
+ 				OTHER_LDFLAGS = (
+@@ -311,7 +311,7 @@
+ 				CLANG_ENABLE_MODULES = YES;
+ 				CURRENT_PROJECT_VERSION = 1;
+ 				INFOPLIST_FILE = HelloWorld/Info.plist;
+-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
++				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+ 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+ 				MARKETING_VERSION = 1.0;
+ 				OTHER_LDFLAGS = (
+@@ -373,7 +373,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+ 				GCC_WARN_UNUSED_FUNCTION = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
++				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+ 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
+ 				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
+ 				MTL_ENABLE_DEBUG_INFO = YES;
+@@ -422,7 +422,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+ 				GCC_WARN_UNUSED_FUNCTION = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
++				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+ 				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
+ 				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
+ 				MTL_ENABLE_DEBUG_INFO = NO;
+diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
+index 57c1dd3834..a50623eb05 100644
+--- a/templates/expo-template-bare-minimum/ios/Podfile
++++ b/templates/expo-template-bare-minimum/ios/Podfile
+@@ -28,7 +28,7 @@ self.define_singleton_method(use_autolinking_method_symbol) do |*args|
+   end
+ end
+ 
+-platform :ios, podfile_properties['ios.deploymentTarget'] || '13.4'
++platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+ install! 'cocoapods',
+   :deterministic_uuids => false
+ 
+@@ -36,6 +36,7 @@ prepare_react_native_project!
+ 
+ target 'HelloWorld' do
+   use_expo_modules!
++
+   config = use_native_modules!
+ 
+   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
+index 563853071f..8ca20518e9 100644
+--- a/templates/expo-template-bare-minimum/package.json
++++ b/templates/expo-template-bare-minimum/package.json
+@@ -1,7 +1,8 @@
+ {
+   "name": "expo-template-bare-minimum",
+   "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
+-  "version": "51.0.56",
++  "license": "0BSD",
++  "version": "51.0.27",
+   "main": "index.js",
+   "scripts": {
+     "start": "expo start --dev-client",
+@@ -10,10 +11,10 @@
+     "web": "expo start --web"
+   },
+   "dependencies": {
+-    "expo": "~51.0.28",
++    "expo": "~51.0.8",
+     "expo-status-bar": "~1.12.1",
+-    "react": "18.2.0",
+-    "react-native": "0.74.5"
++    "react": "18.3.1",
++    "react-native": "0.75.2"
+   },
+   "devDependencies": {
+     "@babel/core": "^7.20.0"

@@ -1,0 +1,137 @@
+---
+title: View payment history, invoices, and receipts
+sidebar_title: Payment history, invoices, and receipts
+description: Learn how to view your account's payment history, download invoices and receipts, and request a refund for a charge.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+**Receipts** in the Expo dashboard provide information about an account's payment history and access to invoices and receipts. It also provides information on payment dates, payment status, and the total amount for that payment. You can also request a refund for a charge if you believe it has been made in error.
+
+> **Note**: You can only access the **Receipts** if you have [Owner or Admin access](/accounts/account-types/#manage-access) to your account.
+
+## Receipts
+
+To view your account's payment history, click [Receipts](https://expo.dev/settings/receipts) in the navigation menu under **Account settings** or **Organization settings**.
+
+For example, an [Organization account's](/accounts/account-types/#organizations) receipts are shown below:
+
+<ContentSpotlight
+  alt="Receipts page in the Expo dashboard."
+  src="/static/images/billing/receipts-01.png"
+/>
+
+### Download and view an invoice
+
+To download and view an invoice for a billing period, go to [Receipts](https://expo.dev/settings/receipts) and:
+
+- Click the **Date** for the billing period corresponding to the invoice. You will be navigated to a page hosted by Stripe. As an example, the March 22, 2024 invoice below links to this page:
+
+<ContentSpotlight
+  alt="Download invoice shown in the Stripe dashboard."
+  src="/static/images/billing/receipts-02.png"
+  className="max-w-[380px]"
+/>
+
+- Click **Download invoice**. You will receive a PDF copy of the invoice.
+
+### Download and view a receipt
+
+To download and view a receipt for a billing period, go to [Receipts](https://expo.dev/settings/receipts) and:
+
+- Click the **Date** for the billing period corresponding to the receipt. You will be navigated to the appropriate receipt hosted by Stripe. As an example, the March 22, 2024 receipt below links to this page:
+
+<ContentSpotlight
+  alt="Download receipt shown in the Stripe dashboard."
+  src="/static/images/billing/receipts-02.png"
+  className="max-w-[380px]"
+/>
+
+- Click on **Download receipt.** You will receive a PDF copy of the receipt.
+
+### Request a refund
+
+You can request a refund directly from the [Receipts](https://expo.dev/settings/receipts) page. The approval process is manual and our team investigates any errors before providing a refund.
+
+To request a refund:
+
+- Next to a receipt, click the three-dot menu and then click **Request Refund:**
+
+<ContentSpotlight
+  alt="Receipts page in the Expo dashboard."
+  src="/static/images/billing/receipts-04.png"
+/>
+
+- Fill the **Request a refund** form with details for the refund and click **Continue**:
+
+<ContentSpotlight
+  alt="Download invoice shown in the Stripe dashboard."
+  src="/static/images/billing/receipts-05.png"
+  className="max-w-[320px]"
+/>
+
+- Our billing team receives and reviews refund requests. Once a refund is approved, the amount is credited to your payment method. Refunds typically take 5 to 10 business days to fully process.
+
+## Read an invoice
+
+An invoice contains your legally registered business name, address, tax ID, invoice number, due date, and more. It also includes a description of any charges and the total amount due. In a typical invoice, the charges are divided into:
+
+- Current plan's subscription amount (if subscribed to a plan)
+- Any overage charges (if applicable)
+- A plan's credit limit
+
+Let's consider three different examples to understand how your invoice might look. If you subscribe to a [Production](/billing/plans/#production), [Enterprise](/billing/plans/#enterprise), or [On-demand](/billing/plans/#on-demand) plan, one of these scenarios may apply to you.
+
+### Subscription charges
+
+In the first example, the invoice table shows a subscription charge for a Production plan:
+
+| Description                                                                                | Quantity | Unit price |     Amount |
+| ------------------------------------------------------------------------------------------ | -------: | ---------: | ---------: |
+| _FEB 1 - MAR 1, 2024_                                                                      |          |            |            |
+| EAS Build - Build (Android: 5 large and 5 medium builds; iOS: 5 large and 5 medium builds) |        1 |     $40.00 |     $40.00 |
+| EAS Build - Plan credit                                                                    |        1 |    -$40.00 |    -$40.00 |
+| _MAR 1 - APR 1, 2024_                                                                      |          |            |            |
+| Expo Application Services - Production                                                     |        1 |     $99.00 |     $99.00 |
+| **Total (USD)**                                                                            |          |            | **$99.00** |
+
+In the above example:
+
+- The first line item describes the EAS Build usage for the billing period of February 1 to March 1, 2024. It contains all the details about how many Android and iOS builds were created during this billing period and their cost.
+- The second line item describes the credit limit for the Production plan for the billing period of February 1 to March 1, 2024.
+- The third line item describes the subscription charge for the Production plan for the next billing period of March 1 to April 1, 2024.
+
+Since the EAS Build usage doesn't exceed the plan's credit amount, the subscriber only has to pay the subscription amount of the Production plan.
+
+### Overage charges
+
+In the second example, the invoice table shows a subscription charge for a Production plan with an overage charge:
+
+| Description                                                                                   | Quantity | Unit price |      Amount |
+| --------------------------------------------------------------------------------------------- | -------: | ---------: | ----------: |
+| _FEB 1 - MAR 1, 2024_                                                                         |          |            |             |
+| EAS Build - Build (Android: 15 large and 10 medium builds; iOS 10 large and 15 medium builds) |        1 |    $110.00 |     $110.00 |
+| EAS Build - Plan credit                                                                       |        1 |    -$99.00 |     -$99.00 |
+| _MAR 1 - APR 1, 2024_                                                                         |          |            |             |
+| Expo Application Services - Production                                                        |        1 |     $99.00 |      $99.00 |
+| **Total (USD)**                                                                               |          |            | **$110.00** |
+
+In the above example:
+
+- The first line item describes the EAS Build usage for the billing period of February 1 to March 1, 2024. It contains all the details about how many Android and iOS builds were created during this billing period and their cost.
+- The second line item describes the credit limit for the Production plan for the billing period of February 1 to March 1, 2024.
+- The third line item describes the subscription charge for the Production plan for the next billing period of March 1 to April 1, 2024.
+
+Since the EAS Build usage exceeds the plan's credit amount for the billing period of February 1 to March 1, 2024, the subscriber has to pay the overage charge and the subscription amount for the Production plan for the next billing period.
+
+### On-demand charges
+
+In the third example, the subscriber is on an On-demand plan. Any charges incurred during the billing period are listed in the invoice:
+
+| Description                                                         | Quantity | Unit price |     Amount |
+| ------------------------------------------------------------------- | -------: | ---------: | ---------: |
+| _FEB 1 - MAR 1, 2024_                                               |          |            |            |
+| EAS Build - Build (Android: 10 medium builds; iOS 10 medium builds) |        1 |     $30.00 |     $30.00 |
+| **Total (USD)**                                                     |          |            | **$30.00** |
+
+The above table shows the total amount due based on usage only since the On-demand plan doesn't include any credits.

@@ -42,9 +42,10 @@ function getAssetLocalPathDefault(
   { baseUrl, scale }: { baseUrl?: string; scale: number }
 ): string {
   const suffix = scale === 1 ? '' : `@${scale}x`;
-  const fileName = `${asset.name + suffix}.${asset.type}`;
+  const fileName = `${asset.name}${suffix}.${asset.type}`;
 
   const adjustedHttpServerLocation = stripAssetPrefix(asset.httpServerLocation, baseUrl);
+
   return path.join(
     // Assets can have relative paths outside of the project root.
     // Replace `../` with `_` to make sure they don't end up outside of
@@ -97,7 +98,7 @@ function getAndroidAssetSuffix(scale: number): string | null {
 }
 
 // See https://developer.android.com/guide/topics/resources/drawable-resource.html
-const drawableFileTypes = new Set<string>(['gif', 'jpeg', 'jpg', 'png', 'webp', 'xml']);
+export const drawableFileTypes = new Set<string>(['gif', 'jpeg', 'jpg', 'png', 'webp', 'xml']);
 
 function getAndroidResourceFolderName(asset: Pick<AssetData, 'type'>, scale: number): string {
   if (!drawableFileTypes.has(asset.type)) {

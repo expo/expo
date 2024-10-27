@@ -114,7 +114,8 @@ class ExpoFaceDetector(private val context: Context) : FaceDetectorInterface {
               }
               result
             },
-            complete, error
+            complete,
+            error
           )
         )
     } else {

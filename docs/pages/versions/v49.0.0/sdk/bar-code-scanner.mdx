@@ -9,14 +9,15 @@ iconUrl: '/static/images/packages/expo-barcode-scanner.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { SnackInline } from '~/ui/components/Snippet';
+import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-barcode-scanner` provides a React component that renders a viewfinder for the device's camera (either front or back) and will scan bar codes that show up in the frame.
 
@@ -27,6 +28,10 @@ import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permiss
 > **info** Only one active `BarCodeScanner` preview is currently supported.
 
 When using navigation, the best practice is to unmount any previously rendered `BarCodeScanner` component so the following screens can use their own `BarCodeScanner` without any issue.
+
+#### Known issues&ensp;<PlatformTags platforms={['android', 'ios']} />
+
+The `BarCodeScanner` component has difficulty scanning barcodes with black backgrounds. This is a limitation due to the underlying ZXing library. It is also an issue discussed on a [Stack Overflow thread](https://stackoverflow.com/questions/41518373/zxing-library-not-scanning-qr-code-black-background-and-white-codenegative-scan). To work around this, your app should allow users to capture the barcode image and then invert the colors of the image before passing it to the `BarCodeScanner`.
 
 ## Installation
 
@@ -116,7 +121,7 @@ You must request permission to access the user's camera before attempting to get
 <SnackInline label="Basic BarCodeScanner usage" dependencies={['expo-barcode-scanner']}>
 
 ```jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
@@ -156,7 +161,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -164,7 +168,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -181,7 +184,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 ### Android
 
-The following permissions are added automatically through this library's `AndroidManifest.xml`:
+The following permissions are added automatically through this library's **AndroidManifest.xml**:
 
 <AndroidPermissions permissions={['CAMERA']} />
 

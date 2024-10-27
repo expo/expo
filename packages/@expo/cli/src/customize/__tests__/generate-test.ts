@@ -5,9 +5,6 @@ import { copyAsync } from '../../utils/dir';
 import { queryAndGenerateAsync, selectAndGenerateAsync } from '../generate';
 import { selectTemplatesAsync } from '../templates';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../log');
 jest.mock('../templates', () => {
   const templates = jest.requireActual('../templates');
@@ -30,7 +27,7 @@ describe(queryAndGenerateAsync, () => {
         extras: [],
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Invalid files: file1, file2. Allowed: babel.config.js, webpack.config.js, metro.config.js, web/serve.json, web/index.html, tsconfig.json"`
+      `"Invalid files: file1, file2. Allowed: babel.config.js, metro.config.js, tsconfig.json, .eslintrc.js, web/index.html, webpack.config.js"`
     );
   });
   it(`does nothing`, async () => {
@@ -67,7 +64,7 @@ describe(selectAndGenerateAsync, () => {
   });
 
   it(`exits when no items are selected`, async () => {
-    asMock(selectTemplatesAsync).mockResolvedValue([]);
+    jest.mocked(selectTemplatesAsync).mockResolvedValue([]);
 
     await expect(
       selectAndGenerateAsync('/', {
@@ -90,7 +87,7 @@ describe(selectAndGenerateAsync, () => {
       '/'
     );
 
-    asMock(selectTemplatesAsync).mockResolvedValue([1]);
+    jest.mocked(selectTemplatesAsync).mockResolvedValue([5]);
 
     await selectAndGenerateAsync('/', {
       props: {
@@ -110,7 +107,7 @@ describe(selectAndGenerateAsync, () => {
   it(`selects a file from installed, and generates`, async () => {
     vol.fromJSON({}, '/');
 
-    asMock(selectTemplatesAsync).mockResolvedValue([1]);
+    jest.mocked(selectTemplatesAsync).mockResolvedValue([5]);
 
     await selectAndGenerateAsync('/', {
       props: {

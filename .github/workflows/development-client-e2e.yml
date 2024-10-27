@@ -18,13 +18,13 @@ concurrency:
 
 jobs:
   detox_e2e:
-    runs-on: macos-13
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         api-level: [33]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🍺 Install required tools
@@ -60,7 +60,7 @@ jobs:
         working-directory: packages/expo-dev-client
       - name: 💾 Store artifacts of build failures
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: expo-dev-client-e2e-artifacts
           path: packages/expo-dev-client/artifacts

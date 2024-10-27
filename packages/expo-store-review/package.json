@@ -1,7 +1,7 @@
 {
   "name": "expo-store-review",
-  "version": "6.8.0",
-  "description": "ExpoStoreReview standalone module",
+  "version": "8.0.0",
+  "description": "Provides access to native APIs for in-app reviews.",
   "main": "build/StoreReview.js",
   "types": "build/StoreReview.d.ts",
   "scripts": {
@@ -16,7 +16,10 @@
   "keywords": [
     "react-native",
     "expo",
-    "expo-store-review"
+    "expo-store-review",
+    "reviews",
+    "app-store",
+    "google-play-store"
   ],
   "repository": {
     "type": "git",
@@ -31,9 +34,10 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react-native": "*"
   }
 }

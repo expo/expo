@@ -13,7 +13,7 @@ class UpdatesDatabaseIntegrityCheckMockingAssetExists : UpdatesDatabaseIntegrity
 }
 
 class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
     

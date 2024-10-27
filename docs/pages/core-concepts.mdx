@@ -3,10 +3,13 @@ title: Core concepts
 description: An overview of Expo tools, features and services.
 ---
 
+import { ExpoGoLogo, DocsLogo } from '@expo/styleguide';
+import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
-import { ExpoGoLogo, DocsLogo } from '@expo/styleguide';
-import { PlanEnterpriseIcon } from '@expo/styleguide-icons';
 
 Expo is an [open-source framework](https://github.com/expo/expo/) for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app.
 
@@ -17,44 +20,53 @@ The `expo` npm package enables a suite of incredible features for React Native a
 <BoxLink
   title="Expo SDK"
   description="Comprehensive suite of well-tested React Native modules that run on Android, iOS, and web."
-  href="/versions/latest"
+  href="/versions/latest/"
   Icon={DocsLogo}
+/>
+<BoxLink
+  title="Develop an app with Expo"
+  description="An overview of the development process of building an Expo app to help build a mental model of the core development loop."
+  href="/workflow/overview/"
+  Icon={BookOpen02Icon}
 />
 <BoxLink
   title="Expo Modules API"
   description="Write highly performant native code with modern Swift and Kotlin API."
-  href="/modules/overview"
+  href="/modules/overview/"
+  Icon={CpuChip01Icon}
 />
 <BoxLink
   title="Prebuild"
   description="Separate React from Native to develop from any computer, upgrade easily, white label apps, and maintain larger projects."
-  href="/workflow/prebuild"
+  href="/workflow/prebuild/"
+  Icon={BookOpen02Icon}
 />
 <BoxLink
   title="Expo CLI"
   description="Manage dependencies, compile native apps, develop for the web, and connect to any device with a powerful dev server."
   href="/more/expo-cli/"
+  Icon={BookOpen02Icon}
 />
 <BoxLink
   title="Expo Go"
   description="Learn React by trying it on your simulator or device."
-  href="/get-started/expo-go/"
+  href="/get-started/set-up-your-environment/"
   Icon={ExpoGoLogo}
 />
 
 > **info** All features are free, optional, and can be used independently of each other. Unused features add no additional bloat to your app.
 
-| Feature                                                                         | With `expo` | Without `expo` (bare React Native) |
-| ------------------------------------------------------------------------------- | ----------- | ---------------------------------- |
-| Develop complex apps **entirely** in JavaScript.                                | <YesIcon /> | <NoIcon />                         |
-| Write JSI native modules with Swift and Kotlin.                                 | <YesIcon /> | <NoIcon />                         |
-| Develop apps without Xcode or Android Studio.                                   | <YesIcon /> | <NoIcon />                         |
-| Create and share example apps in the browser with [Snack][build/introduction/]. | <YesIcon /> | <NoIcon />                         |
-| Major upgrades without native changes.                                          | <YesIcon /> | <NoIcon />                         |
-| First-class TypeScript support.                                                 | <YesIcon /> | <NoIcon />                         |
-| Install natively compatible libraries from the command line.                    | <YesIcon /> | <NoIcon />                         |
-| Develop performant websites with the same codebase.                             | <YesIcon /> | <NoIcon />                         |
-| [Tunnel](/more/expo-cli/#tunneling) your dev server to any device.              | <YesIcon /> | <NoIcon />                         |
+| Feature                                                                             | With `expo` | Without `expo` (bare React Native) |
+| ----------------------------------------------------------------------------------- | ----------- | ---------------------------------- |
+| Develop complex apps **entirely** in JavaScript.                                    | <YesIcon /> | <NoIcon />                         |
+| Write JSI native modules with Swift and Kotlin.                                     | <YesIcon /> | <NoIcon />                         |
+| Develop apps without Xcode or Android Studio.                                       | <YesIcon /> | <NoIcon />                         |
+| Create and share example apps in the browser with [Snack](https://snack.expo.dev/). | <YesIcon /> | <NoIcon />                         |
+| Major upgrades without native changes.                                              | <YesIcon /> | <NoIcon />                         |
+| First-class TypeScript support.                                                     | <YesIcon /> | <NoIcon />                         |
+| Install natively compatible libraries from the command line.                        | <YesIcon /> | <NoIcon />                         |
+| Develop performant websites with the same codebase.                                 | <YesIcon /> | <NoIcon />                         |
+| [Tunnel](/more/expo-cli/#tunneling) your dev server to any device.                  | <YesIcon /> | <NoIcon />                         |
 
 ## Services
 

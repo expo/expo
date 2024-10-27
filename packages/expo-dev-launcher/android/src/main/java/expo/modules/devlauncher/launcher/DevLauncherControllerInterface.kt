@@ -4,14 +4,16 @@ import android.content.Intent
 import android.net.Uri
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.DevLauncherController
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import kotlinx.coroutines.CoroutineScope
 
-interface DevLauncherControllerInterface {
+interface DevLauncherControllerInterface :
+  UpdatesInterfaceCallbacks {
   suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null)
   suspend fun loadApp(url: Uri, projectUrl: Uri?, mainActivity: ReactActivity? = null)
   fun onAppLoaded(context: ReactContext)
@@ -24,9 +26,9 @@ interface DevLauncherControllerInterface {
 
   val manifest: Manifest?
   val manifestURL: Uri?
-  val devClientHost: DevLauncherClientHost
+  val devClientHost: ReactHostWrapper
   val mode: DevLauncherController.Mode
-  val appHost: ReactNativeHost
+  val appHost: ReactHostWrapper
   val latestLoadedApp: Uri?
   val useDeveloperSupport: Boolean
   var updatesInterface: UpdatesInterface?

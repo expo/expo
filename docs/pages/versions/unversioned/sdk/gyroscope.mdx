@@ -4,16 +4,14 @@ description: A library that provides access to the device's gyroscope sensor.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
 packageName: 'expo-sensors'
 iconUrl: '/static/images/packages/expo-sensors.png'
+platforms: ['android', 'ios*', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`Gyroscope` from **`expo-sensors`** provides access to the device's gyroscope sensor to respond to changes in rotation in three-dimensional space.
-
-<PlatformsSection android emulator ios web />
+`Gyroscope` from `expo-sensors` provides access to the device's gyroscope sensor to respond to changes in rotation in three-dimensional space.
 
 ## Installation
 
@@ -24,7 +22,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Basic Gyroscope usage' dependencies={['expo-sensors']}>
 
 ```jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gyroscope } from 'expo-sensors';
 
@@ -78,7 +76,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -106,7 +103,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
 });
-/* @end */
 ```
 
 </SnackInline>

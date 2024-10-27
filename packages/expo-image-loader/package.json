@@ -1,6 +1,6 @@
 {
   "name": "expo-image-loader",
-  "version": "4.6.0",
+  "version": "5.0.0",
   "description": "Image loader",
   "main": "index.js",
   "keywords": [

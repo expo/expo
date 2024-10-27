@@ -102,7 +102,7 @@ class DevMenuPreferences : Module() {
   override fun definition() = ModuleDefinition {
     Name("DevMenuPreferences")
 
-    AsyncFunction("getPreferencesAsync") {
+    AsyncFunction<WritableMap>("getPreferencesAsync") {
       preferencesHandel.serialize()
     }
 

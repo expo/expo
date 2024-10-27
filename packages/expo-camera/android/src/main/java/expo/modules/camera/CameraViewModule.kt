@@ -1,137 +1,50 @@
 package expo.modules.camera
 
 import android.Manifest
-import com.google.android.cameraview.AspectRatio
-import com.google.android.cameraview.Size
-import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
-import expo.modules.core.interfaces.services.UIManager
+import android.graphics.Bitmap
+import android.util.Log
+import expo.modules.camera.analyzers.BarCodeScannerResultSerializer
+import expo.modules.camera.analyzers.MLKitBarCodeScanner
+import expo.modules.camera.records.BarcodeSettings
+import expo.modules.camera.records.BarcodeType
+import expo.modules.camera.records.CameraMode
+import expo.modules.camera.records.CameraRatio
+import expo.modules.camera.records.CameraType
+import expo.modules.camera.records.FlashMode
+import expo.modules.camera.records.FocusMode
+import expo.modules.camera.records.VideoQuality
+import expo.modules.camera.tasks.ResolveTakenPicture
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
-import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.io.File
 
+val cameraEvents = arrayOf(
+  "onCameraReady",
+  "onMountError",
+  "onBarcodeScanned",
+  "onFacesDetected",
+  "onFaceDetectionError",
+  "onPictureSaved"
+)
+
 class CameraViewModule : Module() {
+  private val moduleScope = CoroutineScope(Dispatchers.Main)
+
   override fun definition() = ModuleDefinition {
     Name("ExpoCamera")
 
-    Constants(
-      "Type" to mapOf(
-        "front" to com.google.android.cameraview.Constants.FACING_FRONT,
-        "back" to com.google.android.cameraview.Constants.FACING_BACK
-      ),
-      "FlashMode" to mapOf(
-        "off" to com.google.android.cameraview.Constants.FLASH_OFF,
-        "on" to com.google.android.cameraview.Constants.FLASH_ON,
-        "auto" to com.google.android.cameraview.Constants.FLASH_AUTO,
-        "torch" to com.google.android.cameraview.Constants.FLASH_TORCH
-      ),
-      "AutoFocus" to mapOf(
-        "on" to true,
-        "off" to false
-      ),
-      "WhiteBalance" to mapOf(
-        "auto" to com.google.android.cameraview.Constants.WB_AUTO,
-        "cloudy" to com.google.android.cameraview.Constants.WB_CLOUDY,
-        "sunny" to com.google.android.cameraview.Constants.WB_SUNNY,
-        "shadow" to com.google.android.cameraview.Constants.WB_SHADOW,
-        "fluorescent" to com.google.android.cameraview.Constants.WB_FLUORESCENT,
-        "incandescent" to com.google.android.cameraview.Constants.WB_INCANDESCENT
-      ),
-      "VideoQuality" to mapOf(
-        "2160p" to VIDEO_2160P,
-        "1080p" to VIDEO_1080P,
-        "720p" to VIDEO_720P,
-        "480p" to VIDEO_480P,
-        "4:3" to VIDEO_4x3
-      ),
-    )
-
-    AsyncFunction("pausePreview") { viewTag: Int ->
-      val view = findView(viewTag)
-
-      if (view.cameraView.isCameraOpened) {
-        view.cameraView.pausePreview()
-      }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("resumePreview") { viewTag: Int ->
-      val view = findView(viewTag)
-
-      if (view.cameraView.isCameraOpened) {
-        view.cameraView.resumePreview()
-      }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("takePicture") { options: PictureOptions, viewTag: Int, promise: Promise ->
-      val view = findView(viewTag)
-
-      if (!EmulatorUtilities.isRunningOnEmulator()) {
-        if (!view.cameraView.isCameraOpened) {
-          throw CameraExceptions.CameraIsNotRunning()
-        }
-
-        view.takePicture(options, promise, cacheDirectory)
-      } else {
-        val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
-        ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory, view).execute()
-      }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("record") { options: RecordingOptions, viewTag: Int, promise: Promise ->
-      if (!options.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
-        throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
-      }
-
-      val view = findView(viewTag)
-
-      if (!view.cameraView.isCameraOpened) {
-        throw CameraExceptions.CameraIsNotRunning()
-      }
-
-      view.record(options, promise, cacheDirectory)
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("stopRecording") { viewTag: Int ->
-      val view = findView(viewTag)
-
-      if (view.cameraView.isCameraOpened) {
-        view.cameraView.stopRecording()
-      }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("getSupportedRatios") { viewTag: Int ->
-      val view = findView(viewTag)
-
-      if (!view.cameraView.isCameraOpened) {
-        throw CameraExceptions.CameraIsNotRunning()
-      }
-
-      return@AsyncFunction view.cameraView.supportedAspectRatios.map { it.toString() }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("getAvailablePictureSizes") { ratio: String, viewTag: Int ->
-      val view = findView(viewTag)
-
-      if (!view.cameraView.isCameraOpened) {
-        throw CameraExceptions.CameraIsNotRunning()
-      }
-
-      val sizes = view.cameraView.getAvailablePictureSizes(AspectRatio.parse(ratio))
-      return@AsyncFunction sizes.map { it.toString() }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
-      Permissions.askForPermissionsWithPermissionsManager(
-        permissionsManager,
-        promise,
-        Manifest.permission.CAMERA
-      )
-    }
+    Events("onModernBarcodeScanned")
 
     AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
@@ -146,14 +59,6 @@ class CameraViewModule : Module() {
         permissionsManager,
         promise,
         Manifest.permission.RECORD_AUDIO
-      )
-    }
-
-    AsyncFunction("getPermissionsAsync") { promise: Promise ->
-      Permissions.getPermissionsWithPermissionsManager(
-        permissionsManager,
-        promise,
-        Manifest.permission.CAMERA
       )
     }
 
@@ -173,81 +78,178 @@ class CameraViewModule : Module() {
       )
     }
 
-    View(ExpoCameraView::class) {
-      Events(
-        "onCameraReady",
-        "onMountError",
-        "onBarCodeScanned",
-        "onFacesDetected",
-        "onFaceDetectionError",
-        "onPictureSaved"
+    AsyncFunction("scanFromURLAsync") { url: String, barcodeTypes: List<BarcodeType>, promise: Promise ->
+      appContext.imageLoader?.loadImageForManipulationFromURL(
+        url,
+        object : ImageLoaderInterface.ResultListener {
+          override fun onSuccess(bitmap: Bitmap) {
+            val scanner = MLKitBarCodeScanner()
+            val formats = barcodeTypes.map { it.mapToBarcode() }
+            scanner.setSettings(formats)
+
+            moduleScope.launch {
+              val barcodes = scanner.scan(bitmap)
+                .filter { formats.contains(it.type) }
+                .map { BarCodeScannerResultSerializer.toBundle(it, 1.0f) }
+              promise.resolve(barcodes)
+            }
+          }
+
+          override fun onFailure(cause: Throwable?) {
+            promise.reject(CameraExceptions.ImageRetrievalException(url))
+          }
+        }
       )
+    }
 
-      OnViewDestroys<ExpoCameraView> { view ->
-        val uiManager = appContext.legacyModule<UIManager>()
-        uiManager?.unregisterLifecycleEventListener(view)
-        view.cameraView.stop()
+    OnDestroy {
+      try {
+        moduleScope.cancel(ModuleDestroyedException())
+      } catch (e: IllegalStateException) {
+        Log.e(TAG, "The scope does not have a job in it")
       }
+    }
 
-      Prop("type") { view: ExpoCameraView, type: Int ->
-        view.cameraView.facing = type
-      }
+    View(ExpoCameraView::class) {
+      Events(cameraEvents)
 
-      Prop("ratio") { view: ExpoCameraView, ratio: String? ->
-        if (ratio == null) {
-          return@Prop
+      Prop("facing") { view, facing: CameraType? ->
+        facing?.let {
+          if (view.lensFacing != facing) {
+            view.lensFacing = it
+          }
         }
-        view.cameraView.setAspectRatio(AspectRatio.parse(ratio))
       }
 
-      Prop("flashMode") { view: ExpoCameraView, torchMode: Int ->
-        view.cameraView.flash = torchMode
-      }
-
-      Prop("autoFocus") { view: ExpoCameraView, autoFocus: Boolean ->
-        view.cameraView.autoFocus = autoFocus
-      }
-
-      Prop("focusDepth") { view: ExpoCameraView, depth: Float ->
-        view.cameraView.focusDepth = depth
-      }
-
-      Prop("zoom") { view: ExpoCameraView, zoom: Float ->
-        view.cameraView.zoom = zoom
-      }
-
-      Prop("whiteBalance") { view: ExpoCameraView, whiteBalance: Int ->
-        view.cameraView.whiteBalance = whiteBalance
-      }
-
-      Prop("pictureSize") { view: ExpoCameraView, size: String? ->
-        if (size == null) {
-          return@Prop
+      Prop("flashMode") { view, flashMode: FlashMode? ->
+        flashMode?.let {
+          view.setCameraFlashMode(it)
         }
-        view.cameraView.pictureSize = Size.parse(size)
       }
 
-      Prop("barCodeScannerSettings") { view: ExpoCameraView, settings: Map<String, Any?>? ->
+      Prop("enableTorch") { view, enabled: Boolean? ->
+        view.enableTorch = enabled ?: false
+      }
+
+      Prop("animateShutter") { view, animate: Boolean? ->
+        view.animateShutter = animate ?: true
+      }
+
+      Prop("zoom") { view, zoom: Float? ->
+        zoom?.let {
+          view.camera?.cameraControl?.setLinearZoom(it)
+        }
+      }
+
+      Prop("mode") { view, mode: CameraMode? ->
+        mode?.let {
+          if (view.cameraMode != mode) {
+            view.cameraMode = it
+          }
+        }
+      }
+
+      Prop("mute") { view, muted: Boolean? ->
+        muted?.let {
+          if (it != view.mute) {
+            view.mute = it
+          }
+        }
+      }
+
+      Prop("videoQuality") { view, quality: VideoQuality? ->
+        quality?.let {
+          view.videoQuality = it
+        }
+      }
+
+      Prop("barcodeScannerSettings") { view, settings: BarcodeSettings? ->
         if (settings == null) {
           return@Prop
         }
-        view.setBarCodeScannerSettings(BarCodeScannerSettings(settings))
+        view.setBarcodeScannerSettings(settings)
       }
 
-      Prop("useCamera2Api") { view: ExpoCameraView, useCamera2Api: Boolean ->
-        view.cameraView.setUsingCamera2Api(useCamera2Api)
+      Prop("barcodeScannerEnabled") { view, enabled: Boolean? ->
+        enabled?.let {
+          view.setShouldScanBarcodes(enabled)
+        }
       }
 
-      Prop("barCodeScannerEnabled") { view: ExpoCameraView, barCodeScannerEnabled: Boolean? ->
-        view.setShouldScanBarCodes(barCodeScannerEnabled ?: false)
+      Prop("pictureSize") { view, pictureSize: String? ->
+        pictureSize?.let {
+          if (view.pictureSize != pictureSize) {
+            view.pictureSize = it
+            return@Prop
+          }
+        }
+
+        view.pictureSize = ""
       }
 
-      Prop("faceDetectorEnabled") { view: ExpoCameraView, faceDetectorEnabled: Boolean? ->
-        view.setShouldDetectFaces(faceDetectorEnabled ?: false)
+      Prop("autoFocus") { view, autoFocus: FocusMode? ->
+        view.autoFocus = autoFocus ?: FocusMode.OFF
       }
 
-      Prop("faceDetectorSettings") { view: ExpoCameraView, settings: Map<String, Any>? ->
-        view.setFaceDetectorSettings(settings)
+      Prop("ratio") { view, ratio: CameraRatio? ->
+        if (view.ratio != ratio) {
+          view.ratio = ratio
+        }
+      }
+
+      Prop("mirror") { view, mirror: Boolean? ->
+        mirror?.let {
+          view.mirror = it
+          return@Prop
+        }
+        view.mirror = false
+      }
+
+      OnViewDidUpdateProps { view ->
+        view.createCamera()
+      }
+
+      AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->
+        if (!EmulatorUtilities.isRunningOnEmulator()) {
+          view.takePicture(options, promise, cacheDirectory)
+        } else {
+          val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
+          moduleScope.launch {
+            ResolveTakenPicture(image, promise, options, false, cacheDirectory) { response ->
+              view.onPictureSaved(response)
+            }.resolve()
+          }
+        }
+      }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("getAvailablePictureSizes") { view: ExpoCameraView ->
+        return@AsyncFunction view.getAvailablePictureSizes()
+      }
+
+      AsyncFunction("record") { view: ExpoCameraView, options: RecordingOptions, promise: Promise ->
+        if (!view.mute && !permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
+          throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
+        }
+
+        view.record(options, promise, cacheDirectory)
+      }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("stopRecording") { view: ExpoCameraView ->
+        view.activeRecording?.close()
+      }.runOnQueue(Queues.MAIN)
+
+      AsyncFunction("resumePreview") { view: ExpoCameraView ->
+        view.resumePreview()
+      }
+
+      AsyncFunction("pausePreview") { view: ExpoCameraView ->
+        view.pausePreview()
+      }
+
+      OnViewDestroys { view ->
+        view.orientationEventListener.disable()
+        view.cancelCoroutineScope()
+        view.releaseCamera()
       }
     }
   }
@@ -258,8 +260,7 @@ class CameraViewModule : Module() {
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
 
-  private fun findView(viewTag: Int): ExpoCameraView {
-    return appContext.findView(viewTag)
-      ?: throw Exceptions.ViewNotFound(ExpoCameraView::class, viewTag)
+  companion object {
+    internal val TAG = CameraViewModule::class.java.simpleName
   }
 }

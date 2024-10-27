@@ -11,16 +11,16 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-**`expo-haptics`** provides haptic (touch) feedback for
+`expo-haptics` provides haptic (touch) feedback for:
 
-- iOS 10+ devices using the Taptic Engine
 - Android devices using Vibrator system service.
+- iOS 10+ devices using the Taptic Engine.
 
-On iOS, _the Taptic engine will do nothing if any of the following conditions are true on a user's device:_
+On iOS, the Taptic engine will do nothing if any of the following conditions are true on a user's device:
 
 - Low Power Mode is enabled. This can be detected with [`expo-battery`](/versions/latest/sdk/battery/).
 - User disabled the Taptic Engine in settings.
-- iOS Camera is active (in order prevent destabilization).
+- iOS Camera is active (to prevent destabilization).
 
 <PlatformsSection android emulator ios simulator />
 
@@ -30,14 +30,13 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 
 ## Configuration
 
-On Android, this module requires permission to control vibration on the device. The `VIBRATE` permission is added automatically.
+On Android, this library requires permission to control vibration on the device. The `VIBRATE` permission is added automatically.
 
 ## Usage
 
 <SnackInline label='Haptics usage' dependencies={['expo-haptics']}>
 
 ```jsx
-import * as React from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
@@ -103,7 +102,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -118,7 +116,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
-/* @end */
 ```
 
 </SnackInline>

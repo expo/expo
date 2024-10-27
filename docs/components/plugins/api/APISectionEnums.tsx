@@ -1,5 +1,3 @@
-import { css } from '@emotion/react';
-
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
@@ -7,8 +5,8 @@ import {
   CommentTextBlock,
   getTagNamesList,
   STYLES_APIBOX,
-  STYLES_APIBOX_NESTED,
   H3Code,
+  BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, H4, CODE, MONOSPACE } from '~/ui/components/Text';
 
@@ -27,48 +25,51 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
   return 0;
 };
 
-const renderEnumValue = (value: any) => (typeof value === 'string' ? `"${value}"` : value);
+const renderEnumValue = (value: any, fallback?: string) =>
+  typeof value === 'string' ? `"${value}"` : value ?? fallback;
 
-const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
-  <div key={`enum-definition-${name}`} css={[STYLES_APIBOX, enumContentStyles]}>
-    <APISectionDeprecationNote comment={comment} />
-    <APISectionPlatformTags comment={comment} prefix="Only for:" />
-    <H3Code tags={getTagNamesList(comment)}>
-      <MONOSPACE weight="medium">{name}</MONOSPACE>
-    </H3Code>
-    <CommentTextBlock comment={comment} includePlatforms={false} />
-    {children.sort(sortByValue).map((enumValue: EnumValueData) => (
-      <div css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]} key={enumValue.name}>
-        <APISectionDeprecationNote comment={enumValue.comment} />
-        <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" />
-        <H4 css={enumValueNameStyle}>
-          <CODE>{enumValue.name}</CODE>
-        </H4>
-        <CODE theme="secondary" className="mb-4">
-          {`${name}.${enumValue.name} ＝ ${renderEnumValue(enumValue.type.value)}`}
-        </CODE>
-        <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
+function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefinitionData }) {
+  return (
+    <div key={`enum-definition-${name}`} css={STYLES_APIBOX} className="!p-0">
+      <div className="px-5 pt-4">
+        <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} />
+        <H3Code tags={getTagNamesList(comment)}>
+          <MONOSPACE weight="medium" className="wrap-anywhere">
+            {name}
+          </MONOSPACE>
+        </H3Code>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <BoxSectionHeader text={`${name} Values`} className="!mb-0 !border-b-0" />
       </div>
-    ))}
-  </div>
-);
+      {children.sort(sortByValue).map((enumValue: EnumValueData) => (
+        <div className="border-t border-t-secondary p-5 pb-0 pt-4" key={enumValue.name}>
+          <APISectionDeprecationNote comment={enumValue.comment} />
+          <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" disableFallback />
+          <H4 className="!mt-0" hideInSidebar>
+            <MONOSPACE className="!text-inherit">{enumValue.name}</MONOSPACE>
+          </H4>
+          <CODE theme="secondary" className="mb-3">
+            {`${name}.${enumValue.name} ＝ ${renderEnumValue(
+              enumValue.type.value,
+              enumValue.type.name
+            )}`}
+          </CODE>
+          <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const APISectionEnums = ({ data }: APISectionEnumsProps) =>
   data?.length ? (
     <>
       <H2 key="enums-header">Enums</H2>
-      {data.map(renderEnum)}
+      {data.map(enumData => (
+        <APISectionEnum key={enumData.name} data={enumData} />
+      ))}
     </>
   ) : null;
-
-const enumValueNameStyle = css({
-  h4: {
-    marginTop: 0,
-  },
-});
-
-const enumContentStyles = css({
-  paddingBottom: 0,
-});
 
 export default APISectionEnums;

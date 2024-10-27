@@ -1,0 +1,39 @@
+import AndroidEmulatorInstructions from './_androidEmulatorInstructions.mdx';
+import AndroidStudioEnvironmentInstructions from './_androidStudioEnvironmentInstructions.mdx';
+import AndroidStudioInstructions from './_androidStudioInstructions.mdx';
+import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+## Set up an Android Emulator with a development build
+
+<BuildEnvironmentSwitch />
+
+<AndroidStudioEnvironmentInstructions />
+
+<AndroidStudioInstructions />
+
+<AndroidEmulatorInstructions />
+
+## Running your app on an Android Emulator
+
+<Step label="1">
+
+### Install expo-dev-client
+
+Run the following command in your project's root directory:
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+</Step>
+
+<Step label="2">
+
+Run the following from your terminal:
+
+<Terminal cmd={['$ npx expo run:android']} />
+
+> This command runs a development server after building your app. You can skip running `npx expo start` on the next page.
+
+</Step>

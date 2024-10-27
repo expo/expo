@@ -1,7 +1,0 @@
-import ABI49_0_0ExpoModulesCore
-
-internal class IpAddressException: GenericException<Int32> {
-  override var reason: String {
-    "No network interfaces could be retrieved. getifaddrs() failed with error number: \(param)"
-  }
-}

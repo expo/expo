@@ -11,8 +11,8 @@ Provides GLView that acts as OpenGL ES render target and gives GL context object
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/gl-view.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/gl-view/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/gl-view/)
 
 # Installation in managed Expo projects
 
@@ -45,13 +45,13 @@ To use reanimated worklets you will need compatible version of `react-native-rea
 | <11.3.0  | <=2.8.0                 |
 | >=11.3.0 | >2.8.0                  |
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
 ### Configure for Android
 
 No additional set up necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

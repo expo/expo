@@ -14,7 +14,9 @@ import {
   getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
   getUpdatesTimeout,
+  getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
+  FINGERPRINT_RUNTIME_VERSION_SENTINEL,
 } from '../Updates';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
@@ -178,17 +180,33 @@ describe(getNativeVersion, () => {
   });
 });
 
+describe(getUpdatesUseEmbeddedUpdate, () => {
+  it('returns true if updates.useEmbeddedUpdate is true', () => {
+    expect(getUpdatesUseEmbeddedUpdate({ updates: { useEmbeddedUpdate: true } })).toBe(true);
+  });
+
+  it('returns false if updates.useEmbeddedUpdate is false', () => {
+    expect(getUpdatesUseEmbeddedUpdate({ updates: { useEmbeddedUpdate: false } })).toBe(false);
+  });
+
+  it('returns true if updates.useEmbeddedUpdate is undefined', () => {
+    expect(getUpdatesUseEmbeddedUpdate({ updates: {} })).toBe(true);
+  });
+});
+
 describe(getRuntimeVersionAsync, () => {
   it('works if the top level runtimeVersion is a string', async () => {
     const runtimeVersion = '42';
     expect(await getRuntimeVersionAsync('', { runtimeVersion }, 'ios')).toBe(runtimeVersion);
   });
+
   it('works if the platform specific runtimeVersion is a string', async () => {
     const runtimeVersion = '42';
     expect(await getRuntimeVersionAsync('', { ios: { runtimeVersion } }, 'ios')).toBe(
       runtimeVersion
     );
   });
+
   it('works if the runtimeVersion is a nativeVersion policy', async () => {
     const version = '1';
     const buildNumber = '2';
@@ -200,6 +218,7 @@ describe(getRuntimeVersionAsync, () => {
       )
     ).toBe(`${version}(${buildNumber})`);
   });
+
   it('works if the runtimeVersion is an appVersion policy', async () => {
     const version = '1';
     const buildNumber = '2';
@@ -211,17 +230,24 @@ describe(getRuntimeVersionAsync, () => {
       )
     ).toBe(version);
   });
+
+  it('works if the runtimeVersion is a fingerprint policy', async () => {
+    expect(
+      await getRuntimeVersionAsync('', { runtimeVersion: { policy: 'fingerprint' } }, 'ios')
+    ).toBe(FINGERPRINT_RUNTIME_VERSION_SENTINEL);
+  });
+
   it('returns null if no runtime version is supplied', async () => {
     expect(await getRuntimeVersionAsync('', {}, 'ios')).toEqual(null);
   });
+
   it('throws if runtime version is not parseable', async () => {
     await expect(getRuntimeVersionAsync('', { runtimeVersion: 1 } as any, 'ios')).rejects.toThrow(
-      `"1" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`
+      `"1" is not a valid runtime version. Only a string or a runtime version policy is supported.`
     );
+
     await expect(
       getRuntimeVersionAsync('', { runtimeVersion: { policy: 'unsupportedPlugin' } } as any, 'ios')
-    ).rejects.toThrow(
-      `"{"policy":"unsupportedPlugin"}" is not a valid runtime version. getRuntimeVersionAsync only supports a string, "sdkVersion", "appVersion", "nativeVersion" or "fingerprintExperimental" policy.`
-    );
+    ).rejects.toThrow(`"unsupportedPlugin" is not a valid runtime version policy type.`);
   });
 });

@@ -10,6 +10,71 @@
 
 ### 💡 Others
 
+## 4.0.0 — 2024-10-22
+
+### 🐛 Bug fixes
+
+- Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
+- Replaced the config-plugins deprecated `getAppThemeLightNoActionBarGroup` method with the new `getAppThemeGroup`. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.0.7 - 2024-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.5 - 2024-06-05
+
+### 💡 Others
+
+- Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
+
+## 3.0.4 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Fix event listeners on Android. ([#28260](https://github.com/expo/expo/pull/28260) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Migrated dependency from `@react-native/normalize-color` to `@react-native/normalize-colors`. ([#27736](https://github.com/expo/expo/pull/27736) by [@kudo](https://github.com/kudo))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 2.8.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 2.8.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
 ## 2.7.0 — 2023-11-14
 
 ### 🛠 Breaking changes

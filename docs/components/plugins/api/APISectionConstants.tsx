@@ -5,48 +5,48 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getTagNamesList,
-  STYLE_APIBOX_NO_SPACING,
   STYLES_APIBOX,
   H3Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, BOLD, P, MONOSPACE } from '~/ui/components/Text';
+import { H2, DEMI, P, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
+  sdkVersion: string;
   apiName?: string;
 };
 
 const renderConstant = (
   { name, comment, type }: ConstantDefinitionData,
+  sdkVersion: string,
   apiName?: string
 ): JSX.Element => (
-  <div key={`constant-definition-${name}`} css={STYLES_APIBOX}>
-    <APISectionDeprecationNote comment={comment} />
-    <APISectionPlatformTags comment={comment} prefix="Only for:" />
+  <div key={`constant-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
+    <APISectionDeprecationNote comment={comment} sticky />
+    <APISectionPlatformTags comment={comment} />
     <H3Code tags={getTagNamesList(comment)}>
-      <MONOSPACE weight="medium">
+      <MONOSPACE weight="medium" className="wrap-anywhere">
         {apiName ? `${apiName}.` : ''}
         {name}
       </MONOSPACE>
     </H3Code>
     {type && (
       <P>
-        <BOLD>Type:</BOLD> <APIDataType typeDefinition={type} />
+        <DEMI theme="secondary">Type:</DEMI>{' '}
+        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </P>
     )}
     {comment && (
-      <div css={STYLE_APIBOX_NO_SPACING}>
-        <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
-      </div>
+      <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
     )}
   </div>
 );
 
-const APISectionConstants = ({ data, apiName }: APISectionConstantsProps) =>
+const APISectionConstants = ({ data, sdkVersion, apiName }: APISectionConstantsProps) =>
   data?.length ? (
     <>
       <H2 key="constants-header">Constants</H2>
-      {data.map(constant => renderConstant(constant, apiName))}
+      {data.map(constant => renderConstant(constant, sdkVersion, apiName))}
     </>
   ) : null;
 

@@ -4,18 +4,16 @@ description: A library that provides access to the device's magnetometer sensor.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
 packageName: 'expo-sensors'
 iconUrl: '/static/images/packages/expo-sensors.png'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`Magnetometer` from **`expo-sensors`** provides access to the device magnetometer sensor(s) to respond to and measure the changes in the magnetic field measured in microtesla (`μT`).
+`Magnetometer` from `expo-sensors` provides access to the device magnetometer sensor(s) to respond to and measure the changes in the magnetic field measured in microtesla (`μT`).
 
 You can access the calibrated values with `Magnetometer` and uncalibrated raw values with `MagnetometerUncalibrated`.
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -26,7 +24,7 @@ You can access the calibrated values with `Magnetometer` and uncalibrated raw va
 <SnackInline label='Magnetometer' dependencies={['expo-sensors']}>
 
 ```jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Magnetometer } from 'expo-sensors';
 
@@ -80,7 +78,6 @@ export default function Compass() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -108,7 +105,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
   },
 });
-/* @end */
 ```
 
 </SnackInline>

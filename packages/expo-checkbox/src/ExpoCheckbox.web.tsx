@@ -1,4 +1,5 @@
 /**
+ * Copyright © 2024 650 Industries.
  * Copyright (c) Nicolas Gallagher.
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -9,21 +10,18 @@
  */
 
 import React from 'react';
-// @ts-ignore
-import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
+import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
 
-import { CheckboxProps, CheckboxEvent } from './Checkbox.types';
+import type { CheckboxProps, CheckboxEvent } from './Checkbox.types';
 
-export default class ExpoCheckbox extends React.PureComponent<CheckboxProps> {
-  private handleChange = (event: React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => {
-    const value = event.nativeEvent.target.checked;
-    event.nativeEvent.value = value;
-    this.props.onChange?.(event);
-    this.props.onValueChange?.(value);
-  };
-
-  render() {
-    const { color, disabled, onChange, onValueChange, style, value, ...other } = this.props;
+const ExpoCheckbox = React.forwardRef(
+  ({ color, disabled, onChange, onValueChange, style, value, ...other }: CheckboxProps, ref) => {
+    const handleChange = (event: React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => {
+      const value = event.nativeEvent.target.checked;
+      event.nativeEvent.value = value;
+      onChange?.(event);
+      onValueChange?.(value);
+    };
 
     const fakeControl = (
       <View
@@ -39,23 +37,25 @@ export default class ExpoCheckbox extends React.PureComponent<CheckboxProps> {
     );
 
     const nativeControl = createElement('input', {
-      accessibilityChecked: value,
-      accessibilityDisabled: disabled,
+      'aria-checked': value,
+      'aria-disabled': disabled,
       checked: value,
       disabled,
-      onChange: this.handleChange,
+      onChange: handleChange,
       style: [styles.nativeControl, styles.cursorInherit],
       type: 'checkbox',
     });
 
     return (
-      <View {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
+      <View ref={ref} {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
         {nativeControl}
         {fakeControl}
       </View>
     );
   }
-}
+);
+
+export default ExpoCheckbox;
 
 const styles = StyleSheet.create({
   root: {

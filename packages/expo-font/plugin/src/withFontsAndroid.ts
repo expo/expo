@@ -1,4 +1,4 @@
-import { ConfigPlugin, withDangerousMod } from 'expo/config-plugins';
+import { type ConfigPlugin, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -17,7 +17,9 @@ export const withFontsAndroid: ConfigPlugin<string[]> = (config, fonts) => {
           );
           await fs.mkdir(fontsDir, { recursive: true });
           const output = path.join(fontsDir, path.basename(asset));
-          await fs.copyFile(asset, output);
+          if (output.endsWith('.ttf') || output.endsWith('.otf')) {
+            await fs.copyFile(asset, output);
+          }
         })
       );
       return config;

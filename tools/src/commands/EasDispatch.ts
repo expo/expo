@@ -4,14 +4,15 @@ import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs, { mkdirp } from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
+import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 
-import { EXPO_DIR } from '../Constants';
+import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import Git from '../Git';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
@@ -140,7 +141,6 @@ async function iosBuildAndSubmitAsync() {
   const credentialsDir = path.join(projectDir, 'credentials');
   const fastlaneMatchBucketCopyPath = path.join(credentialsDir, 'fastlane-match');
   const releaseSecretsPath = path.join(credentialsDir, 'secrets');
-  const isDarwin = os.platform() === 'darwin';
 
   logger.info('Preparing credentials');
   try {
@@ -182,12 +182,20 @@ async function iosBuildAndSubmitAsync() {
         stdio: isDebug ? 'inherit' : 'pipe',
       }
     );
+    const { stdout: opensslVersionCommandOutput } = await spawnAsync('openssl', ['--version'], {
+      stdio: isDebug ? 'inherit' : 'pipe',
+    });
+    const opensslVersionRegex = /OpenSSL\s(\d+\.\d+\.\d+)/;
+    const matches = opensslVersionCommandOutput.match(opensslVersionRegex);
+    assert(matches, 'Could not parse openssl version');
+    const opensslVersion = matches[1];
+    const isOpensslVersionAbove1 = semver.satisfies(opensslVersion, '>1');
     await spawnAsync(
       'openssl',
       [
         'pkcs12',
         '-export',
-        ...(isDarwin ? [] : ['-legacy']),
+        ...(isOpensslVersionAbove1 ? ['-legacy'] : []),
         '-out',
         p12KeystorePath,
         '-inkey',
@@ -204,7 +212,7 @@ async function iosBuildAndSubmitAsync() {
       path.join(projectDir, 'credentials.json'),
       JSON.stringify({
         ios: {
-          'Expo Go (versioned)': {
+          'Expo Go': {
             provisioningProfilePath: path.join(
               fastlaneMatchBucketCopyPath,
               'C8D8QTF339/profiles/appstore/AppStore_host.exp.Exponent.mobileprovision'
@@ -362,7 +370,7 @@ async function androidAPKBuildAndPublishAsync() {
 }
 
 async function internalRemoveBackgroundPermissionsFromInfoPlistAsync(): Promise<void> {
-  const INFO_PLIST_PATH = path.join(EXPO_DIR, 'ios/Exponent/Supporting/Info.plist');
+  const INFO_PLIST_PATH = path.join(EXPO_GO_IOS_DIR, 'Exponent/Supporting/Info.plist');
   const rawPlist = await fs.readFile(INFO_PLIST_PATH, 'utf-8');
   const parsedPlist = plist.parse(rawPlist);
 

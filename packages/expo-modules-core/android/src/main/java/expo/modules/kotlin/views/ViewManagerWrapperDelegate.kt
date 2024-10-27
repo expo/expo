@@ -11,7 +11,7 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.logger
 
-class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
+class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>) {
   private val definition: ViewManagerDefinition
     get() = requireNotNull(moduleHolder.definition.viewManagerDefinition)
 
@@ -66,7 +66,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
       val key = iterator.nextKey()
       expoProps[key]?.let { expoProp ->
         try {
-          expoProp.set(propsMap.getDynamic(key), view, moduleHolder.module._appContext)
+          expoProp.set(propsMap.getDynamic(key), view, moduleHolder.module._runtimeContext?.appContext)
         } catch (exception: Throwable) {
           // The view wasn't constructed correctly, so errors are expected.
           // We can ignore them.
@@ -114,7 +114,8 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
       ?.names
       ?.forEach {
         builder.put(
-          normalizeEventName(it), MapBuilder.of<String, Any>("registrationName", it)
+          normalizeEventName(it),
+          MapBuilder.of<String, Any>("registrationName", it)
         )
       }
     return builder.build()

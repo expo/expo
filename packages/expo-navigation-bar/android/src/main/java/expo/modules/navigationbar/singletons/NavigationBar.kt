@@ -14,8 +14,7 @@ object NavigationBar {
   fun setBackgroundColor(
     activity: Activity,
     color: Int,
-    successCallback: () -> Unit,
-    failureCallback: (reason: String) -> Unit
+    successCallback: () -> Unit
   ) {
     activity.window.navigationBarColor = color
     successCallback()

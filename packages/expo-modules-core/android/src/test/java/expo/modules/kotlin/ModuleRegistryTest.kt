@@ -58,7 +58,7 @@ class ModuleRegistryTest {
     try {
       moduleRegistry.register(provider)
       Assert.fail("Module registry should throw.")
-    } catch (e: Exception) {
+    } catch (_: Exception) {
     }
   }
 

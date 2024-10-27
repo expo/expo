@@ -5,7 +5,6 @@ import {
 } from '@expo/multipart-body-parser';
 import execa from 'execa';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -13,9 +12,9 @@ import {
   execute,
   projectRoot,
   getLoadedModulesAsync,
-  setupTestProjectAsync,
   bin,
   ensurePortFreeAsync,
+  setupTestProjectWithOptionsAsync,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
@@ -35,12 +34,6 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/start').expoStart`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/start/index.js',
     '@expo/cli/build/src/utils/args.js',
@@ -118,10 +111,17 @@ describe('server', () => {
   it(
     'runs `npx expo start`',
     async () => {
-      const projectRoot = await setupTestProjectAsync('basic-start', 'with-blank');
+      const projectRoot = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
+
       await fs.remove(path.join(projectRoot, '.expo'));
 
-      const promise = execa('node', [bin, 'start'], { cwd: projectRoot });
+      const promise = execa('node', [bin, 'start'], {
+        cwd: projectRoot,
+        env: {
+          ...process.env,
+          EXPO_USE_FAST_RESOLVER: 'true',
+        },
+      });
 
       console.log('Starting server');
 
@@ -153,7 +153,7 @@ describe('server', () => {
 
       const multipartParts = await parseMultipartMixedResponseAsync(
         response.headers.get('content-type') as string,
-        await response.buffer()
+        Buffer.from(await response.arrayBuffer())
       );
       const manifestPart = nullthrows(
         multipartParts.find((part) => isMultipartPartWithName(part, 'manifest'))
@@ -172,15 +172,15 @@ describe('server', () => {
 
       // URLs
       expect(manifest.launchAsset.url).toBe(
-        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes'
+        'http://127.0.0.1:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable'
       );
       expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:8081');
       expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
       expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:8081');
 
       // Manifest
-      expect(manifest.runtimeVersion).toBe('exposdk:49.0.0');
-      expect(manifest.extra.expoClient.sdkVersion).toBe('49.0.0');
+      expect(manifest.runtimeVersion).toBe('1.0');
+      expect(manifest.extra.expoClient.sdkVersion).toBe('51.0.0');
       expect(manifest.extra.expoClient.slug).toBe('basic-start');
       expect(manifest.extra.expoClient.name).toBe('basic-start');
 
@@ -188,10 +188,35 @@ describe('server', () => {
       expect(manifest.extra.expoGo.__flipperHack).toBe('React Native packager is running');
 
       console.log('Fetching bundle');
-      const bundle = await fetch(manifest.launchAsset.url).then((res) => res.text());
+      const bundleRequest = await fetch(manifest.launchAsset.url);
+      if (!bundleRequest.ok) {
+        console.error(await bundleRequest.text());
+        throw new Error('Failed to fetch bundle');
+      }
+      const bundle = await bundleRequest.text();
       console.log('Fetched bundle: ', bundle.length);
       expect(bundle.length).toBeGreaterThan(1000);
       console.log('Finished');
+
+      // Get source maps for the bundle
+      // Find source map URL
+      const sourceMapUrl = bundle.match(/\/\/# sourceMappingURL=(.*)/)?.[1];
+      expect(sourceMapUrl).toBeTruthy();
+
+      const sourceMaps = await fetch(sourceMapUrl!).then((res) => res.json());
+      expect(sourceMaps).toMatchObject({
+        version: 3,
+        sources: expect.arrayContaining([
+          '__prelude__',
+          expect.stringContaining('metro-runtime/src/polyfills/require.js'),
+          expect.stringContaining('@react-native/js-polyfills/console.js'),
+          expect.stringContaining('@react-native/js-polyfills/error-guard.js'),
+          '\0polyfill:external-require',
+          // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
+          '\0polyfill:environment-variables',
+        ]),
+        mappings: expect.any(String),
+      });
 
       // Kill process.
       promise.kill('SIGTERM');

@@ -3,13 +3,12 @@ title: TypeScript functions
 description: Learn how to create and use EAS Build functions in your custom build configurations.
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
-
-> **Warning** This functionality is in preview, under active development, and likely to change.
 
 EAS Build functions are a great way to extend the functionality of custom builds. You can use them to create reusable steps, and to write your logic in JavaScript, TypeScript, or Bash (more information in [`command` in the config schema](./schema.mdx#functionsfunction_namecommand)). This guide provides a walkthrough of creating a function in TypeScript.
 
@@ -61,13 +60,9 @@ export default myFunction;
 
 <Step label="2">
 
-## Compiling the function and connect it to the config file
+## Compile the function
 
-After generating the function, you will want to compile it and connect it to your custom build YAML configuration.
-
-### Compile the function
-
-Functions must be compiled to a single JavaScript file that can be run without installing any Node Module dependencies. The default `build` script for generated functions uses the [ncc](https://github.com/vercel/ncc) to compile your function into a single file with all its dependencies. If you don't have the `ncc` installed globally on your machine, run `npm install -g @vercel/ncc` to install it. Next, run the build script in the  **.eas/build/myFunction** directory:
+Functions must be compiled to a single JavaScript file that can be run without installing any dependencies. The default `build` script for generated functions uses [ncc](https://github.com/vercel/ncc) to compile your function into a single file with all its dependencies. If you don't have the `ncc` installed globally on your machine, run `npm install -g @vercel/ncc` to install it. Next, run the build script in the **.eas/build/myFunction** directory:
 
 <Terminal cmd={['$ npm run build']} />
 
@@ -87,7 +82,13 @@ This command triggers the `build` script placed in the **package.json** file of 
 
 The `build` script generates **build/index.js**. This file must be uploaded to EAS Build as a part of your project archive, so that the builder can run your function. Ensure that the file is not excluded by a **.gitignore** file or **.easignore** file.
 
-### Connect the function to the custom build config
+</Step>
+
+<Step label="3">
+
+## Expose the function to the custom build config
+
+> **Note**: The following example assumes that you have already set up a custom build workflow and configured it in your **eas.json**. If not, see [Get started with custom builds](/custom-builds/get-started/#create-a-workflow) before proceeding.
 
 Let's assume that you have a **config.yml** file in the **.eas/build** directory. It contains the following content:
 
@@ -96,9 +97,7 @@ build:
   name: My example config
   steps:
     - eas/checkout
-    - run:
-        name: Install dependencies
-        command: npm install
+    - eas/install_node_modules
     - run:
         name: Finished
         command: echo Finished
@@ -111,9 +110,7 @@ build:
   name: My example config
   steps:
     - eas/checkout
-    - run:
-        name: Install dependencies
-        command: npm install
+    - eas/install_node_modules
     - run:
         name: Finished
         command: echo Finished
@@ -135,9 +132,7 @@ build:
   name: My example config
   steps:
     - eas/checkout
-    - run:
-        name: Install dependencies
-        command: npm install
+    - eas/install_node_modules
     # @info #
     - my_function
     # @end #
@@ -151,14 +146,14 @@ functions:
     path: ./myFunction
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Example of a custom build config using a JavaScript/TypeScript function."
   src="/static/images/eas-build/custom-build-function.png"
 />
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 
 ## Working on the function
 
@@ -169,9 +164,7 @@ build:
   name: My example config
   steps:
     - eas/checkout
-    - run:
-        name: Install dependencies
-        command: npm install
+    - eas/install_node_modules
     # @info #
     - my_function:
         inputs:
@@ -256,7 +249,7 @@ async function myFunction(
 export default myFunction;
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Example of a custom build config using custom JavaScript/TypeScript function."
   src="/static/images/eas-build/custom-build-function-advanced.png"
 />

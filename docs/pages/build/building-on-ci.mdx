@@ -4,20 +4,26 @@ description: Learn how to trigger builds on EAS for your app from a CI environme
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
-
-Before building with EAS on CI, we need to install and configure `eas-cli`. Then, we can trigger new builds with the `eas build` command.
 
 ## Prerequisites
 
 ### Run a successful build from your local machine
 
-To trigger EAS builds from a CI environment, we first need to configure our app for EAS Build and successfully run a build from our local machine for each platform that we'd like to support on CI.
+To trigger EAS builds from a CI environment, your app needs to be set up to use EAS Build in non-interactive mode. To do this, go through the EAS Build initialization steps and run a successful build from your local terminal for each platform you would like to support on CI. This way, the `eas build` command can prompt for any additional configuration it needs, and then that configuration will be available for future non-interactive runs on CI.
 
-If you have run `eas build -p [all|ios|android]` successfully before, then you can continue.
+Running a build locally will accomplish the following critical configuration steps:
 
-If you haven't done this yet, see [Create your first build](setup.mdx) guide and return here when you're ready.
+- Initialize the project on EAS by generating a `projectId`.
+- Add an **eas.json** file defining your build profiles.
+- Populates critical app config properties for native builds, such as `android.packageName` and `ios.bundleIdentifier`.
+- Ensure build credentials are created, including Android keystores and iOS distribution certs and provisioning profiles.
+
+Run `eas build -p [all|android|ios]` and verify that your builds for each platform complete successfully. Then, continue with the below steps for implementing EAS Build on CI.
+
+If you haven't done this yet, see the [Create your first build](/build/setup/) guide and return here when you're ready.
 
 ## Configure your app for CI
 
@@ -47,24 +53,39 @@ Next, we need to ensure that we can authenticate ourselves on CI as the owner of
 
 See [personal access tokens](/accounts/programmatic-access/#personal-access-tokens) to learn how to create access tokens.
 
+### (Optional) Provide an ASC API Token for your Apple Team
+
+In the event your iOS credentials need to be repaired, we will need an ASC API key to authenticate ourselves to Apple in CI. A common case is when your provisioning profile needs to be re-signed.
+
+You will need to create an [API Key](https://expo.fyi/creating-asc-api-key). Next, you will need to gather information about your [Apple Team](https://expo.fyi/apple-team).
+
+Using the information you've gathered, pass it into the build command through environment variables. You will need to pass the following:
+
+- `EXPO_ASC_API_KEY_PATH`: The path to your ASC API Key **.p8** file. For example, **/path/to/key/AuthKey_SFB993FB5F.p8**.
+- `EXPO_ASC_KEY_ID`: The key ID of your ASC API Key. For example, `SFB993FB5F`.
+- `EXPO_ASC_ISSUER_ID`: The issuer ID of your ASC API Key. For example, `f9675cff-f45d-4116-bd2c-2372142cee09`.
+- `EXPO_APPLE_TEAM_ID`: Your Apple Team ID. For example, `77KQ969CHE`.
+- `EXPO_APPLE_TEAM_TYPE`: Your Apple Team Type. Valid types are `IN_HOUSE`, `COMPANY_OR_ORGANIZATION`, or `INDIVIDUAL`.
+
 ### Trigger new builds
 
 Now that we're authenticated with Expo CLI, we can create the build step.
 
 To trigger new builds, we will add this script to our configuration:
 
-```sh
-npx eas-cli build --platform all --non-interactive
-```
+<Terminal cmd={['$ npx eas-cli build --platform all --non-interactive --no-wait']} />
 
-This will trigger a new build on EAS and print the URLs for the built files after the build completes.
+This will trigger a new build on EAS. A URL will be printed, linking to the build's progress in the EAS dashboard.
+
+> **info** The `--no-wait` flag exits the step once the build has been triggered. You are not billed for CI execution time while EAS performs the build. However, your CI will report that the build job is passing only if triggering EAS Build is successful.
+>
+> If you need to add another CI step to run once the build is complete, remove this flag.
 
 <Collapsible summary="Travis CI">
 
 Add the following code snippet in **.travis.yml** at the root of your project repository.
 
 ```yaml travis.yml
----
 language: node_js
 node_js:
   - node
@@ -81,7 +102,7 @@ jobs:
       node_js: lts/*
       script:
         - npm ci
-        - npx eas-cli build --platform all --non-interactive
+        - npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
@@ -112,7 +133,7 @@ eas-build:
   stage: build
   script:
     - apk add --no-cache bash
-    - npx eas-cli build --platform all --non-interactive
+    - npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
@@ -138,7 +159,7 @@ pipelines:
         script:
           - apk add --no-cache bash
           - npm ci
-          - npx eas-cli build --platform all --non-interactive
+          - npx eas-cli build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>
@@ -166,7 +187,7 @@ jobs:
           command: npm ci
       - run:
           name: Trigger build
-          command: npx eas-cli build --platform all --non-interactive
+          command: npx eas-cli build --platform all --non-interactive --no-wait
 
 workflows:
   build_app:
@@ -195,8 +216,8 @@ jobs:
     name: Install and build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 18.x
           cache: npm
@@ -208,7 +229,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build on EAS
-        run: eas build --platform all --non-interactive
+        run: eas build --platform all --non-interactive --no-wait
 ```
 
 </Collapsible>

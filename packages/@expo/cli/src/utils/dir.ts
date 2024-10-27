@@ -1,19 +1,20 @@
-import fs from 'fs-extra';
+import fs from 'fs';
+import fse from 'fs-extra';
 
 export function fileExistsSync(file: string): boolean {
-  try {
-    return fs.statSync(file)?.isFile() ?? false;
-  } catch {
-    return false;
-  }
+  return !!fs
+    .statSync(file, {
+      throwIfNoEntry: false,
+    })
+    ?.isFile();
 }
 
 export function directoryExistsSync(file: string): boolean {
-  try {
-    return fs.statSync(file)?.isDirectory() ?? false;
-  } catch {
-    return false;
-  }
+  return !!fs
+    .statSync(file, {
+      throwIfNoEntry: false,
+    })
+    ?.isDirectory();
 }
 
 export async function directoryExistsAsync(file: string): Promise<boolean> {
@@ -26,10 +27,10 @@ export async function fileExistsAsync(file: string): Promise<boolean> {
 
 export const ensureDirectoryAsync = (path: string) => fs.promises.mkdir(path, { recursive: true });
 
-export const ensureDirectory = (path: string) => fs.mkdirSync(path, { recursive: true });
+export const ensureDirectory = (path: string) => fse.mkdirSync(path, { recursive: true });
 
-export const copySync = fs.copySync;
+export const copySync = fse.copySync;
 
-export const copyAsync = fs.copy;
+export const copyAsync = fse.copy;
 
-export const removeAsync = fs.remove;
+export const removeAsync = fse.remove;

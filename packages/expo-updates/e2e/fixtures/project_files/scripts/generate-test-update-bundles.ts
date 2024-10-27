@@ -12,6 +12,7 @@ const notifyStrings = [
   'test-update-invalid-hash',
   'test-update-older',
   'test-assets-1',
+  'test-update-crashing',
 ];
 
 const platform = process.argv[2];
@@ -47,10 +48,15 @@ async function createTestUpdateBundles(
   const testUpdateJson: { [k: string]: any } = {};
   for (const notifyString of ['test', ...notifyStrings]) {
     console.log(`Creating bundle for string '${notifyString}'...`);
-    const modifiedAppJs = originalAppJs.replace(
+    let modifiedAppJs = originalAppJs.replace(
       /testID="updateString" value="test"/g,
       `testID="updateString" value="${notifyString}"`
     );
+
+    if (notifyString === 'test-update-crashing') {
+      modifiedAppJs = modifiedAppJs.replace('// REPLACE_WITH_CRASHING_CODE', 'blah.blah;');
+    }
+
     await fs.rm(appJsPath);
     await fs.writeFile(appJsPath, modifiedAppJs, 'utf-8');
     await createUpdateBundleAsync(projectRoot, platform);

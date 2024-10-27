@@ -48,9 +48,9 @@ function path() {
   };
   return data;
 }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -63,7 +63,6 @@ function isEnabled() {
   return !(0, _getenv().boolish)('EXPO_NO_DOTENV', false);
 }
 function createControlledEnvironment() {
-  const IS_DEBUG = require('debug').enabled('expo:env');
   let userDefinedEnvironment = undefined;
   let memo = undefined;
   function _getForce(projectRoot, options = {}) {
@@ -82,40 +81,40 @@ function createControlledEnvironment() {
 
     // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
     const dotenvFiles = getFiles(process.env.NODE_ENV, options);
-    const loadedEnvFiles = [];
-    const parsed = {};
 
     // Load environment variables from .env* files. Suppress warnings using silent
-    // if this file is missing. dotenv will never modify any environment variables
-    // that have already been set. Variable expansion is supported in .env files.
+    // if this file is missing. Dotenv will only parse the environment variables,
+    // `@expo/env` will set the resulting variables to the current process.
+    // Variable expansion is supported in .env files, and executed as final step.
     // https://github.com/motdotla/dotenv
     // https://github.com/motdotla/dotenv-expand
-    dotenvFiles.forEach(dotenvFile => {
+    const parsedEnv = {};
+    const loadedEnvFiles = [];
+
+    // Iterate over each dotenv file in lowest prio to highest prio order.
+    // This step won't write to the process.env, but will overwrite the parsed envs.
+    dotenvFiles.reverse().forEach(dotenvFile => {
       const absoluteDotenvFile = path().resolve(projectRoot, dotenvFile);
       if (!fs().existsSync(absoluteDotenvFile)) {
         return;
       }
       try {
-        const results = (0, _dotenvExpand().expand)(dotenv().config({
-          debug: IS_DEBUG,
-          path: absoluteDotenvFile,
-          // We will handle overriding ourselves to allow for HMR.
-          override: true
-        }));
-        if (results.parsed) {
+        const result = dotenv().parse(fs().readFileSync(absoluteDotenvFile, 'utf-8'));
+        if (!result) {
+          debug(`Failed to load environment variables from: ${absoluteDotenvFile}%s`);
+        } else {
           loadedEnvFiles.push(absoluteDotenvFile);
           debug(`Loaded environment variables from: ${absoluteDotenvFile}`);
-          for (const key of Object.keys(results.parsed || {})) {
-            var _userDefinedEnvironme;
-            if (typeof parsed[key] === 'undefined' &&
-            // Custom override logic to prevent overriding variables that
-            // were set before the CLI process began.
-            typeof ((_userDefinedEnvironme = userDefinedEnvironment) === null || _userDefinedEnvironme === void 0 ? void 0 : _userDefinedEnvironme[key]) === 'undefined') {
-              parsed[key] = results.parsed[key];
+          for (const key of Object.keys(result)) {
+            if (typeof userDefinedEnvironment?.[key] !== 'undefined') {
+              debug(`"${key}" is already defined and IS NOT overwritten by: ${absoluteDotenvFile}`);
+            } else {
+              if (typeof parsedEnv[key] !== 'undefined') {
+                debug(`"${key}" is already defined and overwritten by: ${absoluteDotenvFile}`);
+              }
+              parsedEnv[key] = result[key];
             }
           }
-        } else {
-          debug(`Failed to load environment variables from: ${absoluteDotenvFile}`);
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -129,9 +128,35 @@ function createControlledEnvironment() {
       debug(`No environment variables loaded from .env files.`);
     }
     return {
-      env: parsed,
-      files: loadedEnvFiles
+      env: _expandEnv(parsedEnv),
+      files: loadedEnvFiles.reverse()
     };
+  }
+
+  /** Expand environment variables based on the current and parsed envs */
+  function _expandEnv(parsedEnv) {
+    const expandedEnv = {};
+
+    // Pass a clone of `process.env` to avoid mutating the original environment.
+    // When the expansion is done, we only store the environment variables that were initially parsed from `parsedEnv`.
+    const allExpandedEnv = (0, _dotenvExpand().expand)({
+      parsed: parsedEnv,
+      processEnv: {
+        ...process.env
+      }
+    });
+    if (allExpandedEnv.error) {
+      console.error(`Failed to expand environment variables, using non-expanded environment variables: ${allExpandedEnv.error}`);
+      return parsedEnv;
+    }
+
+    // Only store the values that were initially parsed, from `parsedEnv`.
+    for (const key of Object.keys(parsedEnv)) {
+      if (allExpandedEnv.parsed?.[key]) {
+        expandedEnv[key] = allExpandedEnv.parsed[key];
+      }
+    }
+    return expandedEnv;
   }
 
   /** Get the environment variables without mutating the environment. This returns memoized values unless the `force` property is provided. */
@@ -164,10 +189,10 @@ function createControlledEnvironment() {
         console.log(_chalk().default.gray('env: export', keys.join(' ')));
       }
     }
-    process.env = {
-      ...process.env,
-      ...envInfo.env
-    };
+    for (const key of Object.keys(envInfo.env)) {
+      // Avoid creating a new object, mutate it instead as this causes problems in Bun
+      process.env[key] = envInfo.env[key];
+    }
     return process.env;
   }
   return {
@@ -192,7 +217,11 @@ function getFiles(mode, {
     }
   }
   if (mode && !['development', 'test', 'production'].includes(mode)) {
-    throw new Error(`Environment variable "NODE_ENV=${mode}" is invalid. Valid values are "development", "test", and "production`);
+    if (silent) {
+      debug(`NODE_ENV="${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead.`);
+    } else {
+      console.warn(_chalk().default.yellow(`"NODE_ENV=${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead`));
+    }
   }
   if (!mode) {
     // Support environments that don't respect NODE_ENV

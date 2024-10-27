@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripInvisibleSegmentsFromPath = exports.stripGroupSegmentsFromPath = exports.removeFileSystemDots = exports.removeSupportedExtensions = exports.getContextKey = exports.getNameFromFilePath = exports.matchGroupName = exports.matchDeepDynamicRouteName = exports.matchDynamicName = void 0;
+exports.isTypedRoute = exports.stripInvisibleSegmentsFromPath = exports.stripGroupSegmentsFromPath = exports.removeFileSystemDots = exports.removeSupportedExtensions = exports.getContextKey = exports.getNameFromFilePath = exports.matchArrayGroupName = exports.matchLastGroupName = exports.matchGroupName = exports.testNotFound = exports.matchDeepDynamicRouteName = exports.matchDynamicName = void 0;
 /** Match `[page]` -> `page` */
 function matchDynamicName(name) {
     // Don't match `...` or `[` or `]` inside the brackets
@@ -13,11 +13,26 @@ function matchDeepDynamicRouteName(name) {
     return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
 }
 exports.matchDeepDynamicRouteName = matchDeepDynamicRouteName;
+/** Test `/` -> `page` */
+function testNotFound(name) {
+    return /\+not-found$/.test(name);
+}
+exports.testNotFound = testNotFound;
 /** Match `(page)` -> `page` */
 function matchGroupName(name) {
     return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
 }
 exports.matchGroupName = matchGroupName;
+/** Match `(app)/(page)` -> `page` */
+function matchLastGroupName(name) {
+    return name.match(/.*(?<=\/|^)\(([^\\/\s]+)\)[^\s]*$/)?.[1];
+}
+exports.matchLastGroupName = matchLastGroupName;
+/** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
+function matchArrayGroupName(name) {
+    return name.match(/(?:[^\\(\\)])*?\(([^\\/]+,[^\\/]+)\).*?$/)?.[1];
+}
+exports.matchArrayGroupName = matchArrayGroupName;
 function getNameFromFilePath(name) {
     return removeSupportedExtensions(removeFileSystemDots(name));
 }
@@ -58,4 +73,13 @@ function stripInvisibleSegmentsFromPath(path) {
     return stripGroupSegmentsFromPath(path).replace(/\/?index$/, '');
 }
 exports.stripInvisibleSegmentsFromPath = stripInvisibleSegmentsFromPath;
+/**
+ * Match:
+ *  - _layout files, +html, +not-found, string+api, etc
+ *  - Routes can still use `+`, but it cannot be in the last segment.
+ */
+function isTypedRoute(name) {
+    return !name.startsWith('+') && name.match(/(_layout|[^/]*?\+[^/]*?)\.[tj]sx?$/) === null;
+}
+exports.isTypedRoute = isTypedRoute;
 //# sourceMappingURL=matchers.js.map

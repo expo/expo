@@ -3,23 +3,17 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.updates.events.UpdatesJSEvent
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.statemachine.UpdatesStateContext
 import java.util.Date
-
-// these unused imports must stay because of versioning
-/* ktlint-disable no-unused-imports */
-
-/* ktlint-enable no-unused-imports */
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
@@ -36,54 +30,21 @@ class UpdatesModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
 
+    Events(
+      UpdatesJSEvent.StateChange.eventName
+    )
+
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
+      UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
+    }
 
-      val constants = mutableMapOf<String, Any>()
-      try {
-        val constantsForModule = UpdatesController.instance.getConstantsForModule()
-        val launchedUpdate = constantsForModule.launchedUpdate
-        val embeddedUpdate = constantsForModule.embeddedUpdate
-        val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
+    OnStartObserving {
+      UpdatesController.onEventListenerStartObserving(appContext.eventEmitter(this@UpdatesModule))
+    }
 
-        constants["isEmergencyLaunch"] = constantsForModule.isEmergencyLaunch
-        constants["isEmbeddedLaunch"] = isEmbeddedLaunch
-        constants["isEnabled"] = constantsForModule.isEnabled
-        constants["releaseChannel"] = constantsForModule.releaseChannel
-        constants["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
-        constants["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
-        constants["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
-        constants["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
-
-        if (launchedUpdate != null) {
-          constants["updateId"] = launchedUpdate.id.toString()
-          constants["commitTime"] = launchedUpdate.commitTime.time
-          constants["manifestString"] = launchedUpdate.manifest.toString()
-        }
-        val localAssetFiles = constantsForModule.localAssetFiles
-        if (localAssetFiles != null) {
-          val localAssets = mutableMapOf<String, String>()
-          for (asset in localAssetFiles.keys) {
-            if (asset.key != null) {
-              localAssets[asset.key!!] = localAssetFiles[asset]!!
-            }
-          }
-          constants["localAssets"] = localAssets
-        }
-      } catch (e: Exception) {
-        // do nothing; this is expected in a development client
-        constants["isEnabled"] = false
-
-        // In a development client, we normally don't have access to the updates configuration, but
-        // we should attempt to see if the runtime/sdk versions are defined in AndroidManifest.xml
-        // and warn the developer if not. This does not take into account any extra configuration
-        // provided at runtime in MainApplication.java, because we don't have access to that in a
-        // debug build.
-        val isMissingRuntimeVersion = UpdatesConfiguration.isMissingRuntimeVersion(context, null)
-        constants["isMissingRuntimeVersion"] = isMissingRuntimeVersion
-      }
-      constants
+    OnStopObserving {
+      UpdatesController.onEventListenerStopObserving()
     }
 
     AsyncFunction("reload") { promise: Promise ->
@@ -100,27 +61,13 @@ class UpdatesModule : Module() {
       )
     }
 
-    // Used internally by useUpdates() to get its initial state
-    AsyncFunction("getNativeStateMachineContextAsync") { promise: Promise ->
-      UpdatesController.instance.getNativeStateMachineContext(object : IUpdatesController.ModuleCallback<UpdatesStateContext> {
-        override fun onSuccess(result: UpdatesStateContext) {
-          promise.resolve(result.bundle)
-        }
-
-        override fun onFailure(exception: CodedException) {
-          promise.reject(exception)
-        }
-      })
-    }
-
     AsyncFunction("checkForUpdateAsync") { promise: Promise ->
       UpdatesController.instance.checkForUpdate(
         object : IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult> {
           override fun onSuccess(result: IUpdatesController.CheckForUpdateResult) {
             when (result) {
               is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
-                promise.reject("ERR_UPDATES_CHECK", result.message, result.error)
-                Log.e(TAG, result.message, result.error)
+                promise.reject("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
               }
               is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
                 promise.resolve(
@@ -146,7 +93,7 @@ class UpdatesModule : Module() {
                     putBoolean("isAvailable", true)
                     putString(
                       "manifestString",
-                      result.updateManifest.manifest.toString()
+                      result.update.manifest.toString()
                     )
                   }
                 )
@@ -220,7 +167,8 @@ class UpdatesModule : Module() {
     AsyncFunction("setExtraParamAsync") { key: String, value: String?, promise: Promise ->
       logger.debug("Called setExtraParamAsync with key = $key, value = $value")
       UpdatesController.instance.setExtraParam(
-        key, value,
+        key,
+        value,
         object : IUpdatesController.ModuleCallback<Unit> {
           override fun onSuccess(result: Unit) {
             promise.resolve(null)
@@ -284,7 +232,7 @@ class UpdatesModule : Module() {
         }
     }
 
-    internal fun clearLogEntries(context: Context, completionHandler: (_: Error?) -> Unit) {
+    internal fun clearLogEntries(context: Context, completionHandler: (_: Exception?) -> Unit) {
       val reader = UpdatesLogReader(context)
       reader.purgeLogEntries(
         olderThan = Date(),

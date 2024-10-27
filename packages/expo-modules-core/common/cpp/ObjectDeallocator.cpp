@@ -8,14 +8,12 @@ namespace expo::common {
 void setDeallocator(
   jsi::Runtime &runtime,
   const std::shared_ptr<jsi::Object> &jsThis,
-  ObjectDeallocator::Block deallocatorBlock,
-  const std::string &key
+  ObjectDeallocator::Block deallocatorBlock
 ) {
-  std::shared_ptr<ObjectDeallocator> hostObjectPtr = std::make_shared<ObjectDeallocator>(
-    deallocatorBlock
+  std::shared_ptr<ObjectDeallocator> objectDeallocator = std::make_shared<ObjectDeallocator>(
+    std::move(deallocatorBlock)
   );
-  jsi::Object jsDeallocator = jsi::Object::createFromHostObject(runtime, hostObjectPtr);
-  jsThis->setProperty(runtime, key.c_str(), jsi::Value(runtime, jsDeallocator));
+  jsThis->setNativeState(runtime, objectDeallocator);
 }
 
 } // namespace expo::common

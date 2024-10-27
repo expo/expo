@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.expoInlineTransformEnvVars = exports.expoInlineEnvVars = void 0;
+exports.expoInlineEnvVars = void 0;
 const debug = require('debug')('expo:babel:env-vars');
 function expoInlineEnvVars(api) {
     const { types: t } = api;
@@ -12,17 +12,6 @@ function expoInlineEnvVars(api) {
         visitor: {
             MemberExpression(path, state) {
                 const filename = state.filename;
-                // If the filename is not defined, skip to prevent a node module from intercepting
-                // environment variables.
-                if (!filename) {
-                    debug('No filename found in state, skipping to be safe:', state.file.opts);
-                    return;
-                }
-                // Do nothing in node modules
-                // Skip node_modules, the feature is a bit too sensitive to allow in arbitrary code.
-                if (/node_modules/.test(filename)) {
-                    return;
-                }
                 if (path.get('object').matchesPattern('process.env')) {
                     // @ts-expect-error: missing types
                     const key = path.toComputedKey();
@@ -38,34 +27,3 @@ function expoInlineEnvVars(api) {
     };
 }
 exports.expoInlineEnvVars = expoInlineEnvVars;
-/**
- * Given a set of options like `{ EXPO_BASE_URL: '/' }`, inline the values into the bundle.
- * This is used for build settings that are always available and not configurable at runtime.
- *
- * Webpack uses DefinePlugin for similar functionality.
- */
-function expoInlineTransformEnvVars(api) {
-    const { types: t } = api;
-    function isFirstInAssign(path) {
-        return t.isAssignmentExpression(path.parent) && path.parent.left === path.node;
-    }
-    return {
-        name: 'expo-inline-transform-environment-variables',
-        visitor: {
-            MemberExpression(path, state) {
-                const options = state.opts;
-                if (path.get('object').matchesPattern('process.env')) {
-                    // @ts-expect-error: missing types
-                    const key = path.toComputedKey();
-                    if (t.isStringLiteral(key) &&
-                        !isFirstInAssign(path) &&
-                        options[key.value] !== undefined) {
-                        debug('Inlining transform setting in %s: %s', state.filename || '[unknown file]', key.value);
-                        path.replaceWith(t.valueToNode(options[key.value]));
-                    }
-                }
-            },
-        },
-    };
-}
-exports.expoInlineTransformEnvVars = expoInlineTransformEnvVars;

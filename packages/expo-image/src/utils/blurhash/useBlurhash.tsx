@@ -22,25 +22,28 @@ export function useBlurhash(
   punch = punch || 1;
 
   const [uri, setUri] = useState<string | null>(null);
-
+  const isBlurhash = (blurhash?.uri && isBlurhashString(blurhash.uri)) ?? false;
   useEffect(() => {
     let isCanceled = false;
 
-    if (!blurhash || !blurhash.uri || !isBlurhashString(blurhash.uri)) return;
+    if (!blurhash || !blurhash.uri || !isBlurhash) {
+      return;
+    }
+    const strippedBlurhashString = blurhash.uri.replace(/blurhash:\//, '');
 
     const pixels = decode(
-      blurhash.uri,
-      blurhash?.width ?? DEFAULT_SIZE.width,
-      blurhash?.height ?? DEFAULT_SIZE.height,
+      strippedBlurhashString,
+      blurhash.width ?? DEFAULT_SIZE.width,
+      blurhash.height ?? DEFAULT_SIZE.height,
       punch
     );
 
     const canvas = document.createElement('canvas');
     const upscaledCanvas = document.createElement('canvas');
-    canvas.width = blurhash?.width ?? DEFAULT_SIZE.width;
-    canvas.height = blurhash?.height ?? DEFAULT_SIZE.height;
-    upscaledCanvas.width = (blurhash?.width ?? DEFAULT_SIZE.width) * scaleRatio;
-    upscaledCanvas.height = (blurhash?.height ?? DEFAULT_SIZE.height) * scaleRatio;
+    canvas.width = blurhash.width ?? DEFAULT_SIZE.width;
+    canvas.height = blurhash.height ?? DEFAULT_SIZE.height;
+    upscaledCanvas.width = (blurhash.width ?? DEFAULT_SIZE.width) * scaleRatio;
+    upscaledCanvas.height = (blurhash.height ?? DEFAULT_SIZE.height) * scaleRatio;
     const context = canvas.getContext('2d');
     if (!context) {
       console.warn('Failed to decode blurhash');
@@ -76,6 +79,7 @@ export function useBlurhash(
         return null;
       });
     };
-  }, [blurhash?.uri, blurhash?.height, blurhash?.width, punch]);
-  return useMemo(() => (uri ? { uri } : null), [uri]);
+  }, [blurhash?.uri, blurhash?.height, blurhash?.width, punch, isBlurhash]);
+  const source = useMemo(() => (uri ? { uri } : null), [uri]);
+  return [source, isBlurhash] as const;
 }

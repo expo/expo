@@ -1,59 +1,58 @@
 ---
 title: iOS Simulator
-description: Learn how you can install the iOS simulator on your Mac and use it to develop your app.
+description: Learn how you can install the iOS Simulator on your Mac and use it to develop your app.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import Video from '~/components/plugins/Video';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import XcodeInstructions from 'scenes/get-started/set-up-your-environment/instructions/_xcodeInstructions.mdx';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-It's often convenient to develop your app directly on your computer rather than having to physically interact with an iPhone and iPad and load your app over the network, which may be slow under some conditions such as if you need to use a tunnel connection because LAN isn't possible on your network.
+Developing your app directly on a computer can be more convenient than constantly interacting with an iPhone or iPad, especially when network conditions are slow or when a [tunnel connection](/more/expo-cli/#tunneling) is required due to LAN limitations.
 
-This guide explains how you can install the iOS Simulator on your Mac and use it for developing your app. It is impossible to install the iOS Simulator on any operating system except macOS. If you want to develop an app for iOS from a Windows machine then you will need a physical iOS device.
+This guide explains how to install the iOS Simulator on your Mac for app development. Note that the iOS Simulator can only be installed on macOS. If you are developing an iOS app from a Windows or a Linux machine, you will need a physical iOS device.
 
-<Step label="1">
+## Setup Xcode and Watchman
 
-## Install Xcode
+<XcodeInstructions />
 
-Open up the Mac App Store, search for [Xcode](https://apps.apple.com/us/app/xcode/id497799835), and click install (or update if you have it already). If you're unable to update, it is because your operating system might be out of date. We recommend updating your operating system to the latest version and then updating Xcode. You may run into issues further down the line if your Xcode version is out of date. For example, you may not be able to submit your app to the App Store.
+<Step label="4">
 
-</Step>
-
-<Step label="2">
-
-## Install Xcode Command Line Tools
-
-Open Xcode, then choose **Settings...** from the Xcode menu (or press <kbd>Cmd ⌘</kbd> + <kbd>,</kbd>). Go to the **Locations** and install the tools by selecting the most recent version in the **Command Line Tools** dropdown.
-
-<ImageSpotlight alt="Xcode preferences" src="/static/images/ios-simulator/xcode-command-line.png" />
-
-</Step>
-
-<Step label="3">
-
-## Try it out
+### Try it out
 
 Run your app with `npx expo start` and press <kbd>i</kbd> from the command line.
 
 You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again to see if it was successful. If not, check the [troubleshooting](#troubleshooting) tips below.
 
-If the troubleshooting tips are not helpful, ask a question in our [forums](https://chat.expo.dev/), Stack Overflow, or Google.
+<ContentSpotlight file="open-in-ios-simulator.mp4" />
 
-<Video file="open-in-ios-simulator.mp4" />
+You can also press <kbd>shift</kbd> + <kbd>i</kbd> in the Expo CLI to interactively select a simulator to open.
 
-You can also press <kbd>Shift</kbd> + <kbd>i</kbd> in the Expo CLI to interactively select a simulator to open.
-
-<ImageSpotlight
+<ContentSpotlight
   alt="List of iOS Simulators in the Expo CLI UI."
   src="/static/images/ios-simulator/simulators-list.png"
+  className="max-w-[480px]"
 />
 
 </Step>
 
+## Expo Orbit
+
+You can use the Expo Orbit app which allows launching builds and simulator management with one click from the menu bar on macOS.
+
+<BoxLink
+  title="Use Expo Orbit"
+  description="Learn more about how to use Expo Orbit."
+  href="/build/orbit/"
+  Icon={BookOpen02Icon}
+/>
+
 ## Limitations
 
-Although the iOS Simulator is great for rapid development, it does come with a few limitations. We'll list out a few of the main differences that affect Expo APIs here, however, [Apple's documentation](https://help.apple.com/simulator/mac/current/#/devb0244142d) goes into more detail.
+Although the iOS Simulator is great for rapid development, it does come with a few limitations. We'll list out a few of the main differences that affect Expo APIs below. However, see [Apple's documentation](https://help.apple.com/simulator/mac/current/#/devb0244142d) for more details.
 
 The following hardware is unavailable in the Simulator:
 
@@ -70,7 +69,7 @@ The Simulator also suspends background apps and processes on iOS 11 and later.
 
 Sometimes the iOS Simulator doesn't respond to the open command. If it seems stuck on this prompt, you can open the iOS Simulator manually (`open -a Simulator`) and then in the macOS toolbar, choose **File** &gt; **Open Simulator**, and select an iOS version and device that you'd like to open.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Opening a simulator manually from the macOS toolbar."
   src="/static/images/ios-simulator/open-simulator-manually.png"
 />
@@ -87,8 +86,8 @@ Create a project with the desired SDK version and open it in a simulator to inst
 
 <Terminal
   cmd={[
-    '# Bootstrap an SDK 49 project',
-    '$ npx create-expo-app --template blank@49',
+    '# Bootstrap an SDK 51 project',
+    '$ npx create-expo-app --template blank@51',
     '',
     '# Open the app on a simulator to install the required Expo Go app',
     '$ npx expo start --ios',
@@ -99,6 +98,6 @@ Create a project with the desired SDK version and open it in a simulator to inst
 
 For miscellaneous errors, try the following:
 
-- Manually uninstall Expo Go on your simulator and reinstall by pressing <kbd>Shift</kbd> + <kbd>i</kbd> in the Expo CLI Terminal UI and selecting the desired simulator.
+- Manually uninstall Expo Go on your simulator and reinstall by pressing <kbd>shift</kbd> + <kbd>i</kbd> in the Expo CLI Terminal UI and selecting the desired simulator.
 - If that doesn't help, focus the simulator window and in the Mac toolbar choose **Device** &gt; **Erase All Content and Settings...**<br/>
   This will reinitialize your simulator from a blank image. This is sometimes useful for cases where your computer is low on memory and the simulator fails to store some internal files, leaving the device in a corrupt state.

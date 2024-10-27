@@ -37,6 +37,7 @@ export const globalDiff = css`
     ${typography.fontSizes[12]};
     text-align: right;
     padding: 0 ${spacing[2]}px;
+    user-select: none;
   }
 
   .diff-gutter-normal {

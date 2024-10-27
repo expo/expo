@@ -74,7 +74,7 @@ export async function downloadExpoGoAsync(
     sdkVersion,
   }: {
     url?: string;
-    sdkVersion?: string;
+    sdkVersion: string;
   }
 ): Promise<string> {
   const { getFilePath, versionsKey, shouldExtractResults } = platformSettings[platform];
@@ -85,12 +85,6 @@ export async function downloadExpoGoAsync(
 
   try {
     if (!url) {
-      if (!sdkVersion) {
-        throw new CommandError(
-          `Unable to determine which Expo Go version to install (platform: ${platform})`
-        );
-      }
-
       const version = await getExpoGoVersionEntryAsync(sdkVersion);
 
       debug(`Installing Expo Go version for SDK ${sdkVersion} at URL: ${version[versionsKey]}`);

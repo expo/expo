@@ -14,7 +14,7 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
       project.ext.kotlinVersion = {
         project.rootProject.ext.has("kotlinVersion")
             ? project.rootProject.ext.get("kotlinVersion")
-            : "1.8.10"
+            : "1.9.24"
       }
 
       project.ext.kspVersion = {
@@ -23,41 +23,63 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
           "1.6.21": "1.6.21-1.0.6",
           "1.7.22": "1.7.22-1.0.8",
           "1.8.0": "1.8.0-1.0.9",
-          "1.8.10": "1.8.10-1.0.9"
+          "1.8.10": "1.8.10-1.0.9",
+          "1.8.22": "1.8.22-1.0.11",
+          "1.9.23": "1.9.23-1.0.20",
+          "1.9.24": "1.9.24-1.0.20"
         ]
 
         project.rootProject.ext.has("kspVersion")
           ? project.rootProject.ext.get("kspVersion")
           : kspVersionsMap.containsKey(project.ext.kotlinVersion())
           ? kspVersionsMap.get(project.ext.kotlinVersion())
-          : "1.8.10-1.0.9"
-      }
-    }
-
-    // Setup build options that are common for all modules
-    if (project.plugins.hasPlugin('kotlin-android')) {
-      project.android {
-        compileSdkVersion project.ext.safeExtGet("compileSdkVersion", 34)
-
-        defaultConfig {
-          minSdkVersion project.ext.safeExtGet("minSdkVersion", 23)
-          targetSdkVersion project.ext.safeExtGet("targetSdkVersion", 34)
-        }
-
-        lintOptions {
-          abortOnError false
-        }
+          : "1.9.24-1.0.20"
       }
     }
   }
 }
 
 ext.applyKotlinExpoModulesCorePlugin = {
+  try {
+    // Tries to apply the kotlin-android plugin if the client project does not apply yet.
+    // On previous `applyKotlinExpoModulesCorePlugin`, it is inside the `project.buildscript` block.
+    // We cannot use `project.plugins.hasPlugin()` yet but only to try-catch instead.
+    apply plugin: 'kotlin-android'
+  } catch (e) {}
+
   apply plugin: KotlinExpoModulesCorePlugin
 }
 
+// Setup build options that are common for all modules
+ext.useDefaultAndroidSdkVersions = {
+  project.android {
+    compileSdkVersion project.ext.safeExtGet("compileSdkVersion", 34)
+
+    defaultConfig {
+      minSdkVersion project.ext.safeExtGet("minSdkVersion", 23)
+      targetSdkVersion project.ext.safeExtGet("targetSdkVersion", 34)
+    }
+
+    lintOptions {
+      abortOnError false
+    }
+  }
+}
+
 ext.useExpoPublishing = {
-  afterEvaluate {
+  if (!project.plugins.hasPlugin('maven-publish')) {
+    apply plugin: 'maven-publish'
+  }
+
+  project.android {
+    publishing {
+      singleVariant("release") {
+        withSourcesJar()
+      }
+    }
+  }
+
+  project.afterEvaluate {
     publishing {
       publications {
         release(MavenPublication) {
@@ -68,14 +90,6 @@ ext.useExpoPublishing = {
         maven {
           url = mavenLocal().url
         }
-      }
-    }
-  }
-
-  android {
-    publishing {
-      singleVariant("release") {
-        withSourcesJar()
       }
     }
   }

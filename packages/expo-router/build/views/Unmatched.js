@@ -1,3 +1,5 @@
+// Copyright © 2024 650 Industries.
+'use client';
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -21,7 +23,11 @@ function NoSSR({ children }) {
     }
     return <>{children}</>;
 }
-/** Default screen for unmatched routes. */
+/**
+ * Default screen for unmatched routes.
+ *
+ * @hidden
+ */
 function Unmatched() {
     const router = (0, hooks_1.useRouter)();
     const navigation = (0, useNavigation_1.useNavigation)();

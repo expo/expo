@@ -1,83 +1,65 @@
-import {
-  installGlobals as installRemixGlobals,
-  Request,
-  RequestInfo,
-  RequestInit,
-  Response,
-  ResponseInit,
-  Headers,
-} from '@remix-run/node';
-import { URL } from 'node:url';
+/* eslint-disable no-var */
+import './assertion';
 
-import { ExpoRouterServerManifestV1FunctionRoute } from './types';
+import { installGlobals as installRemixGlobals } from '@remix-run/node';
+declare const Response: {
+  prototype: Response;
+  new (body?: BodyInit | null, init?: ResponseInit): Response;
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/error_static) */
+  error(): Response;
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/json_static) */
+  json(data: any, init?: ResponseInit): Response;
+  /** [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response/redirect_static) */
+  redirect(url: string | URL, status?: number): Response;
+};
 
-// Ensure these are available for the API Routes.
+declare global {
+  /** @deprecated */
+  var ExpoRequest: typeof Request;
+  /** @deprecated */
+  var ExpoResponse: typeof Response;
+}
+
+/** @deprecated */
+export const ExpoRequest = Request;
+/** @deprecated */
+export const ExpoResponse = Response;
+
 export function installGlobals() {
-  installRemixGlobals();
+  // Use global polyfills from Undici
+  installRemixGlobals({ nativeFetch: true });
 
-  // @ts-expect-error
-  global.Request = ExpoRequest;
-  // @ts-expect-error
-  global.Response = ExpoResponse;
-  // @ts-expect-error
-  global.ExpoResponse = ExpoResponse;
-  // @ts-expect-error
-  global.ExpoRequest = ExpoRequest;
-}
+  global.ExpoRequest = Request;
+  global.ExpoResponse = Response;
 
-export class ExpoResponse extends Response {
-  // TODO: Drop when we upgrade to node-fetch v3
-  static json(data: any = undefined, init: ResponseInit = {}): ExpoResponse {
-    const body = JSON.stringify(data);
-
-    if (body === undefined) {
-      throw new TypeError('data is not JSON serializable');
-    }
-
-    const headers = new Headers(init?.headers);
-
-    if (!headers.has('content-type')) {
-      headers.set('content-type', 'application/json');
-    }
-
-    return new ExpoResponse(body, {
-      ...init,
-      headers,
-    });
-  }
-}
-
-export const NON_STANDARD_SYMBOL = Symbol('non-standard');
-
-export class ExpoURL extends URL {
-  static from(url: string, config: ExpoRouterServerManifestV1FunctionRoute): ExpoURL {
-    const expoUrl = new ExpoURL(url);
-    const match = config.namedRegex.exec(expoUrl.pathname);
-    if (match?.groups) {
-      for (const [key, value] of Object.entries(match.groups)) {
-        const namedKey = config.routeKeys[key];
-        expoUrl.searchParams.set(namedKey, value);
-      }
-    }
-
-    return expoUrl;
-  }
-}
-
-export class ExpoRequest extends Request {
-  [NON_STANDARD_SYMBOL]: {
-    url: ExpoURL;
-  };
-
-  constructor(info: RequestInfo, init?: RequestInit) {
-    super(info, init);
-
-    this[NON_STANDARD_SYMBOL] = {
-      url: new ExpoURL(typeof info !== 'string' && 'url' in info ? info.url : String(info)),
+  if (typeof Response.error !== 'function') {
+    Response.error = function error() {
+      return new Response(null, { status: 500 });
     };
   }
 
-  public get expoUrl() {
-    return this[NON_STANDARD_SYMBOL].url;
+  if (typeof Response.json !== 'function') {
+    Response.json = function json(data: any, init?: ResponseInit) {
+      return new Response(JSON.stringify(data), init);
+    };
+  }
+
+  if (typeof Response.redirect !== 'function') {
+    Response.redirect = function redirect(url: string | URL, status?: number) {
+      if (!status) status = 302;
+      switch (status) {
+        case 301:
+        case 302:
+        case 303:
+        case 307:
+        case 308:
+          return new Response(null, {
+            headers: { Location: new URL(url).toString() },
+            status,
+          });
+        default:
+          throw new RangeError(`Invalid status code ${status}`);
+      }
+    };
   }
 }

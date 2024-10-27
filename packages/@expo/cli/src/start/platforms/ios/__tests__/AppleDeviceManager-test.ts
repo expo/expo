@@ -1,4 +1,3 @@
-import { asMock } from '../../../../__tests__/asMock';
 import { CommandError } from '../../../../utils/errors';
 import { AppleDeviceManager } from '../AppleDeviceManager';
 import { Device, getInfoPlistValueAsync, openAppIdAsync, openUrlAsync } from '../simctl';
@@ -18,7 +17,7 @@ function createDevice() {
 describe('getAppVersionAsync', () => {
   it(`gets the version from an installed app`, async () => {
     const device = createDevice();
-    asMock(getInfoPlistValueAsync).mockResolvedValueOnce('2.23.2');
+    jest.mocked(getInfoPlistValueAsync).mockResolvedValueOnce('2.23.2');
     await expect(device.getAppVersionAsync('host.exp.Exponent')).resolves.toBe('2.23.2');
     expect(getInfoPlistValueAsync).toHaveBeenCalledWith(expect.anything(), {
       appId: 'host.exp.Exponent',
@@ -27,7 +26,7 @@ describe('getAppVersionAsync', () => {
   });
   it(`returns null when the app is not installed`, async () => {
     const device = createDevice();
-    asMock(getInfoPlistValueAsync).mockResolvedValueOnce(null);
+    jest.mocked(getInfoPlistValueAsync).mockResolvedValueOnce(null);
     await expect(device.getAppVersionAsync('host.exp.Exponent')).resolves.toBe(null);
   });
 });
@@ -35,14 +34,14 @@ describe('getAppVersionAsync', () => {
 describe('launchApplicationIdAsync', () => {
   it(`asserts that the app is not installed`, async () => {
     const device = createDevice();
-    asMock(openAppIdAsync).mockImplementationOnce(() => {
+    jest.mocked(openAppIdAsync).mockImplementationOnce(() => {
       throw new CommandError('APP_NOT_INSTALLED', '...');
     });
     await expect(device.launchApplicationIdAsync('host.exp.foobar')).rejects.toThrow(/run:ios/);
   });
   it(`asserts that the Expo Go app is not installed`, async () => {
     const device = createDevice();
-    asMock(openAppIdAsync).mockImplementationOnce(() => {
+    jest.mocked(openAppIdAsync).mockImplementationOnce(() => {
       throw new CommandError('APP_NOT_INSTALLED', '...');
     });
     await expect(device.launchApplicationIdAsync('host.exp.Exponent')).rejects.toThrow(
@@ -51,7 +50,7 @@ describe('launchApplicationIdAsync', () => {
   });
   it(`asserts unknown error`, async () => {
     const device = createDevice();
-    asMock(openAppIdAsync).mockResolvedValueOnce({ status: 1 } as any);
+    jest.mocked(openAppIdAsync).mockResolvedValueOnce({ status: 1 } as any);
     await expect(device.launchApplicationIdAsync('host.exp.Exponent')).rejects.toThrow(
       /Couldn't open iOS app with ID/
     );
@@ -59,13 +58,13 @@ describe('launchApplicationIdAsync', () => {
   it(`opens the app by ID and activates the window.`, async () => {
     const device = createDevice();
     device.activateWindowAsync = jest.fn();
-    asMock(openAppIdAsync).mockResolvedValueOnce({ status: 0 } as any);
+    jest.mocked(openAppIdAsync).mockResolvedValueOnce({ status: 0 } as any);
     await device.launchApplicationIdAsync('host.exp.Exponent');
     expect(device.activateWindowAsync).toBeCalled();
   });
   it(`asserts that an unexpected error occurred`, async () => {
     const device = createDevice();
-    asMock(openAppIdAsync).mockImplementationOnce(() => {
+    jest.mocked(openAppIdAsync).mockImplementationOnce(() => {
       throw new Error('...');
     });
     await expect(device.launchApplicationIdAsync).rejects.toThrow(/\.\.\./);

@@ -98,19 +98,18 @@ export async function coolDownAsync(browserPackage) {
         return await ExponentWebBrowser.coolDownAsync(browserPackage);
     }
 }
-let browserLocked = false;
 // @needsAudit
 /**
  * Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller),
  * and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs)
  * on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need
- * this, use [`openAuthSessionAsync`](#webbrowseropenauthsessionasyncurl-redirecturl-browserparams).
+ * this, use [`openAuthSessionAsync`](#webbrowseropenauthsessionasyncurl-redirecturl-options).
  *
  * @param url The url to open in the web browser.
  * @param browserParams A dictionary of key-value pairs.
  *
  * @return The promise behaves differently based on the platform.
- * On Android promise resolves with `{type: 'opened'}` if we were able to open browser.
+ * On Android promise resolves with `{ type: 'opened' }` if we were able to open browser.
  * On iOS:
  * - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
  * - If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser), the Promise resolves with `{ type: 'dismiss' }`.
@@ -119,22 +118,12 @@ export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
     }
-    if (browserLocked) {
-        // Prevent multiple sessions from running at the same time, WebBrowser doesn't
-        // support it this makes the behavior predictable.
-        if (__DEV__) {
-            console.warn('Attempted to call WebBrowser.openBrowserAsync multiple times while already active. Only one WebBrowser controller can be active at any given time.');
-        }
-        return { type: WebBrowserResultType.LOCKED };
-    }
-    browserLocked = true;
     let result;
     try {
         result = await ExponentWebBrowser.openBrowserAsync(url, _processOptions(browserParams));
     }
-    finally {
-        // WebBrowser session complete, unset lock
-        browserLocked = false;
+    catch {
+        return { type: WebBrowserResultType.LOCKED };
     }
     return result;
 }
@@ -142,14 +131,11 @@ export async function openBrowserAsync(url, browserParams = {}) {
 /**
  * Dismisses the presented web browser.
  *
- * @return The `void` on successful attempt, or throws error, if dismiss functionality is not avaiable.
+ * @return The promise that resolves with `{ type: 'dismiss' }` on the successful attempt or throws an error if dismiss functionality is not available.
  * @platform ios
  */
 export function dismissBrowser() {
-    if (!ExponentWebBrowser.dismissBrowser) {
-        throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
-    }
-    ExponentWebBrowser.dismissBrowser();
+    return ExponentWebBrowser.dismissBrowser?.();
 }
 // @needsAudit
 /**
@@ -166,8 +152,8 @@ export function dismissBrowser() {
  * Using `Linking.addEventListener` is not needed and can have side effects.
  *
  * # On web:
- * > This API can only be used in a secure environment (`https`). You can use expo `start:web --https`
- * to test this. Otherwise, an error with code [`ERR_WEB_BROWSER_CRYPTO`](#errwebbrowsercrypto) will be thrown.
+ * > This API can only be used in a secure environment (localhost/https).
+ * to test this. Otherwise, an error with code [`ERR_WEB_BROWSER_CRYPTO`](#err_web_browser_crypto) will be thrown.
  * This will use the browser's [`window.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) API.
  * - _Desktop_: This will create a new web popup window in the browser that can be closed later using `WebBrowser.maybeCompleteAuthSession()`.
  * - _Mobile_: This will open a new tab in the browser which can be closed using `WebBrowser.maybeCompleteAuthSession()`.
@@ -185,7 +171,7 @@ export function dismissBrowser() {
  *
  * > On mobile web, Chrome and Safari will block any call to [`window.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open)
  * which takes too long to fire after a user interaction. This method must be invoked immediately
- * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
+ * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#err_web_browser_blocked) will be thrown.
  *
  * @param url The url to open in the web browser. This should be a login page.
  * @param redirectUrl _Optional_ - The url to deep link back into your app.
@@ -215,7 +201,14 @@ export async function openAuthSessionAsync(url, redirectUrl, options = {}) {
         return _openAuthSessionPolyfillAsync(url, redirectUrl, options);
     }
 }
-// @docsMissing
+/**
+ * Dismisses the current authentication session. On web, it will close the popup window associated with auth process.
+ *
+ * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
+ *
+ * @platform ios
+ * @platform web
+ */
 export function dismissAuthSession() {
     if (_authSessionIsNativelySupported()) {
         if (!ExponentWebBrowser.dismissAuthSession) {
@@ -225,7 +218,7 @@ export function dismissAuthSession() {
     }
     else {
         if (!ExponentWebBrowser.dismissBrowser) {
-            throw new UnavailabilityError('WebBrowser', 'dismissAuthSession');
+            throw new UnavailabilityError('WebBrowser', 'dismissBrowser');
         }
         ExponentWebBrowser.dismissBrowser();
     }
@@ -240,7 +233,7 @@ export function dismissAuthSession() {
  * @return Returns an object with message about why the redirect failed or succeeded:
  *
  * If `type` is set to `failed`, the reason depends on the message:
- * - `Not supported on this platform`: If the platform doesn't support this method (iOS, Android).
+ * - `Not supported on this platform`: If the platform doesn't support this method (Android, iOS).
  * - `Cannot use expo-web-browser in a non-browser environment`: If the code was executed in an SSR
  *   or node environment.
  * - `No auth session is currently in progress`: (the cached state wasn't found in local storage).
@@ -273,16 +266,9 @@ function _processOptions(options) {
         secondaryToolbarColor: processColor(options.secondaryToolbarColor),
     };
 }
-/* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
+/* Android polyfill for SFAuthenticationSession flow */
 function _authSessionIsNativelySupported() {
-    if (Platform.OS === 'android') {
-        return false;
-    }
-    else if (Platform.OS === 'web') {
-        return true;
-    }
-    const versionNumber = parseInt(String(Platform.Version), 10);
-    return versionNumber >= 11;
+    return Platform.OS !== 'android';
 }
 let _redirectSubscription = null;
 /*

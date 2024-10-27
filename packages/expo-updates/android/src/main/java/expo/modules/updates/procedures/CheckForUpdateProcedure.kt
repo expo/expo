@@ -2,6 +2,7 @@ package expo.modules.updates.procedures
 
 import android.content.Context
 import android.os.AsyncTask
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
@@ -11,7 +12,7 @@ import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.manifest.EmbeddedManifest
+import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 
@@ -25,11 +26,13 @@ class CheckForUpdateProcedure(
   private val launchedUpdate: UpdateEntity?,
   private val callback: (IUpdatesController.CheckForUpdateResult) -> Unit
 ) : StateMachineProcedure() {
+  override val loggerTimerLabel = "timer-check-for-update"
+
   override fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Check())
 
     AsyncTask.execute {
-      val embeddedUpdate = EmbeddedManifest.get(context, updatesConfiguration)?.updateEntity
+      val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity
       val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
         databaseHolder.database,
         updatesConfiguration,
@@ -38,75 +41,85 @@ class CheckForUpdateProcedure(
       )
       databaseHolder.releaseDatabase()
       fileDownloader.downloadRemoteUpdate(
-        updatesConfiguration,
         extraHeaders,
-        context,
         object : FileDownloader.RemoteUpdateDownloadCallback {
-          override fun onFailure(message: String, e: Exception) {
-            procedureContext.processStateEvent(UpdatesStateEvent.CheckError(message))
-            callback(IUpdatesController.CheckForUpdateResult.ErrorResult(e, message))
+          override fun onFailure(e: Exception) {
+            procedureContext.processStateEvent(UpdatesStateEvent.CheckError(e.localizedMessageWithCauseLocalizedMessage()))
+            callback(IUpdatesController.CheckForUpdateResult.ErrorResult(e))
             procedureContext.onComplete()
           }
 
           override fun onSuccess(updateResponse: UpdateResponse) {
             val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+            val update = updateResponse.manifestUpdateResponsePart?.update
 
             if (updateDirective != null) {
-              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                if (!updatesConfiguration.hasEmbeddedUpdate) {
+              when (updateDirective) {
+                is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
                   callback(
                     IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
-                      LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                      LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
                     )
                   )
                   procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
                   procedureContext.onComplete()
                   return
                 }
-
-                if (embeddedUpdate == null) {
-                  callback(
-                    IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
-                      LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
+                  if (!updatesConfiguration.hasEmbeddedUpdate) {
+                    callback(
+                      IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                      )
                     )
-                  )
-                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    procedureContext.onComplete()
+                    return
+                  }
+
+                  if (embeddedUpdate == null) {
+                    callback(
+                      IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_NO_EMBEDDED
+                      )
+                    )
+                    procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    procedureContext.onComplete()
+                    return
+                  }
+
+                  if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+                      updateDirective,
+                      embeddedUpdate,
+                      launchedUpdate,
+                      updateResponse.responseHeaderData?.manifestFilters
+                    )
+                  ) {
+                    callback(
+                      IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
+                        LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY
+                      )
+                    )
+                    procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
+                    procedureContext.onComplete()
+                    return
+                  }
+
+                  callback(IUpdatesController.CheckForUpdateResult.RollBackToEmbedded(updateDirective.commitTime))
+                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithRollback(updateDirective.commitTime))
                   procedureContext.onComplete()
                   return
                 }
-
-                if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
-                    updateDirective,
-                    embeddedUpdate,
-                    launchedUpdate,
-                    updateResponse.responseHeaderData?.manifestFilters
-                  )
-                ) {
-                  callback(
-                    IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
-                      LoaderTask.RemoteCheckResultNotAvailableReason.ROLLBACK_REJECTED_BY_SELECTION_POLICY
-                    )
-                  )
-                  procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
-                  procedureContext.onComplete()
-                  return
-                }
-
-                callback(IUpdatesController.CheckForUpdateResult.RollBackToEmbedded(updateDirective.commitTime))
-                procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithRollback(updateDirective.commitTime))
-                procedureContext.onComplete()
-                return
               }
             }
 
-            if (updateManifest == null) {
+            if (update == null) {
               callback(
                 IUpdatesController.CheckForUpdateResult.NoUpdateAvailable(
                   LoaderTask.RemoteCheckResultNotAvailableReason.NO_UPDATE_AVAILABLE_ON_SERVER
                 )
               )
-              UpdatesStateEvent.CheckCompleteUnavailable()
+              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteUnavailable())
               procedureContext.onComplete()
               return
             }
@@ -114,8 +127,8 @@ class CheckForUpdateProcedure(
             if (launchedUpdate == null) {
               // this shouldn't ever happen, but if we don't have anything to compare
               // the new manifest to, let the user know an update is available
-              callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(updateManifest))
-              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
+              callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(update))
+              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(update.manifest.getRawJson()))
               procedureContext.onComplete()
               return
             }
@@ -123,7 +136,7 @@ class CheckForUpdateProcedure(
             var shouldLaunch = false
             var failedPreviously = false
             if (selectionPolicy.shouldLoadNewUpdate(
-                updateManifest.updateEntity,
+                update.updateEntity,
                 launchedUpdate,
                 updateResponse.responseHeaderData?.manifestFilters
               )
@@ -134,7 +147,7 @@ class CheckForUpdateProcedure(
               // We check to see if the new update is already in the DB, and if so,
               // only allow the update if it has had no launch failures.
               shouldLaunch = true
-              updateManifest.updateEntity?.let { updateEntity ->
+              update.updateEntity?.let { updateEntity ->
                 val storedUpdateEntity = databaseHolder.database.updateDao().loadUpdateWithId(
                   updateEntity.id
                 )
@@ -147,8 +160,8 @@ class CheckForUpdateProcedure(
               }
             }
             if (shouldLaunch) {
-              callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(updateManifest))
-              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(updateManifest.manifest.getRawJson()))
+              callback(IUpdatesController.CheckForUpdateResult.UpdateAvailable(update))
+              procedureContext.processStateEvent(UpdatesStateEvent.CheckCompleteWithUpdate(update.manifest.getRawJson()))
               procedureContext.onComplete()
               return
             } else {

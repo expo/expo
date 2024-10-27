@@ -8,7 +8,7 @@ function App() {
 `;
 
 exports[`Converts fixture 1`] = `
-"import { Main, Article, P, Code, Div } from "@expo/html-elements";import { Image } from 'react-native';import { jsx as _jsx } from "react/jsx-runtime";import { jsxs as _jsxs } from "react/jsx-runtime";
+"import { Main, Article, P, Code, Div } from "@expo/html-elements";import { Image } from 'react-native';import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 
 export default function App() {
   return (
@@ -20,21 +20,21 @@ export default function App() {
             uri: 'https://en.gravatar.com/userimage/120276729/078ee8361156d0e1c37b90e7851fed4b.png'
           },
           width: "384",
-          height: "512" }),
-
+          height: "512" }
+        ),
         _jsxs(Main, { className: "pt-6 md:p-8 text-center md:text-left space-y-4", children: [
           _jsxs(P, { className: "text-lg font-medium", children: ["With ",
-            _jsx(Code, { children: "@expo/html-elements" }), ", you can write HTML syntax that renders to real native components. Combined with Tailwind CSS, you have an experience that makes web developers feel at home.\\u201D"] }),
+            _jsx(Code, { children: "@expo/html-elements" }), ", you can write HTML syntax that renders to real native components. Combined with Tailwind CSS, you have an experience that makes web developers feel at home.\\u201D"] }
 
 
-
+          ),
           _jsxs(Div, { className: "font-medium", children: [
             _jsx(P, { className: "text-sky-500 dark:text-sky-400 my-0", children: "Evan Bacon" }),
-            _jsx(P, { className: "text-slate-700 dark:text-slate-500 my-2", children: "Engineer, Expo" })] })] })] }) }));
-
-
-
-
+            _jsx(P, { className: "text-slate-700 dark:text-slate-500 my-2", children: "Engineer, Expo" })] }
+          )] }
+        )] }
+      ) }
+    ));
 
 }"
 `;

@@ -1,15 +1,25 @@
 package expo.modules.updates
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import com.facebook.react.ReactInstanceManager
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.updates.UpdatesConfiguration.Companion.UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE
+import expo.modules.kotlin.exception.toCodedException
+import expo.modules.updates.events.IUpdatesEventManager
+import expo.modules.updates.events.UpdatesEventManager
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.statemachine.UpdatesStateContext
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.procedures.RecreateReactContextProcedure
+import expo.modules.updates.statemachine.UpdatesStateMachine
+import expo.modules.updates.statemachine.UpdatesStateValue
 import java.io.File
+import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * Updates controller for applications that either disable updates explicitly or have an error
@@ -20,16 +30,33 @@ import java.io.File
  */
 class DisabledUpdatesController(
   private val context: Context,
-  private val fatalException: Exception?,
-  private val isMissingRuntimeVersion: Boolean
+  private val fatalException: Exception?
 ) : IUpdatesController {
+  /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
+  private var weakActivity: WeakReference<Activity>? = null
+
+  private val logger = UpdatesLogger(context)
+  override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
+
+  // disabled controller state machine can only be idle or restarting
+  private val stateMachine = UpdatesStateMachine(logger, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
+
   private var isStarted = false
+  private var startupStartTimeMillis: Long? = null
+  private var startupEndTimeMillis: Long? = null
+
+  private val launchDuration
+    get() = startupStartTimeMillis?.let { start ->
+      startupEndTimeMillis?.let { end ->
+        (end - start).toDuration(
+          DurationUnit.MILLISECONDS
+        )
+      }
+    }
+
   private var launcher: Launcher? = null
   private var isLoaderTaskFinished = false
   override var updatesDirectory: File? = null
-
-  override var isEmergencyLaunch = false
-    private set
 
   @get:Synchronized
   override val launchAssetFile: String?
@@ -38,7 +65,7 @@ class DisabledUpdatesController(
         try {
           (this as java.lang.Object).wait()
         } catch (e: InterruptedException) {
-          Log.e(TAG, "Interrupted while waiting for launch asset file", e)
+          logger.error("Interrupted while waiting for launch asset file", e, UpdatesErrorCode.InitializationError)
         }
       }
       return launcher?.launchAssetFile
@@ -47,7 +74,19 @@ class DisabledUpdatesController(
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
 
-  override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {}
+  override fun onEventListenerStartObserving() {
+    stateMachine.sendContextToJS()
+  }
+
+  override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {}
+
+  override fun onDidCreateReactInstance(reactContext: ReactContext) {
+    weakActivity = WeakReference(reactContext.currentActivity)
+  }
+
+  override fun onReactInstanceException(exception: java.lang.Exception) {}
+
+  override val isActiveController = false
 
   @Synchronized
   override fun start() {
@@ -55,11 +94,12 @@ class DisabledUpdatesController(
       return
     }
     isStarted = true
+    startupStartTimeMillis = System.currentTimeMillis()
 
-    launcher = NoDatabaseLauncher(context, fatalException)
-    isEmergencyLaunch = fatalException != null
+    launcher = NoDatabaseLauncher(context, logger, fatalException)
+
+    startupEndTimeMillis = System.currentTimeMillis()
     notifyController()
-    return
   }
 
   class UpdatesDisabledException(message: String) : CodedException(message)
@@ -67,41 +107,51 @@ class DisabledUpdatesController(
   override fun getConstantsForModule(): IUpdatesController.UpdatesModuleConstants {
     return IUpdatesController.UpdatesModuleConstants(
       launchedUpdate = launcher?.launchedUpdate,
+      launchDuration = launchDuration,
       embeddedUpdate = null,
-      isEmergencyLaunch = isEmergencyLaunch,
+      emergencyLaunchException = fatalException,
       isEnabled = false,
-      releaseChannel = UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE,
       isUsingEmbeddedAssets = launcher?.isUsingEmbeddedAssets ?: false,
       runtimeVersion = null,
       checkOnLaunch = UpdatesConfiguration.CheckAutomaticallyConfiguration.NEVER,
       requestHeaders = mapOf(),
       localAssetFiles = launcher?.localAssetFiles,
-      isMissingRuntimeVersion = isMissingRuntimeVersion,
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = false,
+      initialContext = stateMachine.context
     )
   }
 
   override fun relaunchReactApplicationForModule(callback: IUpdatesController.ModuleCallback<Unit>) {
-    callback.onFailure(UpdatesDisabledException("You cannot reload when expo-updates is not enabled."))
-  }
+    val procedure = RecreateReactContextProcedure(
+      context,
+      weakActivity,
+      object : Launcher.LauncherCallback {
+        override fun onFailure(e: Exception) {
+          callback.onFailure(e.toCodedException())
+        }
 
-  override fun getNativeStateMachineContext(callback: IUpdatesController.ModuleCallback<UpdatesStateContext>) {
-    callback.onFailure(UpdatesDisabledException("You cannot check for updates when expo-updates is not enabled."))
+        override fun onSuccess() {
+          callback.onSuccess(Unit)
+        }
+      }
+    )
+    stateMachine.queueExecution(procedure)
   }
 
   override fun checkForUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult>
   ) {
-    callback.onFailure(UpdatesDisabledException("You cannot check for updates when expo-updates is not enabled."))
+    callback.onFailure(UpdatesDisabledException("Updates.checkForUpdateAsync() is not supported when expo-updates is not enabled."))
   }
 
   override fun fetchUpdate(
     callback: IUpdatesController.ModuleCallback<IUpdatesController.FetchUpdateResult>
   ) {
-    callback.onFailure(UpdatesDisabledException("You cannot fetch update when expo-updates is not enabled."))
+    callback.onFailure(UpdatesDisabledException("Updates.fetchUpdateAsync() is not supported when expo-updates is not enabled."))
   }
 
   override fun getExtraParams(callback: IUpdatesController.ModuleCallback<Bundle>) {
-    callback.onFailure(UpdatesDisabledException("You cannot use extra params when expo-updates is not enabled."))
+    callback.onFailure(UpdatesDisabledException("Updates.getExtraParamsAsync() is not supported when expo-updates is not enabled."))
   }
 
   override fun setExtraParam(
@@ -109,7 +159,7 @@ class DisabledUpdatesController(
     value: String?,
     callback: IUpdatesController.ModuleCallback<Unit>
   ) {
-    callback.onFailure(UpdatesDisabledException("You cannot use extra params when expo-updates is not enabled."))
+    callback.onFailure(UpdatesDisabledException("Updates.setExtraParamAsync() is not supported when expo-updates is not enabled."))
   }
 
   @Synchronized

@@ -1,7 +1,7 @@
 ---
+modificationDate: March 13, 2023
 title: Expo Updates v1
-sidebar_title: Expo Updates v1
-description: Version 1 • Updated 2023-03-13
+description: Version 1
 ---
 
 ## Introduction
@@ -12,7 +12,7 @@ This is the specification for Expo Updates, a protocol for delivering updates to
 
 Conforming servers and client libraries must fulfill all normative requirements. Conformance requirements are described in this document by both descriptive assertions and key words with clearly defined meanings.
 
-The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in the normative portions of this document are to be interpreted as described in [IETF RFC 2119](https://tools.ietf.org/html/rfc2119). These key words may appear in lowercase and still retain their meaning unless explicitly declared as non-normative.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in the normative portions of this document are to be interpreted as described in [IETF RFC 2119](https://tools.ietf.org/html/rfc2119). These key words may appear in lowercase and still retain their meaning unless explicitly declared as non-normative.
 
 A conforming implementation of this protocol MAY provide additional functionality, but MUST NOT where explicitly disallowed or would otherwise result in non-conformance. Where relevant, unknown fields should be allowed and ignored by conforming clients.
 
@@ -20,8 +20,8 @@ A conforming implementation of this protocol MAY provide additional functionalit
 
 Conforming servers and client libraries MUST follow the HTTP spec as described in [RFC 7231](https://tools.ietf.org/html/rfc7231) as well as the more precise guidance described in this spec.
 
-- An _update_ is defined as a [_manifest_](#manifest-response) together with the assets referenced inside the manifest.
-- A [_directive_](#directive-response) is defined as a message from the server that instructs clients to perform an action.
+- An _update_ is defined as a [_manifest_](#manifest-body) together with the assets referenced inside the manifest.
+- A [_directive_](#directive-body) is defined as a message from the server that instructs clients to perform an action.
 
 Expo Updates is a protocol for assembling and delivering updates and directives to clients.
 
@@ -50,11 +50,11 @@ A conformant client library MUST make a GET request with the headers:
    - Android MUST be `expo-platform: android`.
    - If it is not one of these platforms, the server SHOULD return a 400 or a 404
 3. `expo-runtime-version` MUST be a runtime version compatible with the client. A runtime version stipulates the native code setup a client is running. It should be set when the client is built. For example, in an iOS client, the value may be set in a plist file.
-4. Any headers stipulated by a previous responses' [server defined headers](#manifest-response-headers).
+4. Any headers stipulated by a previous responses' [server defined headers](#response).
 
 A conformant client library MAY send one of `accept: application/expo+json`, `accept: application/json`, or `accept: multipart/mixed` based on the [supported response structures](#response), though it SHOULD send `accept: application/expo+json, application/json, multipart/mixed`. A conformant client library MAY express preference using "q" parameters as specified in [RFC 7231](https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.1), which default to `1`.
 
-A conformant client library configured to perform [code signing](#code-signing) verification MUST send a `expo-expect-signature` header to indicate that it expects the conformant server to include the `expo-signature` header in the manifest response. `expo-expect-signature` is an [Expo SFV](expo-sfv-0.mdx) dictionary which MAY contain any of the following key value pairs:
+A conformant client library configured to perform [code signing](#code-signing) verification MUST send a `expo-expect-signature` header to indicate that it expects the conformant server to include the `expo-signature` header in the manifest response. `expo-expect-signature` is an [Expo SFV](/technical-specs/expo-sfv-0/) dictionary which MAY contain any of the following key value pairs:
 
 - `sig` SHOULD contain the boolean `true` to indicate that it requires a conformant server to respond with the signature in the `sig` key.
 - `keyid` SHOULD contain the keyId of the public key the client will use to verify the signature
@@ -62,7 +62,7 @@ A conformant client library configured to perform [code signing](#code-signing) 
 
 Example:
 
-```
+```text
 expo-protocol-version: 1
 accept: application/expo+json;q=0.9, application/json;q=0.8, multipart/mixed
 expo-platform: *
@@ -82,7 +82,7 @@ The choice of update and headers are dependent on the values of the request head
 
 ### Common response headers
 
-```
+```text
 expo-protocol-version: 1
 expo-sfv-version: 0
 expo-manifest-filters: &lt;expo-sfv&gt;
@@ -93,25 +93,25 @@ content-type: *
 
 - `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `1`.
 - `expo-sfv-version` MUST be `0`.
-- `expo-manifest-filters` is an [Expo SFV](expo-sfv-0.mdx) dictionary. It is used to filter updates stored by the client library by the `metadata` attribute found in the [manifest](#manifest-body). If a field is mentioned in the filter, the corresponding field in the metadata must either be missing or equal for the update to be included. The client library MUST store the manifest filters until it is overwritten by a newer response.
-- `expo-server-defined-headers` is an [Expo SFV](expo-sfv-0.mdx) dictionary. It defines headers that a client library MUST store until overwritten by a newer dictionary, and they MUST be included in every subsequent [update request](#request).
+- `expo-manifest-filters` is an [Expo SFV](/technical-specs/expo-sfv-0/) dictionary. It is used to filter updates stored by the client library by the `metadata` attribute found in the [manifest](#manifest-body). If a field is mentioned in the filter, the corresponding field in the metadata must either be missing or equal for the update to be included. The client library MUST store the manifest filters until it is overwritten by a newer response.
+- `expo-server-defined-headers` is an [Expo SFV](/technical-specs/expo-sfv-0/) dictionary. It defines headers that a client library MUST store until overwritten by a newer dictionary, and they MUST be included in every subsequent [update request](#request).
 - `cache-control` MUST be set to an appropriately short period of time. A value of `cache-control: private, max-age=0` is recommended to ensure the newest manifest is returned. Setting longer cache ages could result in stale updates.
 - `content-type` MUST be determined by _proactive negotiation_ as defined in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-3.4.1). Since the client library is [required](#request) to send an `accept` header with each manifest request, this will always be either `application/expo+json`, `application/json`; otherwise the request would return a `406` error.
 
 ### Other response headers
 
-```
+```text
 expo-signature: *
 ```
 
-- `expo-signature` SHOULD contain the signature of the manifest to be used during the validation step of [code signing](#code-signing) if the request for the manifest contained the `expo-expect-signature` header. This is an [Expo SFV](expo-sfv-0.mdx) dictionary which MAY contain any of the following key value pairs:
+- `expo-signature` SHOULD contain the signature of the manifest to be used during the validation step of [code signing](#code-signing) if the request for the manifest contained the `expo-expect-signature` header. This is an [Expo SFV](/technical-specs/expo-sfv-0/) dictionary which MAY contain any of the following key value pairs:
   - `sig` MUST contain the signature of the manifest. The name of this field matches that of `expo-expect-signature`.
   - `keyid` MAY contain the keyId of the key the server used to sign the response. The client SHOULD use the certificate that matches this `keyid` to verify the signature.
   - `alg` MAY contain the algorithm the server used to sign the response. The client SHOULD use this field only if it matches the algorithm defined for the certificate matching `keyid`.
 
 ### Multipart response
 
-A update response of this format is defined by the `multipart/mixed` MIME type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1).
+An update response of this format is defined by the `multipart/mixed` MIME type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1).
 
 Headers for this response format are the [common response headers](#common-response-headers), with the following exceptions:
 
@@ -122,16 +122,16 @@ Part order is not strict. A multipart response with no parts (zero-length body) 
 Each part is defined as follows:
 
 1. OPTIONAL `"manifest"` part:
-   - MUST have part header `content-disposition: inline; name="manifest"`.
+   - MUST have part header `content-disposition: form-data; name="manifest"`. The first parameter (`form-data`) does not need to be `form-data`, but the `name` parameter must have `manifest` as a value.
    - MUST have part header `content-type: application/json` or `application/expo+json`.
    - SHOULD have part header `expo-signature` as defined in [other response headers](#other-response-headers) if code signing is being used.
    - The [manifest body](#manifest-body) MUST be sent in the part body.
 2. OPTIONAL `"extensions"` part:
-   - MUST have part header `content-disposition: inline; name="extensions"`.
+   - MUST have part header `content-disposition: form-data; name="extensions"`. The first parameter (`form-data`) does not need to be `form-data`, but the `name` parameter must have `extensions` as a value.
    - MUST have part header `content-type: application/json`.
    - The [extensions-body](#extensions-body) MUST be sent in the part body.
 3. OPTIONAL `"directive"` part:
-   - MUST have part header `content-disposition: inline; name="directive"`.
+   - MUST have part header `content-disposition: form-data; name="directive"`. The first parameter (`form-data`) does not need to be `form-data`, but the `name` parameter must have `directive` as a value.
    - MUST have part header `content-type: application/json` or `application/expo+json`.
    - SHOULD have part header `expo-signature` as defined in [other response headers](#other-response-headers) if code signing is being used.
    - The [directive body](#directive-body) MUST be sent in the part body.
@@ -140,7 +140,7 @@ Each part is defined as follows:
 
 Defined as JSON conforming to both the following `Manifest` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type Manifest = {
   id: string;
   createdAt: string;
@@ -160,7 +160,7 @@ type Asset = {
 };
 ```
 
-- `id`: The ID MUST uniquely specify the manifest.
+- `id`: The ID MUST uniquely specify the manifest and MUST be a UUID.
 - `createdAt`: The date and time at which the update was created is essential as the client library selects the most recent update (subject to any constraints supplied by the `expo-manifest-filters` header). The datetime should be formatted according to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601).
 - `runtimeVersion`: Can be any string defined by the developer. It stipulates what native code setup is required to run the associated update.
 - `launchAsset`: A special asset that is the entry point of the application code. The `fileExtension` field will be ignored for this asset and SHOULD be omitted.
@@ -187,7 +187,7 @@ type Asset = {
 
 Defined as JSON conforming to both the following `Extensions` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type Extensions = {
   assetRequestHeaders: ExpoAssetHeaderDictionary;
   ...
@@ -206,7 +206,7 @@ type ExpoAssetHeaderDictionary = {
 
 Defined as JSON conforming to both the following `Directive` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 
-```typescript
+```ts
 type Directive = {
   type: string;
   parameters?: { [key: string]: any };
@@ -226,7 +226,7 @@ A conformant client library MUST make a GET request to the asset URLs specified 
 
 Example headers:
 
-```
+```text
 accept: image/jpeg, */*
 accept-encoding: br, gzip
 ```
@@ -242,14 +242,14 @@ An asset located at a particular URL MUST NOT be changed or removed since client
 The asset MUST be encoded using a compression format that the client supports according to the request's `accept-encoding` header. The server MAY serve uncompressed assets. The response MUST include a `content-type` header with the MIME type of the asset.
 For example:
 
-```
+```text
 content-encoding: br
 content-type: application/javascript
 ```
 
 An asset is RECOMMENDED to be served with a `cache-control` header set to a long duration as an asset located at a given URL must not change. For example:
 
-```
+```text
 cache-control: public, max-age=31536000, immutable
 ```
 

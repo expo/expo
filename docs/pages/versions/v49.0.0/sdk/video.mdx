@@ -11,7 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-The `Video` component from **`expo-av`** displays a video inline with the other UI elements in your app.
+The `Video` component from `expo-av` displays a video inline with the other UI elements in your app.
 
 Much of Video and Audio have common APIs that are documented in [AV documentation](av.mdx). This page covers video-specific props and APIs. We encourage you to skim through this document to get basic video working, and then move on to [AV documentation](av.mdx) for more advanced functionality. The audio experience of video (such as whether to interrupt music already playing in another app, or whether to play sound while the phone is on silent mode) can be customized using the [Audio API](audio.mdx).
 
@@ -28,13 +28,13 @@ Here's a simple example of a video with a play/pause button.
 <SnackInline label='Video' dependencies={['expo-av', 'expo-asset']}>
 
 ```jsx
-import * as React from 'react';
+import { useState, useRef } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 
 export default function App() {
-  const video = React.useRef(null);
-  const [status, setStatus] = React.useState({});
+  const video = useRef(null);
+  const [status, setStatus] = useState({});
   return (
     <View style={styles.container}>
       <Video
@@ -60,7 +60,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -78,7 +77,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -91,7 +89,7 @@ For more advanced examples, check out the [Playlist example](https://github.com/
 import { Video } from 'expo-av';
 ```
 
-<APISection packageName="expo-video" apiName="Video" strictTypes />
+<APISection packageName="expo-video" apiName="Video" />
 
 ## Unified API
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import ExpoSMS from './ExpoSMS';
@@ -97,5 +96,5 @@ export async function sendSMSAsync(
  * ```
  */
 export async function isAvailableAsync(): Promise<boolean> {
-  return ExpoSMS.isAvailableAsync();
+  return ExpoSMS.isAvailableAsync?.() ?? false;
 }

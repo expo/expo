@@ -3,8 +3,8 @@ import {
   PermissionStatus,
   PermissionHookOptions,
   createPermissionHook,
-  EventEmitter,
-  Subscription,
+  LegacyEventEmitter,
+  type EventSubscription,
   Platform,
 } from 'expo-modules-core';
 
@@ -25,11 +25,13 @@ import {
 import ExponentAV from '../ExponentAV';
 
 let _recorderExists: boolean = false;
-const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
+const eventEmitter = Platform.OS === 'android' ? new LegacyEventEmitter(ExponentAV) : null;
 
 /**
  * Checks user's permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
+ * @platform android
+ * @platform ios
  */
 export async function getPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.getPermissionsAsync();
@@ -38,6 +40,8 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
 /**
  * Asks the user to grant permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
+ * @platform android
+ * @platform ios
  */
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.requestPermissionsAsync();
@@ -84,9 +88,11 @@ export const usePermissions = createPermissionHook({
  * ```
  *
  * @return A newly constructed instance of `Audio.Recording`.
+ * @platform android
+ * @platform ios
  */
 export class Recording {
-  _subscription: Subscription | null = null;
+  _subscription: EventSubscription | null = null;
   _canRecord: boolean = false;
   _isDoneRecording: boolean = false;
   _finalDurationMillis: number = 0;
@@ -212,7 +218,11 @@ export class Recording {
       const status = await recording.startAsync();
       return { recording, status };
     } catch (err) {
-      recording.stopAndUnloadAsync();
+      recording.stopAndUnloadAsync().catch((_e) => {
+        // Since there was an issue with starting, when trying calling stopAndUnloadAsync
+        // the promise is rejected which is unhandled
+        // lets catch it since its expected
+      });
       throw err;
     }
   };

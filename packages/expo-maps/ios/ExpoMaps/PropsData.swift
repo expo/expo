@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-enum MapType: String, EnumArgument {
+enum MapType: String, Enumerable {
   case normal
   case hybrid
   case satellite
@@ -8,7 +8,7 @@ enum MapType: String, EnumArgument {
 }
 
 // TODO: unify with google maps
-enum POICategoryType: String, EnumArgument {
+enum POICategoryType: String, Enumerable {
   case airport
   case atm
   case bank
@@ -70,18 +70,18 @@ struct PatternItem: Record {
   @Field var length: Float = 1.0
 }
 
-enum PatternType: String, EnumArgument {
+enum PatternType: String, Enumerable {
   case stroke
   case gap
 }
 
-enum Joint: String, EnumArgument {
+enum Joint: String, Enumerable {
   case miter
   case round
   case bevel
 }
 
-enum Cap: String, EnumArgument {
+enum Cap: String, Enumerable {
   case butt
   case round
   case square

@@ -2,7 +2,6 @@ package expo.modules.storereview
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -15,15 +14,11 @@ class StoreReviewModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  private val currentActivity
-    get() = appContext.activityProvider?.currentActivity
-      ?: throw MissingCurrentActivityException()
-
   override fun definition() = ModuleDefinition {
     Name("ExpoStoreReview")
 
-    AsyncFunction("isAvailableAsync") {
-      return@AsyncFunction Build.VERSION.SDK_INT >= 21 && isPlayStoreInstalled()
+    AsyncFunction<Boolean>("isAvailableAsync") {
+      return@AsyncFunction isPlayStoreInstalled()
     }
 
     AsyncFunction("requestReview") { promise: Promise ->
@@ -39,7 +34,7 @@ class StoreReviewModule : Module() {
       if (task.isSuccessful) {
         val reviewInfo = task.result
         reviewInfo?.let {
-          val flow = manager.launchReviewFlow(currentActivity, it)
+          val flow = manager.launchReviewFlow(appContext.throwingActivity, it)
           flow.addOnCompleteListener { result ->
             if (result.isSuccessful) {
               promise.resolve(null)

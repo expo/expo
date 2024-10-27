@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - ios/**
+      - apps/expo-go/ios/**
       - packages/**/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
@@ -19,7 +19,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - ios/**
+      - apps/expo-go/ios/**
       - packages/**/ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
@@ -36,15 +36,15 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-14
     timeout-minutes: 75
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 14.3.1
-        run: sudo xcode-select --switch /Applications/Xcode_14.3.1.app
+      - name: 🔨 Switch to Xcode 16.0
+        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:

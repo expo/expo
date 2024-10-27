@@ -6,27 +6,26 @@ packageName: 'expo-screen-orientation'
 iconUrl: '/static/images/packages/expo-screen-orientation.png'
 ---
 
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { palette } from '@expo/styleguide';
-import APISection from '~/components/plugins/APISection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
+} from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](devicemotion.mdx).
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Portrait orientation in different physical orientations."
   src="/static/images/screen-orientation-portrait.jpg"
 />
 
 On both Android and iOS platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
 
-> Web support has [limited support](https://caniuse.com/#feat=deviceorientation). For improved resize detection on mobile Safari, check out the docs on using [Resize Observer in Expo web](/guides/customizing-webpack/#resizeobserver).
+> Web has [limited support](https://caniuse.com/#feat=deviceorientation).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -44,8 +43,8 @@ You can configure `expo-screen-orientation` using its built-in [config plugin](/
 
 <ConfigReactNative>
 
-1. Open the `ios/` directory in Xcode with `xed ios`. If you don't have an `ios/` directory, run `npx expo prebuild -p ios` to generate one.
-2. Tick the `Requires Full Screen` checkbox in Xcode. It should be located under `Project Target > General > Deployment Info`.
+1. Open the **ios** directory in Xcode with `xed ios`. If you don't have the directory, run `npx expo prebuild -p ios` to generate one.
+2. Tick the `Requires Full Screen` checkbox in Xcode. It should be located under **Project Target** > **General** > **Deployment Info**.
 
 </ConfigReactNative>
 

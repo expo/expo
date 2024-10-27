@@ -4,16 +4,14 @@ description: Learn how to use development builds for a project.
 sidebar_title: Use a build
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { Tab, Tabs } from '~/ui/components/Tabs';
-import { BoxLink } from '~/ui/components/BoxLink';
 
 Usually, creating a new native build from scratch takes long enough that you'll be tempted to switch tasks and lose your focus. However, with the development build installed on your device or an emulator/simulator, you won't have to wait for the native build process until you [change the underlying native code](#rebuild-a-development-build) that powers your app.
 
 ## Add error handling
 
-Certain types of errors can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on, you need to import `expo-dev-client` at the top of the **App.&lbrace;js|tsx&rbrace;** file.
+Certain types of errors can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on, you need to import `expo-dev-client` at the top of the **App.&lbrace;js|tsx&rbrace;** or [**app/\_layout.tsx**](/router/advanced/root-layout/).
 
 ```js App.js
 import 'expo-dev-client';
@@ -27,8 +25,6 @@ To start developing, run the following command to start the development server:
 
 <Terminal cmd={['$ npx expo start']} />
 
-> **Note:** For SDK 48 and lower, use `npx expo start --dev-client`.
-
 To open the project inside your development client:
 
 - Press <kbd>a</kbd> or <kbd>i</kbd> keys to open your project on an Android Emulator or an iOS Simulator.
@@ -38,10 +34,10 @@ To open the project inside your development client:
 
 If you launch the development build from your device's Home screen, you will see your launcher screen, which looks similar to the following:
 
-<ImageSpotlight
+<ContentSpotlight
   alt="The launcher screen of a development build"
   src="/static/images/dev-client/launcher-screen.png"
-  style={{ maxWidth: 600 }}
+  className="max-w-[600px]"
 />
 
 If a bundler is detected on your local network, or if you have signed in to an Expo account in both Expo CLI and your development build, you can connect to it directly from this screen. Otherwise, you can connect by scanning the QR code displayed by the Expo CLI.
@@ -55,11 +51,3 @@ If you add a library to your project that contains native code APIs, for example
 When you need to, you can access the menu by pressing <kbd>Cmd ⌘</kbd> + <kbd>d</kbd> or <kbd>Ctrl</kbd> + <kbd>d</kbd> in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, any debugging functionality you need, or switch to a different version of your app.
 
 See [Debugging](/debugging/runtime-issues/) guide for more information.
-
-## Next step
-
-<BoxLink
-  title="Share a development build with your team"
-  description="Learn how to install and share the development with your team or run it on multiple devices."
-  href="/develop/development-builds/share-with-your-team"
-/>

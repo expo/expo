@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+
+import { listMissingHashLinkTargets } from '~/common/utilities';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
@@ -10,7 +13,7 @@ import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import {
   getCommentContent,
-  getComponentName,
+  getPossibleComponentPropsNames,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -20,18 +23,11 @@ import { P } from '~/ui/components/Text';
 const { LATEST_VERSION } = versions;
 
 type Props = {
-  packageName: string;
+  packageName?: string | string[];
   apiName?: string;
   forceVersion?: string;
-  strictTypes?: boolean;
   testRequire?: any;
   headersMapping?: Record<string, string>;
-
-  /**
-   * Whether to expose all classes props in the sidebar.
-   * @default true when the api has only one class, false otherwise.
-   */
-  exposeAllClassPropsInSidebar?: boolean;
 };
 
 const filterDataByKind = (
@@ -45,7 +41,7 @@ const filterDataByKind = (
       additionalCondition(entry)
   );
 
-const isHook = ({ name }: GeneratedData) =>
+const isHook = ({ name }: { name: string }) =>
   name.startsWith('use') &&
   // note(simek): hardcode this exception until the method will be renamed
   name !== 'useSystemBrightnessAsync';
@@ -53,7 +49,11 @@ const isHook = ({ name }: GeneratedData) =>
 const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
 
-const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
+const isProp = ({ name }: GeneratedData) =>
+  name.includes('Props') &&
+  name !== 'ErrorRecoveryProps' &&
+  name !== 'WebAnchorProps' &&
+  name !== 'ScreenProps';
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
   if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {
@@ -73,7 +73,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 };
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants', 'EventEmitter'].includes(name) &&
+  !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
   !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
@@ -98,20 +98,33 @@ const groupByHeader = (entries: GeneratedData[]) => {
 };
 
 const renderAPI = (
-  version: string,
+  sdkVersion: string,
   {
     packageName,
     apiName,
-    strictTypes = false,
     testRequire = undefined,
     headersMapping = {},
-    ...restProps
   }: Omit<Props, 'forceVersion'>
 ): JSX.Element => {
   try {
-    const { children: data } = testRequire
-      ? testRequire(`~/public/static/data/${version}/${packageName}.json`)
-      : require(`~/public/static/data/${version}/${packageName}.json`);
+    let data;
+
+    if (Array.isArray(packageName)) {
+      data = packageName
+        .map(name => {
+          const { children } = testRequire
+            ? testRequire(`~/public/static/data/${sdkVersion}/${name}.json`)
+            : require(`~/public/static/data/${sdkVersion}/${name}.json`);
+          return children;
+        })
+        .flat()
+        .sort((a: GeneratedData, b: GeneratedData) => a.name.localeCompare(b.name));
+    } else {
+      const { children } = testRequire
+        ? testRequire(`~/public/static/data/${sdkVersion}/${packageName}.json`)
+        : require(`~/public/static/data/${sdkVersion}/${packageName}.json`);
+      data = children;
+    }
 
     const methods = filterDataByKind(
       data,
@@ -137,24 +150,24 @@ const renderAPI = (
 
     const types = filterDataByKind(
       data,
-      TypeDocKind.TypeAlias,
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy],
       entry =>
         !isProp(entry) &&
+        !(entry?.variant === 'reference') &&
         !!(
           entry.type.declaration ||
           entry.type.types ||
           entry.type.type ||
           entry.type.typeArguments
-        ) &&
-        (strictTypes && apiName ? entry.name.startsWith(apiName) : true)
+        )
     );
 
     const props = filterDataByKind(
       data,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
       entry =>
         isProp(entry) &&
-        (entry.kind === TypeDocKind.TypeAlias
+        ([TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)
           ? !!(entry.type.types || entry.type.declaration?.children)
           : true)
     );
@@ -180,12 +193,13 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components.map(
-      ({ name, children }) => `${getComponentName(name, children)}Props`
-    );
+    const componentsPropNames = components
+      .map(({ name, children }) => getPossibleComponentPropsNames(name, children))
+      .flat();
+
     const componentsProps = filterDataByKind(
       props,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
       entry => componentsPropNames.includes(entry.name)
     );
 
@@ -198,16 +212,15 @@ const renderAPI = (
     );
 
     const componentsChildren = components
-      .map(
-        (cls: ClassDefinitionData) =>
-          cls.children?.filter(
-            child =>
-              (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
-              !child.inheritedFrom &&
-              child.name !== 'render' &&
-              // note(simek): hide unannotated "private" methods
-              !child.name.startsWith('_')
-          )
+      .map((cls: ClassDefinitionData) =>
+        cls.children?.filter(
+          child =>
+            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
+            !child.inheritedFrom &&
+            child.name !== 'render' &&
+            // note(simek): hide unannotated "private" methods
+            !child.name.startsWith('_')
+        )
       )
       .flat();
 
@@ -218,7 +231,7 @@ const renderAPI = (
         method?.kind === TypeDocKind.Method &&
         method?.flags?.isStatic === true &&
         !methodsNames.includes(method.name) &&
-        !isHook(method as GeneratedData)
+        !isHook(method)
     );
     const componentMethods = componentsChildren
       .filter(
@@ -244,45 +257,67 @@ const renderAPI = (
                   data={categorizedMethods[key]}
                   header={header}
                   key={`${header}-${index}`}
+                  sdkVersion={sdkVersion}
                 />
               ))
             : Object.entries(categorizedMethods).map(([key, data], index) => (
-                <APISectionMethods data={data} header={key} key={`${key}-${index}`} />
+                <APISectionMethods
+                  data={data}
+                  header={key}
+                  key={`${key}-${index}`}
+                  sdkVersion={sdkVersion}
+                />
               )))}
-        <APISectionComponents data={components} componentsProps={componentsProps} />
-        <APISectionMethods data={staticMethods} header="Static Methods" />
-        <APISectionMethods data={componentMethods} header="Component Methods" />
-        <APISectionConstants data={constants} apiName={apiName} />
-        <APISectionMethods data={hooks} header="Hooks" />
-        <APISectionClasses
-          data={classes}
-          exposeAllClassPropsInSidebar={restProps.exposeAllClassPropsInSidebar}
+        <APISectionComponents
+          data={components}
+          sdkVersion={sdkVersion}
+          componentsProps={componentsProps}
         />
+        <APISectionMethods data={staticMethods} header="Static Methods" sdkVersion={sdkVersion} />
+        <APISectionMethods
+          data={componentMethods}
+          header="Component Methods"
+          sdkVersion={sdkVersion}
+        />
+        <APISectionConstants data={constants} apiName={apiName} sdkVersion={sdkVersion} />
+        <APISectionMethods data={hooks} header="Hooks" sdkVersion={sdkVersion} />
+        <APISectionClasses data={classes} sdkVersion={sdkVersion} />
         {props && !componentsProps.length ? (
-          <APISectionProps data={props} defaultProps={defaultProps} />
+          <APISectionProps data={props} sdkVersion={sdkVersion} defaultProps={defaultProps} />
         ) : null}
-        <APISectionMethods data={methods} apiName={apiName} />
+        <APISectionMethods data={methods} apiName={apiName} sdkVersion={sdkVersion} />
         <APISectionMethods
           data={eventSubscriptions}
           apiName={apiName}
           header="Event Subscriptions"
+          sdkVersion={sdkVersion}
         />
-        <APISectionNamespaces data={namespaces} />
-        <APISectionInterfaces data={interfaces} />
-        <APISectionTypes data={types} />
+        <APISectionNamespaces data={namespaces} sdkVersion={sdkVersion} />
+        <APISectionInterfaces data={interfaces} sdkVersion={sdkVersion} />
+        <APISectionTypes data={types} sdkVersion={sdkVersion} />
         <APISectionEnums data={enums} />
       </>
     );
-  } catch {
+  } catch (e) {
+    console.error(e);
     return <P>No API data file found, sorry!</P>;
   }
 };
+
+const isDevMode = process.env.NODE_ENV === 'development';
 
 const APISection = ({ forceVersion, ...restProps }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
+
+  useEffect(() => {
+    if (isDevMode) {
+      listMissingHashLinkTargets(restProps.apiName);
+    }
+  }, []);
+
   return renderAPI(resolvedVersion, restProps);
 };
 

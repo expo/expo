@@ -2,6 +2,8 @@
 
 #import <EXDevMenu/DevMenuRCTBridge.h>
 
+#import <EXDevMenu/DevClientNoOpLoadingView.h>
+
 // The search path for the Swift generated headers are different
 // between use_frameworks and non_use_frameworks mode.
 #if __has_include(<EXDevMenuInterface/EXDevMenuInterface-Swift.h>)
@@ -70,14 +72,17 @@
 
 - (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules
 {
-  NSArray<NSString *> *allowedModules = @[@"RCT", @"ExpoBridgeModule", @"EXNativeModulesProxy", @"EXReactNativeEventEmitter"];
+  NSArray<NSString *> *allowedModules = @[
+    @"RCT",
+    @"ExpoBridgeModule",
+    @"EXNativeModulesProxy",
+    @"EXReactNativeEventEmitter",
+    @"ExpoModulesCore",
+    @"ViewManagerAdapter_",
+    @"EXDevLauncherDevMenu"
+  ];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
-
-    if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
-      return true;
-    }
-
     for (NSString *allowedModule in allowedModules) {
       if ([clazzName hasPrefix:allowedModule]) {
         return true;
@@ -114,35 +119,30 @@
 
 @end
 
+@interface RCTAppDelegate ()
+
+- (Class)getModuleClassFromName:(const char *)name;
+
+@end
+
 @interface DevClientAppDelegate (DevMenuRCTAppDelegate)
 
-#ifdef __cplusplus
-- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
-#endif
 @end
 
 @implementation DevMenuRCTAppDelegate
-
 
 - (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   return [[DevMenuRCTBridge alloc] initWithDelegate:delegate launchOptions:launchOptions];
 }
 
-#pragma mark - RCTCxxBridgeDelegate
-- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+- (Class)getModuleClassFromName:(const char *)name
 {
-    std::unique_ptr<facebook::react::JSExecutorFactory> executorFactory  = [super jsExecutorFactoryForBridge:bridge];
-
-    #if __has_include(<reacthermes/HermesExecutorFactory.h>)
-        auto rawExecutorFactory = executorFactory.get();
-        auto hermesExecFactory = dynamic_cast<facebook::react::HermesExecutorFactory*>(rawExecutorFactory);
-        if (hermesExecFactory != nullptr) {
-            hermesExecFactory->setEnableDebugger(false);
-        }
-    #endif
-
-    return executorFactory;
+  // Overrides DevLoadingView as no-op when loading dev-menu bundle
+  if (strcmp(name, "DevLoadingView") == 0) {
+    return [DevClientNoOpLoadingView class];
+  }
+  return [super getModuleClassFromName:name];
 }
 
 @end

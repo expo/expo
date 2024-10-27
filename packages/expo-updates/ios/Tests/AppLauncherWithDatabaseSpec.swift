@@ -38,7 +38,7 @@ class AppLauncherWithDatabaseMock : AppLauncherWithDatabase {
 }
 
 class AppLauncherWithDatabaseSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
 
@@ -94,16 +94,11 @@ class AppLauncherWithDatabaseSpec : ExpoSpec {
           directory: testDatabaseDir,
           completionQueue: DispatchQueue.global(qos: .default)
         )
-        var successValue: Bool? = nil
+        let successValue = Synchronized<Bool?>(nil)
         launcher.launchUpdate(withSelectionPolicy: SelectionPolicyFactory.filterAwarePolicy(withRuntimeVersion: "1")) { error, success in
-          successValue = success
+          successValue.value = success
         }
-
-        while successValue == nil {
-          Thread.sleep(forTimeInterval: 0.1)
-        }
-
-        expect(successValue) == true
+        expect(successValue.value).toEventually(beTrue(), timeout: .milliseconds(10_000))
 
         db.databaseQueue.sync {
           let sameUpdate = try! db.update(withId: testUpdate.updateId, config: config)
@@ -113,4 +108,35 @@ class AppLauncherWithDatabaseSpec : ExpoSpec {
       }
     }
   }
+}
+
+/// Allows for synchronization pertaining to the file scope.
+private final class Synchronized<T> {
+  private var _storage: T
+  private let lock = NSLock()
+
+  /// Thread safe access here.
+  var value: T {
+    get {
+      return lockAround {
+        _storage
+      }
+    }
+    set {
+      lockAround {
+        _storage = newValue
+      }
+    }
+  }
+
+  init(_ storage: T) {
+    self._storage = storage
+  }
+
+  private func lockAround<U>(_ closure: () -> U) -> U {
+    lock.lock()
+    defer { lock.unlock() }
+    return closure()
+  }
+
 }

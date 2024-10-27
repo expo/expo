@@ -13,7 +13,7 @@ In this guide, an **update** refers to a single, atomic update, which may consis
 
 If possible, we highly recommend starting with a boilerplate project that has the `expo-updates` library already installed, for example, by running: `npx create-expo-app -t bare-minimum`.
 
-To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.mdx#installation).
+To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions](/versions/latest/sdk/updates/#installation).
 
 Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, and so on) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (for example, GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the services we offer.
 
@@ -57,7 +57,7 @@ Say you have an existing build, build A, of your app running in production. Buil
 
 However, if build A of your app fetches JavaScript version 2 as an update and tries to run it, it will error on the `MediaLibrary.getAlbumsAsync()` method call because the `MediaLibrary` native module is not present in build A. If your JavaScript doesn't catch this error, it will propagate and your app will crash, rendering JavaScript version 2 unusable on build A of your app.
 
-We need some way, therefore, of preventing JavaScript version 2 from being deployed to build A - or, in general, controlling which updates are deployed to specific builds of your app. `expo-updates` provides two ways to control this: Runtime Version and Release Channels.
+We need some way of preventing JavaScript version 2 from being deployed to build A - or, in general, controlling which updates are deployed to specific builds of your app. `expo-updates` provides two ways to control this: Runtime Version and Release Channels.
 
 ### Runtime version
 
@@ -87,7 +87,7 @@ Assets that you import in your JavaScript source can also be atomically download
 
 If you use `expo-asset` in your project (included by default if you have the `expo` package installed), you can control which imported assets will be included as part of this atomic update by using the `assetBundlePatterns` key in **app.json** to provide a list of paths in your project directory:
 
-```
+```text
 "assetBundlePatterns": [
   "**/*" // or "assets/images/*", etc.
 ],
@@ -165,9 +165,9 @@ It's also possible to turn off these automatic updates, and to instead control u
 
 Setting `checkOnLaunch` to `NEVER` will prevent `expo-updates` from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded.
 
-You can then use the [`expo-updates`](../versions/latest/sdk/updates.mdx) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
+You can then use the [`expo-updates`](/versions/latest/sdk/updates/) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
 
-```javascript
+```js
 try {
   const update = await Updates.checkForUpdateAsync();
   if (update.isAvailable) {

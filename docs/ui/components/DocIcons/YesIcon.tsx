@@ -1,4 +1,4 @@
-import { StatusSuccessIcon } from '@expo/styleguide-icons';
+import { StatusSuccessIcon } from '@expo/styleguide-icons/custom/StatusSuccessIcon';
 
 import { IconBase, DocIconProps } from './IconBase';
 

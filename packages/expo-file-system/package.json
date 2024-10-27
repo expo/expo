@@ -1,8 +1,8 @@
 {
   "name": "expo-file-system",
-  "version": "15.9.0",
+  "version": "18.0.0",
   "description": "Provides access to the local file system on the device.",
-  "main": "build/index.js",
+  "main": "src/index.ts",
   "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
@@ -34,14 +34,12 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "uuid": "^3.4.0"
-  },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0",
-    "jest-expo": "~50.0.0-alpha.0"
+    "expo-module-scripts": "^4.0.0",
+    "jest-expo": "~52.0.0-preview.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react-native": "*"
   }
 }

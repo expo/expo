@@ -6,9 +6,6 @@ const noPermissionResponse = {
     expires: 'never',
 };
 export default {
-    get name() {
-        return 'ExpoCalendar';
-    },
     async requestCalendarPermissionsAsync() {
         return noPermissionResponse;
     },

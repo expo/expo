@@ -2,8 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderQueryIntents = exports.renderQueryPackages = exports.renderQueryProviders = void 0;
 function renderQueryProviders(data) {
-    const dataStr = Array.isArray(data) ? data.join(';') : data;
-    return dataStr ? { $: { 'android:authorities': dataStr } } : undefined;
+    return (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({
+        $: {
+            'android:authorities': datum,
+        },
+    }));
 }
 exports.renderQueryProviders = renderQueryProviders;
 function renderQueryPackages(data) {

@@ -5,7 +5,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { filterPlatformAssetScales } from '../persistMetroAssets';
+import { vol } from 'memfs';
+import type { AssetData } from 'metro';
+
+import { filterPlatformAssetScales, persistMetroAssetsAsync } from '../persistMetroAssets';
 
 describe(filterPlatformAssetScales, () => {
   it('removes everything but 2x and 3x for iOS', () => {
@@ -22,5 +25,81 @@ describe(filterPlatformAssetScales, () => {
 
   it('keeps all scales for unknown platform', () => {
     expect(filterPlatformAssetScales('freebsd', [1, 1.5, 2, 3.7])).toEqual([1, 1.5, 2, 3.7]);
+  });
+});
+
+describe(persistMetroAssetsAsync, () => {
+  describe('virtual files match real files', () => {
+    beforeEach(() => {
+      vol.fromJSON(
+        {
+          'input/a.png': '...',
+          'input/a@2x.png': '...',
+          'input/a@3x.png': '...',
+        },
+        '/'
+      );
+    });
+
+    const assets: readonly AssetData[] = [
+      {
+        __packager_asset: true,
+        fileSystemLocation: 'input',
+        httpServerLocation: '/assets/input',
+        width: 100,
+        height: 100,
+        scales: [1, 2, 3],
+        hash: 'hash',
+        name: 'asset',
+        type: 'png',
+        files: ['/input/a.png', '/input/a@2x.png', '/input/a@3x.png'],
+      },
+    ];
+
+    it(`adds files to persist without writing to disk`, async () => {
+      const files = new Map();
+
+      await persistMetroAssetsAsync('/', assets, {
+        outputDirectory: '/output',
+        platform: 'ios',
+        files,
+      });
+
+      expect([...files.keys()]).toEqual([
+        'assets/input/asset.png',
+        'assets/input/asset@2x.png',
+        'assets/input/asset@3x.png',
+      ]);
+
+      expect(files.get('assets/input/asset.png')).toEqual({
+        assetId: expect.stringContaining('input/asset.png'),
+        contents: expect.any(Buffer),
+        targetDomain: undefined,
+      });
+
+      expect(Object.keys(vol.toJSON())).toEqual([
+        '/input/a.png',
+        '/input/a@2x.png',
+        '/input/a@3x.png',
+      ]);
+    });
+
+    it(`writes files that match virtual output`, async () => {
+      await persistMetroAssetsAsync('/', assets, {
+        outputDirectory: '/output',
+        platform: 'ios',
+      });
+
+      expect(Object.keys(vol.toJSON())).toEqual([
+        '/input/a.png',
+        '/input/a@2x.png',
+        '/input/a@3x.png',
+
+        // outputDirectory + asset file
+        '/output/assets/input/asset.png',
+        '/output/assets/input/asset@2x.png',
+        '/output/assets/input/asset@3x.png',
+      ]);
+    });
   });
 });

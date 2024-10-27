@@ -1,4 +1,4 @@
-import { AndroidConfig, ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
+import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('expo-contacts/package.json');
 
@@ -8,10 +8,11 @@ const withContacts: ConfigPlugin<{ contactsPermission?: string } | void> = (
   config,
   { contactsPermission } = {}
 ) => {
-  if (!config.ios) config.ios = {};
-  if (!config.ios.infoPlist) config.ios.infoPlist = {};
-  config.ios.infoPlist.NSContactsUsageDescription =
-    contactsPermission || config.ios.infoPlist.NSContactsUsageDescription || CONTACTS_USAGE;
+  IOSConfig.Permissions.createPermissionsPlugin({
+    NSContactsUsageDescription: CONTACTS_USAGE,
+  })(config, {
+    NSContactsUsageDescription: contactsPermission,
+  });
 
   return AndroidConfig.Permissions.withPermissions(config, [
     'android.permission.READ_CONTACTS',

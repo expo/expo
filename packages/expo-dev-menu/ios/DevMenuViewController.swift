@@ -1,14 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import UIKit
+import React
 
 class DevMenuViewController: UIViewController {
   static let JavaScriptDidLoadNotification = Notification.Name("RCTJavaScriptDidLoadNotification")
   static let ContentDidAppearNotification = Notification.Name("RCTContentDidAppearNotification")
 
   private let manager: DevMenuManager
-  private var reactRootView: DevMenuRootView?
-  private var hasCalledJSLoadedNotification: Bool = false
+  private var reactRootView: UIView?
 
   init(manager: DevMenuManager) {
     self.manager = manager
@@ -23,14 +23,18 @@ class DevMenuViewController: UIViewController {
   }
 
   func updateProps() {
-    reactRootView?.appProperties = initialProps()
+    if let reactRootView = reactRootView as? RCTRootView {
+      reactRootView.appProperties = initialProps()
+    } else if let reactRootView = reactRootView as? RCTSurfaceHostingProxyRootView {
+      reactRootView.appProperties = initialProps()
+    }
   }
 
   // MARK: UIViewController
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    maybeRebuildRootView()
+    rebuildRootView()
   }
 
   override func viewWillLayoutSubviews() {
@@ -40,7 +44,6 @@ class DevMenuViewController: UIViewController {
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    forceRootViewToRenderHack()
     reactRootView?.becomeFirstResponder()
   }
 
@@ -50,7 +53,6 @@ class DevMenuViewController: UIViewController {
     }
   }
 
-  @available(iOS 12.0, *)
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {
       return manager.userInterfaceStyle
@@ -62,7 +64,7 @@ class DevMenuViewController: UIViewController {
 
   private func initialProps() -> [String: Any] {
     let isSimulator = TARGET_IPHONE_SIMULATOR > 0
-    
+
     return [
       "showOnboardingView": manager.shouldShowOnboarding(),
       "appInfo": manager.getAppInfo(),
@@ -74,37 +76,20 @@ class DevMenuViewController: UIViewController {
     ]
   }
 
-  // RCTRootView assumes it is created on a loading bridge.
-  // in our case, the bridge has usually already loaded. so we need to prod the view.
-  private func forceRootViewToRenderHack() {
-    if !hasCalledJSLoadedNotification, let bridge = manager.appInstance.bridge {
-      let notification = Notification(name: DevMenuViewController.JavaScriptDidLoadNotification, object: nil, userInfo: ["bridge": bridge])
-
-      reactRootView?.javaScriptDidLoad(notification)
-      hasCalledJSLoadedNotification = true
-    }
-  }
-
-  private func maybeRebuildRootView() {
-    guard let bridge = manager.appInstance.bridge else {
-      return
-    }
-    if reactRootView?.bridge != bridge {
-      if reactRootView != nil {
-        reactRootView?.removeFromSuperview()
-        reactRootView = nil
+  private func rebuildRootView() {
+    reactRootView = manager.appInstance.rootViewFactory.view(withModuleName: "main", initialProperties: initialProps())
+    reactRootView?.frame = view.bounds
+    reactRootView?.backgroundColor = UIColor { (traitCollection: UITraitCollection) -> UIColor in
+      if traitCollection.userInterfaceStyle == .dark {
+        return  UIColor(red: 22 / 255.0, green: 27 / 255.0, blue: 34 / 255.0, alpha: 1)
       }
-      hasCalledJSLoadedNotification = false
-      reactRootView = DevMenuRootView(bridge: bridge, moduleName: "main", initialProperties: initialProps())
-      reactRootView?.frame = view.bounds
-      reactRootView?.backgroundColor = UIColor.clear
 
-      if isViewLoaded, let reactRootView = reactRootView {
-        view.addSubview(reactRootView)
-        view.setNeedsLayout()
-      }
-    } else {
-      updateProps()
+      return UIColor.clear
+    }
+
+    if isViewLoaded, let reactRootView = reactRootView {
+      view.addSubview(reactRootView)
+      view.setNeedsLayout()
     }
   }
 }

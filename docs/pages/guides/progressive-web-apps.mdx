@@ -1,131 +1,307 @@
 ---
-title: Progressive Web Apps
-description: Learn how to build a progressive web app with Expo.
+title: Progressive web apps
+description: Learn how to add progressive web app support to Expo websites.
 ---
 
-import { CODE } from '~/ui/components/Text';
+import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 
-A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. If you build your native app with Expo, then Expo CLI can generate a lot of the PWA automatically based on how the native app works. Ex: icons, splash screens, orientation, and so on. [Add service workers](https://expo.fyi/enabling-web-service-workers) to get a complete PWA.
+<TabsGroup>
 
-> This guide is oriented towards apps using webpack. If you use [Metro for web](/guides/customizing-metro/#web-support) (such as with [Expo Router](/routing/introduction)), you can still build a PWA. However, the Expo tooling suggested in this guide is not all intended for it. Use the [`web.output`](/versions/latest/config/app/#output) property with `single` as its default value to generate a SPA. You can then modify your **public/index.html** to add meta tags and PWA assets, and use [`expo-router/head`](/router/reference/static-rendering/#meta-tags) to set meta tags on each route. [Workbox](https://web.dev/learn/pwa/workbox/) is recommended for service workers.
+A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. We recommend building native apps whenever possible as they have the best offline support, but PWAs are a great option for desktop users.
 
-## Usage
+## Favicons
 
-Expo web projects generate PWA assets and manifests by default, you only need to [add offline web support](https://expo.fyi/enabling-web-service-workers) to get a full PWA.
+Expo CLI automatically generates the **favicon.ico** file based on the `web.favicon` field in the **app.json**.
 
-When you run `npx expo export:web` the webpack config reads your **app.config.js** (or **app.json**) and generates a PWA from it.
-
-The following properties can be used to customize your PWA:
-
-| **app.config.js**                               | **manifest.json**             | **index.html**                                          |
-| ----------------------------------------------- | ----------------------------- | ------------------------------------------------------- |
-| `web.backgroundColor`                           | `background_color`            |                                                         |
-| <CODE>web.description \| description</CODE>     | `description`                 | `<meta name="description" />`                           |
-| `web.dir`                                       | `dir`                         |                                                         |
-| `web.display`                                   | `display`                     |                                                         |
-| `web.lang`                                      | `lang`                        | `<html lang="">`                                        |
-| <CODE>web.name \| name</CODE>                   | `name`                        | `<title />`                                             |
-| <CODE>web.orientation \| orientation</CODE>     | `orientation`                 |                                                         |
-| `web.scope`                                     | `scope`                       |                                                         |
-| <CODE>web.shortName \| web.name</CODE>          | `short_name`                  | `<meta name="apple-mobile-web-app-title"/>`             |
-| `web.startUrl`                                  | `start_url`                   |                                                         |
-| <CODE>web.themeColor \| primaryColor</CODE>     | `theme_color`                 | `<meta name="theme-color" />`                           |
-| `web.crossorigin`                               | `crossorigin`                 |                                                         |
-| `web.relatedApplications`                       | `related_applications`        |                                                         |
-| `web.preferRelatedApplications`                 | `prefer_related_applications` |                                                         |
-| <CODE>android.icon \| icon</CODE>               | `icons`                       |                                                         |
-| <CODE>ios.icon \| icon</CODE>                   |                               | `<link rel="apple-touch-icon" >`                        |
-| <CODE>web.favicon \| icon</CODE>                |                               | `<link rel="shortcut icon" >`                           |
-| `web.barStyle`                                  |                               | `<meta name="apple-mobile-web-app-status-bar-style" />` |
-| <CODE>web.splash \| ios.splash \| splash</CODE> |                               | `<link rel="apple-touch-startup-image" >`               |
-
-If you need finer control on how the PWA is generated, you should generate the **web/index.html** with `npx expo customize` and add it manually.
-
-### Icons
-
-Icons are generated in webpack using the [`expo-pwa`][expo-pwa] CLI. You can customize and override icon generation by using the `expo-pwa` CLI directly. [Learn more about `expo-pwa`][expo-pwa].
-
-[expo-pwa]: https://github.com/expo/expo-cli/tree/main/packages/pwa
-
-### Chrome
-
-Chrome PWAs use the **manifest.json** and various meta tags in the `<head />` element of the website's **index.html**. Chrome PWAs are far more robust than iOS/Safari PWAs so you may find that certain features don't line up as well as they do natively.
-
-### Safari
-
-Safari PWAs do not use the **manifest.json**, instead they rely on meta tags in the `<head/>` element of a website's **index.html**. Expo unifies values as much as possible to simplify this.
-
-- Safari icons are resolved with: `ios.icon | icon`.
-  - All icons can be individually overwritten with `<link rel="apple-touch-icon" />` in the **web/index.html**
-- Splash screens are resolved with: `web.splash | ios.splash | splash`.
-  - All splash screens can be individually overwritten with `<link rel="apple-touch-startup-image" />` in the **web/index.html**
-- Status Bar Style is resolved with: `web.meta.apple.barStyle | web.barStyle`.
-  - The default status bar style is `black-translucent` (the only full screen setting).
-  - This can be overwritten with `<meta name="apple-mobile-web-app-status-bar-style" />` in the **web/index.html**
-- The home screen name is resolved with: `web.shortName | web.name | name`.
-  - This can be overwritten with `<meta name="apple-mobile-web-app-title" />` in the **web/index.html**
-
-### Offline
-
-To add offline support, you'll need to add service workers to your project. We recommend using [Workbox](https://developers.google.com/web/tools/workbox/modules/workbox-webpack-plugin) as it handles most of the heavy lifting.
-
-### Related applications
-
-[Related applications](https://developer.mozilla.org/en-US/docs/Web/Manifest#related_applications) are a way of telling your website which apps it should install in favor of a PWA, Expo websites try to recommend the native app when possible.
-
-Related applications can be inferred automatically from the following native **app.config.js** properties:
-
-```js app.config.js
-export default {
-  ios: {
-    bundleIdentifier: 'com.myapp',
-    appStoreUrl: 'app store url',
-  },
-  android: {
-    androidPackage: 'package',
-    // This is optional as it can be inferred from the androidPackage.
-    playStoreUrl: 'play store url',
-  },
-};
+```json
+{
+  "web": {
+    "favicon": "./assets/favicon.png"
+  }
+}
 ```
 
-**Optionally** you could override these values by manually defining the related applications:
+Alternatively, you can create a **favicon.ico** file in the **public** directory to manually specify the icon.
 
-```js app.config.js
-export default {
-  web: {
-    relatedApplications: [
-      {
-        platform: 'itunes',
-        url: 'app store url',
-        id: 'iOS bundle identifier',
-      },
-      {
-        platform: 'play',
-        url: 'play store url',
-        id: 'android package',
-      },
-    ],
-    preferRelatedApplications: true,
-  },
-};
+## Manifest file
+
+PWAs can be [configured with a manifest file](https://developer.mozilla.org/en-US/docs/Web/Manifest) that describes the app's name, icon, and other metadata.
+
+<Step label="1">
+
+Create a PWA manifest in **public/manifest.json**:
+
+```json
+{
+  "short_name": "Expo App",
+  "name": "Expo Router Sample",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
 ```
 
-### Manual setup
+</Step>
 
-Under the hood `@expo/webpack-config` uses a CLI called `expo-pwa`. If you want more control on how PWAs are generated, you can use the `expo-pwa` CLI directly.
+<Step label="2">
 
-Firstly, you'll need to generate the **web/index.html** with `npx expo customize`. Now you can generate custom files and link them in the **web/index.html**. `@expo/webpack-config` will check to see if assets are linked first before attempting to generate new ones.
+The files **logo192.png** and **logo512.png** are the icons that will be used when the app is installed on the user's device. These should be added to the **public** directory too.
 
-#### manifest.json
+<FileTree
+  files={[
+    ['public/manifest.json', 'PWA Manifest'],
+    ['public/logo192.png', '192x192 icon'],
+    ['public/logo512.png', '512x512 icon'],
+  ]}
+/>
 
-- `touch web/manifest.json` or `expo-pwa manifest`
-- Add the following line to the `<head/>` element of your **web/index.html**:
+</Step>
 
-```html web/index.html
+<Step label="3">
+
+Now link the manifest in your HTML file. The method here depends on the output mode of your website (indicated in `web.output` in the **app.json**––defaults to `single`).
+
+<Tabs>
+
+<Tab label="single">
+
+If you're using a single-page app, you can link the manifest in your HTML file by first creating a template HTML in **public/index.html**:
+
+<Terminal
+  cmd={['$ npx expo customize public/index.html']}
+  cmdCopy="npx expo customize public/index.html"
+/>
+
+Then add the manifest to the `<head>` tag:
+
+```html
 <link rel="manifest" href="/manifest.json" />
 ```
 
-Now `npx expo export:web` will copy the **web/manifest.json** file into the build folder and skip converting the **app.config.js** or **app.json** into a **manifest.json**.
+</Tab>
 
-Note that if the `icons` property is not defined then the build step will still attempt to generate and append Chrome icons to your **manifest.json**.
+<Tab label="static & server">
+
+If you're using static or server rendering, the HTML entry can be dynamically created in **app/+html.tsx**. Here we'll link the manifest by adding a `<link>` tag to the `<head>` component:
+
+```tsx app/+html.tsx
+import { ScrollViewStyleReset } from 'expo-router/html';
+import type { PropsWithChildren } from 'react';
+
+// This file is web-only and used to configure the root HTML for every
+// web page during static rendering.
+// The contents of this function only run in Node.js environments and
+// do not have access to the DOM or browser APIs.
+export default function Root({ children }: PropsWithChildren) {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        {/* Link the PWA manifest file. */}
+        <link rel="manifest" href="/manifest.json" />
+
+        {/*
+          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
+          However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
+        */}
+        <ScrollViewStyleReset />
+
+        {/* Add any additional <head> elements that you want globally available on web... */}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+## Service workers
+
+Service workers are primarily used to add offline support to websites. Google's Workbox is the best way to add service workers to a website. Follow the guide for [using Workbox CLI](https://developer.chrome.com/docs/workbox/modules/workbox-cli/), and wherever it refers to a "build script" use `npx expo export -p web` instead.
+
+> **warning:** Be careful adding service workers as they are known to cause unexpected behavior on web. If you accidentally ship a service worker that aggressively caches your website, users cannot request updates easily. For the best offline mobile experience, create a native app with Expo. Unlike websites with service workers, native apps can be updated through the app store to clear the cached experience. This would be similar to resetting the user's native browser (which they may have to do if the service worker is aggressive enough). See [why service workers are suboptimal](https://github.com/facebook/create-react-app/issues/2398) for more information.
+
+For example, here's a possible flow for setting up Workbox:
+
+<Step label="1">
+
+Create a new project with the following command:
+
+<Terminal
+  cmd={['$ npm create expo -t tabs my-app', '', '$ cd my-app']}
+  cmdCopy="npm create expo -t tabs my-app && cd my-app"
+/>
+
+</Step>
+
+<Step label="2">
+
+Now register the service worker in the HTML file. The method here depends on the output mode of your website (indicated in `web.output` in the **app.json**––defaults to `single`).
+
+<Tabs>
+
+<Tab label="single">
+
+Next add a service worker registration script to the root **index.html**.
+
+First create a template HTML in **public/index.html** if one does not already exist:
+
+<Terminal
+  cmd={['$ npx expo customize public/index.html']}
+  cmdCopy="npx expo customize public/index.html"
+/>
+
+Then create the service worker registration script in the `<head>` tag:
+
+```html
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then(registration => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch(error => {
+          console.error('Service Worker registration failed:', error);
+        });
+    });
+  }
+</script>
+```
+
+</Tab>
+
+<Tab label="static & server">
+
+Next, create a root HTML file for the app and add the service worker registration script:
+
+```tsx app/+html.tsx
+import { ScrollViewStyleReset } from 'expo-router/html';
+import type { PropsWithChildren } from 'react';
+
+// This file is web-only and used to configure the root HTML for every
+// web page during static rendering.
+// The contents of this function only run in Node.js environments and
+// do not have access to the DOM or browser APIs.
+export default function Root({ children }: PropsWithChildren) {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        {/* Bootstrap the service worker. */}
+        <script dangerouslySetInnerHTML={{ __html: sw }} />
+
+        {/*
+          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
+          However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
+        */}
+        <ScrollViewStyleReset />
+
+        {/* Add any additional <head> elements that you want globally available on web... */}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+
+const sw = `
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+        }).catch(error => {
+            console.error('Service Worker registration failed:', error);
+        });
+    });
+}
+`;
+```
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+Now build the website before running the wizard:
+
+<Terminal cmd={['$ npx expo export -p web']} />
+
+</Step>
+
+<Step label="4">
+
+Run the wizard command, selecting `dist` as the root of the app, and the defaults for everything else...
+
+<Terminal
+  cmd={[
+    '$ npx workbox-cli wizard',
+    '',
+    '? What is the root of your web app (that is which directory do you deploy)? dist/',
+    '? Which file types would you like to precache? js, html, ttf, ico, json',
+    '? Where would you like your service worker file to be saved? dist/sw.js',
+    '? Where would you like to save these configuration options? workbox-config.js',
+    "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+  ]}
+/>
+
+</Step>
+
+<Step label="5">
+
+Finally, run `npx workbox-cli generateSW workbox-config.js` to generate the service worker config.
+
+Going forward, you can add a build script in **package.json** to run both scripts in the correct order:
+
+```json package.json
+{
+  "scripts": {
+    "build:web": "expo export -p web && npx workbox-cli generateSW workbox-config.js"
+  }
+}
+```
+
+</Step>
+
+<Step label="6">
+
+If you host your website and visit with Chrome, you can inspect the service worker by going to **Application > Service Workers** in the Chrome dev tools.
+
+</Step>
+
+</TabsGroup>

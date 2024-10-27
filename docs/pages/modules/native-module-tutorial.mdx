@@ -1,14 +1,21 @@
 ---
 title: 'Tutorial: Creating a native module'
 sidebar_title: Create a native module
-description: A tutorial on creating a native module with Expo modules API.
+description: A tutorial on creating a native module that persists settings with Expo Modules API.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon, Grid01Icon } from '@expo/styleguide-icons';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this tutorial, we are going to build a module that stores the user's preferred app theme - either dark, light, or system. We'll use [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults) on iOS and [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences) on Android. It is possible to implement web support using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), but we'll leave that as an exercise for the reader.
+In this tutorial, we are going to build a module that stores the user's preferred app theme: either dark, light, or system. We'll use [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults) on iOS and [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences) on Android. It is possible to implement web support using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), but we'll leave that as an exercise for the reader.
+
+<VideoBoxLink
+  videoId="CdaQSlyGik8"
+  title="How to create a native module with the Expo modules API"
+  description="Learn how to create a native module with the Expo Modules API to extend your apps capabilities by accessing native Android and iOS APIs."
+/>
+
+---
 
 ## 1. Initialize a new module
 
@@ -16,7 +23,7 @@ First, we'll create a new module. On this page we will use the name `expo-settin
 
 <Terminal cmd={['$ npx create-expo-module expo-settings']} />
 
-> **Tip**: Since you aren't going to actually ship this library, you can hit <kbd>return</kbd> for all of the prompts to accept the default values.
+> **Tip**: Since you aren't going to actually ship this library, you can hit <kbd>return</kbd> for all the prompts to accept the default values.
 
 ## 2. Set up our workspace
 
@@ -66,7 +73,7 @@ class ExpoSettingsModule : Module() {
 }
 ```
 
-```typescript src/index.ts
+```ts src/index.ts
 import ExpoSettingsModule from './ExpoSettingsModule';
 
 export function getTheme(): string {
@@ -74,7 +81,7 @@ export function getTheme(): string {
 }
 ```
 
-```typescript example/App.tsx
+```tsx example/App.tsx
 import * as Settings from 'expo-settings';
 import { Text, View } from 'react-native';
 
@@ -178,7 +185,7 @@ class ExpoSettingsModule : Module() {
 
 Now we can call our native modules from TypeScript.
 
-```typescript src/index.ts
+```ts src/index.ts
 import ExpoSettingsModule from './ExpoSettingsModule';
 
 export function getTheme(): string {
@@ -194,7 +201,7 @@ export function setTheme(theme: string): void {
 
 We can now use the `Settings` API in our example app.
 
-```typescript example/App.tsx
+```tsx example/App.tsx
 import * as Settings from 'expo-settings';
 import { Button, Text, View } from 'react-native';
 
@@ -283,7 +290,7 @@ class ExpoSettingsModule : Module() {
 
 ### TypeScript module
 
-```typescript src/index.ts
+```ts src/index.ts
 import { EventEmitter, Subscription } from 'expo-modules-core';
 import ExpoSettingsModule from './ExpoSettingsModule';
 
@@ -308,15 +315,15 @@ export function setTheme(theme: string): void {
 
 ### Example app
 
-```typescript example/App.tsx
+```tsx example/App.tsx
 import * as Settings from 'expo-settings';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
 export default function App() {
-  const [theme, setTheme] = React.useState<string>(Settings.getTheme());
+  const [theme, setTheme] = useState<string>(Settings.getTheme());
 
-  React.useEffect(() => {
+  useEffect(() => {
     const subscription = Settings.addThemeListener(({ theme: newTheme }) => {
       setTheme(newTheme);
     });
@@ -416,7 +423,7 @@ enum class Theme(val value: String) : Enumerable {
 
 ### TypeScript module
 
-```typescript src/index.ts
+```ts src/index.ts
 import { EventEmitter, Subscription } from 'expo-modules-core';
 
 import ExpoSettingsModule from './ExpoSettingsModule';
@@ -444,9 +451,9 @@ export function setTheme(theme: Theme): void {
 
 ### Example app
 
-If we change `Settings.setTheme(nextTheme)` to `Settings.setTheme("not-a-real-theme")`, TypeScript will complain, and if we ignore that and go ahead and press the button anyways, we'll see the following error:
+If we change `Settings.setTheme(nextTheme)` to `Settings.setTheme("not-a-real-theme")`, TypeScript will complain, and if we ignore that and go ahead and press the button, we'll see the following error:
 
-```
+```text
  ERROR  Error: FunctionCallException: Calling the 'setTheme' function has failed (at ExpoModulesCore/SyncFunctionComponent.swift:76)
 → Caused by: ArgumentCastException: Argument at index '0' couldn't be cast to type Enum<Theme> (at ExpoModulesCore/JavaScriptUtils.swift:41)
 → Caused by: EnumNoSuchValueException: 'not-a-real-theme' is not present in Theme enum, it must be one of: 'light', 'dark', 'system' (at ExpoModulesCore/Enumerable.swift:37)
@@ -456,20 +463,4 @@ We can see from the last line of the error message that `not-a-real-theme` is no
 
 ## Next steps
 
-Congratulations! You have created your first simple yet non-trivial Expo module for Android and iOS.
-
-You can con continue to the next tutorial to learn how to create a native view or see the Expo module API reference.
-
-<BoxLink
-  title="Creating a native view"
-  description="A tutorial on creating a native view that renders a WebView with Expo modules API."
-  href="/modules/native-view-tutorial/"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Module API Reference"
-  description="Outline for the Expo Module API and common patterns like sending events from native code to JavaScript."
-  href="/modules/module-api/"
-  Icon={Grid01Icon}
-/>
+Congratulations! You have created your first simple yet non-trivial Expo module for Android and iOS. You can continue to the next tutorial to learn how to create a native view.

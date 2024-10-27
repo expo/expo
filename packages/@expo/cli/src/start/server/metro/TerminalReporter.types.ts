@@ -1,6 +1,9 @@
 import type { ReportableEvent } from 'metro';
 import type { TerminalReportableEvent } from 'metro/src/lib/TerminalReporter';
 import type { Terminal } from 'metro-core';
+import type { WatcherStatus } from 'metro-file-map';
+
+import { MetroEnvironment } from '../middleware/metroOptions';
 
 export type GlobalCacheDisabledReason = 'too_many_errors' | 'too_many_misses';
 
@@ -11,7 +14,7 @@ export type BundleDetails = {
   entryFile: string;
   minify: boolean;
   platform: string | null | undefined;
-  customTransformOptions?: { environment?: 'node' };
+  customTransformOptions?: { environment?: MetroEnvironment; dom?: string };
   runtimeBytecodeVersion: number | null | undefined;
 };
 
@@ -20,6 +23,12 @@ export type BundleProgress = {
   transformedFileCount: number;
   totalFileCount: number;
   ratio: number;
+};
+
+export type BundleProgressUpdate = {
+  buildID: string;
+  transformedFileCount: number;
+  totalFileCount: number;
 };
 
 export { TerminalReportableEvent };
@@ -92,6 +101,8 @@ export interface TerminalReporterInterface {
     phase: BuildPhase
   ): string;
 
+  _logWatcherStatus(event: WatcherStatus): void;
+
   /**
    * This function is only concerned with logging and should not do state
    * or terminal status updates.
@@ -124,11 +135,7 @@ export interface TerminalReporterInterface {
     buildID,
     transformedFileCount,
     totalFileCount,
-  }: {
-    buildID: string;
-    transformedFileCount: number;
-    totalFileCount: number;
-  }): void;
+  }: BundleProgressUpdate): void;
 
   /**
    * This function is exclusively concerned with updating the internal state.

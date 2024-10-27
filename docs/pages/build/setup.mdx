@@ -17,17 +17,13 @@ For a small app, builds for Android and iOS platforms trigger within a few minut
 
 ## Prerequisites
 
-EAS Build is a new and rapidly evolving service. Before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations) page and the other prerequisites below.
+EAS Build is a rapidly evolving service. Before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations) page and the other prerequisites below.
 
 <Collapsible summary="A React Native Android and/or iOS project that you want to build">
 
 Don't have a project yet? No problem. It's quick and easy to create a "Hello world" app that you can use with this guide.
 
-- Install Expo CLI by running the command:
-
-<Terminal cmd={['$ npm install -g expo-cli']} />
-
-- Run the following command to create a new project:
+Run the following command to create a new project:
 
 <Terminal cmd={['$ npx create-expo-app my-app']} />
 
@@ -37,7 +33,7 @@ EAS Build also works well with projects created by `npx create-react-native-app`
 
 <Collapsible summary="An Expo user account">
 
-EAS Build is available to anyone with an Expo account, regardless of whether you pay for EAS or use our free tier. You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
+EAS Build is available to anyone with an Expo account, regardless of whether you pay for EAS or use our Free plan. You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
 
 Paid subscribers get quality improvements such as additional build concurrencies, priority access to minimize the time your builds spend queueing, and increased limits on build timeouts. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
 
@@ -52,7 +48,7 @@ EAS CLI is the command-line app that you will use to interact with EAS services 
 
 You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
 
-> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli@latest`, just remember to use that instead of `eas` whenever it's called for in the documentation.
+> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli@latest`. Remember to use that instead of `eas` whenever it's called for in the documentation.
 
 </Step>
 
@@ -70,15 +66,14 @@ You can check whether you are logged in by running `eas whoami`.
 <Step label="3">
 ## Configure the project
 
-To configure an iOS or an Android project for EAS Build, run the following command:
+To configure an Android or an iOS project for EAS Build, run the following command:
 
 <Terminal cmd={['$ eas build:configure']} />
 
-If you'd like to learn more about what happens behind the scenes, you can read the [build configuration process reference](/build-reference/build-configuration).
+To learn more about what happens behind the scenes, see [build configuration process reference](/build-reference/build-configuration).
 
 Additional configuration may be required for some scenarios:
 
-- Are you migrating an Expo managed app from `"expo build"`? [Learn about the differences](/build-reference/migrating).
 - Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables).
 - Is your project inside of a monorepo? [Follow these instructions](/build-reference/build-with-monorepos).
 - Do you use private npm packages? [Add your npm token](/build-reference/private-npm-packages).
@@ -128,7 +123,7 @@ Alternatively, you can use `--platform all` option to build for Android and iOS 
 
 <Terminal cmd={['$ eas build --platform all']} />
 
-> If you have released your app to stores previously and have existing [app signing credentials](/distribution/app-signing) that you want to use, [follow these instructions to configure them](/app-signing/existing-credentials).
+> If you have released your app to stores previously and have existing [app signing credentials](/app-signing/app-credentials/) that you want to use, [follow these instructions to configure them](/app-signing/existing-credentials).
 
 #### Android app signing credentials
 

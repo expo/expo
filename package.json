@@ -7,32 +7,40 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && expo-yarn-workspaces check-workspace-dependencies && ([ ! -f node_modules/@react-native/dev-middleware/package.json.orig ] && patch -d node_modules -p2 -f --backup < patches/@react-native+dev-middleware+0.73.4.patch || true) && ([ ! -f node_modules/react-native-gesture-handler/package.json.orig ] && patch -d node_modules -p2 -f --backup < patches/react-native-gesture-handler+2.12.0.patch || true) && ([ ! -f node_modules/react-native-reanimated/package.json.orig ] && patch -d node_modules -p2 -f --backup < patches/react-native-reanimated+3.6.0-nightly-20231031-c56d44fd9.patch || true) && yarn workspace @expo/cli prepare",
+    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && patch-package && node ./tools/bin/expotools.js validate-workspace-dependencies",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },
   "workspaces": {
     "packages": [
       "apps/*",
-      "apps/test-suite/puppeteer-test",
-      "home",
       "packages/*",
       "packages/@expo/*"
     ]
   },
   "resolutions": {
-    "react-native": "0.73.0-rc.4",
-    "react-refresh": "^0.14.0",
-    "@react-navigation/native": "^6.1.6",
-    "@react-navigation/core": "^6.4.9",
+    "react-native": "0.76.0-rc.6",
+    "react": "18.3.1",
+    "@react-navigation/bottom-tabs": "7.0.0-rc.33",
+    "@react-navigation/core": "7.0.0-rc.15",
+    "@react-navigation/drawer": "7.0.0-rc.31",
+    "@react-navigation/elements": "2.0.0-rc.25",
+    "@react-navigation/native": "7.0.0-rc.20",
+    "@react-navigation/native-stack": "7.0.0-rc.28",
+    "@react-navigation/routers": "7.0.0-rc.8",
+    "@react-navigation/stack": "7.0.0-rc.27",
+    "react-native-screens": "4.0.0-beta.13",
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "eslint": "^8.45.0",
-    "expo-yarn-workspaces": "*",
+    "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
-    "prettier": "^3.0.0",
-    "yarn-deduplicate": "^6.0.0"
+    "patch-package": "^8.0.0",
+    "prettier": "^3.3.3",
+    "yarn-deduplicate": "^6.0.2"
+  },
+  "volta": {
+    "node": "20.12.2"
   }
 }

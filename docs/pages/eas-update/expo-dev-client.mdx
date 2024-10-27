@@ -1,76 +1,105 @@
 ---
-title: Use expo-dev-client with EAS Update
-sidebar_title: Use expo-dev-client
+title: Preview an update in a development build
+sidebar_title: Use development builds
 description: Learn how to use the expo-dev-client library to preview a published EAS Update inside a development build.
 ---
 
-import { Step } from '~/ui/components/Step';
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
 
-> **warning** This guide is likely to change as we continue to work on EAS Update.
+[`expo-dev-client`](/develop/development-builds/introduction/) library allows launching different versions of a project by creating a development build. Any compatible EAS Update can be previewed in a development build.
 
-The [`expo-dev-client`](/develop/development-builds/introduction/) library allows launching different versions of a project. One of the most popular use cases is to preview a published update inside a development build using the `expo-dev-client` library.
+This guide walks through the steps required to load and preview a published update inside a development build using the **Extensions** tab or constructing a specific Update URL.
 
-It supports loading published EAS Updates through channels. In this guide, you'll learn how to load a specific channel to preview an update in a development build.
+## Prerequisites
 
-## How to load a published EAS Update inside a development build
+- [Create a development build and install it](/develop/development-builds/create-a-build/) on your device or Android Emulator or iOS Simulator.
+- Make sure your development build has the [`expo-updates` library installed](/eas-update/getting-started/#configure-your-project).
+
+## What is an Extensions tab
+
+<ContentSpotlight
+  alt="Extensions tab in a development build."
+  src="/static/images/eas-update/extensions-01.png"
+  className="max-w-[320px]"
+/>
+
+When using the `expo-updates` library inside a development build, the **Extensions** tab provides the ability to load and preview a published update automatically.
+
+### Preview an update using the Extensions tab
 
 <Step label="1">
 
-Create a [development build](/develop/development-builds/create-a-build) of the project.
+Make non-native changes locally in your project and then [publish them using `eas update`](/eas-update/getting-started/#publish-an-update). The update will be published on a branch.
 
 </Step>
 
 <Step label="2">
 
-Make non-native changes locally, then publish them using `eas update --branch ...`. The branch specified should correspond to a channel. You can see how channels are linked to branches with `eas channel:list`.
+After publishing the update, open your development build, go to **Extensions**, and tap **Login** to log in to your Expo account within the development build. This step is required for the **Extensions** tab to load any published updates associated with the project under your Expo account.
 
 </Step>
 
 <Step label="3">
 
-After publishing an update, it's time to load the update in the development build. All development builds that have the `expo-updates` package installed include an Extensions tab where you can select an update:
+After logging in, an EAS Update section will appear inside the **Extensions** tab with one or more of the latest published updates. Tap **Open** next to the update you want to preview.
 
-<ImageSpotlight
-  alt="Extensions tab in the Expo dev client."
-  src="/static/images/dev-client/extensions-panel.png"
-  style={{ maxWidth: 300 }}
+</Step>
+
+In the **Extensions** tab, you can view the list of all published updates for a branch. Tap the branch name in the **Extensions** tab.
+
+<ContentSpotlight
+  alt="Extensions tab in a development build."
+  src="/static/images/eas-update/extensions-02.png"
+  className="max-w-[480px]"
 />
 
-Alternatively, you can construct a specific URL to open your EAS Update. The URL will look like this:
+## Preview an update using the Expo dashboard
+
+You can also preview an update using the Expo dashboard by following the steps below:
+
+- Click the published updated link in the CLI after running the command to publish an update. This will open the update's details on the **Updates** page in the Expo dashboard.
+- Click **Preview**. This will open the **Preview** dialog.
+- To preview the update, you can either scan the QR code with your device's camera or select a platform to [launch the update under **Open with Orbit**](/review/with-orbit/).
+
+## Construct an update URL
+
+As an alternative to the methods described in the previous sections, you can construct a specific URL to open your EAS Update in the development build. The URL will look like the following:
 
 ```bash
-exp+[project-slug]://expo-development-client/?url=[https://u.expo.dev/project-id]?channel-name=[channel]
+[slug]://expo-development-client/?url=[https://u.expo.dev/project-id]/group/[group-id]
 
 # Example
-exp+form-duo://expo-development-client/?url=https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2?channel-name=preview
+my-app://expo-development-client/?url=https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2/group/47839bf2-9e01-467b-9378-4a978604ab11
 ```
 
-Let's break down the parts of this URL:
+Let's break this URL to understand what each part does:
 
-- `exp+`: The beginning of the URL.
-- `form-duo`: This is the project slug found in **app.json**/**app.config.js**.
-- `://expo-development-client/`: necessary for the deep link to work with the `expo-dev-client` library.
-- `?url=`: Defines a `url` query parameter.
-- `https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2`: This is the updates URL, which is inside the project's app config (**app.json**/**app.config.js**) under `updates.url`.
-- `?channel-name=`: Defines a channel query parameter.
-- `preview`: The name of the channel to request.
+| Part of URL                                               | Description                                                                                                                |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `slug`                                                    | The project's [slug](/versions/latest/config/app/#slug) found in the app config.                                           |
+| `://expo-development-client/`                             | Necessary for the deep link to work with the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library.                |
+| `?url=`                                                   | Defines a `url` query parameter.                                                                                           |
+| `https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2` | This is the updates URL, which is inside the project's app config under [`updates.url`](/versions/latest/config/app/#url). |
+| `/group/47839bf2-9e01-467b-9378-4a978604ab11`             | The group ID of the update.                                                                                                |
 
-</Step>
+Once you've constructed the URL, copy and paste it directly into the development build's launcher screen under **Enter URL Manually**.
 
-<Step label="4">
+Alternatively, you can [create a QR code for the URL](/more/qr-codes/) and scan it using your device's camera. When scanned, the URL will open up the development build to the specified channel.
 
-Once we've constructed the URL, we can either copy/paste it directly into the `expo-dev-client`'s launcher screen. Alternatively, we could create a QR code of the URL, then scan it. Scanning this URL should open up the development build to the specified channel.
-
-</Step>
-
-## More
+## Example
 
 <BoxLink
-  title="Working example"
-  description="See a working example on using expo-dev-client with EAS Update."
+  title="See a working example"
+  description={
+    <>
+      See a working example of using <CODE>expo-dev-client</CODE> with EAS Update.
+    </>
+  }
   Icon={GithubIcon}
   href="https://github.com/jonsamp/test-expo-dev-client-eas-update"
 />

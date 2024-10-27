@@ -24,7 +24,7 @@ type ExpoCliStateObject = {
   };
 };
 
-const EXPO_HOME_PATH = Directories.getExpoHomeJSDir();
+const EXPO_HOME_PATH = Directories.getExpoGoDir();
 const { EXPO_HOME_DEV_ACCOUNT_USERNAME, EXPO_HOME_DEV_ACCOUNT_PASSWORD } = process.env;
 
 /**
@@ -142,8 +142,9 @@ async function action(options: ActionOptions): Promise<void> {
 
   const expoHomeHashNode = await hashElement(EXPO_HOME_PATH, {
     encoding: 'hex',
-    folders: { exclude: ['.expo', 'node_modules'] },
+    folders: { exclude: ['.expo', '**/Pods', 'node_modules'] },
   });
+
   const appJsonFilePath = path.join(EXPO_HOME_PATH, 'app.json');
   const slug = `home`;
   const appJsonFile = new JsonFile<AppConfig>(appJsonFilePath);
@@ -201,7 +202,7 @@ async function action(options: ActionOptions): Promise<void> {
   console.log(
     chalk.yellow(
       `Finished publishing. Remember to commit changes of ${chalk.magenta(
-        'home/app.json'
+        'apps/expo-go/app.json'
       )} and ${chalk.magenta('dev-home-config.json')}.`
     )
   );

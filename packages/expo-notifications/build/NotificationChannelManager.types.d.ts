@@ -72,7 +72,7 @@ export interface NotificationChannel {
     enableLights: boolean;
     enableVibrate: boolean;
 }
-type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
+export type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
 /**
  * An object represents a notification channel to be set.
  * @platform android
@@ -87,5 +87,4 @@ export interface NotificationChannelManager extends ProxyNativeModule {
     setNotificationChannelAsync?: (channelId: string, channelConfiguration: NotificationChannelInput) => Promise<NotificationChannel | null>;
     deleteNotificationChannelAsync?: (channelId: string) => Promise<void>;
 }
-export {};
 //# sourceMappingURL=NotificationChannelManager.types.d.ts.map

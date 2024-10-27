@@ -3,7 +3,7 @@
  */
 
 import { PermissionStatus } from '../Camera.types';
-import ExponentCameraManager from '../ExponentCameraManager';
+import ExponentCameraManager from '../ExpoCameraManager';
 
 describe(ExponentCameraManager.getCameraPermissionsAsync, () => {
   it('handles a TypeError from Firefox', async () => {

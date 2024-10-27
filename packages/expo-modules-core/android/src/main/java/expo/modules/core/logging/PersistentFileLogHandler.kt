@@ -9,16 +9,14 @@ import android.content.Context
 internal class PersistentFileLogHandler(
   category: String,
   context: Context
-) : LogHandler(
-  category
-) {
+) : LogHandler() {
 
   private val persistentFileLog = PersistentFileLog(category, context)
 
   override fun log(type: LogType, message: String, cause: Throwable?) {
     persistentFileLog.appendEntry(message)
     cause?.let {
-      persistentFileLog.appendEntry("${cause.localizedMessage}\n${cause.stackTraceToString()}")
+      persistentFileLog.appendEntry("${cause.localizedMessageWithCauseLocalizedMessage()}\n${cause.stackTraceToString()}")
     }
   }
 }

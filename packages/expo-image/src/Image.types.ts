@@ -1,11 +1,13 @@
-import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
+import type { NativeModule, SharedRef } from 'expo';
+import type { SharedRef as SharedRefType } from 'expo/types';
+import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 
 export type ImageSource = {
   /**
    * A string representing the resource identifier for the image,
-   * which could be an http address, a local file path, or the name of a static image resource.
+   * which could be an HTTPS address, a local file path, or the name of a static image resource.
    */
   uri?: string;
   /**
@@ -15,26 +17,32 @@ export type ImageSource = {
   headers?: Record<string, string>;
   /**
    * Can be specified if known at build time, in which case the value
-   * will be used to set the default `<Image/>` component dimension
+   * will be used to set the default `<Image/>` component dimension.
    */
   width?: number;
   /**
    * Can be specified if known at build time, in which case the value
-   * will be used to set the default `<Image/>` component dimension
+   * will be used to set the default `<Image/>` component dimension.
    */
   height?: number;
 
   /**
-   * The blurhash string to use to generate the image. You can read more about the blurhash
-   * on [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repo. Ignored when `uri` is provided.
+   * A string used to generate the image [`placeholder`](#placeholder). For example,
+   * `placeholder={blurhash}`.  If `uri` is provided as the value of the `source` prop,
+   * this is ignored since the `source` can only have `blurhash` or `uri`.
+   *
    * When using the blurhash, you should also provide `width` and `height` (higher values reduce performance),
    * otherwise their default value is `16`.
+   * For more information, see [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repository.
    */
   blurhash?: string;
 
   /**
-   * The thumbhash string to use to generate the image placeholder. You can read more about thumbhash
-   * on the [`thumbhash website`](https://evanw.github.io/thumbhash/). Ignored when `uri` is provided.
+   * A string used to generate the image [`placeholder`](#placeholder). For example,
+   * `placeholder={thumbhash}`.  If `uri` is provided as the value of the `source` prop,
+   * this is ignored since the `source` can only have `thumbhash` or `uri`.
+   *
+   * For more information, see [`thumbhash website`](https://evanw.github.io/thumbhash/).
    */
   thumbhash?: string;
 
@@ -71,10 +79,17 @@ export type ImageStyle = RNImageStyle;
 export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 
 /**
+ * Determines which format should be used to decode the image.
+ * It's suggestion for the platform to use the specified format, but it's not guaranteed.
+ * @hidden Described in the {@link ImageProps['decodeFormat']}
+ */
+export type ImageDecodeFormat = 'argb' | 'rgb';
+
+/**
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export interface ImageProps extends ViewProps {
+export interface ImageProps extends Omit<ViewProps, 'style'> {
   /** @hidden */
   style?: StyleProp<RNImageStyle>;
 
@@ -83,12 +98,19 @@ export interface ImageProps extends ViewProps {
    * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
    * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
    */
-  source?: ImageSource | string | number | ImageSource[] | string[] | null;
+  source?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
 
   /**
    * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
    */
-  placeholder?: ImageSource | string | number | ImageSource[] | string[] | null;
+  placeholder?:
+    | ImageSource
+    | string
+    | number
+    | ImageSource[]
+    | string[]
+    | SharedRefType<'image'>
+    | null;
 
   /**
    * Determines how the image should be resized to fit its container. This property tells the image to fill the container
@@ -200,6 +222,7 @@ export interface ImageProps extends ViewProps {
    * Determines if an image should automatically begin playing if it is an
    * animated image.
    * @default true
+   * @platform android
    * @platform ios
    */
   autoplay?: boolean;
@@ -229,6 +252,11 @@ export interface ImageProps extends ViewProps {
    * Called when the image load either succeeds or fails.
    */
   onLoadEnd?: () => void;
+
+  /**
+   * Called when the image view successfully rendered the source image.
+   */
+  onDisplay?: () => void;
 
   // DEPRECATED
 
@@ -306,6 +334,19 @@ export interface ImageProps extends ViewProps {
    * @default true
    */
   allowDownscaling?: boolean;
+
+  /**
+   * The format in which the image data should be decoded.
+   * It's not guaranteed that the platform will use the specified format.
+   *
+   * - `'argb'` - The image is decoded into a 32-bit color space with alpha channel (https://developer.android.com/reference/android/graphics/Bitmap.Config#ARGB_8888).
+   *
+   * - `'rgb'` - The image is decoded into a 16-bit color space without alpha channel (https://developer.android.com/reference/android/graphics/Bitmap.Config#RGB_565).
+   *
+   * @default 'argb'
+   * @platform android
+   */
+  decodeFormat?: ImageDecodeFormat;
 }
 
 /**
@@ -314,12 +355,13 @@ export interface ImageProps extends ViewProps {
  */
 export interface ImageNativeProps extends ImageProps {
   style?: RNImageStyle;
-  source?: ImageSource[];
-  placeholder?: ImageSource[];
+  source?: ImageSource[] | SharedRefType<'image'>;
+  placeholder?: ImageSource[] | SharedRefType<'image'>;
   contentPosition?: ImageContentPositionObject;
   transition?: ImageTransition | null;
   autoplay?: boolean;
   nativeViewRef?: React.RefObject<ExpoImage>;
+  containerViewRef?: React.RefObject<View>;
 }
 
 /**
@@ -332,8 +374,6 @@ export interface ImageNativeProps extends ImageProps {
  */
 export type ImageContentPositionValue = number | string | `${number}%` | `${number}` | 'center';
 
-// eslint-disable
-// prettier-ignore
 /**
  * Specifies the position of the image inside its container. One value controls the x-axis and the second value controls the y-axis.
  *
@@ -347,33 +387,32 @@ export type ImageContentPosition =
   /**
    * An object that positions the image relatively to the top-right corner.
    */
-  {
-    top?: ImageContentPositionValue;
-    right?: ImageContentPositionValue;
-  } |
+  | {
+      top?: ImageContentPositionValue;
+      right?: ImageContentPositionValue;
+    }
   /**
    * An object that positions the image relatively to the top-left corner.
    */
-  {
-    top?: ImageContentPositionValue;
-    left?: ImageContentPositionValue;
-  } |
+  | {
+      top?: ImageContentPositionValue;
+      left?: ImageContentPositionValue;
+    }
   /**
    * An object that positions the image relatively to the bottom-right corner.
    */
-  {
-    bottom?: ImageContentPositionValue;
-    right?: ImageContentPositionValue;
-  } |
+  | {
+      bottom?: ImageContentPositionValue;
+      right?: ImageContentPositionValue;
+    }
   /**
    * An object that positions the image relatively to the bottom-left corner.
    */
-  {
-    bottom?: ImageContentPositionValue;
-    left?: ImageContentPositionValue;
-  }
+  | {
+      bottom?: ImageContentPositionValue;
+      left?: ImageContentPositionValue;
+    }
   | ImageContentPositionString;
-// eslint-enable
 
 export interface ImageBackgroundProps extends Omit<ImageProps, 'style'> {
   /** The style of the image container */
@@ -465,4 +504,83 @@ export type ImageProgressEventData = {
 
 export type ImageErrorEventData = {
   error: string;
+};
+
+export type ImagePrefetchOptions = {
+  /**
+   * The cache policy for prefetched images.
+   * @default 'memory-disk'
+   */
+  cachePolicy?: 'disk' | 'memory-disk' | 'memory';
+
+  /**
+   * A map of headers to use when prefetching the images.
+   */
+  headers?: Record<string, string>;
+};
+
+/**
+ * An object that is a reference to a native image instance – [Drawable](https://developer.android.com/reference/android/graphics/drawable/Drawable)
+ * on Android and [UIImage](https://developer.apple.com/documentation/uikit/uiimage) on iOS.
+ * Instances of this class can be passed as a source to the [Image](#image) component in which case the image is rendered immediately
+ * since its native representation is already available in the memory.
+ */
+export declare class ImageRef extends SharedRef<'image'> {
+  /**
+   * Logical width of the image. Multiply it by the value in the `scale` property to get the width in pixels.
+   */
+  readonly width: number;
+  /**
+   * Logical height of the image. Multiply it by the value in the `scale` property to get the height in pixels.
+   */
+  readonly height: number;
+  /**
+   * On iOS, if you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**. All other images are assumed to have a scale factor of **1.0**.
+   * On Android, it calculates the scale based on the bitmap density divided by screen density.
+   *
+   * On all platforms, if you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
+   */
+  readonly scale: number;
+  /**
+   * Media type (also known as MIME type) of the image, based on its format.
+   * Returns `null` when the format is unknown or not supported.
+   * @platform ios
+   */
+  readonly mediaType: string | null;
+  /**
+   * Whether the referenced image is an animated image.
+   */
+  readonly isAnimated?: boolean;
+}
+
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule {
+  // TODO: Add missing function declarations
+  Image: typeof ImageRef;
+
+  loadAsync(source: ImageSource, options?: ImageLoadOptions): Promise<ImageRef>;
+}
+
+/**
+ * An object with options for the [`useImage`](#useimage) hook.
+ */
+export type ImageLoadOptions = {
+  /**
+   * If provided, the image will be automatically resized to not exceed this width in pixels, preserving its aspect ratio.
+   * @platform ios
+   */
+  maxWidth?: number;
+
+  /**
+   * If provided, the image will be automatically resized to not exceed this height in pixels, preserving its aspect ratio.
+   * @platform ios
+   */
+  maxHeight?: number;
+
+  /**
+   * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
+   */
+  onError?(error: Error, retry: () => void): void;
 };

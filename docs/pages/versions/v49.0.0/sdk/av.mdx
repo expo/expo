@@ -6,21 +6,21 @@ packageName: 'expo-av'
 iconUrl: '/static/images/packages/expo-av.png'
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
 
 The [`Audio.Sound`](audio.mdx) objects and [`Video`](video.mdx) components share a unified imperative API for media playback.
 
 Note that for `Video`, all of the operations are also available via props on the component. However, we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
 
-Try the [playlist example app](http://expo.dev/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
+See the [playlist example app](https://github.com/expo/playlist-example) for an example on the playback API for both `Audio.Sound` and `Video`.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -75,7 +75,7 @@ On this page, we reference operations on `playbackObject`s. Here is an example o
 
 ### Example: `Audio.Sound`
 
-```javascript
+```js
 await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
 
 const playbackObject = new Audio.Sound();
@@ -91,7 +91,7 @@ See the [audio documentation](audio.mdx) for further information on `Audio.Sound
 
 ### Example: `Video`
 
-```javascript
+```js
 ...
 _handleVideoRef = component => {
   const playbackObject = component;
@@ -117,7 +117,7 @@ See the [video documentation](video.mdx) for further information.
 
 ### Example: `setOnPlaybackStatusUpdate()`
 
-```javascript
+```js
 _onPlaybackStatusUpdate = playbackStatus => {
   if (!playbackStatus.isLoaded) {
     // Update your UI for the unloaded state
@@ -153,7 +153,7 @@ playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 
 ### Example: Loop media exactly 20 times
 
-```javascript
+```js
 const N = 20;
 ...
 

@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - .github/workflows/tvos-compile-test.yml
+      - packages/expo-updates/e2e/setup/create-eas-project-tv.ts
+      - packages/expo-updates/e2e/setup/project.ts
   push:
     branches: [main, 'sdk-*']
     paths:
@@ -16,9 +18,19 @@ on:
       - packages/@expo/prebuild-config/**
       - packages/expo/**
       - packages/expo-av/**
+      - packages/expo-apple-authentication/**
+      - packages/expo-application/**
+      - packages/expo-asset/**
+      - packages/expo-audio/**
+      - packages/expo-blur/**
+      - packages/expo-device/**
+      - packages/expo-file-system/**
       - packages/expo-font/**
       - packages/expo-image/**
       - packages/expo-json-utils/**
+      - packages/expo-keep-awake/**
+      - packages/expo-linear-gradient/**
+      - packages/expo-linking/**
       - packages/expo-localization/**
       - packages/expo-manifests/**
       - packages/expo-modules-autolinking/**
@@ -27,6 +39,7 @@ on:
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
+      - packages/expo-video/**
       - templates/expo-template-bare-minimum/**
 
 concurrency:
@@ -43,9 +56,9 @@ jobs:
       UPDATES_PORT: 4747
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: ➕ Add `bin` to GITHUB_PATH
@@ -58,9 +71,6 @@ jobs:
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: Build expo-updates CLI
-        working-directory: packages/expo-updates
-        run: yarn build:cli
       - name: 🔧 Install eas-cli
         run: yarn global add eas-cli
       - name: 🌳 Add EXPO_REPO_ROOT to environment
@@ -84,7 +94,7 @@ jobs:
         id: build_eas
         with:
           platform: ${{ env.EAS_PLATFORM }}
-          profile: 'updates_testing'
+          profile: 'updates_testing_debug'
           projectRoot: './updates-e2e'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           noWait: ${{ github.event.schedule }}
@@ -95,4 +105,4 @@ jobs:
         working-directory: './updates-e2e'
         env:
           EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          EAS_BUILD_PROFILE: updates_testing
+          EAS_BUILD_PROFILE: updates_testing_debug

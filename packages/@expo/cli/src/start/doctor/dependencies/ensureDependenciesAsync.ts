@@ -10,6 +10,21 @@ import { isInteractive } from '../../../utils/interactive';
 import { logNewSection } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
 
+export type EnsureDependenciesOptions = {
+  /** The packages and/or version ranges that should be enforced in the project */
+  requiredPackages: ResolvedPackage[];
+  /** The user-facing message when the required packages are missing or incorrect */
+  installMessage: string;
+  /** The user-facing message when users aborted the installation */
+  warningMessage: string;
+  /** A previously loaded Expo configuration (loads when omitted) */
+  exp?: ExpoConfig;
+  /** If the prompts asking users to install should be skipped (defaults to false, in CI defaults to true) */
+  skipPrompt?: boolean;
+  /** Project can be mutated in the current environment (defaults to true, in CI defaults to false) */
+  isProjectMutable?: boolean;
+};
+
 export async function ensureDependenciesAsync(
   projectRoot: string,
   {
@@ -20,15 +35,7 @@ export async function ensureDependenciesAsync(
     // Don't prompt in CI
     skipPrompt = !isInteractive(),
     isProjectMutable = isInteractive(),
-  }: {
-    exp?: ExpoConfig;
-    installMessage: string;
-    warningMessage: string;
-    requiredPackages: ResolvedPackage[];
-    skipPrompt?: boolean;
-    /** Project can be mutated in the current environment. */
-    isProjectMutable?: boolean;
-  }
+  }: EnsureDependenciesOptions
 ): Promise<boolean> {
   const { missing } = await getMissingPackagesAsync(projectRoot, {
     sdkVersion: exp.sdkVersion,
@@ -63,13 +70,30 @@ export async function ensureDependenciesAsync(
 
     if (confirm) {
       // Format with version if available.
-      const packages = missing.map(({ pkg, version }) =>
-        version ? [pkg, version].join('@') : pkg
+      const [packages, devPackages] = missing.reduce(
+        ([deps, devDeps], p) => {
+          const pkg = p.version ? [p.pkg, p.version].join('@') : p.pkg;
+          if (p.dev) {
+            return [deps, devDeps.concat(pkg)];
+          }
+          return [deps.concat(pkg), devDeps];
+        },
+        [[], []] as [string[], string[]]
       );
-      // Install packages with versions
-      await installPackagesAsync(projectRoot, {
-        packages,
-      });
+
+      if (packages.length) {
+        await installPackagesAsync(projectRoot, {
+          packages,
+        });
+      }
+
+      if (devPackages.length) {
+        await installPackagesAsync(projectRoot, {
+          packages: devPackages,
+          dev: true,
+        });
+      }
+
       // Try again but skip prompting twice, simply fail if the packages didn't install correctly.
       return await ensureDependenciesAsync(projectRoot, {
         skipPrompt: true,
@@ -83,9 +107,7 @@ export async function ensureDependenciesAsync(
     title = '';
   }
 
-  const installCommand = createInstallCommand({
-    packages: missing,
-  });
+  const installCommand = 'npx expo install ' + missing.map(({ pkg }) => pkg).join(' ');
 
   const disableMessage = warningMessage;
 
@@ -112,26 +134,19 @@ export function createInstallCommand({
     version?: string | undefined;
   }[];
 }) {
-  return (
-    'npx expo install ' +
-    packages
-      .map(({ pkg, version }) => {
-        if (version) {
-          return [pkg, version].join('@');
-        }
-        return pkg;
-      })
-      .join(' ')
-  );
+  return 'npx expo install ' + packages.map(({ pkg }) => pkg).join(' ');
 }
 
 /** Install packages in the project. */
-async function installPackagesAsync(projectRoot: string, { packages }: { packages: string[] }) {
+async function installPackagesAsync(
+  projectRoot: string,
+  { packages, dev }: { packages: string[]; dev?: boolean }
+) {
   const packagesStr = chalk.bold(packages.join(', '));
   Log.log();
   const installingPackageStep = logNewSection(`Installing ${packagesStr}`);
   try {
-    await installAsync(packages, { projectRoot });
+    await installAsync(packages, { projectRoot, dev });
   } catch (e: any) {
     installingPackageStep.fail(`Failed to install ${packagesStr} with error: ${e.message}`);
     throw e;

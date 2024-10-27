@@ -11,7 +11,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag';
 
-**`expo-face-detector`** lets you use the power of the [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
+`expo-face-detector` lets you use the power of the [Google's ML Kit](https://developers.google.com/ml-kit/vision/face-detection) framework to detect faces on images.
 
 <PlatformsSection android ios />
 
@@ -21,7 +21,7 @@ Face detector does not recognize faces that aren't aligned with the interface (t
 
 ## Installation
 
-This module is **not** available in the [Expo Go app](https://expo.dev/expo-go) because it has dependencies that break builds for iOS Simulators.
+This module is **not** available in the [Expo Go app](https://expo.dev/go) because it has dependencies that break builds for iOS Simulators.
 
 You can create a [development build](/develop/development-builds/create-a-build/) to work with this package.
 
@@ -40,7 +40,6 @@ You can use the following snippet to detect faces in a fast mode without detecti
 <SnackInline dependencies={['expo-camera', 'expo-face-detector']} label="Quick face detection">
 
 ```jsx
-import * as React from 'react';
 import { Camera } from 'expo-camera';
 import * as FaceDetector from 'expo-face-detector';
 

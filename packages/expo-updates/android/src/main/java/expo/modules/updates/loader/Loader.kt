@@ -1,7 +1,6 @@
 package expo.modules.updates.loader
 
 import android.content.Context
-import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.UpdatesDatabase
@@ -10,9 +9,12 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.manifest.Update
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 /**
@@ -23,8 +25,9 @@ import java.util.*
  * application package. These correspond to the two loader subclasses.
  */
 abstract class Loader protected constructor(
-  private val context: Context,
+  protected val context: Context,
   private val configuration: UpdatesConfiguration,
+  protected val logger: UpdatesLogger,
   private val database: UpdatesDatabase,
   private val updatesDirectory: File,
   private val loaderFiles: LoaderFiles
@@ -74,14 +77,12 @@ abstract class Loader protected constructor(
   }
 
   protected abstract fun loadRemoteUpdate(
-    context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
   )
 
   protected abstract fun loadAsset(
-    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
@@ -97,20 +98,21 @@ abstract class Loader protected constructor(
     this.callback = callback
 
     loadRemoteUpdate(
-      context, database, configuration,
+      database,
+      configuration,
       object : RemoteUpdateDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
-          finishWithError(message, e)
+        override fun onFailure(e: Exception) {
+          finishWithException(e)
         }
 
         override fun onSuccess(updateResponse: UpdateResponse) {
           this@Loader.updateResponse = updateResponse
-          val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+          val update = updateResponse.manifestUpdateResponsePart?.update
           val onUpdateResponseLoadedResult = this@Loader.callback!!.onUpdateResponseLoaded(updateResponse)
-          if (updateManifest !== null && onUpdateResponseLoadedResult.shouldDownloadManifestIfPresentInResponse) {
+          if (update !== null && onUpdateResponseLoadedResult.shouldDownloadManifestIfPresentInResponse) {
             // if onUpdateResponseLoaded returns true that is a sign that the delegate wants the update manifest
-            // to be processed/downloaded, and therefore the updateManifest needs to exist
-            processUpdateManifest(updateManifest)
+            // to be processed/downloaded, and therefore the update needs to exist
+            processUpdate(update)
           } else {
             updateEntity = null
             finishWithSuccess()
@@ -132,10 +134,8 @@ abstract class Loader protected constructor(
 
   private fun finishWithSuccess() {
     if (callback == null) {
-      Log.e(
-        TAG,
-        this.javaClass.simpleName + " tried to finish but it already finished or was never initialized."
-      )
+      val cause = Exception("Null callback in finishWithSuccess")
+      logger.error("${this.javaClass.simpleName} tried to finish but it already finished or was never initialized.", cause, UpdatesErrorCode.UpdateFailedToLoad)
       return
     }
 
@@ -155,13 +155,10 @@ abstract class Loader protected constructor(
     reset()
   }
 
-  private fun finishWithError(message: String, e: Exception) {
-    Log.e(TAG, message, e)
+  private fun finishWithException(e: Exception) {
+    logger.error("Load error", e, UpdatesErrorCode.UpdateFailedToLoad)
     if (callback == null) {
-      Log.e(
-        TAG,
-        this.javaClass.simpleName + " tried to finish but it already finished or was never initialized."
-      )
+      logger.error("${this.javaClass.simpleName} tried to finish but it already finished or was never initialized.", e, UpdatesErrorCode.UpdateFailedToLoad)
       return
     }
     callback!!.onFailure(e)
@@ -169,18 +166,18 @@ abstract class Loader protected constructor(
   }
 
   // private helper methods
-  private fun processUpdateManifest(updateManifest: UpdateManifest) {
-    if (updateManifest.isDevelopmentMode) {
+  private fun processUpdate(update: Update) {
+    if (update.isDevelopmentMode) {
       // insert into database but don't try to load any assets;
       // the RN runtime will take care of that and we don't want to cache anything
-      val updateEntity = updateManifest.updateEntity
+      val updateEntity = update.updateEntity
       database.updateDao().insertUpdate(updateEntity!!)
       database.updateDao().markUpdateFinished(updateEntity)
       finishWithSuccess()
       return
     }
 
-    val newUpdateEntity = updateManifest.updateEntity
+    val newUpdateEntity = update.updateEntity
     val existingUpdateEntity = database.updateDao().loadUpdateWithId(
       newUpdateEntity!!.id
     )
@@ -189,11 +186,8 @@ abstract class Loader protected constructor(
     // but different scope keys, we should try to launch something rather than show a cryptic
     // error to the user.
     if (existingUpdateEntity != null && existingUpdateEntity.scopeKey != newUpdateEntity.scopeKey) {
+      logger.warn("Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.")
       database.updateDao().setUpdateScopeKey(existingUpdateEntity, newUpdateEntity.scopeKey)
-      Log.e(
-        TAG,
-        "Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update."
-      )
     }
 
     if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {
@@ -210,12 +204,14 @@ abstract class Loader protected constructor(
         // however, it's not ready, so we should try to download all the assets again.
         updateEntity = existingUpdateEntity
       }
-      downloadAllAssets(updateManifest.assetEntityList)
+      downloadAllAssets(update.assetEntityList)
     }
   }
 
   private enum class AssetLoadResult {
-    FINISHED, ALREADY_EXISTS, ERRORED
+    FINISHED,
+    ALREADY_EXISTS,
+    ERRORED
   }
 
   private fun downloadAllAssets(assetList: List<AssetEntity>) {
@@ -234,9 +230,9 @@ abstract class Loader protected constructor(
       // if we already have a local copy of this asset, don't try to download it again!
       if (assetEntity.relativePath != null && loaderFiles.fileExists(
           File(
-              updatesDirectory,
-              assetEntity.relativePath
-            )
+            updatesDirectory,
+            assetEntity.relativePath
+          )
         )
       ) {
         handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ALREADY_EXISTS)
@@ -244,13 +240,19 @@ abstract class Loader protected constructor(
       }
 
       loadAsset(
-        context, assetEntity, updatesDirectory, configuration,
+        assetEntity,
+        updatesDirectory,
+        configuration,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            val identifier = if (assetEntity.hash != null) "hash " + UpdatesUtils.bytesToHex(
-              assetEntity.hash!!
-            ) else "key " + assetEntity.key
-            Log.e(TAG, "Failed to download asset with $identifier", e)
+            val identifier = if (assetEntity.hash != null) {
+              "hash " + UpdatesUtils.bytesToHex(
+                assetEntity.hash!!
+              )
+            } else {
+              "key " + assetEntity.key
+            }
+            logger.error("Failed to download asset with $identifier", e)
             handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED)
           }
 
@@ -271,7 +273,6 @@ abstract class Loader protected constructor(
       AssetLoadResult.FINISHED -> finishedAssetList.add(assetEntity)
       AssetLoadResult.ALREADY_EXISTS -> existingAssetList.add(assetEntity)
       AssetLoadResult.ERRORED -> erroredAssetList.add(assetEntity)
-      else -> throw AssertionError("Missing implementation for AssetLoadResult value")
     }
 
     callback!!.onAssetLoaded(
@@ -293,7 +294,7 @@ abstract class Loader protected constructor(
             var hash: ByteArray? = null
             try {
               hash = UpdatesUtils.sha256(File(updatesDirectory, asset.relativePath))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
             }
             asset.downloadTime = Date()
             asset.hash = hash
@@ -307,12 +308,12 @@ abstract class Loader protected constructor(
           database.updateDao().markUpdateFinished(updateEntity!!)
         }
       } catch (e: Exception) {
-        finishWithError("Error while adding new update to database", e)
+        finishWithException(IOException("Error while adding new update to database", e))
         return
       }
 
       if (erroredAssetList.size > 0) {
-        finishWithError("Failed to load all assets", Exception("Failed to load all assets"))
+        finishWithException(Exception("Failed to load all assets"))
       } else {
         finishWithSuccess()
       }

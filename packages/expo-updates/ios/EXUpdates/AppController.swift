@@ -1,19 +1,47 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 // swiftlint:disable line_length
-// swiftlint:disable type_body_length
-// swiftlint:disable closure_body_length
 // swiftlint:disable force_unwrapping
+// swiftlint:disable identifier_name
 
 import Foundation
 import ExpoModulesCore
+import EXUpdatesInterface
 
 public struct UpdatesModuleConstants {
+  public init(
+    launchedUpdate: Update?,
+    launchDuration: Double?,
+    embeddedUpdate: Update?,
+    emergencyLaunchException: Error?,
+    isEnabled: Bool,
+    isUsingEmbeddedAssets: Bool,
+    runtimeVersion: String?,
+    checkOnLaunch: CheckAutomaticallyConfig,
+    requestHeaders: [String: String],
+    assetFilesMap: [String: Any]?,
+    shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool,
+    initialContext: UpdatesStateContext
+  ) {
+    self.launchedUpdate = launchedUpdate
+    self.launchDuration = launchDuration
+    self.embeddedUpdate = embeddedUpdate
+    self.emergencyLaunchException = emergencyLaunchException
+    self.isEnabled = isEnabled
+    self.isUsingEmbeddedAssets = isUsingEmbeddedAssets
+    self.runtimeVersion = runtimeVersion
+    self.checkOnLaunch = checkOnLaunch
+    self.requestHeaders = requestHeaders
+    self.assetFilesMap = assetFilesMap
+    self.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
+    self.initialContext = initialContext
+  }
+
   let launchedUpdate: Update?
+  let launchDuration: Double?
   let embeddedUpdate: Update?
-  let isEmergencyLaunch: Bool
+  let emergencyLaunchException: Error?
   let isEnabled: Bool
-  let releaseChannel: String
   let isUsingEmbeddedAssets: Bool
   let runtimeVersion: String?
   let checkOnLaunch: CheckAutomaticallyConfig
@@ -27,7 +55,52 @@ public struct UpdatesModuleConstants {
    */
   let assetFilesMap: [String: Any]?
 
-  let isMissingRuntimeVersion: Bool
+  /**
+   Whether the JS API methods should allow calling the native module methods and thus the methods
+   on the controller in development. For non-expo development we want to throw
+   at the JS layer since there isn't a controller set up. But for development within Expo Go
+   or a Dev Client, which have their own controller/JS API implementations, we want the JS API
+   calls to go through.
+   */
+  let shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: Bool
+
+  let initialContext: UpdatesStateContext
+
+  public func toModuleConstantsMap() -> [String: Any?] {
+    var mutableMap: [String: Any?] = [
+      "isEmergencyLaunch": emergencyLaunchException != nil,
+      "emergencyLaunchReason": emergencyLaunchException?.localizedDescription,
+      "isEmbeddedLaunch": embeddedUpdate != nil && embeddedUpdate?.updateId == launchedUpdate?.updateId,
+      "isEnabled": isEnabled,
+      "launchDuration": launchDuration,
+      "isUsingEmbeddedAssets": isUsingEmbeddedAssets,
+      "runtimeVersion": runtimeVersion ?? "",
+      "checkAutomatically": checkOnLaunch.asString,
+      "channel": requestHeaders["expo-channel-name"] ?? "",
+      "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment":
+        shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled(),
+      "initialContext": initialContext.json
+    ]
+
+    if let launchedUpdate = launchedUpdate {
+      mutableMap["updateId"] = launchedUpdate.updateId.uuidString
+      mutableMap["commitTime"] = UInt64(floor(launchedUpdate.commitTime.timeIntervalSince1970 * 1000))
+      mutableMap["manifest"] = launchedUpdate.manifest.rawManifestJSON()
+    }
+
+    if let assetFilesMap = assetFilesMap {
+      mutableMap["localAssets"] = assetFilesMap
+    }
+
+    return mutableMap
+  }
+}
+
+public enum CheckForUpdateResult {
+  case noUpdateAvailable(reason: RemoteCheckResultNotAvailableReason)
+  case updateAvailable(manifest: [String: Any])
+  case rollBackToEmbedded(commitTime: Date)
+  case error(error: Error)
 }
 
 public enum FetchUpdateResult {
@@ -39,12 +112,6 @@ public enum FetchUpdateResult {
 
 @objc(EXUpdatesAppControllerInterface)
 public protocol AppControllerInterface {
-  /**
-   The RCTBridge for which EXUpdates is providing the JS bundle and assets.
-   This is optional, but required in order for `Updates.reload()` and Updates module events to work.
-   */
-  @objc weak var bridge: AnyObject? { get set }
-
   /**
    Delegate which will be notified when EXUpdates has an update ready to launch and
    `launchAssetUrl` is nonnull.
@@ -58,7 +125,11 @@ public protocol AppControllerInterface {
    */
   @objc func launchAssetUrl() -> URL?
 
-  @objc var isStarted: Bool { get }
+  /**
+   Indicates that the controller is in active state.
+   Currently it's only active for `EnabledAppController`.
+   */
+  @objc var isActiveController: Bool { get }
 
   /**
    Starts the update process to launch a previously-loaded update and (if configured to do so)
@@ -75,13 +146,16 @@ public protocol AppControllerInterface {
 public protocol InternalAppControllerInterface: AppControllerInterface {
   var updatesDirectory: URL? { get }
 
+  var eventManager: UpdatesEventManager { get }
+  func onEventListenerStartObserving()
+
   func getConstantsForModule() -> UpdatesModuleConstants
   func requestRelaunch(
     success successBlockArg: @escaping () -> Void,
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   )
   func checkForUpdate(
-    success successBlockArg: @escaping (_ remoteCheckResult: RemoteCheckResult) -> Void,
+    success successBlockArg: @escaping (_ checkForUpdateResult: CheckForUpdateResult) -> Void,
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   )
   func fetchUpdate(
@@ -96,10 +170,6 @@ public protocol InternalAppControllerInterface: AppControllerInterface {
     key: String,
     value: String?,
     success successBlockArg: @escaping () -> Void,
-    error errorBlockArg: @escaping (_ error: Exception) -> Void
-  )
-  func getNativeStateMachineContext(
-    success successBlockArg: @escaping (_ stateMachineContext: UpdatesStateContext) -> Void,
     error errorBlockArg: @escaping (_ error: Exception) -> Void
   )
 }
@@ -132,43 +202,108 @@ public class AppController: NSObject {
     assert(_sharedInstance != nil, "AppController.sharedInstace was called before the module was initialized")
     return _sharedInstance!
   }
+  private static var _overrideConfig: UpdatesConfig?
 
-  public static func initializeWithoutStarting(configuration: [String: Any]?) {
+  public static func initializeWithoutStarting() {
     if _sharedInstance != nil {
       return
     }
 
-    if UpdatesConfig.canCreateValidConfiguration(mergingOtherDictionary: configuration) {
-      var config: UpdatesConfig?
-      do {
-        config = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration)
-      } catch {
-        NSException(
-          name: .internalInconsistencyException,
-          reason: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
-        )
-        .raise()
-      }
+    if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
+      #if USE_DEV_CLIENT
+      // Passing a reference to DevLauncherController over to the registry,
+      // which expo-dev-client can access.
+      let devLauncherController = initializeAsDevLauncherWithoutStarting()
+      _sharedInstance = devLauncherController
+      UpdatesControllerRegistry.sharedInstance.controller = devLauncherController
+      #else
+      _sharedInstance = DisabledAppController(error: nil)
+      #endif
+      return
+    }
 
+    let logger = UpdatesLogger()
+
+    // swiftlint:disable closure_body_length
+    let config = _overrideConfig != nil ? _overrideConfig : {
+      let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: nil)
+      switch updatesConfigurationValidationResult {
+      case .Valid:
+        guard let config = try? UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil) else {
+          NSException(
+            name: .internalInconsistencyException,
+            reason: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+          )
+          .raise()
+          return nil
+        }
+        return config
+      case .InvalidPlistError:
+        logger.warn(
+          message: "The expo-updates system is disabled due to an invalid configuration. Ensure a valid Expo.plist is present in the application bundle.",
+          code: .initializationError
+        )
+      case .InvalidNotEnabled:
+        logger.warn(
+          message: "The expo-updates system is explicitly disabled. To enable it, set the enabled setting to true.",
+          code: .initializationError
+        )
+      case .InvalidMissingURL:
+        logger.warn(
+          message: "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
+          code: .initializationError
+        )
+      case .InvalidMissingRuntimeVersion:
+        logger.warn(
+          message: "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
+          code: .initializationError
+        )
+      }
+      return nil
+    }()
+    // swiftlint:enable closure_body_length
+
+    if let config = config {
       let updatesDatabase = UpdatesDatabase()
       do {
         let directory = try initializeUpdatesDirectory()
         try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory)
-        _sharedInstance = EnabledAppController(config: config!, database: updatesDatabase, updatesDirectory: directory)
+        _sharedInstance = EnabledAppController(config: config, database: updatesDatabase, updatesDirectory: directory)
       } catch {
-        _sharedInstance = DisabledAppController(error: error, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: configuration))
+        let cause = UpdatesError.appControllerInitializationError(cause: error)
+        logger.error(
+          cause: cause,
+          code: .initializationError
+        )
+        _sharedInstance = DisabledAppController(error: cause)
         return
       }
     } else {
-      _sharedInstance = DisabledAppController(error: nil, isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: configuration))
+      _sharedInstance = DisabledAppController(error: nil)
     }
   }
 
-  public static func initializeAsDevLauncherWithoutStarting() -> DevLauncherAppController {
+  public static func overrideConfiguration(configuration: [String: Any]?) {
+    if _sharedInstance != nil {
+      fatalError("The method should be called before AppController.initializeWithoutStarting()")
+    }
+    let updatesConfigurationValidationResult = UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: configuration)
+    if updatesConfigurationValidationResult == UpdatesConfigurationValidationResult.Valid {
+      do {
+        _overrideConfig = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: configuration)
+      } catch {
+        UpdatesLogger().warn(message: "Failed to overrideConfiguration: invalid configuration: Cannot load configuration from Expo.plist")
+      }
+    } else {
+      UpdatesLogger().warn(message: "Failed to overrideConfiguration: \(updatesConfigurationValidationResult)")
+    }
+  }
+
+  private static func initializeAsDevLauncherWithoutStarting() -> DevLauncherAppController {
     assert(_sharedInstance == nil, "UpdatesController must not be initialized prior to calling initializeAsDevLauncherWithoutStarting")
 
     var config: UpdatesConfig?
-    if UpdatesConfig.canCreateValidConfiguration(mergingOtherDictionary: nil) {
+    if UpdatesConfig.getUpdatesConfigurationValidationResult(mergingOtherDictionary: nil) == UpdatesConfigurationValidationResult.Valid {
       config = try? UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil)
     }
 
@@ -186,8 +321,7 @@ public class AppController: NSObject {
       initialUpdatesConfiguration: config,
       updatesDirectory: updatesDirectory,
       updatesDatabase: updatesDatabase,
-      directoryDatabaseException: directoryDatabaseException,
-      isMissingRuntimeVersion: UpdatesConfig.isMissingRuntimeVersion(mergingOtherDictionary: nil)
+      directoryDatabaseException: directoryDatabaseException
     )
     _sharedInstance = appController
     return appController
@@ -215,9 +349,17 @@ public class AppController: NSObject {
       throw dbError
     }
   }
+
+  internal static func onEventListenerStartObserving(_ eventEmitter: EXEventEmitterService?) {
+    _sharedInstance?.eventManager.eventEmitter = eventEmitter
+    _sharedInstance?.onEventListenerStartObserving()
+  }
+
+  internal static func onEventListenerStopObserving() {
+    _sharedInstance?.eventManager.eventEmitter = nil
+  }
 }
 
+// swiftlint:enable identifier_name
 // swiftlint:enable force_unwrapping
-// swiftlint:enable closure_body_length
 // swiftlint:enable line_length
-// swiftlint:enable type_body_length

@@ -1,7 +1,6 @@
 import { certificateFor } from '@expo/devcert';
 import { vol } from 'memfs';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { ensureEnvironmentSupportsTLSAsync, getTLSCertAsync } from '../tls';
 
@@ -41,7 +40,7 @@ describe(ensureEnvironmentSupportsTLSAsync, () => {
 
 describe(getTLSCertAsync, () => {
   it(`creates an TLS cert for the computer`, async () => {
-    asMock(Log.log).mockReset();
+    jest.mocked(Log.log).mockReset();
     await expect(getTLSCertAsync('/')).resolves.toEqual({
       certPath: '/.expo/tls/cert-localhost.pem',
       keyPath: '/.expo/tls/key-localhost.pem',

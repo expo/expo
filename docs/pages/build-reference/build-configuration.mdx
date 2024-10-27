@@ -2,10 +2,9 @@
 title: Build configuration process
 sidebar_title: Configuration process
 description: Learn how EAS CLI configures a project for EAS Build.
-hideTOC: true
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Step } from '~/ui/components/Step';
 
 In this guide, you will learn what happens when EAS CLI configures your project with `eas build:configure` (or `eas build` - which runs this same process if the project is not yet configured).
@@ -17,10 +16,9 @@ EAS CLI performs the following steps when configuring your project:
 
 If you only want to use EAS Build for a single platform, that's fine. If you change your mind, you can come back and configure the other later.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Terminal running eas build command with platform Android and iOS options available"
   src="/static/images/eas-build/configure/01-configure-platform.png"
-  containerStyle={{ paddingBottom: 0 }}
 />
 
 </Step>
@@ -57,17 +55,16 @@ This is your EAS Build configuration. It defines three build profiles named `"de
 This step varies depending on the project type you have.
 
 <Step label="3.1">
-### Managed project
+### Expo project
 
 If you haven't configured your **app.json** with `android.package` and/or `ios.bundleIdentifier` yet, EAS CLI will prompt you to specify them.
 
 - `android.package` will be used as the Android application id which is used to identify your app on the Google Play Store
 - `ios.bundleIdentifier` will be used to identify you app on the Apple App Store
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Application identifier prompts in eas build:configure"
   src="/static/images/eas-build/configure/02-configure-app-ids.png"
-  containerStyle={{ paddingBottom: 0 }}
 />
 
 In the example above, we defined exactly the same Android application id and iOS bundle identifier. However, they don't need to match.
@@ -75,9 +72,9 @@ In the example above, we defined exactly the same Android application id and iOS
 </Step>
 
 <Step label="3.2">
-### Bare project
+### Bare React Native project
 
-There are no additional steps for bare workflow projects.
+There are no additional steps for bare projects.
 
 </Step>
 
@@ -89,10 +86,9 @@ There are no additional steps for bare workflow projects.
 That's all there is to configuring a project to be compatible with EAS Build.
 There is one final step if you set `cli.requireCommit` to `true` in your **eas.json** — you'll be prompted to commit all the changes we made for you. You can choose to review them before committing, and you can either specify the git commit message or use a default message.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Application identifier prompts in eas build:configure"
   src="/static/images/eas-build/configure/03-next-steps.png"
-  containerStyle={{ paddingBottom: 0 }}
 />
 
 </Step>

@@ -1,6 +1,5 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide-base';
-import { TerminalSquareIcon } from '@expo/styleguide-icons';
+import { TerminalSquareIcon } from '@expo/styleguide-icons/outline/TerminalSquareIcon';
+import { Language, Prism } from 'prism-react-renderer';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
@@ -13,22 +12,15 @@ type TerminalProps = {
   cmd: string[];
   cmdCopy?: string;
   hideOverflow?: boolean;
-  includeMargin?: boolean;
   title?: string;
 };
 
-export const Terminal = ({
-  cmd,
-  cmdCopy,
-  hideOverflow,
-  includeMargin = true,
-  title = 'Terminal',
-}: TerminalProps) => (
-  <Snippet css={wrapperStyle} includeMargin={includeMargin}>
+export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
+  <Snippet className="terminal-snippet [li_&]:mt-4">
     <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
-    <SnippetContent alwaysDark hideOverflow={hideOverflow} className="grid grid-cols-auto-min-1">
+    <SnippetContent alwaysDark hideOverflow={hideOverflow} className="flex flex-col">
       {cmd.map(cmdMapper)}
     </SnippetContent>
   </Snippet>
@@ -70,7 +62,7 @@ function cmdMapper(line: string, index: number) {
     return (
       <CODE
         key={key}
-        className="whitespace-pre !bg-[transparent] !border-none select-none !text-palette-gray10">
+        className="whitespace-pre !bg-transparent !border-none select-none !text-palette-gray10">
         {line}
       </CODE>
     );
@@ -79,26 +71,26 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key}>
-        <CODE className="whitespace-pre !bg-[transparent] !border-none select-none !text-secondary">
+        <CODE className="whitespace-pre !bg-transparent !border-none select-none !text-secondary">
           -&nbsp;
         </CODE>
-        <CODE className="whitespace-pre !bg-[transparent] !border-none text-default">
-          {line.substring(1).trim()}
-        </CODE>
+        <CODE
+          className="whitespace-pre !bg-transparent !border-none text-default"
+          dangerouslySetInnerHTML={{
+            __html: Prism.highlight(
+              line.substring(1).trim(),
+              Prism.languages['bash'],
+              'bash' as Language
+            ),
+          }}
+        />
       </div>
     );
   }
 
   return (
-    <CODE key={key} className="whitespace-pre !bg-[transparent] !border-none text-default">
+    <CODE key={key} className="whitespace-pre !bg-transparent !border-none text-default">
       {line}
     </CODE>
   );
 }
-
-const wrapperStyle = css`
-  li & {
-    margin-top: ${spacing[4]}px;
-    display: flex;
-  }
-`;

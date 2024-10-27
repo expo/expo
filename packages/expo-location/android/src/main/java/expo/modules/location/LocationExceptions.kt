@@ -14,6 +14,9 @@ internal class LocationBackgroundUnauthorizedException :
 internal class LocationRequestRejectedException(cause: Exception) :
   CodedException("Location request has been rejected: " + cause.message)
 
+internal class CurrentLocationIsUnavailableException :
+  CodedException("Current location is unavailable. Make sure that location services are enabled")
+
 internal class LocationRequestCancelledException :
   CodedException("Location request has been cancelled")
 
@@ -44,9 +47,6 @@ internal class TaskManagerNotFoundException :
 internal class GeofencingException(message: String?, cause: Throwable? = null) :
   CodedException("A geofencing exception has occurred: ${message ?: ""} ${cause?.message ?: ""}")
 
-internal class MissingActivityManagerException :
-  CodedException("Activity manager is unavailable")
-
 internal class MissingUIManagerException :
   CodedException("UIManager is unavailable")
 
@@ -54,4 +54,7 @@ internal class ConversionException(fromClass: Class<*>, toClass: Class<*>, messa
   CodedException("Couldn't cast from ${fromClass::class.simpleName} to ${toClass::class.java.simpleName}: $message")
 
 internal class ForegroundServiceStartNotAllowedException :
-  CodedException("Couldn't start the foreground service. Foreground service cannot be started when the application is in the background.")
+  CodedException("Couldn't start the foreground service. Foreground service cannot be started when the application is in the background")
+
+internal class ForegroundServicePermissionsException :
+  CodedException("Couldn't start the foreground service. Foreground service permissions were not found in the manifest")

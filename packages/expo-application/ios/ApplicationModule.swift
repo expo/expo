@@ -26,6 +26,7 @@ public class ApplicationModule: Module {
 
       do {
         let fileAttributes = try FileManager.default.attributesOfItem(atPath: urlToDocumentsFolder.path)
+        // Uses required reason API based on the following reason: C617.1
         if let installDate = fileAttributes[FileAttributeKey.creationDate] as? Date {
           return installDate.timeIntervalSince1970 * 1000
         }
@@ -36,12 +37,12 @@ public class ApplicationModule: Module {
     }
 
     AsyncFunction("getApplicationReleaseTypeAsync") { () -> Int in
-      let mainProvisioningProfile = ApplicationModuleProvisioningProfile.mainProvisioningProfile
+      let mainProvisioningProfile = EXProvisioningProfile.main()
       return mainProvisioningProfile.appReleaseType().rawValue
     }
 
     AsyncFunction("getPushNotificationServiceEnvironmentAsync") { () -> String? in
-      let mainProvisioningProfile = ApplicationModuleProvisioningProfile.mainProvisioningProfile
+      let mainProvisioningProfile = EXProvisioningProfile.main()
       return mainProvisioningProfile.notificationServiceEnvironment()
     }
   }

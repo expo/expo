@@ -22,14 +22,18 @@ export type PluginConfigOptionsByPlatform = {
  */
 export type PluginConfigOptions = {
     /**
-     * **Experimental:** Determines whether to launch the most recently opened project or navigate to the launcher screen.
+     * Determines whether to launch the most recently opened project or navigate to the launcher screen.
      *
      * - `'most-recent'` - Attempt to launch directly into a previously opened project and if unable to connect,
      * fall back to the launcher screen.
      *
      * - `'launcher'` - Opens the launcher screen.
      *
-     * @default 'launcher'
+     * @default 'most-recent'
+     */
+    launchMode?: 'most-recent' | 'launcher';
+    /**
+     * @deprecated use the `launchMode` property instead
      */
     launchModeExperimental?: 'most-recent' | 'launcher';
 };

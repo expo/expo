@@ -13,13 +13,12 @@ import {
   ReadOnlyGraph,
   SerializerOptions,
 } from 'metro';
-import getMetroAssets from 'metro/src/DeltaBundler/Serializers/getAssets';
-import sourceMapString from 'metro/src/DeltaBundler/Serializers/sourceMapString';
+import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
 import bundleToString from 'metro/src/lib/bundleToString';
 import { ConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
-import pathToRegExp from 'path-to-regexp';
 
+import { stringToUUID } from './debugId';
 import { buildHermesBundleAsync } from './exportHermes';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 import {
@@ -27,10 +26,11 @@ import {
   baseJSBundleWithDependencies,
   getBaseUrlOption,
   getPlatformOption,
-  getSplitChunksOption,
 } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
+import { SerializerConfigOptions } from './withExpoSerializers';
+import getMetroAssets from '../transform-worker/getAssets';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -43,19 +43,39 @@ type ChunkSettings = {
 
 export type SerializeChunkOptions = {
   includeSourceMaps: boolean;
-  includeBytecode: boolean;
-};
+  splitChunks: boolean;
+} & SerializerConfigOptions;
+
+// Convert file paths to regex matchers.
+function pathToRegex(path: string) {
+  // Escape regex special characters, except for '*'
+  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
+
+  // Replace '*' with '.*' to act as a wildcard in regex
+  regexSafePath = regexSafePath.replace(/\*/g, '.*');
+
+  // Create a RegExp object with the modified string
+  return new RegExp('^' + regexSafePath + '$');
+}
+
+const sourceMapString =
+  typeof sourceMapStringMod !== 'function'
+    ? sourceMapStringMod.sourceMapString
+    : sourceMapStringMod;
 
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,
   serializeChunkOptions: SerializeChunkOptions,
   ...props: SerializerParameters
-): Promise<{ artifacts: SerialAsset[] | null; assets: AssetData[] }> {
+): Promise<{
+  artifacts: SerialAsset[] | null;
+  assets: AssetData[];
+}> {
   const [entryFile, preModules, graph, options] = props;
 
   const cssDeps = getCssSerialAssets<MixedOutput>(graph.dependencies, {
+    entryFile,
     projectRoot: options.projectRoot,
-    processModuleFilter: options.processModuleFilter,
   });
 
   // Create chunks for splitting.
@@ -63,7 +83,7 @@ export async function graphToSerialAssetsAsync(
 
   [
     {
-      test: pathToRegExp(entryFile),
+      test: pathToRegex(entryFile),
     },
   ].map((chunkSettings) => gatherChunks(chunks, chunkSettings, preModules, graph, options, false));
 
@@ -103,19 +123,35 @@ export async function graphToSerialAssetsAsync(
       }
     }
 
-    // Add common chunk if one exists.
+    // If common dependencies were found, extract them to the entry chunk.
+    // TODO: Extract the metro-runtime to a common chunk apart from the entry chunk then load the common dependencies before the entry chunk.
     if (commonDependencies.length) {
-      const commonDependenciesUnique = [...new Set(commonDependencies)];
-      const commonChunk = new Chunk(
-        chunkIdForModules(commonDependenciesUnique),
-        commonDependenciesUnique,
-        graph,
-        options,
-        false,
-        true
-      );
-      entryChunk.requiredChunks.add(commonChunk);
-      chunks.add(commonChunk);
+      for (const dep of commonDependencies) {
+        entryChunk.deps.add(dep);
+      }
+      // const commonDependenciesUnique = [...new Set(commonDependencies)];
+      // const commonChunk = new Chunk(
+      //   chunkIdForModules(commonDependenciesUnique),
+      //   commonDependenciesUnique,
+      //   graph,
+      //   options,
+      //   false,
+      //   true
+      // );
+      // entryChunk.requiredChunks.add(commonChunk);
+      // chunks.add(commonChunk);
+    }
+
+    // TODO: Optimize this pass more.
+    // Remove all dependencies from async chunks that are already in the common chunk.
+    for (const chunk of [...chunks.values()]) {
+      if (chunk !== entryChunk) {
+        for (const dep of chunk.deps) {
+          if (entryChunk.deps.has(dep)) {
+            chunk.deps.delete(dep);
+          }
+        }
+      }
     }
   }
 
@@ -125,6 +161,16 @@ export async function graphToSerialAssetsAsync(
     serializeChunkOptions
   );
 
+  // TODO: Can this be anything besides true?
+  const isExporting = true;
+  const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
+  const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
+  const publicPath = isExporting
+    ? graph.transformOptions.platform === 'web'
+      ? `/assets?export_path=${assetPublicUrl}`
+      : assetPublicUrl
+    : '/assets/?unstable_path=.';
+
   // TODO: Convert to serial assets
   // TODO: Disable this call dynamically in development since assets are fetched differently.
   const metroAssets = (await getMetroAssets(graph.dependencies, {
@@ -132,13 +178,16 @@ export async function graphToSerialAssetsAsync(
     assetPlugins: config.transformer?.assetPlugins ?? [],
     platform: getPlatformOption(graph, options) ?? 'web',
     projectRoot: options.projectRoot, // this._getServerRootDir(),
-    publicPath: config.transformer?.publicPath ?? '/',
+    publicPath,
   })) as AssetData[];
 
-  return { artifacts: [...jsAssets, ...cssDeps], assets: metroAssets };
+  return {
+    artifacts: [...jsAssets, ...cssDeps],
+    assets: metroAssets,
+  };
 }
 
-class Chunk {
+export class Chunk {
   public deps: Set<Module> = new Set();
   public preModules: Set<Module> = new Set();
 
@@ -175,19 +224,22 @@ class Chunk {
         });
   }
 
+  private getStableChunkSource(serializerConfig: Partial<SerializerConfigT>) {
+    return this.options.dev
+      ? ''
+      : this.serializeToCodeWithTemplates(serializerConfig, {
+          // Disable source maps when creating a sha to reduce the number of possible changes that could
+          // influence the cache hit.
+          serializerOptions: {
+            includeSourceMaps: false,
+          },
+          sourceMapUrl: undefined,
+          debugId: undefined,
+        }).code;
+  }
+
   private getFilenameForConfig(serializerConfig: Partial<SerializerConfigT>) {
-    return this.getFilename(
-      this.options.dev
-        ? ''
-        : this.serializeToCodeWithTemplates(serializerConfig, {
-            // Disable source maps when creating a sha to reduce the number of possible changes that could
-            // influence the cache hit.
-            serializerOptions: {
-              includeSourceMaps: false,
-            },
-            sourceMapUrl: undefined,
-          })
-    );
+    return this.getFilename(this.getStableChunkSource(serializerConfig));
   }
 
   private serializeToCodeWithTemplates(
@@ -196,28 +248,28 @@ class Chunk {
   ) {
     const entryFile = this.name;
 
-    const jsSplitBundle = baseJSBundleWithDependencies(
-      entryFile,
-      [...this.preModules.values()],
-      [...this.deps],
-      {
-        ...this.options,
-        runBeforeMainModule:
-          serializerConfig?.getModulesRunBeforeMainModule?.(
-            path.relative(this.options.projectRoot, entryFile)
-          ) ?? [],
-        runModule: !this.isVendor && !this.isAsync,
-        modulesOnly: this.preModules.size === 0,
-        platform: this.getPlatform(),
-        baseUrl: getBaseUrlOption(this.graph, this.options),
-        splitChunks: getSplitChunksOption(this.graph, this.options),
-        skipWrapping: true,
-        computedAsyncModulePaths: null,
-        ...options,
-      }
-    );
+    // TODO: Disable all debugId steps when a dev server is enabled. This is an export-only feature.
 
-    return bundleToString(jsSplitBundle).code;
+    const preModules = [...this.preModules.values()];
+    const dependencies = [...this.deps];
+
+    const jsSplitBundle = baseJSBundleWithDependencies(entryFile, preModules, dependencies, {
+      ...this.options,
+      runBeforeMainModule:
+        serializerConfig?.getModulesRunBeforeMainModule?.(
+          path.relative(this.options.projectRoot, entryFile)
+        ) ?? [],
+      runModule: this.options.runModule && !this.isVendor && !this.isAsync,
+      modulesOnly: this.options.modulesOnly || this.preModules.size === 0,
+      platform: this.getPlatform(),
+      baseUrl: getBaseUrlOption(this.graph, this.options),
+      splitChunks: !!this.options.serializerOptions?.splitChunks,
+      skipWrapping: true,
+      computedAsyncModulePaths: null,
+      ...options,
+    });
+
+    return { code: bundleToString(jsSplitBundle).code, paths: jsSplitBundle.paths };
   }
 
   hasAbsolutePath(absolutePath: string): boolean {
@@ -237,7 +289,7 @@ class Chunk {
 
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
-        if (dependency.data.data.asyncType === 'async') {
+        if (dependency.data.data.asyncType) {
           const chunkContainingModule = chunks.find((chunk) =>
             chunk.hasAbsolutePath(dependency.absolutePath)
           );
@@ -245,8 +297,14 @@ class Chunk {
             chunkContainingModule,
             'Chunk containing module not found: ' + dependency.absolutePath
           );
-          const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
-          computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+          // NOTE(kitten): We shouldn't have any async imports on non-async chunks
+          // However, due to how chunks merge, some async imports may now be pointing
+          // at entrypoint (or vendor) chunks. We omit the path so that the async import
+          // helper doesn't reload and reevaluate the entrypoint.
+          if (chunkContainingModule.isAsync) {
+            const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+            computedAsyncModulePaths![dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
+          }
         }
       });
     });
@@ -267,7 +325,8 @@ class Chunk {
       return this.options.sourceMapUrl ?? null;
     }
 
-    const isAbsolute = this.getPlatform() !== 'web';
+    const platform = this.getPlatform();
+    const isAbsolute = platform !== 'web';
 
     const baseUrl = getBaseUrlOption(this.graph, this.options);
     const filename = this.getFilenameForConfig(serializerConfig);
@@ -279,6 +338,7 @@ class Chunk {
       '.map';
 
     let adjustedSourceMapUrl = this.options.sourceMapUrl;
+
     // Metro has lots of issues...
     if (this.options.sourceMapUrl.startsWith('//localhost')) {
       adjustedSourceMapUrl = 'http:' + this.options.sourceMapUrl;
@@ -293,6 +353,10 @@ class Chunk {
 
       return parsed.pathname;
     } catch (error) {
+      // NOTE: export:embed that don't use baseUrl will use file paths instead of URLs.
+      if (!this.options.dev && isAbsolute) {
+        return adjustedSourceMapUrl;
+      }
       console.error(
         `Failed to link source maps because the source map URL "${this.options.sourceMapUrl}" is corrupt:`,
         error
@@ -301,29 +365,47 @@ class Chunk {
     }
   }
 
-  private serializeToCode(serializerConfig: Partial<SerializerConfigT>, chunks: Chunk[]) {
+  private serializeToCode(
+    serializerConfig: Partial<SerializerConfigT>,
+    { debugId, chunks }: { debugId: string; chunks: Chunk[] }
+  ) {
     return this.serializeToCodeWithTemplates(serializerConfig, {
       skipWrapping: false,
       sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
       computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
+      debugId,
     });
+  }
+
+  private boolishTransformOption(name: string) {
+    const value = this.graph.transformOptions?.customTransformOptions?.[name];
+    return value === true || value === 'true';
   }
 
   async serializeToAssetsAsync(
     serializerConfig: Partial<SerializerConfigT>,
     chunks: Chunk[],
-    {
-      includeSourceMaps,
-      includeBytecode,
-    }: { includeSourceMaps?: boolean; includeBytecode?: boolean }
+    { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
-    const jsCode = this.serializeToCode(serializerConfig, chunks);
+    // Create hash without wrapping to prevent it changing when the wrapping changes.
+    let outputFile = this.getFilenameForConfig(serializerConfig);
+    // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
+    const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
+
+    let premodules = [...this.preModules];
+    if (unstable_beforeAssetSerializationPlugins) {
+      for (const plugin of unstable_beforeAssetSerializationPlugins) {
+        premodules = plugin({ graph: this.graph, premodules, debugId });
+      }
+      this.preModules = new Set(premodules);
+
+      // If the premodules have changed, we need to recompute the output file hash.
+      outputFile = this.getFilenameForConfig(serializerConfig);
+    }
+
+    const jsCode = this.serializeToCode(serializerConfig, { chunks, debugId });
 
     const relativeEntry = path.relative(this.options.projectRoot, this.name);
-    const outputFile = this.getFilenameForConfig(
-      // Create hash without wrapping to prevent it changing when the wrapping changes.
-      serializerConfig
-    );
 
     const jsAsset: SerialAsset = {
       filename: outputFile,
@@ -334,11 +416,80 @@ class Chunk {
         requires: [...this.requiredChunks.values()].map((chunk) =>
           chunk.getFilenameForConfig(serializerConfig)
         ),
+        // Provide a list of module paths that can be used for matching chunks to routes.
+        // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
+        modulePaths: [...this.deps].map((module) => module.path),
+        paths: jsCode.paths,
+        expoDomComponentReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => {
+                  if (
+                    'expoDomComponentReference' in output.data &&
+                    typeof output.data.expoDomComponentReference === 'string'
+                  ) {
+                    return output.data.expoDomComponentReference;
+                  }
+                  return undefined;
+                });
+              })
+              .flat()
+          ),
+        ].filter((value) => typeof value === 'string') as string[],
+        reactClientReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => {
+                  if (
+                    'reactClientReference' in output.data &&
+                    typeof output.data.reactClientReference === 'string'
+                  ) {
+                    return output.data.reactClientReference;
+                  }
+                  return undefined;
+                });
+              })
+              .flat()
+          ),
+        ].filter((value) => typeof value === 'string') as string[],
+        reactServerReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => {
+                  if (
+                    'reactServerReference' in output.data &&
+                    typeof output.data.reactServerReference === 'string'
+                  ) {
+                    return output.data.reactServerReference;
+                  }
+                  return undefined;
+                });
+              })
+              .flat()
+          ),
+        ].filter((value) => typeof value === 'string') as string[],
       },
-      source: jsCode,
+      source: jsCode.code,
     };
 
     const assets: SerialAsset[] = [jsAsset];
+
+    const mutateSourceMapWithDebugId = (sourceMap: string) => {
+      // TODO: Upstream this so we don't have to parse the source map back and forth.
+      if (!debugId) {
+        return sourceMap;
+      }
+      // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
+      // we don't need to disambiguate between multiple source maps.
+      const sourceMapObject = JSON.parse(sourceMap);
+      sourceMapObject.debugId = debugId;
+      // NOTE: Sentry does this, but bun does not.
+      // sourceMapObject.debug_id = debugId;
+      return JSON.stringify(sourceMapObject);
+    };
 
     if (
       // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
@@ -365,10 +516,13 @@ class Chunk {
         return module;
       });
 
-      const sourceMap = sourceMapString(modules, {
-        excludeSource: false,
-        ...this.options,
-      });
+      // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
+      const sourceMap = mutateSourceMapWithDebugId(
+        sourceMapString(modules, {
+          excludeSource: false,
+          ...this.options,
+        })
+      );
 
       assets.push({
         filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
@@ -379,7 +533,7 @@ class Chunk {
       });
     }
 
-    if (includeBytecode && this.isHermesEnabled()) {
+    if (this.boolishTransformOption('bytecode') && this.isHermesEnabled()) {
       const adjustedSource = jsAsset.source.replace(
         /^\/\/# (sourceMappingURL)=(.*)$/gm,
         (...props) => {
@@ -406,9 +560,24 @@ class Chunk {
         // @ts-expect-error: TODO
         jsAsset.source = hermesBundleOutput.hbc;
         jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
+
+        // Replace mappings with hbc
+        if (jsAsset.metadata.paths) {
+          jsAsset.metadata.paths = Object.fromEntries(
+            Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
+              key,
+              Object.fromEntries(
+                Object.entries(value).map(([key, value]) => [
+                  key,
+                  value ? value.replace(/\.js$/, '.hbc') : value,
+                ])
+              ),
+            ])
+          );
+        }
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
-        assets[1].source = hermesBundleOutput.sourcemap;
+        assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);
         assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
       }
     }
@@ -484,18 +653,16 @@ function gatherChunks(
 
   chunks.add(entryChunk);
 
-  const splitChunks = getSplitChunksOption(graph, options);
-
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
       if (
-        dependency.data.data.asyncType === 'async' &&
+        dependency.data.data.asyncType &&
         // Support disabling multiple chunks.
-        splitChunks
+        entryChunk.options.serializerOptions?.splitChunks !== false
       ) {
         gatherChunks(
           chunks,
-          { test: pathToRegExp(dependency.absolutePath) },
+          { test: pathToRegex(dependency.absolutePath) },
           [],
           graph,
           options,
@@ -524,7 +691,7 @@ function gatherChunks(
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: Partial<SerializerConfigT>,
-  { includeSourceMaps, includeBytecode }: SerializeChunkOptions
+  options: SerializeChunkOptions
 ) {
   const jsAssets: SerialAsset[] = [];
 
@@ -532,10 +699,7 @@ async function serializeChunksAsync(
   await Promise.all(
     chunksArray.map(async (chunk) => {
       jsAssets.push(
-        ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, {
-          includeSourceMaps,
-          includeBytecode,
-        }))
+        ...(await chunk.serializeToAssetsAsync(serializerConfig, chunksArray, options))
       );
     })
   );
@@ -543,7 +707,7 @@ async function serializeChunksAsync(
   return jsAssets;
 }
 
-function getSortedModules(
+export function getSortedModules(
   modules: Module<MixedOutput>[],
   {
     createModuleId,

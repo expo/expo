@@ -1,53 +1,52 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { HeaderStyleInterpolators } from '@react-navigation/stack';
+import { ThemeType } from 'ThemeProvider';
 import * as React from 'react';
-import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Platform, TouchableOpacity, StyleSheet } from 'react-native';
 
-import { Colors } from '../constants';
+import ThemeToggler from '../../../common/ThemeToggler';
 
-const styles = StyleSheet.create({
-  header: Platform.select({
-    default: {
-      backgroundColor: Colors.headerBackground,
-    },
-    android: {
-      elevation: 0,
-      borderBottomWidth: 1,
-      borderBottomColor: '#eee',
-    },
-  }),
-  headerTitle: {
-    color: Colors.headerTitle,
-  },
-  card: {
-    backgroundColor: Colors.greyBackground,
-  },
-});
-
-export default function getStackConfig({
-  navigation,
-}: {
-  navigation: BottomTabNavigationProp<any>;
-}) {
+export default function getStackConfig(navigation: BottomTabNavigationProp<any>, theme: ThemeType) {
   return {
-    cardStyle: styles.card,
+    cardStyle: {
+      backgroundColor: theme.background.default,
+    },
     screenOptions: () => ({
       headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
-      headerStyle: styles.header,
-      headerTintColor: Colors.tintColor,
-      headerTitleStyle: styles.headerTitle,
-      headerPressColorAndroid: Colors.tintColor,
+      headerStyle: {
+        backgroundColor: theme.background.default,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: theme.border.secondary,
+        ...Platform.select({
+          android: {
+            elevation: 0,
+          },
+        }),
+      },
+      headerTintColor: theme.icon.info,
+      headerTitleStyle: {
+        color: theme.text.default,
+      },
+      headerPressColorAndroid: theme.icon.info,
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('searchNavigator')}
-          style={{ marginRight: 16 }}>
-          <Ionicons
-            name="md-search"
-            size={Platform.OS === 'ios' ? 22 : 25}
-            color={Colors.tintColor}
-          />
-        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginRight: 16,
+            marginBottom: 4,
+            gap: 14,
+          }}>
+          <TouchableOpacity onPress={() => navigation.navigate('searchNavigator')}>
+            <Ionicons
+              name="search"
+              size={Platform.OS === 'ios' ? 22 : 25}
+              color={theme.icon.info}
+            />
+          </TouchableOpacity>
+          <ThemeToggler />
+        </View>
       ),
     }),
   };

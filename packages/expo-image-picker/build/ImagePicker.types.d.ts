@@ -8,10 +8,16 @@ export type CameraPermissionResponse = PermissionResponse;
  */
 export type MediaLibraryPermissionResponse = PermissionResponse & {
     /**
-     * @platform ios
+     * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
+     * - `'all'` if the user granted your app access to the whole photo library
+     * - `'limited'` if the user granted your app access only to selected photos (only available on Android API 34+ and iOS 14.0+)
+     * - `'none'` if user denied or hasn't yet granted the permission
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
+/**
+ * @deprecated To set media types available in the image picker use an array of [`MediaType`](#mediatype) instead.
+ */
 export declare enum MediaTypeOptions {
     /**
      * Images and videos.
@@ -26,6 +32,20 @@ export declare enum MediaTypeOptions {
      */
     Images = "Images"
 }
+/**
+ * Media types that can be picked by the image picker.
+ * - `'images'` - for images.
+ * - `'videos'` - for videos.
+ * - `'livePhotos'` - for live photos (iOS only).
+ *
+ * > When the `livePhotos` type is added to the media types array and a live photo is selected,
+ * > the resulting `ImagePickerAsset` will contain an unaltered image and the `pairedVideoAsset` field will contain a
+ * > video asset paired with the image. This option will be ignored when the `allowsEditing` option is enabled. Due
+ * > to platform limitations live photos are returned at original quality, regardless of the `quality` option.
+ *
+ * > When on Android or Web `livePhotos` type passed as a media type will be ignored.
+ */
+export type MediaType = 'images' | 'videos' | 'livePhotos';
 export declare enum VideoExportPreset {
     /**
      * Resolution: __Unchanged__ •
@@ -158,7 +178,7 @@ export declare enum UIImagePickerPresentationStyle {
      * The default presentation style chosen by the system.
      * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
      *
-     * @platform ios 13+
+     * @platform ios
      */
     AUTOMATIC = "automatic"
 }
@@ -212,8 +232,8 @@ export type ImagePickerAsset = {
      * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
      * > On Android, the ID is unavailable when the user selects a photo by directly browsing file system.
      *
-     * @platform ios
      * @platform android
+     * @platform ios
      */
     assetId?: string | null;
     /**
@@ -226,8 +246,12 @@ export type ImagePickerAsset = {
     height: number;
     /**
      * The type of the asset.
+     * - `'image'` - for images.
+     * - `'video'` - for videos.
+     * - `'livePhoto'` - for live photos. (iOS only)
+     * - `'pairedVideo'` - for videos paired with photos, which can be combined to create a live photo. (iOS only)
      */
-    type?: 'image' | 'video';
+    type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo';
     /**
      * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
      * or user gave limited permission to access the media library.
@@ -243,6 +267,9 @@ export type ImagePickerAsset = {
      * The `exif` field is included if the `exif` option is truthy, and is an object containing the
      * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
      * respective EXIF values for those tags.
+     *
+     * @platform android
+     * @platform ios
      */
     exif?: Record<string, any> | null;
     /**
@@ -265,6 +292,18 @@ export type ImagePickerAsset = {
      * The MIME type of the selected asset or `null` if could not be determined.
      */
     mimeType?: string;
+    /**
+     * Contains information about the video paired with the image file. This property is only set when `livePhotos` media type was present in the `mediaTypes` array when launching the picker and a live photo was selected.
+     *
+     * @platform ios
+     */
+    pairedVideoAsset?: ImagePickerAsset | null;
+    /**
+     * The web `File` object containing the selected media. This property is web-only and can be used to upload to a server with `FormData`.
+     *
+     * @platform web
+     */
+    file?: File;
 };
 export type ImagePickerErrorResult = {
     /**
@@ -330,8 +369,8 @@ export type ImagePickerOptions = {
      * > - On iOS cropping a `.bmp` image will convert it to `.png`.
      *
      * @default false
-     * @platform ios
      * @platform android
+     * @platform ios
      */
     allowsEditing?: boolean;
     /**
@@ -348,19 +387,22 @@ export type ImagePickerOptions = {
      *
      * > Note: On iOS, if a `.bmp` or `.png` image is selected from the library, this option is ignored.
      *
-     * @default 0.2
-     * @platform ios
+     * @default 1.0
      * @platform android
+     * @platform ios
      */
     quality?: number;
     /**
      * Choose what type of media to pick.
-     * @default ImagePicker.MediaTypeOptions.Images
+     * @default 'images'
      */
-    mediaTypes?: MediaTypeOptions;
+    mediaTypes?: MediaType | MediaType[] | MediaTypeOptions;
     /**
      * Whether to also include the EXIF data for the image. On iOS the EXIF data does not include GPS
      * tags in the camera case.
+     *
+     * @platform android
+     * @platform ios
      */
     exif?: boolean;
     /**
@@ -388,8 +430,8 @@ export type ImagePickerOptions = {
      * > If this option is enabled, then `allowsEditing` is ignored.
      *
      * @default false
-     * @platform ios 14+
      * @platform android
+     * @platform ios 14+
      * @platform web
      */
     allowsMultipleSelection?: boolean;
@@ -397,8 +439,8 @@ export type ImagePickerOptions = {
      * The maximum number of items that user can select. Applicable when `allowsMultipleSelection` is enabled.
      * Setting the value to `0` sets the selection limit to the maximum that the system supports.
      *
-     * @platform ios 14+
      * @platform android
+     * @platform ios 14+
      * @default 0
      */
     selectionLimit?: number;
@@ -434,8 +476,8 @@ export type ImagePickerOptions = {
      * `front` for the front-facing camera and `back` for the back-facing camera.
      * - **On Android**, the behavior of this option may vary based on the camera app installed on the device.
      * @default CameraType.back
-     * @platform ios
      * @platform android
+     * @platform ios
      */
     cameraType?: CameraType;
     /**
@@ -445,13 +487,19 @@ export type ImagePickerOptions = {
      * @platform ios 14+
      */
     preferredAssetRepresentationMode?: UIImagePickerPreferredAssetRepresentationMode;
+    /**
+     * Uses the legacy image picker on Android. This will allow media to be selected from outside the users photo library.
+     * @platform android
+     * @default false
+     */
+    legacy?: boolean;
 };
 export type OpenFileBrowserOptions = {
     /**
      * Choose what type of media to pick.
-     * @default ImagePicker.MediaTypeOptions.Images
+     * @default 'images'
      */
-    mediaTypes: MediaTypeOptions;
+    mediaTypes: MediaType | MediaType[] | MediaTypeOptions;
     capture?: boolean;
     /**
      * Whether or not to allow selecting multiple media files at once.

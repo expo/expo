@@ -7,7 +7,7 @@ import {
   setStatusBarColors,
   setStatusBarStyles,
 } from '../StatusBar';
-import { getAppThemeLightNoActionBarGroup, getStylesGroupAsObject } from '../Styles';
+import { getAppThemeGroup, getStylesGroupAsObject } from '../Styles';
 
 it(`returns statusbar color if provided`, () => {
   expect(getStatusBarColor({ androidStatusBar: { backgroundColor: '#111111' } })).toMatch(
@@ -35,11 +35,23 @@ describe('e2e: write statusbar color and style to files correctly', () => {
     const styles = setStatusBarStyles(config, { resources: {} });
     const colors = setStatusBarColors(config, { resources: {} });
 
-    const group = getStylesGroupAsObject(styles, getAppThemeLightNoActionBarGroup())!;
-    expect(group.colorPrimaryDark).toBe('@color/colorPrimaryDark');
+    const group = getStylesGroupAsObject(styles, getAppThemeGroup())!;
     expect(group['android:windowLightStatusBar']).toBe('true');
-    // Ensure the version guard is added
-    expect(styles.resources.style![0].item[0].$['tools:targetApi']).toBe('23');
+    expect(group['android:statusBarColor']).toBe('#654321');
+    expect(getColorsAsObject(colors)!.colorPrimaryDark).toBe('#654321');
+  });
+
+  it(`sets the statusBarColor to '@android:color/transparent' if translucent has been set`, async () => {
+    const config: ExpoConfig = {
+      name: 'foo',
+      slug: 'bar',
+      androidStatusBar: { backgroundColor: '#654321', barStyle: 'dark-content', translucent: true },
+    };
+    const styles = setStatusBarStyles(config, { resources: {} });
+    const colors = setStatusBarColors(config, { resources: {} });
+
+    const group = getStylesGroupAsObject(styles, getAppThemeGroup())!;
+    expect(group['android:statusBarColor']).toBe('@android:color/transparent');
     expect(getColorsAsObject(colors)!.colorPrimaryDark).toBe('#654321');
   });
 
@@ -53,7 +65,7 @@ describe('e2e: write statusbar color and style to files correctly', () => {
     const styles = setStatusBarStyles(config, { resources: {} });
     const colors = setStatusBarColors(config, { resources: {} });
 
-    const group = getStylesGroupAsObject(styles, getAppThemeLightNoActionBarGroup());
+    const group = getStylesGroupAsObject(styles, getAppThemeGroup());
 
     expect(group).toStrictEqual(null);
     expect(colors.resources).toStrictEqual({});

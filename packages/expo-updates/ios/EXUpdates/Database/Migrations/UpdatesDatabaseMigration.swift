@@ -1,12 +1,27 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 import Foundation
+#if canImport(sqlite3)
 import sqlite3
+#else
+import SQLite3
+#endif
 
-internal enum UpdatesDatabaseMigrationError: Error {
+internal enum UpdatesDatabaseMigrationError: Error, Sendable, LocalizedError {
   case foreignKeysError
   case transactionError
   case migrationSQLError
+
+  var errorDescription: String? {
+    switch self {
+    case .foreignKeysError:
+      return "SQLite error temporarily disabling foreign keys"
+    case .transactionError:
+      return "SQLite error beginning or ending transaction"
+    case .migrationSQLError:
+      return "SQLite error running migration"
+    }
+  }
 }
 
 internal final class TransactionExecutor {

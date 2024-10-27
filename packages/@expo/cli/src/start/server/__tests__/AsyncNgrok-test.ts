@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 
-import { asMock } from '../../../__tests__/asMock';
 import { NgrokInstance, NgrokResolver } from '../../doctor/ngrok/NgrokResolver';
 import { hasAdbReverseAsync, startAdbReverseAsync } from '../../platforms/android/adbReverse';
 import { AsyncNgrok } from '../AsyncNgrok';
@@ -67,7 +66,7 @@ describe('getActiveUrl', () => {
 describe('startAsync', () => {
   it(`skips adb reverse if Android cannot be found`, async () => {
     const { ngrok } = createNgrokInstance();
-    asMock(hasAdbReverseAsync).mockReturnValueOnce(false);
+    jest.mocked(hasAdbReverseAsync).mockReturnValueOnce(false);
 
     await ngrok.startAsync();
     expect(startAdbReverseAsync).not.toBeCalled();
@@ -77,7 +76,7 @@ describe('startAsync', () => {
   });
   it(`fails if adb reverse doesn't work`, async () => {
     const { ngrok } = createNgrokInstance();
-    asMock(startAdbReverseAsync).mockResolvedValueOnce(false);
+    jest.mocked(startAdbReverseAsync).mockResolvedValueOnce(false);
 
     await expect(ngrok.startAsync()).rejects.toThrow(/adb/);
   });
@@ -152,14 +151,14 @@ describe('_getProjectHostnameAsync', () => {
     vol.fromJSON({}, projectRoot);
 
     const hostname = await ngrok._getProjectHostnameAsync();
-    expect(hostname).toEqual(expect.stringMatching(/.*\.anonymous\.3000\.exp\.direct/));
+    expect(hostname).toEqual(expect.stringMatching(/.*-anonymous-3000\.exp\.direct/));
 
     // URL-safe
     expect(encodeURIComponent(hostname)).toEqual(hostname);
 
     // Works twice in a row...
     expect(await ngrok._getProjectHostnameAsync()).toEqual(
-      expect.stringMatching(/.*\.anonymous\.3000\.exp\.direct/)
+      expect.stringMatching(/.*-anonymous-3000\.exp\.direct/)
     );
 
     // randomness is persisted

@@ -6,7 +6,6 @@ import android.view.View
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import expo.modules.annotation.Config
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
@@ -19,6 +18,8 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectTypeConverter
+import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.sharedobjects.SharedRefTypeConverter
 import expo.modules.kotlin.typedarray.BigInt64Array
 import expo.modules.kotlin.typedarray.BigUint64Array
 import expo.modules.kotlin.typedarray.Float32Array
@@ -41,9 +42,11 @@ import java.io.File
 import java.net.URI
 import java.net.URL
 import java.nio.file.Path
+import java.time.LocalDate
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
+import kotlin.time.Duration
 
 interface TypeConverterProvider {
   fun obtainTypeConverter(type: KType): TypeConverter<*>
@@ -73,8 +76,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
   private val cachedConverters = createCachedConverters(false)
   private val nullableCachedConverters = createCachedConverters(true)
 
-  private val cachedRecordConverters = mutableMapOf<KClass<*>, TypeConverter<*>>()
-  private val cachedCustomConverters = mutableMapOf<KType, TypeConverter<*>>()
+  private val cachedRecordConverters = mutableMapOf<KType, TypeConverter<*>>()
 
   private fun getCachedConverter(inputType: KType): TypeConverter<*>? {
     return if (inputType.isMarkedNullable) {
@@ -117,19 +119,23 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
 
-    val cachedConverter = cachedRecordConverters[kClass]
+    val cachedConverter = cachedRecordConverters[type]
     if (cachedConverter != null) {
       return cachedConverter
     }
 
     if (Record::class.java.isAssignableFrom(jClass)) {
       val converter = RecordTypeConverter<Record>(this, type)
-      cachedRecordConverters[kClass] = converter
+      cachedRecordConverters[type] = converter
       return converter
     }
 
     if (View::class.java.isAssignableFrom(jClass)) {
       return ViewTypeConverter<View>(type)
+    }
+
+    if (SharedRef::class.java.isAssignableFrom(jClass)) {
+      return SharedRefTypeConverter<SharedRef<*>>(type)
     }
 
     if (SharedObject::class.java.isAssignableFrom(jClass)) {
@@ -141,7 +147,6 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     }
 
     return handelEither(type, jClass)
-      ?: handelCustomConverter(type, kClass)
       ?: throw MissingTypeConverter(type)
   }
 
@@ -160,44 +165,26 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     return null
   }
 
-  private fun handelCustomConverter(type: KType, kClass: KClass<*>): TypeConverter<*>? {
-    val cachedConverter = cachedCustomConverters[type]
-    if (cachedConverter != null) {
-      return cachedConverter
-    }
-
-    val typeName = kClass.java.canonicalName ?: return null
-
-    val converterProviderName = "${Config.packageNamePrefix}$typeName${Config.classNameSuffix}"
-    return try {
-      val converterClazz = Class.forName(converterProviderName)
-      val converterProvider = converterClazz.newInstance()
-      val method = converterProvider.javaClass.getMethod(Config.converterProviderFunctionName, KType::class.java)
-
-      (method.invoke(converterProvider, type) as TypeConverter<*>)
-        .also {
-          cachedCustomConverters[type] = it
-        }
-    } catch (e: Throwable) {
-      null
-    }
-  }
-
   private fun createCachedConverters(isOptional: Boolean): Map<KClass<*>, TypeConverter<*>> {
     val intTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.INT)
+      isOptional,
+      ExpectedType(CppType.INT)
     ) { it.asDouble().toInt() }
     val longTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.LONG)
+      isOptional,
+      ExpectedType(CppType.LONG)
     ) { it.asDouble().toLong() }
     val doubleTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.DOUBLE)
+      isOptional,
+      ExpectedType(CppType.DOUBLE)
     ) { it.asDouble() }
     val floatTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.FLOAT)
+      isOptional,
+      ExpectedType(CppType.FLOAT)
     ) { it.asDouble().toFloat() }
     val boolTypeConverter = createTrivialTypeConverter(
-      isOptional, ExpectedType(CppType.BOOLEAN)
+      isOptional,
+      ExpectedType(CppType.BOOLEAN)
     ) { it.asBoolean() }
 
     val converters = mapOf(
@@ -235,6 +222,14 @@ object TypeConverterProviderImpl : TypeConverterProvider {
           jsArray.getInt(index)
         }
       },
+      LongArray::class to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.LONG)
+      ) {
+        val jsArray = it.asArray()
+        LongArray(jsArray.size()) { index ->
+          jsArray.getDouble(index).toLong()
+        }
+      },
       DoubleArray::class to createTrivialTypeConverter(
         isOptional, ExpectedType.forPrimitiveArray(CppType.DOUBLE)
       ) {
@@ -259,6 +254,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
           jsArray.getBoolean(index)
         }
       },
+      ByteArray::class to ByteArrayTypeConverter(isOptional),
 
       JavaScriptValue::class to createTrivialTypeConverter(
         isOptional, ExpectedType(CppType.JS_VALUE)
@@ -286,15 +282,22 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       File::class to FileTypeConverter(isOptional),
 
+      Duration::class to DurationTypeConverter(isOptional),
+
       Any::class to AnyTypeConverter(isOptional),
 
-      ReadableArguments::class to ReadableArgumentsTypeConverter(isOptional),
+      // Unit converter doesn't care about nullability.
+      // It will always return Unit
+      Unit::class to UnitTypeConverter(),
+
+      ReadableArguments::class to ReadableArgumentsTypeConverter(isOptional)
     )
 
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
       return converters + mapOf(
         Path::class to PathTypeConverter(isOptional),
         Color::class to ColorTypeConverter(isOptional),
+        LocalDate::class to DateTypeConverter(isOptional)
       )
     }
 

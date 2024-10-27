@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <resources>
   <string name="app_name">BareExpo</string>
-  <string name="facebook_app_id">629712900716487</string>
   <string name="expo_splash_screen_resize_mode" translatable="false">cover</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="expo_runtime_version">1.0.0</string>
+  <string name="expo_system_ui_user_interface_style" translatable="false">automatic</string>
 </resources>

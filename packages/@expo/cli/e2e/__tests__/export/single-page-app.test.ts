@@ -16,15 +16,14 @@ describe('exports with single-page', () => {
 
   beforeAll(
     async () => {
-      await execa('node', [bin, 'export', '-p', 'web', '--clear', '--output-dir', outputName], {
+      await execa('node', [bin, 'export', '-p', 'web', '--output-dir', outputName], {
         cwd: projectRoot,
         env: {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'single',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'development',
-          // TODO: Reenable this after investigating unstable_getRealPath
-          EXPO_USE_FAST_RESOLVER: 'false',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
     },
@@ -103,14 +102,17 @@ describe('exports with single-page', () => {
         expect(queryMeta(name)).not.toBeDefined();
       });
 
-      indexHtml.querySelectorAll('script').forEach((script) => {
-        const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
+      indexHtml
+        .querySelectorAll('script')
+        .filter((script) => script.attributes.src)
+        .forEach((script) => {
+          const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
 
-        // Ensure the bundle is valid
-        expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
-        // Ensure the non-public env var is not included in the bundle
-        expect(jsBundle).not.toMatch('not-public-value');
-      });
+          // Ensure the bundle is valid
+          expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
+          // Ensure the non-public env var is not included in the bundle
+          expect(jsBundle).not.toMatch('not-public-value');
+        });
     },
     2 * 1000
   );

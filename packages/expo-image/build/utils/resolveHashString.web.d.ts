@@ -2,8 +2,6 @@ import { ImageSource } from '../Image.types';
 /**
  * Converts a string in blurhash format (`blurhash:/<hash>/<width>/<height>`
  * or <hash>/<width>/<height>) into an `ImageSource`.
- * Note: The blurhash:/ uri scheme is removed, because for backward compatibility reasons,
- * strings without a scheme are assumed to be `blurhash` by default.
  *
  * @return An ImageSource representing the provided blurhash.
  * */

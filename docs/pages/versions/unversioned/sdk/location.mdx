@@ -4,23 +4,22 @@ description: A library that provides access to reading geolocation information, 
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-location'
 packageName: 'expo-location'
 iconUrl: '/static/images/packages/expo-location.png'
+platforms: ['android', 'ios', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+} from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline } from '~/ui/components/Snippet';
+import { PlatformTag } from '~/ui/components/Tag';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
-
-<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
@@ -85,6 +84,12 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
         'A boolean to enable the [`ACCESS_BACKGROUND_LOCATION`](#permission-access_background_location) permission.',
       default: 'false',
     },
+    {
+      name: 'isAndroidForegroundServiceEnabled',
+      platform: 'android',
+      description:
+        'A boolean to enable the [`FOREGROUND_SERVICE`](#permission-foreground_service) permission and [`FOREGROUND_SERVICE_LOCATION`](#permission-foreground_service_location). Defaults to `true` if `isAndroidBackgroundLocationEnabled` is `true`, otherwise `false`.',
+    },
   ]}
 />
 
@@ -96,11 +101,15 @@ Learn how to configure the native projects in the [installation instructions in 
 
 ### Background Location methods
 
+> **warning** **Warning:** Background location tracking support is provided as-is and is not guaranteed to work in all scenarios. We currently are not prioritizing resources to improve it, but we hope to in the future. You may want to use [`react-native-background-geolocation`](https://github.com/transistorsoft/react-native-background-geolocation) instead &mdash; it requires purchasing a license and is a well-maintained and supported library that includes a config plugin.
+
 To use Background Location methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
-- **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](task-manager.mdx#configuration).
-- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
+- Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
+- <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
+  specified in **Info.plist** file. See [background tasks configuration
+  guide](/versions/latest/sdk/task-manager/#configuration-in-appjsonappconfigjs).
 
 ### Geofencing methods
 
@@ -114,22 +123,22 @@ To use Geofencing methods, the following requirements apply:
 
 If you're using the Android Emulator or iOS Simulator, ensure that [Location is enabled](#enable-emulator-location).
 
-<SnackInline label='Location' dependencies={['expo-location', 'expo-constants']}>
+<SnackInline label='Location' dependencies={['expo-location', 'expo-constants', 'expo-device']}>
 
-```jsx
-import React, { useState, useEffect } from 'react';
+```tsx
+import { useState, useEffect } from 'react';
 import { Platform, Text, View, StyleSheet } from 'react-native';
 /* @hide */
-import Device from 'expo-device';
+import * as Device from 'expo-device';
 /* @end */
 import * as Location from 'expo-location';
 
 export default function App() {
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
+    async function getCurrentLocation() {
       /* @hide */
       if (Platform.OS === 'android' && !Device.isDevice) {
         setErrorMsg(
@@ -146,10 +155,12 @@ export default function App() {
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-    })();
+    }
+
+    getCurrentLocation();
   }, []);
 
-  let text = 'Waiting..';
+  let text = 'Waiting...';
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
@@ -163,7 +174,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -176,7 +186,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -187,10 +196,10 @@ const styles = StyleSheet.create({
 
 Open Android Studio, and launch the Android Emulator. Inside it, go to **Settings** > **Location** and enable **Use location**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Location settings in Android Emulator for versions 12 and higher"
   src="/static/images/sdk/location/enable-android-emulator-location.png"
-  style={{ maxWidth: 360 }}
+  className="max-w-[360px]"
 />
 
 If you don't receive the locations in the emulator, you may have to turn off the **Improve Location Accuracy** setting. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator.
@@ -201,10 +210,10 @@ For Android 12 and higher, go to **Settings** > **Location** > **Location Servic
 
 With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Location settings in iOS simulator."
   src="/static/images/sdk/location/ios-simulator-location.png"
-  style={{ maxWidth: 480 }}
+  className="max-w-[480px]"
 />
 
 ## API
@@ -219,19 +228,24 @@ import * as Location from 'expo-location';
 
 ### Android
 
+> **warning**: Foreground and background services are not available in Expo Go for Android. Instead, we recommend using a [development build](/develop/development-builds/introduction/) to avoid limitations.
+
 When you install the `expo-location` module, it automatically adds the following permissions:
 
 - `ACCESS_COARSE_LOCATION`: for approximate device location
 - `ACCESS_FINE_LOCATION`: for precise device location
-- `FOREGROUND_SERVICE`: to subscribe to location updates while the app is in use
 
-To use background location features, you must add the `ACCESS_BACKGROUND_LOCATION` in **app.json** and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
+The following permissions are optional:
+
+- `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_LOCATION`: to be able to access location while the app is open but backgrounded. `FOREGROUND_SERVICE_LOCATION` is only required as of Android 14. When you enable this in a new build, you will need to [submit your app for review and request access to use the foreground service permission](https://support.google.com/googleplay/android-developer/answer/13392821?hl=en).
+- `ACCESS_BACKGROUND_LOCATION`: to be able to access location while the app is backgrounded or closed. When you enable this in a new build, you will need to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 <AndroidPermissions
   permissions={[
     'ACCESS_COARSE_LOCATION',
     'ACCESS_FINE_LOCATION',
     'FOREGROUND_SERVICE',
+    'FOREGROUND_SERVICE_LOCATION',
     'ACCESS_BACKGROUND_LOCATION',
   ]}
 />

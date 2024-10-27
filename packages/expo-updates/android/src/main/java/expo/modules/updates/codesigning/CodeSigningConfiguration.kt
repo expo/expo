@@ -56,7 +56,7 @@ class CodeSigningConfiguration(
     return validateSignatureInternal(
       SignatureHeaderInfo.parseSignatureHeader(signature),
       bodyBytes,
-      manifestResponseCertificateChain,
+      manifestResponseCertificateChain
     )
   }
 

@@ -1,4 +1,4 @@
-import { MetroConfig, Module, ReadOnlyGraph } from 'metro';
+import { MetroConfig, MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import { ConfigT, InputConfigT } from 'metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { SerialAsset } from './serializerAssets';
@@ -9,8 +9,16 @@ export type SerializerParameters = [
     ReadOnlyGraph,
     ExpoSerializerOptions
 ];
-export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters;
-export declare function withExpoSerializers(config: InputConfigT): InputConfigT;
-export declare function withSerializerPlugins(config: InputConfigT, processors: SerializerPlugin[]): InputConfigT;
-export declare function createSerializerFromSerialProcessors(config: MetroConfig, processors: (SerializerPlugin | undefined)[], originalSerializer?: Serializer | null): Serializer;
+export type SerializerConfigOptions = {
+    unstable_beforeAssetSerializationPlugins?: ((serializationInput: {
+        graph: ReadOnlyGraph<MixedOutput>;
+        premodules: Module[];
+        debugId?: string;
+    }) => Module[])[];
+};
+export type SerializerPlugin = (...props: SerializerParameters) => SerializerParameters | Promise<SerializerParameters>;
+export declare function withExpoSerializers(config: InputConfigT, options?: SerializerConfigOptions): InputConfigT;
+export declare function withSerializerPlugins(config: InputConfigT, processors: SerializerPlugin[], options?: SerializerConfigOptions): InputConfigT;
+export declare function createDefaultExportCustomSerializer(config: Partial<MetroConfig>, configOptions?: SerializerConfigOptions): Serializer;
+export declare function createSerializerFromSerialProcessors(config: MetroConfig, processors: (SerializerPlugin | undefined)[], originalSerializer: Serializer | null, options?: SerializerConfigOptions): Serializer;
 export { SerialAsset };

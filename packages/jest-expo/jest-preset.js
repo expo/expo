@@ -7,12 +7,25 @@ const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
 
-// transform
-if (!jestPreset.transform) {
-  jestPreset.transform = {
-    '\\.[jt]sx?$': 'babel-jest',
-  };
+// Emulate the alias behavior of Expo's Metro resolver.
+jestPreset.moduleNameMapper = {
+  ...(jestPreset.moduleNameMapper || {}),
+  '^react-native-vector-icons$': '@expo/vector-icons',
+  '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',
+};
+
+const upstreamBabelJest = Object.keys(jestPreset.transform).find(
+  (key) => jestPreset.transform[key] === 'babel-jest'
+);
+if (upstreamBabelJest) {
+  delete jestPreset.transform[upstreamBabelJest];
 }
+
+// transform
+jestPreset.transform['\\.[jt]sx?$'] = [
+  'babel-jest',
+  { caller: { name: 'metro', bundler: 'metro', platform: 'ios' } },
+];
 
 const defaultAssetNamePattern = '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
 if (!jestPreset.transform[defaultAssetNamePattern]) {

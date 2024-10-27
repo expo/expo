@@ -63,7 +63,7 @@ object FaceDetectorUtils {
     val faceBounds = face.getBundle("bounds") as Bundle
     val oldOrigin = faceBounds.getBundle("origin")
     val mirroredOrigin = positionMirroredHorizontally(oldOrigin, sourceWidth, scaleX)
-    val translateX = - (faceBounds.getBundle("size") as Bundle).getDouble("width")
+    val translateX = -(faceBounds.getBundle("size") as Bundle).getDouble("width")
     val translatedMirroredOrigin = positionTranslatedHorizontally(mirroredOrigin, translateX)
     val newBounds = Bundle(faceBounds).apply {
       putBundle("origin", translatedMirroredOrigin)
@@ -118,6 +118,6 @@ object FaceDetectorUtils {
     LEFT_EAR(FaceLandmark.LEFT_EAR, "leftEarPosition"),
     RIGHT_CHEEK(FaceLandmark.RIGHT_CHEEK, "rightCheekPosition"),
     RIGHT_EAR(FaceLandmark.RIGHT_EAR, "rightEarPosition"),
-    NOSE_BASE(FaceLandmark.NOSE_BASE, "noseBasePosition");
+    NOSE_BASE(FaceLandmark.NOSE_BASE, "noseBasePosition")
   }
 }

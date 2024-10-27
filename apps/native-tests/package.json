@@ -3,36 +3,26 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall",
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~50.0.0-alpha.0",
-    "expo-camera": "~13.9.0",
-    "expo-dev-client": "~3.3.0",
-    "expo-face-detector": "~12.6.0",
-    "expo-image": "~1.9.0",
-    "expo-notifications": "~0.26.0",
-    "expo-random": "~13.6.0",
-    "expo-splash-screen": "~0.25.0",
+    "expo": "~52.0.0-preview.0",
+    "expo-camera": "~16.0.0",
+    "expo-dev-client": "~5.0.0-preview.0",
+    "expo-face-detector": "~13.0.0",
+    "expo-image": "~2.0.0-preview.0",
+    "expo-notifications": "~0.29.0",
+    "expo-splash-screen": "~0.28.0",
     "native-component-list": "*",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native": "0.73.0-rc.4"
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.0-rc.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
-  },
-  "expo-yarn-workspaces": {
-    "symlinks": [
-      "expo-constants",
-      "expo-camera",
-      "expo-updates",
-      "react-native-reanimated"
-    ]
   },
   "expo": {
     "autolinking": {

@@ -3,19 +3,25 @@ title: Work with monorepos
 description: Learn about setting up Expo projects in a monorepo with Yarn v1 workspaces.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. It can help speed up development for larger projects, make it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. We currently have first-class support for [Yarn 1 (Classic)](https://classic.yarnpkg.com/lang/en/) workspaces. If you want to use another tool, make sure you know how to configure it.
 
 > **warning** Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds more complexity, and often requires specific tooling configuration. You can get far with just a single repository.
 
-## Example monorepo
+## Automatic configuration
+
+Starting from Expo **SDK 48**, Expo automatically detects and configures monorepos using [bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), or [yarn](https://yarnpkg.com/features/workspaces). From Expo **SDK 52**, Expo also automatically sets up monorepos using [pnpm](https://pnpm.io/workspaces). The detection is based on the workspaces configuration in your project.
+
+> **info** Expo's automatic monorepo setup adds all workspaces in your monorepo as watchFolders to Metro. This might slow Metro down for larger monorepos. You can also manually configure which folders Metro should watch by changing the `watchFolders` in your **metro.config.js**, see [Modify the Metro config](#modify-the-metro-config).
+
+## Manual configuration
 
 In this example, we will set up a monorepo using Yarn workspaces without the [nohoist](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/) option. We will assume some familiar names, but you can fully customize them. After this guide, our basic structure should look like this:
 
-- **apps/** - Contains multiple projects, including React Native apps.
-- **packages/** - Contains different packages used by our apps.
+- **apps** - Contains multiple projects, including React Native apps.
+- **packages** - Contains different packages used by our apps.
 - **package.json** - Root package file, containing Yarn workspaces config.
 
 ### Root package file
@@ -48,21 +54,22 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
 
 Now that we have the basic monorepo structure set up, let's add our first app.
 
-Before we can create our app, we have to create the **apps/** folder. This folder can contain all separate apps or websites that belong to this monorepo. Inside this **apps/** folder, we can create a subfolder that contains the React Native app.
+Before we create our app, we have to create the **apps** directory. This directory contains all separate apps or websites that belong to this monorepo. Inside this **apps** directory, we can create a sub-directory that contains the React Native app.
 
-<Terminal cmd={['$ yarn create expo-app apps/cool-app']} />
+<Terminal cmd={['$ yarn create expo apps/cool-app']} />
 
-> If you have an existing app, you can copy all those files inside a subfolder.
+> If you have an existing app, you can copy all those files into a directory inside **apps**.
 
 After copying or creating the first app, run `yarn` to check for common warnings.
 
 #### Modify the Metro config
 
-Metro doesn't come with monorepo support by default (yet). That's why we need to configure Metro and tell it where to find certain things. There are three main changes we need to:
+Expo's Metro config has monorepo support for bun, npm, yarn, and pnpm. You don't have to manually configure Metro when using monorepos if you use the config from [`expo/metro-config`](/guides/customizing-metro/). If that's the case, you can skip this step.
 
-1. Make sure Metro is watching the full monorepo, not just **apps/cool-app**.
+To configure a monorepo with Metro manually, there are two main changes:
+
+1. Make sure Metro is watching all relevant code within the monorepo, not just **apps/cool-app**.
 2. Tell Metro where it can resolve packages. They might be installed in **apps/cool-app/node_modules** or **node_modules**.
-3. Force Metro to only resolve (sub)packages from the `nodeModulesPaths`.
 
 We can configure this by [creating a **metro.config.js**](/guides/customizing-metro/#customizing) with the following content:
 
@@ -73,19 +80,17 @@ const path = require('path');
 // Find the project and workspace directories
 const projectRoot = __dirname;
 // This can be replaced with `find-yarn-workspace-root`
-const workspaceRoot = path.resolve(projectRoot, '../..');
+const monorepoRoot = path.resolve(projectRoot, '../..');
 
 const config = getDefaultConfig(projectRoot);
 
 // 1. Watch all files within the monorepo
-config.watchFolders = [workspaceRoot];
+config.watchFolders = [monorepoRoot];
 // 2. Let Metro know where to resolve packages and in what order
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
-  path.resolve(workspaceRoot, 'node_modules'),
+  path.resolve(monorepoRoot, 'node_modules'),
 ];
-// 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
-config.resolver.disableHierarchicalLookup = true;
 
 module.exports = config;
 ```
@@ -94,46 +99,46 @@ module.exports = config;
 
 <Collapsible summary="1. Why do we need to watch all files with the monorepo?">
 
-Metro has three separate stages in its bundling process, [documented here](https://facebook.github.io/metro/docs/concepts). During the first phase, **Resolution**, Metro resolves your app's required files and dependencies. Metro does that with the `watchFolders` option, which is set to the project directory by default. This default setting works great for apps that don't use a monorepo structure.
+Metro has three separate stages in its bundling process, [documented here](https://metrobundler.dev/docs/concepts). During the first phase, **Resolution**, Metro resolves your app's required files and dependencies. Metro does that with the `watchFolders` option, which is set to the project directory by default. This default setting works great for apps that don't use a monorepo structure.
 
-When using monorepos, your app dependencies splits up into different directories. Each of these directories must be within the scope of the [watchFolders](https://facebook.github.io/metro/docs/configuration/#watchfolders). If a changed file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo will force Metro to watch all files within the repository and possibly cause a slow initial startup time.
+When using monorepos, your app dependencies splits up into different directories. Each of these directories must be within the scope of the [`watchFolders`](https://metrobundler.dev/docs/configuration/#watchfolders). If a changed file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo will force Metro to watch all files within the repository and possibly cause a slow initial startup time.
 
 As your monorepo increases in size, watching all files within the monorepo becomes slower. You can speed things up by only watching the packages your app uses. Typically, these are the ones that are installed with an asterisk (\*) in your **package.json**. For example:
 
-```js
+```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
 const projectRoot = __dirname;
-const workspaceRoot = path.resolve(projectRoot, '../..');
+const monorepoRoot = path.resolve(projectRoot, '../..');
 
-const config = getDefaultConfig(workspaceRoot);
+const config = getDefaultConfig(projectRoot);
 
 // Only list the packages within your monorepo that your app uses. No need to add anything else.
 // If your monorepo tooling can give you the list of monorepo workspaces linked
 // in your app workspace, you can automate this list instead of hardcoding them.
 const monorepoPackages = {
-  '@acme/api': path.resolve(workspaceRoot, 'packages/api'),
-  '@acme/components': path.resolve(workspaceRoot, 'packages/components'),
+  '@acme/api': path.resolve(monorepoRoot, 'packages/api'),
+  '@acme/components': path.resolve(monorepoRoot, 'packages/components'),
 };
 
-// 1. Watch the local app folder, and only the shared packages (limiting the scope and speeding it up)
-// Note how we change this from `workspaceRoot` to `projectRoot`. This is part of the optimization!
+// 1. Watch the local app directory, and only the shared packages (limiting the scope and speeding it up)
+// Note how we change this from `monorepoRoot` to `projectRoot`. This is part of the optimization!
 config.watchFolders = [projectRoot, ...Object.values(monorepoPackages)];
 
 // Add the monorepo workspaces as `extraNodeModules` to Metro.
-// If your monorepo tooling creates workspace symlinks in the `node_modules` folder,
+// If your monorepo tooling creates workspace symlinks in the `node_modules` directory,
 // you can either add symlink support to Metro or set the `extraNodeModules` to avoid the symlinks.
-// See: https://facebook.github.io/metro/docs/configuration/#extranodemodules
+// See: https://metrobundler.dev/docs/configuration/#extranodemodules
 config.resolver.extraNodeModules = monorepoPackages;
 
 // 2. Let Metro know where to resolve packages and in what order
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
-  path.resolve(workspaceRoot, 'node_modules'),
+  path.resolve(monorepoRoot, 'node_modules'),
 ];
-// 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
-config.resolver.disableHierarchicalLookup = true;
+
+module.exports = config;
 ```
 
 </Collapsible>
@@ -142,47 +147,18 @@ config.resolver.disableHierarchicalLookup = true;
 
 This option is important to resolve libraries in the correct **node_modules** directories. Monorepo tooling, like Yarn, usually creates two different **node_modules** directories which are used for a single workspace.
 
-1. **apps/mobile/node_modules** - The "project" folder
-2. **node_modules** - The "root" folder
+1. **apps/mobile/node_modules** - The "project" directory
+2. **node_modules** - The "root" directory
 
-Yarn uses the root folder to install packages used in multiple workspaces. If a workspace uses a different package version, it installs that different version in the project folder.
+Yarn uses the root directory to install packages used in multiple workspaces. If a workspace uses a different package version, it installs that different version in the project directory.
 
-We have to tell Metro to look in these two folders. The order is important here because the project folder **node_modules** can contain specific versions we use for our app. When the package does not exist in the project folder, it should try the shared root folder.
-
-</Collapsible>
-
-<Collapsible summary="3. Why do we need to disable the hierarchical lookup?">
-
-This option is important for certain edge cases, such as a monorepo that includes multiple versions of the `react` package. For example, let's say you have the following monorepo:
-
-1. **apps/marketing** - A simple Next.js website to attract new users. (uses `react@17.x.x`)
-2. **apps/mobile** - Your Expo app. (uses `react@18.x.x`)
-3. **apps/web** - Your Next.js website. (uses `react@17.x.x`)
-
-With monorepo tooling like Yarn, React is installed in two different **node_modules** folders.
-
-1. **node_modules** - The root folder, contains `react@17.x.x`.
-2. **apps/mobile/node_modules** - The app's folder, contains `react@18.x.x`.
-
-Expo modules and React Native libraries usually don't add `react` as a peer dependency. As a result, monorepo tooling, like Yarn, will install these dependencies to the root **node_modules** directory, for example:
-
-1. **node_modules** - The root folder, contains `expo@...` and `react@17.x.x`.
-2. **apps/mobile/node_modules** - The app's folder, contains `react@18.x.x`.
-
-With hierarchical lookup enabled, whenever `expo` imports `react`, Metro will resolve to `react@17.x.x` and not `react@18.x.x`. This causes "multiple React versions" errors in your app.
-
-By disabling hierarchical lookup, we can force Metro to resolve only folders from the `nodeModulesPaths = [...]` order we defined in #2.
-This option is documented in the [Metro Resolution Algorithm documentation](https://facebook.github.io/metro/docs/resolution/#algorithm), under step 5.
-
-When we disable this hierarchical lookup, it should not matter where the React Native library is installed.
-Whenever a library imports `react`, or any other library, Metro always resolves the library from the `nodeModulesPaths` we defined.
-As long as the **apps/mobile/node_modules** path has the correct library version and is listed as the first `nodeModulesPaths` entry, we should always get the correct version of that library.
+We have to tell Metro to look in these two directories. The order is important here because the project directory **node_modules** can contain specific versions we use for our app. When the package does not exist in the project directory, it should try the shared root directory.
 
 </Collapsible>
 
 #### Change default entrypoint
 
-In monorepos, we can't hardcode paths to packages anymore since we can't be sure if they are installed in the root **node_modules** or the workspace **node_modules** folder. If you are using a managed project, we have to change our default entrypoint to `node_modules/expo/AppEntry.js`.
+In monorepos, we can't hardcode paths to packages anymore since we can't be sure if they are installed in the root **node_modules** or the workspace **node_modules** directory. If you are using a managed project, we have to change our default entry point that looks like `node_modules/expo/AppEntry.js`.
 
 Open our app's **package.json**, change the `main` property to `index.js`, and create this new **index.js** file in the app directory with the content below.
 
@@ -199,7 +175,7 @@ registerRootComponent(App);
 
 > This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
 
-If you are using [Expo Router](/routing/introduction/), define the [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables) environment variable when running the `npx expo start` command. It enables the auto server root detection for Metro.
+If you are using [Expo Router](/router/introduction/), do not change the default entrypoint. When running `npx expo start` command, use the [`EXPO_USE_METRO_WORKSPACE_ROOT`](/more/expo-cli/#environment-variables). It enables the auto server root detection for Metro.
 
 <Terminal cmd={['$ EXPO_USE_METRO_WORKSPACE_ROOT=1 npx expo start']} />
 
@@ -207,13 +183,13 @@ This variable can also be defined inside a **.env** file.
 
 ### Create a package
 
-Monorepos can help us group code in a single repository. That includes apps but also separate packages. They also don't need to be published. The [Expo repository](https://github.com/expo/expo) uses this as well. All the Expo SDK packages live inside the [**packages/**](https://github.com/expo/expo/tree/main/packages) folder in our repo. It helps us test the code inside one of our [**apps/**](https://github.com/expo/expo/tree/main/apps/native-component-list) before we publish them.
+Monorepos can help us group code in a single repository. That includes apps but also separate packages. They also don't need to be published. The [Expo repository](https://github.com/expo/expo) uses this as well. All the Expo SDK packages live inside the [**packages**](https://github.com/expo/expo/tree/main/packages) directory in our repo. It helps us test the code inside one of our [**apps**](https://github.com/expo/expo/tree/main/apps/native-component-list) directory before we publish them.
 
-Let's go back to the root and create the **packages/** folder. This folder can contain all the separate packages that you want to make. Once you are inside this folder, we need to add a new subfolder. The subfolder is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
+Let's go back to the root and create the **packages** directory. This directory can contain all the separate packages that you want to make. Once you are inside this directory, we need to add a new sub-directory. The sub-directory is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
 
 <Terminal
   cmd={[
-    '# Create our new package folder',
+    '# Create our new package directory',
     '$ mkdir -p packages/cool-package',
     '$ cd packages/cool-package',
     '',
@@ -245,15 +221,15 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
   },
   "dependencies": {
     "cool-package": "*",
-    "expo": "~43.0.2",
-    "expo-status-bar": "~1.1.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-native": "0.64.3",
-    "react-native-web": "0.17.1"
+    "expo": "~50.0.0",
+    "expo-status-bar": "~1.10.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.73.0",
+    "react-native-web": "~0.19.13"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.20.0"
   }
 }
 ```
@@ -282,6 +258,31 @@ export default function App() {
 
 As mentioned earlier, using monorepos is not for everyone. You take on increased complexity and need to solve issues you most likely will run into. Here are a couple of common issues you might encounter.
 
+### Multiple React Native versions within the monorepo
+
+Expo SDK 50 and higher has improved support for more complete **node_modules** patterns, such as isolated modules. Unfortunately, React Native can still cause issues when installing multiple versions inside a single monorepo. Because of that, it's recommended to only use a single version of React Native.
+
+You can check if your monorepo has multiple React Native versions and why they are installed through the package manager you use.
+
+<Terminal
+  cmd={[
+    '# Bun does not support `bun why` yet, but you can use `yarn why`',
+    '$ bun install --yarn && yarn why react-native',
+    '',
+    '# npm supports the `npm explain` command, aliased to `npm why`',
+    '# https://docs.npmjs.com/cli/v10/commands/npm-explain',
+    '$ npm why react-native',
+    '',
+    '# pnpm only iterates the full monorepo with the `--recursive` flag',
+    '# https://pnpm.io/cli/why',
+    '$ pnpm why --recursive react-native',
+    '',
+    '# yarn supports the `yarn why` command',
+    '# https://classic.yarnpkg.com/en/docs/cli/why',
+    '$ yarn why react-native',
+  ]}
+/>
+
 ### Can I use another monorepo tool instead of Yarn workspaces?
 
 There are a lot of monorepo tools available, and each of these tools has its benefits. It's hard for us to keep up with the latest tools and methods, and because of that, we can't officially support new monorepo tools. That being said, if the tool follows these three rules, it should work fine.
@@ -294,7 +295,7 @@ React Native dependencies contain many other files besides JavaScript, like Grad
 
 <Collapsible summary="2. Dependencies used in multiple workspaces can be installed in the root node_modules directory">
 
-Whenever multiple workspaces use the same version of a single dependency, they can be installed in a root **node_modules** directory. Monorepo tools usually do this to remove duplicate tasks, like installing the same dependency twice in different places. This rule isn't necessary but does set us up for rule #3.
+Whenever multiple workspaces use the same version of a single dependency, they can be installed in a root **node_modules** directory. Monorepo tools usually do this to remove duplicate tasks, like installing the same dependency twice in different places. This rule isn't necessary but does set us up for next rule.
 
 </Collapsible>
 
@@ -302,14 +303,14 @@ Whenever multiple workspaces use the same version of a single dependency, they c
 
 In the [Modify the Metro config](#modify-the-metro-config) step, we instructed Metro to do a couple of this, specifically:
 
-- #2 - Resolve dependencies in the order of the local **/apps/&lt;name&gt;/node_modules** and root **/node_modules** directories.
+- #2 - Resolve dependencies in the order of the local **apps/&lt;name&gt;/node_modules** and root **node_modules** directories.
 - #3 - Disable resolving dependencies using the hierarchical lookup strategy.
 
-If a workspace uses a different library version than the one installed in the root **/node_modules**, that different library version must be installed in the workspace **/apps/&lt;name&gt;/node_modules** directory.
+If a workspace uses a different library version than the one installed in the root **node_modules**, that different library version must be installed in the workspace **apps/&lt;name&gt;/node_modules** directory.
 
-When Metro resolves a library, for example, `react`, from the workspace, it should find that different version in **/apps/&lt;name&gt;/node_modules** and not look inside the root **/node_modules** directory.
+When Metro resolves a library, for example, `react`, from the workspace, it should find that different version in **apps/&lt;name&gt;/node_modules** and not look inside the root **node_modules** directory.
 
-When importing a dependency from the root **/node_modules** folder that also imports `react`, `react` should still resolve to the different version installed in **/apps/&lt;name&gt;/node_modules**. That's what the disabled hierarchical lookup option does for Metro. Without this, some libraries might import the wrong `react` version and cause "multiple React versions found" errors.
+When importing a dependency from the root **node_modules** directory that also imports `react`, `react` should still resolve to the different version installed in **apps/&lt;name&gt;/node_modules**. That's what the disabled hierarchical lookup option does for Metro. Without this, some libraries might import the wrong `react` version and cause "multiple React versions found" errors.
 
 </Collapsible>
 
@@ -347,12 +348,4 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 
 In the snippets above, you can see that we use Node's own [`require.resolve()`](https://nodejs.org/api/modules.html#requireresolverequest-options) method to find the package location. We explicitly refer to `package.json` because we want to find the root location of the package, not the location of the entry point. And with that root location, we can resolve to the expected relative path within the package. [Learn more about these references here](https://github.com/expo/expo/blob/4633ab2364e30ea87ca2da968f3adaf5cdde9d8b/packages/expo-modules-core/README.mdx#importing-native-dependencies---autolinking).
 
-All Expo SDK modules and templates, starting from SDK 43, have these dynamic references and work with monorepos. But, occasionally, you might run into packages that still use the hardcoded path. You can manually edit it with [patch-package](https://github.com/ds300/patch-package#readme) or mention this to the package maintainers.
-
-### Remove expo-yarn-workspaces
-
-Before SDK 43, `expo-yarn-workspaces` was the recommended way to use Yarn workspaces with your Expo project. It was used to symlink all required dependencies back to the app's **node_modules** folder. Although this works for most apps, it has some flaws. For example, it doesn't work well with multiple versions of the same package.
-
-We made some significant changes with Expo SDK 43 to improve support for monorepos. [The auto linker in the newer Expo modules](https://blog.expo.dev/whats-new-in-expo-modules-infrastructure-7a7cdda81ebc) now also looks for packages in parent **node_modules** folders. None of our native files inside our template contain hardcoded paths to packages.
-
-If you are following this guide, you should remove that package from your project's dependencies.
+All Expo SDK modules and templates have these dynamic references and work with monorepos. However, occasionally, you might run into packages that still use the hardcoded path. You can manually edit it with [`patch-package`](https://github.com/ds300/patch-package#readme) or mention this to the package maintainers.

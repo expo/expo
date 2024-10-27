@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary *)createUpdatesConfigurationWithURL:(NSURL *)url
                                          projectURL:(NSURL *)projectURL
+                                     runtimeVersion:(NSString *)runtimeVersion
                                      installationID:(NSString *)installationID;
 
 @end

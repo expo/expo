@@ -72,7 +72,12 @@ class ExpoImageView(
     }
 
     if (isPlaceholder) {
-      applyTransformationMatrix(drawable, placeholderContentFit)
+      applyTransformationMatrix(
+        drawable,
+        placeholderContentFit,
+        sourceHeight = currentTarget?.placeholderHeight,
+        sourceWidth = currentTarget?.placeholderWidth
+      )
     } else {
       applyTransformationMatrix(drawable, contentFit, contentPosition)
     }
@@ -81,7 +86,9 @@ class ExpoImageView(
   private fun applyTransformationMatrix(
     drawable: Drawable,
     contentFit: ContentFit,
-    contentPosition: ContentPosition = ContentPosition.center
+    contentPosition: ContentPosition = ContentPosition.center,
+    sourceWidth: Int? = currentTarget?.sourceWidth,
+    sourceHeight: Int? = currentTarget?.sourceHeight
   ) {
     val imageRect = RectF(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
     val viewRect = RectF(0f, 0f, width.toFloat(), height.toFloat())
@@ -89,8 +96,8 @@ class ExpoImageView(
     val matrix = contentFit.toMatrix(
       imageRect,
       viewRect,
-      currentTarget?.sourceWidth ?: -1,
-      currentTarget?.sourceHeight ?: -1
+      sourceWidth ?: -1,
+      sourceHeight ?: -1
     )
     val scaledImageRect = imageRect.transform(matrix)
 
@@ -154,8 +161,8 @@ class ExpoImageView(
     borderDrawable.setBorderWidth(position, width)
   }
 
-  internal fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
-    borderDrawable.setBorderColor(position, rgb, alpha)
+  internal fun setBorderColor(position: Int, rgb: Int) {
+    borderDrawable.setBorderColor(position, rgb)
   }
 
   internal fun setBorderStyle(style: String?) {
@@ -204,14 +211,14 @@ class ExpoImageView(
     super.onDraw(canvas)
     // Draw borders on top of the background and image
     if (borderDrawableLazyHolder.isInitialized()) {
-      val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) {
+      val newLayoutDirection = if (I18nUtil.instance.isRTL(context)) {
         LAYOUT_DIRECTION_RTL
       } else {
         LAYOUT_DIRECTION_LTR
       }
 
       borderDrawable.apply {
-        resolvedLayoutDirection = layoutDirection
+        layoutDirection = newLayoutDirection
         setBounds(0, 0, width, height)
         draw(canvas)
       }

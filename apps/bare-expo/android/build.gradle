@@ -1,114 +1,108 @@
-import groovy.json.JsonSlurper
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext {
-        buildToolsVersion = '34.0.0'
-        minSdkVersion = 23
-        compileSdkVersion = 34
-        targetSdkVersion = 34
-        // Some dependencies still expect supportLibVersion to be defined
-        supportLibVersion = "29.0.0"
-        kotlinVersion = '1.8.10'
-        // for expo-dev-client
-        expoUpdatesVersion = null
+  ext {
+    buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
+    minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
+    compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
+    targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
+    kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.24'
+    ndkVersion = "26.1.10909125"
+  }
+  repositories {
+    google()
+    mavenCentral()
+  }
+  dependencies {
+    classpath("com.android.tools.build:gradle")
 
-        ndkVersion = "25.1.8937393"
-    }
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle")
+    classpath("com.facebook.react:react-native-gradle-plugin")
 
-        classpath("com.facebook.react:react-native-gradle-plugin")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
 
-        classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
-
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    }
-}
-
-plugins {
-  id "com.diffplug.spotless" version "5.14.1"
-}
-
-def packageJsonFile = new File(rootProject.projectDir, '../package.json')
-def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-
-// [Custom]
-ext {
-    reactNativeVersion = packageJson.dependencies["react-native"]
+    classpath("com.diffplug.spotless:spotless-plugin-gradle:6.23.3")
+  }
 }
 
 allprojects {
-    // [Custom]
-    configurations.all {
-        if (findProperty("buildReactNativeFromSource") == "true") {
-            resolutionStrategy.dependencySubstitution {
-                substitute(module("com.facebook.react:react-native"))
-                    .using(project(":ReactAndroid"))
-                    .because("Building React Native from source")
-                substitute(module("com.facebook.react:react-android"))
-                    .using(project(":ReactAndroid"))
-                    .because("Building React Native from source")
-                substitute(module("com.facebook.react:hermes-engine"))
-                    .using(project(":ReactAndroid:hermes-engine"))
-                    .because("Building Hermes from source")
-                substitute(module("com.facebook.react:hermes-android"))
-                    .using(project(":ReactAndroid:hermes-engine"))
-                    .because("Building Hermes from source")
-            }
-        }
+  repositories {
+    mavenLocal()
+    maven {
+      // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+      url(
+          new File(
+              providers.exec {
+                workingDir(rootDir)
+                commandLine("node", "--print", "require.resolve('react-native/package.json')")
+              }.standardOutput.asText.get().trim(),
+              "../android"
+          )
+      )
+    }
+    maven {
+      // Android JSC is installed from npm
+      url(
+          new File(
+              providers.exec {
+                workingDir(rootDir)
+                commandLine("node", "--print", "require.resolve('jsc-android/package.json')")
+              }.standardOutput.asText.get().trim(),
+              "../dist"
+          )
+      )
+    }
+    maven {
+      url(
+          new File(
+              providers.exec {
+                workingDir(rootDir)
+                commandLine("node", "--print", "require.resolve('expo-camera/package.json')")
+              }.standardOutput.asText.get().trim(),
+              "../android/maven"
+          )
+      )
     }
 
-    repositories {
-        mavenLocal()
-        maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../android"))
-        }
-        maven {
-            // Android JSC is installed from npm
-            url(new File(["node", "--print", "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), "../dist"))
-        }
-        maven {
-            // expo-camera bundles a custom com.google.android:cameraview
-            url "$rootDir/../node_modules/expo-camera/android/maven"
-        }
-        maven {
-          url(new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven"))
-        }
-        maven {
-            url(new File(["node", "--print", "require.resolve('detox/package.json')"].execute(null, rootDir).text.trim(), "../Detox-android"))
-        }
-
-        google()
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-    }
+    google()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+  }
 }
 
 subprojects {
   plugins.apply("com.diffplug.spotless")
   spotless {
+    // note that spotless config is currently duplicated in expo-go too
     kotlin {
       target '**/*.kt'
-      ktlint("0.41.0").userData([
-        "disabled_rules"           : "no-wildcard-imports,import-ordering",
-        "charset"                  : "utf-8",
-        "end_of_line"              : "lf",
-        "indent_size"              : "2",
-        "indent_style"             : "space",
-        "insert_final_newline"     : "true",
-        "tab_width"                : "2",
-        "trim_trailing_whitespace" : "true"
-      ])
+      ktlint("1.0.1")
+          .editorConfigOverride([
+              "ktlint_standard_no-wildcard-imports"          : "disabled",
+              "ktlint_standard_import-ordering"              : "disabled",
+              "ktlint_standard_filename"                     : "disabled",
+              "ktlint_standard_property-naming"              : "disabled",
+              "ktlint_standard_discouraged-comment-location" : "disabled",
+              "ktlint_standard_comment-wrapping"             : "disabled",
+              "ktlint_standard_function-naming"              : "disabled",
+              "ktlint_standard_class-naming"                 : "disabled",
+              "ktlint_standard_package-name"                 : "disabled",
+              "ktlint_standard_multiline-expression-wrapping": "disabled",
+              "charset"                                      : "utf-8",
+              "end_of_line"                                  : "lf",
+              "indent_size"                                  : "2",
+              "continuation_indent_size"                     : "2",
+              "indent_style"                                 : "space",
+              "insert_final_newline"                         : "true",
+              "tab_width"                                    : "2",
+              "trim_trailing_whitespace"                     : "true",
+              "ij_kotlin_allow_trailing_comma_on_call_site"  : "false",
+              "ij_kotlin_allow_trailing_comma"               : "false"
+          ])
       trimTrailingWhitespace()
       indentWithSpaces()
       endWithNewline()
     }
   }
 }
+
+apply plugin: "com.facebook.react.rootproject"

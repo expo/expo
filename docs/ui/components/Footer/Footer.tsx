@@ -1,31 +1,43 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
-import { ArrowLeftIcon, ArrowRightIcon } from '@expo/styleguide-icons';
+import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
 
-import { ForumsLink, EditPageLink, IssuesLink } from './Links';
+import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
+import { NewsletterSignUp } from './NewsletterSignUp';
+import { PageVote } from './PageVote';
 
 import { NavigationRouteWithSection } from '~/types/common';
-import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
-import { PageVote } from '~/ui/components/Footer/PageVote';
-import { P, FOOTNOTE, UL } from '~/ui/components/Text';
-
-const NEWSLETTER_DISABLED = true as const;
+import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
 type Props = {
-  title: string;
+  title?: string;
   sourceCodeUrl?: string;
   packageName?: string;
   previousPage?: NavigationRouteWithSection;
   nextPage?: NavigationRouteWithSection;
+  modificationDate?: string;
 };
 
-export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPage }: Props) => {
+const isDev = process.env.NODE_ENV === 'development';
+
+export const Footer = ({
+  title,
+  sourceCodeUrl,
+  packageName,
+  previousPage,
+  nextPage,
+  modificationDate,
+}: Props) => {
   const router = useRouter();
   const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
-  const isExpoPackage = packageName && packageName.startsWith('expo-');
+  const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
+  const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
+
+  const shouldShowModifiedDate = !isExpoPackage && !isTutorial;
 
   return (
-    <footer className="flex flex-col border-t border-default mt-10 pt-8 gap-8">
+    <footer className={mergeClasses('flex flex-col gap-10', title && 'pt-10', !title && 'pt-6')}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(
@@ -72,16 +84,30 @@ export const Footer = ({ title, sourceCodeUrl, packageName, previousPage, nextPa
           )}
         </div>
       )}
-      <div className="flex flex-row max-md-gutters:flex-col">
-        <UL className="flex-1 !mt-0 !ml-0 mb-5 !list-none">
-          <ForumsLink isAPIPage={isAPIPage} title={title} />
-          {isAPIPage && (
-            <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
-          )}
-          {router?.pathname && <EditPageLink pathname={router.pathname} />}
-        </UL>
-        <PageVote />
-        {!NEWSLETTER_DISABLED && <NewsletterSignUp />}
+      <div
+        className={mergeClasses('flex flex-row gap-4 justify-between', 'max-md-gutters:flex-col')}>
+        <div>
+          <PageVote />
+          <UL className="flex-1 !mt-0 !ml-0 !list-none">
+            <ShareFeedbackLink pathname={router?.pathname} />
+            {title && <ForumsLink isAPIPage={isAPIPage} title={title} />}
+            {title && isAPIPage && (
+              <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
+            )}
+            {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
+            {!isDev && shouldShowModifiedDate && modificationDate && (
+              <LI className="!text-quaternary !text-2xs !mt-4">
+                Last updated on {modificationDate}
+              </LI>
+            )}
+            {isDev && shouldShowModifiedDate && (
+              <LI className="!text-quaternary !text-2xs !mt-4">
+                Last updated data is not available in dev mode
+              </LI>
+            )}
+          </UL>
+        </div>
+        <NewsletterSignUp />
       </div>
     </footer>
   );

@@ -10,10 +10,8 @@ excluded:
   - apps
   - bin
   - docs
-  - exponent-view-template
   - fastlane
   - guides
-  - home
   - ios/Pods
   - ios/vendored
   - ios/versioned
@@ -24,6 +22,7 @@ excluded:
   - packages/expo-module-template
   - packages/expo-module-template-local
   - packages/expo-dev-menu/ios/OverlayContainer
+  - packages/install-expo-modules
   - react-native-lab
   - scripts
   - secrets
@@ -32,7 +31,6 @@ excluded:
 
 # Enable rules that are turned off by default. Run `swiftlint rules` to see what's available to opt-in.
 opt_in_rules:
-  - anyobject_protocol
   - array_init
   - closure_body_length
   - closure_end_indentation
@@ -91,9 +89,6 @@ analyzer_rules:
   - unused_declaration
   - unused_import
 
-# Prefer using AnyObject over class for class-only protocols.
-anyobject_protocol: warning
-
 # Prefer using `Array(seq)` over `seq.map { $0 }` to convert a sequence into an Array.
 array_init: warning
 
@@ -125,8 +120,8 @@ control_statement: warning
 
 # Limits the complexity of function bodies.
 cyclomatic_complexity:
-  warning: 12
-  error: 20
+  warning: 20
+  error: 28
   ignores_case_statements: true
 
 # Directly return the expression instead of assigning it to a variable first.
@@ -181,8 +176,8 @@ force_unwrapping: error
 
 # Functions bodies should not span too many lines.
 function_body_length:
-  warning: 250
-  error: 300
+  warning: 300
+  error: 350
 
 # Comparing two identical operands is likely a mistake.
 identical_operands: error

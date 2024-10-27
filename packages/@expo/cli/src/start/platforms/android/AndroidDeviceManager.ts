@@ -89,7 +89,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
 
   async uninstallAppAsync(appId: string) {
     // we need to check if the app is installed, else we might bump into "Failure [DELETE_FAILED_INTERNAL_ERROR]"
-    const isInstalled = await this.isAppInstalledAsync(appId);
+    const isInstalled = await this.isAppInstalledAndIfSoReturnContainerPathForIOSAsync(appId);
     if (!isInstalled) {
       return;
     }
@@ -109,10 +109,11 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   /**
    * @param launchActivity Activity to launch `[application identifier]/.[main activity name]`, ex: `com.bacon.app/.MainActivity`
    */
-  async launchActivityAsync(launchActivity: string): Promise<string> {
+  async launchActivityAsync(launchActivity: string, url?: string): Promise<string> {
     try {
       return await AndroidDebugBridge.launchActivityAsync(this.device, {
         launchActivity,
+        url,
       });
     } catch (error: any) {
       let errorMessage = `Couldn't open Android app with activity "${launchActivity}" on device "${this.name}".`;
@@ -127,7 +128,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     }
   }
 
-  async isAppInstalledAsync(applicationId: string) {
+  async isAppInstalledAndIfSoReturnContainerPathForIOSAsync(applicationId: string) {
     return await AndroidDebugBridge.isPackageInstalledAsync(this.device, applicationId);
   }
 
@@ -160,7 +161,11 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     await activateWindowAsync(this.device);
   }
 
-  async ensureExpoGoAsync(sdkVersion?: string): Promise<boolean> {
+  getExpoGoAppId(): string {
+    return EXPO_GO_APPLICATION_IDENTIFIER;
+  }
+
+  async ensureExpoGoAsync(sdkVersion: string): Promise<boolean> {
     const installer = new ExpoGoInstaller('android', EXPO_GO_APPLICATION_IDENTIFIER, sdkVersion);
     return installer.ensureAsync(this);
   }

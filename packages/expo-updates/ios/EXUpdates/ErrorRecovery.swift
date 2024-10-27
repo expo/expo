@@ -1,16 +1,10 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-// swiftlint:disable file_length
-// swiftlint:disable type_body_length
 // swiftlint:disable legacy_objc_type
-
-// for some reason xcode #selector requires @objc in addition to @objcMembers
-// swiftlint:disable redundant_objc_attribute
-
-// this class was writted with implicit non-null constraints between method calls. not worth restructuring to appease linter
 // swiftlint:disable force_unwrapping
 
 import Foundation
+import React
 
 // swiftlint:disable identifier_name
 @objc(EXUpdatesRemoteLoadStatus)
@@ -132,12 +126,12 @@ public final class ErrorRecovery: NSObject {
 
   public func handle(error: NSError) {
     startPipeline(withEncounteredError: error)
-    ErrorRecovery.writeErrorOrExceptionToLog(error)
+    ErrorRecovery.writeErrorOrExceptionToLog(error, logger)
   }
 
   public func handle(exception: NSException) {
     startPipeline(withEncounteredError: exception)
-    ErrorRecovery.writeErrorOrExceptionToLog(exception)
+    ErrorRecovery.writeErrorOrExceptionToLog(exception, logger)
   }
 
   public func notify(newRemoteLoadStatus newStatus: RemoteLoadStatus) {
@@ -190,7 +184,7 @@ public final class ErrorRecovery: NSObject {
       logger.info(message: "ErrorRecovery: launching a cached update")
       tryRelaunchFromCache()
     case .crash:
-      logger.error(message: "ErrorRecovery: could not recover from error, crashing", code: .updateFailedToLoad)
+      logger.error(cause: UpdatesError.errorRecoveryCrashing, code: .updateFailedToLoad)
       crash()
     }
   }
@@ -356,7 +350,7 @@ public final class ErrorRecovery: NSObject {
 
   // MARK: - error persisting
 
-  public static func consumeErrorLog() -> String? {
+  public static func consumeErrorLog(logger: UpdatesLogger) -> String? {
     let errorLogFile = errorLogFile()
     guard let data = try? Data(contentsOf: errorLogFile) else {
       return nil
@@ -365,16 +359,18 @@ public final class ErrorRecovery: NSObject {
     do {
       try FileManager.default.removeItem(at: errorLogFile)
     } catch {
-      NSLog("Could not delete error log: %@", error.localizedDescription)
+      logger.warn(message: "Could not delete error log: \(error.localizedDescription)", code: UpdatesErrorCode.unknown)
     }
 
     return String(data: data, encoding: .utf8)
   }
 
-  public static func writeErrorOrExceptionToLog(_ errorOrException: Any, dispatchQueue: DispatchQueue = DispatchQueue.global()) {
+  public static func writeErrorOrExceptionToLog(_ errorOrException: Any, _ logger: UpdatesLogger, dispatchQueue: DispatchQueue = DispatchQueue.global()) {
     dispatchQueue.async {
       var serializedError: String
-      if let errorOrException = errorOrException as? NSError {
+      if let errorOrException = errorOrException as? UpdatesError {
+        serializedError = "Fatal error: \(ErrorRecovery.serialize(updatesError: errorOrException))"
+      } else if let errorOrException = errorOrException as? NSError {
         serializedError = "Fatal error: \(ErrorRecovery.serialize(error: errorOrException))"
       } else if let errorOrException = errorOrException as? NSException {
         serializedError = "Fatal exception: \(ErrorRecovery.serialize(exception: errorOrException))"
@@ -382,7 +378,7 @@ public final class ErrorRecovery: NSObject {
         return
       }
 
-      UpdatesLogger().error(message: "ErrorRecovery fatal exception: \(serializedError)", code: .jsRuntimeError)
+      logger.error(cause: UpdatesError.errorRecoveryFatalException(serializedError: serializedError), code: .jsRuntimeError)
       let data = serializedError.data(using: .utf8)!
       let errorLogFile = ErrorRecovery.errorLogFile()
       if FileManager.default.fileExists(atPath: errorLogFile.path) {
@@ -395,10 +391,18 @@ public final class ErrorRecovery: NSObject {
         do {
           try data.write(to: errorLogFile, options: .atomic)
         } catch {
-          NSLog("Could not write fatal error to log: %@", error.localizedDescription)
+          logger.error(cause: UpdatesError.errorRecoveryCouldNotWriteToLog(cause: error))
         }
       }
     }
+  }
+
+  private static func serialize(updatesError: UpdatesError) -> String {
+    return String(
+      format: "Time: %f\nDescription: %@\n\n",
+      Date().timeIntervalSince1970 * 1000,
+      updatesError.localizedDescription
+    )
   }
 
   private static func serialize(exception: NSException) -> String {
@@ -437,3 +441,6 @@ public final class ErrorRecovery: NSObject {
     return applicationDocumentsDirectory.appendingPathComponent(ErrorLogFile)
   }
 }
+
+// swiftlint:enable legacy_objc_type
+// swiftlint:enable force_unwrapping

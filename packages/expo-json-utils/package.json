@@ -1,12 +1,16 @@
 {
   "name": "expo-json-utils",
-  "version": "0.12.0",
-  "description": "Utilities for reading NSDictionaries (iOS) and JSONObjects (Android).",
+  "version": "0.14.0",
+  "description": "Utilities for reading JSONObjects (Android) and NSDictionaries (iOS).",
   "main": "index.js",
   "keywords": [
     "react-native",
     "expo",
-    "expo-json-utils"
+    "expo-json-utils",
+    "android",
+    "ios",
+    "jsonobjects",
+    "nsdictionaries"
   ],
   "repository": {
     "type": "git",
@@ -18,5 +22,5 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template"
+  "homepage": "https://docs.expo.dev"
 }

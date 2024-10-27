@@ -1,42 +1,20 @@
 ---
-title: Develop with EAS Update
-sidebar_title: Develop faster
-description: Learn how to iterate your development faster with EAS Update.
+title: Preview updates
+sidebar_title: Preview updates
+description: Learn how to iterate quickly by sharing updates for QA and testing.
+hideTOC: true
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+EAS Update helps us fix critical bugs in production. It can also help us iterate faster with our team during development.
 
-EAS Update can help us fix critical bugs in production. It can also help us iterate faster with our team.
+## Distributing updates to others during development
 
-## Developing locally
+Whether a new feature is being developed, stabilized, QA'd, or critiqued, it's often useful to allow others to preview what it looks and feels like before it is released to production.
 
-When developing locally, `npx expo start` will start a server that serves a manifest and assets to Expo Go and development builds. Locally, those builds look for a local manifest, and when there's an update, they'll download any missing local assets. To accomplish this, Expo Go/development builds use a protocol. That protocol is either a classic version of the updates protocol (used with Classic Updates), or the modern version of the [updates protocol](/technical-specs/expo-updates-1) (used with EAS Update).
+Traditionally previewing meant re-building the project and distributing it to a reviewer manually. Previewing features with EAS Update removes the need for rebuilding in most cases and can help us preview new features quicker.
 
-We want to make sure that our locally developed app is using the same protocol locally as it does when we build our app.
+A published update can be loaded in various environments:
 
-When we run `npx expo start`, Expo CLI will automatically detect if our app is using EAS Update by looking at the `expo.updates.url` property in **app.json**. If the value of `url` starts with `https://u.expo.dev`, we will serve the modern manifest protocol. If there is no `url`, then we default to serving the classic version of the updates protocol.
-
-To ensure that we're using the modern version of the updates protocol, make sure to run `eas update:configure`, then `npx expo install expo-updates` before creating development builds. Running both of these commands should set up our local development environment to use the modern manifest protocol.
-
-## Developing with other developers
-
-When we finish a feature or bug fix, it's convenient to allow other developers to preview a published update for reviewing purposes. One problem with previewing a new feature is that we have to rebuild the project into an app and distribute it to a reviewer. That process takes time and requires bookkeeping of builds and features.
-
-Previewing features with EAS Update can help us preview new features in minutes.
-
-The process flows like this:
-
-- A developer runs `eas device:create`, then has all teammates/reviewers register their devices.
-- Once complete, they create a build suitable for internal distribution. After running `eas build:configure`, the command to generate this build would be `eas build --profile preview`.
-- Once the build is complete, all teammates/reviewers should download the internal distribution app.
-- Then, a developer makes a change to a project. For this example, let’s imagine the developer is on a branch named `typo-fix` and the change fixes a typo within the app.
-- The developer then runs `eas update --auto`. This will publish an update to a branch named `typo-fix`, which is linked by default to a channel named `typo-fix`.
-- Then, the developer can create a URL that will open the previously created internal distribution app. They can either send that link to their teammates/reviewers, or they can create a QR code that teammates/reviewers may scan. To help with this last part, developers can navigate to their public project page and see the following UI to configure the correct URL for previewing a published EAS Update:
-
-<ImageSpotlight
-  alt="Preview EAS Update QR Code configuration"
-  src="/static/images/eas-update/qr-preview.png"
-  style={{ maxHeight: '700px', width: 'auto' }}
-/>
-
-For more information on using EAS Update with development builds, see [Using expo-dev-client with EAS Update](/eas-update/expo-dev-client).
+- A [development build](/eas-update/expo-dev-client/) with a matching runtime version, distributed through [internal distribution](/build/internal-distribution/) or as an emulator or simulator build.
+- A release build distributed via Google Play beta, TestFlight, or [internal distribution](/build/internal-distribution/) with a matching runtime version and channel pointing to a branch with the published update. With this strategy, often an EAS Update channel like "alpha" or "beta" will be used, and builds and updates will be created from development branches in source control.
+- Expo Go can also load published updates in cases where custom native code is not used.

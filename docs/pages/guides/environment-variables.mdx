@@ -4,17 +4,18 @@ sidebar_title: Environment variables
 description: Learn how to use environment variables in an Expo project.
 ---
 
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
 Environment variables are key-value pairs configured outside your source code that allow your app to behave differently depending on the environment. For example, you can enable or disable certain features when building a test version of your app, or switch to a different API endpoint when building for production.
 
 The Expo CLI will automatically load environment variables with an `EXPO_PUBLIC_` prefix from **.env** files for use within your JavaScript code whenever you use the Expo CLI, such as when running `npx expo start` to start your app in local development mode.
 
-> Available in SDK 49 and higher. See notes for [SDK 48 and lower](#environment-variables-in-sdk-48-and-lower).
+> Available in SDK 49 and higher.
 
 ## Reading environment variables from .env files
 
-Create an **.env** file in the root of your project directory and add environment-specific variables on new lines in the form of `EXPO_PUBLIC_[NAME]=VALUE`:
+Create a **.env** file in the root of your project directory and add environment-specific variables on new lines in the form of `EXPO_PUBLIC_[NAME]=VALUE`:
 
 ```bash .env
 EXPO_PUBLIC_API_URL=https://staging.example.com
@@ -45,7 +46,15 @@ When you run `npx expo start`, `process.env.EXPO_PUBLIC_API_URL` will be replace
 
 Expo CLI loads **.env** files according to the [standard .env file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use) and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the **.env** files. Code inside **node_modules** is not affected for security purposes.
 
-Every variable must be referenced as a static property in order for it to be inlined. For example, the expression `process.env.EXPO_PUBLIC_KEY` will be rewritten, but `process.env['EXPO_PUBLIC_KEY']` will not.
+### How to read from environment variables
+
+- <YesIcon small /> **Every environment variable must be statically referenced as a property of
+  `process.env` using JavaScript's dot notation for it to be inlined.** For example, the expression
+  `process.env.EXPO_PUBLIC_KEY` is valid and will be inlined.
+
+- <NoIcon small /> **Alternative versions of the expression are not supported**. For example,
+  `process.env['EXPO_PUBLIC_KEY']` or `const {EXPO_PUBLIC_X} = process.env` is invalid and will not
+  be inlined.
 
 ### Using multiple .env files to define separate environments
 
@@ -59,7 +68,7 @@ You may choose to commit the default **.env** file or other standard configurati
 
 If you create an environment-specific file, like **.env.test**, you can load it by setting `NODE_ENV` when running the Expo CLI:
 
-<Terminal cmd={['$ NODE_ENV=production npx expo start']} />
+<Terminal cmd={['$ NODE_ENV=test npx expo start']} />
 
 ### Disabling environment variables
 
@@ -74,7 +83,7 @@ If you're experiencing issues with environment variables, you can try disabling 
 
 ### EAS Build
 
-[EAS Build](/build/introduction/) uses Metro Bundler to build the JavaScript bundle embedded within your app binary, so it will use **.env** files uploaded with your build job to inline `EXPO_PUBLIC_` variables into your code. EAS Build also lets you define environment variables within build profiles in **eas.json** and via EAS Secrets. Check out the EAS Build documentation on [environment variables and build secrets](/build-reference/variables.mdx) for more information.
+[EAS Build](/build/introduction/) uses Metro Bundler to build the JavaScript bundle embedded within your app binary, so it will use **.env** files uploaded with your build job to inline `EXPO_PUBLIC_` variables into your code. EAS Build also lets you define environment variables within build profiles in **eas.json** and via EAS Secrets. Check out the EAS Build documentation on [environment variables and build secrets](/build-reference/variables/) for more information.
 
 ### EAS Update
 
@@ -104,7 +113,7 @@ Then update your code to use `process.env.EXPO_PUBLIC_[VARNAME]`:
 
 ### From babel-plugin-transform-inline-environment-variables
 
-Using a Babel plugin to transform your environment variable references in your code is similar to how Expo environment variables work. Set your variables inside of an **.env** file and update your variable names to use the `EXPO_PUBLIC_` prefix:
+Using a Babel plugin to transform your environment variable references in your code is similar to how Expo environment variables work. Set your variables inside a **.env** file and update your variable names to use the `EXPO_PUBLIC_` prefix:
 
 ```diff
 - const apiUrl = process.env.API_URL;
@@ -127,9 +136,9 @@ After updating your Babel config file, be sure to clear your cache with `npx exp
 
 ### From direnv
 
-Move any environment variables used in your JavaScript from their **.envrc** file to an **.env** file and prefix it with `EXPO_PUBLIC_`.
+Move any environment variables used in your JavaScript from their **.envrc** file to a **.env** file and prefix it with `EXPO_PUBLIC_`.
 
-Previously with direnv, you would need to use a [dynamic app config](/versions/latest/config/app/#app-config) that reads from [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env) to set environment variables on the `extra` field so they can be used in your JavaScript code via [expo-constants](/versions/latest/sdk/constants). Move those references directly into your code, adding the `EXPO_PUBLIC_` prefix:
+Previously with `direnv`, you would need to use a [dynamic app config](/versions/latest/config/app/#app-config) that reads from [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env) to set environment variables on the `extra` field so they can be used in your JavaScript code via [`expo-constants`](/versions/latest/sdk/constants). Move those references directly into your code, adding the `EXPO_PUBLIC_` prefix:
 
 ```diff
 - import Constants from 'expo-constants';
@@ -138,12 +147,8 @@ Previously with direnv, you would need to use a [dynamic app config](/versions/l
 + const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 ```
 
-> [direnv](https://direnv.net/) automatically loads and unloads environment variables in your shell depending on your current directory, meaning it can affect the environment for any process running in that directly, not just the Expo CLI. You will likely want to continue using direnv for other environment variables that are not used in your JavaScript code.
+> [`direnv`](https://direnv.net/) automatically loads and unloads environment variables in your shell depending on your current directory, meaning it can affect the environment for any process running in that directly, not just the Expo CLI. You will likely want to continue using `direnv` for other environment variables that are not used in your JavaScript code.
 
 ## Security considerations
 
 Never store sensitive secrets in environment variables that are prefixed with `EXPO_PUBLIC_`. When an end-user runs your app, they have access to all of the code and embedded environment variables in your app. Read more about [storing sensitive info](https://reactnative.dev/docs/security#storing-sensitive-info).
-
-## Environment variables in SDK 48 and lower
-
-Due to its ability to automatically load and unload environment variables in your shell depending on your current directory, we highly recommend [direnv](https://direnv.net/) for the highest level of compatibility with all Expo and EAS CLI tooling for SDK versions that do not support Expo environment variables. Since variables loaded with direnv are available in Node processes but not your application code itself, you can load it into the `extra` field of your [dynamic Expo config](/versions/latest/config/app/#app-config) and then access it in your JavaScript code via [expo-constants](/versions/latest/sdk/constants).

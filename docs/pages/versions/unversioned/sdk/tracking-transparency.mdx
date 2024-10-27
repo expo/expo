@@ -3,24 +3,22 @@ title: TrackingTransparency
 description: A library for requesting permission to track the users on devices using iOS 14 and higher.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-tracking-transparency'
 packageName: 'expo-tracking-transparency'
+platforms: ['android', 'ios']
 ---
 
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, and more. This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](/versions/latest/config/app/#infoplist) to explain how the user will be tracked. Otherwise, your app will be rejected by Apple.
 
-For more information on Apple's new App Tracking Transparency framework, please refer to their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
-
-<PlatformsSection android emulator ios simulator />
+For more information on Apple's new App Tracking Transparency framework, see their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
 
 ## Installation
 
@@ -73,7 +71,7 @@ Learn how to configure the native projects in the [installation instructions in 
 <SnackInline label='Basic tracking transparency usage' dependencies={['expo-tracking-transparency']}>
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
@@ -94,7 +92,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -102,7 +99,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>

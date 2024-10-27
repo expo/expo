@@ -1,16 +1,20 @@
 package expo.modules.av
 
 import android.Manifest
+import android.os.Bundle
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import java.lang.ref.WeakReference
 
 private class AVManagerModuleNotFound : CodedException(message = "AVManagerInterface not found")
 
 private typealias KotlinPromise = expo.modules.kotlin.Promise
-private typealias LegacyPromise = expo.modules.core.Promise
+private typealias LegacyPromise =
+  @Suppress("DEPRECATION")
+  expo.modules.core.Promise
 
 class AVModule : Module() {
   private val _avManager by lazy { appContext.legacyModule<AVManagerInterface>() }
@@ -19,6 +23,28 @@ class AVModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExponentAV")
+
+    Events(
+      "didUpdatePlaybackStatus",
+      "ExponentAV.onError",
+      "Expo.Recording.recorderUnloaded"
+    )
+
+    OnCreate {
+      // Slightly hacky way to be able to emit events using the new event emitter from legacy modules.
+      val weakModule = WeakReference(this@AVModule)
+      val emitEvent = { name: String, body: Bundle ->
+        try {
+          // It may thrown, because RN event emitter may not be available
+          // we can just ignore those cases
+          weakModule.get()?.sendEvent(name, body)
+        } catch (_: Throwable) {
+        }
+        Unit
+      }
+
+      appContext.legacyModule<AVManagerInterface>()?.setEmitEventWrapper(emitEvent)
+    }
 
     AsyncFunction("setAudioIsEnabled") { value: Boolean ->
       avManager.setAudioIsEnabled(value)
@@ -114,6 +140,7 @@ class AVModule : Module() {
   }
 }
 
+@Suppress("TYPEALIAS_EXPANSION_DEPRECATION")
 private fun KotlinPromise.toLegacyPromise(): LegacyPromise {
   val newPromise = this
   return object : LegacyPromise {

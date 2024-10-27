@@ -2,9 +2,9 @@ import {
   AndroidConfig,
   ConfigPlugin,
   History,
+  WarningAggregator,
   withAndroidManifest,
   withDangerousMod,
-  withGradleProperties,
 } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
@@ -19,7 +19,17 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
   [
     {
       propName: 'newArchEnabled',
-      propValueGetter: (config) => config.android?.newArchEnabled?.toString(),
+      propValueGetter: (config) => {
+        if (config.android?.newArchEnabled !== undefined) {
+          WarningAggregator.addWarningAndroid(
+            'withAndroidBuildProperties',
+            'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.',
+            'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
+          );
+        }
+
+        return config.android?.newArchEnabled?.toString();
+      },
     },
     {
       propName: 'android.minSdkVersion',
@@ -66,47 +76,32 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
     },
     {
+      propName: 'android.enablePngCrunchInReleaseBuilds',
+      propValueGetter: (config) => config.android?.enablePngCrunchInReleaseBuilds?.toString(),
+    },
+    {
       propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
       propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
+    },
+    {
+      propName: 'expo.useLegacyPackaging',
+      propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
+    },
+    {
+      propName: 'android.extraMavenRepos',
+      propValueGetter: (config) => {
+        const extraMavenRepos = (config.android?.extraMavenRepos ?? []).map((item) => {
+          if (typeof item === 'string') {
+            return { url: item };
+          }
+          return item;
+        });
+        return JSON.stringify(extraMavenRepos);
+      },
     },
   ],
   'withAndroidBuildProperties'
 );
-
-export const withAndroidFlipper: ConfigPlugin<PluginConfigType> = (config, props) => {
-  const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
-  const FLIPPER_FALLBACK = '0.125.0';
-
-  // when not set, make no changes
-  if (props.android?.flipper === undefined) {
-    return config;
-  }
-
-  return withGradleProperties(config, (c) => {
-    // check for Flipper version in package. If set, use that
-    let existing: string | undefined;
-
-    const found = c.modResults.find(
-      (item) => item.type === 'property' && item.key === ANDROID_FLIPPER_KEY
-    );
-    if (found && found.type === 'property') {
-      existing = found.value;
-    }
-
-    // strip key and re-add based on setting
-    c.modResults = c.modResults.filter(
-      (item) => !(item.type === 'property' && item.key === ANDROID_FLIPPER_KEY)
-    );
-
-    c.modResults.push({
-      type: 'property',
-      key: ANDROID_FLIPPER_KEY,
-      value: (props.android?.flipper ?? existing ?? FLIPPER_FALLBACK) as string,
-    });
-
-    return c;
-  });
-};
 
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
@@ -251,18 +246,18 @@ export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props
     // Default template adds a single intent to the `queries` tag
     const defaultIntents =
       config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+    const defaultPackages =
+      config.modResults.manifest.queries.map((q) => q.package ?? []).flat() ?? [];
+    const defaultProviders =
+      config.modResults.manifest.queries.map((q) => q.provider ?? []).flat() ?? [];
 
-    const additionalQueries: AndroidConfig.Manifest.ManifestQuery = {
-      package: renderQueryPackages(manifestQueries.package),
+    const newQueries: AndroidConfig.Manifest.ManifestQuery = {
+      package: [...defaultPackages, ...renderQueryPackages(manifestQueries.package)],
       intent: [...defaultIntents, ...renderQueryIntents(manifestQueries.intent)],
+      provider: [...defaultProviders, ...renderQueryProviders(manifestQueries.provider)],
     };
 
-    const provider = renderQueryProviders(manifestQueries.provider);
-    if (provider != null) {
-      additionalQueries.provider = provider;
-    }
-
-    config.modResults.manifest.queries = [additionalQueries];
+    config.modResults.manifest.queries = [newQueries];
     return config;
   });
 };

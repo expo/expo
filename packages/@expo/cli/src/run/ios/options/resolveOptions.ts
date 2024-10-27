@@ -22,17 +22,20 @@ export async function resolveOptionsAsync(
     xcodeProject
   );
 
+  // Use the configuration or `Debug` if none is provided.
+  const configuration = options.configuration || 'Debug';
+
   // Resolve the device based on the provided device id or prompt
   // from a list of devices (connected or simulated) that are filtered by the scheme.
   const device = await resolveDeviceAsync(options.device, {
     // It's unclear if there's any value to asserting that we haven't hardcoded the os type in the CLI.
     osType: isOSType(osType) ? osType : undefined,
+    xcodeProject,
+    scheme,
+    configuration,
   });
 
   const isSimulator = isSimulatorDevice(device);
-
-  // Use the configuration or `Debug` if none is provided.
-  const configuration = options.configuration || 'Debug';
 
   // This optimization skips resetting the Metro cache needlessly.
   // The cache is reset in `../node_modules/react-native/scripts/react-native-xcode.sh` when the
@@ -42,6 +45,7 @@ export async function resolveOptionsAsync(
 
   return {
     ...bundlerProps,
+    shouldStartBundler: options.configuration === 'Debug' || bundlerProps.shouldStartBundler,
     projectRoot,
     isSimulator,
     xcodeProject,

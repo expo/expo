@@ -1,11 +1,10 @@
-
-name: docs-pr-destroy
+name: Docs Website PR Destroy Preview
 
 on:
   pull_request:
     paths:
       - 'docs/**'
-      - '.github/workflows/docs-pr-deploy.yml'
+      - '.github/workflows/docs-pr.yml'
       - '.github/workflows/docs-pr-destroy.yml'
     types: [closed, unlabeled]
 
@@ -17,7 +16,7 @@ jobs:
   docs-pr-destroy:
     if: (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview')) ||
         (github.event.action == 'unlabeled' && github.event.label.name == 'preview')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 🪣 Delete docs preview bucket
         env:

@@ -1,4 +1,4 @@
-import { getConfig } from '@expo/config';
+import { getConfig, getPackageJson } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
@@ -7,7 +7,9 @@ import { checkPackagesAsync } from './checkPackages';
 import { installExpoPackageAsync } from './installExpoPackage';
 import { Options } from './resolveOptions';
 import * as Log from '../log';
+import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
+import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
 import { setNodeEnv } from '../utils/nodeEnv';
@@ -30,7 +32,7 @@ export async function installAsync(
   setNodeEnv('development');
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo install` from a subdirectory of the project.
-  const projectRoot = options.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
+  const projectRoot = options?.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
   require('@expo/env').load(projectRoot);
 
   // Resolve the package manager used by the project, or based on the provided arguments.
@@ -43,13 +45,30 @@ export async function installAsync(
     log: Log.log,
   });
 
-  if (options.check || options.fix) {
+  const expoVersion = findPackageByName(packages, 'expo');
+  const otherPackages = packages.filter((pkg) => pkg !== expoVersion);
+
+  // Abort early when installing `expo@<version>` and other packages with `--fix/--check`
+  if (packageHasVersion(expoVersion) && otherPackages.length && (options.check || options.fix)) {
+    throw new CommandError(
+      'BAD_ARGS',
+      `Cannot install other packages with ${expoVersion} and --fix or --check`
+    );
+  }
+
+  // Only check/fix packages if `expo@<version>` is not requested
+  if (!packageHasVersion(expoVersion) && (options.check || options.fix)) {
     return await checkPackagesAsync(projectRoot, {
       packages,
       options,
       packageManager,
       packageManagerArguments,
     });
+  }
+
+  // note(simek): check out the packages compatibility with New Architecture against RND API
+  if (!process.env.EXPO_NO_NEW_ARCH_COMPAT_CHECK) {
+    await checkPackagesCompatibility(otherPackages);
   }
 
   // Read the project Expo config without plugins.
@@ -61,6 +80,7 @@ export async function installAsync(
 
   // Resolve the versioned packages, then install them.
   return installPackagesAsync(projectRoot, {
+    ...options,
     packageManager,
     packages,
     packageManagerArguments,
@@ -76,7 +96,10 @@ export async function installPackagesAsync(
     packageManager,
     sdkVersion,
     packageManagerArguments,
-  }: {
+    fix,
+    check,
+    dev,
+  }: Options & {
     /**
      * List of packages to version, grouped by the type of dependency.
      * @example ['uuid', 'react-native-reanimated@latest']
@@ -97,11 +120,7 @@ export async function installPackagesAsync(
   }
 ): Promise<void> {
   // Read the project Expo config without plugins.
-  const { pkg } = getConfig(projectRoot, {
-    // Sometimes users will add a plugin to the config before installing the library,
-    // this wouldn't work unless we dangerously disable plugin serialization.
-    skipPlugins: true,
-  });
+  const pkg = getPackageJson(projectRoot);
 
   //assertNotInstallingExcludedPackages(projectRoot, packages, pkg);
 
@@ -136,7 +155,7 @@ export async function installPackagesAsync(
         )} because ${
           alreadyExcluded.length > 1 ? 'they are' : 'it is'
         } listed in {bold expo.install.exclude} in package.json. ${learnMore(
-          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+          'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
         )}`
       );
     }
@@ -151,28 +170,45 @@ export async function installPackagesAsync(
         )} because ${
           specifiedExactVersion.length > 1 ? 'these versions' : 'this version'
         } was explicitly provided. Packages excluded from dependency validation should be listed in {bold expo.install.exclude} in package.json. ${learnMore(
-          'https://expo.dev/more/expo-cli/#configuring-dependency-validation'
+          'https://docs.expo.dev/more/expo-cli/#configuring-dependency-validation'
         )}`
       );
     }
   }
 
-  // if updating expo package, install this first, then re-run the command minus expo to install everything else
-  if (packages.find((pkg) => pkg === 'expo')) {
-    const packagesMinusExpo = packages.filter((pkg) => pkg !== 'expo');
+  // `expo` needs to be installed before installing other packages
+  const expoPackage = findPackageByName(packages, 'expo');
+  if (expoPackage) {
+    const postInstallCommand = packages.filter((pkg) => pkg !== expoPackage);
 
-    await installExpoPackageAsync(projectRoot, {
+    // Pipe options to the next command
+    if (fix) postInstallCommand.push('--fix');
+    if (check) postInstallCommand.push('--check');
+
+    // Abort after installing `expo`, follow up command is spawn in a new process
+    return await installExpoPackageAsync(projectRoot, {
       packageManager,
       packageManagerArguments,
       expoPackageToInstall: versioning.packages.find((pkg) => pkg.startsWith('expo@'))!,
-      followUpCommandArgs: packagesMinusExpo,
+      followUpCommandArgs: postInstallCommand,
     });
-
-    // follow-up commands will be spawned in a detached process, so return immediately
-    return;
   }
 
-  await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
+  if (dev) {
+    await packageManager.addDevAsync([...packageManagerArguments, ...versioning.packages]);
+  } else {
+    await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
+  }
 
   await applyPluginsAsync(projectRoot, versioning.packages);
+}
+
+/** Find a package, by name, in the requested packages list (`expo` -> `expo`/`expo@<version>`) */
+function findPackageByName(packages: string[], name: string) {
+  return packages.find((pkg) => pkg === name || pkg.startsWith(`${name}@`));
+}
+
+/** Determine if a specific version is requested for a package */
+function packageHasVersion(name = '') {
+  return name.includes('@');
 }

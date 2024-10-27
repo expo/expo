@@ -32,6 +32,11 @@ const { ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
 const workletContextManager = createWorkletContextManager();
 
+export function getWorkletContext(contextId: number): ExpoWebGLRenderingContext | undefined {
+  'worklet';
+  return workletContextManager.getContext(contextId);
+}
+
 // @needsAudit
 /**
  * A View that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created.
@@ -83,6 +88,10 @@ export class GLView extends React.Component<GLViewProps> {
     return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
   }
 
+  /**
+   * This method doesn't work inside of the worklets with new reanimated versions.
+   * @deprecated Use `getWorkletContext` from the global scope instead.
+   */
   static getWorkletContext: (contextId: number) => ExpoWebGLRenderingContext | undefined =
     workletContextManager.getContext;
 
@@ -90,12 +99,8 @@ export class GLView extends React.Component<GLViewProps> {
   exglCtxId?: number;
 
   render() {
-    const {
-      onContextCreate, // eslint-disable-line no-unused-vars
-      msaaSamples,
-      enableExperimentalWorkletSupport,
-      ...viewProps
-    } = this.props;
+    const { onContextCreate, msaaSamples, enableExperimentalWorkletSupport, ...viewProps } =
+      this.props;
 
     return (
       <View {...viewProps}>
@@ -185,7 +190,7 @@ export class GLView extends React.Component<GLViewProps> {
   }
 
   /**
-   * Same as static [`takeSnapshotAsync()`](#glviewtakesnapshotasyncgl-options),
+   * Same as static [`takeSnapshotAsync()`](#takesnapshotasyncoptions),
    * but uses WebGL context that is associated with the view on which the method is called.
    * @param options
    */

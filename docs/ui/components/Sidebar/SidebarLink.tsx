@@ -1,12 +1,11 @@
 import { css } from '@emotion/react';
 import { theme, typography, LinkBase } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { useRouter } from 'next/compat/router';
-import type { PropsWithChildren } from 'react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type PropsWithChildren } from 'react';
 
-import { stripVersionFromPath } from '~/common/utilities';
+import { isRouteActive } from '~/common/routes';
 import { NavigationRoute } from '~/types/common';
 
 type SidebarLinkProps = PropsWithChildren<{
@@ -29,22 +28,7 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
   const router = useRouter();
   const ref = useRef<HTMLAnchorElement>(null);
 
-  const checkSelection = () => {
-    // Special case for root url
-    if (info.name === 'Introduction') {
-      if (router?.asPath.match(/\/versions\/[\w.]+\/$/) || router?.asPath === '/versions/latest/') {
-        return true;
-      }
-    }
-
-    const linkUrl = stripVersionFromPath(info.as || info.href);
-    return (
-      linkUrl === stripVersionFromPath(router?.pathname) ||
-      linkUrl === stripVersionFromPath(router?.asPath)
-    );
-  };
-
-  const isSelected = checkSelection();
+  const isSelected = isRouteActive(info, router?.asPath, router?.pathname);
 
   useEffect(() => {
     if (isSelected && ref?.current && !isLinkInViewport(ref?.current)) {

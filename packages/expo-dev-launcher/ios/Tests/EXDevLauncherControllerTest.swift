@@ -1,10 +1,11 @@
 import Quick
 import Nimble
+import React
 
 @testable import EXDevLauncher
 
 class EXDevLauncherControllerTest: QuickSpec {
-  override func spec() {
+  override class func spec() {
     it("should return correct version") {
       let version = EXDevLauncherController.version()
 
@@ -20,9 +21,10 @@ class EXDevLauncherControllerTest: QuickSpec {
 
     it("extraModulesForBridge should return essential modules") {
       let module = EXDevLauncherController.sharedInstance()
-
-      let modules = module.extraModules(for: nil)!
-
+      let bridgeDelegate = MockBridgeDelegate()
+      let bridge = RCTBridge(delegate: bridgeDelegate)
+      waitBridgeReady(bridgeDelegate: bridgeDelegate)
+      let modules = module.extraModules(for: bridge!)
       expect(modules.first { $0 is RCTDevMenu }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
     }

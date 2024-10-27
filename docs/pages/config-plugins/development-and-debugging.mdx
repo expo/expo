@@ -4,8 +4,6 @@ description: Learn about development best practices and debugging techniques for
 sidebar_title: Development and debugging
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
-
 Developing a plugin is a great way to extend the Expo ecosystem. However, there are times you'll want to debug your plugin. This page provides some of the best practices for developing and debugging a plugin.
 
 ## Develop a plugin
@@ -62,17 +60,6 @@ Config types are exported directly from `expo/config`, so there is no need to in
 import { ExpoConfig, ConfigContext } from 'expo/config';
 ```
 
-<Collapsible summary="Using SDK 46 or lower?">
-
-For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
-
-{/* prettier-ignore */}
-```js
-const { /* @hide ...*//* @end */ } = require('@expo/config-plugins');
-```
-
-</Collapsible>
-
 ### Best practices for mods
 
 - Avoid regex: [static modification](#static-modification) is key. If you want to modify a value in an Android gradle file, consider using `gradle.properties`. If you want to modify some code in the Podfile, consider writing to JSON and having the Podfile read the static values.
@@ -98,7 +85,7 @@ In your monorepo's `packages/` folder, create a module, and [bootstrap a config 
 
 ### Manually run a plugin
 
-If you aren't comfortable with setting up a monorepo, you can try manually running a plugin:
+If you aren't comfortable setting up a monorepo, you can try manually running a plugin:
 
 - Run `npm pack` in the package with the config plugin
 - In your test project, run `npm install path/to/react-native-my-package-1.0.0.tgz`, this will add the package to your **package.json** `dependencies` object.
@@ -131,10 +118,6 @@ Here's an example of adding a `<meta-data android:name="..." android:value="..."
 ```ts my-config-plugin.ts
 import { AndroidConfig, ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
 import { ExpoConfig } from 'expo/config';
-
-// Use these imports in SDK 46 and lower
-// import { AndroidConfig, ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
-// import { ExpoConfig } from '@expo/config-types';
 
 // Using helpers keeps error messages unified and helps cut down on XML format changes.
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow } = AndroidConfig.Manifest;
@@ -177,10 +160,6 @@ Here's an example of adding a `GADApplicationIdentifier` to the **Info.plist**:
 ```ts my-config-plugin.ts
 import { ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
 
-// Use these imports in SDK 46 and lower
-// import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
-// import { ExpoConfig } from '@expo/config-types';
-
 // Pass `<string>` to specify that this plugin requires a string property.
 export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
   return withInfoPlist(config, config => {
@@ -193,14 +172,7 @@ export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
 ### Modify iOS Podfile
 
 The iOS **Podfile** is the config file for CocoaPods, the dependency manager on iOS. It is similar to **package.json** for iOS.
-The **Podfile** is a ruby file (application code), which means you **cannot** safely modify it from Expo config plugins and should opt for another approach, such as [Expo Autolinking](/modules/autolinking) hooks.
-
-Currently, we do have a configuration that interacts with the CocoaPods file though.
-
-Podfile configuration is often done with environment variables:
-
-- `process.env.EXPO_USE_SOURCE` when set to `1`, Expo modules will install source code instead of xcframeworks.
-- `process.env.CI` in some projects, when set to `0`, Flipper installation will be skipped.
+The **Podfile** is a Ruby file, which means you **cannot** safely modify it from Expo config plugins and should opt for another approach, such as [Expo Autolinking](/modules/autolinking) hooks.
 
 We do expose one mechanism for safely interacting with the Podfile, but it's very limited.
 The versioned [template Podfile](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum/ios/Podfile) is hard coded to read
@@ -213,9 +185,6 @@ This is used by [expo-build-properties](/versions/latest/sdk/build-properties) a
 
 ```ts my-config-plugin.ts
 import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
-
-// Use this import in SDK 46 and lower
-// import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
 
 // Keeping the name, and version in sync with it's package.
 const pkg = require('my-cool-plugin/package.json');
@@ -237,10 +206,10 @@ export default createRunOncePlugin(
 
 - **Instructions in your README**: If the plugin is tied to a React Native module, then you should document manual setup instructions for the package.
   If anything goes wrong with the plugin, users should still be able to manually add the package to their project.
-  Doing this often helps you to find ways to reduce the setup, which can lead to a simpler plugin.
+  Doing this often helps you find ways to reduce the setup, which can lead to a simpler plugin.
   - Document the available properties for the plugin, and specify if the plugin works without props.
-  - If you can make your plugin work after running prebuild multiple times, that’s a big plus! It can improve the developer experience to be able to run `npx expo prebuild` without the `--clean` flag to sync changes.
-- **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after “with”. For example, `withAndroidSplash`, `withIosSplash`.
+  - If you can make your plugin work after running prebuild multiple times, that's a big plus! It can improve the developer experience to be able to run `npx expo prebuild` without the `--clean` flag to sync changes.
+- **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after "with". For example, `withAndroidSplash`, `withIosSplash`.
   There is no universally agreed upon casing for `iOS` in camel cased identifiers, we prefer this style and suggest using it for your config plugins too.
 - **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts).
   Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the app config.
@@ -439,14 +408,13 @@ Introspection only supports a subset of modifiers:
 - `ios.expoPlist`
 - `ios.podfileProperties`
 
-> Introspection only works on safe modifiers (static files like JSON, XML, plist, properties), with the exception of `ios.xcodeproj` which often requires file system changes, making it non idempotent.
+> Introspection only works on safe modifiers (static files like JSON, XML, plist, properties), except `ios.xcodeproj` which often requires file system changes, making it non idempotent.
 
 Introspection works by creating custom base mods that work like the default base mods, except they don't write the `modResults` to disk at the end.
 Instead of persisting, they save the results to the app config under `_internal.modResults`, followed by the name of the mod
 such as the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
-As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app,
-so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
+As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
 {/* TODO: Link to VS Code extension after preview feature lands */}
 
@@ -663,30 +631,24 @@ This does come with a couple of caveats:
 
 1. Packages must export a plugin via **app.plugin.js**, this rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
 2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props then `expo-camera` would throw an error.
-3. Plugins can only be automatically added when the user's project uses a static app config (**app.json** and **app.config.json**).
-   If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
+3. Plugins can only be automatically added when the user's project uses a static app config (**app.json** and **app.config.json**). If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
 
-```
-Cannot automatically write to dynamic config at: app.config.js
-Please add the following to your app config
+   ```sh
+   Cannot automatically write to dynamic config at: app.config.js
+   Please add the following to your app config
 
-{
-  "plugins": [
-    "expo-camera"
-  ]
-}
-```
+     {
+       "plugins": [
+       "expo-camera"
+       ]
+     }
+   ```
 
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
 [cli-prebuild]: /more/expo-cli//#expo-prebuild
-[configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
 [source-template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
-[expo-beta-docs]: https://github.com/expo/expo/tree/main/guides/releasing/Release%20Workflow.mdx#stage-5---beta-release
 [vscode-expo]: https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools
 [ems-plugin]: https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin
-[xml2js]: https://www.npmjs.com/package/xml2js
-[expo-plist]: https://www.npmjs.com/package/@expo/plist
 [memfs]: https://www.npmjs.com/package/memfs
-[emc]: https://github.com/expo/expo/tree/main/packages/expo-modules-core
 [autolinking]: /more/glossary-of-terms#autolinking

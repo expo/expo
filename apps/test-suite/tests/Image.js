@@ -8,14 +8,60 @@ import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError } from './hel
 
 export const name = 'Image';
 
-const REMOTE_SOURCE = { uri: 'http://source.unsplash.com/random' };
+const REMOTE_SOURCE = {
+  uri: 'https://images.unsplash.com/photo-1701743805362-86796f50a0c2?w=1080',
+  blurhash: 'LPC6uxxa9GWB01WBs:R*?uayV@WB',
+};
 const NON_EXISTENT_SOURCE = { uri: 'file://non_existent_path.jpg' };
 const ANIMATED_IMAGE_SOURCE = {
   uri: 'https://media1.giphy.com/media/gZEBpuOkPuydi/giphy.gif?cid=ecf05e47fc23hje74g3ryyry6xnui81pej12o4eojtd9ruax&ep=v1_gifs_search&rid=giphy.gif&ct=g',
 };
 
 export async function test(t, { setPortalChild, cleanupPortal }) {
-  t.describe('Image', () => {
+  const throws = async (run) => {
+    let error = null;
+    try {
+      await run();
+    } catch (e) {
+      error = e;
+    }
+    t.expect(error).toBeTruthy();
+  };
+
+  // TODO: Remove the condition once this is implemented on other platforms
+  if (Platform.OS === 'ios' || Platform.OS === 'android') {
+    t.describe('Image', () => {
+      t.it('loads an image', async () => {
+        const image = await Image.loadAsync(REMOTE_SOURCE);
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+        t.expect(image.scale).toBe(1);
+        t.expect(image.isAnimated).toBe(false);
+        if (Platform.OS === 'ios') {
+          t.expect(image.mediaType).toBe('image/jpeg');
+        }
+      });
+
+      t.it('loads an animated image', async () => {
+        const image = await Image.loadAsync(ANIMATED_IMAGE_SOURCE);
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+        t.expect(image.scale).toBe(1);
+        t.expect(image.isAnimated).toBe(true);
+        if (Platform.OS === 'ios') {
+          t.expect(image.mediaType).toBe('image/gif');
+        }
+      });
+    });
+  }
+
+  t.describe('ImageView', () => {
     t.afterEach(async () => {
       await cleanupPortal();
     });
@@ -181,6 +227,33 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           t.expect(path).toBe(null);
         }
       });
+
+      t.it('prefetches an image with headers and resolves promise to true', async () => {
+        await Image.clearDiskCache();
+        const result = await Image.prefetch(REMOTE_SOURCE.uri, {
+          headers: {
+            Referer: 'https://expo.dev',
+          },
+        });
+        t.expect(result).toBe(true);
+
+        if (Platform.OS === 'android' || Platform.OS === 'ios') {
+          const path = await Image.getCachePathAsync(REMOTE_SOURCE.uri);
+          t.expect(typeof path).toBe('string');
+        }
+      });
     });
+
+    if (Platform.OS === 'ios') {
+      t.describe('generateBlurhashAsync', async () => {
+        t.it('returns a correct blurhash for url', async () => {
+          const result = await Image.generateBlurhashAsync(REMOTE_SOURCE.uri, [4, 3]);
+          t.expect(result).toBe(REMOTE_SOURCE.blurhash);
+        });
+        t.it('rejects on a missing url', async () => {
+          await throws(Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));
+        });
+      });
+    }
   });
 }

@@ -4,12 +4,13 @@ package expo.modules.sqlite
 
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
+import java.io.Closeable
 
-private typealias UpdateListener = (dbName: String, tableName: String, operationType: Int, rowID: Long) -> Unit
+private typealias UpdateListener = (databaseName: String, tableName: String, operationType: Int, rowID: Long) -> Unit
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-internal class NativeDatabaseBinding {
+internal class NativeDatabaseBinding : Closeable {
   @DoNotStrip
   private val mHybridData: HybridData
 
@@ -17,6 +18,10 @@ internal class NativeDatabaseBinding {
 
   init {
     mHybridData = initHybrid()
+  }
+
+  override fun close() {
+    mHybridData.resetNative()
   }
 
   /**
@@ -39,7 +44,7 @@ internal class NativeDatabaseBinding {
 
   external fun sqlite3_changes(): Int
   external fun sqlite3_close(): Int
-  external fun sqlite3_db_filename(dbName: String): String
+  external fun sqlite3_db_filename(databaseName: String): String
   external fun sqlite3_enable_load_extension(onoff: Int): Int
   external fun sqlite3_exec(source: String): Int
   external fun sqlite3_get_autocommit(): Int
@@ -47,6 +52,8 @@ internal class NativeDatabaseBinding {
   external fun sqlite3_load_extension(libPath: String, entryProc: String): Int
   external fun sqlite3_open(dbPath: String): Int
   external fun sqlite3_prepare_v2(source: String, statement: NativeStatementBinding): Int
+  external fun sqlite3_serialize(databaseName: String): ByteArray
+  external fun sqlite3_deserialize(databaseName: String, serializedData: ByteArray): Int
   private external fun sqlite3_update_hook(enabled: Boolean) // Keeps it private internally and uses `enableUpdateHook` publicly
 
   external fun convertSqlLiteErrorToString(): String
@@ -59,8 +66,8 @@ internal class NativeDatabaseBinding {
 
   @Suppress("unused")
   @DoNotStrip
-  private fun onUpdate(action: Int, dbName: String, tableName: String, rowId: Long) {
-    mUpdateListener?.invoke(dbName, tableName, action, rowId)
+  private fun onUpdate(action: Int, databaseName: String, tableName: String, rowId: Long) {
+    mUpdateListener?.invoke(databaseName, tableName, action, rowId)
   }
 
   // endregion

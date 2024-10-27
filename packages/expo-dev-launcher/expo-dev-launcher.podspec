@@ -2,6 +2,15 @@ require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
+reactNativeVersion = '0.0.0'
+begin
+  reactNativeVersion = `node --print "require('react-native/package.json').version"`
+rescue
+  reactNativeVersion = '0.0.0'
+end
+
+reactNativeTargetVersion = reactNativeVersion.split('.')[1].to_i
+
 Pod::Spec.new do |s|
   s.name           = 'expo-dev-launcher'
   s.version        = package['version']
@@ -10,7 +19,9 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.4'
+  s.platforms      = {
+    :ios => '15.1'
+  }
   s.swift_version  = '5.2'
   s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }
   s.static_framework = true
@@ -30,11 +41,14 @@ Pod::Spec.new do |s|
 
   new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
-  other_c_flags = '$(inherited)'
+  other_c_flags = "$(inherited) -DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
   dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
   if dev_launcher_url != ""
     escaped_dev_launcher_url = Shellwords.escape(dev_launcher_url).gsub('/','\\/')
     other_c_flags += " -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
+  end
+  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
+    other_c_flags += ' -DUSE_HERMES'
   end
   other_swift_flags = "$(inherited)"
   unless ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == 'false'
@@ -60,11 +74,11 @@ Pod::Spec.new do |s|
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'OTHER_CFLAGS[config=Debug]' => other_c_flags,
-    'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags,
+    'OTHER_CFLAGS[config=*Debug*]' => other_c_flags,
+    'OTHER_SWIFT_FLAGS[config=*Debug*]' => other_swift_flags,
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
     'FRAMEWORK_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/RNReanimated"',
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
   }
 
   s.user_target_xcconfig = {
@@ -78,6 +92,7 @@ Pod::Spec.new do |s|
   s.dependency "EXUpdatesInterface"
   s.dependency "expo-dev-menu"
   s.dependency "ExpoModulesCore"
+  add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
   unless defined?(install_modules_dependencies)
     # `install_modules_dependencies` is defined from react_native_pods.rb.
@@ -88,7 +103,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'Unsafe' do |unsafe|
     unsafe.source_files = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
-    unsafe.compiler_flags = '-x objective-c++ -std=c++1z -fno-objc-arc' # Disable Automatic Reference Counting
+    unsafe.compiler_flags = '-x objective-c++ -std=c++20 -fno-objc-arc' # Disable Automatic Reference Counting
   end
 
   s.subspec 'Main' do |main|

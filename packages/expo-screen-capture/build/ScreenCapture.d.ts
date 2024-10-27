@@ -1,9 +1,9 @@
-import { Subscription } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
 /**
  * Returns whether the Screen Capture API is available on the current device.
  *
  * @returns A promise that resolves to a `boolean` indicating whether the Screen Capture API is available on the current
- * device. Currently, this resolves to `true` on Android and iOS only.
+ * device.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 /**
@@ -16,7 +16,9 @@ export declare function isAvailableAsync(): Promise<boolean>;
  * @param key Optional. If provided, this will help prevent multiple instances of the `preventScreenCaptureAsync`
  * and `allowScreenCaptureAsync` methods (and `usePreventScreenCapture` hook) from conflicting with each other.
  * When using multiple keys, you'll have to re-allow each one in order to re-enable screen capturing.
- * Defaults to `'default'`.
+ *
+ * @platform android
+ * @platform ios 11+
  */
 export declare function preventScreenCaptureAsync(key?: string): Promise<void>;
 /**
@@ -26,16 +28,16 @@ export declare function preventScreenCaptureAsync(key?: string): Promise<void>;
  * @param key This will prevent multiple instances of the `preventScreenCaptureAsync` and
  * `allowScreenCaptureAsync` methods from conflicting with each other. If provided, the value must
  * be the same as the key passed to `preventScreenCaptureAsync` in order to re-enable screen
- * capturing. Defaults to 'default'.
+ * capturing.
  */
 export declare function allowScreenCaptureAsync(key?: string): Promise<void>;
 /**
  * A React hook to prevent screen capturing for as long as the owner component is mounted.
  *
- * @param key. If provided, this will prevent multiple instances of this hook or the
+ * @param key If provided, this will prevent multiple instances of this hook or the
  * `preventScreenCaptureAsync` and `allowScreenCaptureAsync` methods from conflicting with each other.
  * This argument is useful if you have multiple active components using the `allowScreenCaptureAsync`
- * hook. Defaults to `'default'`.
+ * hook.
  */
 export declare function usePreventScreenCapture(key?: string): void;
 /**
@@ -49,12 +51,14 @@ export declare function usePreventScreenCapture(key?: string): void;
  * @return A `Subscription` object that you can use to unregister the listener, either by calling
  * `remove()` or passing it to `removeScreenshotListener`.
  */
-export declare function addScreenshotListener(listener: () => void): Subscription;
+export declare function addScreenshotListener(listener: () => void): EventSubscription;
 /**
  * Removes the subscription you provide, so that you are no longer listening for screenshots.
+ * You can also call `remove()` on that `Subscription` object.
  *
- * If you prefer, you can also call `remove()` on that `Subscription` object, for example:
+ * @param subscription Subscription returned by `addScreenshotListener`.
  *
+ * @example
  * ```ts
  * let mySubscription = addScreenshotListener(() => {
  *   console.log("You took a screenshot!");
@@ -64,9 +68,29 @@ export declare function addScreenshotListener(listener: () => void): Subscriptio
  * // OR
  * removeScreenshotListener(mySubscription);
  * ```
- *
- * @param subscription Subscription returned by `addScreenshotListener`.
  */
-export declare function removeScreenshotListener(subscription: Subscription): void;
-export { Subscription };
+export declare function removeScreenshotListener(subscription: EventSubscription): void;
+/**
+ * Checks user's permissions for detecting when a screenshot is taken.
+ * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.
+ * @return A promise that resolves to a [`PermissionResponse`](#permissionresponse) object.
+ */
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Asks the user to grant permissions necessary for detecting when a screenshot is taken.
+ * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.
+ * @return A promise that resolves to a [`PermissionResponse`](#permissionresponse) object.
+ * */
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions necessary for detecting when a screenshot is taken.
+ * This uses both [`requestPermissionsAsync`](#screencapturerequestpermissionsasync) and [`getPermissionsAsync`](#screencapturegetpermissionsasync) to interact with the permissions.
+ *
+ * @example
+ * ```js
+ * const [status, requestPermission] = ScreenCapture.usePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export { EventSubscription as Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions, };
 //# sourceMappingURL=ScreenCapture.d.ts.map

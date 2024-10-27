@@ -2,11 +2,11 @@ package expo.modules.taskManager;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.LifecycleEventListener;
-import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
 
 import java.lang.ref.WeakReference;
@@ -22,11 +22,11 @@ import expo.modules.interfaces.taskManager.TaskServiceInterface;
 
 public class TaskManagerInternalModule implements InternalModule, TaskManagerInterface, LifecycleEventListener {
   private UIManager mUIManager;
-  private EventEmitter mEventEmitter;
   private ConstantsInterface mConstants;
   private TaskServiceInterface mTaskService;
   private WeakReference<Context> mContextRef;
   private List<Bundle> mEventsQueue = new ArrayList<>();
+  private EmitEventWrapper mEmitEventWrapper;
 
   public TaskManagerInternalModule(Context context) {
     mContextRef = new WeakReference<>(context);
@@ -39,13 +39,16 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     return Collections.singletonList(TaskManagerInterface.class);
   }
 
+  public void setEmitEventWrapper(EmitEventWrapper emitEventWrapper) {
+    mEmitEventWrapper = emitEventWrapper;
+  }
+
   //endregion
   //region ModuleRegistryConsumer
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mUIManager = moduleRegistry.getModule(UIManager.class);
-    mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mConstants = moduleRegistry.getModule(ConstantsInterface.class);
     mTaskService = moduleRegistry.getSingletonModule("TaskService", TaskServiceInterface.class);
 
@@ -83,7 +86,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
       mEventsQueue.add(body);
     } else {
       // Manager is already being observed by JS app, so we can execute the event immediately.
-      mEventEmitter.emit(TaskManagerInterface.EVENT_NAME, body);
+      emitEvent(body);
     }
   }
 
@@ -100,7 +103,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
     // Execute any events that came before this call.
     if (mEventsQueue != null) {
       for (Bundle body : mEventsQueue) {
-        mEventEmitter.emit(TaskManagerInterface.EVENT_NAME, body);
+        emitEvent(body);
       }
       mEventsQueue = null;
     }
@@ -180,6 +183,14 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   private void checkTaskService() throws IllegalStateException {
     if (mTaskService == null) {
       throw new IllegalStateException("Unable to find TaskService singleton module in module registry.");
+    }
+  }
+
+  private void emitEvent(Bundle body) {
+    if (mEmitEventWrapper != null) {
+      mEmitEventWrapper.emit(TaskManagerInterface.EVENT_NAME, body);
+    } else {
+      Log.e("ExpoTaskManager", "EmitEventWrapper is not set. Failed to emit the TaskManager Event.");
     }
   }
 

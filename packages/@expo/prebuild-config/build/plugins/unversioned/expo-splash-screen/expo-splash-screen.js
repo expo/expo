@@ -25,9 +25,8 @@ function _createLegacyPlugin() {
   };
   return data;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-splash-screen',
   fallback: [_withAndroidSplashScreen().withAndroidSplashScreen, _withIosSplashScreen().withIosSplashScreen]
 });
-exports.default = _default;
 //# sourceMappingURL=expo-splash-screen.js.map

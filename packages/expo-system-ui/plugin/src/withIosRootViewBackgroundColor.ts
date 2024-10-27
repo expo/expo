@@ -1,5 +1,5 @@
 // @ts-ignore: uses flow
-import normalizeColor from '@react-native/normalize-color';
+import normalizeColor from '@react-native/normalize-colors';
 import { ExpoConfig } from 'expo/config';
 import { ConfigPlugin, InfoPlist, withInfoPlist } from 'expo/config-plugins';
 

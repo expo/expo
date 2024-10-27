@@ -26,14 +26,18 @@ export type PluginConfigOptionsByPlatform = {
  */
 export type PluginConfigOptions = {
   /**
-   * **Experimental:** Determines whether to launch the most recently opened project or navigate to the launcher screen.
+   * Determines whether to launch the most recently opened project or navigate to the launcher screen.
    *
    * - `'most-recent'` - Attempt to launch directly into a previously opened project and if unable to connect,
    * fall back to the launcher screen.
    *
    * - `'launcher'` - Opens the launcher screen.
    *
-   * @default 'launcher'
+   * @default 'most-recent'
+   */
+  launchMode?: 'most-recent' | 'launcher';
+  /**
+   * @deprecated use the `launchMode` property instead
    */
   launchModeExperimental?: 'most-recent' | 'launcher';
 };
@@ -41,6 +45,11 @@ export type PluginConfigOptions = {
 const schema: JSONSchemaType<PluginConfigType> = {
   type: 'object',
   properties: {
+    launchMode: {
+      type: 'string',
+      enum: ['most-recent', 'launcher'],
+      nullable: true,
+    },
     launchModeExperimental: {
       type: 'string',
       enum: ['most-recent', 'launcher'],
@@ -49,6 +58,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
     android: {
       type: 'object',
       properties: {
+        launchMode: {
+          type: 'string',
+          enum: ['most-recent', 'launcher'],
+          nullable: true,
+        },
         launchModeExperimental: {
           type: 'string',
           enum: ['most-recent', 'launcher'],
@@ -60,6 +74,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
     ios: {
       type: 'object',
       properties: {
+        launchMode: {
+          type: 'string',
+          enum: ['most-recent', 'launcher'],
+          nullable: true,
+        },
         launchModeExperimental: {
           type: 'string',
           enum: ['most-recent', 'launcher'],
@@ -80,5 +99,23 @@ export function validateConfig<T>(config: T): PluginConfigType {
     throw new Error('Invalid expo-dev-launcher config: ' + JSON.stringify(validate.errors));
   }
 
+  if (
+    config.launchModeExperimental ||
+    config.ios?.launchModeExperimental ||
+    config.android?.launchModeExperimental
+  ) {
+    warnOnce(
+      'The `launchModeExperimental` property of expo-dev-launcher config plugin is deprecated and will be removed in a future SDK release. Use `launchMode` instead.'
+    );
+  }
+
   return config;
+}
+
+const warnMap: Record<string, boolean> = {};
+function warnOnce(message: string) {
+  if (!warnMap[message]) {
+    warnMap[message] = true;
+    console.warn(message);
+  }
 }

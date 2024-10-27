@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.respond = exports.convertRequest = exports.convertHeaders = exports.createRequestHandler = void 0;
-const node_1 = require("@remix-run/node");
+const stream_1 = require("@remix-run/node/dist/stream");
 const __1 = require("..");
-const environment_1 = require("../environment");
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
@@ -27,7 +26,7 @@ function createRequestHandler({ build }, setup) {
 }
 exports.createRequestHandler = createRequestHandler;
 function convertHeaders(requestHeaders) {
-    const headers = new node_1.Headers();
+    const headers = new Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
         if (values) {
             if (Array.isArray(values)) {
@@ -46,7 +45,7 @@ exports.convertHeaders = convertHeaders;
 function convertRequest(req, res) {
     const url = new URL(`${req.protocol}://${req.get('host')}${req.url}`);
     // Abort action/loaders once we can no longer write a response
-    const controller = new node_1.AbortController();
+    const controller = new AbortController();
     res.on('close', () => controller.abort());
     const init = {
         method: req.method,
@@ -56,21 +55,20 @@ function convertRequest(req, res) {
         signal: controller.signal,
     };
     if (req.method !== 'GET' && req.method !== 'HEAD') {
-        init.body = req;
+        init.body = (0, stream_1.createReadableStreamFromReadable)(req);
+        init.duplex = 'half';
     }
-    return new environment_1.ExpoRequest(url.href, init);
+    return new Request(url.href, init);
 }
 exports.convertRequest = convertRequest;
 async function respond(res, expoRes) {
     res.statusMessage = expoRes.statusText;
     res.status(expoRes.status);
-    for (const [key, values] of Object.entries(expoRes.headers.raw())) {
-        for (const value of values) {
-            res.append(key, value);
-        }
+    for (const [key, value] of expoRes.headers.entries()) {
+        res.append(key, value);
     }
     if (expoRes.body) {
-        await (0, node_1.writeReadableStreamToWritable)(expoRes.body, res);
+        await (0, stream_1.writeReadableStreamToWritable)(expoRes.body, res);
     }
     else {
         res.end();

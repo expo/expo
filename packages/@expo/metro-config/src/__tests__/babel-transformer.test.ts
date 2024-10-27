@@ -13,15 +13,18 @@ jest.mock('../babel-core', () => {
   return {
     ...babel,
     transformFromAstSync: jest.fn((...props) => babel.transformFromAstSync(...props)),
-    parseSync: jest.fn((...props) => babel.parseSync(...props)),
+    transformSync: jest.fn((...props) => babel.transformSync(...props)),
   };
 });
+const originalWarn = console.warn;
 
 afterEach(() => {
   vol.reset();
+  console.warn = originalWarn;
 });
 
 it(`passes the environment as isServer to the babel preset`, () => {
+  console.warn = jest.fn();
   vol.fromJSON({}, '/');
 
   const fixture = `import { Platform } from 'react-native';
@@ -33,6 +36,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
   const results = transformer.transform({
     filename: 'foo.js',
     options: {
+      globalPrefix: '',
       enableBabelRuntime: true,
       enableBabelRCLookup: true,
       dev: true,
@@ -50,65 +54,100 @@ it(`passes the environment as isServer to the babel preset`, () => {
     plugins: [],
   });
 
-  expect(generate(results.ast).code).toMatchInlineSnapshot(`
-    "Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-    exports.default = App;
-    var _reactNative = require("react-native");
-    var _jsxDevRuntime = require("react/jsx-dev-runtime");
-    var _jsxFileName = "/foo.js";
-    function App() {
-      return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)("div", {
-        children: "Hello"
-      }, void 0, false, {
-        fileName: _jsxFileName,
-        lineNumber: 4,
-        columnNumber: 16
-      }, this);
-    }
-    _c = App;
-    var _c;
-    $RefreshReg$(_c, "App");"
-  `);
+  expect(generate(results.ast).code).toMatchSnapshot();
 
-  expect(babel.parseSync).toBeCalledWith(
-    fixture,
-    expect.objectContaining({
-      ast: true,
-      babelrc: true,
-      caller: {
-        // HERE IS THE MAGIC
-        isServer: true,
-        isDev: true,
-        bundler: 'metro',
-        name: 'metro',
-        platform: 'ios',
-        baseUrl: '',
-        projectRoot: expect.any(String),
-      },
-      cloneInputAst: false,
-      code: false,
-      cwd: '/',
-      extends: undefined,
-      filename: 'foo.js',
-      highlightCode: true,
-      presets: [
-        [
-          expect.anything(),
-          {
-            native: {
-              dev: true,
-              enableBabelRuntime: true,
-            },
-            web: {
-              dev: true,
-              enableBabelRuntime: true,
-            },
-          },
-        ],
-      ],
-      sourceType: 'unambiguous',
-    })
-  );
+  expect(babel.transformSync).toBeCalledWith(fixture, {
+    ast: true,
+    babelrc: true,
+    caller: {
+      // HERE IS THE MAGIC
+      isReactServer: false,
+      isServer: true,
+      isDev: true,
+      bundler: 'metro',
+      engine: undefined,
+      name: 'metro',
+      platform: 'ios',
+      baseUrl: '',
+      isNodeModule: false,
+      isHMREnabled: true,
+      preserveEnvVars: undefined,
+      projectRoot: expect.any(String),
+      routerRoot: 'app',
+    },
+    cloneInputAst: false,
+    code: false,
+    cwd: '/',
+    extends: undefined,
+    filename: 'foo.js',
+    highlightCode: true,
+    presets: [expect.anything()],
+    plugins: [],
+    sourceType: 'unambiguous',
+  });
+});
+
+it(`passes the environment as isReactServer to the babel preset`, () => {
+  console.warn = jest.fn();
+  vol.fromJSON({}, '/');
+
+  const fixture = `import { Platform } from 'react-native';
+    
+    export default function App() {
+        return <div>Hello</div>
+    }`;
+
+  const results = transformer.transform({
+    filename: 'foo.js',
+    options: {
+      globalPrefix: '',
+      enableBabelRuntime: true,
+      enableBabelRCLookup: true,
+      dev: true,
+      projectRoot: '/',
+      hot: true,
+      inlineRequires: false,
+      minify: false,
+      platform: 'ios',
+      publicPath: '/',
+      customTransformOptions: Object.create({
+        environment: 'react-server',
+      }),
+    },
+    src: fixture,
+    plugins: [],
+  });
+
+  expect(console.warn).toBeCalledTimes(0);
+  expect(generate(results.ast).code).toMatchSnapshot();
+
+  expect(babel.transformSync).toBeCalledWith(fixture, {
+    ast: true,
+    babelrc: true,
+    caller: expect.objectContaining({
+      // HERE IS THE MAGIC
+      isReactServer: true,
+      isServer: true,
+      isDev: true,
+      bundler: 'metro',
+      engine: undefined,
+      name: 'metro',
+      platform: 'ios',
+      baseUrl: '',
+      isNodeModule: false,
+      isHMREnabled: true,
+      preserveEnvVars: undefined,
+      projectRoot: expect.any(String),
+      routerRoot: 'app',
+    }),
+    cloneInputAst: false,
+    code: false,
+    cwd: '/',
+    extends: undefined,
+    filename: 'foo.js',
+    highlightCode: true,
+    presets: [expect.anything()],
+    plugins: [],
+    sourceType: 'unambiguous',
+  });
 });

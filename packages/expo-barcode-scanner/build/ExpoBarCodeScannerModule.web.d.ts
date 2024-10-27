@@ -1,6 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
 declare const _default: {
-    readonly name: string;
     readonly BarCodeType: {
         code39mod43: string;
         code138: string;

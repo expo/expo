@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as React from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
@@ -24,7 +24,7 @@ export default function ContactsListItem(props: {
           {subtitle && <Text style={styles.link}>{subtitle}</Text>}
         </View>
         {isMe && <Text style={styles.subtitle}>me</Text>}
-        <Ionicons size={24} color={Colors.tabIconDefault} name="ios-arrow-forward" />
+        <Ionicons size={24} color={Colors.tabIconDefault} name="arrow-forward" />
       </View>
     </TouchableHighlight>
   );

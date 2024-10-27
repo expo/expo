@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform, Subscription } from 'expo-modules-core';
+import { Platform, type EventSubscription } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 
 import { Localization, Calendar, Locale, CalendarIdentifier } from './Localization.types';
@@ -38,21 +38,21 @@ const USES_FAHRENHEIT = [
   'KY',
 ];
 
-export function addLocaleListener(listener: (event) => void): Subscription {
+export function addLocaleListener(listener: (event) => void): EventSubscription {
   addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
   return {
     remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
   };
 }
 
-export function addCalendarListener(listener: (event) => void): Subscription {
+export function addCalendarListener(listener: (event) => void): EventSubscription {
   addEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener);
   return {
     remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
   };
 }
 
-export function removeSubscription(subscription: Subscription) {
+export function removeSubscription(subscription: EventSubscription) {
   subscription.remove();
 }
 
@@ -129,18 +129,33 @@ export default {
     return locales?.map((languageTag) => {
       // TextInfo is an experimental API that is not available in all browsers.
       // We might want to consider using a locale lookup table instead.
-      const locale =
-        typeof Intl !== 'undefined'
-          ? (new Intl.Locale(languageTag) as unknown as ExtendedLocale)
-          : { region: null, textInfo: null, language: null };
-      const { region, textInfo, language } = locale;
+
+      let locale = {} as ExtendedLocale;
 
       // Properties added only for compatibility with native, use `toLocaleString` instead.
-      const digitGroupingSeparator =
-        Array.from((10000).toLocaleString(languageTag)).filter((c) => c > '9' || c < '0')[0] ||
-        null; // using 1e5 instead of 1e4 since for some locales (like pl-PL) 1e4 does not use digit grouping
-      const decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
-      const temperatureUnit = region ? regionToTemperatureUnit(region) : null;
+      let digitGroupingSeparator: string | null = null;
+      let decimalSeparator: string | null = null;
+      let temperatureUnit: 'fahrenheit' | 'celsius' | null = null;
+
+      // Gracefully handle language codes like `en-GB-oed` which is unsupported
+      // but is otherwise a valid language tag (grandfathered)
+      try {
+        digitGroupingSeparator =
+          Array.from((10000).toLocaleString(languageTag)).filter((c) => c > '9' || c < '0')[0] ||
+          null; // using 1e5 instead of 1e4 since for some locales (like pl-PL) 1e4 does not use digit grouping
+
+        decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
+
+        if (typeof Intl !== 'undefined') {
+          locale = new Intl.Locale(languageTag) as unknown as ExtendedLocale;
+        }
+      } catch {}
+
+      const { region, textInfo, language } = locale;
+
+      if (region) {
+        temperatureUnit = regionToTemperatureUnit(region);
+      }
 
       return {
         languageTag,
@@ -151,7 +166,11 @@ export default {
         measurementSystem: null,
         currencyCode: null,
         currencySymbol: null,
+        langageCurrencyCode: null,
+        langageCurrencySymbol: null,
+        // On web, we don't have a way to get the region code, except from the language tag. `regionCode` and `languageRegionCode` are the same.
         regionCode: region || null,
+        languageRegionCode: region || null,
         temperatureUnit,
       };
     });

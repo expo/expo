@@ -4,10 +4,12 @@ description: Learn how to install and share the development with your team or ru
 sidebar_title: Share with your team
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 Android and iOS both offer ways to install a build of your application directly on devices. This gives you full control of putting specific builds on devices, allowing you to iterate quickly and have multiple builds of your application available for review at the same time. You can also share it with your team or run it on multiple test devices.
 
@@ -15,7 +17,7 @@ Android and iOS both offer ways to install a build of your application directly 
 
 When a development build is ready, a shareable URL is generated for your build with instructions on how to get it up and running. You can use this URL with a teammate or send it to your test device to install the build. The URL generated is unique to the build for your project.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An example of shareable development build URL after the Android internal distribution build is ready."
   src="/static/images/share-dev-build/shareable-url.png"
 />
@@ -26,10 +28,18 @@ When a development build is ready, a shareable URL is generated for your build w
 
 You can also direct your teammate to the build page in the Expo dashboard. From there, they can download the build artifact directly on their device.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="An example of shareable development build URL from Expo dashboard."
   src="/static/images/share-dev-build/expo-dashboard.png"
 />
+
+### Use EAS CLI
+
+Your teammate can also download and install the development build using EAS CLI. They have to make sure that they are signed from the Expo account associated with the development build and then can run the following command:
+
+<Terminal cmd={['$ eas build:run --profile development']} />
+
+If the profile name for the development build is different from `development`, use it instead with `--profile`.
 
 ### iOS-only instructions
 
@@ -56,12 +66,5 @@ You can use `eas build:resign` to codesign an existing **.ipa** for iOS to a new
   title="Sharing pre-release versions of your app"
   description="Learn more about sharing pre-release versions of your app."
   href="/guides/sharing-preview-releases"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Tools, workflows and extensions"
-  description="Learn more about different tools, workflows and extensions available when working with development builds."
-  href="/develop/development-builds/development-workflows/"
   Icon={BookOpen02Icon}
 />

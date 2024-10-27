@@ -22,8 +22,8 @@ afterEach(() => {
 it('loads a bundle', async () => {
   process.env.NODE_ENV = 'development';
   await loadBundleAsync('/Second.bundle?modulesOnly=true');
-  expect(LoadingView.showMessage).toBeCalledWith('Downloading...', 'load');
-  expect(LoadingView.hide).toBeCalledWith();
+  expect(LoadingView.showMessage).not.toBeCalled();
+  expect(LoadingView.hide).not.toBeCalled();
   const url = `/Second.bundle?modulesOnly=true`;
   expect(HMRClient.registerBundle).toBeCalledWith(url);
   expect(fetchThenEvalAsync).toBeCalledWith(url);

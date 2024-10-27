@@ -2,12 +2,10 @@ import { getBareExtensions } from '@expo/config/paths';
 import { vol } from 'memfs';
 import { ConfigT } from 'metro-config';
 import { CustomResolutionContext } from 'metro-resolver/src';
+import assert from 'node:assert';
 
-import {
-  getNodejsExtensions,
-  shouldAliasAssetRegistryForWeb,
-  withExtendedResolver,
-} from '../withMetroMultiPlatform';
+import { shouldCreateVirtualCanary, shouldCreateVirtualShim } from '../externals';
+import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => config as any;
 
@@ -27,8 +25,41 @@ jest.mock('metro-resolver', () => {
   };
 });
 
+jest.mock('../externals', () => ({
+  ...jest.requireActual('../externals'),
+  shouldCreateVirtualCanary: jest.fn(() => false),
+  shouldCreateVirtualShim: jest.fn(() => false),
+}));
+
 function getDefaultRequestContext(): CustomResolutionContext {
+  return getResolverContext();
+}
+
+function getMetroBundlerGetter() {
+  return jest.fn(() => {
+    const transformFile = jest.fn();
+    // @ts-expect-error
+    transformFile.__patched = true;
+    return {
+      hasVirtualModule: jest.fn((path) => false),
+      setVirtualModule: jest.fn(),
+      transformFile,
+    };
+  });
+}
+
+const expectVirtual = (result: import('metro-resolver').Resolution, name: string) => {
+  expect(result.type).toBe('sourceFile');
+  assert(result.type === 'sourceFile');
+  assert(/^\0/.test(result.filePath), 'Virtual files must start with null byte: \\0');
+  expect(result.filePath).toBe(name);
+};
+
+function getResolverContext(
+  context: Partial<CustomResolutionContext> = {}
+): CustomResolutionContext {
   return {
+    dev: true,
     extraNodeModules: {},
     mainFields: ['react-native', 'browser', 'main'],
     nodeModulesPaths: ['/node_modules'],
@@ -36,6 +67,26 @@ function getDefaultRequestContext(): CustomResolutionContext {
     sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
     customResolverOptions: {},
     originModulePath: '/index.js',
+    ...context,
+  } as any;
+}
+function getNodeResolverContext({
+  customResolverOptions,
+  ...context
+}: Partial<CustomResolutionContext> = {}): CustomResolutionContext {
+  return {
+    dev: true,
+    extraNodeModules: {},
+    mainFields: ['react-native', 'browser', 'main'],
+    nodeModulesPaths: ['/node_modules'],
+    preferNativePlatform: true,
+    sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
+    customResolverOptions: {
+      environment: 'node',
+      ...(customResolverOptions || {}),
+    },
+    originModulePath: '/index.js',
+    ...context,
   } as any;
 }
 
@@ -60,9 +111,9 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: null,
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'ios';
@@ -79,7 +130,6 @@ describe(withExtendedResolver, () => {
         sourceExts: ['mjs', 'ts', 'tsx', 'js', 'jsx', 'json', 'css'],
         customResolverOptions: {},
         originModulePath: expect.anything(),
-        getPackageMainPath: expect.any(Function),
       }),
       'react-native',
       platform
@@ -90,7 +140,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
       isTsconfigPathsEnabled: true,
     });
@@ -100,23 +149,49 @@ describe(withExtendedResolver, () => {
     modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toBeCalledTimes(1);
-    expect(getResolveFunc()).toBeCalledWith(
+
+    expect(getResolveFunc()).toHaveBeenNthCalledWith(
+      1,
       expect.objectContaining({
-        nodeModulesPaths: ['/node_modules', '/src'],
         extraNodeModules: {},
         mainFields: ['react-native', 'browser', 'main'],
         preferNativePlatform: true,
       }),
-      'react-native',
+      '/src/react-native',
       platform
     );
   });
 
-  it(`resolves to react-native-web on web`, async () => {
+  it(`resolves against tsconfig baseUrl without paths`, async () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
+      tsconfig: { baseUrl: '/src' },
+      isTsconfigPathsEnabled: true,
+    });
+
+    const platform = 'ios';
+
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+
+    expect(getResolveFunc()).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        extraNodeModules: {},
+        mainFields: ['react-native', 'browser', 'main'],
+        preferNativePlatform: true,
+      }),
+      '/src/react-native',
+      platform
+    );
+  });
+
+  it(`does not alias react-native-web in initial resolution with baseUrl on web`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
       tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
       isTsconfigPathsEnabled: true,
     });
@@ -128,16 +203,237 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
-        nodeModulesPaths: ['/node_modules', '/src'],
-        extraNodeModules: {
-          'react-native': expect.stringContaining('node_modules/react-native-web'),
-        },
+        mainFields: ['browser', 'module', 'main'],
+        preferNativePlatform: false,
+      }),
+      '/src/react-native',
+      platform
+    );
+  });
+
+  it(`resolves to react-native-web on web`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: {},
+      isTsconfigPathsEnabled: false,
+    });
+
+    const platform = 'web';
+
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      expect.objectContaining({
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
       }),
       'react-native-web',
       platform
     );
+  });
+
+  it(`resolves to expo-asset/build/resolveAssetSource on web`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: {},
+      isTsconfigPathsEnabled: false,
+    });
+
+    const platform = 'web';
+
+    modified.resolver.resolveRequest!(
+      getDefaultRequestContext(),
+      'react-native/Libraries/Image/resolveAssetSource',
+      platform
+    );
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      expect.objectContaining({
+        mainFields: ['browser', 'module', 'main'],
+        preferNativePlatform: false,
+      }),
+      'expo-asset/build/resolveAssetSource',
+      platform
+    );
+  });
+
+  describe('development aliases', () => {
+    [
+      [
+        'ios',
+        '/Users/path/to/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js',
+        '../implementations/ReactNativeRenderer-prod',
+      ],
+      ['web', '/Users/path/to/expo/node_modules/react/index.js', './cjs/react.production.min.js'],
+    ].forEach(([platform, originModulePath, targetModulePath]) => {
+      it(`resolves production react files to empty when bundling for development: (platform: ${platform}, import: ${targetModulePath})`, async () => {
+        mockMinFs();
+
+        const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+          tsconfig: {},
+          isTsconfigPathsEnabled: false,
+        });
+
+        modified.resolver.resolveRequest!(
+          {
+            ...getDefaultRequestContext(),
+            dev: true,
+            originModulePath,
+          },
+          targetModulePath,
+          platform
+        );
+
+        expect(getResolveFunc()).not.toBeCalled();
+      });
+    });
+
+    it(`does not mock native files on web`, async () => {
+      mockMinFs();
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+      });
+
+      modified.resolver.resolveRequest!(
+        {
+          ...getDefaultRequestContext(),
+          dev: false,
+          originModulePath:
+            '/Users/path/to/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js',
+        },
+        '../implementations/ReactNativeRenderer-prod.js',
+        'web'
+      );
+
+      expect(getResolveFunc()).toBeCalled();
+    });
+
+    it(`resolves production react files normally when bundling for production`, async () => {
+      mockMinFs();
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+      });
+
+      modified.resolver.resolveRequest!(
+        {
+          ...getDefaultRequestContext(),
+          dev: false,
+          originModulePath: '/Users/path/to/expo/node_modules/react/index.js',
+        },
+        './cjs/react.production.min.js',
+        'web'
+      );
+
+      expect(getResolveFunc()).toBeCalled();
+    });
+  });
+
+  it(`resolves to @expo/vector-icons on any platform`, async () => {
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+        'node_modules/@expo/vector-icons/index.js': '',
+      },
+      '/'
+    );
+
+    ['ios', 'web'].forEach((platform) => {
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+      });
+
+      modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        'react-native-vector-icons',
+        platform
+      );
+
+      expect(getResolveFunc()).toBeCalledWith(expect.anything(), '@expo/vector-icons', platform);
+    });
+  });
+
+  it(`resolves nested imports to @expo/vector-icons on any platform`, async () => {
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+        'node_modules/@expo/vector-icons/index.js': '',
+      },
+      '/'
+    );
+
+    ['ios', 'web'].forEach((platform) => {
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+      });
+
+      modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        'react-native-vector-icons/FontAwesome',
+        platform
+      );
+
+      expect(getResolveFunc()).toBeCalledWith(
+        expect.anything(),
+        '@expo/vector-icons/FontAwesome',
+        platform
+      );
+    });
+  });
+
+  it(`does not alias react-native-vector-icons if @expo/vector-icons is not installed`, async () => {
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+      },
+      '/'
+    );
+
+    ['ios', 'web'].forEach((platform) => {
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: true,
+      });
+
+      modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        'react-native-vector-icons',
+        platform
+      );
+
+      expect(getResolveFunc()).toBeCalledWith(
+        expect.anything(),
+        'react-native-vector-icons',
+        platform
+      );
+    });
+  });
+
+  it(`allows importing @expo/vector-icons`, async () => {
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+        'node_modules/@expo/vector-icons/index.js': '',
+      },
+      '/'
+    );
+    const platform = 'ios';
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: {},
+      isTsconfigPathsEnabled: true,
+    });
+
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), '@expo/vector-icons', platform);
+    expect(getResolveFunc()).toBeCalledWith(expect.anything(), '@expo/vector-icons', platform);
   });
 
   it(`resolves a node.js built-in as a shim on web`, async () => {
@@ -149,7 +445,6 @@ describe(withExtendedResolver, () => {
     });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
@@ -165,10 +460,6 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
-        nodeModulesPaths: ['/node_modules'],
-        extraNodeModules: {
-          'react-native': expect.stringContaining('node_modules/react-native-web'),
-        },
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
       }),
@@ -189,7 +480,6 @@ describe(withExtendedResolver, () => {
     });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
@@ -207,9 +497,6 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
         nodeModulesPaths: ['/node_modules'],
-        extraNodeModules: {
-          'react-native': expect.stringContaining('node_modules/react-native-web'),
-        },
         mainFields: ['browser', 'module', 'main'],
         preferNativePlatform: false,
       }),
@@ -222,7 +509,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
-      platforms: ['ios', 'web'],
       tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
@@ -243,9 +529,6 @@ describe(withExtendedResolver, () => {
     expect(getResolveFunc()).toBeCalledTimes(1);
     expect(getResolveFunc()).toBeCalledWith(
       expect.objectContaining({
-        extraNodeModules: {
-          'react-native': expect.stringContaining('node_modules/react-native-web'),
-        },
         mainFields: ['main', 'module'],
         preferNativePlatform: false,
         // Moved mjs to the back
@@ -254,6 +537,382 @@ describe(withExtendedResolver, () => {
       'react-native-web',
       platform
     );
+  });
+
+  it(`modifies resolution for React Server environments`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: null,
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    const platform = 'ios';
+
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        customResolverOptions: {
+          environment: 'react-server',
+        },
+      },
+      'react-foobar',
+      platform
+    );
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      {
+        customResolverOptions: { environment: 'react-server' },
+        dev: true,
+        extraNodeModules: {},
+        mainFields: ['react-native', 'module', 'main'],
+        nodeModulesPaths: ['/node_modules'],
+        originModulePath: '/index.js',
+        preferNativePlatform: true,
+        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
+        unstable_conditionNames: ['node', 'require', 'react-server', 'workerd'],
+        unstable_conditionsByPlatform: {},
+        unstable_enablePackageExports: true,
+      },
+      'react-foobar',
+      platform
+    );
+  });
+  it(`modifies resolution for React Server environments (web)`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: null,
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    const platform = 'web';
+
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        customResolverOptions: {
+          environment: 'react-server',
+        },
+      },
+      'react-foobar',
+      platform
+    );
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      {
+        customResolverOptions: { environment: 'react-server' },
+        dev: true,
+        extraNodeModules: {},
+        mainFields: ['module', 'main'],
+        nodeModulesPaths: ['/node_modules'],
+        originModulePath: '/index.js',
+        preferNativePlatform: false,
+        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
+        unstable_conditionNames: ['node', 'require', 'react-server', 'workerd'],
+        unstable_conditionsByPlatform: {},
+        unstable_enablePackageExports: true,
+      },
+      'react-foobar',
+      platform
+    );
+  });
+  it(`modifies resolution for Node.js environments (web + react-foobar)`, async () => {
+    mockMinFs();
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: null,
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    const platform = 'web';
+
+    modified.resolver.resolveRequest!(
+      {
+        ...getDefaultRequestContext(),
+        customResolverOptions: {
+          environment: 'node',
+        },
+      },
+      'react-foobar',
+      platform
+    );
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      {
+        customResolverOptions: { environment: 'node' },
+        dev: true,
+        extraNodeModules: {},
+        mainFields: ['main', 'module'],
+        nodeModulesPaths: ['/node_modules'],
+        originModulePath: '/index.js',
+        preferNativePlatform: false,
+        sourceExts: ['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css'],
+        unstable_conditionNames: ['node', 'require'],
+        unstable_conditionsByPlatform: {},
+        unstable_enablePackageExports: true,
+      },
+      'react-foobar',
+      platform
+    );
+  });
+
+  it(`aliases react-native-web modules to virtual shims on web`, async () => {
+    vol.fromJSON(
+      {
+        'node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js': '',
+
+        'node_modules/@react-native/assets-registry/registry.js': '',
+
+        mock: '',
+      },
+      '/'
+    );
+
+    jest
+      .mocked(shouldCreateVirtualShim)
+      .mockClear()
+      .mockImplementationOnce((path: string) =>
+        path.includes('react-native-web/dist/cjs/exports') ? '/mock' : null
+      );
+    // Emulate throwing when the module doesn't exist...
+    jest
+      .mocked(getResolveFunc())
+      .mockClear()
+      .mockImplementationOnce(() => {
+        return {
+          type: 'sourceFile',
+          filePath: '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+        };
+      });
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+      tsconfig: {},
+      isTsconfigPathsEnabled: false,
+      isReactCanaryEnabled: true,
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    const result = modified.resolver.resolveRequest!(
+      getDefaultRequestContext(),
+      '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+      'web'
+    );
+
+    expect(result).toEqual({
+      filePath: '\0shim:react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+      type: 'sourceFile',
+    });
+
+    expect(getResolveFunc()).toBeCalledTimes(1);
+    expect(getResolveFunc()).toBeCalledWith(
+      expect.anything(),
+      '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+      'web'
+    );
+  });
+
+  describe('built-in externals', () => {
+    function getModifiedConfig(props: { isExporting?: boolean } = {}) {
+      return withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isExporting: props.isExporting,
+        isTsconfigPathsEnabled: false,
+        isReactCanaryEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+    }
+
+    describe('node server + development', () => {
+      const config = getModifiedConfig();
+
+      ['ios', 'web'].forEach((platform) => {
+        describe(platform, () => {
+          ['react/123', 'expo'].forEach((name) => {
+            it(`does not extern ${name} to virtual node shim`, () => {
+              const result = config.resolver.resolveRequest!(
+                // Context
+                getNodeResolverContext(),
+                // Module
+                name,
+                // Platform
+                platform
+              );
+
+              expect(result.type).toBe('empty');
+              expect(getResolveFunc()).toBeCalledTimes(1);
+            });
+          });
+
+          [
+            'source-map-support',
+            'source-map-support/register.js',
+            'react',
+            'react-native-helmet-async',
+            '@radix-ui/accordion',
+            '@babel/runtime/helpers/interopRequireDefault',
+            'react-dom/server',
+            'debug',
+            'acorn-loose',
+            'acorn',
+            'css-in-js-utils/lib/escape',
+            'hyphenate-style-name',
+            'color',
+            'color-string',
+            'color-convert',
+            'color-name',
+            'fontfaceobserver',
+            'fast-deep-equal',
+            'query-string',
+            'escape-string-regexp',
+            'invariant',
+            'postcss-value-parser',
+            'memoize-one',
+            'nullthrows',
+            'strict-uri-encode',
+            'decode-uri-component',
+            'split-on-first',
+            'filter-obj',
+            'warn-once',
+            'simple-swizzle',
+            'is-arrayish',
+            'inline-style-prefixer/index.js',
+          ].forEach((name) => {
+            it(`externs ${name} to virtual node shim`, () => {
+              const result = config.resolver.resolveRequest!(
+                // Context
+                getNodeResolverContext(),
+                // Module
+                name,
+                // Platform
+                platform
+              );
+
+              expectVirtual(
+                result,
+                // Expected path
+                `\0node:${name}`
+              );
+
+              expect(getResolveFunc()).toBeCalledTimes(0);
+            });
+          });
+
+          it(`externs @babel/runtime/xxx subpaths `, () => {
+            const result = config.resolver.resolveRequest!(
+              getNodeResolverContext(),
+              '@babel/runtime/xxx/foo.js',
+              platform
+            );
+
+            expectVirtual(
+              result,
+              // Expected path
+              '\0node:@babel/runtime/xxx/foo.js'
+            );
+
+            expect(getResolveFunc()).toBeCalledTimes(0);
+          });
+        });
+      });
+    });
+
+    it(`does not extern source-map-support in server environments that are bundling for standalone exports`, async () => {
+      const result = getModifiedConfig({ isExporting: true }).resolver.resolveRequest!(
+        getNodeResolverContext({
+          customResolverOptions: {
+            exporting: true,
+          },
+        }),
+        'source-map-support',
+        'web'
+      );
+
+      expect(result).toEqual({
+        type: 'empty',
+      });
+
+      expect(getResolveFunc()).toBeCalledTimes(1);
+    });
+
+    it(`does not extern source-map-support in client environment`, async () => {
+      const result = getModifiedConfig().resolver.resolveRequest!(
+        getResolverContext(),
+        'source-map-support',
+        'web'
+      );
+
+      expect(result).toEqual({
+        type: 'empty',
+      });
+
+      expect(getResolveFunc()).toBeCalledTimes(1);
+    });
+  });
+
+  it(`aliases React Native renderer modules to canaries on native`, async () => {
+    vol.fromJSON(
+      {
+        'node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js':
+          '',
+
+        'node_modules/@react-native/assets-registry/registry.js': '',
+
+        mock: '',
+      },
+      '/'
+    );
+
+    ['ios', 'android'].forEach((platform) => {
+      jest
+        .mocked(shouldCreateVirtualCanary)
+        .mockClear()
+        .mockImplementationOnce((path: string) =>
+          path.includes('Libraries/Renderer/implementations') ? '/mock' : null
+        );
+      // Emulate throwing when the module doesn't exist...
+      jest
+        .mocked(getResolveFunc())
+        .mockClear()
+        .mockImplementationOnce(() => {
+          return {
+            type: 'sourceFile',
+            filePath:
+              '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+          };
+        });
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+        isReactCanaryEnabled: true,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+        platform
+      );
+
+      expect(result).toEqual({
+        filePath: '/mock',
+        type: 'sourceFile',
+      });
+
+      expect(getResolveFunc()).toBeCalledTimes(1);
+      expect(getResolveFunc()).toBeCalledWith(
+        expect.anything(),
+        '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
+        platform
+      );
+    });
   });
 });
 
@@ -274,49 +933,5 @@ describe(getNodejsExtensions, () => {
         "json",
       ]
     `);
-  });
-});
-
-describe(shouldAliasAssetRegistryForWeb, () => {
-  it(`should return true if the incoming resolution is for the web platform and the AssetRegistry`, () => {
-    [
-      'node_modules/react-native-web/dist/modules/AssetRegistry/index.js',
-      // Monorepo
-      '../../react-native-web/dist/modules/AssetRegistry/index.js',
-      // Windows
-      'node_modules\\react-native-web\\dist\\modules\\AssetRegistry\\index.js',
-    ].forEach((filePath) => {
-      expect(
-        shouldAliasAssetRegistryForWeb('web', {
-          type: 'sourceFile',
-          filePath,
-        })
-      ).toBe(true);
-    });
-  });
-  it(`should return false if the path is wrong`, () => {
-    ['modules/AssetRegistry/index.js', 'invalid'].forEach((filePath) => {
-      expect(
-        shouldAliasAssetRegistryForWeb('web', {
-          type: 'sourceFile',
-          filePath,
-        })
-      ).toBe(false);
-    });
-  });
-  it(`should return false if the incoming resolution is for non-web platforms`, () => {
-    [
-      'invalid.js',
-
-      // valid
-      'node_modules/react-native-web/dist/modules/AssetRegistry/index.js',
-    ].forEach((filePath) => {
-      expect(
-        shouldAliasAssetRegistryForWeb('ios', {
-          type: 'sourceFile',
-          filePath,
-        })
-      ).toBe(false);
-    });
   });
 });

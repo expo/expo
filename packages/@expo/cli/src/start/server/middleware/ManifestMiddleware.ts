@@ -5,8 +5,7 @@ import {
   PackageJSONConfig,
   ProjectConfig,
 } from '@expo/config';
-import { resolveEntryPoint } from '@expo/config/paths';
-import findWorkspaceRoot from 'find-yarn-workspace-root';
+import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
 import path from 'path';
 import { resolve } from 'url';
 
@@ -15,33 +14,24 @@ import {
   shouldEnableAsyncImports,
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
+  getAsyncRoutesFromExpoConfig,
+  createBundleUrlPathFromExpoConfig,
+  convertPathToModuleSpecifier,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
-import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
-import { getPlatformBundlers } from '../platformBundlers';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
+import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
-
-/** Wraps `findWorkspaceRoot` and guards against having an empty `package.json` file in an upper directory. */
-export function getWorkspaceRoot(projectRoot: string): string | null {
-  try {
-    return findWorkspaceRoot(projectRoot);
-  } catch (error: any) {
-    if (error.message.includes('Unexpected end of JSON input')) {
-      return null;
-    }
-    throw error;
-  }
-}
 
 const supportedPlatforms = ['ios', 'android', 'web', 'none'];
 
@@ -57,14 +47,6 @@ export function getEntryWithServerRoot(
   return path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props));
 }
 
-export function getMetroServerRoot(projectRoot: string) {
-  if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
-    return getWorkspaceRoot(projectRoot) ?? projectRoot;
-  }
-
-  return projectRoot;
-}
-
 /** Get the main entry module ID (file) relative to the project root. */
 export function resolveMainModuleName(
   projectRoot: string,
@@ -74,7 +56,7 @@ export function resolveMainModuleName(
 
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
-  return stripExtension(entryPoint, 'js');
+  return convertPathToModuleSpecifier(stripExtension(entryPoint, 'js'));
 }
 
 /** Info about the computer hosting the dev server. */
@@ -93,6 +75,8 @@ export interface ManifestRequestInfo {
   platform: RuntimePlatform;
   /** Requested host name. */
   hostname?: string | null;
+  /** The protocol used to request the manifest */
+  protocol?: 'http' | 'https';
 }
 
 /** Project related info. */
@@ -120,6 +104,7 @@ export abstract class ManifestMiddleware<
   TManifestRequestInfo extends ManifestRequestInfo,
 > extends ExpoMiddleware {
   private initialProjectConfig: ProjectConfig;
+  private platformBundlers: PlatformBundlers;
 
   constructor(
     protected projectRoot: string,
@@ -133,13 +118,18 @@ export abstract class ManifestMiddleware<
       ['/', '/manifest', '/index.exp']
     );
     this.initialProjectConfig = getConfig(projectRoot);
+    this.platformBundlers = getPlatformBundlers(projectRoot, this.initialProjectConfig.exp);
   }
 
   /** Exposed for testing. */
   public async _resolveProjectSettingsAsync({
     platform,
     hostname,
-  }: Pick<TManifestRequestInfo, 'hostname' | 'platform'>): Promise<ResponseProjectSettings> {
+    protocol,
+  }: Pick<
+    TManifestRequestInfo,
+    'hostname' | 'platform' | 'protocol'
+  >): Promise<ResponseProjectSettings> {
     // Read the config
     const projectConfig = getConfig(this.projectRoot);
 
@@ -165,6 +155,14 @@ export abstract class ManifestMiddleware<
       hostname,
       engine: isHermesEnabled ? 'hermes' : undefined,
       baseUrl: getBaseUrlFromExpoConfig(projectConfig.exp),
+      asyncRoutes: getAsyncRoutesFromExpoConfig(
+        projectConfig.exp,
+        this.options.mode ?? 'development',
+        platform
+      ),
+      routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
+      protocol,
+      reactCompiler: !!projectConfig.exp.experiments?.reactCompiler,
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -218,13 +216,21 @@ export abstract class ManifestMiddleware<
     engine,
     baseUrl,
     isExporting,
+    asyncRoutes,
+    routerRoot,
+    protocol,
+    reactCompiler,
   }: {
     platform: string;
     hostname?: string | null;
     mainModuleName: string;
     engine?: 'hermes';
     baseUrl?: string;
+    asyncRoutes: boolean;
     isExporting?: boolean;
+    routerRoot: string;
+    protocol?: 'http' | 'https';
+    reactCompiler: boolean;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -233,21 +239,22 @@ export abstract class ManifestMiddleware<
       mainModuleName,
       lazy: shouldEnableAsyncImports(this.projectRoot),
       engine,
+      bytecode: engine === 'hermes',
       baseUrl,
       isExporting: !!isExporting,
+      asyncRoutes,
+      routerRoot,
+      reactCompiler,
     });
 
     return (
       this.options.constructUrl({
-        scheme: 'http',
+        scheme: protocol ?? 'http',
         // hostType: this.options.location.hostType,
         hostname,
       }) + path
     );
   }
-
-  /** Log telemetry. */
-  protected abstract trackManifest(version?: string): void;
 
   /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. Exposed for testing. */
   public abstract _getManifestResponseAsync(options: TManifestRequestInfo): Promise<{
@@ -310,7 +317,7 @@ export abstract class ManifestMiddleware<
       platform,
     });
 
-    return createBundleUrlPath({
+    return createBundleUrlPathFromExpoConfig(this.projectRoot, this.initialProjectConfig.exp, {
       platform,
       mainModuleName,
       minify: this.options.minify,
@@ -318,8 +325,8 @@ export abstract class ManifestMiddleware<
       mode: this.options.mode ?? 'development',
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',
-      baseUrl: getBaseUrlFromExpoConfig(this.initialProjectConfig.exp),
       isExporting: false,
+      bytecode: false,
     });
   }
 
@@ -345,9 +352,10 @@ export abstract class ManifestMiddleware<
 
   /** Exposed for testing. */
   async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
-    // Read the config
-    const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
-    if (bundlers.web === 'metro') {
+    if (
+      this.platformBundlers.web === 'metro' &&
+      this.initialProjectConfig.exp.platforms?.includes('web')
+    ) {
       // NOTE(EvanBacon): This effectively disables the safety check we do on custom runtimes to ensure
       // the `expo-platform` header is included. When `web.bundler=web`, if the user has non-standard Expo
       // code loading then they'll get a web bundle without a clear assertion of platform support.
@@ -382,13 +390,10 @@ export abstract class ManifestMiddleware<
 
     // Read from headers
     const options = this.getParsedHeaders(req);
-    const { body, version, headers } = await this._getManifestResponseAsync(options);
+    const { body, headers } = await this._getManifestResponseAsync(options);
     for (const [headerName, headerValue] of headers) {
       res.setHeader(headerName, headerValue);
     }
     res.end(body);
-
-    // Log analytics
-    this.trackManifest(version ?? null);
   }
 }

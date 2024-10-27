@@ -20,8 +20,6 @@ private const val ATTR_DATA = "data"
 class IntentLauncherModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private var pendingPromise: Promise? = null
 
   override fun definition() = ModuleDefinition {
@@ -55,12 +53,17 @@ class IntentLauncherModule : Module() {
         }
       }
 
-      params.extra?.let { intent.putExtras(it.toBundle()) }
+      params.extra?.let {
+        val valuesList = it.mapValues { (_, value) ->
+          if (value is Double) value.toInt() else value
+        }
+        intent.putExtras(valuesList.toBundle())
+      }
       params.flags?.let { intent.addFlags(it) }
       params.category?.let { intent.addCategory(it) }
 
       try {
-        currentActivity.startActivityForResult(intent, REQUEST_CODE)
+        appContext.throwingActivity.startActivityForResult(intent, REQUEST_CODE)
         pendingPromise = promise
       } catch (e: Throwable) {
         promise.reject(e.toCodedException())

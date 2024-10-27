@@ -6,9 +6,7 @@ import android.os.Bundle
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.systemui.singletons.SystemUI
 
-// EXPO_VERSIONING_NEEDS_EXPOVIEW_R
-
-class SystemUIReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
+class SystemUIReactActivityLifecycleListener : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
     SystemUI.setUserInterfaceStyle(getUserInterfaceStyle(activity))
   }

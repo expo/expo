@@ -56,7 +56,7 @@ You can also narrow things even further by testing [local notifications](/versio
 
 1. Send a notification:
 
-```shell
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/send" -d '{
   "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
   "title":"hello",
@@ -66,7 +66,7 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 
 2. Use the resulting ticket `id` to request the push receipt:
 
-```shell
+```sh
 curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
   "ids": [
     "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
@@ -88,7 +88,7 @@ The `ExpoPushToken` will never expire. However, if one of your users uninstalls 
 
 This indicates that you have either misconfigured your credentials or didn't configure them at all in your production app. Expo Go uses Expo's credentials, which allows working on notifications in development.
 
-When you build your app for the app stores, you need to generate and use your own credentials. On Android, follow [this guide](/push-notifications/push-notifications-setup/#android). On iOS, this is handled by your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app will result in your notifications failing to be delivered. To fix that, add a new push key with `eas credentials`).
+When you build your app for the app stores, you need to generate and use your own credentials. On Android, follow [this guide](/push-notifications/fcm-credentials). On iOS, this is handled by your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app will result in your notifications failing to be delivered. To fix that, add a new push key with `eas credentials`).
 
 For more information, see [app signing](/app-signing/app-credentials).
 
@@ -119,7 +119,7 @@ Check the `details` property of the returned push ticket or receipt for more inf
 
 Here are some ways our community members have resolved this issue:
 
-<Collapsible summary={<span>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></span>}>
+<Collapsible summary="Read the Apple's Technical Note on troubleshooting push notifications">
 
 Read Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This is the single most reliable source of information on this problem. To help you grasp what they're suggesting:
 

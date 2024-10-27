@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`injects hydration flag 1`] = `
+"<!DOCTYPE html><html><head><script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script></head><body><div id="root"></div><script src="/dist/entry.js" defer></script>
+</body></html>"
+`;
+
+exports[`serializes development export static html with correct baseUrl and script src 1`] = `
+"<!DOCTYPE html><html><head></head><body><div id="root"></div><script src="/custom/base/url/Users/path/to/expo/app/node_modules/expo/AppEntry.js" defer></script>
+</body></html>"
+`;
+
+exports[`serializes development export static html with correct script src 1`] = `
+"<!DOCTYPE html><html><head></head><body><div id="root"></div><script src="/Users/path/to/expo/app/node_modules/expo/AppEntry.js" defer></script>
+</body></html>"
+`;
+
+exports[`serializes development static html 1`] = `
+"<!DOCTYPE html><html><head></head><body><div id="root"></div><script src="/packages/expo-router/entry.bundle?platform=web" defer></script>
+</body></html>"
+`;
+
+exports[`serializes production static html for export 1`] = `
+"<!DOCTYPE html><html><head></head><body><div id="root"></div><script src="/dist/entry.js" defer></script>
+</body></html>"
+`;

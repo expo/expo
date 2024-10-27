@@ -14,10 +14,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.view.View;
+import android.util.Log;
 
 import com.facebook.jni.HybridData;
 
+import androidx.annotation.OptIn;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
@@ -25,7 +26,6 @@ import expo.modules.core.interfaces.DoNotStrip;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.JavaScriptContextProvider;
 import expo.modules.core.interfaces.LifecycleEventListener;
-import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
@@ -43,11 +43,10 @@ import java.util.UUID;
 
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
-import expo.modules.av.video.VideoViewWrapper;
 import expo.modules.interfaces.permissions.Permissions;
 import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
-import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
@@ -88,6 +87,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   private final Context mContext;
 
+  private EmitEventWrapper mEmitEventWrapper;
+
   private boolean mEnabled = true;
 
   private final AudioManager mAudioManager;
@@ -116,6 +117,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private boolean mAudioRecorderIsMeteringEnabled = false;
 
   private ModuleRegistry mModuleRegistry;
+  private ForwardingCookieHandler cookieHandler = new ForwardingCookieHandler();
 
   public AVManager(final Context reactContext) {
     mContext = reactContext;
@@ -147,6 +149,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @SuppressWarnings("JavaJniMissingFunction")
   private native HybridData initHybrid();
+
+  @OptIn(markerClass = FrameworkAPI.class)
   @SuppressWarnings("JavaJniMissingFunction")
   private native void installJSIBindings(long jsRuntimePointer, CallInvokerHolderImpl jsCallInvokerHolder);
 
@@ -159,6 +163,11 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   @Override
   public ModuleRegistry getModuleRegistry() {
     return mModuleRegistry;
+  }
+
+  @Override
+  public ForwardingCookieHandler getCookieHandler() {
+    return cookieHandler;
   }
 
   private UIManager getUIManager() {
@@ -175,13 +184,29 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       final UIManager uiManager = getUIManager();
 
       uiManager.registerLifecycleEventListener(this);
-      uiManager.runOnClientCodeQueueThread(() -> {
-        final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
-        final long jsContextRef = jsContextProvider.getJavaScriptContextRef();
-        if (jsContextRef != 0) {
-          installJSIBindings(jsContextRef, jsContextProvider.getJSCallInvokerHolder());
-        }
-      });
+      uiManager.runOnClientCodeQueueThread(this::installBindings);
+    }
+  }
+
+  @OptIn(markerClass = FrameworkAPI.class)
+  private void installBindings() {
+    final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
+    final long jsContextRef = jsContextProvider.getJavaScriptContextRef();
+    if (jsContextRef != 0) {
+      Log.e("AVManager", "Cannot install JSI bindings for AV module because JS context is not available");
+      return;
+    }
+
+    CallInvokerHolderImpl callInvokerHolder = jsContextProvider.getJSCallInvokerHolder();
+    if (callInvokerHolder == null) {
+      Log.e("AVManager", "Cannot install JSI bindings for AV module because JS call invoker holder is not available");
+      return;
+    }
+
+    try {
+      installJSIBindings(jsContextRef, callInvokerHolder);
+    } catch (Exception e) {
+      Log.e("AVManager", "Cannot install JSI bindings for AV module", e);
     }
   }
 
@@ -196,11 +221,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   private void sendEvent(String eventName, Bundle params) {
-    if (mModuleRegistry != null) {
-      EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-      if (eventEmitter != null) {
-        eventEmitter.emit(eventName, params);
-      }
+    if (mEmitEventWrapper != null) {
+      mEmitEventWrapper.emit(eventName, params);
     }
   }
 
@@ -261,6 +283,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
     removeAudioRecorder();
     abandonAudioFocus();
+
+    mHybridData.resetNative();
+    getUIManager().unregisterLifecycleEventListener(this);
   }
 
   // Global audio state control API
@@ -401,6 +426,11 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     }
 
     mStaysActiveInBackground = map.getBoolean(AUDIO_MODE_STAYS_ACTIVE_IN_BACKGROUND);
+  }
+
+  @Override
+  public void setEmitEventWrapper(EmitEventWrapper emitEventWrapper) {
+    mEmitEventWrapper = emitEventWrapper;
   }
 
   // Unified playback API - Audio
@@ -646,12 +676,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     switch (what) {
       case MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
         removeAudioRecorder();
-        if (mModuleRegistry != null) {
-          EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-          if (eventEmitter != null) {
-            eventEmitter.emit("Expo.Recording.recorderUnloaded", new Bundle());
-          }
-        }
+        sendEvent("Expo.Recording.recorderUnloaded", new Bundle());
       default:
         // Do nothing
     }
@@ -756,10 +781,10 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   @Override
   public void getCurrentInput(final Promise promise) {
     AudioDeviceInfo deviceInfo = null;
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P){
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P) {
       promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting current audio input is not supported on devices running Android version lower than Android 9.0");
       return;
-    } else  {
+    } else {
 
       try {
         // getRoutedDevice() is the most reliable way to return the actual mic input, however it

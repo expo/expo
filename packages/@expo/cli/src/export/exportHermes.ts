@@ -1,6 +1,22 @@
-import { ExpoConfig } from '@expo/config';
+import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
 import fs from 'fs-extra';
 import path from 'path';
+
+export async function assertEngineMismatchAsync(
+  projectRoot: string,
+  exp: Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>,
+  platform: Platform
+) {
+  const isHermesManaged = isEnableHermesManaged(exp, platform);
+  const paths = getConfigFilePaths(projectRoot);
+  const configFilePath = paths.dynamicConfigPath ?? paths.staticConfigPath ?? 'app.json';
+  await maybeThrowFromInconsistentEngineAsync(
+    projectRoot,
+    configFilePath,
+    platform,
+    isHermesManaged
+  );
+}
 
 export function isEnableHermesManaged(
   expoConfig: Partial<Pick<ExpoConfig, 'ios' | 'android' | 'jsEngine'>>,

@@ -1,5 +1,6 @@
 import { ModConfig } from '@expo/config-plugins';
 import JsonFile, { JSONObject } from '@expo/json-file';
+import deepmerge from 'deepmerge';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
@@ -26,6 +27,8 @@ import { getRootPackageJsonPath } from './resolvePackageJson';
 
 type SplitConfigs = { expo: ExpoConfig; mods: ModConfig };
 
+let hasWarnedAboutRootConfig = false;
+
 /**
  * If a config has an `expo` object then that will be used as the config.
  * This method reduces out other top level values if an `expo` object exists.
@@ -34,6 +37,26 @@ type SplitConfigs = { expo: ExpoConfig; mods: ModConfig };
  */
 function reduceExpoObject(config?: any): SplitConfigs {
   if (!config) return config === undefined ? null : config;
+
+  if (config.expo && !hasWarnedAboutRootConfig) {
+    const keys = Object.keys(config).filter((key) => key !== 'expo');
+    if (keys.length) {
+      hasWarnedAboutRootConfig = true;
+      const ansiYellow = (str: string) => `\u001B[33m${str}\u001B[0m`;
+      const ansiGray = (str: string) => `\u001B[90m${str}\u001B[0m`;
+      const ansiBold = (str: string) => `\u001B[1m${str}\u001B[22m`;
+      const plural = keys.length > 1;
+      console.warn(
+        ansiYellow(
+          ansiBold('Warning: ') +
+            `Root-level ${ansiBold(`"expo"`)} object found. Ignoring extra key${plural ? 's' : ''} in Expo config: ${keys
+              .map((key) => `"${key}"`)
+              .join(', ')}\n` +
+            ansiGray(`Learn more: https://expo.fyi/root-expo-object`)
+        )
+      );
+    }
+  }
 
   const { mods, ...expo } = config.expo ?? config;
 
@@ -54,7 +77,7 @@ function getSupportedPlatforms(projectRoot: string): Platform[] {
   if (resolveFrom.silent(projectRoot, 'react-native')) {
     platforms.push('ios', 'android');
   }
-  if (resolveFrom.silent(projectRoot, 'react-native-web')) {
+  if (resolveFrom.silent(projectRoot, 'react-dom')) {
     platforms.push('web');
   }
   return platforms;
@@ -142,7 +165,8 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
 
-      if (configWithDefaultValues.exp.hooks) {
+      // hooks no longer exists in the typescript type but should still be removed
+      if ('hooks' in configWithDefaultValues.exp) {
         delete configWithDefaultValues.exp.hooks;
       }
       if (configWithDefaultValues.exp.ios?.config) {
@@ -254,51 +278,98 @@ export async function modifyConfigAsync(
 ): Promise<{
   type: 'success' | 'warn' | 'fail';
   message?: string;
-  config: AppJSONConfig | null;
+  config: ExpoConfig | null;
 }> {
   const config = getConfig(projectRoot, readOptions);
-  if (config.dynamicConfigPath) {
-    // We cannot automatically write to a dynamic config.
-    /* Currently we should just use the safest approach possible, informing the user that they'll need to manually modify their dynamic config.
+  const isDryRun = writeOptions.dryRun;
 
-    if (config.staticConfigPath) {
-      // Both a dynamic and a static config exist.
-      if (config.dynamicConfigObjectType === 'function') {
-        // The dynamic config exports a function, this means it possibly extends the static config.
-      } else {
-        // Dynamic config ignores the static config, there isn't a reason to automatically write to it.
-        // Instead we should warn the user to add values to their dynamic config.
-      }
+  // Create or modify the static config, when not using dynamic config
+  if (!config.dynamicConfigPath) {
+    const outputConfig = mergeConfigModifications(config, modifications);
+
+    if (!isDryRun) {
+      const configPath = config.staticConfigPath ?? path.join(projectRoot, 'app.json');
+      await JsonFile.writeAsync(configPath, outputConfig, { json5: false });
     }
-    */
-    return {
-      type: 'warn',
-      message: `Cannot automatically write to dynamic config at: ${path.relative(
-        projectRoot,
-        config.dynamicConfigPath
-      )}`,
-      config: null,
-    };
-  } else if (config.staticConfigPath) {
-    // Static with no dynamic config, this means we can append to the config automatically.
-    let outputConfig: AppJSONConfig;
-    // If the config has an expo object (app.json) then append the options to that object.
-    if (config.rootConfig.expo) {
-      outputConfig = {
-        ...config.rootConfig,
-        expo: { ...config.rootConfig.expo, ...modifications },
-      };
-    } else {
-      // Otherwise (app.config.json) just add the config modification to the top most level.
-      outputConfig = { ...config.rootConfig, ...modifications };
-    }
-    if (!writeOptions.dryRun) {
-      await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
-    }
-    return { type: 'success', config: outputConfig };
+
+    return { type: 'success', config: outputConfig.expo ?? outputConfig };
   }
 
-  return { type: 'fail', message: 'No config exists', config: null };
+  // Attempt to write to a function-like dynamic config, when used with a static config
+  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function') {
+    const outputConfig = mergeConfigModifications(config, modifications);
+
+    if (isDryRun) {
+      return {
+        type: 'warn',
+        message: `Cannot verify config modifications in dry-run mode for config at: ${path.relative(projectRoot, config.dynamicConfigPath)}`,
+        config: null,
+      };
+    }
+
+    // Attempt to write the static config with the config modifications
+    await JsonFile.writeAsync(config.staticConfigPath, outputConfig, { json5: false });
+
+    // Verify that the dynamic config is using the static config
+    const newConfig = getConfig(projectRoot, readOptions);
+    const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
+    if (newConfighasModifications) {
+      return {
+        type: 'success',
+        config: newConfig.exp,
+      };
+    }
+
+    // Rollback the changes when the reloaded config did not include the modifications
+    await JsonFile.writeAsync(config.staticConfigPath, config.rootConfig, { json5: false });
+  }
+
+  // We cannot automatically write to a dynamic config
+  return {
+    type: 'warn',
+    message: `Cannot automatically write to dynamic config at: ${path.relative(
+      projectRoot,
+      config.dynamicConfigPath
+    )}`,
+    config: null,
+  };
+}
+
+/** Merge the config modifications, using an optional possible top-level `expo` object. */
+function mergeConfigModifications(
+  config: ProjectConfig,
+  modifications: Partial<ExpoConfig>
+): AppJSONConfig {
+  if (!config.rootConfig.expo) {
+    return deepmerge(config.rootConfig, modifications);
+  }
+
+  return {
+    ...config.rootConfig,
+    expo: deepmerge(config.rootConfig.expo, modifications),
+  };
+}
+
+function isMatchingObject<T extends Record<string, any>>(
+  expectedValues: T,
+  actualValues: T
+): boolean {
+  for (const key in expectedValues) {
+    if (!expectedValues.hasOwnProperty(key)) {
+      continue;
+    }
+
+    if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
+      if (!isMatchingObject(expectedValues[key], actualValues[key])) {
+        return false;
+      }
+    } else {
+      if (expectedValues[key] !== actualValues[key]) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 function ensureConfigHasDefaultValues({

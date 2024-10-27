@@ -53,28 +53,25 @@ function setNavigationBarColors(config, colors) {
 function setNavigationBarStyles(config, styles) {
   styles = _configPlugins().AndroidConfig.Styles.assignStylesValue(styles, {
     add: getNavigationBarStyle(config) === 'dark-content',
-    parent: _configPlugins().AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
+    parent: _configPlugins().AndroidConfig.Styles.getAppThemeGroup(),
     name: 'android:windowLightNavigationBar',
     value: 'true'
   });
   styles = _configPlugins().AndroidConfig.Styles.assignStylesValue(styles, {
     add: !!getNavigationBarColor(config),
-    parent: _configPlugins().AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
+    parent: _configPlugins().AndroidConfig.Styles.getAppThemeGroup(),
     name: `android:${NAVIGATION_BAR_COLOR}`,
     value: `@color/${NAVIGATION_BAR_COLOR}`
   });
   return styles;
 }
 function getNavigationBarImmersiveMode(config) {
-  var _config$androidNaviga;
-  return ((_config$androidNaviga = config.androidNavigationBar) === null || _config$androidNaviga === void 0 ? void 0 : _config$androidNaviga.visible) || null;
+  return config.androidNavigationBar?.visible || null;
 }
 function getNavigationBarColor(config) {
-  var _config$androidNaviga2;
-  return ((_config$androidNaviga2 = config.androidNavigationBar) === null || _config$androidNaviga2 === void 0 ? void 0 : _config$androidNaviga2.backgroundColor) || null;
+  return config.androidNavigationBar?.backgroundColor || null;
 }
 function getNavigationBarStyle(config) {
-  var _config$androidNaviga3;
-  return ((_config$androidNaviga3 = config.androidNavigationBar) === null || _config$androidNaviga3 === void 0 ? void 0 : _config$androidNaviga3.barStyle) || 'light-content';
+  return config.androidNavigationBar?.barStyle || 'light-content';
 }
 //# sourceMappingURL=withAndroidNavigationBar.js.map

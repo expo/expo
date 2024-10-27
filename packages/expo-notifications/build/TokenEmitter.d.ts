@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { DevicePushToken } from './Tokens.types';
 /**
  * A function accepting a device push token ([`DevicePushToken`](#devicepushtoken)) as an argument.
@@ -32,11 +32,11 @@ export type PushTokenListener = (token: DevicePushToken) => void;
  * }
  * ```
  */
-export declare function addPushTokenListener(listener: PushTokenListener): Subscription;
+export declare function addPushTokenListener(listener: PushTokenListener): EventSubscription;
 /**
  * Removes a push token subscription returned by an `addPushTokenListener` call.
  * @param subscription A subscription returned by `addPushTokenListener` method.
  * @header fetch
  */
-export declare function removePushTokenSubscription(subscription: Subscription): void;
+export declare function removePushTokenSubscription(subscription: EventSubscription): void;
 //# sourceMappingURL=TokenEmitter.d.ts.map

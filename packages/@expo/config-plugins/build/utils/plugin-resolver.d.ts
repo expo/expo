@@ -1,10 +1,11 @@
 import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 export declare const pluginFileName = "app.plugin.js";
-export declare function resolvePluginForModule(projectRoot: string, modulePath: string): {
-    isPluginFile: boolean;
+export declare function resolvePluginForModule(projectRoot: string, pluginReference: string): {
     filePath: string;
+    isPluginFile: boolean;
 };
 export declare function moduleNameIsDirectFileReference(name: string): boolean;
+export declare function moduleNameIsPackageReference(name: string): boolean;
 export declare function normalizeStaticPlugin(plugin: StaticPlugin | ConfigPlugin | string): StaticPlugin;
 export declare function assertInternalProjectRoot(projectRoot?: string): asserts projectRoot;
 export declare function resolveConfigPluginFunction(projectRoot: string, pluginReference: string): ConfigPlugin<unknown>;

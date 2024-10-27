@@ -58,9 +58,8 @@ function getPrebuildConfig(projectRoot, {
   config = (0, _withDefaultPlugins().withVersionedExpoSDKPlugins)(config);
   config = (0, _withDefaultPlugins().withLegacyExpoPlugins)(config);
   if (platforms.includes('ios')) {
-    var _ref;
     if (!config.ios) config.ios = {};
-    config.ios.bundleIdentifier = (_ref = bundleIdentifier !== null && bundleIdentifier !== void 0 ? bundleIdentifier : config.ios.bundleIdentifier) !== null && _ref !== void 0 ? _ref : `com.placeholder.appid`;
+    config.ios.bundleIdentifier = bundleIdentifier ?? config.ios.bundleIdentifier ?? `com.placeholder.appid`;
 
     // Add all built-in plugins
     config = (0, _withDefaultPlugins().withIosExpoPlugins)(config, {
@@ -68,9 +67,8 @@ function getPrebuildConfig(projectRoot, {
     });
   }
   if (platforms.includes('android')) {
-    var _ref2;
     if (!config.android) config.android = {};
-    config.android.package = (_ref2 = packageName !== null && packageName !== void 0 ? packageName : config.android.package) !== null && _ref2 !== void 0 ? _ref2 : `com.placeholder.appid`;
+    config.android.package = packageName ?? config.android.package ?? `com.placeholder.appid`;
 
     // Add all built-in plugins
     config = (0, _withDefaultPlugins().withAndroidExpoPlugins)(config, {

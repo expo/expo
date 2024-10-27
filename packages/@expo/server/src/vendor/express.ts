@@ -1,14 +1,10 @@
 import {
-  AbortController,
-  Headers,
-  RequestInit,
-  Response,
   writeReadableStreamToWritable,
-} from '@remix-run/node';
+  createReadableStreamFromReadable,
+} from '@remix-run/node/dist/stream';
 import type * as express from 'express';
 
 import { createRequestHandler as createExpoHandler } from '..';
-import { ExpoRequest } from '../environment';
 
 export type RequestHandler = (
   req: express.Request,
@@ -61,7 +57,7 @@ export function convertHeaders(requestHeaders: express.Request['headers']): Head
   return headers;
 }
 
-export function convertRequest(req: express.Request, res: express.Response): ExpoRequest {
+export function convertRequest(req: express.Request, res: express.Response): Request {
   const url = new URL(`${req.protocol}://${req.get('host')}${req.url}`);
 
   // Abort action/loaders once we can no longer write a response
@@ -77,20 +73,19 @@ export function convertRequest(req: express.Request, res: express.Response): Exp
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    init.body = req;
+    init.body = createReadableStreamFromReadable(req);
+    init.duplex = 'half';
   }
 
-  return new ExpoRequest(url.href, init);
+  return new Request(url.href, init);
 }
 
 export async function respond(res: express.Response, expoRes: Response): Promise<void> {
   res.statusMessage = expoRes.statusText;
   res.status(expoRes.status);
 
-  for (const [key, values] of Object.entries(expoRes.headers.raw())) {
-    for (const value of values) {
-      res.append(key, value);
-    }
+  for (const [key, value] of expoRes.headers.entries()) {
+    res.append(key, value);
   }
 
   if (expoRes.body) {

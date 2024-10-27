@@ -7,27 +7,31 @@ import xcode, { XCBuildConfiguration } from 'xcode';
 import { InfoPlist } from './IosConfig.types';
 import { getAllInfoPlistPaths, getAllPBXProjectPaths, getPBXProjectPath } from './Paths';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
-import { ConfigurationSectionEntry, getBuildConfigurationsForListId } from './utils/Xcodeproj';
+import { ConfigPlugin, XcodeProject } from '../Plugin.types';
+import {
+  ConfigurationSectionEntry,
+  getBuildConfigurationsForListId,
+  resolveXcodeBuildSetting,
+} from './utils/Xcodeproj';
 import { trimQuotes } from './utils/string';
-import { ConfigPlugin } from '../Plugin.types';
-import { withDangerousMod } from '../plugins/withDangerousMod';
+import { withXcodeProject } from '../plugins/ios-plugins';
 
 export const withBundleIdentifier: ConfigPlugin<{ bundleIdentifier?: string }> = (
   config,
   { bundleIdentifier }
 ) => {
-  return withDangerousMod(config, [
-    'ios',
-    async (config) => {
-      const bundleId = bundleIdentifier ?? config.ios?.bundleIdentifier;
-      assert(
-        bundleId,
-        '`bundleIdentifier` must be defined in the app config (`expo.ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.'
-      );
-      await setBundleIdentifierForPbxproj(config.modRequest.projectRoot, bundleId!);
-      return config;
-    },
-  ]);
+  return withXcodeProject(config, async (config) => {
+    const bundleId = bundleIdentifier ?? config.ios?.bundleIdentifier;
+    // Should never happen.
+    assert(
+      bundleId,
+      '`bundleIdentifier` must be defined in the app config (`ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.'
+    );
+
+    config.modResults = updateBundleIdentifierForPbxprojObject(config.modResults, bundleId, false);
+
+    return config;
+  });
 };
 
 function getBundleIdentifier(config: Pick<ExpoConfig, 'ios'>): string | null {
@@ -98,20 +102,10 @@ function getProductBundleIdentifierFromBuildConfiguration(
   const bundleIdentifierRaw = xcBuildConfiguration.buildSettings.PRODUCT_BUNDLE_IDENTIFIER;
   if (bundleIdentifierRaw) {
     const bundleIdentifier = trimQuotes(bundleIdentifierRaw);
-    // it's possible to use interpolation for the bundle identifier
-    // the most common case is when the last part of the id is set to `$(PRODUCT_NAME:rfc1034identifier)`
-    // in this case, PRODUCT_NAME should be replaced with its value
-    // the `rfc1034identifier` modifier replaces all non-alphanumeric characters with dashes
-    const bundleIdentifierParts = bundleIdentifier.split('.');
-    if (
-      bundleIdentifierParts[bundleIdentifierParts.length - 1] ===
-        '$(PRODUCT_NAME:rfc1034identifier)' &&
-      xcBuildConfiguration.buildSettings.PRODUCT_NAME
-    ) {
-      bundleIdentifierParts[bundleIdentifierParts.length - 1] =
-        xcBuildConfiguration.buildSettings.PRODUCT_NAME.replace(/[^a-zA-Z0-9]/g, '-');
-    }
-    return bundleIdentifierParts.join('.');
+    return resolveXcodeBuildSetting(
+      bundleIdentifier,
+      (setting) => xcBuildConfiguration.buildSettings[setting] as string | undefined
+    );
   } else {
     return null;
   }
@@ -131,7 +125,24 @@ function updateBundleIdentifierForPbxproj(
 ): void {
   const project = xcode.project(pbxprojPath);
   project.parseSync();
+  fs.writeFileSync(
+    pbxprojPath,
+    updateBundleIdentifierForPbxprojObject(project, bundleIdentifier, updateProductName).writeSync()
+  );
+}
 
+/**
+ * Updates the bundle identifier for a given pbxproj
+ *
+ * @param {string} project pbxproj file
+ * @param {string} bundleIdentifier Bundle identifier to set in the pbxproj
+ * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
+ */
+function updateBundleIdentifierForPbxprojObject(
+  project: XcodeProject,
+  bundleIdentifier: string,
+  updateProductName: boolean = true
+) {
   const [, nativeTarget] = findFirstNativeTarget(project);
 
   getBuildConfigurationsForListId(project, nativeTarget.buildConfigurationList).forEach(
@@ -150,7 +161,7 @@ function updateBundleIdentifierForPbxproj(
       }
     }
   );
-  fs.writeFileSync(pbxprojPath, project.writeSync());
+  return project;
 }
 
 /**

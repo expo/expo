@@ -7,16 +7,16 @@ import ExpoModulesTestCore
 import EXManifests
 
 class NewUpdateSpec : ExpoSpec {
-  let config = try! UpdatesConfig.config(fromDictionary: [
-    UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-    UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
-  ])
-  let database = UpdatesDatabase()
+  override class func spec() {
+    let config = try! UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+    ])
+    let database = UpdatesDatabase()
 
-  override func spec() {
     describe("instantiation") {
       it("all fields") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -28,16 +28,16 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).notTo(beNil())
       }
 
       it("no runtime version") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
             "createdAt": "2020-11-11T00:17:54.797Z",
@@ -48,16 +48,16 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).to(raiseException())
       }
 
       it("no id") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "createdAt": "2020-11-11T00:17:54.797Z",
@@ -68,16 +68,16 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).to(raiseException())
       }
 
       it("no created at") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -88,16 +88,16 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).to(raiseException())
       }
 
       it("no launch asset") {
-        let manifest = NewManifest(
+        let manifest = ExpoUpdatesManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -105,11 +105,11 @@ class NewUpdateSpec : ExpoSpec {
           ]
         )
 
-        expect(NewUpdate.update(
-          withNewManifest: manifest,
+        expect(ExpoUpdatesUpdate.update(
+          withExpoUpdatesManifest: manifest,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).to(raiseException())
       }
     }

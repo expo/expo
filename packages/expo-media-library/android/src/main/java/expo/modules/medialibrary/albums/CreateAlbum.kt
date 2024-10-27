@@ -58,7 +58,8 @@ internal class CreateAlbum(
     } catch (e: SecurityException) {
       promise.reject(
         ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not create album: need WRITE_EXTERNAL_STORAGE permission.", e
+        "Could not create album: need WRITE_EXTERNAL_STORAGE permission.",
+        e
       )
     } catch (e: IOException) {
       promise.reject(ERROR_UNABLE_TO_LOAD, "Could not read file or parse EXIF tags", e)

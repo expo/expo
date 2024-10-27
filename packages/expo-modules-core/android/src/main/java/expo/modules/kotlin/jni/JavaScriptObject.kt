@@ -27,7 +27,7 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
     /**
      * If set, the value associated with the property may be changed with an assignment operator.
      */
-    Writable(1 shl 2),
+    Writable(1 shl 2)
   }
 
   fun isValid() = mHybridData.isValid
@@ -43,6 +43,9 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
   }
 
   external fun getPropertyNames(): Array<String>
+
+  external fun createWeak(): JavaScriptWeakObject
+
   private external fun setBoolProperty(name: String, value: Boolean)
   private external fun setDoubleProperty(name: String, value: Double)
   private external fun setStringProperty(name: String, value: String?)
@@ -65,6 +68,8 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
     }
   }
 
+  external fun setExternalMemoryPressure(size: Int)
+
   fun setProperty(name: String, value: Boolean) = setBoolProperty(name, value)
   operator fun set(name: String, value: Boolean) = setBoolProperty(name, value)
 
@@ -85,8 +90,8 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
 
   // Needed to handle untyped null value
   // Without it setProperty(name, null) won't work
-  fun setProperty(name: String, `null`: Nothing?) = unsetProperty(name)
-  operator fun set(name: String, `null`: Nothing?) = unsetProperty(name)
+  fun setProperty(name: String, @Suppress("UNUSED_PARAMETER") `null`: Nothing?) = unsetProperty(name)
+  operator fun set(name: String, @Suppress("UNUSED_PARAMETER") `null`: Nothing?) = unsetProperty(name)
 
   fun defineProperty(
     name: String,
@@ -127,7 +132,7 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
   // Needed to handle untyped null value
   fun defineProperty(
     name: String,
-    `null`: Nothing?,
+    @Suppress("UNUSED_PARAMETER") `null`: Nothing?,
     options: List<PropertyDescriptor> = emptyList()
   ) = defineJSObjectProperty(name, null, options.toCppOptions())
 

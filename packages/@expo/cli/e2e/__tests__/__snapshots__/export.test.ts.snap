@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runs \`npx expo export --help\` 1`] = `
+"
+  Info
+    Export the static files of the app for hosting it on a web server
+
+  Usage
+    $ npx expo export <dir>
+
+  Options
+    <dir>                      Directory of the Expo project. Default: Current working directory
+    --output-dir <dir>         The directory to export the static files to. Default: dist
+    --dev                      Configure static files for developing locally using a non-https server
+    --no-minify                Prevent minifying source
+    --no-bytecode              Prevent generating Hermes bytecode
+    --max-workers <number>     Maximum number of tasks to allow the bundler to spawn
+    --dump-assetmap            Emit an asset map for further processing
+    --no-ssg                   Skip exporting static HTML files for web routes
+    -p, --platform <platform>  Options: android, ios, web, all. Default: all
+    -s, --source-maps          Emit JavaScript source maps
+    -c, --clear                Clear the bundler cache
+    -h, --help                 Usage info
+"
+`;

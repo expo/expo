@@ -8,5 +8,5 @@ enum class Orientation(val value: Int) {
   PORTRAIT_UP(1),
   PORTRAIT_DOWN(2),
   LANDSCAPE_LEFT(3),
-  LANDSCAPE_RIGHT(4),
+  LANDSCAPE_RIGHT(4)
 }

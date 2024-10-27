@@ -1,4 +1,6 @@
-import type { Href } from './link/href';
+/**
+ * @hidden
+ */
 export interface RequireContext {
     /** Return the keys that can be resolved. */
     keys(): string[];
@@ -9,18 +11,16 @@ export interface RequireContext {
     /** **Unimplemented:** Readable identifier for the context module. */
     id: string;
 }
-/** The list of input keys will become optional, everything else will remain the same. */
+/**
+ * The list of input keys will become optional, everything else will remain the same.
+ */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-export type Router = {
-    /** Navigate to the provided href. */
-    push: (href: Href) => void;
-    /** Navigate to route without appending to the history. */
-    replace: (href: Href) => void;
-    /** Go back in the history. */
-    back: () => void;
-    /** If there's history that supports invoking the `back` function. */
-    canGoBack: () => boolean;
-    /** Update the current route query params. */
-    setParams: (params?: Record<string, string>) => void;
+export type NativeIntent = {
+    redirectSystemPath?: (event: {
+        path: string;
+        initial: boolean;
+    }) => Promise<string> | string;
+    legacy_subscribe?: (listener: (url: string) => void) => undefined | void | (() => void);
 };
+export type * from './typed-routes/types';
 //# sourceMappingURL=types.d.ts.map

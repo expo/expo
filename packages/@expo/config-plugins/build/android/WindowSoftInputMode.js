@@ -38,12 +38,11 @@ function setWindowSoftInputModeMode(config, androidManifest) {
   return androidManifest;
 }
 function getWindowSoftInputModeMode(config) {
-  var _config$android, _MAPPING$value;
-  const value = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.softwareKeyboardLayoutMode;
+  const value = config.android?.softwareKeyboardLayoutMode;
   if (!value) {
     // Default to `adjustResize` or `resize`.
     return 'adjustResize';
   }
-  return (_MAPPING$value = MAPPING[value]) !== null && _MAPPING$value !== void 0 ? _MAPPING$value : value;
+  return MAPPING[value] ?? value;
 }
 //# sourceMappingURL=WindowSoftInputMode.js.map

@@ -18,6 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class EXAppContext;
 @class EXDevLauncherInstallationIDHelper;
 @class EXDevLauncherPendingDeepLinkRegistry;
 @class EXDevLauncherRecentlyOpenedAppsRegistry;
@@ -31,13 +32,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXDevLauncherController : NSObject <RCTBridgeDelegate>
+@interface EXDevLauncherController : NSObject <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
 
 @property (nonatomic, weak) RCTBridge * _Nullable appBridge;
-@property (nonatomic, strong) RCTBridge *launcherBridge;
+@property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
-@property (nonatomic, strong) id updatesInterface;
+@property (nonatomic, strong) id<EXUpdatesExternalInterface> updatesInterface;
 @property (nonatomic, readonly, assign) BOOL isStarted;
 
 + (instancetype)sharedInstance;
@@ -57,8 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadApp:(NSURL *)url onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
 - (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL  * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
-
-- (NSDictionary *)recentlyOpenedApps;
 
 - (void)clearRecentlyOpenedApps;
 

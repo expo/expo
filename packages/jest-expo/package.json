@@ -1,15 +1,21 @@
 {
   "name": "jest-expo",
-  "version": "50.0.0-alpha.4",
+  "version": "52.0.0-preview.0",
   "description": "A Jest preset to painlessly test your Expo / React Native apps.",
   "license": "MIT",
-  "main": "src",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/expo/expo.git",
     "directory": "packages/jest-expo"
   },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/jest-expo",
   "files": [
+    "rsc",
     "android",
     "bin",
     "config",
@@ -31,21 +37,26 @@
     "preset": "jest-expo/universal"
   },
   "dependencies": {
-    "@expo/config": "~8.4.0",
-    "@expo/json-file": "^8.2.37",
+    "@expo/config": "~10.0.0",
+    "@expo/json-file": "^9.0.0",
     "@jest/create-cache-key-function": "^29.2.1",
+    "@jest/globals": "^29.2.1",
     "babel-jest": "^29.2.1",
+    "fbemitter": "^3.0.0",
     "find-up": "^5.0.0",
     "jest-environment-jsdom": "^29.2.1",
+    "jest-snapshot": "^29.2.1",
     "jest-watch-select-projects": "^2.0.0",
     "jest-watch-typeahead": "2.2.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
-    "react-test-renderer": "18.2.0",
+    "react-server-dom-webpack": "19.0.0-rc-6230622a1a-20240610",
+    "react-test-renderer": "18.3.1",
+    "server-only": "^0.0.1",
     "stacktrace-js": "^2.0.2"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/jest-expo"
+  "peerDependencies": {
+    "expo": "*",
+    "react-native": "*"
+  }
 }

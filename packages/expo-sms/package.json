@@ -1,6 +1,6 @@
 {
   "name": "expo-sms",
-  "version": "11.7.0",
+  "version": "13.0.0",
   "description": "Provides access to the system's UI/app for sending SMS messages.",
   "main": "build/SMS.js",
   "types": "build/SMS.d.ts",
@@ -35,7 +35,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*"

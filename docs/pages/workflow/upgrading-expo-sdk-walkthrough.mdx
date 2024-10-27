@@ -3,100 +3,178 @@ title: Upgrade Expo SDK
 description: Learn how to incrementally upgrade the Expo SDK version in your project.
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
 > **info** We recommend upgrading SDK versions incrementally, one at a time. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
 
-Expo maintains ~6 months of backward compatibility. Once an SDK version has been deprecated, you will no longer be able to use the Expo Go app. However, you will still be able to publish updates via `eas update`, and build using `eas build`. Deprecations **will not** affect the standalone apps you have in production.
+With a new SDK release, the latest version enters the current release status. This applies to Expo Go as it only supports the latest SDK version and previous versions are no longer supported. We recommend using [development builds](/develop/development-builds/introduction/) for production apps as the backwards compatibility for older SDK versions on EAS services tends to be much longer, but not forever.
 
-## SDK 50 (alpha)
+If you are looking to install a specific version of Expo Go, visit [expo.dev/go](https://expo.dev/go). It supports downloads for Android devices/emulators and iOS simulators. However, due to iOS platform restrictions, only the latest version of Expo Go is available for installation on physical iOS devices.
 
-[How to use pre-release versions](/versions/latest/#using-pre-release-versions)
+## How to upgrade to the latest SDK version
 
-## SDK 49
+<Step label="1">
+
+### Upgrade the Expo SDK
+
+Install the new version of the Expo package:
+
+<Tabs>
+<Tab label="npm">
+
+<Terminal
+  cmd={[
+    '# Install latest',
+    '$ npm install expo@latest',
+    '',
+    '# Install a specific SDK version (for example, SDK 51)',
+    '$ npm install expo@51',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Yarn">
+
+<Terminal
+  cmd={[
+    '# Install latest',
+    '$ yarn add expo@latest',
+    '',
+    '# Install a specific SDK version (for example, SDK 51)',
+    '$ yarn add expo@51',
+  ]}
+/>
+
+</Tab>
+</Tabs>
+
+</Step>
+
+<Step label="2">
+
+### Upgrade dependencies
+
+Upgrade all dependencies to match the installed SDK version.
+
+<Terminal cmd={['$ npx expo install --fix']} />
+
+</Step>
+
+<Step label="3">
+
+### Follow the release notes for any other instructions
+
+Read the [SDK changelogs](#sdk-changelogs) for the SDK version you are upgrading to. They contain important information about breaking changes, deprecations, and other changes that may affect your app.
+
+</Step>
+
+## Upgrade native projects
+
+If you manage your own native projects, you will need to manually apply any changes to your native **android** and **ios** project directories. Our [native project upgrade helper](/bare/upgrade) will show you a diff that describes the changes you need to make. Alternatively, you could consider [adopting prebuild](/guides/adopting-prebuild) for easier upgrades in the future.
+
+## SDK Changelogs
+
+Each SDK announcement blog post contains deprecations, breaking changes, and anything else that might be unique to that particular SDK version. When upgrading, be sure to check these out to make sure you don't miss anything.
+
+### SDK 51
+
+[Blog post](https://expo.dev/changelog/2024/05-07-sdk-51)
+
+### SDK 50
+
+[Blog Post](https://expo.dev/changelog/2024/01-18-sdk-50)
+
+### Deprecated SDK Version Changelogs
+
+#### SDK 49
 
 [Blog Post](https://blog.expo.dev/expo-sdk-49-c6d398cdf740)
 
-## SDK 48
+#### SDK 48
 
 [Blog Post](https://blog.expo.dev/expo-sdk-48-ccb8302e231)
 
-## SDK 47
+#### SDK 47
 
 [Blog Post](https://blog.expo.dev/expo-sdk-47-a0f6f5c038af)
 
-## SDK 46 [DEPRECATED]
+#### SDK 46
 
 [Blog Post](https://blog.expo.dev/expo-sdk-46-c2a1655f63f7)
 
-## SDK 45 [DEPRECATED]
+#### SDK 45
 
 [Blog Post](https://blog.expo.dev/expo-sdk-45-f4e332954a68)
 
-## SDK 44 [DEPRECATED]
+#### SDK 44
 
 [Blog Post](https://blog.expo.dev/expo-sdk-44-4c4b8306584a)
 
-## SDK 43 [DEPRECATED]
+#### SDK 43
 
 [Blog Post](https://blog.expo.dev/expo-sdk-43-aa9b3c7d5541)
 
-## SDK 42 [DEPRECATED]
+#### SDK 42
 
 [Blog Post](https://blog.expo.dev/expo-sdk-42-579aee2348b6)
 
-## SDK 41 [DEPRECATED]
+#### SDK 41
 
 [Blog Post](https://blog.expo.dev/expo-sdk-41-12cc5232f2ef)
 
-## SDK 40 [DEPRECATED]
+#### SDK 40
 
 [Blog Post](https://dev.to/expo/expo-sdk-40-is-now-available-1in0)
 
-## SDK 39 [DEPRECATED]
+#### SDK 39
 
 [Blog Post](https://dev.to/expo/expo-sdk-39-is-now-available-1lm8)
 
-## SDK 38 [DEPRECATED]
+#### SDK 38
 
 [Blog Post](https://dev.to/expo/expo-sdk-38-is-now-available-5aa0)
 
-## SDK 37 [DEPRECATED]
+#### SDK 37
 
 [Blog Post](https://dev.to/expo/expo-sdk-37-is-now-available-69g)
 
-## SDK 36 [DEPRECATED]
+#### SDK 36
 
 [Blog Post](https://blog.expo.dev/expo-sdk-36-is-now-available-b91897b437fe)
 
-## SDK 35 [DEPRECATED]
+#### SDK 35
 
 [Blog Post](https://blog.expo.dev/expo-sdk-35-is-now-available-beee0dfafbf4)
 
-#### Upgrade from SDK 34
+##### Upgrade from SDK 34
 
 - Run `expo update 35.0.0`
 
-#### Notes
+##### Notes
 
 - There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
-## SDK 34 [DEPRECATED]
+#### SDK 34
 
 [Blog Post](https://blog.expo.dev/expo-sdk-34-is-now-available-4f7825239319)
 
-#### Upgrade from SDK 33
+##### Upgrade from SDK 33
 
 - Run `expo update 34.0.0`
 
-#### Notes
+##### Notes
 
 - You will need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you will need to run `npx expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
 - There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
-## SDK 33 [DEPRECATED]
+#### SDK 33
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v33-0-0-is-now-available-52d1c99dfe4c)
 
-#### Upgrade from SDK 32
+##### Upgrade from SDK 32
 
 - **app.json**, change `sdkVersion` to `"33.0.0"`,
 - In **package.json**, change these dependencies:
@@ -111,16 +189,16 @@ Expo maintains ~6 months of backward compatibility. Once an SDK version has been
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - You will need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you will need to run `npx expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
 - There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
-## SDK 32 [DEPRECATED]
+#### SDK 32
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v32-0-0-is-now-available-6b78f92a6c52)
 
-#### Upgrade from SDK 31
+##### Upgrade from SDK 31
 
 - **app.json**, change `sdkVersion` to `"32.0.0"`,
 - In **package.json**, change these dependencies:
@@ -135,7 +213,7 @@ Expo maintains ~6 months of backward compatibility. Once an SDK version has been
 
 - If using the default `.babelrc`, change it to **babel.config.js**:
 
-```javascript
+```js
 module.exports = function (api) {
   api.cache(true);
   return {
@@ -146,15 +224,15 @@ module.exports = function (api) {
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
-## SDK 31 [DEPRECATED]
+#### SDK 31
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v31-0-0-is-now-available-cad6d0463f49)
 
-#### Upgrade from SDK 30
+##### Upgrade from SDK 30
 
 - **app.json**, change `sdkVersion` to `"31.0.0"`,
 - In **package.json**, change these dependencies:
@@ -169,15 +247,15 @@ module.exports = function (api) {
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md#3100-partial-changelog) for the full list.
 
-## SDK 30 [DEPRECATED]
+#### SDK 30
 
 [Blog Post](https://blog.expo.dev/expo-sdk-30-0-0-is-now-available-e64d8b1db2a7)
 
-#### Upgrade from SDK 29
+##### Upgrade from SDK 29
 
 - **app.json**, change `sdkVersion` to `"30.0.0"`,
 - In **package.json**, change these dependencies:
@@ -192,15 +270,15 @@ module.exports = function (api) {
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - `Fingerprint` has been renamed to `LocalAuthentication`
 
-## SDK 29 [DEPRECATED]
+#### SDK 29
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v29-0-0-is-now-available-f001d77fadf)
 
-#### Upgrade from SDK 28
+##### Upgrade from SDK 28
 
 - **app.json**, change `sdkVersion` to `"29.0.0"`,
 - In **package.json**, change these dependencies:
@@ -215,15 +293,15 @@ module.exports = function (api) {
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - Some field names in `Contacts` were changed. See the [documentation](../versions/latest/sdk/contacts) for more information.
 
-## SDK 28 [DEPRECATED]
+#### SDK 28
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v28-0-0-is-now-available-f30e8253b530)
 
-#### Upgrade from SDK 27
+##### Upgrade from SDK 27
 
 - **app.json**, change `sdkVersion` to `"28.0.0"`,
 - In **package.json**, change these dependencies:
@@ -238,17 +316,17 @@ module.exports = function (api) {
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - Android apps on all SDK versions now require notification channels for push notifications. This may impact you even if you don't yet use SDK 28. [Read this blog post](https://blog.expo.dev/breaking-change-coming-to-android-apps-3116927f0424) for all of the necessary information.
 - Android app icons are now coerced into adaptive icons. Be sure to test your app icon and supply an adaptive icon if needed. [Read this blog post](https://blog.expo.dev/adaptive-launcher-icons-coming-to-expo-android-apps-7b9191eea6c1) for all of the necessary information.
 - Print has been moved out of DangerZone; update your imports accordingly.
 
-## SDK 27 [DEPRECATED]
+#### SDK 27
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v27-0-0-is-now-available-898bf1e5b0e4)
 
-#### Upgrade from SDK 26
+##### Upgrade from SDK 26
 
 - In **app.json**, change sdkVersion to `"27.0.0"`
 - In **package.json**, change these dependencies:
@@ -263,17 +341,17 @@ module.exports = function (api) {
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - `View.propTypes` has been removed from React Native, so if your code (or any of your dependent libraries) uses it, that will break. Use `ViewPropTypes` instead. We strongly recommend running your app with the dev flag disabled to test whether it's affected by this change.
 - We changed the format of `Constants.linkingUri` (see Linking changes above), so if your code makes assumptions about this, you should double check that.
 - [Camera roll permissions](../versions/latest/sdk/permissions/#expopermissionscamera_roll) are now required to use ImagePicker.launchCameraAsync() and ImagePicker.launchImageLibraryAsync(). You can ask for them by calling `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
 
-## SDK 26 [DEPRECATED]
+#### SDK 26
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v26-0-0-is-now-available-2be6d9805b31)
 
-#### Upgrade from SDK 25
+##### Upgrade from SDK 25
 
 - In **app.json**, change sdkVersion to `"26.0.0"`
 - In **package.json**, change these dependencies:
@@ -288,7 +366,7 @@ module.exports = function (api) {
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - `Expo.Util` is deprecated, functionality has been moved out to `Expo.DangerZone.Localization` and `Expo.Updates`.
 - `ios.loadJSInBackgroundExperimental` is now deprecated, use the new `Updates` API instead. The equivalent of this configuration is `updates.fallbackToCacheTimeout: 0`.
@@ -300,11 +378,11 @@ module.exports = function (api) {
 - On iOS, calling `Notifications.getExpoPushToken()` will throw an error if you don't have permission to send notifications. We recommend call `Permissions.getAsync(Permissions.NOTIFICATIONS)` and, if needed and you haven't asked before, `Permissions.askAsync(Permissions.NOTIFICATIONS)` before getting push token.
 - React Native 0.53.0 removed the TextInput autoGrow prop. [Commit](https://github.com/facebook/react-native/commit/dabb78b1278d922e18b2a84059460689da12578b#diff-b48972356bc8dca4a00747d002fc3dd5).
 
-## SDK 25 [DEPRECATED]
+#### SDK 25
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v25-0-0-is-now-available-714d10a8c3f7)
 
-#### Upgrade from SDK 24
+##### Upgrade from SDK 24
 
 - In **app.json**, change sdkVersion to `"25.0.0"`
 - In **package.json**, change these dependencies:
@@ -319,16 +397,16 @@ module.exports = function (api) {
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - If you have any scripts in your project that depend on `metro-bundler`, you will need to change those to `metro` ([related commit](https://github.com/facebook/metro/commit/0f7ad193c75183eeff1b356644ccf22b0813bb04)). A likely place for this is in `rn-cli.config.js`.
 - Although not technically part of the SDK, React Navigation is commonly used by Expo users, and it's worth mentioning that on Android React Navigation now properly accounts for the translucent status bar. This may require you to remove code that you have to workaround that (maybe a paddingTop somewhere to avoid the content from rendering underneath the status bar). [Read the React Navigation release notes for more information](https://github.com/react-navigation/react-navigation/releases/tag/v1.0.0-beta.26). Only applies to `react-navigation@1.0.0-beta.26` and higher.
 
-## SDK 24 [DEPRECATED]
+#### SDK 24
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v24-0-0-is-now-available-bfcac3b50d51)
 
-#### Upgrade from SDK 23
+##### Upgrade from SDK 23
 
 - In **app.json**, change sdkVersion to `"24.0.0"`
 - In **package.json**, change these dependencies:
@@ -343,7 +421,7 @@ module.exports = function (api) {
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 The following APIs have been removed after being deprecated for a minimum of 2 releases:
 
@@ -351,11 +429,11 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 - `Expo.Font.style`
 - Passing an object into `Expo.SQLite.openDatabase()` instead of separate arguments is no longer supported.
 
-## SDK 23 [DEPRECATED]
+#### SDK 23
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v23-0-0-is-now-available-be0a8c655414)
 
-#### Upgrade from SDK 22
+##### Upgrade from SDK 22
 
 - In **app.json**, change sdkVersion to `"23.0.0"`
 - In **package.json**, change these dependencies:
@@ -370,7 +448,7 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 - React Native no longer supports nesting components inside of `<Image>` &mdash; some developers used this to use an image as a background behind other views. To fix this in your app, replace the `Image` component anywhere where you are nesting views inside of it with the `ImageBackground` component, like this:
 
@@ -396,11 +474,11 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 - React Native now defaults `enableBabelRCLookup` (recursive) to `false` in Metro bundler (the default bundler for React Native). This is unlikely to cause any problems for your application — in our case, this lets us remove a script to delete nested `.babelrc` files from `node_modules` in our postinstall. If you run into transform errors when updating your app, [read this commit message for more information](https://github.com/facebook/react-native/commit/023ac57337b351959d443133c3c09607c4ffc800) and to see how to opt-in to the old behavior.
 
-## SDK 22 [DEPRECATED]
+#### SDK 22
 
 [Blog Post](https://blog.expo.dev/expo-sdk-v22-0-0-is-now-available-7745bfe97fc6)
 
-#### Upgrade from SDK 21
+##### Upgrade from SDK 21
 
 - In **app.json**, change sdkVersion to `"22.0.0"`
 - In **package.json**, change these dependencies:
@@ -415,7 +493,7 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 Metro Bundler (the default React Native bundler) now errors (instead of silently ignoring) dynamic requires. In particular this breaks an older version of moment.js if you were using that (or indirectly depending on it).
 
@@ -436,11 +514,11 @@ Several deprecated APIs have been removed. All of these APIs printed warning mes
 If you have not yet updated your imports of `PropTypes` as warned in deprecation warnings in previous releases, you will need to do this now. Install the `prop-types` package and `import PropTypes from 'prop-types'`; instead of `import { PropTypes } from React;`!
 Similarly, if you depend on `React.createClass`, you will need to install the `create-react-class` package and `import createReactClass from 'create-react-class';` [as described in the React documentation](https://reactjs.org/docs/react-without-es6.html).
 
-## SDK 21 [DEPRECATED]
+#### SDK 21
 
 [Blog Post](https://blog.expo.dev/expo-sdk-21-0-0-is-now-available-be33b79921b7)
 
-#### Upgrade from SDK 20
+##### Upgrade from SDK 20
 
 - In **app.json**, change sdkVersion to `"21.0.0"`
 - In **package.json**, change these dependencies:
@@ -455,7 +533,7 @@ Similarly, if you depend on `React.createClass`, you will need to install the `c
 
 - Delete your project's **node_modules** directory and run `npm install` again
 
-#### Notes
+##### Notes
 
 Camera
 

@@ -3,14 +3,18 @@
 import chalk from 'chalk';
 import UpstreamTerminalReporter from 'metro/src/lib/TerminalReporter';
 import { Terminal } from 'metro-core';
+import type { WatcherStatus } from 'metro-file-map';
 import util from 'util';
 
 import {
   BundleDetails,
+  BundleProgressUpdate,
   TerminalReportableEvent,
   TerminalReporterInterface,
 } from './TerminalReporter.types';
 import { stripAnsi } from '../../../utils/ansi';
+
+const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
 /**
  * A standard way to log a warning to the terminal. This should not be called
@@ -50,7 +54,10 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
   _bundleDetails: Map<string, BundleDetails> = new Map();
 
   /** Keep track of how long a bundle takes to complete */
-  _bundleTimers: Map<string, number> = new Map();
+  _bundleTimers: Map<string, bigint> = new Map();
+
+  /** Keep track of bundle processes that should not be logged. */
+  _hiddenBundleEvents: Set<string> = new Set();
 
   _log(event: TerminalReportableEvent): void {
     switch (event.type) {
@@ -68,11 +75,12 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
   }
 
   /** Gives subclasses an easy interface for filtering out logs. Return `true` to skip. */
-  shouldFilterClientLog(event: {
-    type: 'client_log';
-    level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug';
-    data: unknown[];
-  }): boolean {
+  shouldFilterClientLog(event: TerminalReportableEvent): boolean {
+    return false;
+  }
+
+  /** Gives subclasses an easy interface for filtering out bundle events, specifically for source maps. Return `true` to skip. */
+  shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
     return false;
   }
 
@@ -88,7 +96,30 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
    * @param event event object.
    * @param duration duration of the build in milliseconds.
    */
-  bundleBuildEnded(event: TerminalReportableEvent, duration: number): void {}
+  bundleBuildEnded(event: TerminalReportableEvent, duration: bigint | number): void {}
+
+  // Add a custom format to logs that come from the worker threads.
+  // `| <contents>`
+  _logWorkerChunk(origin: 'stdout' | 'stderr', chunk: string): void {
+    const lines = chunk.split('\n');
+    if (lines.length >= 1 && lines[lines.length - 1] === '') {
+      lines.splice(lines.length - 1, 1);
+    }
+
+    const originTag = origin === 'stdout' ? chalk.dim('|') : chalk.yellow('|');
+    lines.forEach((line: string) => {
+      this.terminal.log(originTag, line);
+    });
+  }
+
+  _logWatcherStatus(status: WatcherStatus) {
+    // Metro logs this warning twice. This helps reduce the noise.
+
+    if (status.type === 'watchman_warning') {
+      return;
+    }
+    return super._logWatcherStatus(status);
+  }
 
   /**
    * This function is exclusively concerned with updating the internal state.
@@ -102,7 +133,19 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
       event.bundleDetails.buildID = event.buildID;
     }
 
-    super._updateState(event);
+    const buildID = event.bundleDetails?.buildID ?? event.buildID;
+
+    if (buildID && !this._hiddenBundleEvents.has(buildID)) {
+      if (this.shouldFilterBundleEvent(event)) {
+        debug('skipping bundle events for', buildID, event);
+        this._hiddenBundleEvents.add(buildID);
+      } else {
+        super._updateState(event);
+      }
+    } else {
+      super._updateState(event);
+    }
+
     switch (event.type) {
       case 'bundle_build_done':
       case 'bundle_build_failed': {
@@ -113,14 +156,34 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
           break;
         }
 
-        this.bundleBuildEnded(event, startTime ? Date.now() - startTime : 0);
+        this.bundleBuildEnded(event, startTime ? process.hrtime.bigint() - startTime : 0);
         this._bundleTimers.delete(event.buildID);
         break;
       }
       case 'bundle_build_started':
         this._bundleDetails.set(event.buildID, event.bundleDetails);
-        this._bundleTimers.set(event.buildID, Date.now());
+        this._bundleTimers.set(event.buildID, process.hrtime.bigint());
         break;
+    }
+  }
+
+  /**
+   * We use Math.pow(ratio, 2) to as a conservative measure of progress because
+   * we know the `totalCount` is going to progressively increase as well. We
+   * also prevent the ratio from going backwards.
+   */
+  _updateBundleProgress(options: BundleProgressUpdate) {
+    super._updateBundleProgress(options);
+
+    const currentProgress = this._activeBundles.get(options.buildID);
+    if (!currentProgress) {
+      return;
+    }
+
+    // Fix an issue where the transformer is faster than the resolver,
+    // locking the progress bar at 100% after transforming the first and only resolved file (1/1).
+    if (currentProgress.ratio === 1 && options.totalFileCount === 1) {
+      Object.assign(currentProgress, { ...currentProgress, ratio: 0 });
     }
   }
 }

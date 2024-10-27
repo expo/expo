@@ -1,7 +1,7 @@
-platform :ios, '13.4'
+platform :ios, '15.1'
 
-# Disable expo-updates auto create manifest in podspec script_phase
-$expo_updates_create_manifest = false
+# Disable expo-updates auto create updates resources in podspec script_phase
+$expo_updates_create_updates_resources = false
 
 # Require autolinking script
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
@@ -79,7 +79,7 @@ target 'ExpoKitApp' do
 
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
       end
 
 
@@ -87,7 +87,7 @@ target 'ExpoKitApp' do
       # projects which don't reference ExponentCPP.
       if pod_name.start_with?('React')
         target_installation_result.native_target.build_configurations.each do |config|
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
           config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
         end
       end

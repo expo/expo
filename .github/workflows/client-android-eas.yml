@@ -1,40 +1,20 @@
 name: Android Client - EAS Build
 
 on:
-  workflow_dispatch:
-    inputs:
-      buildType:
-        required: true
-        type: 'choice'
-        description: 'buildType'
-        options:
-          - versioned-client
-          - unversioned-client
-          - versioned-client-add-sdk
-  schedule:
-    # 5:20 AM UTC time on every Monday, Wednesday and Friday
-    # Build a versioned client
-    - cron: '20 5 * * 1,3,5'
-    # 5:20 AM UTC time on every Monday
-    # Run versioning process for the next sdk and build a versioned client
-    - cron: '20 5 * * 1'
+  workflow_dispatch: {}
   pull_request:
     paths:
       - .github/workflows/client-android-eas.yml
       - apps/eas-expo-go/**
-      - android/versioned-abis/**
-      - android/versioned-react-native/**
-      - android/expoview/**
-      - android/**/*.gradle
+      - apps/expo-go/android/**
   push:
     branches: [main, sdk-*]
     paths:
       - .github/workflows/client-android-eas.yml
       - apps/eas-expo-go/**
-      - android/versioned-abis/**
-      - android/versioned-react-native/**
-      - android/expoview/**
-      - android/**/*.gradle
+      - apps/expo-go/android/**
+  schedule:
+    - cron: '20 5 * * *' # 5:20 AM UTC time every day
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -43,10 +23,10 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
+    if: ${{ github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: 🔓 Decrypt secrets if possible
@@ -66,35 +46,6 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Install eas-cli
         run: npm install -g eas-cli
-      - name: 🔎 Check which flavor to build
-        id: flavor
-        uses: dorny/paths-filter@v2
-        with:
-          # this action fails when base is not set on schedule event
-          base: ${{ github.ref }}
-          filters: |
-            versioned:
-              - android/versioned-abis/**
-              - android/versioned-react-native/**
-              - android/expoview/src/versioned/**
-              - android/expoview/src/main/java/versioned/**
-              - android/**/*.gradle
-      - name: Resolve profile
-        id: profile
-        run: |
-          DISPATCH_PROFILE="${{ github.event.inputs.buildType }}"
-          IS_VERSIONED="${{ steps.flavor.outputs.versioned }}"
-          if [[ ! -z "$DISPATCH_PROFILE" ]]; then
-            echo "profile=$DISPATCH_PROFILE" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.schedule }}" == "20 5 * * 1,3,5" ]]; then
-            echo "profile=versioned-client" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event.schedule }}" == "20 5 * * 1" ]]; then
-            echo "profile=versioned-client-add-sdk" >> $GITHUB_OUTPUT
-          elif [[ "$IS_VERSIONED" == "true" ]]; then
-            echo "profile=versioned-client" >> $GITHUB_OUTPUT
-          else
-            echo "profile=unversioned-client" >> $GITHUB_OUTPUT
-          fi
       - name: Generate local credentials.json
         working-directory: ./apps/eas-expo-go
         run: |
@@ -120,10 +71,9 @@ jobs:
         id: build
         with:
           platform: 'android'
-          profile: ${{ steps.profile.outputs.profile  }}
+          profile: 'unversioned-client'
           projectRoot: './apps/eas-expo-go'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          noWait: ${{ github.event.schedule }}
           message: ${{ github.event.pull_request.title }}
       - name: On workflow canceled
         if: ${{ cancelled() && steps.build.outputs.build_id }}
@@ -131,4 +81,15 @@ jobs:
         working-directory: ./apps/eas-expo-go
         env:
           EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          EAS_BUILD_PROFILE: ${{ steps.profile.outputs.profile  }}
+          EAS_BUILD_PROFILE: 'unversioned-client'
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
+        with:
+          channel: '#expo-android'
+          status: ${{ job.status }}
+          fields: job,message,ref,eventName,author,took
+          author_name: Expo Go (Android)

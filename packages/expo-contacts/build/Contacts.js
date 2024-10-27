@@ -1,4 +1,4 @@
-import { PermissionStatus, UnavailabilityError, uuid } from 'expo-modules-core';
+import { PermissionStatus, UnavailabilityError, uuid, } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
 import ExpoContacts from './ExpoContacts';
 export { PermissionStatus };
@@ -9,6 +9,7 @@ export { PermissionStatus };
 export async function isAvailableAsync() {
     return !!ExpoContacts.getContactsAsync;
 }
+// @docsMissing
 export async function shareContactAsync(contactId, message, shareOptions = {}) {
     if (Platform.OS === 'ios') {
         const url = await writeContactToFileAsync({
@@ -222,7 +223,7 @@ export async function addExistingGroupToContainerAsync(groupId, containerId) {
     return await ExpoContacts.addExistingGroupToContainerAsync(groupId, containerId);
 }
 /**
- * Create a group with a name, and add it to a container. If the container is undefined, the default container will be targeted.
+ * Create a group with a name, and add it to a container. If the container is `undefined`, the default container will be targeted.
  * @param name Name of the new group.
  * @param containerId The container you to add membership to.
  * @return A promise that fulfills with ID of the new group.
@@ -331,6 +332,18 @@ export async function getGroupsAsync(groupQuery) {
         throw new UnavailabilityError('Contacts', 'getGroupsAsync');
     }
     return await ExpoContacts.getGroupsAsync(groupQuery);
+}
+/**
+ * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
+ * obtain this permission by calling the [`Contacts.requestPermissionsAsync()`](#contactsrequestpermissionsasync) method. On iOS, no permissions are
+ * required to use this method.
+ * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
+ */
+export async function presentContactPickerAsync() {
+    if (!ExpoContacts.presentContactPickerAsync) {
+        throw new UnavailabilityError('Contacts', 'presentContactPickerAsync');
+    }
+    return await ExpoContacts.presentContactPickerAsync();
 }
 /**
  * Get the default container's ID.

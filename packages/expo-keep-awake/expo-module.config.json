@@ -1,6 +1,6 @@
 {
-  "platforms": ["ios", "android"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "modules": ["KeepAwakeModule"]
   },
   "android": {

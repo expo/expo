@@ -41,6 +41,16 @@ export async function test(t) {
         const result = await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         t.expect(result).toBeUndefined();
       });
+
+      t.it('rigid', async () => {
+        const result = await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+        t.expect(result).toBeUndefined();
+      });
+
+      t.it('soft', async () => {
+        const result = await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+        t.expect(result).toBeUndefined();
+      });
     });
   });
 }

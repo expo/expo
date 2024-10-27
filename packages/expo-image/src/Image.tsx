@@ -1,27 +1,52 @@
+'use client';
+
+import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import ExpoImage, { ExpoImageModule } from './ExpoImage';
-import { ImageProps } from './Image.types';
+import ExpoImage from './ExpoImage';
+import {
+  ImageLoadOptions,
+  ImagePrefetchOptions,
+  ImageProps,
+  ImageRef,
+  ImageSource,
+} from './Image.types';
+import ImageModule from './ImageModule';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
-import { resolveSources } from './utils/resolveSources';
+import { resolveSource, resolveSources } from './utils/resolveSources';
 
 let loggedDefaultSourceDeprecationWarning = false;
 
 export class Image extends React.PureComponent<ImageProps> {
   nativeViewRef;
-
+  containerViewRef;
   constructor(props) {
     super(props);
-    this.nativeViewRef = React.createRef();
+    this.nativeViewRef = createSnapshotFriendlyRef();
+    this.containerViewRef = createSnapshotFriendlyRef();
   }
+
+  // Reanimated support on web
+  getAnimatableRef = () => {
+    if (Platform.OS === 'web') {
+      return this.containerViewRef.current;
+    } else {
+      return this;
+    }
+  };
+
+  /**
+   * @hidden
+   */
+  static Image = ImageModule.Image;
 
   /**
    * Preloads images at the given URLs that can be later used in the image view.
    * Preloaded images are cached to the memory and disk by default, so make sure
    * to use `disk` (default) or `memory-disk` [cache policy](#cachepolicy).
    * @param urls - A URL string or an array of URLs of images to prefetch.
-   * @param cachePolicy - The cache policy for prefetched images.
+   * @param {ImagePrefetchOptions['cachePolicy']} cachePolicy - The cache policy for prefetched images.
    * @return A promise resolving to `true` as soon as all images have been
    * successfully prefetched. If an image fails to be prefetched, the promise
    * will immediately resolve to `false` regardless of whether other images have
@@ -29,9 +54,37 @@ export class Image extends React.PureComponent<ImageProps> {
    */
   static async prefetch(
     urls: string | string[],
-    cachePolicy: 'memory-disk' | 'memory' = 'memory-disk'
+    cachePolicy?: ImagePrefetchOptions['cachePolicy']
+  ): Promise<boolean>;
+  /**
+   * Preloads images at the given URLs that can be later used in the image view.
+   * Preloaded images are cached to the memory and disk by default, so make sure
+   * to use `disk` (default) or `memory-disk` [cache policy](#cachepolicy).
+   * @param urls - A URL string or an array of URLs of images to prefetch.
+   * @param options - Options for prefetching images.
+   * @return A promise resolving to `true` as soon as all images have been
+   * successfully prefetched. If an image fails to be prefetched, the promise
+   * will immediately resolve to `false` regardless of whether other images have
+   * finished prefetching.
+   */
+  static async prefetch(urls: string | string[], options?: ImagePrefetchOptions): Promise<boolean>;
+  static async prefetch(
+    urls: string | string[],
+    options?: ImagePrefetchOptions['cachePolicy'] | ImagePrefetchOptions
   ): Promise<boolean> {
-    return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy);
+    let cachePolicy: ImagePrefetchOptions['cachePolicy'] = 'memory-disk';
+    let headers: ImagePrefetchOptions['headers'];
+    switch (typeof options) {
+      case 'string':
+        cachePolicy = options;
+        break;
+      case 'object':
+        cachePolicy = options.cachePolicy ?? cachePolicy;
+        headers = options.headers;
+        break;
+    }
+
+    return ImageModule.prefetch(Array.isArray(urls) ? urls : [urls], cachePolicy, headers);
   }
 
   /**
@@ -43,7 +96,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * Resolves to `false` on Web.
    */
   static async clearMemoryCache(): Promise<boolean> {
-    return await ExpoImageModule.clearMemoryCache();
+    return await ImageModule.clearMemoryCache();
   }
 
   /**
@@ -55,7 +108,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * Resolves to `false` on Web.
    */
   static async clearDiskCache(): Promise<boolean> {
-    return await ExpoImageModule.clearDiskCache();
+    return await ImageModule.clearDiskCache();
   }
 
   /**
@@ -69,7 +122,22 @@ export class Image extends React.PureComponent<ImageProps> {
    * to `null` if the image does not exist in the cache.
    */
   static async getCachePathAsync(cacheKey: string): Promise<string | null> {
-    return await ExpoImageModule.getCachePathAsync(cacheKey);
+    return await ImageModule.getCachePathAsync(cacheKey);
+  }
+
+  /**
+   * Asynchronously generates a [Blurhash](https://blurha.sh) from an image.
+   * @param url - The URL of the image to generate a blurhash from.
+   * @param numberOfComponents - The number of components to encode the blurhash with.
+   * Must be between 1 and 9. Defaults to `[4, 3]`.
+   * @platform ios
+   * @return A promise resolving to the blurhash string.
+   */
+  static async generateBlurhashAsync(
+    url: string,
+    numberOfComponents: [number, number] | { width: number; height: number }
+  ): Promise<string | null> {
+    return await ImageModule.generateBlurhashAsync(url, numberOfComponents);
   }
 
   /**
@@ -88,6 +156,21 @@ export class Image extends React.PureComponent<ImageProps> {
    */
   async stopAnimating(): Promise<void> {
     await this.nativeViewRef.current.stopAnimating();
+  }
+
+  /**
+   * Loads an image from the given source to memory and resolves to
+   * an object that references the native image instance.
+   * @platform android
+   * @platform ios
+   * @platform web
+   */
+  static async loadAsync(
+    source: ImageSource | string,
+    options?: ImageLoadOptions
+  ): Promise<ImageRef> {
+    const resolvedSource = resolveSource(source) as ImageSource;
+    return await ImageModule.loadAsync(resolvedSource, options);
   }
 
   render() {
@@ -125,6 +208,7 @@ export class Image extends React.PureComponent<ImageProps> {
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
         nativeViewRef={this.nativeViewRef}
+        containerViewRef={this.containerViewRef}
       />
     );
   }

@@ -4,12 +4,19 @@ maxHeadingDepth: 4
 description: A guide on getting started and using Firebase JS SDK and React Native Firebase library.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import RedirectNotification from '~/ui/components/RedirectNotification';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-[Firebase](https://firebase.google.com/) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as realtime database, cloud storage, authentication, crash reporting, analytics, and so on.
+<RedirectNotification>
+  The `expo-firebase-analytics` and `expo-firebase-recaptcha` libraries have been removed from SDK
+  48 onwards. We recommend using [React Native Firebase](#using-react-native-firebase) which
+  provides capabilities similar to these libraries.
+</RedirectNotification>
+
+[Firebase](https://firebase.google.com/) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as real-time database, cloud storage, authentication, crash reporting, analytics, and so on.
 It is built on Google's infrastructure and scales automatically.
 
 There are two different ways you can use Firebase in your projects:
@@ -32,7 +39,7 @@ It supports services such as [Authentication](https://firebase.google.com/docs/a
 
 You can consider using the Firebase JS SDK when you:
 
-- Want to use Firebase services such as Authentication, Firestore, Realtime Database, and Storage in your app and want to develop your app with [**Expo Go**](/get-started/expo-go/).
+- Want to use Firebase services such as Authentication, Firestore, Realtime Database, and Storage in your app and want to develop your app with [**Expo Go**](/get-started/set-up-your-environment/).
 - Want a quick start with Firebase services.
 - Want to create a universal app for Android, iOS, and the web.
 
@@ -42,7 +49,7 @@ Firebase JS SDK does not support all services for mobile apps. Some of these ser
 
 ### Install and initialize Firebase JS SDK
 
-The following sub-sections use `firebase@9.x.x`. Expo SDK do not enforce or recommend any specific version of Firebase to use in your app.
+The following sub-sections use `firebase@9.x.x`. Expo SDK does not enforce or recommend any specific version of Firebase to use in your app.
 
 If you are using an older version of the firebase library in your project, you may have to adapt the code examples to match the version that you are using with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
 
@@ -92,9 +99,9 @@ const app = initializeApp(firebaseConfig);
 
 You do not have to install other plugins or configurations to use Firebase JS SDK.
 
-Firebase version 9 provides a modular API. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
+Firebase version 9 and above provide a modular API. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
 
-> Using Firebase Authentication with version 9 or below? See [the guide for setting up persistence to keep users logged in between reloads](https://expo.fyi/firebase-js-auth-setup).
+> **info** **Troubleshooting tip:** If you encounter issues related to authentication persistence with Firebase JS SDK, see the guide for [setting up persistence to keep users logged in between reloads](https://expo.fyi/firebase-js-auth-setup).
 
 </Step>
 
@@ -103,7 +110,7 @@ Firebase version 9 provides a modular API. You can directly import any service y
 
 > **info** If you are using Firebase version `9.7.x` and above, you need to add the following configuration to a **metro.config.js** file to make sure that the Firebase JS SDK is bundled correctly.
 
-Expo CLI uses [Metro](https://facebook.github.io/metro/) to bundle your JavaScript code and assets, and add [support for more file extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts).
+Expo CLI uses [Metro](https://metrobundler.dev/) to bundle your JavaScript code and assets, and add [support for more file extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts).
 
 Start by generating the template file **metro.config.js** in your project's root directory using the following command:
 

@@ -1,5 +1,5 @@
-import { DefaultDependencyKind, DependencyKind, Package } from '../Packages';
 import PackagesGraphEdge from './PackagesGraphEdge';
+import { DefaultDependencyKind, DependencyKind, Package } from '../Packages';
 
 /**
  * A graph node that refers to the single package.

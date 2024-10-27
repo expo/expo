@@ -1,6 +1,4 @@
-import { ExpoRequest, ExpoResponse } from 'expo-router/server';
-
-export function GET(req: ExpoRequest): ExpoResponse {
+export function GET(_req: Request, { dynamic }): Response {
   // curl -d "param1=value1&param2=value2" -X POST http://localhost:8082/data
-  return ExpoResponse.json({ hello: req.expoUrl.searchParams.get('dynamic') });
+  return new Response(JSON.stringify({ hello: dynamic }));
 }

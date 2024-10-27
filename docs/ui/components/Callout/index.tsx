@@ -1,19 +1,24 @@
 import { css } from '@emotion/react';
 import { mergeClasses, theme, typography } from '@expo/styleguide';
-import { borderRadius, spacing } from '@expo/styleguide-base';
+import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
+import { InfoCircleSolidIcon } from '@expo/styleguide-icons/solid/InfoCircleSolidIcon';
+import { XSquareSolidIcon } from '@expo/styleguide-icons/solid/XSquareSolidIcon';
 import {
-  XSquareSolidIcon,
-  InfoCircleSolidIcon,
-  AlertTriangleSolidIcon,
-} from '@expo/styleguide-icons';
-import { Children, HTMLAttributes, isValidElement } from 'react';
-import type { PropsWithChildren, ReactNode, ComponentType } from 'react';
+  Children,
+  HTMLAttributes,
+  isValidElement,
+  type ComponentType,
+  type PropsWithChildren,
+  type ReactNode,
+} from 'react';
 
 type CalloutType = 'default' | 'warning' | 'error' | 'info';
 
 type CalloutProps = PropsWithChildren<{
   type?: CalloutType;
+  className?: string;
   icon?: ComponentType<any> | string;
+  size?: 'sm' | 'md';
 }>;
 
 const extractType = (childrenArray: ReactNode[]) => {
@@ -31,7 +36,13 @@ const extractType = (childrenArray: ReactNode[]) => {
   return false;
 };
 
-export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
+export const Callout = ({
+  type = 'default',
+  size = 'md',
+  icon,
+  children,
+  className,
+}: CalloutProps) => {
   const content = Children.toArray(children).filter(child => isValidElement(child))[0];
   const contentChildren = Children.toArray(isValidElement(content) && content?.props?.children);
 
@@ -40,15 +51,31 @@ export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
   const Icon = icon || getCalloutIcon(finalType);
 
   return (
-    <blockquote css={[containerStyle, getCalloutColor(finalType)]} data-testid="callout-container">
-      <div css={iconStyle}>
+    <blockquote
+      css={[containerStyle, getCalloutColor(finalType)]}
+      className={mergeClasses(
+        'flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4',
+        '[table_&]:last-of-type:mb-0',
+        // TODO(simek): remove after migration to new components is completed
+        '[&_p]:!mb-0',
+        className
+      )}
+      data-testid="callout-container">
+      <div
+        className={mergeClasses(
+          'select-none mt-[5px]',
+          '[table_&]:mt-[3px]',
+          size === 'sm' && 'mt-[3px]'
+        )}>
         {typeof icon === 'string' ? (
           icon
         ) : (
           <Icon className={mergeClasses('icon-sm', getCalloutIconColor(finalType))} />
         )}
       </div>
-      <div css={contentStyle}>
+      <div
+        css={size === 'sm' ? contentSmStyle : contentMdStyle}
+        className={mergeClasses('text-default w-full', 'last:mb-0')}>
         {type === finalType ? children : contentChildren.filter((_, i) => i !== 0)}
       </div>
     </blockquote>
@@ -95,45 +122,18 @@ function getCalloutIconColor(type: CalloutType) {
 const containerStyle = css({
   backgroundColor: theme.background.subtle,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.md,
-  display: 'flex',
-  gap: spacing[2],
-  padding: `${spacing[3]}px ${spacing[4]}px`,
-  marginBottom: spacing[4],
-
-  'table &': {
-    ':last-of-type': {
-      marginBottom: 0,
-    },
-  },
 
   code: {
     backgroundColor: theme.background.element,
   },
-
-  // TODO(simek): remove after migration to new components is completed
-  p: {
-    marginBottom: `0 !important`,
-  },
 });
 
-const iconStyle = css({
-  fontStyle: 'normal',
-  marginTop: 5,
-  userSelect: 'none',
-
-  'table &': {
-    marginTop: 3,
-  },
-});
-
-const contentStyle = css({
+const contentMdStyle = css({
   ...typography.fontSizes[16],
-  color: theme.text.default,
+});
 
-  '*:last-child': {
-    marginBottom: 0,
-  },
+const contentSmStyle = css({
+  ...typography.fontSizes[14],
 });
 
 const warningColorStyle = css({

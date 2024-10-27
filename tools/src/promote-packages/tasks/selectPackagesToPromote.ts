@@ -3,11 +3,11 @@ import inquirer from 'inquirer';
 import readline from 'readline';
 import stripAnsi from 'strip-ansi';
 
+import { findPackagesToPromote } from './findPackagesToPromote';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { formatVersionChange } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { findPackagesToPromote } from './findPackagesToPromote';
 
 const { green, red } = chalk;
 

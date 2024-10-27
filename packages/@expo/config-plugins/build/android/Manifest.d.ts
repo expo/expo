@@ -57,6 +57,7 @@ type ManifestApplicationAttributes = {
     'android:allowBackup'?: StringBoolean;
     'android:largeHeap'?: StringBoolean;
     'android:requestLegacyExternalStorage'?: StringBoolean;
+    'android:supportsPictureInPicture'?: StringBoolean;
     'android:usesCleartextTraffic'?: StringBoolean;
     [key: string]: string | undefined;
 };
@@ -115,7 +116,7 @@ export type AndroidManifest = {
 };
 type ManifestQueryIntent = Omit<ManifestIntentFilter, '$'>;
 export type ManifestQuery = {
-    package: {
+    package?: {
         $: {
             'android:name': string;
         };
@@ -125,7 +126,7 @@ export type ManifestQuery = {
         $: {
             'android:authorities': string;
         };
-    };
+    }[];
 };
 export declare function writeAndroidManifestAsync(manifestPath: string, androidManifest: AndroidManifest): Promise<void>;
 export declare function readAndroidManifestAsync(manifestPath: string): Promise<AndroidManifest>;

@@ -17,8 +17,6 @@ import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -28,28 +26,15 @@ private const val AUTHENTICATION_TYPE_FACIAL_RECOGNITION = 2
 private const val AUTHENTICATION_TYPE_IRIS = 3
 private const val SECURITY_LEVEL_NONE = 0
 private const val SECURITY_LEVEL_SECRET = 1
-private const val SECURITY_LEVEL_BIOMETRIC = 2
+private const val SECURITY_LEVEL_BIOMETRIC_WEAK = 2
+private const val SECURITY_LEVEL_BIOMETRIC_STRONG = 3
 private const val DEVICE_CREDENTIAL_FALLBACK_CODE = 6
-
-class AuthOptions : Record {
-  @Field
-  val promptMessage: String = ""
-
-  @Field
-  val cancelLabel: String = ""
-
-  @Field
-  val disableDeviceFallback: Boolean = false
-
-  @Field
-  val requireConfirmation: Boolean = true
-}
 
 class LocalAuthenticationModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalAuthentication")
 
-    AsyncFunction("supportedAuthenticationTypesAsync") {
+    AsyncFunction<Set<Int>>("supportedAuthenticationTypesAsync") {
       val results = mutableSetOf<Int>()
       if (canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
         return@AsyncFunction results
@@ -67,27 +52,30 @@ class LocalAuthenticationModule : Module() {
       return@AsyncFunction results
     }
 
-    AsyncFunction("hasHardwareAsync") {
+    AsyncFunction<Boolean>("hasHardwareAsync") {
       canAuthenticateUsingWeakBiometrics() != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
     }
 
-    AsyncFunction("isEnrolledAsync") {
+    AsyncFunction<Boolean>("isEnrolledAsync") {
       canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_SUCCESS
     }
 
-    AsyncFunction("getEnrolledLevelAsync") {
+    AsyncFunction<Int>("getEnrolledLevelAsync") {
       var level = SECURITY_LEVEL_NONE
       if (isDeviceSecure) {
         level = SECURITY_LEVEL_SECRET
       }
       if (canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_SUCCESS) {
-        level = SECURITY_LEVEL_BIOMETRIC
+        level = SECURITY_LEVEL_BIOMETRIC_WEAK
+      }
+      if (canAuthenticateUsingStrongBiometrics() == BiometricManager.BIOMETRIC_SUCCESS) {
+        level = SECURITY_LEVEL_BIOMETRIC_STRONG
       }
       return@AsyncFunction level
     }
 
     AsyncFunction("authenticateAsync") { options: AuthOptions, promise: Promise ->
-      val fragmentActivity = currentActivity as? FragmentActivity
+      val fragmentActivity = appContext.throwingActivity as? FragmentActivity
       if (fragmentActivity == null) {
         promise.reject(Exceptions.MissingActivity())
         return@AsyncFunction
@@ -149,9 +137,6 @@ class LocalAuthenticationModule : Module() {
 
   private val keyguardManager: KeyguardManager
     get() = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-
-  private val currentActivity: Activity?
-    get() = appContext.currentActivity
 
   private val biometricManager by lazy { BiometricManager.from(context) }
   private val packageManager by lazy { context.packageManager }
@@ -222,8 +207,12 @@ class LocalAuthenticationModule : Module() {
 
     val promptMessage = options.promptMessage
     val cancelLabel = options.cancelLabel
-    val disableDeviceFallback = options.disableDeviceFallback
     val requireConfirmation = options.requireConfirmation
+    val allowedAuthenticators = if (options.disableDeviceFallback) {
+      options.biometricsSecurityLevel.toNativeBiometricSecurityLevel()
+    } else {
+      options.biometricsSecurityLevel.toNativeBiometricSecurityLevel() or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+    }
 
     isAuthenticating = true
     this.promise = promise
@@ -231,14 +220,9 @@ class LocalAuthenticationModule : Module() {
     biometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
     val promptInfoBuilder = PromptInfo.Builder().apply {
       setTitle(promptMessage)
-
-      if (disableDeviceFallback) {
+      setAllowedAuthenticators(allowedAuthenticators)
+      if (options.disableDeviceFallback) {
         setNegativeButtonText(cancelLabel)
-      } else {
-        setAllowedAuthenticators(
-          BiometricManager.Authenticators.BIOMETRIC_WEAK
-            or BiometricManager.Authenticators.DEVICE_CREDENTIAL
-        )
       }
       setConfirmationRequired(requireConfirmation)
     }
@@ -252,7 +236,7 @@ class LocalAuthenticationModule : Module() {
   }
 
   private fun promptDeviceCredentialsFallback(options: AuthOptions, promise: Promise) {
-    val fragmentActivity = currentActivity as FragmentActivity?
+    val fragmentActivity = appContext.throwingActivity as FragmentActivity?
     if (fragmentActivity == null) {
       promise.resolve(
         createResponse(
@@ -335,6 +319,9 @@ class LocalAuthenticationModule : Module() {
 
   private fun canAuthenticateUsingWeakBiometrics(): Int =
     biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+
+  private fun canAuthenticateUsingStrongBiometrics(): Int =
+    biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)
 
   private fun createResponse(
     error: String? = null,

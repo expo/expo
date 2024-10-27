@@ -23,8 +23,7 @@ describe('exports with tailwind and postcss', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'tailwind-postcss',
           E2E_ROUTER_ASYNC: 'development',
-          // TODO: Reenable this after investigating unstable_getRealPath
-          EXPO_USE_FAST_RESOLVER: 'false',
+          EXPO_USE_FAST_RESOLVER: 'true',
         },
       });
     },
@@ -49,12 +48,12 @@ describe('exports with tailwind and postcss', () => {
     expect(files).toEqual([
       '+not-found.html',
       expect.stringMatching(/_expo\/static\/css\/global-.*\.css/),
-      expect.stringMatching(/_expo\/static\/js\/web\/index-.*\.js/),
+      expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/),
       '_sitemap.html',
-      'assets/__packages/expo-router/assets/error.png',
-      'assets/__packages/expo-router/assets/file.png',
-      'assets/__packages/expo-router/assets/forward.png',
-      'assets/__packages/expo-router/assets/pkg.png',
+      'assets/__packages/expo-router/assets/error.563d5e3294b67811d0a1aede6f601e30.png',
+      'assets/__packages/expo-router/assets/file.b6c297a501e289394b0bc5dc69c265e6.png',
+      'assets/__packages/expo-router/assets/forward.9d9c5644f55c2f6e4b7f247c378b2fe9.png',
+      'assets/__packages/expo-router/assets/pkg.5974eb3e1c5314e8d5a822702d7d0740.png',
       'index.html',
     ]);
   });

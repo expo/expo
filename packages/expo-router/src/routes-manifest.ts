@@ -1,14 +1,16 @@
 // This file runs in Node.js environments.
 // no relative imports
-import { getRoutes } from './getRoutes';
+import { Options, getRoutes } from './getRoutesSSR';
 import { getServerManifest } from './getServerManifest';
 import { RequireContext } from './types';
+
+export { Options } from './getRoutes';
 
 export type RouteInfo<TRegex = string> = {
   file: string;
   page: string;
   namedRegex: TRegex;
-  routeKeys: { [named: string]: string };
+  routeKeys: Record<string, string>;
 };
 
 export type ExpoRoutesManifestV1<TRegex = string> = {
@@ -27,11 +29,17 @@ function createMockContextModule(map: string[] = []) {
   return contextModule as RequireContext;
 }
 
-export function createRoutesManifest(paths: string[]): ExpoRoutesManifestV1 | null {
+export function createRoutesManifest(
+  paths: string[],
+  options: Options
+): ExpoRoutesManifestV1 | null {
   // TODO: Drop this part for Node.js
   const routeTree = getRoutes(createMockContextModule(paths), {
+    ...options,
     preserveApiRoutes: true,
     ignoreRequireErrors: true,
+    ignoreEntryPoints: true,
+    platform: 'web',
   });
 
   if (!routeTree) {

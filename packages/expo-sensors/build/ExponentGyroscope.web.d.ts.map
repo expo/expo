@@ -1,1 +1,1 @@
-{"version":3,"file":"ExponentGyroscope.web.d.ts","sourceRoot":"","sources":["../src/ExponentGyroscope.web.ts"],"names":[],"mappings":"AAEA,OAAO,EAEL,mBAAmB,EAEnB,uBAAuB,EACxB,MAAM,kCAAkC,CAAC;;;wBAQd,QAAQ,OAAO,CAAC;;;;;;;;;AAJ5C,wBA2BE"}
+{"version":3,"file":"ExponentGyroscope.web.d.ts","sourceRoot":"","sources":["../src/ExponentGyroscope.web.ts"],"names":[],"mappings":"AAEA,OAAO,EAEL,mBAAmB,EAEnB,uBAAuB,EACxB,MAAM,kCAAkC,CAAC;;wBAKd,QAAQ,OAAO,CAAC;;;;;;;;;AAD5C,wBAyBE"}

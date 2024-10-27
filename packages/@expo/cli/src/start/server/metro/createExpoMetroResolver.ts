@@ -4,16 +4,40 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import fs from 'fs';
 import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 
 import jestResolver from './createJResolver';
 import { isNodeExternal } from './externals';
 import { formatFileCandidates } from './formatFileCandidates';
+import { isServerEnvironment } from '../middleware/metroOptions';
 
-class FailedToResolvePathError extends Error {}
+export class FailedToResolvePathError extends Error {
+  // Added to ensure the error is matched by our tooling.
+  // TODO: Test that this matches `isFailedToResolvePathError`
+  candidates = {};
+}
 
 class ShimModuleError extends Error {}
+
+const debug = require('debug')('expo:metro:resolve') as typeof console.log;
+
+const realpathFS =
+  process.platform !== 'win32' && fs.realpathSync && typeof fs.realpathSync.native === 'function'
+    ? fs.realpathSync.native
+    : fs.realpathSync;
+
+function realpathSync(x: string) {
+  try {
+    return realpathFS(x);
+  } catch (realpathErr: any) {
+    if (realpathErr.code !== 'ENOENT') {
+      throw realpathErr;
+    }
+  }
+  return x;
+}
 
 export function createFastResolver({
   preserveSymlinks,
@@ -22,6 +46,7 @@ export function createFastResolver({
   preserveSymlinks: boolean;
   blockList: RegExp[];
 }) {
+  debug('Creating with settings:', { preserveSymlinks, blockList });
   const cachedExtensions: Map<string, readonly string[]> = new Map();
 
   function getAdjustedExtensions({
@@ -77,12 +102,13 @@ export function createFastResolver({
       | 'resolveAsset'
       | 'unstable_conditionNames'
       | 'unstable_conditionsByPlatform'
+      | 'fileSystemLookup'
     >,
     moduleName: string,
     platform: string | null
   ): Resolution {
     const environment = context.customResolverOptions?.environment;
-    const isServer = environment === 'node';
+    const isServer = isServerEnvironment(environment);
 
     const extensions = getAdjustedExtensions({
       metroSourceExtensions: context.sourceExts,
@@ -92,26 +118,61 @@ export function createFastResolver({
 
     let fp: string;
 
-    try {
-      const conditions = context.unstable_enablePackageExports
-        ? [
-            ...new Set([
-              'default',
-              ...context.unstable_conditionNames,
-              ...(platform != null ? context.unstable_conditionsByPlatform[platform] ?? [] : []),
-            ]),
-          ]
-        : [];
+    const conditions = context.unstable_enablePackageExports
+      ? [
+          ...new Set([
+            'default',
+            ...context.unstable_conditionNames,
+            ...(platform != null ? (context.unstable_conditionsByPlatform[platform] ?? []) : []),
+          ]),
+        ]
+      : [];
 
+    // NOTE(cedric): metro@0.81.0 ships with `fileSystemLookup`, while `metro@0.80.12` ships as unstable
+    const fileSystemLookup = (
+      'unstable_fileSystemLookup' in context
+        ? context.unstable_fileSystemLookup
+        : context.fileSystemLookup
+    ) as ResolutionContext['fileSystemLookup'] | undefined;
+
+    if (!fileSystemLookup) {
+      throw new Error('Metro API fileSystemLookup is required for fast resolver');
+    }
+
+    try {
       fp = jestResolver(moduleName, {
         blockList,
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
-        paths: context.nodeModulesPaths as string[],
+        moduleDirectory: context.nodeModulesPaths.length
+          ? (context.nodeModulesPaths as string[])
+          : undefined,
         extensions,
         conditions,
-        // @ts-ignore
-        realpathSync: context.unstable_getRealPath,
+        realpathSync(file: string): string {
+          let metroRealPath: string | null = null;
+
+          const res = fileSystemLookup(file);
+          if (res?.exists) {
+            metroRealPath = res.realPath;
+          }
+
+          if (metroRealPath == null && preserveSymlinks) {
+            return realpathSync(file);
+          }
+          return metroRealPath ?? file;
+        },
+        isDirectory(file: string): boolean {
+          const res = fileSystemLookup(file);
+          return res.exists && res.type === 'd';
+        },
+        isFile(file: string): boolean {
+          const res = fileSystemLookup(file);
+          return res.exists && res.type === 'f';
+        },
+        pathExists(file: string): boolean {
+          return fileSystemLookup(file).exists;
+        },
         packageFilter(pkg) {
           // set the pkg.main to the first available field in context.mainFields
           for (const field of context.mainFields) {
@@ -132,13 +193,7 @@ export function createFastResolver({
         // the app doesn't finish without it.
         preserveSymlinks,
         readPackageSync(readFileSync, pkgFile) {
-          return (
-            context.getPackage(pkgFile) ??
-            JSON.parse(
-              // @ts-expect-error
-              readFileSync(pkgfile)
-            )
-          );
+          return context.getPackage(pkgFile) ?? JSON.parse(fs.readFileSync(pkgFile, 'utf8'));
         },
         includeCoreModules: isServer,
 
@@ -182,7 +237,8 @@ export function createFastResolver({
           };
         }
 
-        // TODO: Add improved error handling.
+        debug({ moduleName, platform, conditions, isServer, preserveSymlinks }, context);
+
         throw new FailedToResolvePathError(
           'The module could not be resolved because no file or module matched the pattern:\n' +
             `  ${formatFileCandidates(
@@ -192,7 +248,7 @@ export function createFastResolver({
                 candidateExts: extensions,
               },
               true
-            )}\n\n`
+            )}\n\nFrom:\n  ${context.originModulePath}\n`
         );
       }
       throw error;

@@ -4,6 +4,7 @@ import ExpoModulesCore
 
 final class NativeStatement: SharedObject, Equatable {
   var pointer: OpaquePointer?
+  var isFinalized = false
 
   // MARK: - Equatable
 

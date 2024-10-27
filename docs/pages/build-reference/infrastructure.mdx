@@ -1,4 +1,5 @@
 ---
+modificationDate: July 31st, 2024
 title: Build server infrastructure
 sidebar_title: Server infrastructure
 maxHeadingDepth: 4
@@ -6,33 +7,37 @@ description: Learn about the current build server infrastructure when using EAS.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import { HardwareList, BuildResourceList } from '~/ui/components/utils/infrastructure';
-
-> This document was last updated on **November 8, 2023**.
+import { BuildResourceList } from '~/ui/components/utils/infrastructure';
 
 ## Builder IP addresses
 
-Here is the [up-to-date list of builder IP addresses](https://expo.dev/eas-build-worker-ips.txt).
+A list of the IP addresses of the build servers is available [in this file](https://expo.dev/eas-build-worker-ips.txt). We do not expect to change the list often. The list includes "Last-Modified" and "Expires" ISO 8601 timestamps that respectively specify the last time the list was updated and the time until which we commit to not change the list.
+
+Linux runners are hosted in Google Cloud Platform. macOS runners are hosted in our own macOS cloud.
 
 ## Configuring build environment
 
 Images for each platform have one specific version of Node.js, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json). If there is no dedicated configuration option you are looking for, you can use [npm hooks](/build-reference/npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Consider that those customizations are applied during the build and will increase your build times.
 
-When selecting an image for the build you can use the full name provided below or one of the aliases: `default`, `latest`.
+When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, `sdk-50` or `sdk-49`.
 
 - The use of a specific name guarantees a consistent environment with only minor updates.
-- `default` alias will be assigned to the environment that most closely resembles the configuration used for Expo SDK development.
-- `latest` alias will be assigned to the image with the most up-to-date versions of the software.
+- When using the `auto` alias, the build image will be selected based on the project configuration, Expo SDK version, and React Native version. You can check what image is used for a build in the **Spin up build environment** build logs section.
+- The `latest` alias will be assigned to the image with the most up-to-date versions of the software.
+- The `sdk-50` alias will be assigned to the image best suited for SDK 50 builds.
+- The `sdk-49` alias will be assigned to the image best suited for SDK 49 builds.
+- SDK aliases will be updated with every new SDK release.
+- The `latest` alias will be updated with every new image release.
 
-> **info** **Note:** If you do not provide `image` in **eas.json**, your build will use `default` image. However, in some cases, we select a more appropriate image based on the Expo SDK version or React Native version. You can check what image is used for a build in the **Spin up build environment** build logs section.
+> **info** **Note:** If you do not provide `image` in **eas.json**, your build by default will use the `auto` alias.
 
 ## Android build server configurations
 
 Android builders run on virtual machines in an isolated environment. Every build gets its own dedicated VM instance.
 
-- Hardware:
+- Build resources:
 
-  <HardwareList platform="android" />
+  <BuildResourceList platform="android" />
 
 - [npm cache deployed with Kubernetes](/build-reference/caching/#javascript-dependencies)
 - [Maven cache deployed with Kubernetes](/build-reference/caching/#android-dependencies)
@@ -48,7 +53,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 - Global npm configuration in **~/.npmrc**:
 
   ```ini ~/.npmrc
-  registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
+  registry=http://10.4.0.19:4873
   ```
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
@@ -56,124 +61,197 @@ Android builders run on virtual machines in an isolated environment. Every build
   ```yml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'http://npm-cache-service.worker-infra-production.svc.cluster.local:4873'
+  npmRegistryServer: 'http://10.4.0.19:4873'
   enableImmutableInstalls: false
   ```
 
 ### Android server images
 
-#### `ubuntu-22.04-jdk-17-ndk-r21e` (alias `latest`)
+#### `ubuntu-22.04-jdk-17-ndk-r26b` (`latest`, `sdk-51`)
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:jammy-20220531`
+- Docker image: `ubuntu:jammy-v20240614`
+- NDK 26.1.10909125
+- Node.js 18.18.0
+- Bun 1.1.13
+- Yarn 1.22.21
+- pnpm 9.3.0
+- npm 9.8.1
+- Java 17
+- node-gyp 10.1.0
+
+</Collapsible>
+
+#### `ubuntu-22.04-jdk-17-ndk-r25b` (`sdk-50`)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220810`
+- NDK 25.1.8937393
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 8.9.2
+- npm 9.8.1
+- Java 17
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `ubuntu-22.04-jdk-11-ndk-r23b` (`sdk-49`)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220810`
+- NDK 23.1.7779620
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 8.7.5
+- npm 9.8.1
+- Java 11
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `ubuntu-22.04-jdk-17-ndk-r21e`
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220810`
 - NDK 21.4.7075529
 - Node.js 18.18.0
-- Bun 1.0.2
-- Yarn 1.22.17
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 8.9.2
-- npm 8.19.2
+- npm 9.8.1
 - Java 17
+- node-gyp 10.0.1
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-11-ndk-r21e` (alias `default`)
+#### `ubuntu-22.04-jdk-11-ndk-r21e`
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:jammy-20220531`
+- Docker image: `ubuntu:jammy-20220810`
 - NDK 21.4.7075529
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 8.7.5
-- npm 8.19.2
+- npm 9.8.1
 - Java 11
+- node-gyp 10.0.1
 
 </Collapsible>
 
-#### `ubuntu-22.04-jdk-8-ndk-r21e`
+#### `ubuntu-22.04-jdk-8-ndk-r21e` (deprecated)
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:jammy-20220531`
+- Docker image: `ubuntu:jammy-20220810`
 - NDK 21.4.7075529
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - Java 8
+- node-gyp 10.0.1
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-11-ndk-r21e`
+#### `ubuntu-20.04-jdk-11-ndk-r23b` (deprecated)
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:focal-20210921`
-- NDK 21.4.7075529
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Docker image: `ubuntu:focal-20220823`
+- NDK 23.1.7779620
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - Java 11
+- node-gyp 10.0.1
 
 </Collapsible>
 
-#### `ubuntu-20.04-jdk-8-ndk-r21e`
+#### `ubuntu-20.04-jdk-11-ndk-r21e` (deprecated)
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:focal-20210921`
+- Docker image: `ubuntu:focal-20220823`
 - NDK 21.4.7075529
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
-- Java 8
+- npm 9.8.1
+- Java 11
+- node-gyp 10.0.1
 
 </Collapsible>
 
-#### `ubuntu-18.04-jdk-11-ndk-r19c`
+#### `ubuntu-20.04-jdk-8-ndk-r21e` (deprecated)
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:bionic-20210930`
+- Docker image: `ubuntu:focal-20220823`
+- NDK 21.4.7075529
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 7.0.0
+- npm 9.8.1
+- Java 8
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `ubuntu-20.04-jdk-11-ndk-r19c` (deprecated)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:focal-20220823`
 - NDK 19.2.5345600
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - Java 11
+- node-gyp 10.0.1
 
 </Collapsible>
 
-#### `ubuntu-18.04-jdk-8-ndk-r19c`
+#### `ubuntu-20.04-jdk-8-ndk-r19c` (deprecated)
 
 <Collapsible summary="Details">
 
-- Docker image: `ubuntu:bionic-20210930`
+- Docker image: `ubuntu:focal-20220823`
 - NDK 19.2.5345600
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 7.0.0
-- npm 8.19.2
+- npm 9.8.1
 - Java 8
+- node-gyp 10.0.1
 
 </Collapsible>
 
 ## iOS build server configurations
 
-iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build gets its own fresh macOS VM. For more information, see [see iOS-specific resource class](/eas/json/#resourceclass-2).
+iOS builder VMs run on Mac mini hosts in an isolated environment. Every build gets its own fresh macOS VM. For more information, see [iOS-specific resource classes](/eas/json/#resourceclass-2).
 
 - Hardware:
 
-  <HardwareList platform="ios" />
+  - M1 3.2GHz 8-Core, 16 GB RAM
+  - M2 3.9GHz 8-Core, 24 GB RAM
+  - M2 Pro 3.9GHz 12-Core, 32 GB RAM
 
 - Build resources:
 
@@ -185,7 +263,7 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
 - Global npm configuration in **~/.npmrc**:
 
   ```ini ~/.npmrc
-  registry=http://10.254.24.9:4873
+  registry=http://10.94.183.70:4873
   ```
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
@@ -193,161 +271,122 @@ iOS builder VMs run on Mac Mini hosts in an isolated environment. Every build ge
   ```yml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'registry=http://10.254.24.9:4873'
+  npmRegistryServer: 'http://10.94.183.70:4873'
   enableImmutableInstalls: false
   ```
 
 ### iOS server images
 
-#### `macos-ventura-13.6-xcode-15.0` (`latest`)
+#### `macos-sonoma-14.6-xcode-16.0` (`latest`)
+
+<Collapsible summary="Details">
+
+- macOS Sonoma 14.6
+- Xcode 16.0 (16A242d)
+- Node.js 18.18.0
+- Bun 1.1.27
+- Yarn 1.22.21
+- pnpm 9.10.0
+- npm 9.8.1
+- fastlane 2.222.0
+- CocoaPods 1.15.2
+- Ruby 3.2
+- node-gyp 10.2.0
+
+</Collapsible>
+
+#### `macos-sonoma-14.5-xcode-15.4` (`sdk-51`, `sdk-50`, `sdk-49`)
+
+<Collapsible summary="Details">
+
+- macOS Sonoma 14.5
+- Xcode 15.4 (15F31d)
+- Node.js 18.18.0
+- Bun 1.1.13
+- Yarn 1.22.21
+- pnpm 9.3.0
+- npm 9.8.1
+- fastlane 2.220.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.1.0
+
+</Collapsible>
+
+#### `macos-sonoma-14.4-xcode-15.3`
+
+<Collapsible summary="Details">
+
+- macOS Sonoma 14.4.1
+- Xcode 15.3 (15E204a)
+- Node.js 18.18.0
+- Bun 1.0.35
+- Yarn 1.22.21
+- pnpm 8.14.1
+- npm 9.8.1
+- fastlane 2.219.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `macos-ventura-13.6-xcode-15.2`
+
+<Collapsible summary="Details">
+
+- macOS Ventura 13.6
+- Xcode 15.2 (15C500b)
+- Node.js 18.18.0
+- Bun 1.0.23
+- Yarn 1.22.21
+- pnpm 8.14.1
+- npm 9.8.1
+- fastlane 2.219.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `macos-ventura-13.6-xcode-15.1`
+
+<Collapsible summary="Details">
+
+- macOS Ventura 13.6
+- Xcode 15.1 (15C65)
+- Node.js 18.18.0
+- Bun 1.0.14
+- Yarn 1.22.19
+- pnpm 8.12.1
+- npm 9.8.1
+- fastlane 2.217.0
+- CocoaPods 1.14.3
+- Ruby 2.7
+- node-gyp 10.0.1
+
+</Collapsible>
+
+#### `macos-ventura-13.6-xcode-15.0`
 
 <Collapsible summary="Details">
 
 - macOS Ventura 13.6
 - Xcode 15.0 (15A240d)
 - Node.js 18.18.0
-- Bun 1.0.2
-- Yarn 1.22.17
+- Bun 1.0.14
+- Yarn 1.22.19
 - pnpm 8.7.6
-- npm 8.1.2
+- npm 9.8.1
 - fastlane 2.216.0
 - CocoaPods 1.13.0
 - Ruby 2.7
+- node-gyp 10.0.1
 
 </Collapsible>
 
-#### `macos-ventura-13.4-xcode-14.3.1` (`default`)
+### Supported Xcode versions
 
-<Collapsible summary="Details">
+We aim to support all stable Xcode releases that allow you to submit your app to the App Store Connect when used during the build process.
 
-- macOS Ventura 13.4
-- Xcode 14.3.1 (14E300c)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
-- pnpm 8.6.5
-- npm 8.1.2
-- fastlane 2.213.0
-- CocoaPods 1.12.1
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-ventura-13.3-xcode-14.3`
-
-<Collapsible summary="Details">
-
-- macOS Ventura 13.3
-- Xcode 14.3 (14E222b)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
-- pnpm 8.2.0
-- npm 8.1.2
-- fastlane 2.212.2
-- CocoaPods 1.12.0
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-monterey-12.6-xcode-14.2`
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.6
-- Xcode 14.2 (14C18)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
-- pnpm 7.27.0
-- npm 8.19.2
-- fastlane 2.211.0
-- CocoaPods 1.11.3
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-monterey-12.6-xcode-14.1`
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.6
-- Xcode 14.1 (14B47b)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
-- pnpm 7.15.0
-- npm 8.19.2
-- fastlane 2.210.1
-- CocoaPods 1.11.3
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-monterey-12.6-xcode-14.0`
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.6
-- Xcode 14.0 (14A309)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
-- pnpm 7.11.0
-- npm 8.19.2
-- fastlane 2.210.0
-- CocoaPods 1.11.3
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-monterey-12.4-xcode-13.4` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.4
-- Xcode 13.4 (13F17a)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
-- pnpm 7.0.0
-- npm 8.19.2
-- fastlane 2.205.2
-- CocoaPods 1.11.3
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-monterey-12.3-xcode-13.3` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.3.1
-- Xcode 13.3.1 (13E500a)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
-- pnpm 7.0.0
-- npm 8.19.2
-- fastlane 2.205.2
-- CocoaPods 1.11.3
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-monterey-12.1-xcode-13.2` (deprecated)
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.1
-- Xcode 13.2.1 (13C100)
-- Node.js 16.18.1
-- Bun 1.0.2
-- Yarn 1.22.17
-- pnpm 7.0.0
-- npm 8.19.2
-- fastlane 2.201.0
-- CocoaPods 1.11.2
-- Ruby 2.7
-
-</Collapsible>
+This usually means that we support the latest stable Xcode version and the previous one (until the new [minimal Xcode version requirement](https://developer.apple.com/news/upcoming-requirements/?id=04292024a) is introduced by Apple).

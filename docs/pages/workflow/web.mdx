@@ -1,26 +1,73 @@
 ---
-title: Develop for Web
+title: Develop websites with Expo
+sidebar_title: Develop websites
 description: Learn how to develop your app for the web so you can build a universal app.
+hideTOC: true
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
 
-If you build your native app with the Expo SDK, then you can also run it directly in the browser with [Expo CLI](/more/expo-cli/#develop). On web, your app is rendered with [React Native for web](https://github.com/necolas/react-native-web) which powers massive websites and progressive web apps like [Twitter](https://mobile.twitter.com/), and [Major League Soccer](https://matchcenter.mlssoccer.com/). The Expo SDK also utilizes native browser functionality like Video, Camera, and Gestures without the need for a custom native browser.
+Expo has first-class support for building full-stack websites with React. Expo websites can be [statically rendered](/router/reference/static-rendering) for SEO and performance, or client-rendered for a more app-like experience in the browser.
+
+<Tabs>
+
+<Tab label="Universal">
+
+    Render text on any platform with the `<Text>` component from [React Native for web](https://github.com/necolas/react-native-web).
+
+    ```jsx app/index.js
+    import { Text } from 'react-native';
+
+    export default function Page() {
+      return <Text>Home page</Text>;
+    }
+    ```
+
+    React Native for web (RNW) is a set of component libraries such as `<View>`, and `<Text>`, that wrap `react-dom` primitives such as `<div>`, `<p>`, and `<img>`. RNW is optional when developing for web since you can use React DOM directly, but we often recommended it when building across platforms as it maximizes code reuse.
+
+    > React Native for web is used to power the entire [X](https://x.com/) website.
+
+</Tab>
+
+<Tab label="Web-only">
+
+    Alternatively, you can write web-only React DOM components such as `<div>`, `<p>`, and so on, however, these components won't render on native platforms.
+
+    ```jsx app/index.js
+    export default function Page() {
+      return <p>Home page</p>;
+    }
+    ```
+
+    Building web-only components is fully supported by Expo, however, you may want to organize your code to better support building for both web and native platforms simultaneously. Learn more in [platform-specific modules](/router/advanced/platform-specific-modules).
+
+</Tab>
+
+</Tabs>
+
+All of the libraries in the Expo SDK are built to support both browser and server rendering environments (when applicable). Libraries are also optimized for the individual platforms they target.
+
+Development features like Fast Refresh, debugging, environment variables, and [bundling](/guides/customizing-metro) are also fully universal, enabling a unified developer experience. Expo CLI **automatically optimizes code** for individual platforms when you build for production, using techniques like [platform shaking](/guides/tree-shaking#platform-shaking).
 
 ## Getting started
 
-Install the `expo` package which contains the [Expo CLI](/more/expo-cli/) used for starting the dev server:
+### Install web dependencies
 
-<Terminal cmd={['$ yarn add expo']} />
+<Terminal cmd={['$ npx expo install react-dom react-native-web @expo/metro-runtime']} />
 
-Then you can use Expo CLI to install the web dependencies in your project:
+<Collapsible summary={<>Not using the <CODE>expo</CODE> package in your app yet?</>}>
 
-<Terminal cmd={['$ npx expo install react-dom react-native-web @expo/webpack-config']} />
+If you haven't added Expo to your React Native app yet, you can either [install Expo modules](/bare/installing-expo-modules/) (recommended) or just install the `expo` package and configure the app entry file. This will allow you to target web, but it will not include support for the Expo SDK.
 
-### Update the entry file
+1. Install [Expo CLI](/more/expo-cli/) in your project:
 
-Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/register-root-component) instead of `AppRegistry.registerComponent`:
+<Terminal cmd={['$ npm install expo']} />
+
+2. Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/register-root-component#registerrootcomponentcomponent) instead of `AppRegistry.registerComponent`:
 
 ```diff
 + import {registerRootComponent} from 'expo';
@@ -33,48 +80,40 @@ import App from './App';
 + registerRootComponent(App);
 ```
 
-> Learn more about [`registerRootComponent`](/versions/latest/sdk/register-root-component#registerrootcomponentcomponent).
+</Collapsible>
 
 ### Start the dev server
 
-Finally you can start the webpack dev server with:
+You can now start the dev server and develop in the browser with:
 
 <Terminal cmd={['$ npx expo start --web']} cmdCopy="npx expo start --web" />
 
-You can test secure web APIs like the camera and user location by adding the `--https` flag to `npx expo start`. This will host your app from a secure origin like `https://localhost:19006`.
+The app can be exported as a production website with:
 
-> You can try experimental [Metro web support](/guides/customizing-metro#web-support) instead of webpack.
-
-## Alternative rendering patterns
-
-> **Example:** The website [beatgig.com](https://beatgig.com/) uses Expo web + Next.js to achieve SSR in the browser.
-
-By default, Expo renders your web app as a **single page application (SPA)**. This rendering pattern is the closest to how native rendering works. If you'd like to render your Expo web using **server-side rendering (SSR)** or **static site generation (SSG)**, then you should try using the Expo SDK with another tool like Gatsby, Next.js, Remix, and so on. One caveat is that these tools are less universal and require a bit more effort to share code across platforms.
-
-The ability to use Expo web with these other React frameworks is what makes it the most powerful way to build a universal app. The possibilities are endless and you won't hit a theoretic performance wall in the future.
-
-- [Next.js](/guides/using-nextjs)
-- [Storybook](https://github.com/expo/examples/tree/master/with-storybook)
-- [Preact](https://github.com/expo/examples/tree/master/with-preact)
-- [Gatsby](https://github.com/expo/examples/tree/master/with-gatsby)
-- [Electron](https://github.com/expo/expo-electron-adapter/tree/main/example)
-
-> Alternative framework implementations are maintained by the Expo community.
+<Terminal cmd={['$ npx expo export --platform web']} cmdCopy="npx expo export --platform web" />
 
 ## Next
 
 <BoxLink
-  title="Publishing websites"
+  title="File-based routing"
+  description="Build routes and navigation with Expo Router."
+  href="/router/introduction"
+/>
+
+<BoxLink
+  title="Static rendering and SEO"
+  description="Render your website as static HTML with Expo Router to improve SEO and performance."
+  href="/router/reference/static-rendering"
+/>
+
+<BoxLink
+  title="Publish websites"
   description="Export your website and upload to any web host."
   href="/distribution/publishing-websites"
 />
+
 <BoxLink
-  title="Progressive web app"
-  description="Learn how to make your website run offline."
-  href="/guides/progressive-web-apps"
-/>
-<BoxLink
-  title="Responsive design"
-  description="Make your website work across different screens."
-  href="https://blog.expo.dev/media-queries-with-react-native-for-ios-android-and-web-e0b73ed5777b"
+  title="Customizing the JavaScript bundler"
+  description="Customize Metro bundler for your project."
+  href="/guides/customizing-metro"
 />

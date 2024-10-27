@@ -24,6 +24,52 @@ public enum TintStyle: String, Enumerable {
   case systemChromeMaterialDark
 
   func toBlurEffect() -> UIBlurEffect.Style {
+#if os(tvOS)
+    switch self {
+    case .default:
+      return .regular
+    case .extraLight:
+      return .extraLight
+    case .light:
+      return .light
+    case .regular:
+      return .regular
+    case .dark:
+      return .dark
+    case .prominent:
+      return .prominent
+    case .systemUltraThinMaterial:
+      return .regular
+    case .systemThinMaterial:
+      return .regular
+    case .systemMaterial:
+      return .regular
+    case .systemThickMaterial:
+      return .regular
+    case .systemChromeMaterial:
+      return .regular
+    case .systemUltraThinMaterialLight:
+      return .light
+    case .systemThinMaterialLight:
+      return .light
+    case .systemMaterialLight:
+      return .light
+    case .systemThickMaterialLight:
+      return .light
+    case .systemChromeMaterialLight:
+      return .light
+    case .systemUltraThinMaterialDark:
+      return .dark
+    case .systemThinMaterialDark:
+      return .dark
+    case .systemMaterialDark:
+      return .dark
+    case .systemThickMaterialDark:
+      return .dark
+    case .systemChromeMaterialDark:
+      return .dark
+    }
+#else
     switch self {
     case .default:
       return .regular
@@ -68,5 +114,6 @@ public enum TintStyle: String, Enumerable {
     case .systemChromeMaterialDark:
       return .systemChromeMaterialDark
     }
+#endif
   }
 }

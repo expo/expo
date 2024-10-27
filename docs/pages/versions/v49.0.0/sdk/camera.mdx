@@ -9,15 +9,15 @@ iconUrl: '/static/images/packages/expo-camera.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
-`expo-camera` provides a React component that renders a preview of the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. The component is also capable of detecting faces and bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together.
+`expo-camera` provides a React component that renders a preview of the device's front or back camera. The camera's parameters such as zoom, auto focus, white balance and flash mode are adjustable. Using `Camera`, you can take photos and record videos that are saved to the app's cache. The component is also capable of detecting faces and bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together.
 
 <PlatformsSection android ios web />
 
@@ -88,14 +88,11 @@ export default function App() {
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
 
-  /* @hide if (!permission) ... */
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
   }
-  /* @end */
 
-  /* @hide if (!permission.granted) ... */
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
@@ -105,7 +102,6 @@ export default function App() {
       </View>
     );
   }
-  /* @end */
 
   function toggleCameraType() {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
@@ -124,7 +120,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -150,14 +145,13 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
 
 ## Web support
 
-Luckily most browsers support at least some form of web camera functionality, you can check out the [web camera browser support here](https://caniuse.com/#feat=stream). Image URIs are always returned as base64 strings because local file system paths are not available in the browser.
+Most browsers support a version of web camera functionality, you can check out the [web camera browser support here](https://caniuse.com/#feat=stream). Image URIs are always returned as base64 strings because local file system paths are unavailable in the browser.
 
 ### Chrome `iframe` usage
 

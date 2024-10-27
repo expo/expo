@@ -1,7 +1,6 @@
 import * as PackageManager from '@expo/package-manager';
 import spawnAsync from '@expo/spawn-async';
 
-import { asMock } from '../../__tests__/asMock';
 import { Log } from '../../log';
 import { installExpoPackageAsync } from '../installExpoPackage';
 
@@ -52,12 +51,12 @@ describe(installExpoPackageAsync, () => {
       followUpCommandArgs: [],
     });
     expect(packageManager.addAsync).toHaveBeenCalledWith(['expo@latest']);
-    expect(spawnAsync).not.toBeCalled();
+    expect(spawnAsync).not.toHaveBeenCalled();
   });
 
   it(`Does not run follow-up command if first command fails`, async () => {
     const packageManager = PackageManager.createForProject('/path/to/project');
-    asMock(packageManager.addAsync).mockRejectedValueOnce(new Error('Something went wrong'));
+    jest.mocked(packageManager.addAsync).mockRejectedValueOnce(new Error('Something went wrong'));
 
     try {
       await installExpoPackageAsync('/path/to/project', {
@@ -66,12 +65,23 @@ describe(installExpoPackageAsync, () => {
         expoPackageToInstall: 'expo@latest',
         followUpCommandArgs: ['--fix'],
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {}
+    } catch {}
     expect(packageManager.addAsync).toHaveBeenCalledWith(['expo@latest']);
     expect(Log.error).toHaveBeenCalledWith(
       expect.stringContaining('Cannot install the latest Expo package')
     );
-    expect(spawnAsync).not.toBeCalled();
+    expect(spawnAsync).not.toHaveBeenCalled();
+  });
+
+  it(`Installs dev dependencies`, async () => {
+    const packageManager = PackageManager.createForProject('/path/to/project');
+    await installExpoPackageAsync('/path/to/project', {
+      packageManager,
+      packageManagerArguments: [],
+      expoPackageToInstall: 'expo@latest',
+      followUpCommandArgs: [],
+    });
+    expect(packageManager.addAsync).toHaveBeenCalledWith(['expo@latest']);
+    expect(spawnAsync).not.toHaveBeenCalled();
   });
 });

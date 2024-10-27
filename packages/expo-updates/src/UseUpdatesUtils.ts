@@ -11,8 +11,10 @@ export const currentlyRunning: CurrentlyRunningInfo = {
   updateId: Updates.updateId ?? undefined,
   channel: Updates.channel ?? undefined,
   createdAt: Updates.createdAt ?? undefined,
+  launchDuration: Updates.launchDuration ?? undefined,
   isEmbeddedLaunch: Updates.isEmbeddedLaunch,
   isEmergencyLaunch: Updates.isEmergencyLaunch,
+  emergencyLaunchReason: Updates.emergencyLaunchReason,
   manifest: Updates.manifest ?? undefined,
   runtimeVersion: Updates.runtimeVersion ?? undefined,
 };
@@ -56,31 +58,21 @@ export const updateFromRollback: (rollback: UpdatesNativeStateRollback) => Updat
   updateId: undefined,
 });
 
-// Default useUpdates() state
-export const defaultUseUpdatesState: UseUpdatesStateType = {
-  isChecking: false,
-  isDownloading: false,
-  isUpdateAvailable: false,
-  isUpdatePending: false,
-};
-
 // Transform the useUpdates() state based on native state machine context
-export const reduceUpdatesStateFromContext: (
-  updatesState: UseUpdatesStateType,
+export const updatesStateFromContext: (
   context: UpdatesNativeStateMachineContext
-) => UseUpdatesStateType = (updatesState, context) => {
+) => UseUpdatesStateType = (context) => {
   const availableUpdate = context?.latestManifest
     ? updateFromManifest(context?.latestManifest)
     : context.rollback
-    ? updateFromRollback(context.rollback)
-    : undefined;
+      ? updateFromRollback(context.rollback)
+      : undefined;
   const downloadedUpdate = context?.downloadedManifest
     ? updateFromManifest(context?.downloadedManifest)
     : context.rollback
-    ? updateFromRollback(context.rollback)
-    : undefined;
+      ? updateFromRollback(context.rollback)
+      : undefined;
   return {
-    ...updatesState,
     isUpdateAvailable: context.isUpdateAvailable,
     isUpdatePending: context.isUpdatePending,
     isChecking: context.isChecking,

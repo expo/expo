@@ -1,6 +1,6 @@
-/// <reference types="react" />
+import React from 'react';
 import { RouteNode } from '../Route';
 export declare function SuspenseFallback({ route }: {
     route: RouteNode;
-}): JSX.Element | null;
+}): React.JSX.Element | null;
 //# sourceMappingURL=SuspenseFallback.d.ts.map

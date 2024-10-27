@@ -1,7 +1,11 @@
 //  Copyright (c) 2020 650 Industries, Inc. All rights reserved.
 
 import ExpoModulesTestCore
+#if canImport(sqlite3)
 import sqlite3
+#else
+import SQLite3
+#endif
 
 @testable import EXUpdates
 
@@ -283,13 +287,13 @@ let UpdatesDatabaseV9Schema = """
 """
 
 class UpdatesDatabaseInitializationSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
 
     beforeEach {
       let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
       testDatabaseDir = applicationSupportDir!.appendingPathComponent("UpdatesDatabaseTests")
-      
+
       try? FileManager.default.removeItem(atPath: testDatabaseDir.path)
 
       if !FileManager.default.fileExists(atPath: testDatabaseDir.path) {
@@ -460,7 +464,7 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
         expect(try! UpdatesDatabaseUtils.execute(sql:foreignKeySelectSql, withArgs:nil, onDatabase:migratedDb).count) == 1
 
         let foreignKeyInsertBadSql = "INSERT INTO `updates_assets` (`update_id`, `asset_id`) VALUES (X'594100ea066e4804b5c7c907c773f980', 13)"
-        
+
         expect {
           try UpdatesDatabaseUtils.execute(sql:foreignKeyInsertBadSql, withArgs:nil, onDatabase:migratedDb)
         }.to(throwError(errorType: UpdatesDatabaseUtilsError.self) { error in

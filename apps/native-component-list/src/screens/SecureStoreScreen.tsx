@@ -44,11 +44,7 @@ function SecureStoreView() {
   const [key, setKey] = React.useState<string | undefined>();
   const [value, setValue] = React.useState<string | undefined>();
   const [service, setService] = React.useState<string | undefined>();
-  const [requireAuth, setRequireAuth] = React.useState<boolean | undefined>();
-
-  const toggleAuth = async () => {
-    setRequireAuth(!requireAuth);
-  };
+  const [requireAuth, setRequireAuth] = React.useState<boolean>(false);
 
   async function storeValueAsync(value: string, key: string) {
     try {
@@ -120,14 +116,10 @@ function SecureStoreView() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <TextInput
-        style={styles.textInput}
-        placeholder="Enter a value to store (ex. pw123!)"
-        placeholderTextColor={Colors.secondaryText}
-        value={value}
-        onChangeText={setValue}
-      />
+    <ScrollView
+      style={styles.container}
+      keyboardDismissMode="interactive"
+      keyboardShouldPersistTaps="handled">
       <TextInput
         style={styles.textInput}
         placeholder="Enter a key for the value (ex. password)"
@@ -137,15 +129,27 @@ function SecureStoreView() {
       />
       <TextInput
         style={styles.textInput}
+        placeholder="Enter a value to store (ex. pw123!)"
+        placeholderTextColor={Colors.secondaryText}
+        value={value}
+        onChangeText={setValue}
+      />
+      <TextInput
+        style={styles.textInput}
         placeholder="Enter a service name (may be blank)"
         placeholderTextColor={Colors.secondaryText}
         value={service}
         onChangeText={setService}
       />
-      <View style={styles.authToggleContainer}>
-        <Text>Requires authentication:</Text>
-        <Switch value={requireAuth} onValueChange={toggleAuth} />
-      </View>
+      <Text style={{ marginBottom: 10 }}>
+        Can use biometric authentication: {SecureStore.canUseBiometricAuthentication().toString()}
+      </Text>
+      {SecureStore.canUseBiometricAuthentication() && (
+        <View style={styles.authToggleContainer}>
+          <Text>Requires authentication:</Text>
+          <Switch value={requireAuth} onValueChange={setRequireAuth} />
+        </View>
+      )}
       {value && key && (
         <ListButton onPress={() => storeValueAsync(value, key)} title="Store value with key" />
       )}

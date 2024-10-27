@@ -11,7 +11,7 @@ namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
-class JSIInteropModuleRegistry;
+class JSIContext;
 class SingleType;
 
 /**
@@ -35,7 +35,6 @@ public:
   virtual jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const = 0;
 };
@@ -48,7 +47,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -63,7 +61,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -78,7 +75,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -93,7 +89,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -108,7 +103,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -123,7 +117,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -138,7 +131,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -153,7 +145,20 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
+ * Converter from js Uint8Array to [java.lang.Byte] array.
+ */
+class ByteArrayFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
     const jsi::Value &value
   ) const override;
 
@@ -168,7 +173,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -183,7 +187,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -198,7 +201,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -213,7 +215,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -228,7 +229,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -243,7 +243,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -260,7 +259,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -282,7 +280,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -302,7 +299,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -335,7 +331,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -345,6 +340,12 @@ private:
    * Converter used to convert array elements.
    */
   std::shared_ptr<FrontendConverter> parameterConverter;
+
+  jobject convertSingleValue(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    const jsi::Value &value
+  ) const;
 };
 
 /**
@@ -359,7 +360,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 
@@ -379,7 +379,6 @@ public:
   jobject convert(
     jsi::Runtime &rt,
     JNIEnv *env,
-    JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &value
   ) const override;
 

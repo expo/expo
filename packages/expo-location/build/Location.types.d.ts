@@ -54,7 +54,7 @@ export declare enum LocationActivityType {
     /**
      * Intended for airborne activities. Fall backs to `ActivityType.Other` if
      * unsupported.
-     * @platform ios 12+
+     * @platform ios
      */
     Airborne = 5
 }
@@ -96,6 +96,8 @@ export type LocationOptions = {
      * Location manager accuracy. Pass one of `Accuracy` enum values.
      * For low-accuracies the implementation can avoid geolocation providers
      * that consume a significant amount of power (such as GPS).
+     *
+     * @default LocationAccuracy.Balanced
      */
     accuracy?: LocationAccuracy;
     /**
@@ -140,7 +142,7 @@ export type LocationTaskOptions = LocationOptions & {
      * A boolean indicating whether the status bar changes its appearance when
      * location services are used in the background.
      * @default false
-     * @platform ios 11+
+     * @platform ios
      */
     showsBackgroundLocationIndicator?: boolean;
     /**
@@ -328,10 +330,17 @@ export type LocationHeadingObject = {
      */
     magHeading: number;
     /**
-     * Level of calibration of compass.
-     * - `3`: high accuracy, `2`: medium accuracy, `1`: low accuracy, `0`: none
+     * Level of calibration of compass:
+     * - `3`: high accuracy
+     * - `2`: medium accuracy
+     * - `1`: low accuracy
+     * - `0`: none
+     *
      * Reference for iOS:
-     * - `3`: < 20 degrees uncertainty, `2`: < 35 degrees, `1`: < 50 degrees, `0`: > 50 degrees
+     * - `3`: < 20 degrees uncertainty
+     * - `2`: < 35 degrees
+     * - `1`: < 50 degrees
+     * - `0`: > 50 degrees
      */
     accuracy: number;
 };
@@ -339,16 +348,6 @@ export type LocationHeadingObject = {
  * Represents `watchHeadingAsync` callback.
  */
 export type LocationHeadingCallback = (location: LocationHeadingObject) => any;
-/**
- * An object of options for forward and reverse geocoding.
- */
-export type LocationGeocodingOptions = {
-    /**
-     * Whether to force using Google Maps API instead of the native implementation.
-     * Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
-     */
-    useGoogleMaps?: boolean;
-};
 /**
  * Type representing a result of `geocodeAsync`.
  */
@@ -419,6 +418,11 @@ export type LocationGeocodedAddress = {
      * @platform ios
      */
     timezone: string | null;
+    /**
+     * Composed string of the address components, for example, "111 8th Avenue, New York, NY".
+     * @platform android
+     */
+    formattedAddress: string | null;
 };
 /**
  * Represents subscription object returned by methods watching for new locations or headings.
@@ -438,16 +442,12 @@ export type PermissionDetailsLocationIOS = {
 };
 export type PermissionDetailsLocationAndroid = {
     /**
-     * @deprecated Use `accuracy` field instead.
-     */
-    scope: 'fine' | 'coarse' | 'none';
-    /**
      * Indicates the type of location provider.
      */
     accuracy: 'fine' | 'coarse' | 'none';
 };
 /**
- * `LocationPermissionResponse` extends [PermissionResponse](#permissionresponse)
+ * `LocationPermissionResponse` extends [`PermissionResponse`](#permissionresponse)
  * type exported by `expo-modules-core` and contains additional platform-specific fields.
  */
 export type LocationPermissionResponse = PermissionResponse & {

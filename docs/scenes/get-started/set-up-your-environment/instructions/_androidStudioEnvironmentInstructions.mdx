@@ -1,0 +1,77 @@
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+## Install Watchman and JDK
+
+<Tabs>
+
+<Tab label='macOS'>
+
+#### Prerequisites
+
+Use a package manager such as [Homebrew](https://brew.sh/) to install the following dependency.
+
+#### Install dependencies
+
+<Step label="1">
+
+[Install Watchman](https://facebook.github.io/watchman/docs/install#macos) using a tool such as Homebrew:
+
+<Terminal cmd={['$ brew install watchman']} />
+
+</Step>
+
+<Step label="2">
+
+Install OpenJDK distribution called Azul Zulu using Homebrew. This distribution offers JDKs for both Apple Silicon and Intel Macs.
+
+Run the following commands in a terminal:
+
+<Terminal cmd={['$ brew install --cask zulu@17']} />
+
+After you install the JDK, add the `JAVA_HOME` environment variable in **~/.bash_profile** (or **~/.zshrc** if you use Zsh):
+
+```bash
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+```
+
+</Step>
+
+</Tab>
+
+<Tab label='Windows'>
+
+#### Prerequisites
+
+Use a package manager such as [Chocolatey](https://chocolatey.org/) to install the following dependencies.
+
+#### Install dependencies
+
+Install [Java SE Development Kit (JDK)](https://openjdk.org/):
+
+<Terminal cmd={['$ choco install -y microsoft-openjdk17']} />
+
+</Tab>
+
+<Tab label="Linux">
+
+#### Install dependencies
+
+<Step label="1">
+
+Follow [instructions from the Watchman documentation](https://facebook.github.io/watchman/docs/install#linux) to compile and install it from the source.
+
+</Step>
+
+<Step label="2">
+
+Install [Java SE Development Kit (JDK)](https://openjdk.org/):
+
+You can download and install [OpenJDK](http://openjdk.java.net/) from [AdoptOpenJDK](https://adoptopenjdk.net/) or your system packager.
+
+</Step>
+
+</Tab>
+
+</Tabs>

@@ -1,6 +1,6 @@
 import { matchers } from '@emotion/jest';
 import { theme } from '@expo/styleguide';
-import { CheckCircleSolidIcon } from '@expo/styleguide-icons';
+import { CheckCircleSolidIcon } from '@expo/styleguide-icons/solid/CheckCircleSolidIcon';
 import { render, screen } from '@testing-library/react';
 import ReactMarkdown from 'react-markdown';
 

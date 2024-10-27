@@ -1,11 +1,26 @@
+import codeFrame from '@babel/code-frame';
+import type { TransformResult, Warning } from 'lightningcss';
+
+import type { CollectedDependencies } from './collect-dependencies';
 import { wrapDevelopmentCSS } from './css';
+import { CSSMetadata } from '../serializer/jsOutput';
+
+type NotReadonly<T> = {
+  -readonly [P in keyof T]: T[P];
+};
 
 const RNW_CSS_CLASS_ID = '_';
 
 export async function transformCssModuleWeb(props: {
   filename: string;
   src: string;
-  options: { projectRoot: string; minify: boolean; dev: boolean; sourceMap: boolean };
+  options: {
+    projectRoot: string;
+    minify: boolean;
+    dev: boolean;
+    sourceMap: boolean;
+    reactServer: boolean;
+  };
 }) {
   const { transform } = require('lightningcss') as typeof import('lightningcss');
 
@@ -21,10 +36,15 @@ export async function transformCssModuleWeb(props: {
       // variables created in global files are available.
       dashedIdents: false,
     },
+    errorRecovery: true,
+    analyzeDependencies: true,
     // cssModules: true,
     projectRoot: props.options.projectRoot,
     minify: props.options.minify,
   });
+
+  printCssWarnings(props.filename, props.src, cssResults.warnings);
+
   const codeAsString = cssResults.code.toString();
 
   const { styles, reactNativeWeb, variables } = convertLightningCssToReactNativeWebStyleSheet(
@@ -37,17 +57,26 @@ export async function transformCssModuleWeb(props: {
 
   if (props.options.dev) {
     const runtimeCss = wrapDevelopmentCSS({
-      ...props,
+      reactServer: props.options.reactServer,
+      filename: props.filename,
       src: codeAsString,
     });
 
     outputModule += '\n' + runtimeCss;
   }
 
+  const cssImports = collectCssImports(
+    props.filename,
+    props.src,
+    cssResults.code.toString(),
+    cssResults
+  );
+
   return {
     output: outputModule,
-    css: cssResults.code,
+    css: cssImports.code,
     map: cssResults.map,
+    ...cssImports,
   };
 }
 
@@ -83,4 +112,87 @@ export function convertLightningCssToReactNativeWebStyleSheet(
 
 export function matchCssModule(filePath: string): boolean {
   return !!/\.module(\.(native|ios|android|web))?\.(css|s[ac]ss)$/.test(filePath);
+}
+
+export function printCssWarnings(filename: string, code: string, warnings?: Warning[]) {
+  if (warnings) {
+    for (const warning of warnings) {
+      console.warn(
+        `Warning: ${warning.message} (${filename}:${warning.loc.line}:${warning.loc.column}):\n${codeFrame(code, warning.loc.line, warning.loc.column)}`
+      );
+    }
+  }
+}
+
+function isExternalUrl(url: string) {
+  return url.match(/^\w+:\/\//);
+}
+
+export function collectCssImports(
+  filename: string,
+  originalCode: string,
+  code: string,
+  cssResults: Pick<TransformResult, 'dependencies' | 'exports'>
+) {
+  const externalImports: CSSMetadata['externalImports'] = [];
+
+  const cssModuleDeps: NotReadonly<CollectedDependencies['dependencies']> = [];
+  if (cssResults.dependencies) {
+    for (const dep of cssResults.dependencies) {
+      if (dep.type === 'import') {
+        // If the URL starts with `http://` or other protocols, we'll treat it like an external import.
+        if (isExternalUrl(dep.url)) {
+          externalImports.push({
+            url: dep.url,
+            supports: dep.supports,
+            media: dep.media,
+          });
+        } else {
+          // If the import is a local file, then add it as a JS dependency so the bundler can resolve it.
+          cssModuleDeps.push({
+            name: dep.url,
+            data: {
+              asyncType: null,
+              isOptional: false,
+              locs: [
+                {
+                  start: {
+                    line: dep.loc.start.line,
+                    column: dep.loc.start.column,
+                    index: -1,
+                  },
+                  end: {
+                    line: dep.loc.end.line,
+                    column: dep.loc.end.column,
+                    index: -1,
+                  },
+                  filename,
+                  identifierName: undefined,
+                },
+              ],
+              css: {
+                url: dep.url,
+                media: dep.media,
+                supports: dep.supports,
+              },
+              exportNames: [],
+              key: dep.url,
+            },
+          });
+        }
+      } else if (dep.type === 'url') {
+        if (isExternalUrl(dep.url)) {
+          // Put the external URL back.
+          code = code.replaceAll(dep.placeholder, dep.url);
+        } else {
+          // Assert that syntax like `background: url('./img.png');` is not supported yet.
+          throw new Error(
+            `Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${codeFrame(originalCode, dep.loc.start.line, dep.loc.start.column)}`
+          );
+        }
+      }
+    }
+  }
+
+  return { externalImports, code, dependencies: cssModuleDeps };
 }

@@ -17,51 +17,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRouter = void 0;
-/// <reference types="../../types/jest" />
+exports.testRouter = exports.renderRouter = exports.getMockContext = exports.getMockConfig = void 0;
 require("./expect");
+require("./mocks");
 const react_native_1 = require("@testing-library/react-native");
-const path_1 = __importDefault(require("path"));
 const react_1 = __importDefault(require("react"));
-const context_stubs_1 = require("./context-stubs");
-const mocks_1 = require("./mocks");
+const mock_config_1 = require("./mock-config");
+Object.defineProperty(exports, "getMockConfig", { enumerable: true, get: function () { return mock_config_1.getMockConfig; } });
+Object.defineProperty(exports, "getMockContext", { enumerable: true, get: function () { return mock_config_1.getMockContext; } });
 const ExpoRoot_1 = require("../ExpoRoot");
-const getLinkingConfig_1 = require("../getLinkingConfig");
+const getPathFromState_1 = require("../fork/getPathFromState");
 const router_store_1 = require("../global-state/router-store");
+const imperative_api_1 = require("../imperative-api");
 // re-export everything
 __exportStar(require("@testing-library/react-native"), exports);
-function isOverrideContext(context) {
-    return Boolean(typeof context === 'object' && 'appDir' in context);
-}
-function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) {
+afterAll(() => {
+    router_store_1.store.cleanup();
+});
+function renderRouter(context = './app', { initialUrl = '/', linking, ...options } = {}) {
     jest.useFakeTimers();
-    let ctx;
-    // Reset the initial URL
-    (0, mocks_1.setInitialUrl)(initialUrl);
+    const mockContext = (0, mock_config_1.getMockContext)(context);
     // Force the render to be synchronous
-    process.env.EXPO_ROUTER_IMPORT_MODE_WEB = 'sync';
-    process.env.EXPO_ROUTER_IMPORT_MODE_IOS = 'sync';
-    process.env.EXPO_ROUTER_IMPORT_MODE_ANDROID = 'sync';
-    if (typeof context === 'string') {
-        ctx = (0, context_stubs_1.requireContext)(path_1.default.resolve(process.cwd(), context));
-    }
-    else if (isOverrideContext(context)) {
-        ctx = (0, context_stubs_1.requireContextWithOverrides)(context.appDir, context.overrides);
-    }
-    else {
-        ctx = (0, context_stubs_1.inMemoryContext)(context);
-    }
-    getLinkingConfig_1.stateCache.clear();
-    let location;
-    if (typeof initialUrl === 'string') {
-        location = new URL(initialUrl, 'test://');
-    }
-    else if (initialUrl instanceof URL) {
-        location = initialUrl;
-    }
-    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={ctx} location={location}/>, {
-        ...options,
-    });
+    process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
+    const result = (0, react_native_1.render)(<ExpoRoot_1.ExpoRoot context={mockContext} location={initialUrl} linking={linking}/>, options);
+    /**
+     * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
+     * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
+     * (that the app will briefly be in the right state, but then update to an invalid state)
+     */
+    router_store_1.store.subscribeToRootState(() => jest.runOnlyPendingTimers());
     return Object.assign(result, {
         getPathname() {
             return router_store_1.store.routeInfoSnapshot().pathname;
@@ -72,7 +56,53 @@ function renderRouter(context = './app', { initialUrl = '/', ...options } = {}) 
         getSearchParams() {
             return router_store_1.store.routeInfoSnapshot().params;
         },
+        getPathnameWithParams() {
+            return (0, getPathFromState_1.getPathFromState)(router_store_1.store.rootState, router_store_1.store.linking.config);
+        },
+        getRouterState() {
+            return router_store_1.store.rootStateSnapshot();
+        },
     });
 }
 exports.renderRouter = renderRouter;
+exports.testRouter = {
+    /** Navigate to the provided pathname and the pathname */
+    navigate(path) {
+        (0, react_native_1.act)(() => imperative_api_1.router.navigate(path));
+        expect(react_native_1.screen).toHavePathnameWithParams(path);
+    },
+    /** Push the provided pathname and assert the pathname */
+    push(path) {
+        (0, react_native_1.act)(() => imperative_api_1.router.push(path));
+        expect(react_native_1.screen).toHavePathnameWithParams(path);
+    },
+    /** Replace with provided pathname and assert the pathname */
+    replace(path) {
+        (0, react_native_1.act)(() => imperative_api_1.router.replace(path));
+        expect(react_native_1.screen).toHavePathnameWithParams(path);
+    },
+    /** Go back in history and asset the new pathname */
+    back(path) {
+        expect(imperative_api_1.router.canGoBack()).toBe(true);
+        (0, react_native_1.act)(() => imperative_api_1.router.back());
+        if (path) {
+            expect(react_native_1.screen).toHavePathnameWithParams(path);
+        }
+    },
+    /** If there's history that supports invoking the `back` function. */
+    canGoBack() {
+        return imperative_api_1.router.canGoBack();
+    },
+    /** Update the current route query params and assert the new pathname */
+    setParams(params, path) {
+        imperative_api_1.router.setParams(params);
+        if (path) {
+            expect(react_native_1.screen).toHavePathnameWithParams(path);
+        }
+    },
+    /** If there's history that supports invoking the `back` function. */
+    dismissAll() {
+        (0, react_native_1.act)(() => imperative_api_1.router.dismissAll());
+    },
+};
 //# sourceMappingURL=index.js.map

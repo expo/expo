@@ -1,17 +1,18 @@
+export { Box } from './Box';
 export { Grid } from './Grid';
 export { GridItem } from './GridItem';
-export { Box } from './Box';
 
 const ASSETS_PATH = '/static/images/sdk/auth-session/';
-
 export const ASSETS = {
   apple: ASSETS_PATH + 'apple.png',
   asgardeo: ASSETS_PATH + 'asgardeo.png',
   azure: ASSETS_PATH + 'azure.png',
   beyondidentity: ASSETS_PATH + 'beyondidentity.png',
+  calendly: ASSETS_PATH + 'calendly.svg',
   cognito: ASSETS_PATH + 'cognito.png',
   coinbase: ASSETS_PATH + 'coinbase.png',
   id4: ASSETS_PATH + 'identity4.png',
+  descope: ASSETS_PATH + 'descope.png',
   dropbox: ASSETS_PATH + 'dropbox.png',
   facebook: ASSETS_PATH + 'facebook.png',
   fitbit: ASSETS_PATH + 'fitbit.png',
@@ -25,7 +26,9 @@ export const ASSETS = {
   slack: ASSETS_PATH + 'slack.png',
   spotify: ASSETS_PATH + 'spotify.png',
   strava: ASSETS_PATH + 'strava.png',
+  strivacity: ASSETS_PATH + 'strivacity.png',
   twitch: ASSETS_PATH + 'twitch.png',
   twitter: ASSETS_PATH + 'twitter.png',
   uber: ASSETS_PATH + 'uber.png',
+  logto: ASSETS_PATH + 'logto.png',
 } as const;

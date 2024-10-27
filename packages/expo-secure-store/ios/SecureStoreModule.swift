@@ -1,5 +1,7 @@
 import ExpoModulesCore
+#if !os(tvOS)
 import LocalAuthentication
+#endif
 import Security
 
 public final class SecureStoreModule: Module {
@@ -17,17 +19,11 @@ public final class SecureStoreModule: Module {
     ])
 
     AsyncFunction("getValueWithKeyAsync") { (key: String, options: SecureStoreOptions) -> String? in
-      guard let key = validate(for: key) else {
-        throw InvalidKeyException()
-      }
+      return try get(with: key, options: options)
+    }
 
-      let data = try searchKeyChain(with: key, options: options)
-
-      guard let data = data else {
-        return nil
-      }
-
-      return String(data: data, encoding: .utf8)
+    Function("getValueWithKeySync") { (key: String, options: SecureStoreOptions) -> String? in
+      return try get(with: key, options: options)
     }
 
     AsyncFunction("setValueWithKeyAsync") { (value: String, key: String, options: SecureStoreOptions) -> Bool in
@@ -38,34 +34,90 @@ public final class SecureStoreModule: Module {
       return try set(value: value, with: key, options: options)
     }
 
+    Function("setValueWithKeySync") {(value: String, key: String, options: SecureStoreOptions) -> Bool in
+      guard let key = validate(for: key) else {
+        throw InvalidKeyException()
+      }
+
+      return try set(value: value, with: key, options: options)
+    }
+
     AsyncFunction("deleteValueWithKeyAsync") { (key: String, options: SecureStoreOptions) in
-      let searchDictionary = query(with: key, options: options)
-      SecItemDelete(searchDictionary as CFDictionary)
+      let noAuthSearchDictionary = query(with: key, options: options, requireAuthentication: false)
+      let authSearchDictionary = query(with: key, options: options, requireAuthentication: true)
+      let legacySearchDictionary = query(with: key, options: options)
+
+      SecItemDelete(legacySearchDictionary as CFDictionary)
+      SecItemDelete(authSearchDictionary as CFDictionary)
+      SecItemDelete(noAuthSearchDictionary as CFDictionary)
+    }
+
+    Function("canUseBiometricAuthentication") {() -> Bool in
+      #if os(tvOS)
+      return false
+      #else
+      let context = LAContext()
+      var error: NSError?
+      let isBiometricsSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
+
+      if error != nil {
+        return false
+      }
+      return isBiometricsSupported
+      #endif
     }
   }
 
+  private func get(with key: String, options: SecureStoreOptions) throws -> String? {
+    guard let key = validate(for: key) else {
+      throw InvalidKeyException()
+    }
+
+    if let unauthenticatedItem = try searchKeyChain(with: key, options: options, requireAuthentication: false) {
+      return String(data: unauthenticatedItem, encoding: .utf8)
+    }
+
+    if let authenticatedItem = try searchKeyChain(with: key, options: options, requireAuthentication: true) {
+      return String(data: authenticatedItem, encoding: .utf8)
+    }
+
+    if let legacyItem = try searchKeyChain(with: key, options: options) {
+      return String(data: legacyItem, encoding: .utf8)
+    }
+
+    return nil
+  }
+
   private func set(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
-    var query = query(with: key, options: options)
+    var setItemQuery = query(with: key, options: options, requireAuthentication: options.requireAuthentication)
 
     let valueData = value.data(using: .utf8)
-    query[kSecValueData as String] = valueData
+    setItemQuery[kSecValueData as String] = valueData
 
     let accessibility = attributeWith(options: options)
 
     if !options.requireAuthentication {
-      query[kSecAttrAccessible as String] = accessibility
+      setItemQuery[kSecAttrAccessible as String] = accessibility
     } else {
       guard let _ = Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] as? String else {
         throw MissingPlistKeyException()
       }
-      let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, SecAccessControlCreateFlags.biometryCurrentSet, nil)
-      query[kSecAttrAccessControl as String] = accessOptions
+
+      var error: Unmanaged<CFError>? = nil
+      guard let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, .biometryCurrentSet, &error) else {
+        let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
+        throw SecAccessControlError(errorCode)
+      }
+      setItemQuery[kSecAttrAccessControl as String] = accessOptions
     }
 
-    let status = SecItemAdd(query as CFDictionary, nil)
+    let status = SecItemAdd(setItemQuery as CFDictionary, nil)
 
     switch status {
     case errSecSuccess:
+      // On success we want to remove the other key alias and legacy key (if they exist) to avoid conflicts during reads
+      SecItemDelete(query(with: key, options: options) as CFDictionary)
+      SecItemDelete(query(with: key, options: options, requireAuthentication: !options.requireAuthentication) as CFDictionary)
       return true
     case errSecDuplicateItem:
       return try update(value: value, with: key, options: options)
@@ -75,7 +127,7 @@ public final class SecureStoreModule: Module {
   }
 
   private func update(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
-    var query = query(with: key, options: options)
+    var query = query(with: key, options: options, requireAuthentication: options.requireAuthentication)
 
     let valueData = value.data(using: .utf8)
     let updateDictionary = [kSecValueData as String: valueData]
@@ -93,8 +145,8 @@ public final class SecureStoreModule: Module {
     }
   }
 
-  private func searchKeyChain(with key: String, options: SecureStoreOptions) throws -> Data? {
-    var query = query(with: key, options: options)
+  private func searchKeyChain(with key: String, options: SecureStoreOptions, requireAuthentication: Bool? = nil) throws -> Data? {
+    var query = query(with: key, options: options, requireAuthentication: requireAuthentication)
 
     query[kSecMatchLimit as String] = kSecMatchLimitOne
     query[kSecReturnData as String] = kCFBooleanTrue
@@ -119,8 +171,12 @@ public final class SecureStoreModule: Module {
     }
   }
 
-  private func query(with key: String, options: SecureStoreOptions) -> [String: Any] {
-    let service = options.keychainService ?? "app"
+  private func query(with key: String, options: SecureStoreOptions, requireAuthentication: Bool? = nil) -> [String: Any] {
+    var service = options.keychainService ?? "app"
+    if let requireAuthentication {
+      service.append(":\(requireAuthentication ? "auth" : "no-auth")")
+    }
+
     let encodedKey = Data(key.utf8)
 
     return [
@@ -147,8 +203,6 @@ public final class SecureStoreModule: Module {
       return kSecAttrAccessibleAlwaysThisDeviceOnly
     case .whenUnlockedThisDeviceOnly:
       return kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-    default:
-      return kSecAttrAccessibleWhenUnlocked
     }
   }
 

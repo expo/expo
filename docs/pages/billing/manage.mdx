@@ -1,0 +1,264 @@
+---
+title: Manage plans and billing
+description: Learn how to update, downgrade, or cancel your Expo account's plans and manage billing details.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+**Billing** in the Expo dashboard provides information about your account's currently subscribed plan and monthly usage. It also allows you to manage your plan and billing details.
+
+This guide explains how to manage your account's plans and billing information.
+
+## Manage plans
+
+### View the current plan
+
+<Tabs>
+
+<Tab label="For Organization accounts">
+
+- Click [Billing](https://expo.dev/settings/billing) from the navigation menu under **Organization settings**.
+- Under **Plan**, you can see the current plan for your account.
+
+For example, an Organization account is subscribed to the Production plan below:
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the current plan for an Organization account."
+  src="/static/images/billing/management/billing-01.png"
+/>
+
+</Tab>
+
+<Tab label="For Personal accounts">
+
+- Click [Billing](https://expo.dev/settings/billing) from the navigation menu under **Account settings**.
+- Under **Plan**, you can see the current plan for your account.
+
+For example, a Personal account is subscribed to the Production plan below:
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the current plan for a Personal account."
+  src="/static/images/billing/management/billing-02.png"
+/>
+
+</Tab>
+
+</Tabs>
+
+### Upgrade to a new plan
+
+To upgrade to a different plan:
+
+- Click [Billing](https://expo.dev/settings/billing) from the navigation menu in Expo dashboard.
+- Under **Plan**, click **Change Plan** if you are already on a paid plan. If you are on the Free plan, click **Subscribe**. It opens the **Cart** page.
+- Under **Choose a plan**, you can see a list of all available plans. Choose the plan you want to upgrade to and click the **Continue to Review** button at the bottom of this page.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the list of available plans to upgrade."
+  src="/static/images/billing/management/billing-03.png"
+  className="max-w-[640px]"
+/>
+
+- Next, you are asked to review and confirm your new plan. After reviewing the details on this page, enable the checkbox and click **Continue to Checkout** to open the checkout page.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the review page for the selected plan to upgrade."
+  src="/static/images/billing/management/billing-04.png"
+  className="max-w-[640px]"
+/>
+
+- On **Checkout**, you are asked to enter your email, card details, and billing address. After adding these details, click **Pay Now** to subscribe to the new plan.
+
+> **Note**: If you are subscribing to the [On-demand plan](/billing/plans/#on-demand), you are not charged any fee when you check out. Since this is a usage-based plan, all charges are due at the end of the billing period.
+
+### Downgrade a plan
+
+If you are on a Production, Enterprise, or Legacy plan, you can downgrade to the On-demand or Free plan.
+
+<Tabs>
+
+<Tab label="To On-demand plan">
+
+Downgrading to the On-demand plan takes effect after your current billing period ends.
+
+To downgrade, go to [Billing](https://expo.dev/settings/billing) and follow the steps below:
+
+- Under **Plan**, click **Change Plan**.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the Change Plan button to downgrade a plan."
+  src="/static/images/billing/management/billing-05.png"
+  className="max-w-[720px]"
+/>
+
+- Under **Choose a plan**, select **On-demand plan**. Then, click **Continue to Review** at the bottom of the page.
+
+<ContentSpotlight
+  alt="On Cart, select On-demand plan under Choose a plan and Continue to Review at the bottom of the page in Expo dashboard."
+  src="/static/images/billing/management/billing-06.png"
+  className="max-w-[640px]"
+/>
+
+- Next, you need to review and confirm that you're switching to the On-demand plan. Verify that the account you're downgrading from is correct (see the _warning_ on this page). After reviewing the details, enable the checkbox and click **Continue to Checkout**.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the review page for the selected plan to downgrade."
+  src="/static/images/billing/management/billing-07.png"
+  className="max-w-[640px]"
+/>
+
+- A **Checkout** dialog opens up where you can confirm all the details. Click **Schedule Downgrade** to schedule a downgrade of your plan.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the review page for the selected plan to downgrade."
+  src="/static/images/billing/management/billing-08.png"
+  className="max-w-[280px]"
+/>
+
+- After confirming your account for a plan downgrade to On-demand, the same information is also reflected under **Billing** > **Plan**.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the review page for the selected plan to downgrade."
+  src="/static/images/billing/management/billing-09.png"
+  className="max-w-[640px]"
+/>
+
+</Tab>
+
+<Tab label="To Free plan">
+
+Downgrading to the Free plan takes effect after your current billing period ends and is equivalent to canceling a paid plan.
+
+To downgrade, go to [Billing](https://expo.dev/settings/billing) and follow the steps below:
+
+- Under **Plan**, click **Change Plan**.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the Change Plan button to downgrade a plan."
+  src="/static/images/billing/management/billing-05.png"
+  className="max-w-[720px]"
+/>
+
+- Under **Choose a plan**, select **Free plan**. Then, click **Continue to Review** at the bottom of the page.
+
+<ContentSpotlight
+  alt="On Cart, select Free plan under Choose a plan and Continue to Review at the bottom of the page in the Expo dashboard."
+  src="/static/images/billing/management/billing-10.png"
+  className="max-w-[640px]"
+/>
+
+- Next, you need to review and confirm that you're switching to the Free plan. Verify that the account you're downgrading is correct (see the _warning_ on this page). After reviewing the details, enable the checkbox and click **Cancel Paid Plan**.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the review page for the selected plan to downgrade."
+  src="/static/images/billing/management/billing-11.png"
+  className="max-w-[640px]"
+/>
+
+- You will be redirected to Stripe's cancel plan screen, where you can cancel your plan. Switching to the Free plan is equivalent to canceling a paid plan at the end of the billing period.
+
+</Tab>
+
+</Tabs>
+
+### Cancel a plan
+
+<Tabs>
+
+<Tab label="From Production or Enterprise plan">
+
+Cancellation from a Production or Enterprise plan takes effect after your current billing period ends.
+
+To cancel your plan, on [Billing](https://expo.dev/settings/billing), click **Cancel Plan** and then click **Continue to Stripe** to follow the process of your current plan's cancellation.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the Cancel Plan button to cancel a plan."
+  src="/static/images/billing/management/billing-12.png"
+  className="max-w-[640px]"
+/>
+
+</Tab>
+
+<Tab label="From On-demand to Free plan">
+
+Cancellation for the On-demand plan takes effect immediately and resets your account's quota to the Free plan.
+
+To cancel your plan, on [Billing](https://expo.dev/settings/billing), click **Cancel Plan** and then click **Cancel Immediately**.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the Cancel Plan button to cancel a plan."
+  src="/static/images/billing/management/billing-12.png"
+  className="max-w-[640px]"
+/>
+
+> **Note**: If you unsubscribe from an **On-demand plan,** you will be charged for any usage incurred during the current billing period.
+
+</Tab>
+
+</Tabs>
+
+## Manage billing information
+
+You can manage your billing-related details such as name, email, address, and payment information, or add a tax ID. All of this information is mentioned on the [monthly invoice](/billing/invoices-and-receipts/) you receive for the subscribed plan.
+
+### Update Billing name, email, or address
+
+To update your billing name, email, or address:
+
+- On [Billing](https://expo.dev/settings/billing), click **Update billing information**. This will open Stripe's portal where you can view payment methods, billing information, invoicing history, and update your billing information. Then, click **Update information**.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the Update billing information button to update billing details."
+  src="/static/images/billing/management/billing-13.png"
+  className="max-w-[640px]"
+/>
+
+- Update your billing details by entering your new name, email or address, then click **Save**.
+
+<ContentSpotlight
+  alt="On Billing information, enter the new name, email, or address and click Save to update the billing details."
+  src="/static/images/billing/management/billing-14.png"
+  className="max-w-[200px]"
+/>
+
+### Tax ID
+
+To add or update your billing tax ID:
+
+- On [Billing](https://expo.dev/settings/billing), click **Update billing information**. This will open Stripe's portal where you can view and update your billing information. Then, click **Update information**.
+
+<ContentSpotlight
+  alt="Billing page in Expo dashboard displays the Update billing information button to update billing details."
+  src="/static/images/billing/management/billing-13.png"
+  className="max-w-[640px]"
+/>
+
+- Under **Tax ID**, select the ID type, enter your valid tax ID, and click **Save**.
+
+<ContentSpotlight
+  alt="On Billing information, enter the new tax ID and click Save to update the billing detail."
+  src="/static/images/billing/management/billing-15.png"
+  className="max-w-[200px]"
+/>
+
+### Payment method
+
+To add a new payment method information:
+
+- On [Billing](https://expo.dev/settings/billing), click **Update billing information**. This will open Stripe's portal where you can view and update your billing information.
+- Under **Payment method**, click on **Add payment method** to add a new payment method.
+
+<ContentSpotlight
+  alt="On Billing information, you can add a new payment method."
+  src="/static/images/billing/management/payment-01.png"
+  className="max-w-[400px]"
+/>
+
+- Enter your new payment method details and click **Add**.
+
+<ContentSpotlight
+  alt="On add a new payment method, enter the new payment method details."
+  src="/static/images/billing/management/payment-02.png"
+  className="max-w-[320px]"
+/>

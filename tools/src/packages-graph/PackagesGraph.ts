@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 
+import PackagesGraphEdge from './PackagesGraphEdge';
+import PackagesGraphNode from './PackagesGraphNode';
 import {
   DefaultDependencyKind,
   DependencyKind,
   getListOfPackagesAsync,
   Package,
 } from '../Packages';
-import PackagesGraphEdge from './PackagesGraphEdge';
-import PackagesGraphNode from './PackagesGraphNode';
 
 type PackagesMap = Map<string, PackagesGraphNode>;
 

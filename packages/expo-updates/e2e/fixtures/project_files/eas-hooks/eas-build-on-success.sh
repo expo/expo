@@ -14,7 +14,7 @@ set -eox pipefail
 # If this script exits, trap it first and clean up the emulator
 trap cleanup EXIT
 
-if [[ "$EAS_BUILD_PROFILE" != "updates_testing" ]]; then
+if [[ "$EAS_BUILD_PROFILE" != "updates_testing_debug" && "$EAS_BUILD_PROFILE" != "updates_testing_release" ]]; then
   exit 0
 fi
 
@@ -32,7 +32,6 @@ export UPDATES_PORT=4747
 export PROJECT_ROOT=$PWD
 
 export EX_UPDATES_NATIVE_DEBUG=1
-export NO_FLIPPER=1
 
 mkdir ./logs
 
@@ -67,10 +66,18 @@ if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   adb reverse tcp:4747 tcp:4747
 
   # Execute Android tests
-  detox test --configuration android.release 2>&1 | tee ./logs/detox-tests.log
+  if [[ "$EAS_BUILD_PROFILE" == "updates_testing_debug" ]]; then
+    detox test --configuration android.debug 2>&1 | tee ./logs/detox-tests.log
+  else
+    detox test --configuration android.release 2>&1 | tee ./logs/detox-tests.log
+  fi
 else
   # Execute iOS tests
-  detox test --configuration ios.debug 2>&1 | tee ./logs/detox-tests.log
+  if [[ "$EAS_BUILD_PROFILE" == "updates_testing_debug" ]]; then
+    detox test --configuration ios.debug 2>&1 | tee ./logs/detox-tests.log
+  else
+    detox test --configuration ios.release 2>&1 | tee ./logs/detox-tests.log
+  fi
 fi
 
 

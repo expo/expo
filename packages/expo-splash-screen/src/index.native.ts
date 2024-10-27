@@ -1,9 +1,9 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireOptionalNativeModule } from 'expo-modules-core';
 
-const SplashModule = requireNativeModule('ExpoSplashScreen') as {
+const SplashModule = requireOptionalNativeModule('ExpoSplashScreen') as {
   preventAutoHideAsync: () => Promise<boolean>;
   hideAsync: () => Promise<boolean>;
-};
+} | null;
 
 let _userControlledAutoHideEnabled = false;
 let _preventAutoHideAsyncInvoked = false;
@@ -16,10 +16,14 @@ let _preventAutoHideAsyncInvoked = false;
  *
  * @private
  */
-export const _internal_preventAutoHideAsync = () => {
+export async function _internal_preventAutoHideAsync(): Promise<boolean> {
+  if (!SplashModule) {
+    return false;
+  }
+
   // Memoize, this should only be called once.
   if (_preventAutoHideAsyncInvoked) {
-    return;
+    return false;
   }
   _preventAutoHideAsyncInvoked = true;
 
@@ -33,8 +37,8 @@ export const _internal_preventAutoHideAsync = () => {
     });
   }
 
-  SplashModule.preventAutoHideAsync();
-};
+  return SplashModule.preventAutoHideAsync();
+}
 
 /**
  * Used for Expo libraries to attempt hiding the splash screen after they've completed their work.
@@ -53,6 +57,10 @@ export const _internal_maybeHideAsync = () => {
 };
 
 export function hideAsync() {
+  if (!SplashModule) {
+    return Promise.resolve(false);
+  }
+
   return SplashModule.hideAsync().catch((error: any) => {
     // Hide this very unfortunate error.
     if (
@@ -70,5 +78,5 @@ export const preventAutoHideAsync = () => {
   // Indicate that the user is controlling the auto hide behavior.
   _userControlledAutoHideEnabled = true;
   // Prevent as usual...
-  _internal_preventAutoHideAsync();
+  return _internal_preventAutoHideAsync();
 };

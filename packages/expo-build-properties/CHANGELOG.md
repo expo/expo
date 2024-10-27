@@ -10,6 +10,67 @@
 
 ### 💡 Others
 
+## 0.13.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Export missing types. ([#29401](https://github.com/expo/expo/pull/29401) by [@Simek](https://github.com/Simek))
+- Deprecate `android.newArchEnabled` and `ios.newArchEnabled` in favor of app config `newArchEnabled`. ([#31963](https://github.com/expo/expo/pull/31963) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.12.5 - 2024-08-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.4 - 2024-07-30
+
+### 🎉 New features
+
+- Add `android.enablePngCrunchInReleaseBuilds` to enable toggling PNG crunching in release builds. ([#30699](https://github.com/expo/expo/pull/30699) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.12.3 - 2024-06-06
+
+### 🎉 New features
+
+- `ios.privacyManifestAggregationEnabled` is now enabled by default. ([#29439](https://github.com/expo/expo/pull/29439) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.12.2 - 2024-06-05
+
+### 🐛 Bug fixes
+
+- Improved android manifest queries, preventing overrides of <package> tags and splitting <provider> instead of merging them into one string ([#29418](https://github.com/expo/expo/pull/29418) by [@Titozzz](https://github.com/Titozzz))
+
+## 0.12.1 — 2024-05-06
+
+### 🎉 New features
+
+- Add `ios.ccacheEnabled` option to enable the C++ compiler cache for iOS builds. ([#28638](https://github.com/expo/expo/pull/28638) by [@byCedric](https://github.com/byCedric))
+- Add `ios.privacyManifestAggregationEnabled` option to enable/disable privacy manifest aggregation. ([#28646](https://github.com/expo/expo/pull/28646) by [@brentvatne](https://github.com/brentvatne)).
+
+## 0.12.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- Removed Flipper support. ([#26581](https://github.com/expo/expo/pull/26581) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Expand `android.extraMavenRepos` to allow authentication-required Maven repositories. ([#26895](https://github.com/expo/expo/pull/26895) by [@bpeltonc](https://github.com/bpeltonc))
+- Added `extraPods` and `extraMavenRepos` supports within `withBuildProperties()` that library authors could reuse in third-party libraries. ([#28106](https://github.com/expo/expo/pull/28106) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+- update semver from 7.5.3 to 7.5.4. ([#26876](https://github.com/expo/expo/pull/26876) by [@GaelCO](https://github.com/GaelCO))
+
+## 0.11.1 - 2024-02-01
+
+### 🎉 New features
+
+- Added `useLegacyPackaging` property to instruct AGP to compress native libraries in the APK. ([#26779](https://github.com/expo/expo/pull/26779) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 0.11.0 — 2023-11-14
 
 ### 🛠 Breaking changes

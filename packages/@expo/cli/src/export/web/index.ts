@@ -21,7 +21,7 @@ export const expoExportWeb: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      `Export the static files of the web app for hosting on a web server`,
+      `(Deprecated) Bundle the static files of the web app with Webpack for hosting on a web server`,
       chalk`npx expo export:web {dim <dir>}`,
       [
         chalk`<dir>                         Directory of the Expo project. {dim Default: Current working directory}`,

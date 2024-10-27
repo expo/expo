@@ -4,121 +4,131 @@ sidebar_title: Get started
 description: Learn about getting started with Expo modules API.
 ---
 
-import { BookOpen02Icon, Grid01Icon } from '@expo/styleguide-icons';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Step } from '~/ui/components/Step';
-import { Terminal } from '~/ui/components/Snippet';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 
-**There are two ways to get started with the Expo Modules API:** you can either initialize a new module from scratch or add the Expo Modules API to an existing module. This guide will walk you through creating a new module from scratch, and the [Integrating in an existing library guide](/modules/existing-library) covers the latter case.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+**There are two ways to get started with the Expo Modules API:** you can either initialize a new module from scratch or add the Expo Modules API to an existing module. This guide will walk you through creating a new module from scratch, and the [Integrating in an existing library](/modules/existing-library) covers the latter.
 
 The two recommended flows to create a new module with Expo Modules API:
 
-- [Add a new module to an existing Expo application, and use it to test and develop your module.](#adding-a-new-module-to-an-existing-application)
+- [Add a new module to an existing Expo application](#adding-a-new-module-to-an-existing-application), and use it to test and develop your module.
 
-- [Create a new module in isolation with a generated example project if you want to reuse it in multiple projects or publish it to npm.](#creating-a-new-module-with-an-example-project)
+- [Create a new module in isolation with a generated example project](#creating-a-new-module-with-an-example-project) if you want to reuse it in multiple projects or publish it to npm.
 
 Both of these flows are covered in the next sections.
 
-## Adding a new module to an existing application
+## Add a new module to an existing application
 
 <Step label="1">
 
-### Creating the local Expo module
+### Create the local Expo module
 
-Navigate to your project directory (the one that contains the **package.json** file) and run the following command, which is the recommended way to create a local Expo module:
+Navigate to your project directory (the one that contains the **package.json** file) and run the following command. This is the recommended way to create a local Expo module.
 
-<Terminal cmd={[`$ npx create-expo-module@latest --local`]} />
+<Terminal cmd={['$ npx create-expo-module@latest --local']} />
 
-It's best to provide a meaningful module name. However, you can accept the default suggestions for the rest of the questions.
+Then, if your project doesn't have native projects generated (**android** and **ios** directories), run the following command, otherwise skip this command:
+
+<Terminal cmd={['$ npx expo prebuild --clean']} />
+
+You can provide a meaningful module name in the CLI prompt. For the rest of the prompts, you can also accept the default suggestions.
+
+> **Note**: If you have a pre-existing **ios** directory in your project's root which was created using `npx expo prebuild`, you must reinstall the pods:
+>
+> <br />
+> <Terminal cmd={['$ npx pod-install']} />
 
 </Step>
 
 <Step label="2">
 
-### Using the module
+### Use the local module
 
-If you have an **ios** directory in your project that you created using `npx expo prebuild`, you must reinstall the pods:
+Import the local module in your application, for example in **App.js** or **App.tsx** or **app/index.tsx**:
 
-<Terminal cmd={[`$ pod install --project-directory=ios`]} />
-
-> **Note:**
-> If you're using a development client, you need to rebuild your development client any time you want to use new native code.
-
-Now, import the module in your application, for example in **App.js** or **App.tsx**:
-
-```js
+```tsx App.tsx
+/* @hide ...*/ /* @end */
 import { hello } from './modules/my-module';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      /* @info In the component, return the result of the native method. */
+      <Text>{hello()}</Text>
+      /* @end */
+    </View>
+  );
+}
 ```
 
-To run your app locally, run the `prebuild` command and then compile the app:
+Start the development sever in your terminal so that when you edit the native module and build the app in the next step, the changes will be reflected in the app:
 
-<Terminal
-  cmdCopy="npx expo prebuild --clean && npx expo run:ios"
-  cmd={[
-    '# Re-generate the native project directories from scratch',
-    '$ npx expo prebuild --clean',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
-/>
+<Terminal cmd={['$ npx expo start']} />
 
 Congratulations! You have created a local Expo module. You can now start working on it.
 
-> **Note:**
-> You can also use absolute import paths [with some configuration changes](https://expo.fyi/absolute-path-expo-modules.md).
+> **info** **Tip**: You can also use absolute import paths [by applying these configuration changes](https://expo.fyi/absolute-path-expo-modules.md).
 
 </Step>
 
 <Step label="3">
 
-### Editing the module
+### Edit the module
+
+To develop and test your module locally, let's use Android Studio and Xcode for Android and iOS.
 
 #### Android
 
-If you have an **android** directory in your project that you created using `npx expo prebuild`, you can open the directory in Android Studio.
+1. Open the **android** directory (that is generated by `npx expo prebuild` in step 1) from your project in Android Studio. It may take a while for Gradle to finish syncing the native directory project.
+2. Once the project is synced, open **modules/my-module/android/src/main/java/expo/modules/mymodule/MyModule.kt** file.
+3. Change `hello` function to return a different string, such as "Hello world! 🌎🤖" and save the file.
+4. Build the app by clicking **Run 'app'** button from top menu bar and you will see the changes on the screen.
 
-You can always just edit the files in the `modules/my-module/android/src/main/java/expo/modules/mymodule/` directory directly in your favorite text editor.
-
-Change the `hello` method to return a different string. For example, you can change it to return "Hello world! 🌎🍎".
-
-Rebuild the app or build a new development client and you should see your change.
+You have to repeat the build step anytime you make a change to the native code to the changes.
 
 #### iOS
 
-Open the files in **modules/my-module/ios/** directory in your favorite code editor to edit them. Alternatively, if you have an **ios** directory in your project that was created using `npx expo prebuild`, you can use Xcode to edit them.
+1. Open the **ios** directory (that is generated by `npx expo prebuild` in step 1) from your project in Xcode by running `xed ios` command.
+2. Under **Pods** > **Development Pods** > **MyModule**, open **MyModule.swift** file.
+3. Change `hello` function to return a different string, such as "Hello world! 🌎🍎" and save the file.
+4. Build your app by clicking **Run** button from top menu bar or press <kbd>⌘ Cmd</kbd> + <kbd>R</kbd>, you will see the changes on the screen.
 
-Now, change the `hello` method to return a different string. For example, you can change it to return "Hello world! 🌎🍎".
+You have to repeat the build step anytime you make a change to the native code to the changes.
 
-Rebuild the app or build a new development client and you should see your change. Remember you need to either run `npx expo prebuild` each time you make a native change or reinstall the pods using `pod install --project-directory="example/ios"` (which should be way faster).
+> **info** **Tip**: Use `npx pod-install` to reinstall the pods if you add new native files to the module or when you modify **expo-module.config.json**.
 
 </Step>
 
-> **Note**: There are also other flows for working on an Expo module in parallel with your application. For example, you can use a monorepo or publish to npm, as described in the [How to use a standalone Expo module in your project](/modules/use-standalone-expo-module-in-your-project) guide.
+> **Note**: There are also other flows for working on an Expo module in parallel with your application. For example, you can use a monorepo or publish to npm, as described in the [How to use a standalone Expo module](/modules/use-standalone-expo-module-in-your-project) guide.
 
-## Creating a new module with an example project
+## Create a new module with an example project
 
 <Step label="1">
 
-### Creating the Expo module
+### Create the Expo module
 
 To create a new Expo module from scratch, run the `create-expo-module` script as shown below.
 The script will ask you a few questions and then generate the native Expo module along with the example app for Android and iOS that uses your new module.
 
-<Terminal cmd={[`$ npx create-expo-module my-module`]} />
+<Terminal cmd={[`$ npx create-expo-module@latest my-module`]} />
 
 </Step>
 
 <Step label="2">
 
-### Running the example project
+### Open the module and start the development server
 
 Navigate to the module directory and then open the Android and/or iOS example project by running the following commands:
 
 <Terminal cmd={[`$ cd my-module`, `$ npm run open:android`, `$ npm run open:ios`]} />
 
-Now, you can run the example project on your device or simulator/emulator. When the project compiles and runs, you will see "Hello world! 👋" on the screen.
+Go to **example** directory and start the development sever in your terminal so that when you edit the native module and build the app in the next step, the changes will be reflected in the app:
+
+<Terminal cmd={['$ cd example', '$ npx expo start']} cmdCopy="cd example && npx expo start" />
 
 > **Note:** If you're using Windows, you can open the example project by opening the **android** directory in Android Studio, but you cannot open the iOS project files.
 
@@ -126,19 +136,25 @@ Now, you can run the example project on your device or simulator/emulator. When 
 
 <Step label="3">
 
-### Making a change
+### Edit the module
 
 #### Android
 
-Open up **MyModuleModule.kt** in Android Studio (<kbd>⌘ Cmd</kbd> + <kbd>O</kbd> or <kbd>Ctrl</kbd> + <kbd>O</kbd> and search for **MyModuleModule.kt**). Change the `hello` method to return a different string. For example, you can change it to return `"Hello world! 🌎🤖"`. Rebuild the app and you should see your change.
+1. Open **my-module/android/src/main/java/expo/modules/mymodule/MyModule.kt** file.
+2. Change `hello` function to return a different string, such as "Hello world! 🌎🤖" and save the file.
+3. Build the app by clicking **Run 'app'** button from top menu bar and you will see the changes on the screen.
+
+You have to repeat the build step anytime you make a change to the native code to the changes.
 
 #### iOS
 
-Open up **MyModuleModule.swift** in Xcode (<kbd>⌘ Cmd</kbd> + <kbd>O</kbd> or <kbd>Ctrl</kbd> + <kbd>O</kbd> and search for **MyModuleModule.swift**). Change the `hello` method to return a different string. For example, you can change it to return `"Hello world! 🌎🍎"`.
+1. Under **Pods** > **Development Pods** > **MyModule**, open **MyModule.swift** file.
+2. Change `hello` function to return a different string, such as "Hello world! 🌎🍎" and save the file.
+3. Build your app by clicking **Run** button from top menu bar or press <kbd>⌘ Cmd</kbd> + <kbd>R</kbd>, you will see the changes on the screen.
 
-If you added new native files, you need to reinstall the pods using `pod install --project-directory="example/ios"`.
+You have to repeat the build step anytime you make a change to the native code to the changes.
 
-Rebuild the app and you should see your change.
+> **info** **Tip**: Use `npx pod-install` to reinstall the pods if you add new native files to the module or when you modify **expo-module.config.json**.
 
 </Step>
 ## Next steps

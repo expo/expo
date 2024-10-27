@@ -2,6 +2,7 @@ import { UnavailabilityError } from 'expo-modules-core';
 
 import NotificationPresenter from './NotificationPresenterModule';
 import { Notification } from './Notifications.types';
+import { mapNotification } from './utils/mapNotificationResponse';
 
 /**
  * Fetches information about all notifications present in the notification tray (Notification Center).
@@ -14,5 +15,7 @@ export default async function getPresentedNotificationsAsync(): Promise<Notifica
     throw new UnavailabilityError('Notifications', 'getPresentedNotificationsAsync');
   }
 
-  return await NotificationPresenter.getPresentedNotificationsAsync();
+  return (await NotificationPresenter.getPresentedNotificationsAsync()).map((notification) =>
+    mapNotification(notification)
+  );
 }

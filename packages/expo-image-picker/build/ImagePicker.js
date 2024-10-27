@@ -1,5 +1,6 @@
-import { PermissionStatus, createPermissionHook, UnavailabilityError, CodedError, } from 'expo-modules-core';
+import { CodedError, createPermissionHook, PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
 import ExponentImagePicker from './ExponentImagePicker';
+import { mapDeprecatedOptions } from './utils';
 function validateOptions(options) {
     const { aspect, quality, videoMaxDuration } = options;
     if (aspect != null) {
@@ -119,7 +120,8 @@ export async function launchCameraAsync(options = {}) {
     if (!ExponentImagePicker.launchCameraAsync) {
         throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
     }
-    return await ExponentImagePicker.launchCameraAsync(validateOptions(options));
+    const mappedOptions = mapDeprecatedOptions(options);
+    return await ExponentImagePicker.launchCameraAsync(validateOptions(mappedOptions));
 }
 // @needsAudit
 /**
@@ -142,16 +144,17 @@ export async function launchCameraAsync(options = {}) {
  * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
  * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
-export async function launchImageLibraryAsync(options) {
+export async function launchImageLibraryAsync(options = {}) {
+    const mappedOptions = mapDeprecatedOptions(options);
     if (!ExponentImagePicker.launchImageLibraryAsync) {
         throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
     }
-    if (options?.allowsEditing && options.allowsMultipleSelection) {
+    if (mappedOptions?.allowsEditing && mappedOptions.allowsMultipleSelection) {
         console.warn('[expo-image-picker] `allowsEditing` is not supported when `allowsMultipleSelection` is enabled and will be ignored.' +
             "Disable either 'allowsEditing' or 'allowsMultipleSelection' in 'launchImageLibraryAsync' " +
             'to fix this warning.');
     }
-    return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
+    return await ExponentImagePicker.launchImageLibraryAsync(mappedOptions);
 }
 export * from './ImagePicker.types';
 export { PermissionStatus };

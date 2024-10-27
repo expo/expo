@@ -18,7 +18,7 @@ const packageManager_1 = require("./packageManager");
 const prompts_2 = require("./prompts");
 const resolvePackageManager_1 = require("./resolvePackageManager");
 const telemetry_1 = require("./telemetry");
-const utils_1 = require("./utils");
+const ora_1 = require("./utils/ora");
 const debug = require('debug')('create-expo-module:main');
 const packageJson = require('../package.json');
 // Opt in to using beta versions
@@ -77,16 +77,16 @@ async function main(target, options) {
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir, options.local);
     (0, telemetry_1.logEventAsync)((0, telemetry_1.eventCreateExpoModule)(packageManager, options));
-    await (0, utils_1.newStep)('Creating the module from template files', async (step) => {
+    await (0, ora_1.newStep)('Creating the module from template files', async (step) => {
         await createModuleFromTemplate(packagePath, targetDir, data);
         step.succeed('Created the module from template files');
     });
     if (!options.local) {
-        await (0, utils_1.newStep)('Installing module dependencies', async (step) => {
+        await (0, ora_1.newStep)('Installing module dependencies', async (step) => {
             await (0, packageManager_1.installDependencies)(packageManager, targetDir);
             step.succeed('Installed module dependencies');
         });
-        await (0, utils_1.newStep)('Compiling TypeScript files', async (step) => {
+        await (0, ora_1.newStep)('Compiling TypeScript files', async (step) => {
             await (0, spawn_async_1.default)(packageManager, ['run', 'build'], {
                 cwd: targetDir,
                 stdio: 'ignore',
@@ -110,7 +110,7 @@ async function main(target, options) {
             // Create "example" folder
             await (0, createExampleApp_1.createExampleApp)(data, targetDir, packageManager);
         }
-        await (0, utils_1.newStep)('Creating an empty Git repository', async (step) => {
+        await (0, ora_1.newStep)('Creating an empty Git repository', async (step) => {
             try {
                 const result = await createGitRepositoryAsync(targetDir);
                 if (result) {
@@ -169,11 +169,51 @@ async function getNpmTarballUrl(packageName, version = 'latest') {
     return stdout.trim();
 }
 /**
+ * Gets expo SDK version major from the local package.json.
+ */
+async function getLocalSdkMajorVersion() {
+    const path = require.resolve('expo/package.json', { paths: [process.cwd()] });
+    if (!path) {
+        return null;
+    }
+    const { version } = require(path) ?? {};
+    return version?.split('.')[0] ?? null;
+}
+/**
+ * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
+ */
+async function getTemplateVersion(isLocal) {
+    if (EXPO_BETA) {
+        return 'next';
+    }
+    if (!isLocal) {
+        return 'latest';
+    }
+    try {
+        const sdkVersionMajor = await getLocalSdkMajorVersion();
+        return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
+    }
+    catch {
+        console.log();
+        console.warn(chalk_1.default.yellow("Couldn't determine the SDK version from the local project, using `latest` as the template version."));
+        return 'latest';
+    }
+}
+/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir, isLocal = false) {
-    return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
-        const tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', EXPO_BETA ? 'next' : 'latest');
+    return await (0, ora_1.newStep)('Downloading module template from npm', async (step) => {
+        const templateVersion = await getTemplateVersion(isLocal);
+        let tarballUrl = null;
+        try {
+            tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', templateVersion);
+        }
+        catch {
+            console.log();
+            console.warn(chalk_1.default.yellow("Couldn't download the versioned template from npm, falling back to the latest version."));
+            tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', 'latest');
+        }
         await (0, download_tarball_1.default)({
             url: tarballUrl,
             dir: targetDir,
@@ -248,9 +288,7 @@ async function askForPackageSlugAsync(customTargetPath, isLocal = false) {
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
 async function askForSubstitutionDataAsync(slug, isLocal = false) {
-    const promptQueries = await (isLocal
-        ? prompts_2.getLocalSubstitutionDataPrompts
-        : prompts_2.getSubstitutionDataPrompts)(slug);
+    const promptQueries = await (isLocal ? prompts_2.getLocalSubstitutionDataPrompts : prompts_2.getSubstitutionDataPrompts)(slug);
     // Stop the process when the user cancels/exits the prompt.
     const onCancel = () => {
         process.exit(0);

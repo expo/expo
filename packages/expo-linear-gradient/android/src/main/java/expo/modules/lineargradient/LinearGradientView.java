@@ -12,7 +12,7 @@ import android.view.View;
 import expo.modules.core.interfaces.DoNotStrip;
 
 public class LinearGradientView extends View {
-  private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
   private Path mPathForBorderRadius;
   private RectF mTempRectForBorderRadius;
 
@@ -55,6 +55,11 @@ public class LinearGradientView extends View {
     }
     mBorderRadii = borderRadii;
     updatePath();
+    drawGradient();
+  }
+
+  public void setDither(final boolean dither){
+    mPaint.setDither(dither);
     drawGradient();
   }
 

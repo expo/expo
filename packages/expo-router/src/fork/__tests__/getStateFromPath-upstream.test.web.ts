@@ -1,10 +1,10 @@
-import { findFocusedRoute } from '@react-navigation/native';
+import { expect, test } from '@jest/globals';
 import type { InitialState } from '@react-navigation/routers';
-import produce from 'immer';
+import { produce } from 'immer';
 
-import { configFromFs } from '../../utils/mockState';
-import getPathFromState from '../getPathFromState';
-import getStateFromPath from '../getStateFromPath';
+import { findFocusedRoute } from '../findFocusedRoute';
+import { getPathFromState } from '../getPathFromState';
+import { getStateFromPath } from '../getStateFromPath';
 
 const changePath = <T extends InitialState>(state: T, path: string): T =>
   produce(state, (draftState) => {
@@ -13,11 +13,117 @@ const changePath = <T extends InitialState>(state: T, path: string): T =>
     route.path = path;
   });
 
-it('returns undefined for invalid path', () => {
-  expect(getStateFromPath<object>('//', { screens: {} })).toBe(undefined);
+test('returns undefined for invalid path', () => {
+  expect(getStateFromPath<object>('//')).toBeUndefined();
 });
 
-it('converts path string to initial state with config', () => {
+test('converts path string to initial state', () => {
+  const path = 'foo/bar/baz%20qux?author=jane%20%26%20co&valid=true';
+  const state = {
+    routes: [
+      {
+        name: 'foo',
+        state: {
+          routes: [
+            {
+              name: 'bar',
+              state: {
+                routes: [
+                  {
+                    name: 'baz qux',
+                    params: { author: 'jane & co', valid: 'true' },
+                    path,
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  expect(getStateFromPath<object>(path)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state))).toEqual(
+    changePath(state, '/foo/bar/baz%20qux?author=jane%20%26%20co&valid=true')
+  );
+});
+
+test('decodes encoded params in path', () => {
+  const path = '/foo/bar/bar_%23_foo';
+  const config = {
+    screens: {
+      Foo: {
+        path: 'foo',
+        screens: {
+          Bar: {
+            path: '/bar/:id',
+          },
+        },
+      },
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        params: { id: 'bar_#_foo' }, // Fork - Expo Router copies params to higher levels
+        state: {
+          routes: [
+            {
+              name: 'Bar',
+              params: { id: 'bar_#_foo' },
+              path,
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config)!, config)).toEqual(path);
+});
+
+test('decodes encoded params in path that have encoded /', () => {
+  const path = '/foo/bar/bar_%2F_foo';
+  const config = {
+    screens: {
+      Foo: {
+        path: 'foo',
+        screens: {
+          Bar: {
+            path: '/bar/:id',
+          },
+        },
+      },
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        params: { id: 'bar_/_foo' }, // Fork - Expo Router copies params to higher levels
+        state: {
+          routes: [
+            {
+              name: 'Bar',
+              params: { id: 'bar_/_foo' },
+              path,
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config)!, config)).toEqual(path);
+});
+
+test('converts path string to initial state with config', () => {
   const path = '/foo/bar/sweet/apple/baz/jane?count=10&answer=42&valid=true';
   const config = {
     screens: {
@@ -50,15 +156,20 @@ it('converts path string to initial state with config', () => {
       {
         name: 'Foo',
         params: {
-          author: 'Jane',
+          // Fork - Expo Router copies params to higher levels
           fruit: 'apple',
           type: 'sweet',
+          author: 'Jane',
         },
         state: {
           routes: [
             {
               name: 'Bar',
-              params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
+              params: {
+                fruit: 'apple',
+                type: 'sweet',
+                author: 'Jane', // Fork - Expo Router copies params to higher levels
+              },
               state: {
                 routes: [
                   {
@@ -66,10 +177,10 @@ it('converts path string to initial state with config', () => {
                     params: {
                       author: 'Jane',
                       count: 10,
-                      fruit: 'apple',
-                      type: 'sweet',
                       answer: '42',
                       valid: true,
+                      fruit: 'apple', // Fork - Expo Router copies params to higher levels
+                      type: 'sweet', // Fork - Expo Router copies params to higher levels
                     },
                     path,
                   },
@@ -82,26 +193,14 @@ it('converts path string to initial state with config', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles leading slash when converting', () => {
+test('handles leading slash when converting', () => {
   const path = '/foo/bar/?count=42';
 
-  expect(
-    getStateFromPath<object>(path, {
-      screens: {
-        foo: {
-          path: 'foo',
-          screens: {
-            bar: {
-              path: 'bar',
-            },
-          },
-        },
-      },
-    })
-  ).toEqual({
+  expect(getStateFromPath<object>(path)).toEqual({
     routes: [
       {
         name: 'foo',
@@ -119,23 +218,10 @@ it('handles leading slash when converting', () => {
   });
 });
 
-it('handles ending slash when converting', () => {
+test('handles ending slash when converting', () => {
   const path = 'foo/bar/?count=42';
 
-  expect(
-    getStateFromPath<object>(path, {
-      screens: {
-        foo: {
-          path: 'foo',
-          screens: {
-            bar: {
-              path: 'bar',
-            },
-          },
-        },
-      },
-    })
-  ).toEqual({
+  expect(getStateFromPath<object>(path)).toEqual({
     routes: [
       {
         name: 'foo',
@@ -153,7 +239,26 @@ it('handles ending slash when converting', () => {
   });
 });
 
-it('converts path string to initial state with config with nested screens', () => {
+test('handles route without param', () => {
+  const path = 'foo/bar';
+  const state = {
+    routes: [
+      {
+        name: 'foo',
+        state: {
+          routes: [{ name: 'bar', path }],
+        },
+      },
+    ],
+  };
+
+  expect(getStateFromPath<object>(path)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state))).toEqual(
+    changePath(state, '/foo/bar')
+  );
+});
+
+test('converts path string to initial state with config with nested screens', () => {
   const path = '/foe/bar/sweet/apple/baz/jane?count=10&answer=42&valid=true';
   const config = {
     screens: {
@@ -192,6 +297,7 @@ it('converts path string to initial state with config with nested screens', () =
       {
         name: 'Foo',
         params: {
+          // Fork - Expo Router copies params to higher levels
           fruit: 'apple',
           type: 'sweet',
           author: 'Jane',
@@ -201,6 +307,7 @@ it('converts path string to initial state with config with nested screens', () =
             {
               name: 'Foe',
               params: {
+                // Fork - Expo Router copies params to higher levels
                 fruit: 'apple',
                 type: 'sweet',
                 author: 'Jane',
@@ -212,19 +319,19 @@ it('converts path string to initial state with config with nested screens', () =
                     params: {
                       fruit: 'apple',
                       type: 'sweet',
-                      author: 'Jane',
+                      author: 'Jane', // Fork - Expo Router copies params to higher levels
                     },
                     state: {
                       routes: [
                         {
                           name: 'Baz',
                           params: {
-                            fruit: 'apple',
-                            type: 'sweet',
                             author: 'Jane',
                             count: 10,
                             answer: '42',
                             valid: true,
+                            fruit: 'apple', // Fork - Expo Router copies params to higher levels
+                            type: 'sweet', // Fork - Expo Router copies params to higher levels
                           },
                           path,
                         },
@@ -240,10 +347,11 @@ it('converts path string to initial state with config with nested screens', () =
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('converts path string to initial state with config with nested screens and unused parse functions', () => {
+test('converts path string to initial state with config with nested screens and unused parse functions', () => {
   const path = '/foe/baz/jane?count=10&answer=42&valid=true';
   const config = {
     screens: {
@@ -275,6 +383,7 @@ it('converts path string to initial state with config with nested screens and un
       {
         name: 'Foo',
         params: {
+          // Fork - Expo Router copies params to higher levels
           author: 'Jane',
         },
         state: {
@@ -282,6 +391,7 @@ it('converts path string to initial state with config with nested screens and un
             {
               name: 'Foe',
               params: {
+                // Fork - Expo Router copies params to higher levels
                 author: 'Jane',
               },
               state: {
@@ -311,7 +421,7 @@ it('converts path string to initial state with config with nested screens and un
   );
 });
 
-it('handles nested object with unused configs and with parse in it', () => {
+test('handles nested object with unused configs and with parse in it', () => {
   const path = '/bar/sweet/apple/foe/bis/jane?count=10&answer=42&valid=true';
   const config = {
     screens: {
@@ -355,12 +465,17 @@ it('handles nested object with unused configs and with parse in it', () => {
     routes: [
       {
         name: 'Bar',
-        params: { fruit: 'apple', type: 'sweet', author: 'Jane' },
+        params: {
+          fruit: 'apple',
+          type: 'sweet',
+          author: 'Jane', // Fork - Expo Router copies params to higher levels
+        },
         state: {
           routes: [
             {
               name: 'Foo',
               params: {
+                // Fork - Expo Router copies params to higher levels
                 author: 'Jane',
                 fruit: 'apple',
                 type: 'sweet',
@@ -370,6 +485,7 @@ it('handles nested object with unused configs and with parse in it', () => {
                   {
                     name: 'Foe',
                     params: {
+                      // Fork - Expo Router copies params to higher levels
                       author: 'Jane',
                       fruit: 'apple',
                       type: 'sweet',
@@ -379,6 +495,7 @@ it('handles nested object with unused configs and with parse in it', () => {
                         {
                           name: 'Baz',
                           params: {
+                            // Fork - Expo Router copies params to higher levels
                             author: 'Jane',
                             fruit: 'apple',
                             type: 'sweet',
@@ -412,10 +529,11 @@ it('handles nested object with unused configs and with parse in it', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles parse in nested object for second route depth', () => {
+test('handles parse in nested object for second route depth', () => {
   const path = '/baz';
   const config = {
     screens: {
@@ -459,10 +577,11 @@ it('handles parse in nested object for second route depth', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles parse in nested object for second route depth and and path and parse in roots', () => {
+test('handles parse in nested object for second route depth and and path and parse in roots', () => {
   const path = '/baz';
   const config = {
     screens: {
@@ -507,10 +626,88 @@ it('handles parse in nested object for second route depth and and path and parse
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles initialRouteName inside a screen', () => {
+test('handles path at top level', () => {
+  const path = 'foo/fruits/apple';
+  const config = {
+    path: 'foo',
+    screens: {
+      Foo: {
+        screens: {
+          Fruits: 'fruits/:fruit',
+        },
+      },
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        params: { fruit: 'apple' }, // Fork - Expo Router copies params to higher levels
+        state: {
+          routes: [
+            {
+              name: 'Fruits',
+              params: { fruit: 'apple' },
+              path,
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
+});
+
+test('handles initialRouteName at top level', () => {
+  const path = '/baz';
+  const config = {
+    initialRouteName: 'Boo',
+    screens: {
+      Foo: {
+        screens: {
+          Foe: 'foe',
+          Bar: {
+            screens: {
+              Baz: 'baz',
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const state = {
+    index: 1,
+    routes: [
+      { name: 'Boo' },
+      {
+        name: 'Foo',
+        state: {
+          routes: [
+            {
+              name: 'Bar',
+              state: {
+                routes: [{ name: 'Baz', path }],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
+});
+
+test('handles initialRouteName inside a screen', () => {
   const path = '/baz';
   const config = {
     screens: {
@@ -550,10 +747,11 @@ it('handles initialRouteName inside a screen', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles initialRouteName included in path', () => {
+test('handles initialRouteName included in path', () => {
   const path = '/baz';
   const config = {
     screens: {
@@ -589,10 +787,11 @@ it('handles initialRouteName included in path', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles two initialRouteNames', () => {
+test('handles two initialRouteNames', () => {
   const path = '/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
@@ -637,30 +836,53 @@ it('handles two initialRouteNames', () => {
     routes: [
       {
         name: 'Bar',
-        params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
+        params: {
+          fruit: 'apple',
+          type: 'sweet',
+          author: 'Jane', // Fork - Expo Router copies params to higher levels
+        },
         state: {
           routes: [
             {
               name: 'Foo',
-              params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
+              params: {
+                author: 'Jane',
+                // Fork - Expo Router copies params to higher levels
+                fruit: 'apple',
+                type: 'sweet',
+              },
               state: {
                 routes: [
                   {
                     name: 'Foe',
-                    params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
+                    params: {
+                      author: 'Jane',
+                      // Fork - Expo Router copies params to higher levels
+                      fruit: 'apple',
+                      type: 'sweet',
+                    },
                     state: {
                       routes: [
                         {
                           name: 'Baz',
                           params: {
                             author: 'Jane',
+                            // Fork - Expo Router copies params to higher levels
                             fruit: 'apple',
                             type: 'sweet',
                           },
                           state: {
                             index: 1,
                             routes: [
-                              { name: 'Bos' },
+                              {
+                                name: 'Bos',
+                                params: {
+                                  author: 'Jane',
+                                  // Fork - Expo Router copies params to higher levels
+                                  fruit: 'apple',
+                                  type: 'sweet',
+                                },
+                              },
                               {
                                 name: 'Bis',
                                 params: {
@@ -668,6 +890,7 @@ it('handles two initialRouteNames', () => {
                                   author: 'Jane',
                                   count: 10,
                                   valid: true,
+                                  // Fork - Expo Router copies params to higher levels
                                   fruit: 'apple',
                                   type: 'sweet',
                                 },
@@ -688,10 +911,11 @@ it('handles two initialRouteNames', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('accepts initialRouteName without config for it', () => {
+test('accepts initialRouteName without config for it', () => {
   const path = '/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true';
   const config = {
     screens: {
@@ -736,22 +960,37 @@ it('accepts initialRouteName without config for it', () => {
     routes: [
       {
         name: 'Bar',
-        params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
+        params: {
+          fruit: 'apple',
+          type: 'sweet',
+          author: 'Jane', // Fork - Expo Router copies params to higher levels
+        },
         state: {
           routes: [
             {
               name: 'Foo',
-              params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
+              params: {
+                // Fork - Expo Router copies params to higher levels
+                author: 'Jane',
+                fruit: 'apple',
+                type: 'sweet',
+              },
               state: {
                 routes: [
                   {
                     name: 'Foe',
-                    params: { author: 'Jane', fruit: 'apple', type: 'sweet' },
+                    params: {
+                      // Fork - Expo Router copies params to higher levels
+                      author: 'Jane',
+                      fruit: 'apple',
+                      type: 'sweet',
+                    },
                     state: {
                       routes: [
                         {
                           name: 'Baz',
                           params: {
+                            // Fork - Expo Router copies params to higher levels
                             author: 'Jane',
                             fruit: 'apple',
                             type: 'sweet',
@@ -761,6 +1000,12 @@ it('accepts initialRouteName without config for it', () => {
                             routes: [
                               {
                                 name: 'Bas',
+                                params: {
+                                  author: 'Jane',
+                                  // Fork - Expo Router copies params to higher levels
+                                  fruit: 'apple',
+                                  type: 'sweet',
+                                },
                               },
                               {
                                 name: 'Bis',
@@ -768,11 +1013,12 @@ it('accepts initialRouteName without config for it', () => {
                                   answer: '42',
                                   author: 'Jane',
                                   count: 10,
+                                  valid: true,
+                                  // Fork - Expo Router copies params to higher levels
                                   fruit: 'apple',
                                   type: 'sweet',
-                                  valid: true,
                                 },
-                                path: '/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true',
+                                path,
                               },
                             ],
                           },
@@ -789,10 +1035,54 @@ it('accepts initialRouteName without config for it', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('returns undefined if path is empty and no matching screen is present', () => {
+test('returns undefined if no matching screen is present (top level path)', () => {
+  const path = '/foo/bar';
+  const config = {
+    path: 'qux',
+    screens: {
+      Foo: {
+        screens: {
+          Foe: 'foo',
+          Bar: {
+            screens: {
+              Baz: 'bar',
+            },
+          },
+        },
+      },
+    },
+  };
+
+  expect(getStateFromPath<object>(path, config)).toBeUndefined();
+});
+
+test('returns undefined if no matching screen is present', () => {
+  const path = '/baz';
+  const config = {
+    screens: {
+      Foo: {
+        path: 'foo',
+        screens: {
+          Foe: 'foe',
+          Bar: {
+            screens: {
+              Baz: 'baz',
+            },
+          },
+        },
+      },
+    },
+  };
+
+  expect(getStateFromPath<object>(path, config)).toBeUndefined();
+});
+
+test('returns undefined if path is empty and no matching screen is present', () => {
+  const path = '';
   const config = {
     screens: {
       Foo: {
@@ -808,12 +1098,10 @@ it('returns undefined if path is empty and no matching screen is present', () =>
     },
   };
 
-  const path = '';
-
-  expect(getStateFromPath<object>(path, config)).toEqual(undefined);
+  expect(getStateFromPath<object>(path, config)).toBeUndefined();
 });
 
-it('returns matching screen if path is empty', () => {
+test('returns matching screen if path is empty', () => {
   const path = '';
   const config = {
     screens: {
@@ -855,7 +1143,7 @@ it('returns matching screen if path is empty', () => {
   );
 });
 
-it('returns matching screen if path is only slash', () => {
+test('returns matching screen if path is only slash', () => {
   const path = '/';
   const config = {
     screens: {
@@ -897,33 +1185,7 @@ it('returns matching screen if path is only slash', () => {
   );
 });
 
-// Test `app/(app)/index.js` matching `/`
-it('returns matching screen if path is only slash and root is a group', () => {
-  expect(
-    getStateFromPath<object>('/', {
-      screens: {
-        '(app)/index': '(app)',
-        '[id]': ':id',
-        '[...slug]': '*slug',
-      },
-    })
-  ).toEqual({ routes: [{ name: '(app)/index', path: '/' }] });
-});
-
-// Test `app/(one)/(two)/index.js` matching `/`
-it('returns matching screen if path is only slash and root is a nested group', () => {
-  expect(
-    getStateFromPath<object>('/', {
-      screens: {
-        '(one)/(two)/index': '(one)/(two)',
-        '[id]': ':id',
-        '[...slug]': '*slug',
-      },
-    })
-  ).toEqual({ routes: [{ name: '(one)/(two)/index', path: '/' }] });
-});
-
-it('returns matching screen with params if path is empty', () => {
+test('returns matching screen with params if path is empty', () => {
   const path = '?foo=42';
   const config = {
     screens: {
@@ -968,7 +1230,7 @@ it('returns matching screen with params if path is empty', () => {
   );
 });
 
-it("doesn't match nested screen if path is empty", () => {
+test("doesn't match nested screen if path is empty", () => {
   const config = {
     screens: {
       Foo: {
@@ -990,10 +1252,10 @@ it("doesn't match nested screen if path is empty", () => {
 
   const path = '';
 
-  expect(getStateFromPath<object>(path, config)).toEqual(undefined);
+  expect(getStateFromPath<object>(path, config)).toBeUndefined();
 });
 
-it('chooses more exhaustive pattern', () => {
+test('chooses more exhaustive pattern', () => {
   const path = '/foo/5';
 
   const config = {
@@ -1018,14 +1280,14 @@ it('chooses more exhaustive pattern', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-        },
+
+        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bis',
@@ -1038,10 +1300,11 @@ it('chooses more exhaustive pattern', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles same paths beginnings', () => {
+test('handles same paths beginnings', () => {
   const path = '/foos';
 
   const config = {
@@ -1079,10 +1342,11 @@ it('handles same paths beginnings', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles same paths beginnings with params', () => {
+test('handles same paths beginnings with params', () => {
   const path = '/foos/5';
 
   const config = {
@@ -1107,15 +1371,13 @@ it('handles same paths beginnings with params', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-        },
-
+        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bis',
@@ -1128,10 +1390,11 @@ it('handles same paths beginnings with params', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles not taking path with too many segments', () => {
+test('handles not taking path with too many segments', () => {
   const path = '/foos/5';
 
   const config = {
@@ -1163,15 +1426,13 @@ it('handles not taking path with too many segments', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-        },
-
+        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bis',
@@ -1184,10 +1445,11 @@ it('handles not taking path with too many segments', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles differently ordered params v1', () => {
+test('handles differently ordered params v1', () => {
   const path = '/foos/5/res/20';
 
   const config = {
@@ -1219,15 +1481,13 @@ it('handles differently ordered params v1', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-          pwd: 20,
-        },
+        params: { id: 5, pwd: 20 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 20 },
             },
             {
               name: 'Bas',
@@ -1240,10 +1500,11 @@ it('handles differently ordered params v1', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles differently ordered params v2', () => {
+test('handles differently ordered params v2', () => {
   const path = '/5/20/foos/res';
 
   const config = {
@@ -1275,16 +1536,13 @@ it('handles differently ordered params v2', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-          pwd: 20,
-        },
-
+        params: { id: 5, pwd: 20 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 20 },
             },
             {
               name: 'Bas',
@@ -1297,10 +1555,11 @@ it('handles differently ordered params v2', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles differently ordered params v3', () => {
+test('handles differently ordered params v3', () => {
   const path = '/foos/5/20/res';
 
   const config = {
@@ -1332,15 +1591,13 @@ it('handles differently ordered params v3', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-          pwd: 20,
-        },
+        params: { id: 5, pwd: 20 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 20 },
             },
             {
               name: 'Bas',
@@ -1353,10 +1610,11 @@ it('handles differently ordered params v3', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handles differently ordered params v4', () => {
+test('handles differently ordered params v4', () => {
   const path = '5/foos/res/20';
 
   const config = {
@@ -1388,15 +1646,13 @@ it('handles differently ordered params v4', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-          pwd: 20,
-        },
+        params: { id: 5, pwd: 20 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 20 },
             },
             {
               name: 'Bas',
@@ -1415,7 +1671,7 @@ it('handles differently ordered params v4', () => {
   );
 });
 
-it('handles simple optional params', () => {
+test('handles simple optional params', () => {
   const path = '/foos/5';
 
   const config = {
@@ -1447,14 +1703,13 @@ it('handles simple optional params', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-        },
+        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bas',
@@ -1467,10 +1722,11 @@ it('handles simple optional params', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handle 2 optional params at the end v1', () => {
+test('handle 2 optional params at the end v1', () => {
   const path = '/foos/5';
 
   const config = {
@@ -1502,14 +1758,13 @@ it('handle 2 optional params at the end v1', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-        },
+        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5 },
             },
             {
               name: 'Bas',
@@ -1522,10 +1777,11 @@ it('handle 2 optional params at the end v1', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handle 2 optional params at the end v2', () => {
+test('handle 2 optional params at the end v2', () => {
   const path = '/foos/5/10';
 
   const config = {
@@ -1557,16 +1813,13 @@ it('handle 2 optional params at the end v2', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-          nip: 10,
-        },
-
+        params: { id: 5, nip: 10 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, nip: 10 },
             },
             {
               name: 'Bas',
@@ -1579,10 +1832,11 @@ it('handle 2 optional params at the end v2', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handle 2 optional params at the end v3', () => {
+test('handle 2 optional params at the end v3', () => {
   const path = '/foos/5/10/15';
 
   const config = {
@@ -1615,16 +1869,19 @@ it('handle 2 optional params at the end v3', () => {
     routes: [
       {
         name: 'Foe',
+
         params: {
+          // Fork - Expo Router copies params to higher levels
+          id: 5,
           nip: 10,
           pwd: 15,
-          id: 5,
         },
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, nip: 10, pwd: 15 },
             },
             {
               name: 'Bas',
@@ -1637,10 +1894,11 @@ it('handle 2 optional params at the end v3', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handle optional params in the middle v1', () => {
+test('handle optional params in the middle v1', () => {
   const path = '/foos/5/10';
 
   const config = {
@@ -1673,16 +1931,13 @@ it('handle optional params in the middle v1', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-          pwd: 10,
-        },
-
+        params: { id: 5, pwd: 10 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 10 },
             },
             {
               name: 'Bas',
@@ -1695,10 +1950,11 @@ it('handle optional params in the middle v1', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handle optional params in the middle v2', () => {
+test('handle optional params in the middle v2', () => {
   const path = '/foos/5/10/15';
 
   const config = {
@@ -1731,16 +1987,13 @@ it('handle optional params in the middle v2', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-          nip: 10,
-          pwd: 15,
-        },
+        params: { id: 5, nip: 10, pwd: 15 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, nip: 10, pwd: 15 },
             },
             {
               name: 'Bas',
@@ -1753,10 +2006,11 @@ it('handle optional params in the middle v2', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handle optional params in the middle v3', () => {
+test('handle optional params in the middle v3', () => {
   const path = '/foos/5/10/15';
 
   const config = {
@@ -1790,17 +2044,13 @@ it('handle optional params in the middle v3', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 5,
-          pwd: 10,
-          smh: 15,
-        },
-
+        params: { id: 5, pwd: 10, smh: 15 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { id: 5, pwd: 10, smh: 15 },
             },
             {
               name: 'Bas',
@@ -1813,10 +2063,11 @@ it('handle optional params in the middle v3', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handle optional params in the middle v4', () => {
+test('handle optional params in the middle v4', () => {
   const path = '/foos/5/10';
 
   const config = {
@@ -1850,15 +2101,13 @@ it('handle optional params in the middle v4', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 10,
-          pwd: 5,
-        },
+        params: { pwd: 5, id: 10 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { pwd: 5, id: 10 },
             },
             {
               name: 'Bas',
@@ -1871,10 +2120,11 @@ it('handle optional params in the middle v4', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handle optional params in the middle v5', () => {
+test('handle optional params in the middle v5', () => {
   const path = '/foos/5/10/15';
 
   const config = {
@@ -1908,17 +2158,13 @@ it('handle optional params in the middle v5', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 15,
-          nip: 5,
-          pwd: 10,
-        },
-
+        params: { nip: 5, pwd: 10, id: 15 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { nip: 5, pwd: 10, id: 15 },
             },
             {
               name: 'Bas',
@@ -1931,10 +2177,11 @@ it('handle optional params in the middle v5', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('handle optional params in the beginning v1', () => {
+test('handle optional params in the beginning v1', () => {
   const path = '5/10/foos/15';
 
   const config = {
@@ -1968,16 +2215,13 @@ it('handle optional params in the beginning v1', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 15,
-          nip: 5,
-          pwd: 10,
-        },
+        params: { nip: 5, pwd: 10, id: 15 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { nip: 5, pwd: 10, id: 15 },
             },
             {
               name: 'Bas',
@@ -1996,7 +2240,7 @@ it('handle optional params in the beginning v1', () => {
   );
 });
 
-it('handle optional params in the beginning v2', () => {
+test('handle optional params in the beginning v2', () => {
   const path = '5/10/foos/15';
 
   const config = {
@@ -2030,16 +2274,13 @@ it('handle optional params in the beginning v2', () => {
     routes: [
       {
         name: 'Foe',
-        params: {
-          id: 15,
-          nip: 5,
-          pwd: 10,
-        },
+        params: { nip: 5, pwd: 10, id: 15 }, // Fork - Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
             {
               name: 'Foo',
+              params: { nip: 5, pwd: 10, id: 15 },
             },
             {
               name: 'Bas',
@@ -2058,7 +2299,7 @@ it('handle optional params in the beginning v2', () => {
   );
 });
 
-it('merges parent patterns if needed', () => {
+test('merges parent patterns if needed', () => {
   const path = 'foo/42/baz/babel';
 
   const config = {
@@ -2079,12 +2320,18 @@ it('merges parent patterns if needed', () => {
     routes: [
       {
         name: 'Foo',
-        params: { bar: 42, qux: 'babel' },
+        params: {
+          bar: 42,
+          qux: 'babel', // Fork - Expo Router copies params to higher levels
+        },
         state: {
           routes: [
             {
               name: 'Baz',
-              params: { bar: 42, qux: 'babel' },
+              params: {
+                qux: 'babel',
+                bar: 42, // Fork - Expo Router copies params to higher levels
+              },
               path,
             },
           ],
@@ -2099,7 +2346,7 @@ it('merges parent patterns if needed', () => {
   );
 });
 
-it('ignores extra slashes in the pattern', () => {
+test('ignores extra slashes in the pattern', () => {
   const path = '/bar/42';
   const config = {
     screens: {
@@ -2117,9 +2364,7 @@ it('ignores extra slashes in the pattern', () => {
     routes: [
       {
         name: 'Foo',
-        params: {
-          id: '42',
-        },
+        params: { id: '42' }, // Fork - Expo Router copies params to higher levels
         state: {
           routes: [
             {
@@ -2133,55 +2378,68 @@ it('ignores extra slashes in the pattern', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('matches wildcard patterns at root', () => {
+test('matches wildcard patterns at root', () => {
   const path = '/test/bar/42/whatever';
-  const config = configFromFs(['[...slug].js', 'foo/bar.js', 'index.js']);
-  const state = {
-    routes: [
-      {
-        params: {
-          slug: ['test', 'bar', '42', 'whatever'],
+  const config = {
+    screens: {
+      404: '*',
+      Foo: {
+        screens: {
+          Bar: {
+            path: '/bar/:id/',
+          },
         },
-        name: '[...slug]',
-        path,
       },
-    ],
+    },
   };
 
-  testConversions(path, config, state);
+  const state = {
+    routes: [{ name: '404', path }],
+  };
+
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/404')
+  );
 });
 
-it('matches wildcard patterns at nested level', () => {
+test('matches wildcard patterns at nested level', () => {
   const path = '/bar/42/whatever/baz/initt';
-
-  const config = configFromFs([
-    '(foo)/_layout.tsx',
-    '(foo)/bar/_layout.tsx',
-    '(foo)/bar/[id].tsx',
-    '(foo)/bar/[...rest].tsx',
-  ]);
+  const config = {
+    screens: {
+      Foo: {
+        screens: {
+          Bar: {
+            path: '/bar/:id/',
+            screens: {
+              404: '*',
+            },
+          },
+        },
+      },
+    },
+  };
 
   const state = {
     routes: [
       {
-        name: '(foo)',
-        params: { rest: ['42', 'whatever', 'baz', 'initt'] },
+        name: 'Foo',
+        params: { id: '42' }, // Fork - Expo Router copies params to higher levels
         state: {
           routes: [
             {
-              name: 'bar',
-              params: { rest: ['42', 'whatever', 'baz', 'initt'] },
+              name: 'Bar',
+              params: { id: '42' },
               state: {
                 routes: [
                   {
-                    name: '[...rest]',
-                    params: {
-                      rest: ['42', 'whatever', 'baz', 'initt'],
-                    },
-                    path: '/bar/42/whatever/baz/initt',
+                    name: '404',
+                    path,
+                    params: { id: '42' }, // Fork - Expo Router copies params to higher levels
                   },
                 ],
               },
@@ -2192,10 +2450,13 @@ it('matches wildcard patterns at nested level', () => {
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/bar/42/404')
+  );
 });
 
-xit('matches wildcard patterns at nested level with exact', () => {
+test('matches wildcard patterns at nested level with exact', () => {
   const path = '/whatever';
   const config = {
     screens: {
@@ -2204,8 +2465,8 @@ xit('matches wildcard patterns at nested level with exact', () => {
           Bar: {
             path: '/bar/:id/',
             screens: {
-              slug: {
-                path: '*slug',
+              404: {
+                path: '*',
                 exact: true,
               },
             },
@@ -2220,24 +2481,61 @@ xit('matches wildcard patterns at nested level with exact', () => {
     routes: [
       {
         name: 'Foo',
-        params: {
-          slug: ['whatever'],
-        },
         state: {
           routes: [
             {
               name: 'Bar',
-              params: {
-                slug: ['whatever'],
+              state: {
+                routes: [{ name: '404', path }],
               },
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/404')
+  );
+});
+
+test('tries to match wildcard patterns at the end', () => {
+  const path = '/bar/42/test';
+  const config = {
+    screens: {
+      Foo: {
+        screens: {
+          Bar: {
+            path: '/bar/:id/',
+            screens: {
+              404: '*',
+              UserProfile: ':userSlug',
+              Test: 'test',
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        params: { id: '42' }, // Fork - Expo Router copies params to higher levels
+        state: {
+          routes: [
+            {
+              name: 'Bar',
+              params: { id: '42' },
               state: {
                 routes: [
                   {
-                    name: 'slug',
-                    params: {
-                      slug: ['whatever'],
-                    },
+                    name: 'Test',
                     path,
+                    params: { id: '42' }, // Fork - Expo Router copies params to higher levels
                   },
                 ],
               },
@@ -2249,61 +2547,10 @@ xit('matches wildcard patterns at nested level with exact', () => {
   };
 
   expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
-    changePath(state, path)
-  );
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('tries to match wildcard patterns at the end', () => {
-  const path = '/bar/42/test';
-  const config = {
-    screens: {
-      bar: {
-        path: 'bar',
-        screens: {
-          '[...slug]': '*slug',
-          '[userSlug]': ':userSlug',
-          ':id': {
-            path: ':id',
-            screens: {
-              test: 'test',
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const state = {
-    routes: [
-      {
-        name: 'bar',
-        params: { id: '42' },
-        state: {
-          routes: [
-            {
-              name: ':id',
-              params: { id: '42' },
-              state: {
-                routes: [
-                  {
-                    name: 'test',
-                    params: { id: '42' },
-                    path: '/bar/42/test',
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
-  testConversions(path, config, state);
-});
-
-it('uses nearest parent wildcard match for unmatched paths', () => {
+test('uses nearest parent wildcard match for unmatched paths', () => {
   const path = '/bar/42/baz/test';
   const config = {
     screens: {
@@ -2315,7 +2562,7 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
               Baz: 'baz',
             },
           },
-          '[...slug]': '*slug',
+          404: '*',
         },
       },
     },
@@ -2325,28 +2572,56 @@ it('uses nearest parent wildcard match for unmatched paths', () => {
     routes: [
       {
         name: 'Foo',
-        params: {
-          slug: ['bar', '42', 'baz', 'test'],
-        },
         state: {
-          routes: [
-            {
-              name: '[...slug]',
-              params: {
-                slug: ['bar', '42', 'baz', 'test'],
-              },
-              path,
-            },
-          ],
+          routes: [{ name: '404', path }],
         },
       },
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/404')
+  );
 });
 
-it('throws if two screens map to the same pattern', () => {
+test('matches screen with overlapping initial path and wildcard', () => {
+  const path = '/bar/42/baz/test/whatever';
+  const config = {
+    screens: {
+      Foo: {
+        screens: {
+          Bar: {
+            path: '/bar/:id/',
+            screens: {
+              Baz: 'baz',
+            },
+          },
+          Baz: '/bar/:id/*',
+        },
+      },
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        params: { id: '42' }, // Fork - Expo Router copies params to higher levels
+        state: {
+          routes: [{ name: 'Baz', params: { id: '42' }, path }],
+        },
+      },
+    ],
+  };
+
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(
+    changePath(state, '/bar/42/Baz')
+  );
+});
+
+test('throws if two screens map to the same pattern', () => {
   const path = '/bar/42/baz/test';
 
   expect(() =>
@@ -2366,7 +2641,7 @@ it('throws if two screens map to the same pattern', () => {
       },
     })
   ).toThrow(
-    "The route pattern 'bar/:id/baz' resolves to both 'Foo//bar/:id/baz' and 'Foo/Bar/baz'. Patterns must be unique and cannot resolve to more than one route."
+    "Found conflicting screens with the same pattern. The pattern 'bar/:id/baz' resolves to both 'Foo > Bax' and 'Foo > Bar > Baz'. Patterns must be unique and cannot resolve to more than one screen."
   );
 
   expect(() =>
@@ -2387,7 +2662,7 @@ it('throws if two screens map to the same pattern', () => {
   ).not.toThrow();
 });
 
-it('correctly applies initialRouteName for config with similar route names', () => {
+test('correctly applies initialRouteName for config with similar route names', () => {
   const path = '/weekly-earnings';
 
   const config = {
@@ -2437,10 +2712,11 @@ it('correctly applies initialRouteName for config with similar route names', () 
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('correctly applies initialRouteName for config with similar route names v2', () => {
+test('correctly applies initialRouteName for config with similar route names v2', () => {
   const path = '/earnings/weekly-earnings';
 
   const config = {
@@ -2494,12 +2770,14 @@ it('correctly applies initialRouteName for config with similar route names v2', 
     ],
   };
 
-  testConversions(path, config, state);
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-it('throws when invalid properties are specified in the config', () => {
+test('throws when invalid properties are specified in the config', () => {
   expect(() =>
     getStateFromPath<object>('', {
+      path: 42,
       Foo: 'foo',
       Bar: {
         path: 'bar',
@@ -2507,15 +2785,16 @@ it('throws when invalid properties are specified in the config', () => {
     } as any)
   ).toThrowErrorMatchingInlineSnapshot(`
     "Found invalid properties in the configuration:
-    - Foo
-    - Bar
-
-    Did you forget to specify them under a 'screens' property?
+    - path (expected 'string', got 'number')
+    - Foo (extraneous)
+    - Bar (extraneous)
 
     You can only specify the following properties:
-    - initialRouteName
-    - screens
-    - _route
+    - path (string)
+    - initialRouteName (string)
+    - screens (object)
+
+    If you want to specify configuration for screens, you need to specify them under a 'screens' property.
 
     See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
   `);
@@ -2536,24 +2815,128 @@ it('throws when invalid properties are specified in the config', () => {
     } as any)
   ).toThrowErrorMatchingInlineSnapshot(`
     "Found invalid properties in the configuration:
-    - Qux
-
-    Did you forget to specify them under a 'screens' property?
+    - Qux (extraneous)
 
     You can only specify the following properties:
-    - initialRouteName
-    - screens
-    - _route
-    - path
-    - exact
-    - stringify
-    - parse
+    - path (string)
+    - initialRouteName (string)
+    - screens (object)
+    - exact (boolean)
+    - stringify (object)
+    - parse (object)
+
+    If you want to specify configuration for screens, you need to specify them under a 'screens' property.
 
     See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
   `);
+
+  expect(() =>
+    getStateFromPath<object>('', {
+      path: 'foo/:id',
+    } as any)
+  ).toThrowErrorMatchingInlineSnapshot(
+    `"Found invalid path 'foo/:id'. The 'path' in the top-level configuration cannot contain patterns for params."`
+  );
 });
 
-function testConversions(path: string, config: any, state: any) {
-  expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
-}
+// Valid characters according to
+// https://datatracker.ietf.org/doc/html/rfc3986#section-3.3 (see pchar definition)
+// A–Z, a–z, 0–9, -, ., _, ~, !, $, &, ', (, ), *, +, ,, ;, =, :, @
+// User09-A_Z~!$&'()*+,;=:@__#?# - should encode only last ones #?#
+// query params after '?' should be encoded fully with encodeURIComponent
+test('encodes special characters in params', () => {
+  const paramWithValidSymbols = `User09-A_Z~!$&'()*+,;=:@__`;
+  const invalidSymbols = '#?[]{}%<>||';
+  // const invalidSymbols = '#?[]{}%<>||';
+  const queryString = 'user#email@gmail.com=2&4';
+
+  const path = `users/id/${paramWithValidSymbols}${encodeURIComponent(invalidSymbols)}?query=${encodeURIComponent(queryString)}`;
+  const config = {
+    path: 'users',
+    screens: {
+      Users: {
+        screens: {
+          User: 'id/:id',
+        },
+      },
+    },
+  };
+
+  const state = {
+    routes: [
+      {
+        name: 'Users',
+        state: {
+          routes: [
+            {
+              name: 'User',
+              params: {
+                id: `${paramWithValidSymbols}${invalidSymbols}`,
+                query: queryString,
+              },
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  expect(getPathFromState<object>(state, config)).toEqual(path);
+  expect(getPathFromState<object>(getStateFromPath<object>(path, config)!, config)).toEqual(path);
+});
+
+// Start Fork
+// Expo Router changes this functionality so all segments see the last :id
+// test('resolves nested path params with same name to correct screen', () => {
+//   const path = '/foo/42/bar/43';
+
+//   const config = {
+//     initialRouteName: 'Foo',
+//     screens: {
+//       Foo: {
+//         path: 'foo/:id',
+//         screens: {
+//           Bar: {
+//             path: 'bar/:id',
+//           },
+//         },
+//       },
+//     },
+//   };
+
+//   const state = {
+//     routes: [
+//       {
+//         name: 'Foo',
+//         params: { id: '42' },
+//         state: {
+//           routes: [
+//             {
+//               name: 'Bar',
+//               params: { id: '43' },
+//               path,
+//             },
+//           ],
+//         },
+//       },
+//     ],
+//   };
+
+//   expect(getStateFromPath<object>(path, config)).toEqual(state);
+// });
+// End Fork
+
+test('parses / same as empty string', () => {
+  const config = {
+    screens: {
+      Foo: {
+        path: '/',
+      },
+      Bar: {
+        path: 'bar',
+      },
+    },
+  };
+
+  expect(getStateFromPath<object>('/', config)).toEqual(getStateFromPath<object>('', config));
+});

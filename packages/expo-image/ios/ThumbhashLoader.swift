@@ -23,7 +23,7 @@ class ThumbhashLoader: NSObject, SDImageLoader {
     // The URI looks like this: thumbhash:/3OcRJYB4d3h\iIeHeEh3eIhw+j2w
     // ThumbHash may include slashes which could break the structure of the URL, so we replace them
     // with backslashes on the JS side and revert them back to slashes here, before generating the image.
-    var thumbhash = (url.pathComponents[1] ?? "").replacingOccurrences(of: "\\", with: "/")
+    var thumbhash = url.pathComponents[1].replacingOccurrences(of: "\\", with: "/")
 
     // Thumbhashes with transparency cause the conversion to data to fail, padding the thumbhash string to correct length fixes that
     let remainder = thumbhash.count % 4

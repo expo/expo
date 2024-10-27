@@ -3,6 +3,12 @@ title: App stores best practices
 description: Learn about the best practices when submitting an app to the app stores.
 ---
 
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 
 This guide offers best practices for submitting your app to the app stores. To learn how to generate native binaries for submission, see [Create your first build](/build/setup/).
@@ -12,42 +18,50 @@ This guide offers best practices for submitting your app to the app stores. To l
 <BoxLink
   title="Versioning your app"
   description="Learn how to configure native runtime versions for your apps."
-  href="/build-reference/app-versions"
+  href="/build-reference/app-versions/"
+  Icon={BuildIcon}
 />
 <BoxLink
   title="App Store presence"
   description="Manage your Apple App Store metadata from the command line."
-  href="/eas-metadata/introduction"
+  href="/eas/metadata/"
+  Icon={EasMetadataIcon}
 />
 <BoxLink
   title="Permissions"
-  description="Refine native permissions and system dialog messages."
+  description="Refine native permissions and system dialog messages by using app config."
   href="/guides/permissions"
+  Icon={CodeSquare01Icon}
 />
 <BoxLink
   title="App icons"
   description="App stores have strict rules for home screen icons."
-  href="/develop/user-interface/app-icons/"
+  href="/develop/user-interface/splash-screen-and-app-icon/"
+  Icon={BookOpen02Icon}
 />
 <BoxLink
   title="Splash screen"
-  description="Create a seamless loading experience using with the splash screen API."
-  href="/develop/user-interface/splash-screen/"
+  description="Create a seamless loading experience using the splash screen API."
+  href="/develop/user-interface/splash-screen-and-app-icon/"
+  Icon={BookOpen02Icon}
 />
 <BoxLink
-  title="Status bar"
-  description="Configure the native status bar to have high contrast on all screens."
-  href="/guides/configuring-statusbar"
+  title="App store assets"
+  description="Learn how to create screenshots and previews for your app's store pages."
+  href="/guides/store-assets/"
+  Icon={BookOpen02Icon}
 />
 <BoxLink
   title="Localizing your app"
   description="Prepare versions of your app for different languages and regions."
-  href="/guides/localization"
+  href="/guides/localization/"
+  Icon={BookOpen02Icon}
 />
 <BoxLink
   title="Apple: Review guidelines"
   description="Official Apple guide on preparing your app for App Store review."
-  href="https://developer.apple.com/app-store/review"
+  href="https://developer.apple.com/distribute/app-review/"
+  Icon={AppleAppStoreIcon}
 />
 
 ## Responsive design

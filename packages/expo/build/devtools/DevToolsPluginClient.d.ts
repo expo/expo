@@ -1,30 +1,36 @@
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import type { ConnectionInfo } from './devtools.types';
-export declare const MESSAGE_PROTOCOL_VERSION = 2;
-export declare const DevToolsPluginMethod = "Expo:DevToolsPlugin";
+import { WebSocketBackingStore } from './WebSocketBackingStore';
+import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
 /**
  * This client is for the Expo DevTools Plugins to communicate between the app and the DevTools webpage hosted in a browser.
  * All the code should be both compatible with browsers and React Native.
  */
 export declare abstract class DevToolsPluginClient {
     readonly connectionInfo: ConnectionInfo;
+    private readonly options?;
     protected eventEmitter: EventEmitter;
-    constructor(connectionInfo: ConnectionInfo);
+    private static defaultWSStore;
+    private readonly wsStore;
+    protected isClosed: boolean;
+    protected retries: number;
+    private readonly messageFramePacker;
+    constructor(connectionInfo: ConnectionInfo, options?: DevToolsPluginClientOptions | undefined);
     /**
      * Initialize the connection.
      * @hidden
      */
-    abstract initAsync(): Promise<void>;
+    initAsync(): Promise<void>;
     /**
      * Close the connection.
      */
-    abstract closeAsync(): Promise<void>;
+    closeAsync(): Promise<void>;
     /**
      * Send a message to the other end of DevTools.
      * @param method A method name.
      * @param params any extra payload.
      */
-    abstract sendMessage(method: string, params: any): void;
+    sendMessage(method: string, params: any): void;
+    private sendMessageImpl;
     /**
      * Subscribe to a message from the other end of DevTools.
      * @param method Subscribe to a message with a method name.
@@ -40,7 +46,17 @@ export declare abstract class DevToolsPluginClient {
     /**
      * Returns whether the client is connected to the server.
      */
-    abstract isConnected(): boolean;
+    isConnected(): boolean;
+    /**
+     * The method to create the WebSocket connection.
+     */
+    protected connectAsync(): Promise<WebSocket>;
     protected handleMessage: (event: WebSocketMessageEvent) => void;
+    private handleMessageImpl;
+    /**
+     * Get the WebSocket backing store. Exposed for testing.
+     * @hidden
+     */
+    getWebSocketBackingStore(): WebSocketBackingStore;
 }
 //# sourceMappingURL=DevToolsPluginClient.d.ts.map

@@ -7,15 +7,15 @@ import ExpoModulesTestCore
 import EXManifests
 
 class UpdateSpec : ExpoSpec {
-  let config = try! UpdatesConfig.config(fromDictionary: [
-    UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
-    UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"
-  ])
-  let database = UpdatesDatabase()
-  
-  override func spec() {
+  override class func spec() {
+    let config = try! UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000"
+    ])
+    let database = UpdatesDatabase()
+    
     describe("instantiation") {
-      it("works for legacy manifest") {
+      it("throws for legacy manifest") {
         let legacyManifest = [
           "sdkVersion": "39.0.0",
           "releaseId": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -26,21 +26,20 @@ class UpdateSpec : ExpoSpec {
         let responseHeaderData = ResponseHeaderData(
           protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
-        expect(try! Update.update(
+        expect { try Update.update(
           withManifest: legacyManifest,
           responseHeaderData: responseHeaderData,
           extensions: [:],
-          config: self.config,
-          database: self.database
-        )).notTo(beNil())
+          config: config,
+          database: database
+        ) }.to(throwError())
       }
       
-      it("works for new manifest") {
-        let easNewManifest = [
+      it("works for expo updates manifest") {
+        let expoUpdatesManifest = [
           "runtimeVersion": "1",
           "id": "0eef8214-4833-4089-9dff-b4138a14f196",
           "createdAt": "2020-11-11T00:17:54.797Z",
@@ -53,21 +52,20 @@ class UpdateSpec : ExpoSpec {
         let responseHeaderData = ResponseHeaderData(
           protocolVersionRaw: "0",
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
         expect(try! Update.update(
-          withManifest: easNewManifest,
+          withManifest: expoUpdatesManifest,
           responseHeaderData: responseHeaderData,
           extensions: [:],
-          config: self.config,
-          database: self.database
+          config: config,
+          database: database
         )).notTo(beNil())
       }
       
       it("throws for unsupported protocol version") {
-        let easNewManifest = [
+        let expoUpdatesManifest = [
           "runtimeVersion": "1",
           "id": "0eef8214-4833-4089-9dff-b4138a14f196",
           "createdAt": "2020-11-11T00:17:54.797Z",
@@ -80,28 +78,27 @@ class UpdateSpec : ExpoSpec {
         let responseHeaderData = ResponseHeaderData(
           protocolVersionRaw: "2",
           serverDefinedHeadersRaw: nil,
-          manifestFiltersRaw: nil,
-          manifestSignature: nil
+          manifestFiltersRaw: nil
         )
         
         expect(try Update.update(
-          withManifest: easNewManifest,
+          withManifest: expoUpdatesManifest,
           responseHeaderData: responseHeaderData,
           extensions: [:],
-          config: self.config,
-          database: self.database
-        )).to(throwError(UpdateError.invalidExpoProtocolVersion))
+          config: config,
+          database: database
+        )).to(throwError(UpdateError.invalidExpoProtocolVersion(protocolVersion: 2)))
       }
       
       it("works for embedded bare manifest") {
-        let bareManifest = [
+        let embeddedManifest = [
           "id": "0eef8214-4833-4089-9dff-b4138a14f196",
           "commitTime": 1609975977832
         ]
         expect(Update.update(
-          withEmbeddedManifest: bareManifest,
-          config: self.config,
-          database: self.database
+          withRawEmbeddedManifest: embeddedManifest,
+          config: config,
+          database: database
         )).notTo(beNil())
       }
     }

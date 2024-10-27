@@ -5,7 +5,7 @@ import type { CSSProperties, ComponentType, PropsWithChildren } from 'react';
 import { Code as PrismCodeBlock } from '~/components/base/code';
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { H1, H2, H3, H4, H5, A, CODE, P, BOLD, UL, OL, LI, KBD } from '~/ui/components/Text';
+import { H1, H2, H3, H4, H5, A, CODE, P, BOLD, UL, OL, LI, KBD, DEL } from '~/ui/components/Text';
 
 type Config = ConfigStyles & {
   Component: ComponentType<PropsWithChildren<ComponentProps>> | string;
@@ -58,7 +58,10 @@ const markdownStyles: Record<string, Config | null> = {
   hr: {
     Component: 'hr',
     css: typography.utility.hr,
-    style: { margin: `2ch 0` },
+    style: {
+      margin: `2ch 0`,
+      marginTop: '3rem',
+    },
   },
   blockquote: {
     Component: Callout,
@@ -93,6 +96,9 @@ const markdownStyles: Record<string, Config | null> = {
   },
   kbd: {
     Component: KBD,
+  },
+  del: {
+    Component: DEL,
   },
 };
 

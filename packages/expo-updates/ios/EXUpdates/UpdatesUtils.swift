@@ -99,7 +99,9 @@ public final class UpdatesUtils: NSObject {
         let absolutePath = path(forBundledAsset: asset)
         let message = "AppLauncherWithDatabase: embedded asset key = \(asset.key ?? ""), main bundle filename = \(asset.mainBundleFilename ?? ""), path = \(absolutePath ?? "")"
         logger.debug(message: message)
-        assetFilesMap[assetKey] = absolutePath
+        if let absolutePath = absolutePath {
+          assetFilesMap[assetKey] = URL(fileURLWithPath: absolutePath).absoluteString
+        }
       }
     }
 
@@ -123,10 +125,10 @@ public final class UpdatesUtils: NSObject {
   /**
    Purges entries in the expo-updates log file that are older than 1 day
    */
-  internal static func purgeUpdatesLogsOlderThanOneDay() {
+  internal static func purgeUpdatesLogsOlderThanOneDay(logger: UpdatesLogger) {
     UpdatesLogReader().purgeLogEntries { error in
       if let error = error {
-        NSLog("UpdatesUtils: error in purgeOldUpdatesLogs: %@", error.localizedDescription)
+        logger.warn(message: "UpdatesUtils: error in purgeOldUpdatesLogs: \(error.localizedDescription)")
       }
     }
   }

@@ -11,8 +11,8 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import android.content.pm.ResolveInfo
 
 class MailComposerModule : Module() {
-  private val context get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
+  private val context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private var composerOpened = false
   private var pendingPromise: Promise? = null
 
@@ -20,7 +20,7 @@ class MailComposerModule : Module() {
     // TODO: Rename the package to 'ExpoMail'
     Name("ExpoMailComposer")
 
-    AsyncFunction("isAvailableAsync") {
+    AsyncFunction<Boolean>("isAvailableAsync") {
       return@AsyncFunction true
     }
 
@@ -48,37 +48,51 @@ class MailComposerModule : Module() {
     }
 
     AsyncFunction("composeAsync") { options: MailComposerOptions, promise: Promise ->
-      val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse(MAILTO_URI) }
+      val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse("mailto:") }
+      val application = appContext.throwingActivity.application
       val resolveInfo = context.packageManager.queryIntentActivities(intent, 0)
-      if (resolveInfo.isNotEmpty()) {
-        val mailIntents = resolveInfo.map { info ->
-          val mailIntentBuilder = MailIntentBuilder(options)
-            .setComponentName(info.activityInfo.packageName, info.activityInfo.name)
-            .putRecipients(Intent.EXTRA_EMAIL)
-            .putCcRecipients(Intent.EXTRA_CC)
-            .putBccRecipients(Intent.EXTRA_BCC)
-            .putSubject(Intent.EXTRA_SUBJECT)
-            .putBody(Intent.EXTRA_TEXT, options.isHtml ?: false)
-            .putAttachments(Intent.EXTRA_STREAM, currentActivity.application)
-          LabeledIntent(mailIntentBuilder.build(), info.activityInfo.packageName, info.loadLabel(context.packageManager), info.icon)
-        }.toMutableList()
 
-        val chooser = Intent.createChooser(mailIntents.removeAt(mailIntents.size - 1), null).apply {
-          putExtra(Intent.EXTRA_INITIAL_INTENTS, mailIntents.toTypedArray())
-          addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        pendingPromise = promise
-        currentActivity.startActivityForResult(chooser, REQUEST_CODE)
-        composerOpened = true
-      } else {
-        promise.reject(ERROR_NO_EMAIL_APPS_AVAILABLE, "No email apps available for sending", null)
+      val mailIntents = resolveInfo.map { info ->
+        val mailIntentBuilder = MailIntentBuilder(options)
+          .setComponentName(info.activityInfo.packageName, info.activityInfo.name)
+          .putRecipients(Intent.EXTRA_EMAIL)
+          .putCcRecipients(Intent.EXTRA_CC)
+          .putBccRecipients(Intent.EXTRA_BCC)
+          .putSubject(Intent.EXTRA_SUBJECT)
+          .putBody(Intent.EXTRA_TEXT, options.isHtml == true)
+          .putAttachments(
+            Intent.EXTRA_STREAM,
+            application
+          )
+
+        LabeledIntent(
+          mailIntentBuilder.build(),
+          info.activityInfo.packageName,
+          info.loadLabel(context.packageManager),
+          info.icon
+        )
+      }.toMutableList()
+
+      val chooser = Intent.createChooser(
+        mailIntents.removeAt(mailIntents.size - 1),
+        null
+      ).apply {
+        putExtra(Intent.EXTRA_INITIAL_INTENTS, mailIntents.toTypedArray())
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
       }
+
+      pendingPromise = promise
+      appContext.throwingActivity.startActivityForResult(chooser, REQUEST_CODE)
+      composerOpened = true
     }
 
     OnActivityResult { _, payload ->
-      if (payload.requestCode == REQUEST_CODE && composerOpened) {
-        pendingPromise?.resolve(Bundle().apply { putString("status", "sent") })
-        composerOpened = false
+      if (payload.requestCode == REQUEST_CODE && pendingPromise != null) {
+        val promise = pendingPromise ?: return@OnActivityResult
+        if (composerOpened) {
+          composerOpened = false
+          promise.resolve(Bundle().apply { putString("status", "sent") })
+        }
       }
     }
   }
@@ -92,6 +106,5 @@ class MailComposerModule : Module() {
     private const val ERROR_UNABLE_TO_CREATE_INTENT = "E_UNABLE_TO_CREATE_INTENT"
     private const val ERROR_NO_EMAIL_APPS_AVAILABLE = "E_NO_EMAIL_APPS_AVAILABLE"
     private const val REQUEST_CODE = 8675
-    private const val MAILTO_URI = "mailto:"
   }
 }

@@ -4,66 +4,122 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Base64
-import expo.modules.imagemanipulator.arguments.Actions
+import expo.modules.imagemanipulator.transformers.CropTransformer
+import expo.modules.imagemanipulator.transformers.FlipTransformer
+import expo.modules.imagemanipulator.transformers.ResizeTransformer
+import expo.modules.imagemanipulator.transformers.RotateTransformer
 import expo.modules.interfaces.imageloader.ImageLoaderInterface.ResultListener
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.exception.toCodedException
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.async
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-
-private const val ERROR_TAG = "E_IMAGE_MANIPULATOR"
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class ImageManipulatorModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoImageManipulator")
+  private fun createManipulatorContext(url: Uri): ImageManipulatorContext {
+    val loader = suspend {
+      val imageLoader = appContext.imageLoader
+        ?: throw ImageLoaderNotFoundException()
 
-    AsyncFunction("manipulateAsync") { uri: String, actionsRaw: List<ManipulateAction>, saveOptions: SaveOptions, promise: Promise ->
-      val actions = Actions.fromArgument(actionsRaw)
-      appContext.imageLoader?.loadImageForManipulationFromURL(
-        uri,
-        object : ResultListener {
-          override fun onSuccess(bitmap: Bitmap) {
-            runActions(bitmap, actions, saveOptions, promise)
+      suspendCancellableCoroutine { continuation ->
+        imageLoader.loadImageForManipulationFromURL(
+          url.toString(),
+          object : ResultListener {
+            override fun onSuccess(bitmap: Bitmap) {
+              continuation.resume(bitmap)
+            }
+
+            override fun onFailure(cause: Throwable?) {
+              continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+            }
           }
-
-          override fun onFailure(cause: Throwable?) {
-            promise.reject(ImageDecodeException(uri, cause))
-          }
-        }
-      )
-    }
-  }
-
-  private fun runActions(bitmap: Bitmap, actions: Actions, saveOptions: SaveOptions, promise: Promise) {
-    val resultBitmap = actions.actions.fold(bitmap) { acc, action -> action.run(acc) }
-    val path = FileUtils.generateRandomOutputPath(context, saveOptions.compressFormat)
-    val compression = (saveOptions.compress * 100).toInt()
-
-    var base64String: String? = null
-
-    FileOutputStream(path).use { fileOut ->
-      resultBitmap.compress(saveOptions.compressFormat, compression, fileOut)
-      if (saveOptions.base64) {
-        ByteArrayOutputStream().use { byteOut ->
-          resultBitmap.compress(saveOptions.compressFormat, compression, byteOut)
-          base64String = Base64.encodeToString(byteOut.toByteArray(), Base64.NO_WRAP)
-        }
+        )
       }
     }
 
-    promise.resolve(
-      ImageResult(
-        uri = Uri.fromFile(File(path)).toString(),
-        width = resultBitmap.width,
-        height = resultBitmap.height,
-        base64 = base64String
-      )
-    )
+    val task = ManipulatorTask(appContext.backgroundCoroutineScope, loader)
+    return ImageManipulatorContext(runtimeContext, task)
+  }
+
+  override fun definition() = ModuleDefinition {
+    Name("ExpoImageManipulator")
+
+    Function("manipulate") { url: Uri ->
+      createManipulatorContext(url)
+    }
+
+    Class<ImageManipulatorContext>("Context") {
+      Constructor { url: Uri ->
+        createManipulatorContext(url)
+      }
+
+      Function("resize") { context: ImageManipulatorContext, options: ResizeOptions ->
+        context.addTransformer(ResizeTransformer(options))
+      }
+
+      Function("rotate") { context: ImageManipulatorContext, rotation: Float ->
+        context.addTransformer(RotateTransformer(rotation))
+      }
+
+      Function("flip") { context: ImageManipulatorContext, flipType: FlipType ->
+        context.addTransformer(FlipTransformer(flipType))
+      }
+
+      Function("crop") { context: ImageManipulatorContext, rect: CropRect ->
+        context.addTransformer(CropTransformer(rect))
+      }
+
+      Function("reset") { context: ImageManipulatorContext ->
+        context.reset()
+      }
+
+      AsyncFunction("renderAsync") Coroutine { context: ImageManipulatorContext ->
+        val image = context.render()
+        ImageRef(image, runtimeContext)
+      }
+    }
+
+    Class<ImageRef>("Image") {
+      Property("width") { image: ImageRef -> image.ref.width }
+      Property("height") { image: ImageRef -> image.ref.height }
+
+      AsyncFunction("saveAsync") Coroutine { image: ImageRef, options: ManipulateOptions? ->
+        val options = options ?: ManipulateOptions()
+        val path = FileUtils.generateRandomOutputPath(context, options.format)
+        val compression = (options.compress * 100).toInt()
+        val resultBitmap = image.ref
+
+        var base64String: String? = null
+        appContext.backgroundCoroutineScope.async {
+          FileOutputStream(path).use { fileOut ->
+            val compressFormat = options.format.compressFormat
+            resultBitmap.compress(compressFormat, compression, fileOut)
+            if (options.base64) {
+              ByteArrayOutputStream().use { byteOut ->
+                resultBitmap.compress(compressFormat, compression, byteOut)
+                base64String = Base64.encodeToString(byteOut.toByteArray(), Base64.NO_WRAP)
+              }
+            }
+          }
+        }.await()
+
+        mapOf(
+          "uri" to Uri.fromFile(File(path)).toString(),
+          "width" to resultBitmap.width,
+          "height" to resultBitmap.height,
+          "base64" to base64String
+        )
+      }
+    }
   }
 }

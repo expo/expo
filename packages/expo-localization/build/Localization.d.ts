@@ -5,7 +5,8 @@ export * from './Localization.types';
  * @deprecated Use Localization.getLocales() instead.
  * Three-character ISO 4217 currency code. Returns `null` on web.
  *
- * @example `'USD'`, `'EUR'`, `'CNY'`, `null`
+ * @example
+ * `'USD'`, `'EUR'`, `'CNY'`, `null`
  */
 export declare const currency: string | null;
 /**
@@ -13,7 +14,8 @@ export declare const currency: string | null;
  * @deprecated Use Localization.getLocales() instead.
  * Decimal separator used for formatting numbers.
  *
- * @example `','`, `'.'`
+ * @example
+ * `','`, `'.'`
  */
 export declare const decimalSeparator: string;
 /**
@@ -21,7 +23,8 @@ export declare const decimalSeparator: string;
  * @deprecated Use Localization.getLocales() instead.
  * Digit grouping separator used when formatting numbers larger than 1000.
  *
- * @example `'.'`, `''`, `','`
+ * @example
+ * `'.'`, `''`, `','`
  */
 export declare const digitGroupingSeparator: string;
 /**
@@ -51,7 +54,8 @@ export declare const isRTL: boolean;
  * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
  * consisting of a two-character language code and optional script, region and variant codes.
  *
- * @example `'en'`, `'en-US'`, `'zh-Hans'`, `'zh-Hans-CN'`, `'en-emodeng'`
+ * @example
+ * `'en'`, `'en-US'`, `'zh-Hans'`, `'zh-Hans-CN'`, `'en-emodeng'`
  */
 export declare const locale: string;
 /**
@@ -60,7 +64,8 @@ export declare const locale: string;
  * List of all the native languages provided by the user settings.
  * These are returned in the order the user defines in their device settings.
  *
- * @example `['en', 'en-US', 'zh-Hans', 'zh-Hans-CN', 'en-emodeng']`
+ * @example
+ * `['en', 'en-US', 'zh-Hans', 'zh-Hans-CN', 'en-emodeng']`
  */
 export declare const locales: string[];
 /**
@@ -71,7 +76,8 @@ export declare const locales: string[];
  * better estimation you could use the moment-timezone package but it will add significant bloat to
  * your website's bundle size.
  *
- * @example `'America/Los_Angeles'`
+ * @example
+ * `'America/Los_Angeles'`
  */
 export declare const timezone: string;
 /**
@@ -80,7 +86,8 @@ export declare const timezone: string;
  * The region code for your device that comes from the Region setting under Language & Region on iOS.
  * This value is always available on iOS, but might return `null` on Android or web.
  *
- * @example `'US'`, `'NZ'`, `null`
+ * @example
+ * `'US'`, `'NZ'`, `null`
  */
 export declare const region: string | null;
 /**
@@ -89,32 +96,36 @@ export declare const region: string | null;
  * These are returned in the order the user defines in their device settings.
  * On the web currency and measurements systems are not provided, instead returned as null.
  * If needed, you can infer them from the current region using a lookup table.
- * @example `[{
-    "languageTag": "pl-PL",
-    "languageCode": "pl",
-    "textDirection": "ltr",
-    "digitGroupingSeparator": " ",
-    "decimalSeparator": ",",
-    "measurementSystem": "metric",
-    "currencyCode": "PLN",
-    "currencySymbol": "zł",
-    "regionCode": "PL",
-    "temperatureUnit": "celsius"
-  }]`
+ * @example
+ * ```js
+ * [{
+ *   "languageTag": "pl-PL",
+ *   "languageCode": "pl",
+ *   "textDirection": "ltr",
+ *   "digitGroupingSeparator": " ",
+ *   "decimalSeparator": ",",
+ *   "measurementSystem": "metric",
+ *   "currencyCode": "PLN",
+ *   "currencySymbol": "zł",
+ *   "regionCode": "PL",
+ *   "temperatureUnit": "celsius"
+ * }]
+ * ```
  */
 export declare const getLocales: () => import("./Localization.types").Locale[];
 /**
  * List of user's preferred calendars, returned as an array of objects of type `Calendar`.
  * Guaranteed to contain at least 1 element.
  * For now always returns a single element, but it's likely to return a user preference list on some platforms in the future.
- * @example `[
-    {
-      "calendar": "gregory",
-      "timeZone": "Europe/Warsaw",
-      "uses24hourClock": true,
-      "firstWeekday": 1
-    }
-  ]`
+ * @example
+ * ```js
+ * [{
+ *   "calendar": "gregory",
+ *   "timeZone": "Europe/Warsaw",
+ *   "uses24hourClock": true,
+ *   "firstWeekday": 1
+ * }]
+ * ```
  */
 export declare const getCalendars: () => import("./Localization.types").Calendar[];
 /**
@@ -124,18 +135,21 @@ export declare const getCalendars: () => import("./Localization.types").Calendar
  * On the web currency and measurements systems are not provided, instead returned as null.
  * If needed, you can infer them from the current region using a lookup table.
  * If the OS settings change, the hook will rerender with a new list of locales.
- * @example `[{
-    "languageTag": "pl-PL",
-    "languageCode": "pl",
-    "textDirection": "ltr",
-    "digitGroupingSeparator": " ",
-    "decimalSeparator": ",",
-    "measurementSystem": "metric",
-    "currencyCode": "PLN",
-    "currencySymbol": "zł",
-    "regionCode": "PL",
-    "temperatureUnit": "celsius"
-  }]`
+ * @example
+ * ```js
+ * [{
+ *   "languageTag": "pl-PL",
+ *   "languageCode": "pl",
+ *   "textDirection": "ltr",
+ *   "digitGroupingSeparator": " ",
+ *   "decimalSeparator": ",",
+ *   "measurementSystem": "metric",
+ *   "currencyCode": "PLN",
+ *   "currencySymbol": "zł",
+ *   "regionCode": "PL",
+ *   "temperatureUnit": "celsius"
+ * }]
+ * ```
  */
 export declare function useLocales(): import("./Localization.types").Locale[];
 /**
@@ -143,14 +157,15 @@ export declare function useLocales(): import("./Localization.types").Locale[];
  * Guaranteed to contain at least 1 element.
  * For now always returns a single element, but it's likely to return a user preference list on some platforms in the future.
  * If the OS settings change, the hook will rerender with a new list of calendars.
- * @example `[
-    {
-      "calendar": "gregory",
-      "timeZone": "Europe/Warsaw",
-      "uses24hourClock": true,
-      "firstWeekday": 1
-    }
-  ]`
+ * @example
+ * ```js
+ * [{
+ *   "calendar": "gregory",
+ *   "timeZone": "Europe/Warsaw",
+ *   "uses24hourClock": true,
+ *   "firstWeekday": 1
+ * }]
+ * ```
  */
 export declare function useCalendars(): import("./Localization.types").Calendar[];
 /**

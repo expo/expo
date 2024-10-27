@@ -4,7 +4,8 @@ maxHeadingDepth: 4
 description: Learn how to install multiple variants of an app on the same device.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), installing these build variants simultaneously on the same device is common. This allows working in development, previewing the next version of the app, and running the production version on a device without needing to uninstall and reinstall the app.
 
@@ -79,13 +80,33 @@ export default {
   },
   android: {
     package: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
-  },
+  }
 };
 ```
 
 In the above example, the environment variable `IS_DEV` is used to differentiate between the development and production environment. Based on its value, the different Application IDs or Bundle Identifiers are set for each variant.
 
-> **Note**: If you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps, you'll need to have a separate configuration for that API for the `android.package` and `ios.bundleIdentifier`. You can also swap this configuration using the same approach as above.
+<Collapsible summary="Additional app variant customizations">
+
+You can customize other aspects of your app on a per-variant basis. You can swap any configuration that you used previously in **app.json** using the same approach as above.
+
+**Examples:**
+
+- If you are using a library that requires you to register your application identifier with an external service to use its SDK, such as Google Maps or Firebase Cloud Messaging (FCM), you'll need to have a separate configuration for that API for the `android.package` and `ios.bundleIdentifier`.
+- If you're using [development builds](/develop/development-builds/introduction/), you can configure the `expo-dev-client` plugin to disable the app scheme used by Expo CLI and EAS Update QR codes in non-development builds. This ensures that those URLs will always launch the development build, regardless of your device's defaults:
+
+```js app.config.js
+plugins: [
+  [
+    'expo-dev-client',
+    {
+      addGeneratedScheme: !IS_DEV,
+    },
+  ],
+],
+```
+
+</Collapsible>
 
 ### Configuration for EAS Build
 
@@ -202,9 +223,9 @@ The rest of the configuration at this point is not specific to EAS, it's the sam
       <string name="app_name">MyApp - Dev</string>
   </resources>
   ```
-- To change the icon of the app built with the development profile, create `android/app/src/development/res/mipmap-*` directories with appropriate assets (you can copy them from **android/app/src/main/res** and replace the icon files).
+- To change the icon of the app built with the development profile, create **android/app/src/development/res/mipmap-\*** directories with appropriate assets (you can copy them from **android/app/src/main/res** and replace the icon files).
 - To specify **google-services.json** for a specific flavor, put it in the **android/app/src/&lbrace;flavor&rbrace;/google-services.json** file.
-- To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (for example, **android/sentry-production-release.properties**)
+- To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file **android/sentry-\{flavor\}-\{buildType\}.properties** (for example, **android/sentry-production-release.properties**)
 
 #### iOS
 
@@ -254,10 +275,10 @@ end
 
 Open project in Xcode, click on the project name in the navigation panel, right click on the existing target, and click "Duplicate":
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Duplicate Xcode target"
   src="/static/images/eas-build/variants/1-ios-duplicate-target.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 Rename the target to something more meaningful, for example, `myapp copy` -> `myapp-dev`.
@@ -269,10 +290,10 @@ Configure a scheme for the new target:
 - Change scheme name `myapp copy` -> `myapp-dev`.
 - By default, the new scheme should be marked as shared, but Xcode does not create `.xcscheme` files. To fix that, uncheck the "Shared" checkbox and check it again, after that new `.xcscheme` file should show up in the **ios/myapp.xcodeproj/xcshareddata/xcschemes** directory.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Xcode scheme list"
   src="/static/images/eas-build/variants/2-scheme-list.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 By default, the newly created target has separate **Info.plist** file (in the above example, it's **ios/myapp copy-Info.plist**). To simplify your project we recommend using the same file for all targets:
@@ -284,10 +305,10 @@ By default, the newly created target has separate **Info.plist** file (in the ab
 - Change **Info.plist** value - **myapp copy-Info.plist** -> **myapp/Info.plist**.
 - Change `Product Bundle Identifier`.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Xcode build settings"
   src="/static/images/eas-build/variants/3-target-build-settings.png"
-  style={{ maxWidth: 720 }}
+  className="max-w-[720px]"
 />
 
 To change the display name:

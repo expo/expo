@@ -77,11 +77,6 @@ export interface IosNotificationPermissionsRequest {
    * The ability to post noninterrupting notifications provisionally to the Notification Center.
    */
   allowProvisional?: boolean;
-  /**
-   * The ability for Siri to automatically read out messages over AirPods.
-   * @deprecated
-   */
-  allowAnnouncements?: boolean;
 }
 
 export type NativeNotificationPermissionsRequest = IosNotificationPermissionsRequest | object;

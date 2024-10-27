@@ -24,7 +24,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Basic Crypto usage' dependencies={['expo-crypto']}>
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import * as Crypto from 'expo-crypto';
 
@@ -47,7 +47,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -56,7 +55,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -71,7 +69,7 @@ import * as Crypto from 'expo-crypto';
 
 ## Error codes
 
-| Code                     | Description                                                                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ERR_CRYPTO_UNAVAILABLE` | **Web Only.** Access to the WebCrypto API is restricted to secure origins (https). <br/>You can run your web project from a secure origin with `npx expo start --https`. |
-| `ERR_CRYPTO_DIGEST`      | An invalid encoding type provided.                                                                                                                                       |
+| Code                     | Description                                                                                  |
+| ------------------------ | -------------------------------------------------------------------------------------------- |
+| `ERR_CRYPTO_UNAVAILABLE` | **Web Only.** Access to the WebCrypto API is restricted to secure origins (localhost/https). |
+| `ERR_CRYPTO_DIGEST`      | An invalid encoding type provided.                                                           |

@@ -6,9 +6,13 @@ import { CODE } from '~/ui/components/Text';
 const typeDefinitionContainsObject = (typDef: TypeDefinitionData) =>
   typDef.type === 'reflection' && typDef.declaration?.children;
 
-type APIDataTypeProps = { typeDefinition: TypeDefinitionData; inline?: boolean };
+type APIDataTypeProps = {
+  typeDefinition: TypeDefinitionData;
+  sdkVersion: string;
+  inline?: boolean;
+};
 
-export const APIDataType = ({ typeDefinition, inline = true }: APIDataTypeProps) => {
+export const APIDataType = ({ typeDefinition, sdkVersion, inline = true }: APIDataTypeProps) => {
   const { type, declaration, types, elementType, typeArguments } = typeDefinition;
 
   const isObjectDefinition = type === 'reflection' && declaration?.children?.length;
@@ -24,9 +28,11 @@ export const APIDataType = ({ typeDefinition, inline = true }: APIDataTypeProps)
 
   return isObjectDefinition || isIntersectionWithObject || isUnionWithObject || isObjectWrapped ? (
     <CodeBlock inline={inline} key={typeDefinition.name}>
-      {resolveTypeName(typeDefinition)}
+      {resolveTypeName(typeDefinition, sdkVersion)}
     </CodeBlock>
   ) : (
-    <CODE key={typeDefinition.name}>{resolveTypeName(typeDefinition)}</CODE>
+    <CODE key={typeDefinition.name} className="[&>span]:!text-inherit">
+      {resolveTypeName(typeDefinition, sdkVersion)}
+    </CODE>
   );
 };

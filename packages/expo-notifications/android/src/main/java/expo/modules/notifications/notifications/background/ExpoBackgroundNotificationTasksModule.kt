@@ -6,14 +6,13 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.ModuleNotFoundException
 
 class ExpoBackgroundNotificationTasksModule : Module() {
-  private lateinit var taskManager: TaskManagerInterface
+  private val taskManager: TaskManagerInterface by lazy {
+    return@lazy appContext.legacyModule()
+      ?: throw ModuleNotFoundException(TaskManagerInterface::class)
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoBackgroundNotificationTasksModule")
-    OnCreate {
-      taskManager = appContext.legacyModule()
-        ?: throw ModuleNotFoundException(TaskManagerInterface::class)
-    }
 
     AsyncFunction("registerTaskAsync") { taskName: String ->
       taskManager.registerTask(

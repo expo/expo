@@ -4,27 +4,23 @@ description: A library that provides access to native APIs for in-app reviews.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-store-review'
 packageName: 'expo-store-review'
 iconUrl: '/static/images/packages/expo-store-review.png'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-**`expo-store-review`** provides access to the `SKStoreReviewController` API on iOS, and `ReviewManager` API in Android 5.0+ allowing you to ask the user to rate your app without ever having to leave the app itself.
+`expo-store-review` is a library that provides access to `ReviewManager` API on Android 5+ and `SKStoreReviewController` API on iOS. It allows you to ask the user to rate your app without leaving the app itself.
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/store-review.png"
   alt="Screenshots of the store review API in action on iOS"
 />
 
-<PlatformsSection android emulator ios simulator />
-
 ## Installation
 
-> `expo-linking` is a peer dependency and must be installed alongside `expo-store-review`.
-
-<APIInstallSection packageName="expo-store-review expo-linking" />
+<APIInstallSection packageName="expo-store-review" />
 
 ## Usage
 
@@ -39,25 +35,11 @@ It is important that you follow the [Human Interface Guidelines](https://develop
 
 ### Write reviews
 
-#### iOS
-
-You can redirect someone to the "Write a Review" screen for an app in the iOS App Store by using the query parameter `action=write-review`. For example:
-
-```ts
-const itunesItemId = 982107779;
-// Open the iOS App Store in the browser -> redirects to App Store on iOS
-Linking.openURL(`https://apps.apple.com/app/apple-store/id${itunesItemId}?action=write-review`);
-// Open the iOS App Store directly
-Linking.openURL(
-  `itms-apps://itunes.apple.com/app/viewContentsUserReviews/id${itunesItemId}?action=write-review`
-);
-```
-
 #### Android
 
 There is no equivalent redirect on Android, you can still open the Play Store to the reviews sections using the query parameter `showAllReviews=true` like this:
 
-```ts
+```ts Android Play Store example
 const androidPackageName = 'host.exp.exponent';
 // Open the Android Play Store in the browser -> redirects to Play Store on Android
 Linking.openURL(
@@ -65,6 +47,20 @@ Linking.openURL(
 );
 // Open the Android Play Store directly
 Linking.openURL(`market://details?id=${androidPackageName}&showAllReviews=true`);
+```
+
+#### iOS
+
+You can redirect an app user to the **"Write a Review"** screen for an app in the iOS App Store by using the query parameter `action=write-review`. For example:
+
+```ts iOS App Store example
+const itunesItemId = 982107779;
+// Open the iOS App Store in the browser -> redirects to App Store on iOS
+Linking.openURL(`https://apps.apple.com/app/apple-store/id${itunesItemId}?action=write-review`);
+// Open the iOS App Store directly
+Linking.openURL(
+  `itms-apps://itunes.apple.com/app/viewContentsUserReviews/id${itunesItemId}?action=write-review`
+);
 ```
 
 ## API

@@ -1,4 +1,4 @@
-import type { Fingerprint, FingerprintSource, Options } from './Fingerprint.types';
+import type { Fingerprint, FingerprintDiffItem, Options } from './Fingerprint.types';
 /**
  * Create a fingerprint from project
  */
@@ -10,8 +10,9 @@ export declare function createProjectHashAsync(projectRoot: string, options?: Op
 /**
  * Differentiate given `fingerprint` with the current project fingerprint state
  */
-export declare function diffFingerprintChangesAsync(fingerprint: Fingerprint, projectRoot: string, options?: Options): Promise<FingerprintSource[]>;
+export declare function diffFingerprintChangesAsync(fingerprint: Fingerprint, projectRoot: string, options?: Options): Promise<FingerprintDiffItem[]>;
 /**
- * Differentiate two fingerprints
+ * Differentiate two fingerprints with operation type.
+ * The implementation is assumed that the sources are sorted.
  */
-export declare function diffFingerprints(fingerprint1: Fingerprint, fingerprint2: Fingerprint): FingerprintSource[];
+export declare function diffFingerprints(fingerprint1: Fingerprint, fingerprint2: Fingerprint): FingerprintDiffItem[];

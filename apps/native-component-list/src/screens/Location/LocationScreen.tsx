@@ -38,88 +38,71 @@ function SubscriptionDemo(props: SubscriptionDemoProps) {
   return <SimpleActionDemo title={props.title} action={toggle} />;
 }
 
-export default class LocationScreen extends React.Component<{
+export default function LocationScreen({
+  navigation,
+}: {
   navigation: StackNavigationProp<{ BackgroundLocationMap: undefined; Geofencing: undefined }>;
-}> {
-  static navigationOptions = {
-    title: 'Location',
-  };
+}) {
+  return (
+    <ScrollView style={styles.scrollView}>
+      <SimpleActionDemo
+        title="requestForegroundPermissionsAsync"
+        action={() => Location.requestForegroundPermissionsAsync()}
+      />
+      <SimpleActionDemo
+        title="getForegroundPermissionsAsync"
+        action={() => Location.getForegroundPermissionsAsync()}
+      />
+      <SimpleActionDemo
+        title="requestBackgroundPermissionsAsync"
+        action={async () => Location.requestBackgroundPermissionsAsync()}
+      />
+      <SimpleActionDemo
+        title="getBackgroundPermissionsAsync"
+        action={() => Location.getBackgroundPermissionsAsync()}
+      />
+      <SimpleActionDemo
+        title="hasServicesEnabledAsync"
+        action={() => Location.hasServicesEnabledAsync()}
+      />
+      <SimpleActionDemo
+        title="getProviderStatusAsync"
+        action={() => Location.getProviderStatusAsync()}
+      />
+      <SimpleActionDemo
+        title="getCurrentPositionAsync – lowest accuracy"
+        action={() =>
+          Location.getCurrentPositionAsync({ accuracy: Location.LocationAccuracy.Lowest })
+        }
+      />
+      <SimpleActionDemo
+        title="getCurrentPositionAsync – balanced accuracy"
+        action={() => Location.getCurrentPositionAsync()}
+      />
+      <SimpleActionDemo
+        title="getLastKnownPositionAsync"
+        action={() => Location.getLastKnownPositionAsync()}
+      />
+      <SubscriptionDemo
+        title="watchPositionAsync"
+        subscribe={(setValue) => Location.watchPositionAsync({}, setValue)}
+      />
+      <SimpleActionDemo title="getHeadingAsync" action={() => Location.getHeadingAsync()} />
+      <SubscriptionDemo
+        title="watchHeadingAsync"
+        subscribe={(setValue) => Location.watchHeadingAsync(setValue)}
+      />
 
-  _goToGeofencingMap = () => {
-    this.props.navigation.navigate('Geofencing');
-  };
-
-  renderLocationMapButton() {
-    return (
       <View style={{ marginTop: 30, paddingHorizontal: 10 }}>
-        <ListButton onPress={this._goToGeofencingMap} title="Geofencing map" />
+        <ListButton onPress={() => navigation.navigate('Geofencing')} title="Geofencing map" />
       </View>
-    );
-  }
-
-  render() {
-    return (
-      <ScrollView style={styles.scrollView}>
-        <SimpleActionDemo
-          title="requestPermissionsAsync (legacy)"
-          action={() => Location.requestPermissionsAsync()}
-        />
-        <SimpleActionDemo
-          title="getPermissionsAsync (legacy)"
-          action={() => Location.getPermissionsAsync()}
-        />
-        <SimpleActionDemo
-          title="requestForegroundPermissionsAsync"
-          action={() => Location.requestForegroundPermissionsAsync()}
-        />
-        <SimpleActionDemo
-          title="getForegroundPermissionsAsync"
-          action={() => Location.getForegroundPermissionsAsync()}
-        />
-        <SimpleActionDemo
-          title="requestBackgroundPermissionsAsync"
-          action={async () => Location.requestBackgroundPermissionsAsync()}
-        />
-        <SimpleActionDemo
-          title="getBackgroundPermissionsAsync"
-          action={() => Location.getBackgroundPermissionsAsync()}
-        />
-        <SimpleActionDemo
-          title="hasServicesEnabledAsync"
-          action={() => Location.hasServicesEnabledAsync()}
-        />
-        <SimpleActionDemo
-          title="getProviderStatusAsync"
-          action={() => Location.getProviderStatusAsync()}
-        />
-        <SimpleActionDemo
-          title="getCurrentPositionAsync – lowest accuracy"
-          action={() =>
-            Location.getCurrentPositionAsync({ accuracy: Location.LocationAccuracy.Lowest })
-          }
-        />
-        <SimpleActionDemo
-          title="getCurrentPositionAsync – balanced accuracy"
-          action={() => Location.getCurrentPositionAsync()}
-        />
-        <SimpleActionDemo
-          title="getLastKnownPositionAsync"
-          action={() => Location.getLastKnownPositionAsync()}
-        />
-        <SubscriptionDemo
-          title="watchPositionAsync"
-          subscribe={(setValue) => Location.watchPositionAsync({}, setValue)}
-        />
-        <SimpleActionDemo title="getHeadingAsync" action={() => Location.getHeadingAsync()} />
-        <SubscriptionDemo
-          title="watchHeadingAsync"
-          subscribe={(setValue) => Location.watchHeadingAsync(setValue)}
-        />
-        {this.renderLocationMapButton()}
-      </ScrollView>
-    );
-  }
+    </ScrollView>
+  );
 }
+
+LocationScreen.navigationOptions = {
+  title: 'Location',
+};
 
 const styles = StyleSheet.create({
   scrollView: {

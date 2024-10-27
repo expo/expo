@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
+import { Parcel } from './types';
 import * as Changelogs from '../Changelogs';
 import { GitDirectory } from '../Git';
 import logger from '../Logger';
 import { Package } from '../Packages';
-import { Parcel } from './types';
 
 const { cyan, green, magenta, red, gray } = chalk;
 

@@ -43,13 +43,13 @@ function _warnings() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const DEFAULT_TARGET_PATH = './android/app/google-services.json';
 const googleServicesClassPath = 'com.google.gms:google-services';
 const googleServicesPlugin = 'com.google.gms.google-services';
 
 // NOTE(brentvatne): This may be annoying to keep up to date...
-const googleServicesVersion = '4.3.3';
+const googleServicesVersion = '4.4.1';
 const withClassPath = config => {
   return (0, _androidPlugins().withProjectBuildGradle)(config, config => {
     if (config.modResults.language === 'groovy') {
@@ -84,8 +84,7 @@ const withGoogleServicesFile = config => {
 };
 exports.withGoogleServicesFile = withGoogleServicesFile;
 function getGoogleServicesFilePath(config) {
-  var _config$android$googl, _config$android;
-  return (_config$android$googl = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.googleServicesFile) !== null && _config$android$googl !== void 0 ? _config$android$googl : null;
+  return config.android?.googleServicesFile ?? null;
 }
 async function setGoogleServicesFile(config, projectRoot, targetPath = DEFAULT_TARGET_PATH) {
   const partialSourcePath = getGoogleServicesFilePath(config);

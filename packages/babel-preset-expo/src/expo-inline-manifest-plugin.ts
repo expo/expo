@@ -1,7 +1,7 @@
 import { ConfigAPI } from '@babel/core';
 import { ExpoConfig, getConfig, getNameFromConfig, ProjectConfig } from 'expo/config';
 
-import { getPlatform, getPossibleProjectRoot } from './common';
+import { getIsReactServer, getPlatform, getPossibleProjectRoot } from './common';
 
 const debug = require('debug')('expo:babel:inline-manifest');
 
@@ -25,7 +25,7 @@ const RESTRICTED_MANIFEST_FIELDS: (keyof ExpoConfig)[] = [
   'android',
   // Hide internal / build values
   'plugins',
-  'hooks',
+  'hooks' as any, // hooks no longer exists in the typescript type but should still be removed
   '_internal',
   // Remove metro-specific values
   'assetBundlePatterns',
@@ -124,14 +124,16 @@ function getConfigMemo(projectRoot: string) {
 export function expoInlineManifestPlugin(api: ConfigAPI & { types: any }) {
   const { types: t } = api;
 
+  const isReactServer = api.caller(getIsReactServer);
   const platform = api.caller(getPlatform);
   const possibleProjectRoot = api.caller(getPossibleProjectRoot);
+  const shouldInline = platform === 'web' || isReactServer;
   return {
     name: 'expo-inline-manifest-plugin',
     visitor: {
       MemberExpression(path: any, state: any) {
-        // Web-only feature, the native manifest is provided dynamically by the client.
-        if (platform !== 'web') {
+        // Web-only/React Server-only feature: the native manifest is provided dynamically by the client.
+        if (!shouldInline) {
           return;
         }
 

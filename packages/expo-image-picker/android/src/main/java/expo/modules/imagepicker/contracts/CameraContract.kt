@@ -22,7 +22,7 @@ import java.io.Serializable
  * @see [androidx.activity.result.contract.ActivityResultContracts.TakePicture] or [androidx.activity.result.contract.ActivityResultContracts.CaptureVideo]
  */
 internal class CameraContract(
-  private val appContextProvider: AppContextProvider,
+  private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<CameraContractOptions, ImagePickerContractResult> {
   private val contentResolver: ContentResolver
     get() = requireNotNull(appContextProvider.appContext.reactContext) {
@@ -30,10 +30,10 @@ internal class CameraContract(
     }.contentResolver
 
   override fun createIntent(context: Context, input: CameraContractOptions): Intent =
-    Intent(input.options.mediaTypes.toCameraIntentAction())
+    Intent(input.options.nativeMediaTypes.toCameraIntentAction())
       .putExtra(MediaStore.EXTRA_OUTPUT, input.uri.toUri())
       .apply {
-        if (input.options.mediaTypes.toCameraIntentAction() == MediaStore.ACTION_VIDEO_CAPTURE) {
+        if (input.options.nativeMediaTypes.toCameraIntentAction() == MediaStore.ACTION_VIDEO_CAPTURE) {
           putExtra(MediaStore.EXTRA_DURATION_LIMIT, input.options.videoMaxDuration)
         }
         if (input.options.cameraType == CameraType.FRONT) {
@@ -62,5 +62,5 @@ internal data class CameraContractOptions(
    * Destination file in a form of content-[Uri] to save results coming from camera to.
    */
   val uri: String,
-  val options: ImagePickerOptions,
+  val options: ImagePickerOptions
 ) : Serializable

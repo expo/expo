@@ -3,9 +3,10 @@ title: App stores metadata
 description: A brief overview of how to use EAS Metadata to automate and maintain your app store presence.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
+import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { EasMetadataIcon, LayersTwo02Icon } from '@expo/styleguide-icons';
+import { Terminal } from '~/ui/components/Snippet';
 
 > **warning** EAS Metadata is in beta and subject to breaking changes.
 
@@ -15,7 +16,7 @@ When submitting your app to app stores, you need to provide metadata. This proce
 
 ## Prerequisites
 
-EAS Metadata is available starting from EAS CLI >= 0.54.0, and currently **only supports the Apple App Store**.
+EAS Metadata currently **only supports the Apple App Store**.
 
 > Using VS Code? Install the [Expo Tools extension](https://github.com/expo/vscode-expo#readme) for auto-complete, suggestions, and warnings in your **store.config.json** files.
 
@@ -63,13 +64,6 @@ If EAS Metadata runs into any issues with your store config, it will warn you wh
 You can also re-use this command when you modify the **store.config.json** file and want to push the latest changes to the app stores.
 
 ## Next steps
-
-<BoxLink
-  title="Instant updates with EAS Update"
-  description="Learn how to automate and maintain your app store presence from the command line with EAS Metadata."
-  Icon={LayersTwo02Icon}
-  href="/deploy/instant-updates/"
-/>
 
 <BoxLink
   title="EAS Metadata schema"

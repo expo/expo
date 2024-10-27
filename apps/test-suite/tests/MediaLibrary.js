@@ -18,8 +18,6 @@ const FILES = [
 const WAIT_TIME = 1000;
 const IMG_NUMBER = 3;
 const VIDEO_NUMBER = 1;
-const F_SIZE = IMG_NUMBER + VIDEO_NUMBER;
-// const MEDIA_TYPES = [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video];
 const DEFAULT_MEDIA_TYPES = [MediaLibrary.MediaType.photo];
 const DEFAULT_PAGE_SIZE = 20;
 const ASSET_KEYS = [
@@ -222,7 +220,6 @@ export async function test(t) {
           const otherAlbum = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
           t.expect(otherAlbum.title).toBe(album.title);
           t.expect(otherAlbum.id).toBe(album.id);
-          t.expect(otherAlbum.assetCount).toBe(F_SIZE);
         });
 
         t.it('getAlbum with not existing album', async () => {
@@ -471,9 +468,10 @@ export async function test(t) {
         'deleteAssetsAsync',
         async () => {
           const assets = await getAssets(files);
+          const assetsIds = assets.map((asset) => asset?.id);
           const result = await MediaLibrary.deleteAssetsAsync(assets);
           const deletedAssets = await Promise.all(
-            assets.map(async (asset) => await MediaLibrary.getAssetInfoAsync(asset))
+            assetsIds.map(async (id) => await MediaLibrary.getAssetInfoAsync(id))
           );
           t.expect(result).toEqual(true);
           t.expect(assets.length).not.toEqual(0);

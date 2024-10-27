@@ -5,23 +5,41 @@
 // data compatibility.
 // swiftlint:disable legacy_objc_type
 // swiftlint:disable line_length
-// swiftlint:disable type_body_length
 // swiftlint:disable force_unwrapping
-// swiftlint:disable file_length
+// swiftlint:disable identifier_name
 
 import Foundation
+#if canImport(sqlite3)
 import sqlite3
+#else
+import SQLite3
+#endif
 import EXManifests
 
-internal enum UpdatesDatabaseError: Error {
-  case addExistingAssetMissingAssetKey
-  case addExistingAssetInsertError
-  case addExistingAssetAssetNotFoundError
-  case markMissingAssetsError
-  case deleteUpdatesError
-  case deleteUnusedAssetsError
-  case getUpdatesError
-  case setJsonDataError
+internal enum UpdatesDatabaseError: Error, Sendable, LocalizedError {
+  case addExistingAssetInsertOrReplaceIntoError(cause: Error)
+  case addExistingAssetUpdateLaunchAssetError(cause: Error)
+  case markMissingAssetsError(cause: Error)
+  case deleteUpdatesError(cause: Error)
+  case deleteUnusedAssetsError(cause: Error)
+  case setJsonDataError(cause: Error)
+
+  var errorDescription: String? {
+    switch self {
+    case let .addExistingAssetInsertOrReplaceIntoError(cause):
+      return "Database error while inserting asset: \(cause.localizedDescription)"
+    case let .addExistingAssetUpdateLaunchAssetError(cause):
+      return "Database error while updating launch asset on update: \(cause.localizedDescription)"
+    case let .markMissingAssetsError(cause):
+      return "Database error while marking missing assets: \(cause.localizedDescription)"
+    case let .deleteUpdatesError(cause):
+      return "Database error while deleting updates: \(cause.localizedDescription)"
+    case let .deleteUnusedAssetsError(cause):
+      return "Database error while deleting unused assets: \(cause.localizedDescription)"
+    case let .setJsonDataError(cause):
+      return "Database error while setting JSON data: \(cause.localizedDescription)"
+    }
+  }
 }
 
 enum UpdatesDatabaseHashType: Int {
@@ -186,7 +204,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try execute(sql: insertSql, withArgs: [updateId, assetId.intValue])
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw UpdatesDatabaseError.addExistingAssetInsertError
+        throw UpdatesDatabaseError.addExistingAssetInsertOrReplaceIntoError(cause: error)
       }
 
       if asset.isLaunchAsset {
@@ -195,7 +213,7 @@ public final class UpdatesDatabase: NSObject {
           _ = try execute(sql: updateSql, withArgs: [assetId.intValue, updateId])
         } catch {
           sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-          throw UpdatesDatabaseError.addExistingAssetInsertError
+          throw UpdatesDatabaseError.addExistingAssetUpdateLaunchAssetError(cause: error)
         }
       }
     }
@@ -303,7 +321,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try execute(sql: updateSql, withArgs: [UpdateStatus.StatusPending.rawValue, asset.assetId])
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw UpdatesDatabaseError.markMissingAssetsError
+        throw UpdatesDatabaseError.markMissingAssetsError(cause: error)
       }
     }
 
@@ -319,7 +337,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try execute(sql: updateSql, withArgs: [update.updateId])
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw UpdatesDatabaseError.deleteUpdatesError
+        throw UpdatesDatabaseError.deleteUpdatesError(cause: error)
       }
     }
 
@@ -339,7 +357,7 @@ public final class UpdatesDatabase: NSObject {
       _ = try execute(sql: update1Sql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw UpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError(cause: error)
     }
 
     let update2Sql = "UPDATE assets SET marked_for_deletion = 0 WHERE id IN (SELECT asset_id FROM updates_assets INNER JOIN updates ON updates_assets.update_id = updates.id WHERE updates.keep = 1);"
@@ -347,7 +365,7 @@ public final class UpdatesDatabase: NSObject {
       _ = try execute(sql: update2Sql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw UpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError(cause: error)
     }
 
     // check for duplicate rows representing a single file on disk
@@ -356,7 +374,7 @@ public final class UpdatesDatabase: NSObject {
       _ = try execute(sql: update3Sql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw UpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError(cause: error)
     }
 
     var rows: [[String: Any?]]
@@ -365,7 +383,7 @@ public final class UpdatesDatabase: NSObject {
       rows = try execute(sql: selectSql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw UpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError(cause: error)
     }
 
     let assets = rows.map { row in
@@ -377,7 +395,7 @@ public final class UpdatesDatabase: NSObject {
       _ = try execute(sql: deleteSql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw UpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError(cause: error)
     }
 
     sqlite3_exec(db, "COMMIT;", nil, nil, nil)
@@ -399,6 +417,12 @@ public final class UpdatesDatabase: NSObject {
     return rows.map { row in
       update(withRow: row, config: config)
     }
+  }
+
+  public func recentUpdateIdsWithFailedLaunch() throws -> [UUID] {
+    let sql = "SELECT id FROM updates WHERE failed_launch_count > 0 ORDER BY commit_time DESC LIMIT 5;"
+    let rows = try execute(sql: sql, withArgs: nil)
+    return rows.map { row in row.requiredValue(forKey: "id") }
   }
 
   public func launchableUpdates(withConfig config: UpdatesConfig) throws -> [Update] {
@@ -485,7 +509,7 @@ public final class UpdatesDatabase: NSObject {
       if !isInTransaction {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
       }
-      throw UpdatesDatabaseError.setJsonDataError
+      throw UpdatesDatabaseError.setJsonDataError(cause: error)
     }
 
     let insertSql = """
@@ -497,7 +521,7 @@ public final class UpdatesDatabase: NSObject {
       if !isInTransaction {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
       }
-      throw UpdatesDatabaseError.setJsonDataError
+      throw UpdatesDatabaseError.setJsonDataError(cause: error)
     }
 
     if !isInTransaction {
@@ -546,7 +570,9 @@ public final class UpdatesDatabase: NSObject {
 
       // ensure that this can be serialized to a structured-header dictionary
       // this will throw for invalid values
-      _ = try StringStringDictionarySerializer.serialize(dictionary: extraParamsToWrite)
+      _ = try StringDictionary(value: extraParamsToWrite.mapValues({ value in
+        try StringItem(value: value)
+      }))
 
       _ = try setJsonData(extraParamsToWrite, withKey: UpdatesDatabase.ExtraParmasKey, scopeKey: scopeKey, isInTransaction: true)
     } catch {
@@ -565,7 +591,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try setJsonData(serverDefinedHeaders, withKey: UpdatesDatabase.ServerDefinedHeadersKey, scopeKey: scopeKey, isInTransaction: true)
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw UpdatesDatabaseError.setJsonDataError
+        throw UpdatesDatabaseError.setJsonDataError(cause: error)
       }
     }
 
@@ -574,7 +600,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try setJsonData(manifestFilters, withKey: UpdatesDatabase.ManifestFiltersKey, scopeKey: scopeKey, isInTransaction: true)
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw UpdatesDatabaseError.setJsonDataError
+        throw UpdatesDatabaseError.setJsonDataError(cause: error)
       }
     }
 
@@ -647,7 +673,7 @@ public final class UpdatesDatabase: NSObject {
     asset.metadata = metadata
 
     if let launchAssetId = launchAssetId?.intValue,
-       launchAssetId == assetId.intValue {
+      launchAssetId == assetId.intValue {
       asset.isLaunchAsset = true
     } else {
       asset.isLaunchAsset = false
@@ -656,3 +682,8 @@ public final class UpdatesDatabase: NSObject {
     return asset
   }
 }
+
+// swiftlint:enable legacy_objc_type
+// swiftlint:enable line_length
+// swiftlint:enable force_unwrapping
+// swiftlint:enable identifier_name

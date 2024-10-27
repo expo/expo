@@ -19,11 +19,7 @@ describe('selectAssetSource', () => {
   beforeEach(() => {
     _mockConstants({
       experienceUrl: 'https://example.com/app/expo-manifest.json',
-      __unsafeNoWarnManifest: {
-        assetMapOverride: {
-          d00dd00dd00dd00dd00dd00dd00dd00d: { name: 'overridden', type: 'mp4' },
-        },
-      },
+      __unsafeNoWarnManifest2: {},
     });
   });
 
@@ -31,33 +27,15 @@ describe('selectAssetSource', () => {
     jest.resetModules();
   });
 
-  it(`returns a production CDN URI using the asset file hash`, () => {
+  it(`returns an asset source object with an invalid dummy remote URL if the asset metadata does not specify an absolute URL in production`, () => {
     const AssetSources = require('../AssetSources');
-
-    const source = AssetSources.selectAssetSource(mockFontMetadata);
-    expect(source.uri).toBe(
-      'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe'
-    );
-    expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    expect(AssetSources.selectAssetSource(mockFontMetadata)).toEqual({
+      hash: 'cafecafecafecafecafecafecafecafe',
+      uri: '',
+    });
   });
 
   if (Platform.OS !== 'web') {
-    it(`returns a URI based on the bundle's URL in development`, () => {
-      _mockConstants({
-        __unsafeNoWarnManifest: {
-          developer: {},
-          bundleUrl: 'https://exp.direct:19001/src/App.js',
-        },
-      });
-
-      const AssetSources = require('../AssetSources');
-
-      const source = AssetSources.selectAssetSource(mockFontMetadata);
-      expect(source.uri).toBe(
-        `https://exp.direct:19001/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
-      );
-      expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
-    });
     it(`returns a manifest2 URI based on the bundle's URL in development`, () => {
       _mockConstants({
         __unsafeNoWarnManifest2: {
@@ -118,6 +96,11 @@ describe('selectAssetSource', () => {
       name: 'test',
       type: 'png',
       scales: [1, 2, 100],
+      fileUris: [
+        'https://example.com/icon.png',
+        'https://example.com/icon@2x.png',
+        'https://example.com/icon@100x.png',
+      ],
       fileHashes: [
         'facefacefacefacefacefacefaceface',
         'c0dec0dec0dec0dec0dec0dec0dec0de',
@@ -126,21 +109,31 @@ describe('selectAssetSource', () => {
       httpServerLocation: '/assets',
     });
 
+    const uri = Platform.select({
+      web: 'https://example.com/icon.png',
+      default: 'https://example.com/icon@2x.png',
+    });
     const hash = Platform.select({
       web: 'facefacefacefacefacefacefaceface',
       default: 'c0dec0dec0dec0dec0dec0dec0dec0de',
     });
 
-    expect(source.uri).toBe('https://classic-assets.eascdn.net/~assets/' + hash);
+    expect(source.uri).toBe(uri);
     expect(source.hash).toBe(hash);
   });
 
   if (Platform.OS !== 'web') {
     it(`returns a development URI using the asset file hash with non-standard path`, () => {
       _mockConstants({
-        __unsafeNoWarnManifest: {
-          developer: {},
-          bundleUrl: 'https://exp.direct:19001/src/App.js',
+        __unsafeNoWarnManifest2: {
+          extra: {
+            expoGo: {
+              developer: {
+                tool: 'expo-cli',
+              },
+              debuggerHost: '127.0.0.1:8081',
+            },
+          },
         },
       });
 
@@ -148,42 +141,11 @@ describe('selectAssetSource', () => {
 
       const source = AssetSources.selectAssetSource(mockFontMonorepoMetadata);
       expect(source.uri).toBe(
-        `https://exp.direct:19001/assets/?unstable_path=.%2Ftest.ttf&platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+        `http://127.0.0.1:8081/assets/?unstable_path=.%2Ftest.ttf&platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
       );
       expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
     });
-
-    // Skip on web where the manifest isn't used for asset resolution
-    it(`applies overrides if an asset's hash matches`, () => {
-      const AssetSources = require('../AssetSources');
-
-      const source = AssetSources.selectAssetSource({
-        hash: 'd00dd00dd00dd00dd00dd00dd00dd00d',
-        name: 'test',
-        type: 'ttf',
-        scales: [1],
-        httpServerLocation: 'https://example.com',
-      });
-
-      expect(source.uri).toBe(
-        `https://example.com/overridden.mp4?platform=${Platform.OS}&hash=d00dd00dd00dd00dd00dd00dd00dd00d`
-      );
-      expect(source.hash).toBe('d00dd00dd00dd00dd00dd00dd00dd00d');
-    });
   }
-});
-
-describe('pathJoin', () => {
-  it('joins paths', () => {
-    const { pathJoin } = require('../AssetSources') as typeof import('../AssetSources');
-    expect(pathJoin('/foo/', '/bar/', '/baz')).toBe('/foo/bar/baz');
-    expect(pathJoin('foo', 'bar')).toBe('foo/bar');
-    expect(pathJoin('/foo/', 'bar')).toBe('/foo/bar');
-    expect(pathJoin('/foo/')).toBe('/foo');
-    expect(pathJoin('/foo/', '..', 'bar')).toBe('/bar');
-    expect(pathJoin('/foo/', '.', 'bar')).toBe('/foo/bar');
-    expect(pathJoin('/foo/bar/', '..', '..', 'baz')).toBe('/baz');
-  });
 });
 
 if (Platform.OS !== 'web') {

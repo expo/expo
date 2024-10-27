@@ -13,6 +13,8 @@ export declare const AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY: KeychainAccessibilityC
 /**
  * The data in the keychain item can always be accessed regardless of whether the device is locked.
  * This is the least secure option.
+ *
+ * @deprecated Use an accessibility level that provides some user protection, such as `AFTER_FIRST_UNLOCK`.
  */
 export declare const ALWAYS: KeychainAccessibilityConstant;
 /**
@@ -22,6 +24,8 @@ export declare const ALWAYS: KeychainAccessibilityConstant;
 export declare const WHEN_PASSCODE_SET_THIS_DEVICE_ONLY: KeychainAccessibilityConstant;
 /**
  * Similar to `ALWAYS`, except the entry is not migrated to a new device when restoring from a backup.
+ *
+ * @deprecated Use an accessibility level that provides some user protection, such as `AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY`.
  */
 export declare const ALWAYS_THIS_DEVICE_ONLY: KeychainAccessibilityConstant;
 /**
@@ -45,9 +49,12 @@ export type SecureStoreOptions = {
      * accessing data stored in SecureStore.
      * - Android: Equivalent to [`setUserAuthenticationRequired(true)`](https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder#setUserAuthenticationRequired(boolean))
      *   (requires API 23).
-     * - iOS: Equivalent to [`kSecAccessControlBiometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/ksecaccesscontrolbiometrycurrentset/).
+     * - iOS: Equivalent to [`biometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/2937192-biometrycurrentset).
      * Complete functionality is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
      * value used for the others non-authenticated operations.
+     *
+     * This option works slightly differently across platforms: On Android, user authentication is required for all operations.
+     * On iOS, the user is prompted to authenticate only when reading or updating an existing value (not when creating a new one).
      *
      * Warning: This option is not supported in Expo Go when biometric authentication is available due to a missing NSFaceIDUsageDescription.
      * In release builds or when using continuous native generation, make sure to use the `expo-secure-store` config plugin.
@@ -80,7 +87,7 @@ export declare function isAvailableAsync(): Promise<boolean>;
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return A promise that will reject if the value couldn't be deleted.
+ * @return A promise that rejects if the value can't be deleted.
  */
 export declare function deleteItemAsync(key: string, options?: SecureStoreOptions): Promise<void>;
 /**
@@ -89,8 +96,8 @@ export declare function deleteItemAsync(key: string, options?: SecureStoreOption
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return A promise that resolves to the previously stored value. It will return `null` if there is no entry
- * for the given key or if the key has been invalidated. It will reject if an error occurs while retrieving the value.
+ * @return A promise that resolves to the previously stored value. It resolves with `null` if there is no entry
+ * for the given key or if the key has been invalidated. It rejects if an error occurs while retrieving the value.
  *
  * > Keys are invalidated by the system when biometrics change, such as adding a new fingerprint or changing the face profile used for face recognition.
  * > After a key has been invalidated, it becomes impossible to read its value.
@@ -104,7 +111,7 @@ export declare function getItemAsync(key: string, options?: SecureStoreOptions):
  * @param value The value to store. Size limit is 2048 bytes.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return A promise that will reject if value cannot be stored on the device.
+ * @return A promise that rejects if value cannot be stored on the device.
  */
 export declare function setItemAsync(key: string, value: string, options?: SecureStoreOptions): Promise<void>;
 /**
@@ -124,7 +131,15 @@ export declare function setItem(key: string, value: string, options?: SecureStor
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return Previously stored value. It will return `null` if there is no entry for the given key or if the key has been invalidated.
+ * @return Previously stored value. It resolves with `null` if there is no entry
+ * for the given key or if the key has been invalidated.
  */
 export declare function getItem(key: string, options?: SecureStoreOptions): string | null;
+/**
+ * Checks if the value can be saved with `requireAuthentication` option enabled.
+ * @return `true` if the device supports biometric authentication and the enrolled method is sufficiently secure. Otherwise, returns `false`. Always returns false on tvOS.
+ * @platform android
+ * @platform ios
+ */
+export declare function canUseBiometricAuthentication(): boolean;
 //# sourceMappingURL=SecureStore.d.ts.map

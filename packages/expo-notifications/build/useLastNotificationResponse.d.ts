@@ -1,4 +1,5 @@
 import { NotificationResponse } from './Notifications.types';
+type MaybeNotificationResponse = NotificationResponse | null | undefined;
 /**
  * A React hook always returns the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
@@ -10,7 +11,8 @@ import { NotificationResponse } from './Notifications.types';
  * - `null` - if no notification response has been received yet,
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  *
- * @example Responding to a notification tap by opening a URL that could be put into the notification's `data`
+ * @example
+ * Responding to a notification tap by opening a URL that could be put into the notification's `data`
  * (opening the URL is your responsibility and is not a part of the `expo-notifications` API):
  * ```jsx
  * import * as Notifications from 'expo-notifications';
@@ -34,5 +36,6 @@ import { NotificationResponse } from './Notifications.types';
  * ```
  * @header listen
  */
-export default function useLastNotificationResponse(): NotificationResponse | null | undefined;
+export default function useLastNotificationResponse(): MaybeNotificationResponse;
+export {};
 //# sourceMappingURL=useLastNotificationResponse.d.ts.map

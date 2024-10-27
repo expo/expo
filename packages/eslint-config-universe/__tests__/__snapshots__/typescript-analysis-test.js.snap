@@ -5,9 +5,46 @@ exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 0,
-  "messages": [],
-  "output": "type T = {
+  "fixableWarningCount": 2,
+  "messages": [
+    {
+      "column": 10,
+      "endColumn": 46,
+      "endLine": 20,
+      "fix": {
+        "range": [
+          227,
+          263,
+        ],
+        "text": "foo?.a?.b?.c",
+      },
+      "line": 20,
+      "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
+      "messageId": "preferOptionalChain",
+      "nodeType": null,
+      "ruleId": "@typescript-eslint/prefer-optional-chain",
+      "severity": 1,
+    },
+    {
+      "column": 3,
+      "endColumn": 33,
+      "endLine": 24,
+      "fix": {
+        "range": [
+          312,
+          342,
+        ],
+        "text": "foo?.a?.b.method",
+      },
+      "line": 24,
+      "message": "Prefer using an optional chain expression instead, as it's more concise and easier to read.",
+      "messageId": "preferOptionalChain",
+      "nodeType": null,
+      "ruleId": "@typescript-eslint/prefer-optional-chain",
+      "severity": 1,
+    },
+  ],
+  "source": "type T = {
   a?: {
     b?: {
       c: string;
@@ -26,16 +63,23 @@ type T2 = {
 };
 
 export function myFunc(foo: T | null) {
-  return foo?.a?.b?.c;
+  return foo && foo.a && foo.a.b && foo.a.b.c;
 }
 
 export function myFunc2(foo: T2 | null) {
-  return foo?.a?.b.method && foo.a.b.method();
+  foo && foo.a && foo.a.b.method && foo.a.b.method();
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
-  "warningCount": 0,
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/ban-ts-comment",
+      ],
+      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
+    },
+  ],
+  "warningCount": 2,
 }
 `;
 
@@ -48,12 +92,12 @@ exports[`lints: fixtures/typescript-analysis-01.ts 1`] = `
   "messages": [
     {
       "column": 1,
-      "endColumn": 2,
-      "endLine": 6,
+      "endColumn": 21,
+      "endLine": 4,
       "line": 4,
-      "message": "For-in loops over arrays are forbidden. Use for-of or array.forEach instead.",
+      "message": "For-in loops over arrays skips holes, returns indices as strings, and may visit the prototype chain or other enumerable properties. Use a more robust iteration method such as for-of or array.forEach instead.",
       "messageId": "forInViolation",
-      "nodeType": "ForInStatement",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-for-in-array",
       "severity": 2,
     },
@@ -66,7 +110,14 @@ for (const b in arr) {
 }
 export { sum };",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/ban-ts-comment",
+      ],
+      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
+    },
+  ],
   "warningCount": 0,
 }
 `;
@@ -110,7 +161,14 @@ exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/ban-ts-comment",
+      ],
+      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
+    },
+  ],
   "warningCount": 1,
 }
 `;
@@ -130,7 +188,7 @@ exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
       "message": "Expected an error object to be thrown.",
       "messageId": "object",
       "nodeType": "Literal",
-      "ruleId": "@typescript-eslint/no-throw-literal",
+      "ruleId": "@typescript-eslint/only-throw-error",
       "severity": 1,
     },
   ],
@@ -138,7 +196,158 @@ exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
   throw 3;
 }",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/ban-ts-comment",
+      ],
+      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
+    },
+  ],
   "warningCount": 1,
+}
+`;
+
+exports[`lints: fixtures/typescript-analysis-04.ts 1`] = `
+{
+  "errorCount": 2,
+  "fatalErrorCount": 0,
+  "fixableErrorCount": 1,
+  "fixableWarningCount": 0,
+  "messages": [
+    {
+      "column": 10,
+      "endColumn": 33,
+      "endLine": 2,
+      "fix": {
+        "range": [
+          33,
+          33,
+        ],
+        "text": "await ",
+      },
+      "line": 2,
+      "message": "Returning an awaited promise is required in this context.",
+      "messageId": "requiredPromiseAwait",
+      "nodeType": "CallExpression",
+      "ruleId": "@typescript-eslint/return-await",
+      "severity": 2,
+    },
+    {
+      "column": 3,
+      "endColumn": 22,
+      "endLine": 8,
+      "line": 8,
+      "message": "Unexpected \`await\` of a non-Promise (non-"Thenable") value.",
+      "messageId": "await",
+      "nodeType": "AwaitExpression",
+      "ruleId": "@typescript-eslint/await-thenable",
+      "severity": 1,
+      "suggestions": [
+        {
+          "desc": "Remove unnecessary \`await\`.",
+          "fix": {
+            "range": [
+              150,
+              155,
+            ],
+            "text": "",
+          },
+          "messageId": "removeAwait",
+        },
+      ],
+    },
+    {
+      "column": 15,
+      "endColumn": 37,
+      "endLine": 11,
+      "line": 11,
+      "message": "Placing a void expression inside another expression is forbidden. Move it to its own statement instead.",
+      "messageId": "invalidVoidExpr",
+      "nodeType": "CallExpression",
+      "ruleId": "@typescript-eslint/no-confusing-void-expression",
+      "severity": 1,
+    },
+    {
+      "column": 7,
+      "endColumn": 14,
+      "endLine": 15,
+      "line": 15,
+      "message": "Expected non-Promise value in a boolean conditional.",
+      "messageId": "conditional",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-misused-promises",
+      "severity": 2,
+    },
+    {
+      "column": 5,
+      "endColumn": 12,
+      "endLine": 21,
+      "line": 21,
+      "message": "Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the \`void\` operator.",
+      "messageId": "floatingVoid",
+      "nodeType": "ExpressionStatement",
+      "ruleId": "@typescript-eslint/no-floating-promises",
+      "severity": 1,
+      "suggestions": [
+        {
+          "desc": "Add void operator to ignore.",
+          "fix": {
+            "range": [
+              398,
+              398,
+            ],
+            "text": "void ",
+          },
+          "messageId": "floatingFixVoid",
+        },
+        {
+          "desc": "Add await operator.",
+          "fix": {
+            "range": [
+              398,
+              398,
+            ],
+            "text": "await ",
+          },
+          "messageId": "floatingFixAwait",
+        },
+      ],
+    },
+  ],
+  "source": "async function test() {
+  return Promise.resolve('blah');
+}
+
+export async function wat() {
+  // await-thenable
+  const createValue = () => 'value';
+  await createValue();
+
+  // no-confusing-void-expression
+  console.log(alert('Are you sure?'));
+
+  // no-misused-promises
+  const promise = Promise.resolve('value');
+  if (promise) {
+    console.log('hi');
+  }
+
+  // no-floating-promises
+  try {
+    test(); // needs to be awaited, otherwise try/catch is useless.
+  } catch {}
+}
+",
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [
+    {
+      "replacedBy": [
+        "@typescript-eslint/ban-ts-comment",
+      ],
+      "ruleId": "@typescript-eslint/prefer-ts-expect-error",
+    },
+  ],
+  "warningCount": 3,
 }
 `;

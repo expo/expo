@@ -4,7 +4,7 @@ initscript {
   }
 
   dependencies {
-    classpath 'com.github.ben-manes:gradle-versions-plugin:v0.44.0'
+    classpath 'com.github.ben-manes:gradle-versions-plugin:+'
   }
 }
 

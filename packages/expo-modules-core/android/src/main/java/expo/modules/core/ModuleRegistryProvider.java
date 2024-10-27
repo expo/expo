@@ -28,8 +28,6 @@ public class ModuleRegistryProvider {
   public ModuleRegistry get(Context context) {
     return new ModuleRegistry(
             createInternalModules(context),
-            createExportedModules(context),
-            createViewManagers(context),
             createSingletonModules(context)
     );
   }
@@ -40,22 +38,6 @@ public class ModuleRegistryProvider {
       internalModules.addAll(pkg.createInternalModules(context));
     }
     return internalModules;
-  }
-
-  public Collection<ExportedModule> createExportedModules(Context context) {
-    Collection<ExportedModule> exportedModules = new ArrayList<>();
-    for (Package pkg : getPackages()) {
-      exportedModules.addAll(pkg.createExportedModules(context));
-    }
-    return exportedModules;
-  }
-
-  public Collection<ViewManager> createViewManagers(Context context) {
-    Collection<ViewManager> viewManagers = new ArrayList<>();
-    for (Package pkg : getPackages()) {
-      viewManagers.addAll(pkg.createViewManagers(context));
-    }
-    return viewManagers;
   }
 
   public Collection<SingletonModule> createSingletonModules(Context context) {

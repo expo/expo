@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 
 import {
@@ -9,8 +9,6 @@ import {
   PowerState,
 } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
-
-const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 
 // @needsAudit
 /**
@@ -26,7 +24,7 @@ export async function isAvailableAsync(): Promise<boolean> {
 /**
  * Gets the battery level of the device as a number between `0` and `1`, inclusive. If the device
  * does not support retrieving the battery level, this method returns `-1`. On web, this method
- * always returns `-1`.
+ * always returns `1`.
  * @return A `Promise` that fulfils with a number between `0` and `1` representing the battery level,
  * or `-1` if the device does not provide it.
  * @example
@@ -62,13 +60,13 @@ export async function getBatteryStateAsync(): Promise<BatteryState> {
 
 // @needsAudit
 /**
- * Gets the current status of Low Power mode on iOS and Power Saver mode on Android. If a platform
+ * Gets the current status of Power Saver mode on Android and Low Power mode on iOS. If a platform
  * doesn't support Low Power mode reporting (like web, older Android devices), the reported low-power
  * state is always `false`, even if the device is actually in low-power mode.
  * @return Returns a `Promise` which fulfills with a `boolean` value of either `true` or `false`,
- * indicating whether low power mode is enabled or disabled, respectively.
+ * indicating whether low power mode is enabled or disabled.
  * @example
- * Low Power Mode (iOS) or Power Saver Mode (Android) are enabled.
+ * Power Saver Mode (Android) or Low Power Mode (iOS) are enabled.
  * ```ts
  * await Battery.isLowPowerModeEnabledAsync();
  * // true
@@ -103,7 +101,7 @@ export async function isBatteryOptimizationEnabledAsync(): Promise<boolean> {
 
 /**
  * Gets the power state of the device including the battery level, whether it is plugged in, and if
- * the system is currently operating in Low Power Mode (iOS) or Power Saver Mode (Android). This
+ * the system is currently operating in Power Saver Mode (Android) or Low Power Mode (iOS). This
  * method re-throws any errors that occur when retrieving any of the power-state information.
  * @return Returns a `Promise` which fulfills with [`PowerState`](#powerstate) object.
  * @example
@@ -133,24 +131,24 @@ export async function getPowerStateAsync(): Promise<PowerState> {
 /**
  * Subscribe to the battery level change updates.
  *
+ * On Android devices, the event fires only when significant changes happens, which is when the
+ * battery level drops below [`android.intent.action.BATTERY_LOW`](https://developer.android.com/reference/android/content/Intent#ACTION_BATTERY_LOW)
+ * or rises above [`android.intent.action.BATTERY_OKAY`](https://developer.android.com/reference/android/content/Intent#ACTION_BATTERY_OKAY)
+ * from a low battery level. See [Monitor the Battery Level and Charging State](https://developer.android.com/training/monitoring-device-state/battery-monitoring)
+ * in Android documentation for more information.
+ *
  * On iOS devices, the event fires when the battery level drops one percent or more, but is only
  * fired once per minute at maximum.
- *
- * On Android devices, the event fires only when significant changes happens, which is when the
- * battery level drops below [`"android.intent.action.BATTERY_LOW"`](https://developer.android.com/reference/android/content/Intent#ACTION_BATTERY_LOW)
- * or rises above [`"android.intent.action.BATTERY_OKAY"`](https://developer.android.com/reference/android/content/Intent#ACTION_BATTERY_OKAY)
- * from a low battery level. See [here](https://developer.android.com/training/monitoring-device-state/battery-monitoring)
- * to read more from the Android docs.
  *
  * On web, the event never fires.
  * @param listener A callback that is invoked when battery level changes. The callback is provided a
  * single argument that is an object with a `batteryLevel` key.
- * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.s
+ * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  */
 export function addBatteryLevelListener(
   listener: (event: BatteryLevelEvent) => void
-): Subscription {
-  return BatteryEventEmitter.addListener('Expo.batteryLevelDidChange', listener);
+): EventSubscription {
+  return ExpoBattery.addListener('Expo.batteryLevelDidChange', listener);
 }
 
 // @needsAudit
@@ -165,22 +163,24 @@ export function addBatteryLevelListener(
  */
 export function addBatteryStateListener(
   listener: (event: BatteryStateEvent) => void
-): Subscription {
-  return BatteryEventEmitter.addListener('Expo.batteryStateDidChange', listener);
+): EventSubscription {
+  return ExpoBattery.addListener('Expo.batteryStateDidChange', listener);
 }
 
 // @needsAudit
 /**
- * Subscribe to Low Power Mode (iOS) or Power Saver Mode (Android) updates. The event fires whenever
+ * Subscribe to  Power Saver Mode (Android) or Low Power Mode (iOS) updates. The event fires whenever
  * the power mode is toggled.
  *
  * On web, the event never fires.
- * @param listener A callback that is invoked when Low Power Mode (iOS) or Power Saver Mode (Android)
+ * @param listener A callback that is invoked when Power Saver Mode (Android) or  Low Power Mode (iOS)
  * changes. The callback is provided a single argument that is an object with a `lowPowerMode` key.
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  */
-export function addLowPowerModeListener(listener: (event: PowerModeEvent) => void): Subscription {
-  return BatteryEventEmitter.addListener('Expo.powerModeDidChange', listener);
+export function addLowPowerModeListener(
+  listener: (event: PowerModeEvent) => void
+): EventSubscription {
+  return ExpoBattery.addListener('Expo.powerModeDidChange', listener);
 }
 
 // @needsAudit
@@ -192,7 +192,7 @@ export function addLowPowerModeListener(listener: (event: PowerModeEvent) => voi
  * const batteryLevel = useBatteryLevel();
  * ```
  *
- * @return The battery level of the device
+ * @return The battery level of the device.
  */
 export function useBatteryLevel(): number {
   const [batteryLevel, setBatteryLevel] = useState(-1);
@@ -215,7 +215,7 @@ export function useBatteryLevel(): number {
  * const batteryState = useBatteryState();
  * ```
  *
- * @return The battery state of the device
+ * @return The battery state of the device.
  */
 export function useBatteryState(): BatteryState {
   const [batteryState, setBatteryState] = useState(BatteryState.UNKNOWN);
@@ -238,7 +238,7 @@ export function useBatteryState(): BatteryState {
  * const lowPowerMode = useLowPowerMode();
  * ```
  *
- * @return boolean indicating if the device is in low power mode
+ * @return Returns a boolean indicating if the device is in low power mode.
  */
 export function useLowPowerMode(): boolean {
   const [lowPowerMode, setLowPowerMode] = useState(false);
@@ -261,7 +261,7 @@ export function useLowPowerMode(): boolean {
  * const { lowPowerMode, batteryLevel, batteryState } = usePowerState();
  * ```
  *
- * @return power state information
+ * @return Returns power state information.
  */
 export function usePowerState(): PowerState {
   const [lowPowerMode, setLowPowerMode] = useState(false);
@@ -291,5 +291,5 @@ export {
   BatteryStateEvent,
   PowerModeEvent,
   PowerState,
-  Subscription,
+  EventSubscription as Subscription,
 };

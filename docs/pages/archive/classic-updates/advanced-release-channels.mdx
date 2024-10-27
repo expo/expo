@@ -6,7 +6,7 @@ title: Advanced release channels
 
 ## Introduction
 
-For a quick introduction to release channels, read [this](./release-channels.mdx).
+For a quick introduction to release channels, [read this](/archive/classic-updates/release-channels/).
 
 When you publish your app by running `expo publish --release-channel staging`, it creates:
 
@@ -17,7 +17,7 @@ For simplicity, the rest of this article will refer to just the `ios` releases, 
 
 ## See past publishes
 
-You can see everything that you’ve published with `expo publish:history`.
+You can see everything that you've published with `expo publish:history`.
 
 #### Example command and output
 
@@ -68,11 +68,11 @@ Continuing from the previous section, we can see that our release is available i
 
 Example use case: you published a release to your `production` release channel, only to realize that it includes a major regression for some of your users, so you want to revert to the previous version.
 
-Continuing from the previous section, we rollback our `production` release channel entry for just the iOS platform with `expo publish:set`
+Continuing from the previous section, we roll back our `production` release channel entry for just the iOS platform with `expo publish:set`
 
 `expo publish:set --release-channel production --publish-id d6b61741-a8dc-11e9-852a-3b0715b88238`
 
-Or, we could rollback the `production` release channel entry for both Android and iOS with:
+Or, we could roll back the `production` release channel entry for both Android and iOS with:
 `expo publish:rollback --release-channel production --sdk-version 36.0.0`
 
 Now we can see that our releases are available on the production release channel.
@@ -87,7 +87,7 @@ Now we can see that our releases are available on the production release channel
 
 ### Publish history
 
-```
+```text
   Usage: expo publish:history [--release-channel <channel-name>] [--count <number-of-logs>]
 
   View a log of your published releases.
@@ -101,7 +101,7 @@ Now we can see that our releases are available on the production release channel
 
 ### Publish details
 
-```
+```text
   Usage: expo publish:details --publish-id <publish-id>
   View the details of a published release.
 
@@ -112,7 +112,7 @@ Now we can see that our releases are available on the production release channel
 
 ### Publish rollback
 
-```
+```text
 Usage: expo publish:rollback
 
   Rollback an update to a release channel. Equivalent to running `expo publish:set` with publish-id set to the most recent release to the specified sdk version
@@ -125,7 +125,7 @@ Usage: expo publish:rollback
 
 ### Publish set
 
-```
+```text
  Usage: expo publish:set --release-channel <channel-name> --publish-id <publish-id>
 
   Set a published release to be served from a specified channel.

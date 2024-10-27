@@ -2,20 +2,9 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#import <React/RCTUIManager.h>
-#import <React/RCTBridge+Private.h>
-#import <React/RCTAppState.h>
-#import <React/RCTImageLoader.h>
-
+#import <React/React-Core-umbrella.h>
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
-
-#if RN_FABRIC_ENABLED
-#import <React/RCTComponentViewRegistry.h>
-#import <React/RCTSurfacePresenter.h>
-#import <React/RCTMountingManager.h>
-
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
-#endif
 
 @interface EXReactNativeAdapter ()
 
@@ -74,7 +63,11 @@ EX_REGISTER_MODULE();
 
 - (void)addUIBlock:(void (^)(NSDictionary<id, UIView *> *))block
 {
+#if RCT_NEW_ARCH_ENABLED
+  [NSException raise:NSGenericException format:@"This version of `addUIBlock` is not supported in the New Architecture"];
+#else
   __weak EXReactNativeAdapter *weakSelf = self;
+
   dispatch_async(_bridge.uiManager.methodQueue, ^{
     __strong EXReactNativeAdapter *strongSelf = weakSelf;
     if (strongSelf) {
@@ -83,6 +76,7 @@ EX_REGISTER_MODULE();
       }];
     }
   });
+#endif
 }
 
 - (void)addUIBlock:(void (^)(id))block forView:(id)viewId ofClass:(Class)klass
@@ -113,6 +107,9 @@ EX_REGISTER_MODULE();
 }
 
 - (void)executeUIBlock:(void (^)(NSDictionary<id,UIView *> *))block {
+#if RCT_NEW_ARCH_ENABLED
+  [NSException raise:NSGenericException format:@"This version of `executeUIBlock` is not supported in the New Architecture"];
+#else
   __weak EXReactNativeAdapter *weakSelf = self;
   dispatch_async(_bridge.uiManager.methodQueue, ^{
     __strong EXReactNativeAdapter *strongSelf = weakSelf;
@@ -123,6 +120,7 @@ EX_REGISTER_MODULE();
       [strongSelf.bridge.uiManager setNeedsLayout];
     }
   });
+#endif
 }
 
 
@@ -190,11 +188,7 @@ EX_REGISTER_MODULE();
 
 - (void *)javaScriptRuntimePointer
 {
-  if ([_bridge respondsToSelector:@selector(runtime)]) {
-    return _bridge.runtime;
-  } else {
-    return nil;
-  }
+  return _bridge.runtime;
 }
 
 # pragma mark - App state observing
@@ -226,11 +220,11 @@ EX_REGISTER_MODULE();
       _isForegrounded && (
        [notification.name isEqualToString:UIApplicationWillResignActiveNotification] ||
        [notification.name isEqualToString:UIApplicationDidEnterBackgroundNotification] ||
-       RCTSharedApplication().applicationState == UIApplicationStateBackground
+       [self isApplicationStateBackground]
       )
     ) {
     [self setAppStateToBackground];
-  } else if (!_isForegrounded && RCTSharedApplication().applicationState == UIApplicationStateActive) {
+  } else if (!_isForegrounded && [self isApplicationStateActive]) {
     [self setAppStateToForeground];
   }
 }
@@ -282,37 +276,45 @@ EX_REGISTER_MODULE();
 
 - (void)addUIBlock:(void (^)(UIView *view))block forView:(id)viewId
 {
-  __weak EXReactNativeAdapter *weakSelf = self;
-  dispatch_async(_bridge.uiManager.methodQueue, ^{
-    __strong EXReactNativeAdapter *strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        UIView *view = viewRegistry[viewId];
-        block(view);
-      }];
-    }
+  __weak RCTUIManager *uiManager = [_bridge uiManager];
+
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+      UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
+      block(view);
+    }];
   });
 }
 
 - (void)executeUIBlock:(void (^)(UIView *view))block forView:(id)viewId
 {
-  __weak EXReactNativeAdapter *weakSelf = self;
-  dispatch_async(_bridge.uiManager.methodQueue, ^{
-    __strong EXReactNativeAdapter *strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-#if RN_FABRIC_ENABLED
-        RCTSurfacePresenter *surfacePresenter = strongSelf.bridge.surfacePresenter;
-        UIView<RCTComponentViewProtocol> *componentView = [surfacePresenter.mountingManager.componentViewRegistry findComponentViewWithTag:[viewId integerValue]];
-        UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
-#else
-        UIView *view = viewRegistry[viewId];
-#endif
-        block(view);
-      }];
-      [strongSelf.bridge.uiManager setNeedsLayout];
-    }
+  __weak RCTUIManager *uiManager = [_bridge uiManager];
+
+  dispatch_async(RCTGetUIManagerQueue(), ^{
+    [uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+      UIView *view = [uiManager viewForReactTag:(NSNumber *)viewId];
+      block(view);
+    }];
+    [uiManager setNeedsLayout];
   });
+}
+
+- (BOOL)isApplicationStateBackground
+{
+#if TARGET_OS_IOS || TARGET_OS_TV
+  return RCTSharedApplication().applicationState == UIApplicationStateBackground;
+#elif TARGET_OS_OSX
+  return RCTSharedApplication().isHidden;
+#endif
+}
+
+- (BOOL)isApplicationStateActive
+{
+#if TARGET_OS_IOS || TARGET_OS_TV
+  return RCTSharedApplication().applicationState == UIApplicationStateActive;
+#elif TARGET_OS_OSX
+  return RCTSharedApplication().isActive;
+#endif
 }
 
 @end

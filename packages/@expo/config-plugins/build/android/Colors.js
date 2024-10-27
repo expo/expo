@@ -32,8 +32,7 @@ function getProjectColorsXMLPathAsync(projectRoot, {
   });
 }
 function setColorItem(itemToAdd, colorFileContentsJSON) {
-  var _colorFileContentsJSO;
-  if ((_colorFileContentsJSO = colorFileContentsJSON.resources) !== null && _colorFileContentsJSO !== void 0 && _colorFileContentsJSO.color) {
+  if (colorFileContentsJSON.resources?.color) {
     const colorNameExists = colorFileContentsJSON.resources.color.filter(e => e.$.name === itemToAdd.$.name)[0];
     if (colorNameExists) {
       colorNameExists._ = itemToAdd._;
@@ -50,8 +49,7 @@ function setColorItem(itemToAdd, colorFileContentsJSON) {
   return colorFileContentsJSON;
 }
 function removeColorItem(named, contents) {
-  var _contents$resources;
-  if ((_contents$resources = contents.resources) !== null && _contents$resources !== void 0 && _contents$resources.color) {
+  if (contents.resources?.color) {
     const index = contents.resources.color.findIndex(e => e.$.name === named);
     if (index > -1) {
       // replace the previous value
@@ -86,8 +84,7 @@ function assignColorValue(xml, {
  * @returns
  */
 function getColorsAsObject(xml) {
-  var _xml$resources;
-  if (!(xml !== null && xml !== void 0 && (_xml$resources = xml.resources) !== null && _xml$resources !== void 0 && _xml$resources.color)) {
+  if (!xml?.resources?.color) {
     return null;
   }
   return (0, _Resources().getResourceItemsAsObject)(xml.resources.color);

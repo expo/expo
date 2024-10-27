@@ -18,11 +18,10 @@ function _createLegacyPlugin() {
   };
   return data;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-navigation-bar',
   fallback: [
   // Android
   _withAndroidNavigationBar().withNavigationBar]
 });
-exports.default = _default;
 //# sourceMappingURL=expo-navigation-bar.js.map

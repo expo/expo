@@ -2,19 +2,21 @@
 
 #ifdef __cplusplus
 
+#pragma once
+
 #import <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;
 
 namespace expo::common {
 
-class JSI_EXPORT ObjectDeallocator : public jsi::HostObject {
+class JSI_EXPORT ObjectDeallocator : public jsi::NativeState {
 public:
   typedef std::function<void()> Block;
 
-  ObjectDeallocator(const Block deallocator) : deallocator(deallocator) {};
+  ObjectDeallocator(Block deallocator) : deallocator(std::move(deallocator)) {};
 
-  virtual ~ObjectDeallocator() {
+  ~ObjectDeallocator() override {
     deallocator();
   }
 
@@ -28,8 +30,7 @@ public:
 void setDeallocator(
   jsi::Runtime &runtime,
   const std::shared_ptr<jsi::Object> &jsThis,
-  ObjectDeallocator::Block deallocatorBlock,
-  const std::string &key = "__expo_object_deallocator__"
+  ObjectDeallocator::Block deallocatorBlock
 );
 
 } // namespace expo::common

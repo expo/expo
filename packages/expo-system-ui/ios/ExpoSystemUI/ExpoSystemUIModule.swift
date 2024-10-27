@@ -8,14 +8,14 @@ public class ExpoSystemUIModule: Module {
     Name("ExpoSystemUI")
 
     OnCreate {
-      // TODO: Maybe read from the app manifest instead of from Info.plist.
-      // Set / reset the initial color on reload and app start.
       let color = UserDefaults.standard.integer(forKey: Self.colorKey)
-
       if color > 0 {
         Self.setBackgroundColorAsync(color: color)
       } else {
-        Self.setBackgroundColorAsync(color: nil)
+        // TODO: Maybe read from the app manifest instead of from Info.plist.
+        // Set / reset the initial color on reload and app start.
+        let colorFromPlugin = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
+        Self.setBackgroundColorAsync(color: colorFromPlugin)
       }
     }
 
@@ -43,6 +43,7 @@ public class ExpoSystemUIModule: Module {
     EXUtilities.performSynchronously {
       if color == nil {
         if let window = UIApplication.shared.delegate?.window {
+          // Uses required reason API based on the following reason: CA92.1
           UserDefaults.standard.removeObject(forKey: colorKey)
           let interfaceStyle = window?.traitCollection.userInterfaceStyle
           window?.backgroundColor = nil

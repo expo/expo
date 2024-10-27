@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
+exports.routeToScreen = exports.screenOptionsFactory = exports.createGetIdForRoute = exports.getQualifiedRouteComponent = exports.useSortedScreens = void 0;
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const import_mode_1 = __importDefault(require("./import-mode"));
@@ -81,7 +81,7 @@ function fromImport({ ErrorBoundary, ...component }) {
             return { default: EmptyRoute_1.EmptyRoute };
         }
     }
-    return { default: component.default || EmptyRoute_1.EmptyRoute };
+    return { default: component.default };
 }
 function fromLoadedRoute(res) {
     if (!(res instanceof Promise)) {
@@ -97,37 +97,30 @@ function getQualifiedRouteComponent(value) {
     if (qualifiedStore.has(value)) {
         return qualifiedStore.get(value);
     }
-    let getLoadable;
+    let ScreenComponent;
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
     if (import_mode_1.default === 'lazy') {
-        const AsyncComponent = react_1.default.lazy(async () => {
+        ScreenComponent = react_1.default.lazy(async () => {
             const res = value.loadRoute();
             return fromLoadedRoute(res);
         });
-        getLoadable = (props, ref) => (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-        <AsyncComponent {...{
-            ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route,
-        }}/>
-      </react_1.default.Suspense>);
     }
     else {
         const res = value.loadRoute();
         const Component = fromImport(res).default;
-        const SyncComponent = react_1.default.forwardRef((props, ref) => {
+        ScreenComponent = react_1.default.forwardRef((props, ref) => {
             return <Component {...props} ref={ref}/>;
         });
-        getLoadable = (props, ref) => (<SyncComponent {...{
-            ...props,
-            ref,
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment: value.route,
-        }}/>);
     }
+    const getLoadable = (props, ref) => (<react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+      <ScreenComponent {...{
+        ...props,
+        ref,
+        // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+        // the intention is to make it possible to deduce shared routes.
+        segment: value.route,
+    }}/>
+    </react_1.default.Suspense>);
     const QualifiedRoute = react_1.default.forwardRef(({ 
     // Remove these React Navigation props to
     // enforce usage of expo-router hooks (where the query params are correct).
@@ -135,7 +128,9 @@ function getQualifiedRouteComponent(value) {
     // Pass all other props to the component
     ...props }, ref) => {
         const loadable = getLoadable(props, ref);
-        return <Route_1.Route node={value}>{loadable}</Route_1.Route>;
+        return (<Route_1.Route node={value} route={route}>
+          {loadable}
+        </Route_1.Route>);
     });
     QualifiedRoute.displayName = `Route(${value.route})`;
     qualifiedStore.set(value, QualifiedRoute);
@@ -144,52 +139,65 @@ function getQualifiedRouteComponent(value) {
 exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 /** @returns a function which provides a screen id that matches the dynamic route name in params. */
 function createGetIdForRoute(route) {
-    if (!route.dynamic?.length) {
-        return undefined;
+    const include = new Map();
+    if (route.dynamic) {
+        for (const segment of route.dynamic) {
+            include.set(segment.name, segment);
+        }
     }
-    return ({ params }) => {
-        const getPreferredId = (segment) => {
-            // Params can be undefined when there are no params in the route.
-            const preferredId = params?.[segment.name];
-            // If the route has a dynamic segment, use the matching parameter
-            // as the screen id. This enables pushing a screen like `/[user]` multiple times
-            // when the user is different.
-            if (preferredId) {
-                if (!Array.isArray(preferredId)) {
-                    return preferredId;
-                }
-                else if (preferredId.length) {
-                    // Deep dynamic routes will return as an array, so we'll join them to create a
-                    // fully qualified string.
-                    return preferredId.join('/');
-                }
-                // Empty arrays...
+    return ({ params = {} } = {}) => {
+        if (params.__EXPO_ROUTER_key) {
+            const key = params.__EXPO_ROUTER_key;
+            delete params.__EXPO_ROUTER_key;
+            return key;
+        }
+        const segments = [];
+        for (const dynamic of include.values()) {
+            const value = params?.[dynamic.name];
+            if (Array.isArray(value) && value.length > 0) {
+                // If we are an array with a value
+                segments.push(value.join('/'));
             }
-            return segment.deep ? `[...${segment.name}]` : `[${segment.name}]`;
-        };
-        return route.dynamic?.map((segment) => getPreferredId(segment)).join('/');
+            else if (value && !Array.isArray(value)) {
+                // If we have a value and not an empty array
+                segments.push(value);
+            }
+            else if (dynamic.deep) {
+                segments.push(`[...${dynamic.name}]`);
+            }
+            else {
+                segments.push(`[${dynamic.name}]`);
+            }
+        }
+        return segments.join('/') ?? route.contextKey;
     };
 }
 exports.createGetIdForRoute = createGetIdForRoute;
+function screenOptionsFactory(route, options) {
+    return (args) => {
+        // Only eager load generated components
+        const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
+        const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
+        const dynamicResult = typeof options === 'function' ? options?.(args) : options;
+        const output = {
+            ...staticResult,
+            ...dynamicResult,
+        };
+        // Prevent generated screens from showing up in the tab bar.
+        if (route.generated) {
+            output.tabBarItemStyle = { display: 'none' };
+            output.tabBarButton = () => null;
+            // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
+            output.drawerItemStyle = { height: 0, display: 'none' };
+        }
+        return output;
+    };
+}
+exports.screenOptionsFactory = screenOptionsFactory;
 function routeToScreen(route, { options, ...props } = {}) {
     return (<primitives_1.Screen 
     // Users can override the screen getId function.
-    getId={createGetIdForRoute(route)} {...props} name={route.route} key={route.route} options={(args) => {
-            // Only eager load generated components
-            const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
-            const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
-            const dynamicResult = typeof options === 'function' ? options?.(args) : options;
-            const output = {
-                ...staticResult,
-                ...dynamicResult,
-            };
-            // Prevent generated screens from showing up in the tab bar.
-            if (route.generated) {
-                output.tabBarButton = () => null;
-                // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
-                output.drawerItemStyle = { height: 0, display: 'none' };
-            }
-            return output;
-        }} getComponent={() => getQualifiedRouteComponent(route)}/>);
+    getId={createGetIdForRoute(route)} {...props} name={route.route} key={route.route} options={screenOptionsFactory(route, options)} getComponent={() => getQualifiedRouteComponent(route)}/>);
 }
+exports.routeToScreen = routeToScreen;
 //# sourceMappingURL=useScreens.js.map

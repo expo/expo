@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class ConstantsSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext()
 
     it("takes closure resolving to dictionary") {

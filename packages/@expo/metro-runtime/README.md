@@ -13,7 +13,7 @@ yarn add @expo/metro-runtime
 Import this somewhere in the initial bundle. For example, the `App.js`:
 
 ```js
-import '@expo/metro-config';
+import '@expo/metro-runtime';
 ```
 
 `expo/metro-config` will automatically move this import to be first in the bundle.

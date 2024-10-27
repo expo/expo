@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 final class EnumerableSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     describe("static createFromRawValue") {
       it("succeeds") {
         expect(try Position.create(fromRawValue: "top")) == .top

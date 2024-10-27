@@ -1,6 +1,3 @@
-import * as DevLauncher from 'expo-dev-launcher';
-import * as DevMenu from 'expo-dev-menu';
-export { DevMenu, DevLauncher };
-export const registerErrorHandlers = DevLauncher.registerErrorHandlers;
-export const isDevelopmentBuild = DevLauncher.isDevelopmentBuild;
+export * from 'expo-dev-launcher';
+export * from 'expo-dev-menu';
 //# sourceMappingURL=DevClient.js.map

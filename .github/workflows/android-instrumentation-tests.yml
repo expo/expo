@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/android-instrumentation-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       # - packages/**/android/**
       - packages/expo-eas-client/android/**
@@ -19,7 +19,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/android-instrumentation-tests.yml
-      - android/**
+      - apps/expo-go/android/**
       - fastlane/**
       # - packages/**/android/**
       - packages/expo-eas-client/android/**
@@ -36,7 +36,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: macos-13
+    runs-on: ubuntu-22.04
     timeout-minutes: 150
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
@@ -46,15 +46,17 @@ jobs:
         api-level: [33]
     steps:
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: 👀 Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -80,7 +82,7 @@ jobs:
           script: expotools android-native-unit-tests --type instrumented
       - name: 💾 Save test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: packages/**/build/outputs/androidTest-results/**/*

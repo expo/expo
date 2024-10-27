@@ -70,15 +70,15 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(results.status).toBe('granted');
     });
 
-    const createdContactIds = [];
+    const createdContacts = [];
     const createContact = async (contact) => {
       const id = await Contacts.addContactAsync(contact);
-      createdContactIds.push({ id, contact });
+      createdContacts.push({ id, contact });
       return id;
     };
 
     afterAll(async () => {
-      await Promise.all(createdContactIds.map(async ({ id }) => Contacts.removeContactAsync(id)));
+      await Promise.all(createdContacts.map(async ({ id }) => Contacts.removeContactAsync(id)));
     });
 
     it('Contacts.createContactsAsync()', async () => {
@@ -135,7 +135,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       await image.downloadAsync();
 
       const fields = {
-        [Contacts.Fields.Image]: image.localUri,
+        [Contacts.Fields.Image]: { uri: image.localUri },
         [Contacts.Fields.FirstName]: 'Kenny',
         [Contacts.Fields.LastName]: 'McCormick',
       };
@@ -148,8 +148,51 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(typeof contactId).toBe('string');
     });
 
+    it('Contacts.createContactAsync() with birthday', async () => {
+      const originalBirthday = {
+        day: 30,
+        month: 0,
+      };
+
+      const contactId = await createContact({
+        [Contacts.Fields.Birthday]: originalBirthday,
+        [Contacts.Fields.FirstName]: 'Kenny',
+        [Contacts.Fields.LastName]: 'Bday guy',
+      });
+      expect(typeof contactId).toBe('string');
+
+      const contact = await Contacts.getContactByIdAsync(contactId, [Contacts.Fields.Birthday]);
+
+      expect(contact.birthday).toEqual({
+        ...originalBirthday,
+        format: 'gregorian',
+      });
+      const newBirthday = {
+        day: 1,
+        month: 8,
+        year: 2024,
+      };
+      const modifiedId = await Contacts.updateContactAsync({
+        id: contactId,
+        [Contacts.Fields.Birthday]: newBirthday,
+      });
+      const modifiedContact = await Contacts.getContactByIdAsync(modifiedId, [
+        Contacts.Fields.Birthday,
+      ]);
+      expect(modifiedContact.birthday).toEqual({
+        ...newBirthday,
+        format: 'gregorian',
+      });
+
+      // this is needed to make sure the entry in `createdContacts` corresponds to the actual contact
+      await Contacts.updateContactAsync({
+        id: contactId,
+        [Contacts.Fields.Birthday]: originalBirthday,
+      });
+    });
+
     it('Contacts.writeContactToFileAsync() returns uri', async () => {
-      createdContactIds.map(async ({ id }) => {
+      createdContacts.map(async ({ id }) => {
         const localUri = await Contacts.writeContactToFileAsync({ id });
         expect(typeof localUri).toBe('string');
       });
@@ -380,7 +423,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(contact).toEqual(
         jasmine.objectContaining({
           contactType: jasmine.any(String),
-          name: jasmine.any(String),
+          firstName: jasmine.any(String),
           id: jasmine.any(String),
         })
       );
@@ -389,10 +432,10 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
     });
 
     it('Contacts.getContactByIdAsync() checks shape of the inserted contacts', async () => {
-      expect(createdContactIds.length).toBeGreaterThan(0);
+      expect(createdContacts.length).toBeGreaterThan(0);
 
       await Promise.all(
-        createdContactIds.map(async ({ id, contact: expectedContact }) => {
+        createdContacts.map(async ({ id, contact: expectedContact }) => {
           const contact = await Contacts.getContactByIdAsync(id);
           if (contact) {
             expect(contact).toBeDefined();

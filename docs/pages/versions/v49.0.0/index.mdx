@@ -3,12 +3,15 @@ title: Reference
 hideTOC: true
 ---
 
-import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';
-import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
+import RedirectNotification from '~/ui/components/RedirectNotification';
+import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 
-<VersionedRedirectNotification />
+<RedirectNotification>
+  The page you are looking for does not exist in this SDK version. It may have been deprecated or
+  added to a newer SDK version.
+</RedirectNotification>
 
 The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope, GPS location, and so on, in the form of packages. You can install any Expo SDK package using the `npx expo install` command. For example, three different packages are installed using the following command:
 
@@ -16,7 +19,7 @@ The Expo SDK provides access to device and system functionality such as contacts
 
 After installing one or more packages, you can import them into your JavaScript code:
 
-```javascript
+```js
 import { Camera } from 'expo-camera';
 import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
@@ -38,7 +41,8 @@ Expo apps are React Native apps, so all Expo SDK packages work in any React Nati
   href="/bare/installing-expo-modules"
   description={
     <>
-      Learn more about configuring projects created with <CODE>npx react-native init</CODE> to Expo SDK packages.
+      Learn more about configuring projects created with <CODE>npx react-native init</CODE> to Expo
+      SDK packages.
     </>
   }
 />
@@ -53,14 +57,23 @@ Expo apps are React Native apps, so all Expo SDK packages work in any React Nati
 
 New Expo SDK versions are released three times each year. Between these releases, we publish pre-release versions of the `expo` package and all of the Expo SDK packages. Pre-releases are not considered stable and should only be used if you are comfortable with the risk of encountering bugs or other issues.
 
-Pre-release versions of the `expo` package are versioned with an `-alpha` suffix, such as `50.0.0-alpha.1`. To install, for example, SDK 50 alpha, you can run the following command:
+### Canary releases
+
+Canary releases represent a snapshot of the state of the `main` branch at the time they are published. Canary package versions include `-canary` in the name, along with the date and commit hash, such as `50.0.0-canary-20231205-250b31f`. To install the latest canary release:
 
 <Terminal
-  cmd={['# Install the alpha version of expo and its related packages', '$ npm install expo@50.0.0-alpha && npx expo install --fix']}
-  cmdCopy="npm install expo@50.0.0-alpha && npx expo install --fix"
+  cmd={[
+    '# Install the alpha version of expo and its related packages',
+    '$ npm install expo@canary && npx expo install --fix',
+  ]}
+  cmdCopy="npm install expo@canary && npx expo install --fix"
 />
 
-You can often use pre-release versions of individual packages with stable releases of the Expo SDK. There may occasionally be incompatibilities or other issues that arise in alpha-quality releases. You may want to [silence dependency validation warnings](/more/expo-cli/#configuring-dependency-validation) if you opt in to the alpha package and once you have verified that it works well for your use cases.
+You can often use pre-release versions of individual packages with stable releases of the Expo SDK. There may occasionally be incompatibilities or other issues that arise in canary-quality releases. You may want to [silence dependency validation warnings](/more/expo-cli/#configuring-dependency-validation) if you opt in to the canary package and once you have verified that it works well for your use cases.
+
+### Beta releases
+
+Before each Expo SDK release, we publish beta versions of the `expo` package and all of the Expo SDK packages. Beta releases are considered much more stable than canary releases, and we encourage developers to try them out on their apps and share their feedback. Beta releases use the `beta` tag on npm and follow the instructions in the related [changelog](https://expo.dev/changelog) post.
 
 ## Each Expo SDK version depends on a React Native version
 

@@ -4,13 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-function _configPlugins() {
-  const data = require("@expo/config-plugins");
-  _configPlugins = function () {
-    return data;
-  };
-  return data;
-}
 function _withAndroidNotifications() {
   const data = require("./withAndroidNotifications");
   _withAndroidNotifications = function () {
@@ -25,19 +18,13 @@ function _createLegacyPlugin() {
   };
   return data;
 }
-const withNotificationsEntitlement = (config, mode) => {
-  return (0, _configPlugins().withEntitlementsPlist)(config, config => {
-    config.modResults['aps-environment'] = mode;
-    return config;
-  });
-};
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-notifications',
   fallback: [
   // Android
-  _withAndroidNotifications().withNotificationManifest, _withAndroidNotifications().withNotificationIconColor, _withAndroidNotifications().withNotificationIcons,
+  _withAndroidNotifications().withNotificationManifest, _withAndroidNotifications().withNotificationIconColor, _withAndroidNotifications().withNotificationIcons
   // iOS
-  [withNotificationsEntitlement, 'development']]
+  // Automatic setting of APNS entitlement is no longer needed
+  ]
 });
-exports.default = _default;
 //# sourceMappingURL=expo-notifications.js.map

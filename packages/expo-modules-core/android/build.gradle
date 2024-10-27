@@ -1,46 +1,15 @@
-import java.nio.file.Paths
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '1.10.0'
+version = '2.0.0-preview.1'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-if (expoModulesCorePlugin.exists()) {
-  apply from: expoModulesCorePlugin
-  applyKotlinExpoModulesCorePlugin()
-
-  // Remove this check, but keep the contents after SDK49 support is dropped
-  if (safeExtGet("expoProvidesDefaultConfig", false)) {
-    useExpoPublishing()
-  }
-}
-
-buildscript {
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
-
-  // Ensures backward compatibility
-  ext.getKotlinVersion = {
-    if (ext.has("kotlinVersion")) {
-      ext.kotlinVersion()
-    } else {
-      ext.safeExtGet("kotlinVersion", "1.8.10")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-  }
-}
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -55,7 +24,10 @@ def isExpoModulesCoreTests = {
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":packages:react-native:ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
   ? findProject(":packages:react-native:ReactAndroid").getProjectDir().parent
-  : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+  : file(providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('react-native/package.json')")
+    }.standardOutput.asText.get().trim()).parent
 
 def reactProperties = new Properties()
 file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
@@ -81,45 +53,9 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
-// Remove this if and it's contents, when support for SDK49 is dropped
-if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-  afterEvaluate {
-    publishing {
-      publications {
-        release(MavenPublication) {
-          from components.release
-        }
-      }
-      repositories {
-        maven {
-          url = mavenLocal().url
-        }
-      }
-    }
-  }
-}
+def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
 android {
-  // Remove this if and it's contents, when support for SDK49 is dropped
-  if (!safeExtGet("expoProvidesDefaultConfig", false)) {
-    compileSdkVersion safeExtGet("compileSdkVersion", 34)
-
-    defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 23)
-      targetSdkVersion safeExtGet("targetSdkVersion", 34)
-    }
-
-    publishing {
-      singleVariant("release") {
-        withSourcesJar()
-      }
-    }
-
-    lintOptions {
-      abortOnError false
-    }
-  }
-
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
   }
@@ -127,23 +63,11 @@ android {
     ndkVersion rootProject.ext.ndkVersion
   }
 
-  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
-  if (agpVersion.tokenize('.')[0].toInteger() < 8) {
-    compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.majorVersion
-    }
-  }
-
   namespace "expo.modules"
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.10.0"
+    versionName "2.0.0-preview.1"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -185,9 +109,11 @@ android {
       "**/libhermes.so",
       "**/libjscexecutor.so",
       "**/libjsi.so",
+      "**/libreactnative.so",
       "**/libreactnativejni.so",
       "**/libreact_debug.so",
       "**/libreact_nativemodule_core.so",
+      "**/libreact_utils.so",
       "**/libreact_render_debug.so",
       "**/libreact_render_graphics.so",
       "**/libreact_render_core.so",
@@ -197,6 +123,14 @@ android {
       "**/libruntimeexecutor.so",
       "**/libyoga.so",
     ]
+
+    // Required or mockk will crash
+    resources {
+      excludes += [
+          "META-INF/LICENSE.md",
+          "META-INF/LICENSE-notice.md"
+      ]
+    }
 
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
     // Otherwise, those files should be excluded, because will be loaded by the application.
@@ -223,47 +157,33 @@ android {
   }
 }
 
-
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
-  implementation 'androidx.annotation:annotation:1.3.0'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion()}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+  implementation 'androidx.annotation:annotation:1.7.1'
 
-  api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
-  api "androidx.core:core-ktx:1.6.0"
-  api project(':expo-modules-core$android-annotation')
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+  api "androidx.core:core-ktx:1.13.1"
 
-  /**
-   * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.
-   * Unfortunately until https://github.com/facebook/react-native/pull/33072 is released React Native uses "androidx.appcompat:appcompat:1.0.2".
-   * Gradle is picking the highest version of the dependency so we enforce higher version here.
-   * see https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
-   * We're enforcing the most up-to-date versions of the dependencies here that are used in subclassing chain for ReactActivity.
-   */
-  implementation "androidx.appcompat:appcompat:1.4.1"
-  implementation "androidx.activity:activity-ktx:1.7.1" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
-  implementation "androidx.fragment:fragment-ktx:1.5.7" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
+  implementation("androidx.tracing:tracing-ktx:1.2.0")
 
-  implementation("androidx.tracing:tracing-ktx:1.1.0")
+  implementation 'com.facebook.react:react-android'
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
+  compileOnly 'com.facebook.fbjni:fbjni:0.5.1'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
-
-  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core:1.5.0'
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation 'io.mockk:mockk:1.13.10'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation "org.robolectric:robolectric:4.11.1"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
   testImplementation "org.json:json:20230227"
 
-  androidTestImplementation 'androidx.test:runner:1.4.0'
-  androidTestImplementation 'androidx.test:core:1.4.0'
-  androidTestImplementation 'androidx.test:rules:1.4.0'
-  androidTestImplementation "io.mockk:mockk-android:1.12.3"
+  androidTestImplementation 'androidx.test:runner:1.5.2'
+  androidTestImplementation 'androidx.test:core:1.5.0'
+  androidTestImplementation 'androidx.test:rules:1.5.0'
+  androidTestImplementation "io.mockk:mockk-android:1.13.10"
   androidTestImplementation "com.google.truth:truth:1.1.2"
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
@@ -273,5 +193,14 @@ dependencies {
     } else {
       compileOnly "org.webkit:android-jsc:+"
     }
+  }
+}
+
+if (shouldTurnWarningsIntoErrors) {
+  tasks.withType(JavaCompile) configureEach {
+    options.compilerArgs << "-Werror" << "-Xlint:all"
+  }
+  tasks.withType(KotlinCompile) configureEach {
+    compilerOptions.allWarningsAsErrors = true
   }
 }

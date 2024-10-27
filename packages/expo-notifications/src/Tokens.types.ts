@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { type Platform } from 'expo-modules-core';
 
 // @docsMissing
 export interface NativeDevicePushToken {
@@ -7,43 +7,43 @@ export interface NativeDevicePushToken {
 }
 
 // @docsMissing
+/**
+ * @hidden
+ */
 export interface WebDevicePushToken {
   type: 'web';
   data: {
     endpoint: string;
-    keys: {
-      p256dh: string;
-      auth: string;
-    };
+    keys: WebDevicePushTokenKeys;
   };
 }
 
 // @docsMissing
-type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
+/**
+ * @hidden
+ */
+export type WebDevicePushTokenKeys = {
+  p256dh: string;
+  auth: string;
+};
 
-type ImplicitlySupportedDevicePushToken = {
+// @docsMissing
+export type ExplicitlySupportedDevicePushToken = NativeDevicePushToken;
+
+export type ImplicitlySupportedDevicePushToken = {
   /**
-   * Either `android`, `ios` or `web`.
+   * Either `android` or `ios`.
    */
   type: Exclude<typeof Platform.OS, ExplicitlySupportedDevicePushToken['type']>;
   /**
-   * Either the push token as a string (when for native platforms), or an object conforming to the type below (for web):
-   * ```ts
-   * {
-   *   endpoint: string;
-   *   keys: {
-   *     p256dh: string;
-   *     auth: string;
-   *   }
-   * }
-   * ```
+   * The push token as a string for a native platform.
    */
   data: any;
 };
 
 /**
  * In simple terms, an object of `type: Platform.OS` and `data: any`. The `data` type depends on the environment - on a native device it will be a string,
- * which you can then use to send notifications via Firebase Cloud Messaging (Android) or APNs (iOS); on web it will be a registration object (VAPID).
+ * which you can then use to send notifications via Firebase Cloud Messaging (Android) or APNs (iOS).
  */
 export type DevicePushToken =
   | ExplicitlySupportedDevicePushToken
@@ -63,6 +63,7 @@ export interface ExpoPushToken {
   data: string;
 }
 
+// @needsAudit
 export interface ExpoPushTokenOptions {
   /**
    * Endpoint URL override.
@@ -76,7 +77,7 @@ export interface ExpoPushTokenOptions {
    * Request body override.
    */
   type?: string;
-  // @missingDocs
+  // @docsMissing
   deviceId?: string;
   /**
    * Makes sense only on iOS, where there are two push notification services: "sandbox" and "production".

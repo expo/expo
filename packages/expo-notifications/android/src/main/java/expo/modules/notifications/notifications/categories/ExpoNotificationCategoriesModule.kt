@@ -107,7 +107,7 @@ open class ExpoNotificationCategoriesModule : Module() {
           NotificationAction(
             actionMap.identifier,
             actionMap.buttonTitle,
-            actionMap.options.opensAppToForeground,
+            actionMap.options.opensAppToForeground
           )
         )
       }

@@ -5,20 +5,12 @@
 
 import Foundation
 
-/**
- Protocol with a method for sending state change events to JS.
- In production, this will be implemented by the AppController.sharedInstance.
- */
-internal protocol UpdatesStateChangeDelegate: AnyObject {
-  func sendUpdateStateChangeEventToBridge(_ eventType: UpdatesStateEventType, body: [String: Any?])
-}
-
 // MARK: - Enums
 
 /**
  All the possible states the machine can take.
  */
-internal enum UpdatesStateValue: String {
+internal enum UpdatesStateValue: String, CaseIterable {
   case idle
   case checking
   case downloading
@@ -29,7 +21,7 @@ internal enum UpdatesStateValue: String {
  All the possible types of events that can be sent to the machine. Each event
  will cause the machine to transition to a new state.
  */
-internal enum UpdatesStateEventType: String {
+public enum UpdatesStateEventType: String {
   case check
   case checkCompleteUnavailable
   case checkCompleteAvailable
@@ -156,8 +148,8 @@ let iso8601DateFormatter = ISO8601DateFormatter()
 /**
  Structure for a rollback. Only the commitTime is used for now.
  */
-internal struct UpdatesStateContextRollback {
-  let commitTime: Date
+public struct UpdatesStateContextRollback {
+  public let commitTime: Date
 
   var json: [String: Any] {
     return [
@@ -170,18 +162,19 @@ internal struct UpdatesStateContextRollback {
  The state machine context, with information that will be readable from JS.
  */
 public struct UpdatesStateContext {
-  let isUpdateAvailable: Bool
-  let isUpdatePending: Bool
-  let isRollback: Bool
-  let isChecking: Bool
-  let isDownloading: Bool
-  let isRestarting: Bool
-  let latestManifest: [String: Any]?
-  let downloadedManifest: [String: Any]?
-  let rollback: UpdatesStateContextRollback?
-  let checkError: [String: String]?
-  let downloadError: [String: String]?
-  let lastCheckForUpdateTime: Date?
+  public let isUpdateAvailable: Bool
+  public let isUpdatePending: Bool
+  public let isRollback: Bool
+  public let isChecking: Bool
+  public let isDownloading: Bool
+  public let isRestarting: Bool
+  public let latestManifest: [String: Any]?
+  public let downloadedManifest: [String: Any]?
+  public let rollback: UpdatesStateContextRollback?
+  public let checkError: [String: String]?
+  public let downloadError: [String: String]?
+  public let lastCheckForUpdateTime: Date?
+  private let sequenceNumber: Int
 
   private var lastCheckForUpdateTimeDateString: String? {
     guard let lastCheckForUpdateTime = lastCheckForUpdateTime else {
@@ -203,12 +196,13 @@ public struct UpdatesStateContext {
       "checkError": self.checkError,
       "downloadError": self.downloadError,
       "lastCheckForUpdateTimeString": lastCheckForUpdateTimeDateString,
-      "rollback": rollback?.json
+      "rollback": rollback?.json,
+      "sequenceNumber": sequenceNumber
     ] as [String: Any?]
   }
 }
 
-extension UpdatesStateContext {
+public extension UpdatesStateContext {
   init() {
     self.isUpdateAvailable = false
     self.isUpdatePending = false
@@ -222,14 +216,20 @@ extension UpdatesStateContext {
     self.downloadError = nil
     self.lastCheckForUpdateTime = nil
     self.rollback = nil
+    self.sequenceNumber = 0
   }
 
   // struct copy, lets you overwrite specific variables retaining the value of the rest
   // using a closure to set the new values for the copy of the struct
-  func copy(build: (inout Builder) -> Void) -> UpdatesStateContext {
+  func copyAndIncrementSequenceNumber(build: (inout Builder) -> Void) -> UpdatesStateContext {
     var builder = Builder(original: self)
     build(&builder)
-    return builder.toContext()
+    return builder.toContext(newSequenceNumber: self.sequenceNumber + 1)
+  }
+
+  func resetCopyWithIncrementedSequenceNumber() -> UpdatesStateContext {
+    let builder = Builder(original: UpdatesStateContext())
+    return builder.toContext(newSequenceNumber: self.sequenceNumber + 1)
   }
 
   struct Builder {
@@ -261,7 +261,7 @@ extension UpdatesStateContext {
       self.rollback = original.rollback
     }
 
-    fileprivate func toContext() -> UpdatesStateContext {
+    fileprivate func toContext(newSequenceNumber: Int) -> UpdatesStateContext {
       return UpdatesStateContext(
         isUpdateAvailable: isUpdateAvailable,
         isUpdatePending: isUpdatePending,
@@ -274,7 +274,8 @@ extension UpdatesStateContext {
         rollback: rollback,
         checkError: checkError,
         downloadError: downloadError,
-        lastCheckForUpdateTime: lastCheckForUpdateTime
+        lastCheckForUpdateTime: lastCheckForUpdateTime,
+        sequenceNumber: newSequenceNumber
       )
     }
   }
@@ -287,19 +288,49 @@ extension UpdatesStateContext {
  in a production app, instantiated as a property of AppController.
  */
 internal class UpdatesStateMachine {
+  private let eventManager: UpdatesEventManager
+  private let validUpdatesStateValues: Set<UpdatesStateValue>
+
+  required init(eventManager: UpdatesEventManager, validUpdatesStateValues: Set<UpdatesStateValue>) {
+    self.eventManager = eventManager
+    self.validUpdatesStateValues = validUpdatesStateValues
+  }
+
   private let logger = UpdatesLogger()
+
+  private lazy var serialExecutorQueue: StateMachineSerialExecutorQueue = {
+    return StateMachineSerialExecutorQueue(
+      updatesLogger: logger,
+      stateMachineProcedureContext: StateMachineProcedureContext(
+        processStateEventCallback: { event in
+          self.processEvent(event)
+        },
+        getCurrentStateCallback: {
+          return self.state
+        },
+        resetStateCallback: {
+          return self.reset()
+        }
+      )
+    )
+  }()
 
   // MARK: - Public methods and properties
 
   /**
-   In production, this is the AppController instance.
+   Queue a StateMachineProcedure procedure for serial execution.
    */
-  internal weak var changeEventDelegate: (any UpdatesStateChangeDelegate)?
+  func queueExecution(stateMachineProcedure: StateMachineProcedure) {
+    serialExecutorQueue.queueExecution(stateMachineProcedure: stateMachineProcedure)
+  }
 
   /**
    The current state
    */
-  internal var state: UpdatesStateValue = .idle
+  private var state: UpdatesStateValue = .idle
+  internal func getStateForTesting() -> UpdatesStateValue {
+    return state
+  }
 
   /**
    The context
@@ -307,29 +338,33 @@ internal class UpdatesStateMachine {
   internal var context: UpdatesStateContext = UpdatesStateContext()
 
   /**
-   Called after the app restarts (reloadAsync()) to reset the machine to its
-   starting state.
+   Reset the machine to its starting state. Should only be called after the app restarts (reloadAsync()).
    */
-  internal func reset() {
+  private func reset() {
     state = .idle
-    context = UpdatesStateContext()
+    context = context.resetCopyWithIncrementedSequenceNumber()
     logger.info(message: "Updates state is reset, state = \(state), context = \(context)")
-    sendChangeEventToJS()
+    sendContextToJS()
+  }
+  internal func resetForTesting() {
+    reset()
   }
 
   /**
-   Called by AppLoaderTask delegate methods in AppController during the initial
-   background check for updates, and called by checkForUpdateAsync(), fetchUpdateAsync(), and reloadAsync().
+   Transition the state machine forward to a new state.
    */
-  internal func processEvent(_ event: UpdatesStateEvent) {
+  private func processEvent(_ event: UpdatesStateEvent) {
     // Execute state transition
     if transition(event) {
       // Only change context if transition succeeds
       context = reducedContext(context, event)
       logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
-      // Send change event
-      sendChangeEventToJS(event)
+      // Send context to JS
+      sendContextToJS()
     }
+  }
+  internal func processEventForTesting(_ event: UpdatesStateEvent) {
+    processEvent(event)
   }
 
   // MARK: - Private methods
@@ -340,15 +375,16 @@ internal class UpdatesStateMachine {
   private func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: Set<UpdatesStateEventType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
-      // Uncomment the line below to halt execution on invalid state transitions,
-      // very useful for testing
-      /*
       assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
-       */
+      return false
+    }
+    let newStateValue = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
+    if !validUpdatesStateValues.contains(newStateValue) {
+      assertionFailure("UpdatesState: invalid transition requested: state = \(state), event = \(event.type)")
       return false
     }
     // Successful transition
-    state = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
+    state = newStateValue
     return true
   }
 
@@ -366,11 +402,11 @@ internal class UpdatesStateMachine {
 
     switch event.type {
     case .check:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isChecking = true
       }
     case .checkCompleteUnavailable:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isChecking = false
         $0.checkError = nil
         $0.latestManifest = nil
@@ -380,7 +416,7 @@ internal class UpdatesStateMachine {
         $0.rollback = nil
       }
     case .checkCompleteAvailable:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isChecking = false
         $0.checkError = nil
         $0.latestManifest = event.manifest
@@ -389,17 +425,17 @@ internal class UpdatesStateMachine {
         $0.rollback = rollback
       }
     case .checkError:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isChecking = false
         $0.checkError = event.error
         $0.lastCheckForUpdateTime = Date()
       }
     case .download:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = true
       }
     case .downloadComplete:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
         $0.latestManifest = event.manifest ?? context.latestManifest
@@ -408,24 +444,23 @@ internal class UpdatesStateMachine {
         $0.isUpdateAvailable = event.manifest != nil || context.isUpdateAvailable
       }
     case .downloadError:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = event.error
       }
     case .restart:
-      return context.copy {
+      return context.copyAndIncrementSequenceNumber {
         $0.isRestarting = true
       }
     }
   }
 
   /**
-   On each state change, all context properties are sent to JS
+   On each state change, all context properties are sent to JS.
+   The owning controller should also request a re-emit of context to JS upon event emitter observation.
    */
-  private func sendChangeEventToJS(_ event: UpdatesStateEvent? = nil) {
-    changeEventDelegate?.sendUpdateStateChangeEventToBridge(event?.type ?? .restart, body: [
-      "context": context.json
-    ])
+  internal func sendContextToJS() {
+    eventManager.sendStateMachineContextEvent(context: context)
   }
 
   // MARK: - Static definitions of the state machine rules
@@ -435,7 +470,7 @@ internal class UpdatesStateMachine {
    If the machine receives an unexpected event, an assertion failure will occur
    and the app will crash.
    */
-  static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEventType>] = [
+  private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEventType>] = [
     .idle: [.check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
     .downloading: [.downloadComplete, .downloadError],
@@ -446,7 +481,7 @@ internal class UpdatesStateMachine {
    For this state machine, each event has only one destination state that the
    machine will transition to.
    */
-  static let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
+  private static let updatesStateTransitions: [UpdatesStateEventType: UpdatesStateValue] = [
     .check: .checking,
     .checkCompleteAvailable: .idle,
     .checkCompleteUnavailable: .idle,

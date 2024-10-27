@@ -1,22 +1,26 @@
-import { Button } from '@expo/styleguide';
-import { ThumbsDownIcon, ThumbsUpIcon } from '@expo/styleguide-icons';
+import { Button, mergeClasses } from '@expo/styleguide';
+import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
+import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { useState } from 'react';
 
-import { CALLOUT } from '../Text';
-
 import { reportPageVote } from '~/providers/Analytics';
+import { CALLOUT } from '~/ui/components/Text';
 
 export const PageVote = () => {
   const [userVoted, setUserVoted] = useState(false);
+
   return (
-    <div>
+    <div
+      className={mergeClasses(
+        'mb-4 flex items-center min-h-[32px]',
+        userVoted ? 'content-start' : 'content-center',
+        'max-md-gutters:mb-8 max-md-gutters:mx-auto max-md-gutters:justify-center'
+      )}>
       {userVoted ? (
-        <CALLOUT theme="secondary" className="py-1">
-          Thank you for your vote! 💙
-        </CALLOUT>
+        <CALLOUT theme="secondary">Thank you for your vote! 💙</CALLOUT>
       ) : (
         <div className="flex flex-row items-center gap-2 max-md-gutters:flex-col">
-          <CALLOUT theme="secondary" weight="medium" className="px-2">
+          <CALLOUT theme="secondary" weight="medium">
             Was this doc helpful?
           </CALLOUT>
           <div>

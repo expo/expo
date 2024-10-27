@@ -2,19 +2,27 @@
 
 import AVFoundation
 import ExpoModulesCore
+import VisionKit
 
-let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarCodeScanned", "onFacesDetected", "onResponsiveOrientationChanged"]
+let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged"]
 
-public final class CameraViewModule: Module {
+struct ScannerContext {
+  var controller: Any?
+  var delegate: Any?
+}
+
+public final class CameraViewModule: Module, ScannerResultHandler {
+  private var scannerContext: ScannerContext?
+
   public func definition() -> ModuleDefinition {
     Name("ExpoCamera")
 
+    Events("onModernBarcodeScanned")
+
     OnCreate {
       let permissionsManager = self.appContext?.permissions
-
       EXPermissionsMethodsDelegate.register(
         [
-          CameraPermissionRequester(),
           CameraOnlyPermissionRequester(),
           CameraMicrophonePermissionRequester()
         ],
@@ -22,208 +30,199 @@ public final class CameraViewModule: Module {
       )
     }
 
-    Constants([
-      "Type": [
-        "front": CameraType.front.rawValue,
-        "back": CameraType.back.rawValue
-      ],
-      "FlashMode": [
-        "off": CameraFlashMode.off.rawValue,
-        "on": CameraFlashMode.on.rawValue,
-        "auto": CameraFlashMode.auto.rawValue,
-        "torch": CameraFlashMode.torch.rawValue
-      ],
-      "AutoFocus": [
-        "on": CameraAutoFocus.on.rawValue,
-        "off": CameraAutoFocus.off.rawValue
-      ],
-      "WhiteBalance": [
-        "auto": CameraWhiteBalance.auto.rawValue,
-        "sunny": CameraWhiteBalance.sunny.rawValue,
-        "cloudy": CameraWhiteBalance.cloudy.rawValue,
-        "shadow": CameraWhiteBalance.shadow.rawValue,
-        "incandescent": CameraWhiteBalance.incandescent.rawValue,
-        "fluorescent": CameraWhiteBalance.fluorescent.rawValue
-      ],
-      "VideoQuality": [
-        "2160p": VideoQuality.video2160p.rawValue,
-        "1080p": VideoQuality.video1080p.rawValue,
-        "720p": VideoQuality.video720p.rawValue,
-        "480p": VideoQuality.video4x3.rawValue,
-        "4:3": VideoQuality.video4x3.rawValue
-      ],
-      "VideoStabilization": [
-        "off": CameraVideoStabilizationMode.off.rawValue,
-        "standard": CameraVideoStabilizationMode.standard.rawValue,
-        "cinematic": CameraVideoStabilizationMode.cinematic.rawValue,
-        "auto": CameraVideoStabilizationMode.auto.rawValue
-      ],
-      "VideoCodec": [
-        "H264": CameraVideoCodec.h264.rawValue,
-        "HEVC": CameraVideoCodec.hevc.rawValue,
-        "JPEG": CameraVideoCodec.jpeg.rawValue,
-        "AppleProRes422": CameraVideoCodec.appleProRes422.rawValue,
-        "AppleProRes4444": CameraVideoCodec.appleProRes4444.rawValue
-      ]
-    ])
+    Property("isModernBarcodeScannerAvailable") { () -> Bool in
+      if #available(iOS 16.0, *) {
+        return true
+      }
+      return false
+    }
 
+    AsyncFunction("scanFromURLAsync") { (url: URL, _: [BarcodeType], promise: Promise) in
+      guard let imageLoader = appContext?.imageLoader else {
+        throw ImageLoaderNotFound()
+      }
+
+      imageLoader.loadImage(for: url) { error, image in
+        if error != nil {
+          promise.reject(FailedToLoadImage())
+          return
+        }
+
+        guard let cgImage = image?.cgImage else {
+          promise.reject(FailedToLoadImage())
+          return
+        }
+
+        guard let detector = CIDetector(
+          ofType: CIDetectorTypeQRCode,
+          context: nil,
+          options: [CIDetectorAccuracy: CIDetectorAccuracyHigh]
+        ) else {
+          promise.reject(InitScannerFailed())
+          return
+        }
+
+        let ciImage = CIImage(cgImage: cgImage)
+        let features = detector.features(in: ciImage)
+        promise.resolve(BarcodeUtils.getResultFrom(features))
+      }
+    }
+
+    // swiftlint:disable:next closure_body_length
     View(CameraView.self) {
       Events(cameraEvents)
 
-      Prop("type") { (view, type: CameraType) in
-        if view.presetCamera.rawValue != type.rawValue {
+      Prop("facing") { (view, type: CameraType?) in
+        if let type, view.presetCamera != type.toPosition() {
           view.presetCamera = type.toPosition()
         }
       }
 
-      Prop("flashMode") { (view, flashMode: CameraFlashMode) in
-        if view.flashMode.rawValue != flashMode.rawValue {
+      Prop("flashMode") { (view, flashMode: FlashMode?) in
+        if let flashMode, view.flashMode != flashMode {
           view.flashMode = flashMode
         }
       }
 
-      Prop("faceDetectorSettings") { (view, settings: [String: Any]) in
-        view.updateFaceDetectorSettings(settings: settings)
+      Prop("enableTorch") { (view, enabled: Bool?) in
+        view.torchEnabled = enabled ?? false
       }
 
-      Prop("barCodeScannerSettings") { (view, settings: [String: Any]) in
-        view.setBarCodeScannerSettings(settings: settings)
-      }
-
-      Prop("autoFocus") { (view, autoFocus: CameraAutoFocus) in
-        if view.autoFocus.rawValue != autoFocus.rawValue {
-          view.autoFocus = autoFocus.toAvAutoFocus()
+      Prop("pictureSize") { (view, pictureSize: PictureSize?) in
+        if let pictureSize, view.pictureSize != pictureSize {
+          view.pictureSize = pictureSize
         }
       }
 
-      Prop("focusDepth") { (view, focusDepth: Float) in
-        if fabsf(view.focusDepth - focusDepth) > Float.ulpOfOne {
-          view.focusDepth = focusDepth
-        }
-      }
-
-      Prop("zoom") { (view, zoom: Double) in
-        if fabs(view.zoom - zoom) > Double.ulpOfOne {
+      Prop("zoom") { (view, zoom: Double?) in
+        if let zoom, fabs(view.zoom - zoom) > Double.ulpOfOne {
           view.zoom = zoom
         }
       }
 
-      Prop("whiteBalance") { (view, whiteBalance: CameraWhiteBalance) in
-        if view.whiteBalance.rawValue != whiteBalance.rawValue {
-          view.whiteBalance = whiteBalance
+      Prop("mode") { (view, mode: CameraMode?) in
+        if let mode, view.mode != mode {
+          view.mode = mode
         }
       }
 
-      Prop("pictureSize") { (view, pictureSize: String) in
-        if let size = pictureSizesDict[pictureSize] {
-          view.pictureSize = size
+      Prop("barcodeScannerEnabled") { (view, scanBarcodes: Bool?) in
+        if let scanBarcodes, view.isScanningBarcodes != scanBarcodes {
+          view.isScanningBarcodes = scanBarcodes
         }
       }
 
-      Prop("faceDetectorEnabled") { (view, detectFaces: Bool?) in
-        if view.isDetectingFaces != detectFaces {
-          view.isDetectingFaces = detectFaces ?? false
+      Prop("barcodeScannerSettings") { (view, settings: BarcodeSettings?) in
+        if let settings {
+          view.setBarcodeScannerSettings(settings: settings)
         }
       }
 
-      Prop("barCodeScannerEnabled") { (view, scanBarCodes: Bool?) in
-        if view.isScanningBarCodes != scanBarCodes {
-          view.isScanningBarCodes = scanBarCodes ?? false
+      Prop("mute") { (view, muted: Bool?) in
+        view.isMuted = muted ?? false
+      }
+
+      Prop("animateShutter") { (view, animate: Bool?) in
+        view.animateShutter = animate ?? true
+      }
+
+      Prop("videoQuality") { (view, quality: VideoQuality?) in
+        if let quality, view.videoQuality != quality {
+          view.videoQuality = quality
         }
       }
 
-      Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
-        if view.responsiveWhenOrientationLocked != responsiveOrientation {
+      Prop("autoFocus") { (view, focusMode: FocusMode?) in
+        view.autoFocus = focusMode?.toAVCaptureFocusMode() ?? .continuousAutoFocus
+      }
+
+      Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool?) in
+        if let responsiveOrientation, view.responsiveWhenOrientationLocked != responsiveOrientation {
           view.responsiveWhenOrientationLocked = responsiveOrientation
         }
       }
-    }
 
-    AsyncFunction("takePicture") { (options: TakePictureOptions, viewTag: Int, promise: Promise) in
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
+      Prop("mirror") { (view, mirror: Bool?) in
+        if let mirror {
+          view.mirror = mirror
+          return
+        }
+        view.mirror = false
       }
-      #if targetEnvironment(simulator)
-      try takePictureForSimulator(self.appContext, view, options, promise)
-      #else // simulator
-      view.takePicture(options: options, promise: promise)
-      #endif // not simulator
-    }
-    .runOnQueue(.main)
 
-    AsyncFunction("record") { (options: CameraRecordingOptions, viewTag: Int, promise: Promise) in
-      #if targetEnvironment(simulator)
-      throw Exceptions.SimulatorNotSupported()
-      #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
+      Prop("active") { (view, active: Bool?) in
+        if let active {
+          view.active = active
+          return
+        }
+        view.active = true
       }
-      view.record(options: options, promise: promise)
-      #endif
-    }
-    .runOnQueue(.main)
 
-    AsyncFunction("stopRecording") { (viewTag: Int) in
-      #if targetEnvironment(simulator)
-      throw Exceptions.SimulatorNotSupported()
-      #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
+      OnViewDidUpdateProps { view in
+        Task {
+          await view.initCamera()
+        }
       }
-      view.stopRecording()
-      #endif
-    }
-    .runOnQueue(.main)
 
-    AsyncFunction("resumePreview") { (viewTag: Int) in
-      #if targetEnvironment(simulator)
-      throw Exceptions.SimulatorNotSupported()
-      #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
+      AsyncFunction("resumePreview") { view in
+        view.resumePreview()
       }
-      view.resumePreview()
-      #endif
-    }
-    .runOnQueue(.main)
 
-    AsyncFunction("pausePreview") { (viewTag: Int) in
-      #if targetEnvironment(simulator)
-      throw Exceptions.SimulatorNotSupported()
-      #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: CameraView.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: CameraView.self))
+      AsyncFunction("pausePreview") { view in
+        view.pausePreview()
       }
-      view.pausePreview()
-      #endif
-    }
-    .runOnQueue(.main)
 
-    AsyncFunction("getAvailablePictureSizes") { (_: String?, _: Int) in
-      // Argument types must be compatible with Android which receives the ratio and view tag.
-      return pictureSizesDict.keys
+      AsyncFunction("getAvailablePictureSizes") { (_: String?) in
+        return PictureSize.allCases.map {
+          $0.rawValue
+        }
+      }
+
+      AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
+        #if targetEnvironment(simulator) // simulator
+        try takePictureForSimulator(self.appContext, view, options, promise)
+        #else // not simulator
+        Task {
+          await view.takePicture(options: options, promise: promise)
+        }
+        #endif
+      }
+
+      AsyncFunction("record") { (view, options: CameraRecordingOptions, promise: Promise) in
+        #if targetEnvironment(simulator)
+        throw Exceptions.SimulatorNotSupported()
+        #else
+        Task {
+          await view.record(options: options, promise: promise)
+        }
+        #endif
+      }
+
+      AsyncFunction("stopRecording") { view in
+        #if targetEnvironment(simulator)
+        throw Exceptions.SimulatorNotSupported()
+        #else
+        view.stopRecording()
+        #endif
+      }
     }
 
-    AsyncFunction("getAvailableVideoCodecsAsync") { () -> [String] in
-      return getAvailableVideoCodecs()
+    AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in
+      if #available(iOS 16.0, *) {
+        await MainActor.run {
+          let delegate = VisionScannerDelegate(handler: self)
+          scannerContext = ScannerContext(delegate: delegate)
+          launchScanner(with: options)
+        }
+      }
     }
 
-    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
-        self.appContext?.permissions,
-        withRequester: CameraPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
-    }
-
-    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
-      EXPermissionsMethodsDelegate.askForPermission(
-        withPermissionsManager: self.appContext?.permissions,
-        withRequester: CameraPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+    AsyncFunction("dismissScanner") {
+      if #available(iOS 16.0, *) {
+        await MainActor.run {
+          dismissScanner()
+        }
+      }
     }
 
     AsyncFunction("getCameraPermissionsAsync") { (promise: Promise) in
@@ -261,89 +260,71 @@ public final class CameraViewModule: Module {
         reject: promise.legacyRejecter
       )
     }
+
+    AsyncFunction("getAvailableVideoCodecsAsync") { () -> [String] in
+      return getAvailableVideoCodecs()
+    }
+  }
+
+  @available(iOS 16.0, *)
+  @MainActor
+  private func launchScanner(with options: VisionScannerOptions?) {
+    let symbologies = options?.toSymbology() ?? [.qr]
+    let controller = DataScannerViewController(
+      recognizedDataTypes: [.barcode(symbologies: symbologies)],
+      isPinchToZoomEnabled: options?.isPinchToZoomEnabled ?? true,
+      isGuidanceEnabled: options?.isGuidanceEnabled ?? true,
+      isHighlightingEnabled: options?.isHighlightingEnabled ?? false
+    )
+
+    scannerContext?.controller = controller
+    if let delegate = scannerContext?.delegate as? VisionScannerDelegate {
+      controller.delegate = delegate
+    }
+
+    appContext?.utilities?.currentViewController()?.present(controller, animated: true) {
+      try? controller.startScanning()
+    }
+  }
+
+  @available(iOS 16.0, *)
+  @MainActor
+  private func dismissScanner() {
+    guard let controller = scannerContext?.controller as? DataScannerViewController else {
+      return
+    }
+    controller.stopScanning()
+    controller.dismiss(animated: true)
+  }
+
+  func onItemScanned(result: [String: Any]) {
+    sendEvent("onModernBarcodeScanned", result)
+  }
+
+  private func getAvailableVideoCodecs() -> [String] {
+    let session = AVCaptureSession()
+
+    session.beginConfiguration()
+
+    guard let captureDevice = ExpoCameraUtils.device(
+      with: AVMediaType.video,
+      preferring: AVCaptureDevice.Position.front) else {
+      return []
+    }
+    guard let deviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
+      return []
+    }
+    if session.canAddInput(deviceInput) {
+      session.addInput(deviceInput)
+    }
+
+    session.commitConfiguration()
+
+    let movieFileOutput = AVCaptureMovieFileOutput()
+
+    if session.canAddOutput(movieFileOutput) {
+      session.addOutput(movieFileOutput)
+    }
+    return movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
   }
 }
-
-private func takePictureForSimulator(
-  _ appContext: AppContext?,
-  _ view: CameraView,
-  _ options: TakePictureOptions,
-  _ promise: Promise
-) throws {
-  if options.fastMode {
-    promise.resolve()
-  }
-  let result = try generatePictureForSimulator(appContext: appContext, options: options)
-
-  if options.fastMode {
-    view.onPictureSaved([
-      "data": result,
-      "id": options.id
-    ])
-  } else {
-    promise.resolve(result)
-  }
-}
-
-private func generatePictureForSimulator(
-  appContext: AppContext?,
-  options: TakePictureOptions
-) throws -> [String: Any?] {
-  guard let fileSystem = appContext?.fileSystem else {
-    throw Exceptions.FileSystemModuleNotFound()
-  }
-  let path = fileSystem.generatePath(
-    inDirectory: fileSystem.cachesDirectory.appending("/Camera"),
-    withExtension: ".jpg"
-  )
-  let generatedPhoto = ExpoCameraUtils.generatePhoto(of: CGSize(width: 200, height: 200))
-  guard let photoData = generatedPhoto.jpegData(compressionQuality: options.quality) else {
-    throw CameraInvalidPhotoData()
-  }
-
-  return [
-    "uri": ExpoCameraUtils.write(data: photoData, to: path),
-    "width": generatedPhoto.size.width,
-    "height": generatedPhoto.size.height,
-    "base64": options.base64 ? photoData.base64EncodedString() : nil
-  ]
-}
-
-private func getAvailableVideoCodecs() -> [String] {
-  let session = AVCaptureSession()
-
-  session.beginConfiguration()
-
-  guard let captureDevice = ExpoCameraUtils.device(
-    with: AVMediaType.video,
-    preferring: AVCaptureDevice.Position.front) else {
-    return []
-  }
-  guard let deviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
-    return []
-  }
-  if session.canAddInput(deviceInput) {
-    session.addInput(deviceInput)
-  }
-
-  session.commitConfiguration()
-
-  let movieFileOutput = AVCaptureMovieFileOutput()
-
-  if session.canAddOutput(movieFileOutput) {
-    session.addOutput(movieFileOutput)
-  }
-  return movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
-}
-
-private let pictureSizesDict = [
-  "3840x2160": AVCaptureSession.Preset.hd4K3840x2160,
-  "1920x1080": AVCaptureSession.Preset.hd1920x1080,
-  "1280x720": AVCaptureSession.Preset.hd1280x720,
-  "640x480": AVCaptureSession.Preset.vga640x480,
-  "352x288": AVCaptureSession.Preset.cif352x288,
-  "Photo": AVCaptureSession.Preset.photo,
-  "High": AVCaptureSession.Preset.high,
-  "Medium": AVCaptureSession.Preset.medium,
-  "Low": AVCaptureSession.Preset.low
-]

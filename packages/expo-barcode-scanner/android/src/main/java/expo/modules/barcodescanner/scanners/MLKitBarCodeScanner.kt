@@ -46,8 +46,9 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
         return@runBlocking results
       }
       for (barcode in result) {
+        val raw = barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
         val value = if (barcode.valueType == Barcode.TYPE_CONTACT_INFO) {
-          barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
+          raw
         } else {
           barcode.displayValue
         }
@@ -58,7 +59,7 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
           }
         }
 
-        results.add(BarCodeScannerResult(barcode.format, value, cornerPoints, inputImage.height, inputImage.width))
+        results.add(BarCodeScannerResult(barcode.format, value, raw, cornerPoints, inputImage.height, inputImage.width))
       }
       return@runBlocking results
     } catch (e: Exception) {

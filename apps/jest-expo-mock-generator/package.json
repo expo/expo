@@ -3,16 +3,12 @@
   "version": "0.0.0",
   "author": "Expo",
   "private": true,
-  "main": "__generated__/AppEntry.js",
-  "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall"
-  },
+  "main": "index.js",
   "dependencies": {
     "@expo/mux": "^1.0.7",
-    "expo": "~50.0.0-alpha.0",
-    "expo-clipboard": "~4.8.0",
-    "react": "18.2.0",
-    "react-native": "0.73.0-rc.4",
-    "uuid": "^3.4.0"
+    "expo": "~52.0.0-preview.0",
+    "expo-clipboard": "~7.0.0",
+    "react": "18.3.1",
+    "react-native": "0.76.0-rc.6"
   }
 }

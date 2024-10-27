@@ -14,18 +14,20 @@ export type Bundle = {
     modules: ModuleMap;
     post: string;
     pre: string;
+    paths: Record<string, Record<string, string>>;
 };
 export type ExpoSerializerOptions = SerializerOptions & {
     serializerOptions?: {
         baseUrl?: string;
         skipWrapping?: boolean;
+        usedExports?: boolean;
+        splitChunks?: boolean;
         output?: string;
-        includeBytecode?: boolean;
         includeSourceMaps?: boolean;
     };
+    debugId?: string;
 };
 export declare function getPlatformOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'sourceUrl'>): string | null;
-export declare function getSplitChunksOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<SerializerOptions, 'includeAsyncPaths' | 'sourceUrl'>): boolean;
 export declare function getBaseUrlOption(graph: Pick<ReadOnlyGraph, 'transformOptions'>, options: Pick<ExpoSerializerOptions, 'serializerOptions'>): string;
 export declare function baseJSBundle(entryPoint: string, preModules: readonly Module[], graph: Pick<ReadOnlyGraph, 'dependencies' | 'transformOptions'>, options: ExpoSerializerOptions): Bundle;
 export declare function baseJSBundleWithDependencies(entryPoint: string, preModules: readonly Module[], dependencies: Module<MixedOutput>[], options: ExpoSerializerOptions & {
@@ -34,4 +36,5 @@ export declare function baseJSBundleWithDependencies(entryPoint: string, preModu
     splitChunks: boolean;
     skipWrapping: boolean;
     computedAsyncModulePaths: Record<string, string> | null;
+    debugId?: string;
 }): Bundle;

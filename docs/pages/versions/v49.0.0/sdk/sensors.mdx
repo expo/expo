@@ -6,13 +6,15 @@ packageName: 'expo-sensors'
 iconUrl: '/static/images/packages/expo-sensors.png'
 ---
 
+import { Speedometer04Icon } from '@expo/styleguide-icons/outline/Speedometer04Icon';
+
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 
-`expo-sensors` provides various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
+`expo-sensors` provide various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -41,9 +43,9 @@ import {
 
 ### Android
 
-Starting in Android 12 (API level 31), the system has a 200ms limit for each sensor updates.
+Starting in Android 12 (API level 31), the system has a 200Hz limit for each sensor updates.
 
-If you need an update interval of less than 200ms, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+If you need an update interval of less than 200Hz, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
 
 <AndroidPermissions permissions={['HIGH_SAMPLING_RATE_SENSORS']} />
 
@@ -61,34 +63,41 @@ For more information, please see the documentation for the sensor you are intere
   title="Accelerometer"
   href="accelerometer"
   description="Measures device acceleration on all platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="Barometer"
   href="barometer"
   description="Measures pressure on Android and iOS platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="DeviceMotion"
   href="devicemotion"
   description="Measures device motion on all platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="Gyroscope"
   href="gyroscope"
   description="Measures device rotation on all platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="Magnetometer"
   href="magnetometer"
   description="Measures magnetic fields on Android and iOS platforms."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="LightSensor"
   href="light-sensor"
   description="Measures ambient light on Android platform."
+  Icon={Speedometer04Icon}
 />
 <BoxLink
   title="Pedometer"
   href="pedometer"
   description="Measures steps count on Android and iOS platforms."
+  Icon={Speedometer04Icon}
 />

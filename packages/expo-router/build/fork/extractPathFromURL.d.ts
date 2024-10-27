@@ -1,6 +1,7 @@
-export declare function extractExpoPathFromURL(url?: string): string;
-export declare function adjustPathname(url: {
-    hostname?: string | null;
+export declare function parsePathAndParamsFromExpoGoLink(url: string): {
     pathname: string;
-}): string;
+    queryString: string;
+};
+export declare function parsePathFromExpoGoLink(url: string): string;
+export declare function extractExpoPathFromURL(_prefixes: string[], url?: string): string;
 //# sourceMappingURL=extractPathFromURL.d.ts.map

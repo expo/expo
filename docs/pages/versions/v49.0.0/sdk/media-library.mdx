@@ -6,19 +6,18 @@ packageName: 'expo-media-library'
 iconUrl: '/static/images/packages/expo-media-library.png'
 ---
 
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
-import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
+} from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-media-library` provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
-
-> **warning** If your Android app created an album using SDK &lt;= 40 and you want to add more assets to this album, you may need to migrate it to the new scoped directory. Otherwise, your app won't have access to the old album directory and `expo-media-library` won't be able to add new assets to it. However, all other functions will work without problems. You only need to migrate the old album if you want to add something to it. For more information, check out [Android R changes](https://expo.fyi/android-r) and [`MediaLibrary.migrateAlbumIfNeededAsync`](#medialibrarymigratealbumifneededasyncalbum).
 
 <PlatformsSection android emulator ios simulator />
 
@@ -83,6 +82,92 @@ Learn how to configure the native projects in the [installation instructions in 
   ]}
 />
 
+## Usage
+
+<SnackInline label='Fetching albums and displaying assets' dependencies={['expo-media-library']}>
+
+{/* prettier-ignore */}
+```jsx
+import { useState, useEffect } from 'react';
+import { Button, Text, SafeAreaView, ScrollView, StyleSheet, Image, View, Platform } from 'react-native';
+import * as MediaLibrary from 'expo-media-library';
+
+export default function App() {
+  const [albums, setAlbums] = useState(null);
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+
+  async function getAlbums() {
+    if (permissionResponse.status !== 'granted') {
+      await requestPermission();
+    }
+    const fetchedAlbums = await MediaLibrary.getAlbumsAsync({
+      includeSmartAlbums: true,
+    });
+    setAlbums(fetchedAlbums);
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Button onPress={getAlbums} title="Get albums" />
+      <ScrollView>
+        {albums && albums.map((album) => <AlbumEntry album={album} />)}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+function AlbumEntry({ album }) {
+  const [assets, setAssets] = useState([]);
+
+  useEffect(() => {
+    async function getAlbumAssets() {
+      const albumAssets = await MediaLibrary.getAssetsAsync({ album });
+      setAssets(albumAssets.assets);
+    }
+    getAlbumAssets();
+  }, [album]);
+
+  return (
+    <View key={album.id} style={styles.albumContainer}>
+      <Text>
+        {album.title} - {album.assetCount ?? 'no'} assets
+      </Text>
+      <View style={styles.albumAssetsContainer}>
+        {assets && assets.map((asset) => (
+          <Image source={{ uri: asset.uri }} width={50} height={50} />
+        ))}
+      </View>
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    gap: 8,
+    justifyContent: 'center',
+    ...Platform.select({
+      android: {
+        paddingTop: 40,
+      },
+    }),
+  },
+  albumContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 12,
+    gap: 4,
+  },
+  albumAssetsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+});
+/* @end */
+```
+
+</SnackInline>
+
 ## API
 
 ```js
@@ -95,7 +180,7 @@ import * as MediaLibrary from 'expo-media-library';
 
 ### Android
 
-The following permissions are added automatically through this library's `AndroidManifest.xml`.
+The following permissions are added automatically through this library's **AndroidManifest.xml**:
 
 <AndroidPermissions permissions={['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']} />
 

@@ -16,7 +16,6 @@ import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.JavaScriptContextProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -25,11 +24,9 @@ import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
-import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
-import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
@@ -38,11 +35,8 @@ import expo.modules.kotlin.events.KEventEmitterWrapper
 import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.jni.JNIDeallocator
-import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
-import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -56,26 +50,16 @@ import java.lang.ref.WeakReference
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
-  private val reactContextHolder: WeakReference<ReactApplicationContext>
+  reactContextHolder: WeakReference<ReactApplicationContext>
 ) : CurrentActivityProvider {
-  val registry = ModuleRegistry(WeakReference(this))
+
+  // The main context used in the app.
+  // Modules attached to this context will be available on the main js context.
+  val hostingRuntimeContext = RuntimeContext(this, reactContextHolder)
+
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
-  // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
-  internal lateinit var jsiInterop: JSIInteropModuleRegistry
-
-  /**
-   * The core module that defines the `expo` object in the global scope of the JS runtime.
-   *
-   * Note: in current implementation this module won't receive any events.
-   */
-  internal val coreModule = run {
-    val module = CoreModule()
-    module._appContext = this
-    ModuleHolder(module)
-  }
-
-  internal val sharedObjectRegistry = SharedObjectRegistry()
+  private var hostWasDestroyed = false
 
   private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
     .apply { start() }
@@ -106,7 +90,8 @@ class AppContext(
       CoroutineName("expo.modules.MainQueue")
   )
 
-  val jniDeallocator: JNIDeallocator = JNIDeallocator()
+  val registry
+    get() = hostingRuntimeContext.registry
 
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
@@ -121,42 +106,26 @@ class AppContext(
       addActivityEventListener(reactLifecycleDelegate)
 
       // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
-      // `AppContext` during their initialisation (or during `OnCreate` method), so we need to ensure all `AppContext`'s
+      // `AppContext` during their initialisation, so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
-      registry.register(ErrorManagerModule())
-      registry.register(NativeModulesProxyModule())
-      registry.register(modulesProvider)
+      hostingRuntimeContext.registry.register(ErrorManagerModule())
+      hostingRuntimeContext.registry.register(NativeModulesProxyModule())
+      hostingRuntimeContext.registry.register(modulesProvider)
 
       logger.info("✅ AppContext was initialized")
     }
+  }
+
+  fun onCreate() = trace("AppContext.onCreate") {
+    hostingRuntimeContext.registry.postOnCreate()
   }
 
   /**
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
-  fun installJSIInterop() = synchronized(this) {
-    trace("AppContext.installJSIInterop") {
-      try {
-        jsiInterop = JSIInteropModuleRegistry(this)
-        val reactContext = reactContextHolder.get() ?: return@trace
-        val jsContextProvider = legacyModule<JavaScriptContextProvider>() ?: return@trace
-        val jsContextHolder = jsContextProvider.javaScriptContextRef
-        val catalystInstance = reactContext.catalystInstance ?: return@trace
-        jsContextHolder
-          .takeIf { it != 0L }
-          ?.let {
-            jsiInterop.installJSI(
-              it,
-              jniDeallocator,
-              jsContextProvider.jsCallInvokerHolder
-            )
-            logger.info("✅ JSI interop was installed")
-          }
-      } catch (e: Throwable) {
-        logger.error("❌ Cannot install JSI interop: $e", e)
-      }
-    }
+  fun installJSIInterop() {
+    hostingRuntimeContext.installJSIContext()
   }
 
   /**
@@ -233,12 +202,6 @@ class AppContext(
     get() = legacyModule()
 
   /**
-   * Provides access to the sensor manager from the legacy module registry
-   */
-  val sensor: SensorServiceInterface?
-    get() = legacyModule()
-
-  /**
    * Provides access to the task manager from the legacy module registry
    */
   val taskManager: TaskManagerInterface?
@@ -254,13 +217,13 @@ class AppContext(
    * Provides access to the react application context
    */
   val reactContext: Context?
-    get() = reactContextHolder.get()
+    get() = hostingRuntimeContext.reactContext
 
   /**
    * @return true if there is an non-null, alive react native instance
    */
   val hasActiveReactInstance: Boolean
-    get() = reactContextHolder.get()?.hasActiveReactInstance() ?: false
+    get() = hostingRuntimeContext.reactContext?.hasActiveReactInstance() ?: false
 
   /**
    * Provides access to the event emitter
@@ -269,11 +232,11 @@ class AppContext(
     val legacyEventEmitter = legacyModule<expo.modules.core.interfaces.services.EventEmitter>()
       ?: return null
     return KModuleEventEmitterWrapper(
-      requireNotNull(registry.getModuleHolder(module)) {
+      requireNotNull(hostingRuntimeContext.registry.getModuleHolder(module)) {
         "Cannot create an event emitter for the module that isn't present in the module registry."
       },
       legacyEventEmitter,
-      reactContextHolder
+      hostingRuntimeContext.reactContextHolder
     )
   }
 
@@ -281,39 +244,47 @@ class AppContext(
     get() {
       val legacyEventEmitter = legacyModule<expo.modules.core.interfaces.services.EventEmitter>()
         ?: return null
-      return KEventEmitterWrapper(legacyEventEmitter, reactContextHolder)
+      return KEventEmitterWrapper(legacyEventEmitter, hostingRuntimeContext.reactContextHolder)
     }
 
   val errorManager: ErrorManagerModule?
-    get() = registry.getModule()
+    get() = hostingRuntimeContext.registry.getModule()
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {
-    reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
-    registry.post(EventName.MODULE_DESTROY)
-    registry.cleanUp()
-    coreModule.module._appContext = null
+    hostingRuntimeContext.reactContext?.removeLifecycleEventListener(reactLifecycleDelegate)
+    hostingRuntimeContext.registry.post(EventName.MODULE_DESTROY)
+    hostingRuntimeContext.registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
-    if (::jsiInterop.isInitialized) {
-      jsiInterop.wasDeallocated()
-    }
-    jniDeallocator.deallocate()
+    hostingRuntimeContext.deallocate()
     logger.info("✅ AppContext was destroyed")
   }
 
   internal fun onHostResume() {
-    val activity = currentActivity
+    // If the current activity is null, it means that the current React context was destroyed.
+    // We can just return here.
+    val activity = currentActivity ?: return
     check(activity is AppCompatActivity) {
       "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
     }
 
+    // We need to re-register activity contracts when reusing AppContext with new Activity after host destruction.
+    if (hostWasDestroyed) {
+      hostWasDestroyed = false
+      hostingRuntimeContext.registry.registerActivityContracts()
+    }
+
     activityResultsManager.onHostResume(activity)
-    registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
+    hostingRuntimeContext.registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
   internal fun onHostPause() {
-    registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
+    hostingRuntimeContext.registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
+  }
+
+  internal fun onUserLeaveHint() {
+    hostingRuntimeContext.registry.post(EventName.ON_USER_LEAVES_ACTIVITY)
   }
 
   internal fun onHostDestroy() {
@@ -324,12 +295,15 @@ class AppContext(
 
       activityResultsManager.onHostDestroy(it)
     }
-    registry.post(EventName.ACTIVITY_DESTROYS)
+    hostingRuntimeContext.registry.post(EventName.ACTIVITY_DESTROYS)
+    // The host (Activity) was destroyed, but it doesn't mean that modules will be destroyed too.
+    // So we save that information, and we will re-register activity contracts when the host will be resumed with new Activity.
+    hostWasDestroyed = true
   }
 
   internal fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
-    activityResultsManager.onActivityResult(activity, requestCode, resultCode, data)
-    registry.post(
+    activityResultsManager.onActivityResult(requestCode, resultCode, data)
+    hostingRuntimeContext.registry.post(
       EventName.ON_ACTIVITY_RESULT,
       activity,
       OnActivityResultPayload(
@@ -341,7 +315,7 @@ class AppContext(
   }
 
   internal fun onNewIntent(intent: Intent?) {
-    registry.post(
+    hostingRuntimeContext.registry.post(
       EventName.ON_NEW_INTENT,
       intent
     )
@@ -350,12 +324,12 @@ class AppContext(
   @Suppress("UNCHECKED_CAST")
   @UiThread
   fun <T : View> findView(viewTag: Int): T? {
-    val reactContext = reactContextHolder.get() ?: return null
+    val reactContext = hostingRuntimeContext.reactContext ?: return null
     return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
   internal fun dispatchOnMainUsingUIManager(block: () -> Unit) {
-    val reactContext = reactContextHolder.get() ?: throw Exceptions.ReactContextLost()
+    val reactContext = hostingRuntimeContext.reactContext ?: throw Exceptions.ReactContextLost()
     val uiManager = UIManagerHelper.getUIManagerForReactTag(
       reactContext,
       UIManagerType.DEFAULT
@@ -374,7 +348,7 @@ class AppContext(
    * Runs a code block on the JavaScript thread.
    */
   fun executeOnJavaScriptThread(runnable: Runnable) {
-    reactContextHolder.get()?.runOnJSQueueThread(runnable)
+    hostingRuntimeContext.reactContext?.runOnJSQueueThread(runnable)
   }
 
 // region CurrentActivityProvider
@@ -382,6 +356,14 @@ class AppContext(
   override val currentActivity: Activity?
     get() {
       return activityProvider?.currentActivity
+        ?: (reactContext as? ReactApplicationContext)?.currentActivity
+    }
+
+  val throwingActivity: Activity
+    get() {
+      val current = activityProvider?.currentActivity
+        ?: (reactContext as? ReactApplicationContext)?.currentActivity
+      return current ?: throw Exceptions.MissingActivity()
     }
 
 // endregion

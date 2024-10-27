@@ -1,6 +1,5 @@
 import { getConfig } from '@expo/config';
 
-import { asMock } from '../../__tests__/asMock';
 import { resolveOptionsAsync } from '../resolveOptions';
 
 jest.mock('@expo/config', () => ({
@@ -10,6 +9,7 @@ jest.mock('@expo/config', () => ({
       sdkVersion: '45.0.0',
       name: 'my-app',
       slug: 'my-app',
+      platforms: ['ios', 'android'],
     },
   })),
 }));
@@ -22,8 +22,12 @@ describe(resolveOptionsAsync, () => {
   });
 
   it(`asserts not-configured platform`, async () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      // @ts-expect-error
+      exp: { web: { bundler: 'webpack' }, platforms: ['ios', 'android', 'web'] },
+    });
     await expect(resolveOptionsAsync('/', { '--platform': ['web'] })).rejects.toThrow(
-      /^Platform "web" is not configured to use the Metro bundler in the project Expo config\./
+      /^Platform "web" is not configured to use the Metro bundler in the project Expo config,/
     );
   });
 
@@ -65,10 +69,12 @@ describe(resolveOptionsAsync, () => {
     ).resolves.toEqual({
       clear: true,
       dev: true,
+      bytecode: true,
       minify: true,
       dumpAssetmap: true,
       sourceMaps: true,
       maxWorkers: 2,
+      skipSSG: false,
       outputDir: 'foobar',
       platforms: ['android'],
     });
@@ -78,18 +84,20 @@ describe(resolveOptionsAsync, () => {
     await expect(resolveOptionsAsync('/', {})).resolves.toEqual({
       clear: false,
       dev: false,
+      bytecode: true,
       minify: true,
       dumpAssetmap: false,
       sourceMaps: false,
       maxWorkers: undefined,
+      skipSSG: false,
       outputDir: 'dist',
       platforms: ['ios', 'android'],
     });
   });
   it(`parses default options with web enabled`, async () => {
-    asMock(getConfig).mockReturnValueOnce({
+    jest.mocked(getConfig).mockReturnValueOnce({
       // @ts-expect-error
-      exp: { web: { bundler: 'metro' } },
+      exp: { web: { bundler: 'metro' }, platforms: ['ios', 'android', 'web'] },
     });
     await expect(resolveOptionsAsync('/', {})).resolves.toEqual(
       expect.objectContaining({

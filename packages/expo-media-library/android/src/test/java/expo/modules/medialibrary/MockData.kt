@@ -36,7 +36,7 @@ internal data class MockAsset(
  */
 internal data class MockAlbum(
   val id: String,
-  val name: String,
+  val name: String
 ) {
   fun toColumnArray() = arrayOf(id, name)
 }

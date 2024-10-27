@@ -4,7 +4,6 @@ exports.isBinaryType = exports.convertRequest = exports.createHeaders = exports.
 const node_1 = require("@remix-run/node");
 const abort_controller_1 = require("abort-controller");
 const __1 = require("..");
-const environment_1 = require("../environment");
 function createRequestHandler({ build }) {
     const handleRequest = (0, __1.createRequestHandler)(build);
     return async (event) => {
@@ -25,17 +24,20 @@ async function respond(res) {
             body = await res.text();
         }
     }
-    const multiValueHeaders = res.headers.raw();
+    const headers = {};
+    for (const [key, value] of res.headers.entries()) {
+        headers[key] = value;
+    }
     return {
         statusCode: res.status,
-        multiValueHeaders,
+        headers,
         body,
         isBase64Encoded,
     };
 }
 exports.respond = respond;
 function createHeaders(requestHeaders) {
-    const headers = new node_1.Headers();
+    const headers = new Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
         if (values) {
             for (const value of values) {
@@ -94,8 +96,9 @@ function convertRequest(event) {
                 ? Buffer.from(event.body, 'base64')
                 : Buffer.from(event.body, 'base64').toString()
             : event.body;
+        init.duplex = 'half';
     }
-    return new environment_1.ExpoRequest(url.href, init);
+    return new Request(url.href, init);
 }
 exports.convertRequest = convertRequest;
 /**

@@ -1,17 +1,18 @@
 import { mergeClasses, SnackLogo } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
-import { useEffect, useRef, useState, PropsWithChildren } from 'react';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { useEffect, useRef, useState, PropsWithChildren, ReactElement } from 'react';
 
 import { Snippet } from '../Snippet';
 import { SnippetAction } from '../SnippetAction';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 
+import { cleanCopyValue, findPropInChildren } from '~/common/code-utilities';
 import { SNACK_URL, getSnackFiles } from '~/common/snack';
-import { cleanCopyValue } from '~/components/base/code';
 import { PageApiVersionContextType, usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
+import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 
 const DEFAULT_PLATFORM = 'android';
 const { LATEST_VERSION } = versions;
@@ -73,6 +74,9 @@ export const SnackInline = ({
     return code.replace(/%%placeholder-start%%.*%%placeholder-end%%/g, '');
   };
 
+  const prismBlockClassName = findPropInChildren(children as ReactElement, 'className');
+  const codeLanguage = prismBlockClassName ? prismBlockClassName.split('-')[1] : 'jsx';
+
   return (
     <Snippet className="flex flex-col mb-3 prose-pre:!m-0 prose-pre:!border-0">
       <SnippetHeader title={label || 'Example'} Icon={SnackLogo}>
@@ -94,6 +98,7 @@ export const SnackInline = ({
                   code: getCode(),
                   files,
                   baseURL: getExamplesPath(),
+                  codeLanguage,
                 })
               )}
             />
@@ -105,6 +110,7 @@ export const SnackInline = ({
             type="submit">
             {buttonTitle || 'Open in Snack'}
           </SnippetAction>
+          <SettingsAction />
         </form>
       </SnippetHeader>
       <SnippetContent ref={contentRef} className={mergeClasses('p-0', contentHidden && 'hidden')}>

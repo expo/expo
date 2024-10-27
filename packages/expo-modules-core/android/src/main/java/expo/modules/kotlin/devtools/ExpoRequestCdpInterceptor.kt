@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.ResponseBody
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -38,7 +39,11 @@ object ExpoRequestCdpInterceptor : ExpoNetworkInspectOkHttpInterceptorsDelegate 
 
   //region ExpoNetworkInspectOkHttpInterceptorsDelegate implementations
 
-  override fun willSendRequest(requestId: String, request: Request, redirectResponse: Response?) {
+  override fun willSendRequest(
+    requestId: String,
+    request: Request,
+    redirectResponse: Response?
+  ) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
 
     val params = RequestWillBeSentParams(now, requestId, request, redirectResponse)
@@ -48,18 +53,23 @@ object ExpoRequestCdpInterceptor : ExpoNetworkInspectOkHttpInterceptorsDelegate 
     dispatchEvent(Event("Network.requestWillBeSentExtraInfo", params2))
   }
 
-  override fun didReceiveResponse(requestId: String, request: Request, response: Response) {
+  override fun didReceiveResponse(
+    requestId: String,
+    request: Request,
+    response: Response,
+    body: ResponseBody?
+  ) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
 
-    val params = ResponseReceivedParams(now, requestId, request, response)
+    val params = ResponseReceivedParams(now, requestId, response)
     dispatchEvent(Event("Network.responseReceived", params))
 
-    if (response.peekBody(ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE + 1).contentLength() <= ExpoNetworkInspectOkHttpNetworkInterceptor.MAX_BODY_SIZE) {
-      val params2 = ExpoReceivedResponseBodyParams(now, requestId, request, response)
+    if (body != null) {
+      val params2 = ExpoReceivedResponseBodyParams(requestId, body)
       dispatchEvent(Event("Expo(Network.receivedResponseBody)", params2))
     }
 
-    val params3 = LoadingFinishedParams(now, requestId, request, response)
+    val params3 = LoadingFinishedParams(now, requestId, response)
     dispatchEvent(Event("Network.loadingFinished", params3))
   }
 

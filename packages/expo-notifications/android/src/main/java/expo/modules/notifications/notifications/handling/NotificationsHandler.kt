@@ -13,7 +13,6 @@ import expo.modules.notifications.notifications.interfaces.NotificationListener
 import expo.modules.notifications.notifications.interfaces.NotificationManager
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
-import expo.modules.notifications.toLegacyPromise
 
 class NotificationBehaviourRecord : Record {
   @Field
@@ -57,6 +56,11 @@ open class NotificationsHandler : Module(), NotificationListener {
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationsHandlerModule")
 
+    Events(
+      "onHandleNotification",
+      "onHandleNotificationTimeout"
+    )
+
     OnCreate {
       moduleRegistry = appContext.legacyModuleRegistry
 
@@ -95,9 +99,9 @@ open class NotificationsHandler : Module(), NotificationListener {
       ?: throw NotificationWasAlreadyHandledException(identifier)
 
     with(behavior) {
-      task.handleResponse(
+      task.processNotificationWithBehavior(
         NotificationBehavior(shouldShowAlert, shouldPlaySound, shouldSetBadge, priority),
-        promise.toLegacyPromise()
+        promise
       )
     }
   }
@@ -106,11 +110,19 @@ open class NotificationsHandler : Module(), NotificationListener {
    * Callback called by [NotificationManager] to inform its listeners of new messages.
    * Starts up a new [SingleNotificationHandlerTask] which will take it on from here.
    *
+   * SingleNotificationHandlerTask.processNotificationWithBehavior can then present it
+   *
    * @param notification Notification received
    */
   override fun onNotificationReceived(notification: Notification) {
     val context = appContext.reactContext ?: return
-    val task = SingleNotificationHandlerTask(context, handler, moduleRegistry, notification, this)
+    val task = SingleNotificationHandlerTask(
+      context,
+      appContext.eventEmitter(this),
+      handler,
+      notification,
+      this
+    )
     tasksMap[task.identifier] = task
     task.start()
   }

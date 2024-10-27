@@ -1,13 +1,40 @@
 ---
-title: Publish websites
+title: Publish websites with Metro
 description: Different ways to publish the Expo web app with third-party services.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 
+> **warning** In SDK 50 and above, `metro` is the default bundler for web apps. The previous [guide for publishing with `webpack` is available here](/archive/publishing-websites-webpack/).
+
 A web app created using Expo can be served locally for testing out the production behavior. Once the testing phase checks out, you can choose from a variety of third-party services to host it.
+
+## Output targets
+
+The [`web.output`](/versions/latest/config/app/#output) target can be configured in the [app config](/workflow/configuration/) to set the export method for the web app:
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "output": "server",
+      "bundler": "metro"
+    }
+  }
+}
+```
+
+Expo Router supports three output targets for web apps.
+
+| Output             | Expo Router | API Routes  | Description                                                                                                                                                                      |
+| ------------------ | ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `single` (default) | <YesIcon /> | <NoIcon />  | Outputs a Single Page Application (SPA) with a single **index.html** in the output folder and has no statically indexable HTML.                                                  |
+| `server`           | <YesIcon /> | <YesIcon /> | Creates **client** and **server** directories. Client files are output as separate HTML files. API routes as separate JavaScript files for hosting with a custom Node.js server. |
+| `static`           | <YesIcon /> | <NoIcon />  | Outputs separate HTML files for every route in the **app** directory.                                                                                                            |
 
 ## Create a build
 
@@ -15,39 +42,11 @@ Creating a build of the project is the first step to publishing a web app. Wheth
 
 <TabsGroup>
 
-<Tabs>
-
-<Tab label="Expo Router">
-
 Run the universal export command to compile the project for web:
 
 <Terminal cmd={['$ npx expo export -p web']} />
 
 The resulting project files are located in the **dist** directory. Any files inside the **public** directory are also copied to the **dist** directory.
-
-</Tab>
-
-<Tab label="webpack">
-
-Run the webpack export command to compile the project for web:
-
-<Terminal cmd={['$ npx expo export:web']} />
-
-The resulting project files are in the **web-build** directory. Any files inside the **web** directory are also copied to the **web-build** directory.
-
-If you make changes to your project, you'll need to rebuild it for production. Don't edit the **web-build** directory directly.
-
-> **Tip:** If you want to serve your site in a subfolder, add its path to your **package.json** as shown below:
->
-> ```json package.json
-> {
->   "homepage": "/path/to/subfolder"
-> }
-> ```
-
-</Tab>
-
-</Tabs>
 
 ## Serve locally
 
@@ -55,27 +54,25 @@ Use [Serve CLI](https://www.npmjs.com/package/serve) to quickly test locally how
 
 <Tabs>
 
-<Tab label="Expo Router">
-
-If you're using [static rendering](/router/reference/static-rendering), then you can serve the static bundle with the following command:
-
-<Terminal cmd={['$ npx serve dist']} />
-
-Otherwise, use the `--single` flag to redirect all requests to the single **dist/index.html** file.
+<Tab label="single">
 
 <Terminal cmd={['$ npx serve dist --single']} />
 
-Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other secure features won't work.
+Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other secure features will not work.
 
 </Tab>
 
-<Tab label="webpack">
+<Tab label="server">
 
-Run the following command to serve the single-page application:
+You need to create a custom server to host the websites with API routes. Learn more about [serving locally with Express](/router/reference/api-routes/#express).
 
-<Terminal cmd={['$ npx serve web-build --single']} />
+</Tab>
 
-Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other things won't work.
+<Tab label="static">
+
+<Terminal cmd={['$ npx serve dist']} />
+
+Open [`http://localhost:5000`](http://localhost:5000) to see your project in action. This method is **HTTP only**, so permissions, camera, location, and many other secure features will not work.
 
 </Tab>
 
@@ -101,10 +98,6 @@ Install the Netlify CLI by running the following command:
 
 Configure redirects for single-page applications.
 
-<Tabs>
-
-<Tab label="Expo Router">
-
 > If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
 
 `expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
@@ -115,39 +108,13 @@ Configure redirects for single-page applications.
 
 If you modify this file, you must rebuild your project with `npx expo export -p web` to have it safely copied into the **dist** directory.
 
-</Tab>
-
-<Tab label="webpack">
-
-If your app implements any navigation, you'll need to configure Netlify to redirect requests to the single **web-build/index.html** file. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
-
-Navigate inside the **web-build** directory and run the following command to create **\_redirects** file with follwing rule:
-
-```sh web/_redirects
-/*    /index.html   200
-```
-
-If you modify this file, you must rebuild your project with `npx expo export:web` to have it safely copied into the **web-build** directory.
-
-</Tab>
-
-</Tabs>
-
 </Step>
 
 <Step label="3">
 
 Deploy the web build folder by running the following command:
 
-<Tabs>
-  <Tab label="Expo Router">
-    <Terminal cmd={['$ netlify deploy --dir dist']} />
-  </Tab>
-
-  <Tab label="webpack">
-    <Terminal cmd={['$ netlify deploy --dir web-build']} />
-  </Tab>
-</Tabs>
+<Terminal cmd={['$ netlify deploy --dir dist']} />
 
 You'll see a URL that you can use to view your project online.
 
@@ -174,52 +141,27 @@ Install the [Vercel CLI](https://vercel.com/docs/cli).
 </Step>
 <Step label="2">
   Configure redirects for single-page applications.
-  <Tabs>
-    <Tab label="Expo Router">
 
-      Create a **vercel.json** file at the root of your app and add the following configuration:
+Create a **vercel.json** file at the root of your app and add the following configuration:
 
-      ```json vercel.json
-      {
-        "buildCommand": "expo export -p web",
-        "outputDirectory": "dist",
-        "devCommand": "expo",
-        "cleanUrls": true,
-        "framework": null,
-        "rewrites": [
-          {
-            "source": "/:path*",
-            "destination": "/"
-          }
-        ]
-      }
-      ```
+```json vercel.json
+{
+  "buildCommand": "expo export -p web",
+  "outputDirectory": "dist",
+  "devCommand": "expo",
+  "cleanUrls": true,
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "destination": "/"
+    }
+  ]
+}
+```
 
-      If your app uses [static rendering](/router/reference/static-rendering), then you may want to add additional [dynamic route configuration](/router/reference/static-rendering#dynamic-routes).
+If your app uses [static rendering](/router/reference/static-rendering), then you may want to add additional [dynamic route configuration](/router/reference/static-rendering#dynamic-routes).
 
-    </Tab>
-    <Tab label="webpack">
-      Create a **vercel.json** file at the root of your app and add the following:
-
-      ```json vercel.json
-      {
-        "buildCommand": "expo export:web",
-        "outputDirectory": "web-build",
-        "devCommand": "expo",
-        "cleanUrls": true,
-        "framework": null,
-        "rewrites": [
-          {
-            "source": "/:path*",
-            "destination": "/"
-          }
-        ]
-      }
-      ```
-
-    </Tab>
-
-  </Tabs>
 </Step>
 
 <Step label="3">
@@ -271,78 +213,6 @@ Follow the steps in the **Learn how to get the most out of Amplify Hosting** dro
 
 </Step>
 
-### GitHub Pages
-
-[GitHub Pages](https://pages.github.com/) allows you to publish a website directly from a GitHub repository.
-
-> **warning** Expo Router websites do not support deployment to GitHub Pages yet.
-
-<Step label="1">
-
-Start by initializing a new git repository in your project. If this is already done, skip this step.
-
-If not then you'll want to run the following command in your project's root directory:
-
-<Terminal cmd={['$ git init']} />
-
-</Step>
-
-<Step label="2">
-
-Add the GitHub repository as a `remote` in your local git repository.
-
-<Terminal cmd={['$ git remote add origin https://github.com/username/expo-gh-pages.git']} />
-
-Running the above command makes git know to which repository you want to push your source code. It also makes the `gh-pages` package (installed in the next step) know where you want to deploy your app.
-
-</Step>
-
-<Step label="3">
-
-Install the `gh-pages` package as a `dev-dependency` in your project:
-
-<Terminal cmd={['$ yarn add -D gh-pages']} />
-
-</Step>
-
-<Step label="4">
-
-Configure your project's **package.json** for web hosting. Start by adding a `homepage` property. Set its value to the string `http://{username on GitHub}.github.io/{repo-name}`.
-
-For example, if a GitHub username is called `dev` and the GitHub repository is `expo-gh-pages`, the following will be the value of the `homepage` property:
-
-{/* prettier-ignore */}
-```json package.json
-{
-  "homepage": "http://dev.github.io/expo-gh-pages"
-}
-```
-
-In the same file, modify the `scripts` property by adding `predeploy` and `deploy` properties. Each has its own value as shown:
-
-{/* prettier-ignore */}
-```json package.json
-"scripts": {
- /* @hide ... */ /* @end */
-  "deploy": "gh-pages -d web-build",
-  "predeploy": "expo export:web"
-}
-```
-
-</Step>
-
-<Step label="5">
-
-To generate a production build of your app, and deploy it to GitHub Pages, run the following command:
-
-<Terminal cmd={['$ yarn deploy']} />
-
-Your web app is now available at the URL you set as `homepage` in your **package.json**.
-
-> When you publish code to your repository, for example: `gh-pages`, it will create and push the code to a branch in your repo. This branch will have your build code, however, not your development source code.
-
-</Step>
-
 ### Firebase hosting
 
 [Firebase Hosting](https://console.firebase.google.com/) is production-grade web content hosting for web projects.
@@ -369,28 +239,14 @@ Then, initialize your firebase project to host by running the command:
 
 The settings will depend on how you built your Expo website:
 
-<Tabs>
-<Tab label="Expo Router">
-
 1. When asked about the public path, make sure to specify the **dist** directory.
 2. When prompted **Configure as a single-page app (rewrite all urls to /index.html)**, only select **Yes** if you used `web.output: "single"` (default). Otherwise, select **No**.
-
-</Tab>
-<Tab label="webpack">
-
-When asked about the public path, make sure to specify the **web-build** directory. Also, when prompted **Configure as a single-page app (rewrite all urls to /index.html)**, select **Yes**.
-
-</Tab>
-</Tabs>
 
 </Step>
 
 <Step label="4">
 
 In the existing `scripts` property of **package.json**, add `predeploy` and `deploy` properties. Each has the following values:
-
-<Tabs>
-<Tab label="Expo Router">
 
 {/* prettier-ignore */}
 ```json package.json
@@ -400,21 +256,6 @@ In the existing `scripts` property of **package.json**, add `predeploy` and `dep
   "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
 }
 ```
-
-</Tab>
-<Tab label="webpack">
-
-{/* prettier-ignore */}
-```json package.json
-"scripts": {
-  /* @hide ... */ /* @end */
-  "predeploy": "expo export:web",
-  "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
-}
-```
-
-</Tab>
-</Tabs>
 
 </Step>
 
@@ -460,3 +301,141 @@ In case you want to change the header for hosting add the following config for `
 </Step>
 
 </TabsGroup>
+
+### GitHub Pages
+
+[GitHub Pages](https://pages.github.com/) allows you to publish a website directly from a GitHub repository.
+
+> **warning** GitHub Pages deployment requires Expo SDK 50 or higher, and uses experimental `baseUrl` functionality that may not work as intended.
+
+<Step label="1">
+
+Start by initializing a new git repository in your project and configuring it to push to a GitHub repository. If you are already syncing your changes with a GitHub repository, skip this step.
+
+Create a repository on the GitHub website. Then, run the following commands in your project's root directory:
+
+<Terminal
+  cmd={['$ git init', '', '$ git remote add origin https://github.com/username/expo-gh-pages.git']}
+/>
+
+The above commands initialize a new Git repository and configure it to push your source code to the specified GitHub repository.
+
+</Step>
+
+<Step label="2">
+
+Install the `gh-pages` package as a development dependency in your project:
+
+<Tabs>
+
+<Tab label="npm">
+
+<Terminal cmd={['$ npm install --save-dev gh-pages']} />
+
+</Tab>
+
+<Tab label="yarn">
+
+<Terminal cmd={['$ yarn add -D gh-pages']} />
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+To deploy the project, configure it to a subdomain with the [`baseUrl`](/versions/latest/config/app/#baseurl) property in [app config](/workflow/configuration/). Set its value to the string `/repo-name`.
+
+For example, if the GitHub repository is `expo-gh-pages`, the following will be the value of the [experimental `baseUrl` property](/more/expo-cli/#hosting-with-sub-paths):
+
+{/* prettier-ignore */}
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "baseUrl": "/expo-gh-pages"
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="4">
+
+Because Expo uses underscores in generated files, you need to disable jekyll by creating a **.nojekyll** file in the **public** directory.
+
+<Terminal cmd={['$ mkdir public && touch public/.nojekyll']} />
+
+Files in the **public** directory are copied to the **dist** directory when you build your web app.
+
+</Step>
+
+<Step label="5">
+
+Modify the `scripts` in the **package.json** file by adding `predeploy` and `deploy` scripts. Each has its own value:
+
+{/* prettier-ignore */}
+```json package.json
+"scripts": {
+ /* @hide ... */ /* @end */
+  "deploy": "gh-pages -t -d dist",
+  "predeploy": "expo export -p web"
+}
+```
+
+Running `gh-pages` with the `-t` flag is required. This flag ensures that the files starting with `.` are also included.
+
+</Step>
+
+<Step label="6">
+
+To generate a production build of the web app and deploy it to GitHub Pages, run the following command:
+
+<Tabs>
+
+<Tab label="npm">
+
+<Terminal cmd={['$ npm run deploy']} />
+
+</Tab>
+
+<Tab label="yarn">
+
+<Terminal cmd={['$ yarn deploy']} />
+
+</Tab>
+
+</Tabs>
+
+This publishes a build of the web app to the `gh-pages` branch of your GitHub repository. This branch only contains your build code in the root directory and does not include development source code.
+
+</Step>
+
+<Step label="7">
+
+Now that the web app is published to the `gh-pages` branch, configure GitHub Pages to serve the app from that branch.
+
+- Navigate to the **Settings** tab of the GitHub repository.
+- Scroll down to **Pages** section.
+- Ensure the **Source** is set to **Deploy from a branch**.
+- Under **Branch** section, select **gh-pages** and the **root** directory.
+- Click **Save**.
+
+<ContentSpotlight
+  alt="GitHub Pages configuration in repository settings"
+  src="/static/images/distribution/publishing-websites-github-pages-config.png"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="8">
+
+Once the web app is published and the GitHub Pages configuration is set, a GitHub action will deploy your website. You can monitor its progress by navigating to your repository's **Actions** tab. Upon completion, your web app will be available at the URL `http://username-on-github.github.io/repo-name`.
+
+For subsequent deployments and updates, run the `deploy` command and the GitHub action will start automatically to update your web app.
+
+</Step>

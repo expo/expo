@@ -64,10 +64,6 @@ async function loadIgnoredPathsAsync(ignoredFile) {
         }
     }
     catch { }
-    try {
-        await promises_1.default.rm(ignoredFile);
-    }
-    catch { }
     return ignorePaths;
 }
 /**

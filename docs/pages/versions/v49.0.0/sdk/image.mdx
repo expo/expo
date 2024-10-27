@@ -9,10 +9,10 @@ iconUrl: '/static/images/packages/expo-image.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
+import { Terminal } from '~/ui/components/Snippet';
 
-**`expo-image`** is a cross-platform React component that loads and renders images.
+`expo-image` is a cross-platform React component that loads and renders images.
 
 **Main features:**
 
@@ -28,21 +28,19 @@ import { YesIcon, NoIcon, PendingIcon } from '~/ui/components/DocIcons';
 
 #### Supported image formats
 
-|   Format   |                   Android                   |     iOS     |                                 Web                                 |
-| :--------: | :-----------------------------------------: | :---------: | :-----------------------------------------------------------------: |
-|    WebP    |                 <YesIcon />                 | <YesIcon /> |        <YesIcon /> [~96% adoption](https://caniuse.com/webp)        |
-| PNG / APNG |                 <YesIcon />                 | <YesIcon /> | <YesIcon /> / <YesIcon /> [~96% adoption](https://caniuse.com/apng) |
-|    AVIF    | <YesIcon /> (No support for animated AVIFs) | <YesIcon /> |      <PendingIcon /> [~79% adoption](https://caniuse.com/avif)      |
-|    HEIC    |                 <YesIcon />                 | <YesIcon /> |       <NoIcon /> [not adopted yet](https://caniuse.com/heif)        |
-|    JPEG    |                 <YesIcon />                 | <YesIcon /> |                             <YesIcon />                             |
-|    GIF     |                 <YesIcon />                 | <YesIcon /> |                             <YesIcon />                             |
-|    SVG     |                 <YesIcon />                 | <YesIcon /> |                             <YesIcon />                             |
-|    ICO     |                 <YesIcon />                 | <YesIcon /> |                             <YesIcon />                             |
-|    ICNS    |                 <NoIcon />                  | <YesIcon /> |                             <NoIcon />                              |
+|   Format   |                   Android                   |     iOS     |                            Web                            |
+| :--------: | :-----------------------------------------: | :---------: | :-------------------------------------------------------: |
+|    WebP    |                 <YesIcon />                 | <YesIcon /> |                        <YesIcon />                        |
+| PNG / APNG |                 <YesIcon />                 | <YesIcon /> |                        <YesIcon />                        |
+|    AVIF    | <YesIcon /> (No support for animated AVIFs) | <YesIcon /> | <PendingIcon /> [~87% adoption](https://caniuse.com/avif) |
+|    HEIC    |                 <YesIcon />                 | <YesIcon /> |  <NoIcon /> [not adopted yet](https://caniuse.com/heif)   |
+|    JPEG    |                 <YesIcon />                 | <YesIcon /> |                        <YesIcon />                        |
+|    GIF     |                 <YesIcon />                 | <YesIcon /> |                        <YesIcon />                        |
+|    SVG     |                 <YesIcon />                 | <YesIcon /> |                        <YesIcon />                        |
+|    ICO     |                 <YesIcon />                 | <YesIcon /> |                        <YesIcon />                        |
+|    ICNS    |                 <NoIcon />                  | <YesIcon /> |                        <NoIcon />                         |
 
 ## Installation
-
-> **Info** `expo-image` is not yet available in Snack.
 
 <APIInstallSection />
 

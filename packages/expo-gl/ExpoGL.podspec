@@ -10,14 +10,16 @@ Pod::Spec.new do |s|
   s.license         = package['license']
   s.author          = package['author']
   s.homepage        = package['homepage']
-  s.platform        = :ios, '13.4'
+  s.platforms       = {
+    :ios => '15.1'
+  }
   s.source          = { git: 'https://github.com/expo/expo-gl.git' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'ReactCommon/turbomodule/core'
 
-  s.compiler_flags = '-x objective-c++ -std=c++1z'
+  s.compiler_flags = '-x objective-c++ -std=c++20'
   s.pod_target_xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) GLES_SILENCE_DEPRECATION=1'
   }

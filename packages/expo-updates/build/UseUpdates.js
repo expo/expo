@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getNativeStateMachineContextAsync } from './Updates';
-import { addUpdatesStateChangeListener } from './UpdatesEmitter';
-import { currentlyRunning, defaultUseUpdatesState, reduceUpdatesStateFromContext, } from './UseUpdatesUtils';
+import { addUpdatesStateChangeListener, latestContext } from './UpdatesEmitter';
+import { currentlyRunning, updatesStateFromContext } from './UseUpdatesUtils';
 /**
  * Hook that obtains information on available updates and on the currently running update.
  *
@@ -11,21 +10,20 @@ import { currentlyRunning, defaultUseUpdatesState, reduceUpdatesStateFromContext
  * ```tsx UpdatesDemo.tsx
  * import { StatusBar } from 'expo-status-bar';
  * import * as Updates from 'expo-updates';
- * import React from 'react';
- * import { Pressable, Text, View } from 'react-native';
+ * import { useEffect } from 'react';
+ * import { Button, Text, View } from 'react-native';
  *
  * export default function UpdatesDemo() {
  *   const {
  *     currentlyRunning,
- *     availableUpdate,
  *     isUpdateAvailable,
  *     isUpdatePending
  *   } = Updates.useUpdates();
  *
- *   React.useEffect(() => {
+ *   useEffect(() => {
  *     if (isUpdatePending) {
- *       // Update has successfully downloaded
- *       runUpdate();
+ *       // Update has successfully downloaded; apply it now
+ *       Updates.reloadAsync();
  *     }
  *   }, [isUpdatePending]);
  *
@@ -41,9 +39,9 @@ import { currentlyRunning, defaultUseUpdatesState, reduceUpdatesStateFromContext
  *     <View style={styles.container}>
  *       <Text style={styles.headerText}>Updates Demo</Text>
  *       <Text>{runTypeMessage}</Text>
- *       <Button pressHandler={() => Updates.checkForUpdateAsync()} text="Check manually for updates" />
+ *       <Button onPress={() => Updates.checkForUpdateAsync()} title="Check manually for updates" />
  *       {showDownloadButton ? (
- *         <Button pressHandler={() => Updates.fetchUpdateAsync()} text="Download and run update" />
+ *         <Button onPress={() => Updates.fetchUpdateAsync()} title="Download and run update" />
  *       ) : null}
  *       <StatusBar style="auto" />
  *     </View>
@@ -52,19 +50,11 @@ import { currentlyRunning, defaultUseUpdatesState, reduceUpdatesStateFromContext
  * ```
  */
 export const useUpdates = () => {
-    const [updatesState, setUpdatesState] = useState(defaultUseUpdatesState);
+    const [updatesState, setUpdatesState] = useState(latestContext);
     // Change the state based on native state machine context changes
     useEffect(() => {
-        getNativeStateMachineContextAsync()
-            .then((context) => {
-            setUpdatesState((updatesState) => reduceUpdatesStateFromContext(updatesState, context));
-        })
-            .catch((error) => {
-            // Native call can fail (e.g. if in development mode), so catch the promise rejection and surface the error
-            setUpdatesState((updatesState) => ({ ...updatesState, initializationError: error }));
-        });
         const subscription = addUpdatesStateChangeListener((event) => {
-            setUpdatesState((updatesState) => reduceUpdatesStateFromContext(updatesState, event.context));
+            setUpdatesState(updatesStateFromContext(event.context));
         });
         return () => subscription.remove();
     }, []);

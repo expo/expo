@@ -1,13 +1,16 @@
 {
   "name": "expo-camera",
-  "platforms": ["ios", "android"],
+  "platforms": ["ios", "android", "web"],
   "ios": {
-    "modules": ["CameraViewModule", "CameraViewNextModule"]
+    "modules": ["CameraViewModule"]
   },
   "android": {
-    "modules": [
-      "expo.modules.camera.CameraViewModule",
-      "expo.modules.camera.next.CameraViewNextModule"
+    "modules": ["expo.modules.camera.CameraViewModule"],
+    "gradleAarProjects": [
+      {
+        "name": "cameraview-aar",
+        "aarFilePath": "android/libs/cameraview-1.0.0.aar"
+      }
     ]
   }
 }

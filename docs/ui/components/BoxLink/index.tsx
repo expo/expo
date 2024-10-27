@@ -1,7 +1,8 @@
-import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import type { AnchorHTMLAttributes, ComponentType, HTMLAttributes, ReactNode } from 'react';
 
-import { A, DEMI, P } from '~/ui/components/Text';
+import { A, DEMI, CALLOUT } from '~/ui/components/Text';
 
 type BoxLinkProps = AnchorHTMLAttributes<HTMLLinkElement> & {
   title: string;
@@ -30,7 +31,7 @@ export function BoxLink({ title, description, href, testID, Icon, imageUrl }: Bo
         {imageUrl && <img className="!w-9 !h-9 self-center" src={imageUrl} alt="Icon" />}
         <div>
           <DEMI>{title}</DEMI>
-          <P>{description}</P>
+          <CALLOUT theme="secondary">{description}</CALLOUT>
         </div>
       </div>
       <ArrowIcon className="text-icon-secondary self-center content-end ml-3 min-w-[20px]" />

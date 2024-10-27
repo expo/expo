@@ -1,27 +1,139 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { mergeClasses, theme, Themes, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
-import { FileCode01Icon, LayoutAlt01Icon, Server03Icon } from '@expo/styleguide-icons';
-import { Language, Prism } from 'prism-react-renderer';
-import * as React from 'react';
+import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
+import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon';
+import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
+import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 
-import { installLanguages } from './languages';
-
+import {
+  cleanCopyValue,
+  getRootCodeBlockProps,
+  getCodeData,
+  parseValue,
+  getCollapseHeight,
+} from '~/common/code-utilities';
+import { useCodeBlockSettingsContext } from '~/providers/CodeBlockSettingsProvider';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
+import { SnippetExpandOverlay } from '~/ui/components/Snippet/SnippetExpandOverlay';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
 import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
+import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 import { CODE } from '~/ui/components/Text';
+import { TextTheme } from '~/ui/components/Text/types';
 
 // @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
 
-installLanguages(Prism);
-
 const attributes = {
   'data-text': true,
 };
+
+type CodeProps = PropsWithChildren<{
+  className?: string;
+  title?: string;
+}>;
+
+export function Code({ className, children, title }: CodeProps) {
+  const contentRef = useRef<HTMLPreElement>(null);
+  const { preferredTheme, wordWrap } = useCodeBlockSettingsContext();
+
+  const rootProps = getRootCodeBlockProps(children, className);
+  const codeBlockData = parseValue(rootProps?.children?.toString() ?? '');
+  const codeBlockTitle = codeBlockData?.title ?? title;
+
+  const [isExpanded, setExpanded] = useState(false);
+  const [collapseBound, setCollapseBound] = useState<number | undefined>(undefined);
+  const [blockHeight, setBlockHeight] = useState<number | undefined>(undefined);
+
+  const collapseHeight = getCollapseHeight(codeBlockData.params);
+  const showExpand = !isExpanded && blockHeight && collapseBound && blockHeight > collapseBound;
+  const highlightedHtml = getCodeData(codeBlockData.value, rootProps.className);
+
+  useEffect(() => {
+    const tippyFunc = testTippy || tippy;
+    tippyFunc('.code-annotation.with-tooltip', {
+      allowHTML: true,
+      theme: 'expo',
+      placement: 'top',
+      arrow: roundArrow,
+      interactive: true,
+      offset: [0, 20],
+      appendTo: document.body,
+    });
+
+    tippyFunc('.tutorial-code-annotation.with-tooltip', {
+      allowHTML: true,
+      theme: 'expo',
+      placement: 'top',
+      arrow: roundArrow,
+      interactive: true,
+      offset: [0, 20],
+      appendTo: document.body,
+    });
+
+    if (contentRef?.current?.clientHeight) {
+      setBlockHeight(contentRef.current.clientHeight);
+      if (contentRef.current.clientHeight > collapseHeight) {
+        setCollapseBound(collapseHeight);
+      }
+    }
+  }, []);
+
+  function expandCodeBlock() {
+    setExpanded(true);
+    setCollapseBound(undefined);
+  }
+
+  const commonClasses = [
+    wordWrap && '!whitespace-pre-wrap !break-words',
+    showExpand && !isExpanded && `!overflow-hidden`,
+  ];
+
+  return codeBlockTitle ? (
+    <Snippet>
+      <SnippetHeader title={codeBlockTitle} Icon={getIconForFile(codeBlockTitle)}>
+        <CopyAction text={cleanCopyValue(codeBlockData.value)} />
+        <SettingsAction />
+      </SnippetHeader>
+      <SnippetContent className="p-0">
+        <pre
+          ref={contentRef}
+          css={STYLES_CODE_CONTAINER}
+          style={{
+            maxHeight: collapseBound,
+          }}
+          className={mergeClasses('relative', ...commonClasses)}
+          {...attributes}>
+          <code
+            css={STYLES_CODE_BLOCK}
+            dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
+          />
+          {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
+        </pre>
+      </SnippetContent>
+    </Snippet>
+  ) : (
+    <pre
+      ref={contentRef}
+      css={STYLES_CODE_CONTAINER}
+      style={{
+        maxHeight: collapseBound,
+      }}
+      className={mergeClasses(
+        'relative border border-secondary p-4 my-4 bg-subtle',
+        preferredTheme === Themes.DARK && 'dark-theme',
+        ...commonClasses,
+        'last:mb-0'
+      )}
+      {...attributes}>
+      <code css={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
+      {showExpand && <SnippetExpandOverlay onClick={expandCodeBlock} />}
+    </pre>
+  );
+}
 
 const STYLES_CODE_BLOCK = css`
   ${typography.body.code};
@@ -29,37 +141,6 @@ const STYLES_CODE_BLOCK = css`
   white-space: inherit;
   padding: 0;
   margin: 0;
-
-  .code-annotation {
-    transition: 200ms ease all;
-    transition-property: text-shadow, opacity;
-    text-shadow:
-      ${theme.palette.yellow7} 0 0 10px,
-      ${theme.palette.yellow7} 0 0 10px,
-      ${theme.palette.yellow7} 0 0 10px,
-      ${theme.palette.yellow7} 0 0 10px;
-  }
-
-  .code-annotation.with-tooltip:hover {
-    cursor: pointer;
-    animation: none;
-    opacity: 0.8;
-  }
-
-  .code-hidden {
-    display: none;
-  }
-
-  .code-placeholder {
-    opacity: 0.5;
-  }
-`;
-
-const STYLES_CODE_CONTAINER_BLOCK = css`
-  border: 1px solid ${theme.border.secondary};
-  padding: 16px;
-  margin: 16px 0;
-  background-color: ${theme.background.subtle};
 `;
 
 const STYLES_CODE_CONTAINER = css`
@@ -75,206 +156,23 @@ const STYLES_CODE_CONTAINER = css`
   }
 `;
 
-type Props = {
+type CodeBlockProps = PropsWithChildren<{
+  inline?: boolean;
+  theme?: TextTheme;
   className?: string;
-};
+}>;
 
-export function cleanCopyValue(value: string) {
-  return value
-    .replace(/\/\*\s?@(info[^*]+|end|hide[^*]+).?\*\//g, '')
-    .replace(/#\s?@(info[^#]+|end|hide[^#]+).?#/g, '')
-    .replace(/<!--\s?@(info[^<>]+|end|hide[^<>]+).?-->/g, '')
-    .replace(/^ +\r?\n|\n +\r?$/gm, '');
-}
-
-export class Code extends React.Component<React.PropsWithChildren<Props>> {
-  componentDidMount() {
-    this.runTippy();
-  }
-
-  componentDidUpdate() {
-    this.runTippy();
-  }
-
-  private runTippy() {
-    const tippyFunc = testTippy || tippy;
-    tippyFunc('.code-annotation.with-tooltip', {
-      allowHTML: true,
-      theme: 'expo',
-      placement: 'top',
-      arrow: roundArrow,
-      interactive: true,
-      offset: [0, 20],
-      appendTo: document.body,
-    });
-  }
-
-  private escapeHtml(text: string) {
-    return text.replace(/"/g, '&quot;');
-  }
-
-  private replaceXmlCommentsWithAnnotations(value: string) {
-    return value
-      .replace(
-        /<span class="token comment">&lt;!-- @info (.*?)--><\/span>\s*/g,
-        (match, content) => {
-          return content
-            ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
-                content
-              )}">`
-            : '<span class="code-annotation">';
-        }
-      )
-      .replace(
-        /<span class="token comment">&lt;!-- @hide (.*?)--><\/span>\s*/g,
-        (match, content) => {
-          return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
-            content
-          )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
-        }
-      )
-      .replace(/\s*<span class="token comment">&lt;!-- @end --><\/span>/g, '</span>');
-  }
-
-  private replaceHashCommentsWithAnnotations(value: string) {
-    return value
-      .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (match, content) => {
-        return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
-              content
-            )}">`
-          : '<span class="code-annotation">';
-      })
-      .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (match, content) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
-          content
-        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
-      })
-      .replace(/\s*<span class="token comment"># @end #<\/span>/g, '</span>');
-  }
-
-  private replaceSlashCommentsWithAnnotations(value: string) {
-    return value
-      .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
-              content
-            )}">`
-          : '<span class="code-annotation">';
-      })
-      .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
-          content
-        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
-      })
-      .replace(/\s*<span class="token comment">\/\* @end \*\/<\/span>/g, '</span>');
-  }
-
-  private parseValue(value: string) {
-    if (value.startsWith('@@@')) {
-      const valueChunks = value.split('@@@');
-      return {
-        title: valueChunks[1],
-        value: valueChunks[2],
-      };
-    }
-    return {
-      value,
-    };
-  }
-
-  render() {
-    // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
-    // which results in this nesting mess, we should fix it in the future
-    const child =
-      this.props.className && this.props.className.startsWith('language')
-        ? this
-        : (React.Children.toArray(this.props.children)[0] as JSX.Element);
-
-    const value = this.parseValue(child?.props?.children?.toString() || '');
-    let html = value.value;
-
-    // mdx will add the class `language-foo` to codeblocks with the tag `foo`
-    // if this class is present, we want to slice out `language-`
-    let lang = child.props.className && child.props.className.slice(9).toLowerCase();
-
-    // Allow for code blocks without a language.
-    if (lang) {
-      // sh isn't supported, use sh to match js, and ts
-      if (lang in remapLanguages) {
-        lang = remapLanguages[lang];
-      }
-
-      const grammar = Prism.languages[lang as keyof typeof Prism.languages];
-      if (!grammar) {
-        throw new Error(`docs currently do not support language: ${lang}`);
-      }
-
-      html = Prism.highlight(html, grammar, lang as Language);
-      if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
-        html = this.replaceHashCommentsWithAnnotations(html);
-      } else if (['xml', 'html'].includes(lang)) {
-        html = this.replaceXmlCommentsWithAnnotations(html);
-      } else {
-        html = this.replaceSlashCommentsWithAnnotations(html);
-      }
-    }
-
-    return value?.title ? (
-      <Snippet>
-        <SnippetHeader title={value.title} Icon={getIconForFile(value.title)}>
-          <CopyAction text={cleanCopyValue(value.value)} />
-        </SnippetHeader>
-        <SnippetContent className="p-0">
-          <pre css={STYLES_CODE_CONTAINER} {...attributes}>
-            <code
-              css={STYLES_CODE_BLOCK}
-              dangerouslySetInnerHTML={{ __html: html.replace(/^@@@.+@@@/g, '') }}
-            />
-          </pre>
-        </SnippetContent>
-      </Snippet>
-    ) : (
-      <pre css={[STYLES_CODE_CONTAINER, STYLES_CODE_CONTAINER_BLOCK]} {...attributes}>
-        <code css={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
-      </pre>
-    );
-  }
-}
-
-const remapLanguages: Record<string, string> = {
-  'objective-c': 'objc',
-  sh: 'bash',
-  rb: 'ruby',
-};
-
-const codeBlockContainerStyle = {
-  margin: 0,
-  padding: `3px 6px`,
-};
-
-const codeBlockInlineStyle = {
-  padding: 4,
-};
-
-const codeBlockInlineContainerStyle = {
-  display: 'inline-flex',
-  padding: 0,
-};
-
-type CodeBlockProps = React.PropsWithChildren<{ inline?: boolean }>;
-
-export const CodeBlock = ({ children, inline = false }: CodeBlockProps) => {
+export const CodeBlock = ({ children, theme, className, inline = false }: CodeBlockProps) => {
   const Element = inline ? 'span' : 'pre';
   return (
     <Element
-      css={[
-        STYLES_CODE_CONTAINER,
-        codeBlockContainerStyle,
-        inline && codeBlockInlineContainerStyle,
-      ]}
+      className={mergeClasses('m-0 px-1 py-1.5', inline && 'inline-flex !p-0')}
+      css={STYLES_CODE_CONTAINER}
       {...attributes}>
-      <CODE css={[STYLES_CODE_BLOCK, inline && codeBlockInlineStyle, { fontSize: '80%' }]}>
+      <CODE
+        className={mergeClasses('!text-[85%]', inline && 'inline-flex w-full !p-1.5', className)}
+        theme={theme}
+        css={STYLES_CODE_BLOCK}>
         {children}
       </CODE>
     </Element>

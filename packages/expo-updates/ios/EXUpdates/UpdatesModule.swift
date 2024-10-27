@@ -1,8 +1,5 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
-// swiftlint:disable closure_body_length
-// swiftlint:disable superfluous_else
-
 import ExpoModulesCore
 
 /**
@@ -15,52 +12,23 @@ import ExpoModulesCore
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
 public final class UpdatesModule: Module {
-  // swiftlint:disable cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
+    Events(
+      EXUpdatesStateChangeEventName
+    )
+
     Constants {
-      let constantsForModule = AppController.sharedInstance.getConstantsForModule()
+      AppController.sharedInstance.getConstantsForModule().toModuleConstantsMap()
+    }
 
-      let releaseChannel = constantsForModule.releaseChannel
-      let channel = constantsForModule.requestHeaders["expo-channel-name"] ?? ""
-      let runtimeVersion = constantsForModule.runtimeVersion ?? ""
-      let checkAutomatically = constantsForModule.checkOnLaunch.asString
-      let isMissingRuntimeVersion = constantsForModule.isMissingRuntimeVersion
+    OnStartObserving {
+      AppController.onEventListenerStartObserving(self.appContext?.eventEmitter)
+    }
 
-      guard AppController.sharedInstance.isStarted,
-        let launchedUpdate = constantsForModule.launchedUpdate else {
-        return [
-          "isEnabled": false,
-          "isEmbeddedLaunch": false,
-          "isMissingRuntimeVersion": isMissingRuntimeVersion,
-          "releaseChannel": releaseChannel,
-          "runtimeVersion": runtimeVersion,
-          "checkAutomatically": checkAutomatically,
-          "channel": channel
-        ]
-      }
-
-      let embeddedUpdate = constantsForModule.embeddedUpdate
-      let isEmbeddedLaunch = embeddedUpdate != nil && embeddedUpdate?.updateId == launchedUpdate.updateId
-
-      let commitTime = UInt64(floor(launchedUpdate.commitTime.timeIntervalSince1970 * 1000))
-      return [
-        "isEnabled": true,
-        "isEmbeddedLaunch": isEmbeddedLaunch,
-        "isUsingEmbeddedAssets": constantsForModule.isUsingEmbeddedAssets,
-        "updateId": launchedUpdate.updateId.uuidString,
-        "manifest": launchedUpdate.manifest.rawManifestJSON(),
-        "localAssets": constantsForModule.assetFilesMap,
-        "isEmergencyLaunch": constantsForModule.isEmergencyLaunch,
-        "isMissingRuntimeVersion": isMissingRuntimeVersion,
-        "releaseChannel": releaseChannel,
-        "runtimeVersion": runtimeVersion,
-        "checkAutomatically": checkAutomatically,
-        "channel": channel,
-        "commitTime": commitTime,
-        "nativeDebug": UpdatesUtils.isNativeDebuggingEnabled()
-      ]
+    OnStopObserving {
+      AppController.onEventListenerStopObserving()
     }
 
     AsyncFunction("reload") { (promise: Promise) in
@@ -72,8 +40,8 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      AppController.sharedInstance.checkForUpdate { remoteCheckResult in
-        switch remoteCheckResult {
+      AppController.sharedInstance.checkForUpdate { checkForUpdateResult in
+        switch checkForUpdateResult {
         case .noUpdateAvailable(let reason):
           promise.resolve([
             "isAvailable": false,
@@ -168,19 +136,5 @@ public final class UpdatesModule: Module {
         promise.reject(error)
       }
     }
-
-    // Getter used internally by useUpdates()
-    // to initialize its state
-    AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
-      AppController.sharedInstance.getNativeStateMachineContext { stateMachineContext in
-        promise.resolve(stateMachineContext.json)
-      } error: { error in
-        promise.reject(error)
-      }
-    }
   }
-  // swiftlint:enable cyclomatic_complexity
 }
-
-// swiftlint:enable closure_body_length
-// swiftlint:enable superfluous_else

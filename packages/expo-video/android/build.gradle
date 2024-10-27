@@ -1,88 +1,36 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
-apply plugin: 'kotlin-kapt'
 
-buildscript {
-  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-  if (expoModulesCorePlugin.exists()) {
-    apply from: expoModulesCorePlugin
-    applyKotlinExpoModulesCorePlugin()
-  }
+group = 'host.exp.exponent'
+version = '2.0.0-preview.0'
 
-  // Simple helper that allows the root project to override versions declared by this library.
-  ext.safeExtGet = { prop, fallback ->
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-  }
-
-  // Ensures backward compatibility
-  ext.getKotlinVersion = {
-    if (ext.has("kotlinVersion")) {
-      ext.kotlinVersion()
-    } else {
-      ext.safeExtGet("kotlinVersion", "1.8.10")
-    }
-  }
-
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-  }
-}
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useCoreDependencies()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 33)
-
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
-  }
-
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
-  }
-
   namespace "expo.modules.video"
   defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 1
-    versionName "0.2.0"
+    versionName '2.0.0-preview.0'
   }
-  lintOptions {
-    abortOnError false
-  }
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
-    }
-  }
-}
-
-repositories {
-  // ref: https://www.baeldung.com/maven-local-repository
-  mavenLocal()
-  maven {
-    // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-    url "$rootDir/../node_modules/react-native/android"
-  }
-  maven {
-    // Android JSC is installed from npm
-    url "$rootDir/../node_modules/jsc-android/dist"
-  }
-  google()
-  mavenCentral()
 }
 
 dependencies {
-  implementation project(':expo-modules-core')
+  implementation 'com.facebook.react:react-android'
 
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'  // From node_modules
+  // Remember to keep this in sync with the version in `expo-audio`
+  def androidxMedia3Version = "1.4.0"
+  implementation "androidx.media3:media3-session:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-dash:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-hls:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-ui:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-datasource-okhttp:${androidxMedia3Version}"
 
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  def fragment_version = "1.6.2"
+  implementation "androidx.fragment:fragment:$fragment_version"
+  implementation "androidx.fragment:fragment-ktx:$fragment_version"
 }

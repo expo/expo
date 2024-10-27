@@ -11,7 +11,7 @@ import nullthrows from 'nullthrows';
 import os from 'os';
 import path from 'path';
 
-import { ANDROID_DIR, IOS_DIR } from '../Constants';
+import { EXPO_GO_ANDROID_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import { deepCloneObject } from '../Utils';
 import { Directories, EASUpdate } from '../expotools';
 import AppConfig from '../typings/AppConfig';
@@ -22,20 +22,30 @@ type ExpoCliStateObject = {
   };
 };
 
-const EXPO_HOME_PATH = Directories.getExpoHomeJSDir();
+const EXPO_HOME_PATH = Directories.getExpoGoDir();
 
-const iosPublishBundlePath = path.join(IOS_DIR, 'Exponent', 'Supporting', 'kernel.ios.bundle');
+const iosPublishBundlePath = path.join(
+  EXPO_GO_IOS_DIR,
+  'Exponent',
+  'Supporting',
+  'kernel.ios.bundle'
+);
 const androidPublishBundlePath = path.join(
-  ANDROID_DIR,
+  EXPO_GO_ANDROID_DIR,
   'app',
   'src',
   'main',
   'assets',
   'kernel.android.bundle'
 );
-const iosManifestPath = path.join(IOS_DIR, 'Exponent', 'Supporting', 'kernel-manifest.json');
+const iosManifestPath = path.join(
+  EXPO_GO_IOS_DIR,
+  'Exponent',
+  'Supporting',
+  'kernel-manifest.json'
+);
 const androidManifestPath = path.join(
-  ANDROID_DIR,
+  EXPO_GO_ANDROID_DIR,
   'app',
   'src',
   'main',
@@ -129,7 +139,7 @@ async function fetchManifestAndBundleAsync(
   groupId: string,
   platform: 'ios' | 'android'
 ): Promise<void> {
-  const manifestUrl = `https://staging-u.expo.dev/${projectId}/group/${groupId}`;
+  const manifestUrl = `https://u.expo.dev/${projectId}/group/${groupId}`;
   const manifestResponse = await fetch(manifestUrl, {
     method: 'GET',
     headers: {

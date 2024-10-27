@@ -1,3 +1,3 @@
 import redirect from '~/common/redirect';
 
-export default redirect('/get-started/installation/');
+export default redirect('/get-started/introduction/');

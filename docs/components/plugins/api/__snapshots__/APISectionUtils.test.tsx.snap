@@ -3,7 +3,7 @@
 exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 <div>
   <p
-    class="mb-4 css-1kfqm4n-TextComponent"
+    class="mb-3.5 emotion-0"
     data-text="true"
   >
     This is the basic comment.
@@ -13,52 +13,62 @@ exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
-  <strong
-    class="css-bvflvn-TextComponent"
-  >
-    Only for:
-     
-  </strong>
   <div
-    class="!bg-palette-green4 !text-palette-green12 !border-palette-green5 css-r2zk2g-PlatformTag"
+    class="flex flex-row items-center mb-2"
   >
-    <svg
-      class="icon-xs text-palette-green12"
-      fill="none"
-      role="img"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g
-        id="android"
-      >
-        <path
-          d="M17.0628 15.073C16.5576 15.073 16.1467 14.6605 16.1467 14.1537C16.1467 13.6469 16.5576 13.2347 17.0628 13.2347C17.5679 13.2347 17.9788 13.6469 17.9788 14.1537C17.9788 14.6605 17.5679 15.073 17.0628 15.073ZM6.9372 15.073C6.43204 15.073 6.02116 14.6605 6.02116 14.1537C6.02116 13.6469 6.43204 13.2347 6.9372 13.2347C7.44234 13.2347 7.85325 13.6469 7.85325 14.1537C7.85325 14.6605 7.44234 15.073 6.9372 15.073ZM17.3913 9.53705L19.2222 6.35598C19.3272 6.17313 19.2647 5.93959 19.0828 5.834C18.9008 5.72871 18.6677 5.79135 18.5624 5.97389L16.7087 9.19523C15.291 8.54619 13.6989 8.18468 12 8.18468C10.3011 8.18468 8.70893 8.54619 7.29131 9.19523L5.43751 5.97389C5.33226 5.79135 5.09916 5.72871 4.9172 5.834C4.73524 5.93959 4.67251 6.17313 4.77776 6.35598L6.60865 9.53705C3.46479 11.2524 1.31456 14.4454 1 18.2177H23C22.6851 14.4454 20.5349 11.2524 17.3913 9.53705Z"
-          fill="currentColor"
-          id="Vector"
-        />
-      </g>
-    </svg>
     <span
-      class="css-6g4m4t-PlatformTag"
+      class="inline-flex items-center emotion-0"
+      data-text="true"
     >
-      Android
+      <span
+        class="!text-inherit !font-medium emotion-1"
+        data-text="true"
+      >
+        Only for:
+         
+      </span>
+      <div
+        class="!bg-palette-green3 !text-palette-green12 !border-palette-green4 select-none emotion-2"
+      >
+        <svg
+          class="opacity-80 icon-xs text-palette-green12"
+          fill="none"
+          role="img"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g
+            id="android-custom-icon"
+          >
+            <path
+              d="M17.0628 15.073C16.5576 15.073 16.1467 14.6605 16.1467 14.1537C16.1467 13.6469 16.5576 13.2347 17.0628 13.2347C17.5679 13.2347 17.9788 13.6469 17.9788 14.1537C17.9788 14.6605 17.5679 15.073 17.0628 15.073ZM6.9372 15.073C6.43204 15.073 6.02116 14.6605 6.02116 14.1537C6.02116 13.6469 6.43204 13.2347 6.9372 13.2347C7.44234 13.2347 7.85325 13.6469 7.85325 14.1537C7.85325 14.6605 7.44234 15.073 6.9372 15.073ZM17.3913 9.53705L19.2222 6.35598C19.3272 6.17313 19.2647 5.93959 19.0828 5.834C18.9008 5.72871 18.6677 5.79135 18.5624 5.97389L16.7087 9.19523C15.291 8.54619 13.6989 8.18468 12 8.18468C10.3011 8.18468 8.70893 8.54619 7.29131 9.19523L5.43751 5.97389C5.33226 5.79135 5.09916 5.72871 4.9172 5.834C4.73524 5.93959 4.67251 6.17313 4.77776 6.35598L6.60865 9.53705C3.46479 11.2524 1.31456 14.4454 1 18.2177H23C22.6851 14.4454 20.5349 11.2524 17.3913 9.53705Z"
+              fill="currentColor"
+              id="Vector"
+            />
+          </g>
+        </svg>
+        <span
+          class="emotion-3"
+        >
+          Android
+        </span>
+      </div>
+      <br />
     </span>
   </div>
-  <br />
   <p
-    class="mb-4 css-1kfqm4n-TextComponent"
+    class="mb-3.5 emotion-4"
     data-text="true"
   >
     Gets the referrer URL of the installed app with the 
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-5"
       href="https://developer.android.com/google/play/installreferrer"
       rel="noopener noreferrer"
       target="_blank"
     >
       <code
-        class="css-1a6y07t-TextComponent"
+        class="emotion-6"
         data-text="true"
       >
         Install Referrer API
@@ -67,38 +77,60 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
     
 from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
   </p>
-  <p
-    class="css-1eksndl-BoxSectionHeader"
-    data-text="true"
+  <div
+    class="mb-3.5 last:[&>*]:mb-0"
   >
-    Example
-  </p>
-  <pre>
+    <p
+      class="!mt-1 emotion-7"
+      data-text="true"
+    >
+      <span
+        class="text-inherit flex flex-row gap-2 items-center emotion-8"
+        data-text="true"
+      >
+        <svg
+          class="icon-sm text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g
+            id="code-square-01-outline-icon"
+          >
+            <path
+              d="M14.5 15L17.5 12L14.5 9M9.5 9L6.5 12L9.5 15M7.8 21H16.2C17.8802 21 18.7202 21 19.362 20.673C19.9265 20.3854 20.3854 19.9265 20.673 19.362C21 18.7202 21 17.8802 21 16.2V7.8C21 6.11984 21 5.27976 20.673 4.63803C20.3854 4.07354 19.9265 3.6146 19.362 3.32698C18.7202 3 17.8802 3 16.2 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V16.2C3 17.8802 3 18.7202 3.32698 19.362C3.6146 19.9265 4.07354 20.3854 4.63803 20.673C5.27976 21 6.11984 21 7.8 21Z"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
+        Example
+      </span>
+    </p>
     <pre
-      class="css-1tmj8fm"
+      class="relative border border-secondary p-4 my-4 bg-subtle last:mb-0 emotion-9"
       data-text="true"
     >
       <code
-        class="css-1r5zesl"
+        class="emotion-10"
       >
         <span
           class="token keyword"
         >
           await
         </span>
-         
-        <span
-          class="token maybe-class-name"
-        >
-          Application
-        </span>
+         Application
         <span
           class="token punctuation"
         >
           .
         </span>
         <span
-          class="token method function property-access"
+          class="token function"
         >
           getInstallReferrerAsync
         </span>
@@ -128,7 +160,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
 
       </code>
     </pre>
-  </pre>
+  </div>
 </div>
 `;
 
@@ -137,95 +169,155 @@ exports[`APISectionUtils.CommentTextBlock component no comment 1`] = `<div />`;
 exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 <div>
   <a
-    class="css-1na8e0o-A"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
     target="_blank"
   >
     Promise
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     void
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
 <div>
   <a
-    class="css-1na8e0o-A"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
     target="_blank"
   >
     Promise
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#appleauthenticationcredential"
     >
       AppleAuthenticationCredential
     </a>
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName Record 1`] = `
 <div>
   Record
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     string
-    , 
+    <span
+      class="text-quaternary"
+    >
+      , 
+    </span>
   </span>
   <span>
     any
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
 <div>
   Record
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     string
-    , 
+    <span
+      class="text-quaternary"
+    >
+      , 
+    </span>
   </span>
   <span>
     <span>
       number
-       | 
+      <span
+        class="text-quaternary"
+      >
+         | 
+      </span>
     </span>
     <span>
       boolean
-       | 
+      <span
+        class="text-quaternary"
+      >
+         | 
+      </span>
     </span>
     <span>
       string
     </span>
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName alternative generic object notation 1`] = `
 <div>
-  { [column]: any }
+  <span
+    class="text-quaternary"
+  >
+    {
+  </span>
+   [column]: any 
+  <span
+    class="text-quaternary"
+  >
+    }
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 <div>
   <a
-    class="css-1na8e0o-A"
-    href="#speechsynthesisevent"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
+    href="https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent"
+    rel="noopener noreferrer"
+    target="_blank"
   >
     SpeechSynthesisEvent
   </a>
@@ -235,7 +327,7 @@ exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 exports[`APISectionUtils.resolveTypeName custom type array 1`] = `
 <div>
   <a
-    class="css-1na8e0o-A"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="#appleauthenticationscope"
   >
     AppleAuthenticationScope
@@ -253,41 +345,61 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
 <div>
   <a
-    class="css-1na8e0o-A"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys"
     rel="noopener noreferrer"
     target="_blank"
   >
     Pick
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#fontresource"
     >
       FontResource
     </a>
-    , 
+    <span
+      class="text-quaternary"
+    >
+      , 
+    </span>
   </span>
   <span>
     'display'
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName function 1`] = `
 <div>
-  () =&gt;
+  <span
+    class="text-quaternary"
+  >
+    () =&gt;
+  </span>
    
   <span>
     void
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#speecheventcallback"
     >
       SpeechEventCallback
@@ -298,12 +410,21 @@ exports[`APISectionUtils.resolveTypeName function 1`] = `
 
 exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
 <div>
-  (
+  <span
+    class="text-quaternary"
+  >
+    (
+  </span>
   <span>
     error
-    : 
+    <span
+      class="text-quaternary"
+    >
+      :
+    </span>
+     
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
       target="_blank"
@@ -311,16 +432,29 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
       Error
     </a>
   </span>
-  ) 
-  =&gt;
+  <span
+    class="text-quaternary"
+  >
+    )
+  </span>
+   
+  <span
+    class="text-quaternary"
+  >
+    =&gt;
+  </span>
    
   <span>
     void
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#speecheventcallback"
     >
       SpeechEventCallback
@@ -331,12 +465,21 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
 
 exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 1`] = `
 <div>
-  (
+  <span
+    class="text-quaternary"
+  >
+    (
+  </span>
   <span>
     error
-    : 
+    <span
+      class="text-quaternary"
+    >
+      :
+    </span>
+     
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
       target="_blank"
@@ -344,8 +487,17 @@ exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 
       Error
     </a>
   </span>
-  ) 
-  =&gt;
+  <span
+    class="text-quaternary"
+  >
+    )
+  </span>
+   
+  <span
+    class="text-quaternary"
+  >
+    =&gt;
+  </span>
    
   void
 </div>
@@ -360,61 +512,89 @@ exports[`APISectionUtils.resolveTypeName generic type 1`] = `
 exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 <div>
   <a
-    class="css-1na8e0o-A"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="#pagedinfo"
   >
     PagedInfo
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#asset"
     >
       Asset
     </a>
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
 <div>
   <a
-    class="css-1na8e0o-A"
+    class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
     target="_blank"
   >
     Promise
   </a>
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#pagedinfo"
     >
       PagedInfo
     </a>
-    &lt;
+    <span
+      class="text-quaternary"
+    >
+      &lt;
+    </span>
     <span>
       <a
-        class="css-1na8e0o-A"
+        class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
         href="#asset"
       >
         Asset
       </a>
     </span>
+    <span
+      class="text-quaternary"
+    >
+      &gt;
+    </span>
+  </span>
+  <span
+    class="text-quaternary"
+  >
     &gt;
   </span>
-  &gt;
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName object reflection 1`] = `
 <div>
-  {
+  <span
+    class="text-quaternary"
+  >
+    {
 
+  </span>
   <span>
       
     target: 
@@ -430,58 +610,94 @@ exports[`APISectionUtils.resolveTypeName object reflection 1`] = `
     
 
   </span>
-  }
+  <span
+    class="text-quaternary"
+  >
+    }
+  </span>
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
 <div>
   StyleProp
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
       rel="noopener noreferrer"
       target="_blank"
     >
       Omit
     </a>
-    &lt;
+    <span
+      class="text-quaternary"
+    >
+      &lt;
+    </span>
     <span>
       <a
-        class="css-1na8e0o-A"
+        class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
         href="https://reactnative.dev/docs/view-style-props"
         rel="noopener noreferrer"
         target="_blank"
       >
         ViewStyle
       </a>
-      , 
+      <span
+        class="text-quaternary"
+      >
+        , 
+      </span>
     </span>
     <span>
       <span>
         'backgroundColor'
-         | 
+        <span
+          class="text-quaternary"
+        >
+           | 
+        </span>
       </span>
       <span>
         'borderRadius'
       </span>
     </span>
+    <span
+      class="text-quaternary"
+    >
+      &gt;
+    </span>
+  </span>
+  <span
+    class="text-quaternary"
+  >
     &gt;
   </span>
-  &gt;
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName query type 1`] = `
 <div>
   React.ComponentProps
-  &lt;
+  <span
+    class="text-quaternary"
+  >
+    &lt;
+  </span>
   <span>
     View
   </span>
-  &gt;
+  <span
+    class="text-quaternary"
+  >
+    &gt;
+  </span>
 </div>
 `;
 
@@ -490,7 +706,7 @@ exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
   [
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#sortbykey"
     >
       SortByKey
@@ -508,12 +724,16 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
 <div>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#speecheventcallback"
     >
       SpeechEventCallback
     </a>
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     null
@@ -523,25 +743,37 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
 
 exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
 <div>
-  (
+  <span
+    class="text-quaternary"
+  >
+    (
+  </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#resultseterror"
     >
       ResultSetError
     </a>
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#resultset"
     >
       ResultSet
     </a>
   </span>
-  )
+  <span
+    class="text-quaternary"
+  >
+    )
+  </span>
   []
 </div>
 `;
@@ -550,7 +782,11 @@ exports[`APISectionUtils.resolveTypeName union with array 1`] = `
 <div>
   <span>
     number[]
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     null
@@ -562,17 +798,21 @@ exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = 
 <div>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#assetref"
     >
       AssetRef
       []
     </a>
-     | 
+    <span
+      class="text-quaternary"
+    >
+       | 
+    </span>
   </span>
   <span>
     <a
-      class="css-1na8e0o-A"
+      class="cursor-pointer decoration-0 hocus:opacity-80 emotion-0"
       href="#assetref"
     >
       AssetRef

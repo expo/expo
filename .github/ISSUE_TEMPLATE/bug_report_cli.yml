@@ -36,14 +36,17 @@ body:
     attributes:
       label: Environment
       description: Run the `npx expo-env-info` command and paste its output in the field below.
+      render: text
     validations:
       required: true
   - type: textarea
     attributes:
       label: Minimal reproducible example
       description: |
-        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project.
-        If a reproducible demo is not provided, your issue will be closed. You must also test your issue against the latest CLI version to ensure that it hasn't already been resolved.
+        A link to a GitHub repository containing a minimal reproducible example. This repository should include as little code as possible and not include extraneous dependencies. The most effective reproducible examples are created by starting a new project from scratch and adding in only the necessary pieces to reproduce the issue. Do not share your entire project.
+        List the steps you took to generate the reproducible example within that repository in the README or the summary field below along with any instructions needed to run the project.
+        You must also test your issue against the latest CLI version to ensure that it hasn't already been resolved.
+        If a reproducible example is not provided, your issue will be closed.
         [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
     validations:
       required: true

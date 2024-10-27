@@ -3,33 +3,30 @@ title: Localization
 description: Learn about getting started and configuring localization in an Expo project using expo-localization.
 ---
 
-import { SnackInline } from '~/ui/components/Snippet';
-import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
 
-If you want your app to be easy to use for users who speak different languages or come from different cultures, you should localize it.
+If you want your app to be easy to use for users who speak different languages or come from different cultures, you should localize it. Localizing an app makes it adapt to the locale of the user's device. The app will show translations and currencies that the user knows and understands. Numbers, lists, and more will be formatted in a way that the user is used to.
 
-Localizing an app makes it adapt to the locale of the user's device. The app will show translations and currencies that the user knows and understands. Numbers, lists, and more will format in a way that the user is used to.
+This guide uses the `expo-localization` library for accessing user language settings and adding support for multiple languages. It uses `i18n-js` as an example to add multi-language support.
 
 ## Getting the user's language
 
-Use the [`expo-localization`](../versions/latest/sdk/localization) module to get the user's current language. Install the package by running the following command:
+Use the [`expo-localization`](/versions/latest/sdk/localization/) library to get the user's current language. Install the package by running the following command:
 
 <Terminal cmd={['$ npx expo install expo-localization']} />
 
 Then, you will be able to access localization methods and data in your app:
 
-```ts
+```tsx
 import { getLocales } from 'expo-localization';
 
 const deviceLanguage = getLocales()[0].languageCode;
 ```
 
-The `getLocales` method returns the current locale based on the system settings of the device.
+The `getLocales` method returns the current locale based on the system settings of the device. On newer Android and iOS versions, app language can be set per app, so you usually don't need to build a custom UI to allow users to change the current locale inside of your app.
 
-On new Android and iOS versions, app language can be set per app, so you usually don't need to build a custom UI to allow users to change the current locale inside of your app.
-
-Sometimes, it makes sense to build UI to allow the user to set other localization preferences on a per-app basis. As a general rule, you should allow the user to change the following:
+Sometimes, it makes sense to build a UI to allow the user to set other localization preferences on a per-app basis. As a general rule, you should allow the user to change the following:
 
 - Localized units if your app makes at least a moderate use of them (such as metric/imperial measurements, currency, temperature, and more)
 - Other preferences if there's no API to get the default value on platforms you want to support (check [`expo-localization`](/versions/latest/sdk/localization) API documentation for details)
@@ -74,7 +71,7 @@ On iOS, when a user changes the device's language, the app will reset. This mean
 
 ```tsx
 import { View, StyleSheet, Text } from 'react-native';
-import * as Localization from 'expo-localization';
+import { getLocales } from 'expo-localization';
 import { I18n } from 'i18n-js';
 
 // Set the key-value pairs for the different languages you want to support.
@@ -85,7 +82,7 @@ const translations = {
 const i18n = new I18n(translations);
 
 // Set the locale once at the beginning of your app.
-i18n.locale = Localization.locale;
+i18n.locale = getLocales()[0].languageCode ?? 'en';
 
 // When a value is missing from a language it'll fall back to another language with the key present.
 i18n.enableFallback = true;
@@ -99,12 +96,11 @@ export default function App() {
         {i18n.t('welcome')} {i18n.t('name')}
       </Text>
       <Text>Current locale: {i18n.locale}</Text>
-      <Text>Device locale: {Localization.getLocales()[0].languageCode}</Text>
+      <Text>Device locale: {getLocales()[0].languageCode}</Text>
     </View>
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -117,31 +113,23 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 });
-/* @end */
 ```
 
 </SnackInline>
 
-<Collapsible summary="Using other translation libraries">
+### Other translation libraries
 
-While this guide uses `i18n-js` as an example, there are many other libraries that can help you with translations, and they each have different features:
+This guide uses `i18n-js` as an example. Other libraries can also help you with translations, and each has different features:
 
-- Creating translations is a huge effort, and you'd ideally want to hire someone. It's also hard for them to edit translations directly in your code. Some translation libraries can integrate with translation management tools (essentially a web service that lets you outsource, auto-generate, or make it easier to create translations).
+- Creating translations is a huge effort. Consider hiring experts and using translation libraries with management tools for easier edits and automation. Some translation libraries can integrate with translation management tools (essentially, a web service that lets you outsource, auto-generate, or make it easier to create translations).
 
-- Some libraries make it easy to move the component structure around (not just words of your copy) based on translation strings. Imagine you want to localize a string that includes a `<Pressable>` link, and you want the link to be in a different order from the rest of the text, depending on the translation.
+- Some libraries allow rearranging component structures based on translation strings. For example, you want to localize a string that includes a `<Pressable>` link, and depending on the translation you want the link to be in a different order from the rest of the text.
 
-Here are some libraries that can be a good option depending on your needs:
+Here are some libraries:
 
-- [`React i18next`](https://react.i18next.com/)
+- [`React i18next`](https://react.i18next.com/) is a stable, well-maintained library based on `i18next`.
 
-  `React i18next` is a stable, well-maintained library based on `i18next`.
-
-- [`typesafe-i18n`](https://github.com/ivanhofer/typesafe-i18n)
-
-  `typesafe-i18n` compiles translations to save space in the production bundle. It also generates TypeScript types for your translations so that you can use them in your code and get autocomplete and type safety.
-  It requires the `Intl` API for some features, so it's only usable in projects with Hermes enabled.
-
-</Collapsible>
+- [`typesafe-i18n`](https://github.com/ivanhofer/typesafe-i18n) compiles translations to save space in the production bundle. It also generates TypeScript types for your translations so that you can use them in your code and get autocomplete and type safety. It requires the `Intl` API for some features, so it's only usable in projects with Hermes enabled.
 
 ### Translating app metadata
 
@@ -177,9 +165,7 @@ Now, iOS knows to set the display name of your app to `こんにちは` whenever
 
 Several regions around the world write text from right to left. If you want to localize your app, so it looks as expected in RTL languages, you need to make sure your app handles these layout and text direction changes accordingly.
 
-To enable RTL support in your application using SDK 48 or later, install the `expo-localization` package and add the following properties in app config:
-
-<Terminal cmd={['$ npx expo install expo-localization']} />
+To enable RTL support, use the [`expo-localization`](/versions/latest/sdk/localization/#installation) config plugin and enable `extra.supportsRTL` property in app config:
 
 ```json app.json
 {
@@ -196,6 +182,22 @@ This enables RTL when your app is loaded in Expo Go, in Expo dev Client, and in 
 
 When an application starts, Expo checks if the current device locale should render in RTL layout to look correctly. For example, an app marked to support RTL in the app config file will render in RTL mode in Hebrew or Arabic locale.
 
+### Forcing RTL layout
+
+You can also force the RTL layout for testing or for applications that are only localized for RTL locales by enabling `extra.forcesRTL` property in the app config:
+
+```json app.json
+{
+  "expo": {
+    "extra": {
+      "supportsRTL": true,
+      "forcesRTL": true
+    },
+    "plugins": ["expo-localization"]
+  }
+}
+```
+
 <Collapsible summary="Dynamically overriding RTL settings">
 
 If you want to override the default RTL detection from your application code dynamically, you cannot use the static configuration in app config. Instead, apply these changes dynamically from your application code.
@@ -207,10 +209,9 @@ label="Overriding RTL settings"
 dependencies={['expo-updates', 'expo-constants']}
 >
 
-```jsx
+```tsx
 import { Text, View, StyleSheet, I18nManager, Platform } from 'react-native';
 import Constants from 'expo-constants';
-
 import * as Updates from 'expo-updates';
 
 export default function App() {
@@ -250,14 +251,14 @@ const styles = StyleSheet.create({
 
 </Collapsible>
 
-## Making your app behave correctly on RTL locales
+## Making an app behave correctly on RTL locales
 
 ### Layouts and views
 
-You don't need to manually adjust `<View>` styling properties based on locale. You can use properties like `justifyContext`, `alignItems`, and others. Their property values change behavior as required.
+You don't need to manually adjust `<View>` styling properties based on locale. You can use properties like `justifyContent`, `alignItems`, and others. Their property values change behavior as required.
 
 - On LTR locales, `start` and `end` are the same as `left` and `right`.
-- On RTL locales, `start` and `end` are the same as `right` and `left`, respectively.
+- On RTL locales, `start` and `end` are the same as `right` and `left`.
 
 > **info** For more details on how RTL works in React Native check out the React Native [blog article](https://reactnative.dev/blog/2016/08/19/right-to-left-support-for-react-native-apps) introducing RTL support.
 
@@ -265,8 +266,7 @@ You don't need to manually adjust `<View>` styling properties based on locale. Y
 
 Web support for RTL layouts requires no app config changes.
 
-Expo uses `react-native-web` for running Expo projects in the browser.
-To make `react-native-web` automatically adapt to locale direction, add a `dir` property to your root `<View>` component.
+Expo uses `react-native-web` for running Expo projects in the browser. To make `react-native-web` automatically adapt to locale direction, add a `dir` property to your root `<View>` component.
 
 ```tsx App.tsx
 import { View } from 'react-native';
@@ -280,11 +280,9 @@ return <View dir={getLocales()[0].textDirection || 'ltr'}>//...</View>;
 
 ### Text alignment
 
-The React Native's `textDirection` property does not accept `start` or `end` values that you can use in flex properties. Instead, `left` effectively works as `start` (aligns to the left on LTR and to the right on RTL), and `right` works as `end`.
+The React Native's `textDirection` property does not accept `start` or `end` values that you can use in flex properties. Instead, `left` effectively works as `start` (aligns to the left on LTR and the right on RTL), and `right` works as `end`.
 
-However, the default unset value of `textDirection` property signifies the actual left (aligns to the left both on LTR and RTL).
-
-Because of this, each `<Text>` tag needs to have the `textDirection: left` or `textDirection: right` style set if you want it to be aligned correctly.
+However, the default unset value of `textDirection` property signifies the actual left (aligns to the left both on LTR and RTL). This means each `<Text>` tag should have the `textDirection: left` or `textDirection: right` style set if you want it to be aligned correctly.
 
 It's best to define this style in your custom reusable `<Text>` component that you can then import everywhere you need to render text strings.
 
@@ -299,8 +297,7 @@ export default MobileText;
 
 #### Web support
 
-For each text tag, you need to add the `lang` property with the current locale identifier.
-It's best to define this style in a custom reusable component.
+For each text tag, you need to add the `lang` property with the current locale identifier. It's best to define this style in a custom reusable component.
 
 ```tsx WebText.tsx
 import { getLocales } from 'expo-localization';
@@ -327,13 +324,11 @@ If you need to use different icons for LTR/RTL or change styles based on this se
 
 ## Locale settings and units
 
-Expo provides the `expo-localization` module to allow you to read the user's locale and other preferences.
+Expo provides the `expo-localization` library to allow you to read the user's locale and other preferences. You can use synchronous `getLocales()` and `getCalendars()` methods to get the current locale settings of the user device:
 
-You can use synchronous `getLocales()` and `getCalendars()` methods to get the current locale settings of the user device.
+- `getLocales()` returns a list of locales based on the order in which the user prefers them. There will always be at least one locale in the list.
 
-`getLocales()` returns a list of locales based on the order in which the user prefers them. There will always be at least one locale in the list.
-
-`getCalendars()` returns a list of calendars based on the order in which the user prefers them. There will always be at least one calendar on the list.
+- `getCalendars()` returns a list of calendars based on the order in which the user prefers them. There will always be at least one calendar on the list.
 
 ```ts
 import { getLocales, getCalendars } from 'expo-localization';
@@ -354,11 +349,11 @@ const { calendar, timeZone, uses24hourClock, firstWeekday } = getCalendars()[0];
 ```
 
 <Collapsible summary="Limitations">
-  There are a few limitations to keep in mind when relying on auto-detected locale preferences from
-  `expo-localization`: - There is yet to be a way to read temperature units from user preferences.
-  On Android, you can use a lookup table based on locale, but on iOS, the user can change it in
-  device preferences. - Some properties can be null when they are unavailable on the current
-  platform.
+There are a few limitations to keep in mind when relying on auto-detected locale preferences from `expo-localization`.
+
+- There is yet to be a way to read temperature units from user preferences. On Android, you can use a lookup table based on locale. However, on iOS, the user can change it in device preferences.
+- Some properties can be null when they are unavailable on the current platform.
+
 </Collapsible>
 
 ## Intl API

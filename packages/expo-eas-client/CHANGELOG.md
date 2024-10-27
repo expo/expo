@@ -10,6 +10,31 @@
 
 ### 💡 Others
 
+## 0.13.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.12.0 — 2024-04-18
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 0.11.2 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.1 - 2024-01-10
+
+_This version does not introduce any user-facing changes._
+
 ## 0.11.0 — 2023-11-14
 
 ### 🛠 Breaking changes

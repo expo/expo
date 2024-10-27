@@ -1,15 +1,18 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.15.0",
+  "version": "0.19.0-preview.1",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
+  "types": "build/ExpoMetroConfig.d.ts",
   "scripts": {
-    "watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
-    "prepare": "yarn run clean && yarn build",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint .",
-    "test": "jest"
+    "build": "expo-module tsc",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepare": "expo-module clean && expo-module tsc",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck",
+    "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
   "repository": {
     "type": "git",
@@ -27,32 +30,33 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-config#readme",
   "files": [
     "build",
-    "transformer",
     "file-store",
     "babel-transformer"
   ],
   "dependencies": {
-    "babel-preset-fbjs": "^3.4.0",
-    "@expo/config": "~8.4.0",
-    "@expo/env": "~0.1.0",
-    "@expo/json-file": "~8.2.37",
+    "@babel/core": "^7.20.0",
+    "@babel/generator": "^7.20.5",
+    "@babel/parser": "^7.20.0",
+    "@babel/types": "^7.20.0",
+    "@expo/config": "~10.0.0",
+    "@expo/env": "~0.4.0",
+    "@expo/json-file": "~9.0.0",
+    "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
-    "find-yarn-workspace-root": "~2.0.0",
+    "fs-extra": "^9.1.0",
     "getenv": "^1.0.0",
+    "glob": "^10.4.2",
     "jsc-safe-url": "^0.2.4",
-    "lightningcss": "~1.19.0",
-    "path-to-regexp": "~1.8.0",
-    "postcss": "~8.4.21",
-    "resolve-from": "^5.0.0",
-    "sucrase": "^3.20.0"
-  },
-  "peerDependencies": {
-    "@babel/core": "*",
-    "@react-native/babel-preset": "*"
+    "lightningcss": "~1.27.0",
+    "minimatch": "^3.0.4",
+    "postcss": "~8.4.32",
+    "resolve-from": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
+    "@jridgewell/trace-mapping": "^0.3.20",
+    "dedent": "^1.5.3",
+    "expo-module-scripts": "^4.0.0",
     "sass": "^1.60.0"
   },
   "publishConfig": {

@@ -4,37 +4,11 @@ sidebar_title: Use Hermes
 description: A guide on configuring Hermes for both Android and iOS in an Expo project.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
-
 [Hermes](https://hermesengine.dev/) is a JavaScript engine optimized for React Native. By compiling JavaScript into bytecode ahead of time, Hermes can improve your app start-up time. The binary size of Hermes is also smaller than other JavaScript engines, such as JavaScriptCore (JSC). It also uses less memory at runtime, which is particularly valuable on lower-end Android devices.
 
 ## Support
 
-The Hermes engine is the default JavaScript engine used by Expo and it is fully supported across all Expo tooling. See the table below to check if your project is using a compatible version:
-
-| Platform | Expo Go | [Development Builds](/develop/development-builds/introduction/) |
-| -------- | ------- | --------------------------------------------------------------- |
-| Android  | SDK 42  | SDK 42                                                          |
-| iOS      | SDK 47  | SDK 43                                                          |
-
-<Collapsible summary="Using SDK 47 or lower?">
-
-For SDK 47 and lower, JSC is the default JavaScript engine and to use Hermes you need to add the `jsEngine` field in [app config](/workflow/configuration):
-
-{/* prettier-ignore */}
-```js
-{
-  "expo": {
-    /* @info Add the "jsEngine" field here. Supported values are "hermes" or "jsc" */
-    "jsEngine": "hermes"
-   /* @end */
-  }
-}
-```
-
-Development builds will need to be recompiled with `eas build`.
-
-</Collapsible>
+The Hermes engine is the default JavaScript engine used by Expo and it is fully supported across all Expo tooling.
 
 ### Switch JavaScript engine on a specific platform
 
@@ -58,7 +32,7 @@ You may want to use Hermes on one platform and JSC on another. One way to do thi
 
 Publishing updates with `eas update` and `npx expo export` will generate Hermes bytecode bundles and their source maps.
 
-Please note that the Hermes bytecode format may change between different Hermes versions — an update produced for a specific version of Hermes will not run on a different version of Hermes. Starting from Expo SDK 46 (React Native 0.69), [Hermes is bundled within React Native](https://reactnative.dev/architecture/bundled-hermes). Updating React Native version or Hermes version can be thought of in the same way as updating any other native module. So if you update the `react-native` version you should also update the `runtimeVersion` in **app.json**. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older Hermes version that is incompatible with the updated bytecode format. See [`runtimeVersion`](/eas-update/runtime-versions/) for more information.
+Note that the Hermes bytecode format may change between different Hermes versions &mdash; an update produced for a specific version of Hermes will not run on a different version of Hermes. Starting from Expo SDK 46 (React Native 0.69), [Hermes is bundled within React Native](https://reactnative.dev/architecture/bundled-hermes). Updating React Native version or Hermes version can be thought of in the same way as updating any other native module. So if you update the `react-native` version you should also update the `runtimeVersion` in **app.json**. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older Hermes version that is incompatible with the updated bytecode format. See [`runtimeVersion`](/eas-update/runtime-versions/) for more information.
 
 ## JavaScript debugger
 
@@ -67,7 +41,7 @@ To debug JavaScript code running with Hermes, you can start your project with `n
 Alternatively, you can use the JavaScript inspector from the following tools:
 
 - [Open Google Chrome DevTools manually](https://reactnative.dev/docs/hermes#debugging-js-on-hermes-using-google-chromes-devtools)
-- [Flipper](https://fbflipper.com/)
+- [Experimental new React Native debugger](https://reactnative.dev/docs/debugging?js-debugger=new-debugger)
 
 ### Troubleshooting
 
@@ -107,6 +81,6 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 
 ### Can I use Remote Debugging with Hermes?
 
-One of the many limitations of [remote debugging](/more/glossary-of-terms/#remote-debugging) is that it does not work with modules built on top of [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91), such as [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2 or higher.
+One of the many limitations of [remote debugging](/more/glossary-of-terms/#remote-debugging) is that it does not work with modules built on top of [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91), such as [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated) version 2 or higher.
 
 Hermes supports [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/v8/) to debug JavaScript in place by connecting to the engine running on the device, as opposed to remote debugging, which executes JavaScript within a desktop Chrome tab. Hermes apps use this debugging technique automatically when you open the debugger in Expo Go or a development build.

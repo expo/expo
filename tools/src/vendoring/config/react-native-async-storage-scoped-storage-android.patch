@@ -42,7 +42,7 @@
  @ReactModule(name = AsyncStorageModule.NAME)
 -public final class AsyncStorageModule
 +public class AsyncStorageModule
-     extends ReactContextBaseJavaModule implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
+     extends NativeAsyncStorageModuleSpec implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
  
    // changed name to not conflict with AsyncStorage from RN repo
 @@ -43,7 +43,7 @@ public final class AsyncStorageModule

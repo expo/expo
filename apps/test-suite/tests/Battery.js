@@ -62,7 +62,6 @@ export async function test({ describe, it, expect, jasmine }) {
       });
 
       describe(`Event listeners`, () => {
-        // TODO(Bacon) Add detox & spies
         // TODO: check that events don't get fired after we unsubscribe
         // but we currently don't have a way to programmatically set battery statuses
 

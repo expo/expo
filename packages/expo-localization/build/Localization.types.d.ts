@@ -1,20 +1,20 @@
 export type Localization = {
     /**
      * Three-character ISO 4217 currency code. Returns `null` on web.
-     *
-     * @example `'USD'`, `'EUR'`, `'CNY'`, `null`
+     * @example
+     * `'USD'`, `'EUR'`, `'CNY'`, `null`
      */
     currency: string | null;
     /**
      * Decimal separator used for formatting numbers.
-     *
-     * @example `','`, `'.'`
+     * @example
+     * `','`, `'.'`
      */
     decimalSeparator: string;
     /**
      * Digit grouping separator used when formatting numbers larger than 1000.
-     *
-     * @example `'.'`, `''`, `','`
+     * @example
+     * `'.'`, `''`, `','`
      */
     digitGroupingSeparator: string;
     /**
@@ -36,22 +36,22 @@ export type Localization = {
     /**
      * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
      * consisting of a two-character language code and optional script, region and variant codes.
-     *
-     * @example `'en'`, `'en-US'`, `'zh-Hans'`, `'zh-Hans-CN'`, `'en-emodeng'`
+     * @example
+     * `'en'`, `'en-US'`, `'zh-Hans'`, `'zh-Hans-CN'`, `'en-emodeng'`
      */
     locale: string;
     /**
      * List of all the native languages provided by the user settings.
      * These are returned in the order that the user defined in the device settings.
-     *
-     * @example `['en', 'en-US', 'zh-Hans', 'zh-Hans-CN', 'en-emodeng']`
+     * @example
+     * `['en', 'en-US', 'zh-Hans', 'zh-Hans-CN', 'en-emodeng']`
      */
     locales: string[];
     /**
      * The region code for your device that comes from the Region setting under Language & Region on iOS.
      * This value is always available on iOS, but might return `null` on Android or web.
-     *
-     * @example `'US'`, `'NZ'`, `null`
+     * @example
+     * `'US'`, `'NZ'`, `null`
      */
     region: string | null;
     /**
@@ -59,46 +59,79 @@ export type Localization = {
      * On Web time zone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a
      * better estimation you could use the moment-timezone package but it will add significant bloat to
      * your website's bundle size.
-     *
-     * @example `'America/Los_Angeles'`
+     * @example
+     * `'America/Los_Angeles'`
      */
     timezone: string;
 };
 export type Locale = {
     /**
      * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) with a region code.
-     * @example `'en-US'`, `'es-419'`, `'pl-PL'`.
+     * @example
+     * `'en-US'`, `'es-419'`, `'pl-PL'`.
      */
     languageTag: string;
     /**
      * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) without the region code.
-     * @example `'en'`, `'es'`, `'pl'`.
+     * @example
+     * `'en'`, `'es'`, `'pl'`.
      */
     languageCode: string | null;
     /**
      * The region code for your device that comes from the Region setting under Language & Region on iOS, Region settings on Android and is parsed from locale on Web (can be `null` on Web).
+     * @example
+     * `'US'`.
      */
     regionCode: string | null;
     /**
+     * The region code for the preferred language. When the language is not region-specific, it returns the same value as `regionCode`. When the language is region-specific, it returns the region code for the language (`en-CA` -> `CA`).
+     * Prefer using `regionCode` for any internalization purposes.
+     * @example
+     * `'US'`.
+     */
+    languageRegionCode: string | null;
+    /**
      * Currency code for the locale.
+     * On iOS, it's the currency code from the `Region` setting under Language & Region, not for the current locale.
+     * On Android, it's the currency specifc to the locale in the list, as there are no separate settings for selecting a region.
      * Is `null` on Web, use a table lookup based on region instead.
-     * @example `'USD'`, `'EUR'`, `'PLN'`.
+     * @example
+     * `'USD'`, `'EUR'`, `'PLN'`.
      */
     currencyCode: string | null;
     /**
-     * Currency symbol for the locale.
-     * Is `null` on Web, use a table lookup based on region (if available) instead.
-     * @example `'$'`, `'€'`, `'zł'`.
+     * Currency symbol for the currency specified by `currencyCode`.
+     * @example
+     * `'$'`, `'€'`, `'zł'`.
      */
     currencySymbol: string | null;
     /**
+     * Currency code for the locale.
+     * On iOS, it's the currency code for the current locale in the list, not the device region.
+     * On Android, it's equal to `currencyCode`.
+     * Is `null` on Web.
+     * Prefer using `currencyCode` for any internalization purposes.
+     * @example
+     * `'USD'`, `'EUR'`, `'PLN'`.
+     */
+    langageCurrencyCode: string | null;
+    /**
+     * Currency symbol for the currency specified by `langageCurrencyCode`.
+     * Prefer using `currencySymbol` for any internalization purposes.
+     * @example
+     * `'$'`, `'€'`, `'zł'`.
+     */
+    langageCurrencySymbol: string | null;
+    /**
      * Decimal separator used for formatting numbers with fractional parts.
-     * @example `'.'`, `','`.
+     * @example
+     * `'.'`, `','`.
      */
     decimalSeparator: string | null;
     /**
      * Digit grouping separator used for formatting large numbers.
-     * @example `'.'`, `','`.
+     * @example
+     * `'.'`, `','`.
      */
     digitGroupingSeparator: string | null;
     /**
@@ -183,19 +216,21 @@ export type Calendar = {
      */
     calendar: CalendarIdentifier | null;
     /**
-     * True when current device settings use 24 hour time format.
+     * True when current device settings use 24-hour time format.
      * Can be null on some browsers that don't support the [hourCycle](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/hourCycle) property in [Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) API.
      */
     uses24hourClock: boolean | null;
     /**
      * The first day of the week. For most calendars Sunday is numbered `1`, with Saturday being number `7`.
      * Can be null on some browsers that don't support the [weekInfo](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/weekInfo) property in [Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) API.
-     * @example `1`, `7`.
+     * @example
+     * `1`, `7`.
      */
     firstWeekday: Weekday | null;
     /**
      * Time zone for the calendar. Can be `null` on Web.
-     * @example `'America/Los_Angeles'`, `'Europe/Warsaw'`, `'GMT+1'`.
+     * @example
+     * `'America/Los_Angeles'`, `'Europe/Warsaw'`, `'GMT+1'`.
      */
     timeZone: string | null;
 };

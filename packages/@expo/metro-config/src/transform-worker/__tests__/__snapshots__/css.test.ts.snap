@@ -10,23 +10,36 @@ exports[`getHotReplaceTemplate should generate the correct template 1`] = `
 
 exports[`wrapDevelopmentCSS should transform css in dev mode 1`] = `
 "(() => {
-  if (typeof document === 'undefined') {
-    return
-  }
-  const head = document.head || document.getElementsByTagName('head')[0];
-  const style = document.createElement('style');
-  style.setAttribute('data-expo-css-hmr', "test_css");
+if (typeof window === 'undefined') {
+  return
+}
+const head = document.head || document.getElementsByTagName('head')[0];
+const style = document.createElement('style');
+style.setAttribute('data-expo-css-hmr', "test_css");
   const previousStyle = document.querySelector('[data-expo-css-hmr="test_css"]');
   if (previousStyle) {
     previousStyle.parentNode.removeChild(previousStyle);
   }
-  style.setAttribute('data-expo-loader', 'css');
-  head.appendChild(style);
-  const css = \`body { color: red; }\`;
-  if (style.styleSheet){
-    style.styleSheet.cssText = css;
-  } else {
-    style.appendChild(document.createTextNode(css));
-  }
+style.setAttribute('data-expo-loader', 'css');
+head.appendChild(style);
+const css = \`body { color: red; }\`;
+if (style.styleSheet){
+  style.styleSheet.cssText = css;
+} else {
+  style.appendChild(document.createTextNode(css));
+}
+})();"
+`;
+
+exports[`wrapDevelopmentCSS should transform css in dev mode for server components 1`] = `
+"(() => {
+if (typeof __expo_rsc_inject_module === 'function') {
+  __expo_rsc_inject_module({
+    id: "test.css",
+    code: "(()=>{const head = document.head || document.getElementsByTagName('head')[0];\\nconst style = document.createElement('style');\\nstyle.setAttribute('data-expo-css-hmr', \\"test_css\\");\\n  const previousStyle = document.querySelector('[data-expo-css-hmr=\\"test_css\\"]');\\n  if (previousStyle) {\\n    previousStyle.parentNode.removeChild(previousStyle);\\n  }\\nstyle.setAttribute('data-expo-loader', 'css');\\nhead.appendChild(style);\\nconst css = \`body { color: red; }\`;\\nif (style.styleSheet){\\n  style.styleSheet.cssText = css;\\n} else {\\n  style.appendChild(document.createTextNode(css));\\n}})();",
+  });
+} else {
+  throw new Error('RSC SSR CSS injection function is not found (__expo_rsc_inject_module)');
+}
 })();"
 `;

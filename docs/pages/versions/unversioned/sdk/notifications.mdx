@@ -4,40 +4,30 @@ description: A library that provides an API to fetch push notification tokens an
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-notifications'
 packageName: 'expo-notifications'
 iconUrl: '/static/images/packages/expo-notifications.png'
+platforms: ['android*', 'ios*']
 ---
 
-import { ConfigReactNative, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
-import { AndroidPermissions } from '~/components/plugins/permissions';
-import { SnackInline } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { Collapsible } from '~/ui/components/Collapsible';
 import APISection from '~/components/plugins/APISection';
-import { PlatformTags } from '~/ui/components/Tag';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ConfigReactNative, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { SnackInline } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
-> Migrating from Expo's `LegacyNotifications` module? See [the migration guide](https://expo.fyi/legacy-notifications-to-expo-notifications).
-
-<PlatformsSection title="Push notifications Platform Compatibility" android ios />
-
-<PlatformsSection
-  title="Local notifications Platform Compatibility"
-  android
-  emulator
-  ios
-  simulator
-/>
+> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` is unavailable in Expo Go from SDK 52. A [development build](/develop/development-builds/introduction/) is required to use push notifications. Scheduled notifications (local notifications) remain available in Expo Go.
 
 ## Features
 
 - Schedule a one-off notification for a specific date or some time from now
 - Schedule a notification repeating in some time interval (or a calendar date match on iOS)
 - Get and set the application badge icon number
-- Fetch a native device push token so you can send push notifications with FCM and APNs
-- Fetch an Expo push token so you can send push notifications with Expo
+- Fetch a native device push token, so you can send push notifications with FCM and APNs
+- Fetch an Expo push token, so you can send push notifications with Expo
 - Listen to incoming notifications in the foreground and background
 - Listen to interactions with notifications
 - Handle notifications when the app is in the foreground
@@ -53,13 +43,14 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Check out the example Snack below to see Notifications in action, make sure to use a physical device to test it. Push notifications don't work on emulators/simulators.
 
-<SnackInline label='Push Notifications' dependencies={['expo-device', 'expo-permissions', 'expo-notifications']}>
+<SnackInline label='Push Notifications' dependencies={['expo-device', 'expo-constants', 'expo-notifications']}>
 
-```jsx
+```tsx
 import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -71,13 +62,19 @@ Notifications.setNotificationHandler({
 
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
+  const notificationListener = useRef<Notifications.Subscription>();
+  const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
 
+    if (Platform.OS === 'android') {
+      Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
+    }
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
@@ -87,8 +84,10 @@ export default function App() {
     });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
-      Notifications.removeNotificationSubscription(responseListener.current);
+      notificationListener.current &&
+        Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current &&
+        Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
@@ -100,6 +99,11 @@ export default function App() {
         justifyContent: 'space-around',
       }}>
       <Text>Your expo push token: {expoPushToken}</Text>
+      <Text>{`Channels: ${JSON.stringify(
+        channels.map(c => c.id),
+        null,
+        2
+      )}`}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>
         <Text>Body: {notification && notification.request.content.body}</Text>
@@ -120,7 +124,7 @@ async function schedulePushNotification() {
     content: {
       title: "You've got mail! 📬",
       body: 'Here is the notification body',
-      data: { data: 'goes here' },
+      data: { data: 'goes here', test: { test1: 'more data' } },
     },
     trigger: { seconds: 2 },
   });
@@ -151,8 +155,22 @@ async function registerForPushNotificationsAsync() {
     }
     // Learn more about projectId:
     // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-    token = (await Notifications.getExpoPushTokenAsync({ projectId: 'your-project-id' })).data;
-    console.log(token);
+    // EAS projectId is used here.
+    try {
+      const projectId =
+        Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+      if (!projectId) {
+        throw new Error('Project ID not found');
+      }
+      token = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+      console.log(token);
+    } catch (e) {
+      token = `${e}`;
+    }
   } else {
     alert('Must use physical device for Push Notifications');
   }
@@ -198,7 +216,7 @@ If you'd like to deep link to a specific screen in your app when you receive a p
 
 <Tab label="Expo Router">
 
-You can use Expo Router's [built-in deep linking](/routing/create-pages) to handle incoming URLs from push notifications. Simply configure the root layout to listen for incoming and initial notification events.
+You can use Expo Router's [built-in deep linking](/router/create-pages) to handle incoming URLs from push notifications. Simply configure the root layout to listen for incoming and initial notification events.
 
 ```tsx app/_layout.tsx
 import { useEffect } from 'react';
@@ -350,6 +368,11 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
         'Tint color for the push notification image when it appears in the notification tray.',
     },
     {
+      name: 'defaultChannel',
+      platform: 'android',
+      description: 'Default channel for FCMv1 notifications.',
+    },
+    {
       name: 'sounds',
       description:
         'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.',
@@ -366,11 +389,12 @@ Here is an example of using the config plugin in the app config file:
       [
         "expo-notifications",
         {
-          "icon": "./local/assets/notification-icon.png",
+          "icon": "./local/assets/notification_icon.png",
           "color": "#ffffff",
+          "defaultChannel": "default",
           "sounds": [
-            "./local/assets/notification-sound.wav",
-            "./local/assets/notification-sound-other.wav"
+            "./local/assets/notification_sound.wav",
+            "./local/assets/notification_sound_other.wav"
           ]
         }
       ]
@@ -424,9 +448,11 @@ A few different listeners are exposed, so we've provided a chart below which wil
 | false                              |          Killed          | none                                                                    |
 | true                               |        Foreground        | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
 | true                               |        Background        | `NotificationResponseReceivedListener`                                  |
-| true                               |          Killed          | `NotificationResponseReceivedListener`                                  |
+| true                               |          Killed          | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
+
+> **info** When the app is not running or killed and is restarted by tapping on a notification, the `NotificationResponseReceivedListener` may or may not be triggered. To reliably capture the response, we recommend using `useLastNotificationResponse` or `getLastNotificationResponseAsync`.
 
 ### Background notifications
 
@@ -434,10 +460,19 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 A background notification (iOS) or a data-only notification (Android) is a remote notification that does not display an alert, play a sound, or add a badge to your app's icon. The purpose of a background notification is to provide a way to wake up your app to trigger an app data refresh in the background.
 
-To handle notifications while the app is in the background on iOS, add `remote-notification` as a value to the array under `ios.infoPlist.UIBackgroundModes` key in your [app config](/versions/latest/config/app/), and add `"content-available": 1` to your push notification payload. Under normal circumstances, the "content-available" flag should launch your app if it isn't running
-and wasn't killed by the user. However, this is ultimately decided by the OS, so it might not always happen.
+To handle notifications while the app is in the background or not running, you need to do the following:
 
-On Android, data-only notifications are sent using the `data` key of the push notification request payload.
+- Add `expo-task-manager` package to your project.
+- In your application code, set up a [background task](#registertaskasynctaskname) to run when the notification is received.
+
+For Android:
+
+- Send a push notification payload containing only the `data` key.
+
+For iOS:
+
+- In the array under the `ios.infoPlist.UIBackgroundModes` key in your [app config](/workflow/configuration/), add the values `remote-notification` and `processing`.
+- Add `_contentAvailable: true` to your push notification payload for the Expo push notification service. Under normal circumstances, the "content-available" flag should launch your app in the background.
 
 ## Additional information
 
@@ -465,9 +500,10 @@ To add custom push notification sounds to your app, add the `expo-notifications`
 After building your app, the array of files will be available for use in both [`NotificationContentInput`](#notificationcontentinput) and [`NotificationChannelInput`](#notificationchannelinput).
 You only need to provide the base filename. Here's an example using the config above:
 
-```js
-await Notifications.setNotificationChannelAsync('new-emails', {
+```ts
+await Notifications.setNotificationChannelAsync('new_emails', {
   name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
   sound: 'mySoundFile.wav', // Provide ONLY the base filename
 });
 
@@ -478,7 +514,7 @@ await Notifications.scheduleNotificationAsync({
   },
   trigger: {
     seconds: 2,
-    channelId: 'new-emails',
+    channelId: 'new_emails',
   },
 });
 ```
@@ -490,14 +526,14 @@ You can also manually add notification files to your Android and iOS projects if
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`.
 You will also need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
 
-For the example below to work, you would place your `email-sound.wav` file in `android/app/src/main/res/raw/`.
+For the example below to work, you would place your **email_sound.wav** file in **android/app/src/main/res/raw/**.
 
 ```ts
 // Prepare the notification channel
-await Notifications.setNotificationChannelAsync('new-emails', {
+await Notifications.setNotificationChannelAsync('new_emails', {
   name: 'E-mail notifications',
   importance: Notifications.AndroidImportance.HIGH,
-  sound: 'email-sound.wav', // <- for Android 8.0+, see channelId property below
+  sound: 'email_sound.wav', // <- for Android 8.0+, see channelId property below
 });
 
 // Eg. schedule the notification
@@ -505,11 +541,11 @@ await Notifications.scheduleNotificationAsync({
   content: {
     title: "You've got mail! 📬",
     body: 'Open the notification to read them all',
-    sound: 'email-sound.wav', // <- for Android below 8.0
+    sound: 'email_sound.wav', // <- for Android below 8.0
   },
   trigger: {
     seconds: 2,
-    channelId: 'new-emails', // <- for Android 8.0+, see definition above
+    channelId: 'new_emails', // <- for Android 8.0+, see definition above
   },
 });
 ```
@@ -534,10 +570,10 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<ImageSpotlight
+<ContentSpotlight
   alt="notification.wav inside of app resources in Xcode project organizer"
-  src="/static/images/notification-sound-ios.jpeg"
-  style={{ maxWidth: 305 }}
+  src="/static/images/notification_sound_ios.jpeg"
+  className="max-w-[305px]"
 />
 
 </Collapsible>
@@ -553,7 +589,6 @@ export interface FirebaseData {
   subtitle?: string;
   sound?: boolean | string;
   vibrate?: boolean | number[];
-  priority?: AndroidNotificationPriority;
   badge?: number;
 }
 ```
@@ -576,15 +611,13 @@ Notification categories allow you to create interactive push notifications, so t
 either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification
 by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-<ImageSpotlight
+<ContentSpotlight
   src="/static/images/sdk/notifications/categories.png"
-  style={{ maxWidth: 800 }}
+  className="max-w-[800px]"
   alt="Image of notification categories on Android and iOS"
 />
 
 On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take, but you can also configure things like the placeholder text to display when the user disables notification previews for your app.
-
-> Notification categories are not supported on the web and all related methods will result in noop.
 
 ## Platform specific guides
 
@@ -598,7 +631,7 @@ as [Android developer docs](https://developer.android.com/training/notify-user/c
 If you do not specify a notification channel, `expo-notifications` will create a fallback channel for you, named **Miscellaneous**.
 We encourage you to always ensure appropriate channels with informative names are set up for the application and to always send notifications to these channels.
 
-> Calling these methods is a no-op for platforms that do not support this feature (Android below version 8.0 (26), iOS and web).
+> Calling these methods is a no-op for platforms that do not support this feature (Android below version 8.0 (26) and iOS).
 
 ### Custom notification icon and colors&ensp;<PlatformTags platforms={['android']} />
 

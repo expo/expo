@@ -1,26 +1,17 @@
 package expo.modules.updates
 
 import android.content.Context
-import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
-import expo.modules.updates.db.entity.AssetEntity
-import android.os.AsyncTask
 import android.net.ConnectivityManager
 import android.util.Base64
 import android.util.Log
-import com.facebook.react.ReactNativeHost
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.modules.core.DeviceEventManagerModule
+import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
+import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import org.apache.commons.io.FileUtils
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
-import java.lang.ClassCastException
-import java.lang.Exception
-import java.lang.ref.WeakReference
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -28,6 +19,7 @@ import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Pattern
 import kotlin.experimental.and
 
 /**
@@ -130,16 +122,15 @@ object UpdatesUtils {
       if (expectedBase64URLEncodedHash != null && expectedBase64URLEncodedHash != hashBase64String) {
         throw IOException("File download was successful but base64url-encoded SHA-256 did not match expected; expected: $expectedBase64URLEncodedHash; actual: $hashBase64String")
       }
-
       // only rename after the hash has been verified
       // Since renameTo() does not expose detailed errors, and can fail if source and destination
       // are not on the same mount point, we do a copyTo followed by delete
+      // if there are two assets with identical content, they will be written to the same file path,
+      // so we allow overwrites
       try {
-        tmpFile.copyTo(destination)
+        tmpFile.copyTo(destination, true)
       } catch (e: NoSuchFileException) {
         throw IOException("File download was successful, but temp file ${tmpFile.absolutePath} does not exist")
-      } catch (e: FileAlreadyExistsException) {
-        throw IOException("File download was successful, but file already exists at ${destination.absolutePath}")
       } catch (e: Exception) {
         throw IOException("File download was successful, but an exception occurred: $e")
       } finally {
@@ -158,65 +149,14 @@ object UpdatesUtils {
     return if (asset.key == null) {
       // create a filename that's unlikely to collide with any other asset
       "asset-" + Date().time + "-" + Random().nextInt() + fileExtension
-    } else asset.key + fileExtension
-  }
-
-  fun sendEventToReactNative(
-    reactNativeHost: WeakReference<ReactNativeHost>?,
-    logger: UpdatesLogger,
-    eventName: String,
-    eventType: String,
-    params: WritableMap?
-  ) {
-    val host = reactNativeHost?.get()
-    if (host != null) {
-      AsyncTask.execute {
-        try {
-          var reactContext: ReactContext? = null
-          // in case we're trying to send an event before the reactContext has been initialized
-          // continue to retry for 5000ms
-          for (i in 0..4) {
-            // Calling host.reactInstanceManager has a side effect of creating a new
-            // reactInstanceManager if there isn't already one. We want to avoid this so we check
-            // if it has an instance first.
-            if (host.hasInstance()) {
-              reactContext = host.reactInstanceManager.currentReactContext
-              if (reactContext != null) {
-                break
-              }
-            }
-            Thread.sleep(1000)
-          }
-          if (reactContext != null) {
-            val emitter = reactContext.getJSModule(
-              DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
-            )
-            if (emitter != null) {
-              var eventParams = params
-              if (eventParams == null) {
-                eventParams = Arguments.createMap()
-              }
-              eventParams!!.putString("type", eventType)
-              logger.info("Emitted event: name = $eventName, type = $eventType")
-              emitter.emit(eventName, eventParams)
-              return@execute
-            }
-          }
-          logger.error("Could not emit $eventName $eventType event; no event emitter was found.", UpdatesErrorCode.JSRuntimeError)
-        } catch (e: Exception) {
-          logger.error("Could not emit $eventName $eventType event; no react context was found.", UpdatesErrorCode.JSRuntimeError)
-        }
-      }
     } else {
-      logger.error(
-        "Could not emit $eventType event; UpdatesController was not initialized with an instance of ReactApplication.",
-        UpdatesErrorCode.Unknown
-      )
+      asset.key + fileExtension
     }
   }
 
   fun shouldCheckForUpdateOnLaunch(
     updatesConfiguration: UpdatesConfiguration,
+    logger: UpdatesLogger,
     context: Context
   ): Boolean {
     return when (updatesConfiguration.checkOnLaunch) {
@@ -226,10 +166,8 @@ object UpdatesUtils {
       CheckAutomaticallyConfiguration.WIFI_ONLY -> {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
         if (cm == null) {
-          Log.e(
-            TAG,
-            "Could not determine active network connection is metered; not checking for updates"
-          )
+          val cause = Exception("Null ConnectivityManager system service")
+          logger.error("Could not determine active network connection is metered; not checking for updates", cause, UpdatesErrorCode.Unknown)
           return false
         }
         !cm.isActiveNetworkMetered
@@ -268,5 +206,53 @@ object UpdatesUtils {
       // Throw if the second parse attempt fails
       throw e
     }
+  }
+
+  private val PARAMETER_PATTERN: Pattern by lazy {
+    val token = "([a-zA-Z0-9-!#$%&'*+.^_`{|}~]+)"
+    val quoted = "\"([^\"]*)\""
+    Pattern.compile(";\\s*(?:\\s*$token\\s*=\\s*(?:$token|$quoted))?\\s*")
+  }
+
+  /**
+   * Parse name parameter from content-disposition header value.
+   *
+   * Derived from Okhttp String.toMediaType
+   */
+  fun String.parseContentDispositionNameParameter(): String? {
+    val parameterNamesAndValues = mutableMapOf<String, String?>()
+    val parameter = PARAMETER_PATTERN.matcher(this)
+    var s = this.indexOf(';')
+    while (s < length) {
+      parameter.region(s, length)
+      require(parameter.lookingAt()) {
+        "Parameter is not formatted correctly: \"${substring(s)}\" for: \"$this\""
+      }
+
+      val name: String? = parameter.group(1)
+      if (name == null) {
+        s = parameter.end()
+        continue
+      }
+
+      val token: String? = parameter.group(2)
+      val value: String? = when {
+        token == null -> {
+          // Value is "double-quoted". That's valid and our regex group already strips the quotes.
+          parameter.group(3)
+        }
+        token.startsWith("'") && token.endsWith("'") && token.length > 2 -> {
+          // If the token is 'single-quoted' it's invalid! But we're lenient and strip the quotes.
+          token.substring(1, token.length - 1)
+        }
+        else -> token
+      }
+
+      if (!parameterNamesAndValues.containsKey(name)) {
+        parameterNamesAndValues[name] = value
+      }
+      s = parameter.end()
+    }
+    return parameterNamesAndValues["name"]
   }
 }

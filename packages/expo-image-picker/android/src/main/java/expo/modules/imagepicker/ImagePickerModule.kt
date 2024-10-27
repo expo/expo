@@ -1,13 +1,14 @@
 package expo.modules.imagepicker
 
 import android.Manifest
-import android.Manifest.permission.READ_MEDIA_IMAGES
-import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.OperationCanceledException
+import androidx.core.content.ContextCompat
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.imagepicker.contracts.CameraContract
 import expo.modules.imagepicker.contracts.CameraContractOptions
@@ -17,12 +18,16 @@ import expo.modules.imagepicker.contracts.ImageLibraryContract
 import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.imagepicker.contracts.ImagePickerContractResult
 import expo.modules.interfaces.permissions.Permissions
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsResponseListener
 import expo.modules.interfaces.permissions.PermissionsStatus
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.weak
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -33,20 +38,24 @@ import kotlin.coroutines.resumeWithException
 // TODO(@bbarthec): rename to ExpoImagePicker
 private const val moduleName = "ExponentImagePicker"
 
+const val ACCESS_PRIVILEGES_PERMISSION_KEY = "accessPrivileges"
+
 class ImagePickerModule : Module() {
-
   override fun definition() = ModuleDefinition {
-
     Name(moduleName)
 
     // region JS API
 
     AsyncFunction("requestMediaLibraryPermissionsAsync") { writeOnly: Boolean, promise: Promise ->
-      Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, *getMediaLibraryPermissions(writeOnly))
+      val manager = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
+      val permissions = getMediaLibraryPermissions(writeOnly)
+      manager.askForPermissions(createPermissionsDecorator(promise), *permissions)
     }
 
     AsyncFunction("getMediaLibraryPermissionsAsync") { writeOnly: Boolean, promise: Promise ->
-      Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, *getMediaLibraryPermissions(writeOnly))
+      val manager = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
+      val permissions = getMediaLibraryPermissions(writeOnly)
+      manager.getPermissions(createPermissionsDecorator(promise), *permissions)
     }
 
     AsyncFunction("requestCameraPermissionsAsync") { promise: Promise ->
@@ -61,7 +70,7 @@ class ImagePickerModule : Module() {
       ensureTargetActivityIsAvailable(options)
       ensureCameraPermissionsAreGranted()
 
-      val mediaFile = createOutputFile(cacheDirectory, options.mediaTypes.toFileExtension())
+      val mediaFile = createOutputFile(cacheDirectory, options.nativeMediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
       val contractOptions = options.toCameraContractOptions(uri.toString())
 
@@ -85,15 +94,15 @@ class ImagePickerModule : Module() {
 
     RegisterActivityContracts {
       cameraLauncher = registerForActivityResult(
-        CameraContract(this@ImagePickerModule),
+        CameraContract(this@ImagePickerModule)
       ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
 
       imageLibraryLauncher = registerForActivityResult(
-        ImageLibraryContract(this@ImagePickerModule),
+        ImageLibraryContract(this@ImagePickerModule)
       ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
 
       cropImageLauncher = registerForActivityResult(
-        CropImageContract(this@ImagePickerModule),
+        CropImageContract(this@ImagePickerModule)
       ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
     }
   }
@@ -101,9 +110,6 @@ class ImagePickerModule : Module() {
   // TODO (@bbarthec): generalize it as almost every module re-declares this approach
   val context: Context
     get() = requireNotNull(appContext.reactContext) { "React Application Context is null" }
-
-  private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw MissingCurrentActivityException()
 
   private val mediaHandler = MediaHandler(this)
 
@@ -122,14 +128,78 @@ class ImagePickerModule : Module() {
    */
   private var pendingMediaPickingResult: PendingMediaPickingResult? = null
 
+  private var isPickerOpen = false
+
+  private fun createPermissionsDecorator(promise: Promise): PermissionsResponseListener {
+    val weakContext = appContext.reactContext.weak()
+    return PermissionsResponseListener { permissionsMap ->
+      val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
+      val areAllDenied = permissionsMap.isNotEmpty() && permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
+      val canAskAgain = permissionsMap.all { (_, response) -> response.canAskAgain }
+
+      val permissionsBundle =
+        Bundle().apply {
+          putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER)
+          putString(
+            PermissionsResponse.STATUS_KEY,
+            when {
+              areAllGranted -> PermissionsStatus.GRANTED.status
+              areAllDenied -> PermissionsStatus.DENIED.status
+              else -> PermissionsStatus.UNDETERMINED.status
+            }
+          )
+          putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain)
+          putBoolean(PermissionsResponse.GRANTED_KEY, areAllGranted)
+        }
+
+      if (areAllGranted) {
+        permissionsBundle.putString(ACCESS_PRIVILEGES_PERMISSION_KEY, "all")
+        promise.resolve(permissionsBundle)
+        return@PermissionsResponseListener
+      }
+
+      // On Android < 14 we always return `all` or `none`, since it doesn't support limited access
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        permissionsBundle.putString(ACCESS_PRIVILEGES_PERMISSION_KEY, "none")
+
+        promise.resolve(permissionsBundle)
+        return@PermissionsResponseListener
+      }
+
+      val context = weakContext.get() ?: run {
+        promise.reject(Exceptions.ReactContextLost())
+        return@PermissionsResponseListener
+      }
+
+      // For photo and video access android will return DENIED status if the user selected "allow only selected"
+      // We need to check if that is the case and overwrite the result.
+      val hasPartialAccess = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED
+      if (hasPartialAccess) {
+        permissionsBundle.putBoolean(PermissionsResponse.GRANTED_KEY, true)
+        permissionsBundle.putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, true)
+        permissionsBundle.putString(PermissionsResponse.STATUS_KEY, PermissionsStatus.GRANTED.status)
+        permissionsBundle.putString(ACCESS_PRIVILEGES_PERMISSION_KEY, "limited")
+      } else {
+        permissionsBundle.putString(ACCESS_PRIVILEGES_PERMISSION_KEY, "none")
+      }
+
+      promise.resolve(permissionsBundle)
+    }
+  }
+
   /**
    * Calls [launchPicker] and unifies flow shared between "launchCameraAsync" and "launchImageLibraryAsync"
    */
   private suspend fun launchContract(
     pickerLauncher: suspend () -> ImagePickerContractResult,
-    options: ImagePickerOptions,
+    options: ImagePickerOptions
   ): Any {
     return try {
+      if (isPickerOpen) {
+        return ImagePickerResponse(canceled = true)
+      }
+
+      isPickerOpen = true
       var result = launchPicker(pickerLauncher)
       if (
         !options.allowsMultipleSelection &&
@@ -144,6 +214,8 @@ class ImagePickerModule : Module() {
       mediaHandler.readExtras(result.data, options)
     } catch (cause: OperationCanceledException) {
       return ImagePickerResponse(canceled = true)
+    } finally {
+      isPickerOpen = false
     }
   }
 
@@ -161,7 +233,7 @@ class ImagePickerModule : Module() {
    * Launches picker (image library or camera)
    */
   private suspend fun launchPicker(
-    pickerLauncher: suspend () -> ImagePickerContractResult,
+    pickerLauncher: suspend () -> ImagePickerContractResult
   ): ImagePickerContractResult.Success = withContext(Dispatchers.IO) {
     when (val pickingResult = pickerLauncher()) {
       is ImagePickerContractResult.Success -> pickingResult
@@ -176,10 +248,7 @@ class ImagePickerModule : Module() {
 
   private fun getMediaLibraryPermissions(writeOnly: Boolean): Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      listOfNotNull(
-        READ_MEDIA_IMAGES,
-        READ_MEDIA_VIDEO
-      ).toTypedArray()
+      emptyArray<String>()
     } else {
       listOfNotNull(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -188,8 +257,8 @@ class ImagePickerModule : Module() {
     }
 
   private fun ensureTargetActivityIsAvailable(options: ImagePickerOptions) {
-    val cameraIntent = Intent(options.mediaTypes.toCameraIntentAction())
-    if (cameraIntent.resolveActivity(currentActivity.application.packageManager) == null) {
+    val cameraIntent = Intent(options.nativeMediaTypes.toCameraIntentAction())
+    if (cameraIntent.resolveActivity(appContext.throwingActivity.application.packageManager) == null) {
       throw MissingActivityToHandleIntent(cameraIntent.type)
     }
   }
@@ -199,7 +268,7 @@ class ImagePickerModule : Module() {
 
     permissions.askForPermissions(
       { permissionsResponse ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           if (permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
             continuation.resume(Unit)
           } else {
@@ -215,7 +284,7 @@ class ImagePickerModule : Module() {
         }
       },
       *listOfNotNull(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU },
+        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.Q },
         Manifest.permission.CAMERA
       ).toTypedArray()
     )

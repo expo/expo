@@ -4,16 +4,7 @@ const commitTime = new Date('2023-03-26T04:58:02.560Z');
 const checkForUpdateAsync = jest.fn();
 const fetchUpdateAsync = jest.fn();
 const reload = jest.fn();
-const getNativeStateMachineContextAsync = jest.fn();
-
-getNativeStateMachineContextAsync.mockImplementation(async () => ({
-  isChecking: false,
-  isDownloading: false,
-  isRestarting: false,
-  isRollback: false,
-  isUpdateAvailable: false,
-  isUpdatePending: false,
-}));
+const addListener = jest.fn();
 
 export default {
   channel,
@@ -22,5 +13,5 @@ export default {
   checkForUpdateAsync,
   fetchUpdateAsync,
   reload,
-  getNativeStateMachineContextAsync,
+  addListener,
 };

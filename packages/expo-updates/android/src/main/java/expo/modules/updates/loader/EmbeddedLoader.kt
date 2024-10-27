@@ -7,6 +7,7 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.UpdatesUtils
+import expo.modules.updates.logging.UpdatesLogger
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.AssertionError
@@ -21,49 +22,52 @@ import java.util.*
  * first try to read it into the expo-updates cache and database and launch it like any other
  * update. The benefits of this include (a) a single code path for launching most updates and (b)
  * assets included in embedded updates and copied into the cache in this way do not need to be
- * redownloaded if included in future updates.
+ * re-downloaded if included in future updates.
  */
 class EmbeddedLoader internal constructor(
-  private val context: Context,
+  context: Context,
   private val configuration: UpdatesConfiguration,
+  logger: UpdatesLogger,
   database: UpdatesDatabase,
   updatesDirectory: File,
   private val loaderFiles: LoaderFiles
 ) : Loader(
-  context, configuration, database, updatesDirectory, loaderFiles
+  context,
+  configuration,
+  logger,
+  database,
+  updatesDirectory,
+  loaderFiles
 ) {
 
   constructor(
     context: Context,
     configuration: UpdatesConfiguration,
+    logger: UpdatesLogger,
     database: UpdatesDatabase,
     updatesDirectory: File
-  ) : this(context, configuration, database, updatesDirectory, LoaderFiles()) {
-  }
+  ) : this(context, configuration, logger, database, updatesDirectory, LoaderFiles())
 
   override fun loadRemoteUpdate(
-    context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
   ) {
-    val updateManifest = loaderFiles.readEmbeddedManifest(this.context, this.configuration)
-    if (updateManifest != null) {
+    val update = loaderFiles.readEmbeddedUpdate(this.context, this.configuration)
+    if (update != null) {
       callback.onSuccess(
         UpdateResponse(
           responseHeaderData = null,
-          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(updateManifest),
+          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(update),
           directiveUpdateResponsePart = null
         )
       )
     } else {
-      val message = "Embedded manifest is null"
-      callback.onFailure(message, Exception(message))
+      callback.onFailure(Exception("Embedded manifest is null"))
     }
   }
 
   override fun loadAsset(
-    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
@@ -93,8 +97,6 @@ class EmbeddedLoader internal constructor(
   }
 
   companion object {
-    private val TAG = EmbeddedLoader::class.java.simpleName
-
     const val BUNDLE_FILENAME = "app.bundle"
     const val BARE_BUNDLE_FILENAME = "index.android.bundle"
   }

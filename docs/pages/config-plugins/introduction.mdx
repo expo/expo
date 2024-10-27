@@ -5,8 +5,6 @@ sidebar_title: Introduction
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 An automatic setup for adding a native module to your project is possible. Sometimes, a module requires a more complex setup. A config plugin can be used to automatically configure your native project for a module and reduce the complexity by avoiding interaction with the native project.
 
@@ -26,7 +24,7 @@ For example, `expo-camera` has a plugin that adds camera permissions to the **An
 
 <Terminal cmd={['$ npx expo install expo-camera']} />
 
-In your app's config (**app.json**, or **app.config.js**), you can add `expo-camera` to the list of plugins:
+In your [app's config](/versions/latest/config/app/), you can add `expo-camera` to the list of plugins:
 
 ```json app.json
 {
@@ -36,7 +34,7 @@ In your app's config (**app.json**, or **app.config.js**), you can add `expo-cam
 }
 ```
 
-Some plugins such as for [`expo-camera`](/versions/latest/sdk/camera/) can be customized by passing an array, where the second argument is the options:
+Some config plugins offer flexibility by allowing you to pass options to customize their configuration. To do this, you can pass an array with the Expo library name as the first argument, and an object containing the options as the second argument. For example, the `expo-camera` plugin allows you to customize the camera permission message:
 
 ```json app.json
 {
@@ -53,18 +51,9 @@ Some plugins such as for [`expo-camera`](/versions/latest/sdk/camera/) can be cu
 }
 ```
 
-> For each Expo package that a config plugin is available for, you'll find more information about that in the [package's API reference](/versions/latest/).
+> **info** **Tip**: For every Expo library that has a config plugin, you'll find more information about that in the library's API reference. For example, the [`expo-camera` library has a config plugin section](/versions/latest/sdk/camera/#configuration-in-appjsonappconfigjs).
 
-On running the `npx expo prebuild`, the [`mods`]() are compiled, and the native files change.
+On running the `npx expo prebuild`, the [`mods`](/config-plugins/plugins-and-mods/#how-mods-work) are compiled, and the native files change.
 
 The changes don't take effect until you rebuild the native project, for example, with Xcode. **If you're using config plugins in a managed app,
 they will be applied during the prebuild phase on `eas build`**.
-
-## Next step
-
-<BoxLink
-  title="Create a plugin"
-  description="Learn about how you can create a config plugin."
-  href="/config-plugins/plugins-and-mods"
-  Icon={BookOpen02Icon}
-/>

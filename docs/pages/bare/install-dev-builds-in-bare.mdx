@@ -1,107 +1,91 @@
 ---
-title: Install development builds in React Native and bare projects
-sidebar_title: Install development builds in bare React Native
-description: Learn how to configure development builds for bare React Native projects.
+title: Install expo-dev-client in an existing React Native project
+sidebar_title: Install expo-dev-client
+description: Learn how to install and configure expo-dev-client in your existing React Native project.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or a bare project.
+The following guide explains how to install and configure `expo-dev-client` in an existing React Native project.
 
-> To add the `expo-dev-client` library to an existing managed project, see [Create development builds](/develop/development-builds/create-a-build/).
+<Collapsible summary="Do you need to create a new project?">
 
-If you're starting your project, you can create a new project with our `with-dev-client` template. Run the following command to initialize the project:
+If you're starting with a new project, create it using the `with-dev-client` template:
 
-<Terminal cmd={['$ npx crna -t with-dev-client']} />
+<Terminal cmd={['$ npx create-expo-app -e with-dev-client']} />
 
-Otherwise, if you already have an existing React Native or a bare project, follow the steps below to add `expo-dev-client` to it.
+</Collapsible>
+
+<Collapsible summary="Do you use Continuous Native Generation (CNG) in your project?">
+
+To use `expo-dev-client` in a project that uses [CNG](/workflow/continuous-native-generation/), see [Create a development build](/develop/development-builds/create-a-build/).
+
+</Collapsible>
+
+## Prerequisites
+
+**The `expo` package must be installed and configured.** If you created your project with `npx react-native init` and do not have any other Expo libraries installed, you will need to [install Expo modules](/bare/installing-expo-modules) before proceeding.
 
 <Step label="1">
 
-## Set up Expo modules
-
-If you created your project with `npx react-native init` and do not have any other Expo packages installed, **you'd need to [install Expo modules](/bare/installing-expo-modules)** before proceeding.
-
-Otherwise, if you already have `expo` and/or other Expo modules up and running, you can skip this step.
-
-</Step>
-
-<Step label="2">
-
-## Installation
+## Install expo-dev-client
 
 Add the `expo-dev-client` library to your **package.json**:
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 
-If your project has an **ios/** directory on disk, run the following command to fully install the native code for `expo-dev-client`:
+If your project has an **ios** directory on disk, run the following command to fully install the native code for `expo-dev-client`:
 
 <Terminal cmd={['$ npx pod-install']} />
 
-If your project doesn't have an **ios/** directory, you can skip this step.
+If your project doesn't have an **ios** directory, you can skip this step.
+
+</Step>
+
+<Step label="2">
+
+## Configure deep links
+
+Expo CLI uses a deep link to launch your project, and it's also useful if you use plan to [use `expo-dev-client` for launching preview updates](/eas-update/getting-started/) if you have added a custom deep link scheme to your project.
+
+If you haven't configured a `scheme` for your app yet to support deep linking, then use `uri-scheme` library to do this for you.
+
+<Terminal
+  cmd={[
+    "# List your project's schemes",
+    '$ npx uri-scheme list',
+    '',
+    '# Add a scheme to your project',
+    '$ npx uri-scheme add your-scheme',
+  ]}
+/>
+
+For more information, see the [`uri-scheme` library](https://www.npmjs.com/package/uri-scheme).
 
 </Step>
 
 <Step label="3">
 
-## Basic configuration
+## Add additional optional configuration
 
-Development builds use deep links to open projects from the QR code. If you have added a custom deep link scheme to your project, your development build will use it. However, if this isn't the case, you need to configure the deep link support for your app. The `uri-scheme` package will do this for you once you have chosen a scheme.
+For certain types of errors, you can obtain more helpful error messages when using `expo-dev-client`. To turn this on, import `expo-dev-client` in the project's **index** file. Make sure that the import statement is executed early, before your application's JS code is imported (place the import above `import App from './App'`).
 
-<Terminal cmd={['$ npx uri-scheme add <your scheme>']} />
+```js
+import 'expo-dev-client';
+/* @hide ... */ /* @end */
+import App from './App';
+```
 
-For more information, see [uri-scheme package](https://www.npmjs.com/package/uri-scheme).
+For more information, see [Error handling](/develop/development-builds/use-development-builds/#add-error-handling).
 
 </Step>
 
 <Step label="4">
 
-## Optional configuration
+## Build and install the app
 
-There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/develop/development-builds/create-a-build/#create-a-development-build-for-the-device) if you prefer.
-
-### Disable packager autostart when building for iOS
-
-When you start your project on iOS, the metro bundler will start automatically. This behavior might not be ideal when you want to use `npx expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to **Build Phases** and remove the **Start Packager** action.
-
-<ImageSpotlight
-  alt="Remove start package manager from Xcode."
-  src="/static/images/bare/remove_start_packager.png"
-  style={{ maxWidth: 720 }}
-/>
-
-### Add better error handlers
-
-For certain type of errors, you can provide more helpful error messages. To turn this on, import `expo-dev-client` in the project's **index** file (in the managed workflow, you need to add this import on top of the **App.&lbrace;js|tsx&rbrace;**). Make sure that the import statement is above `import App from './App'`.
-
-```js
-import 'expo-dev-client';
-...
-import App from "./App";
-```
-
-For more information, see [Error handling](/develop/development-builds/use-development-builds/#add-error-handling).
-
-### Loading published updates
-
-Development builds can also open and preview published updates to your app.
-
-To add this feature, install `expo-updates` in your project:
-
-<Terminal cmd={['$ npx expo install expo-updates']} />
-
-After doing so, if your project has an **ios/** directory on disk, you will need to reinstall CocoaPods:
-
-<Terminal cmd={['$ npx pod-install']} />
-
-</Step>
-
-<Step label="5">
-
-## Build and install
-
-You're now ready to [build your first development build](/develop/development-builds/create-a-build/#initialize-eas-build).
+Create a debug build of your app using the tools of your choice. For example, you can do this [locally with Expo CLI](/guides/local-app-development/) or [in the cloud with EAS Build](/develop/development-builds/create-a-build/).
 
 </Step>

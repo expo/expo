@@ -12,8 +12,9 @@ import fetch, { Response } from 'node-fetch';
 import os from 'os';
 import path from 'path';
 
+import { EXPO_GO_DIR } from '../Constants';
 import { getExpoRepositoryRootDir } from '../Directories';
-import { getHomeSDKVersionAsync } from '../ProjectVersions';
+import { getExpoGoSDKVersionAsync } from '../ProjectVersions';
 
 interface Manifest {
   id: string;
@@ -32,8 +33,6 @@ interface Manifest {
 
 // some files are absent on turtle builders and we don't want log errors there
 const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
-
-const EXPO_DIR = getExpoRepositoryRootDir();
 
 type AssetRequestHeaders = { authorization: string };
 
@@ -92,7 +91,9 @@ async function getManifestAsync(
 }
 
 async function getSavedDevHomeEASUpdateUrlAsync(): Promise<string> {
-  const devHomeConfig = await new JsonFile(path.join(EXPO_DIR, 'dev-home-config.json')).readAsync();
+  const devHomeConfig = await new JsonFile(
+    path.join(getExpoRepositoryRootDir(), 'dev-home-config.json')
+  ).readAsync();
   return devHomeConfig.url as string;
 }
 
@@ -198,8 +199,7 @@ export default {
       return '';
     }
 
-    const pathToHome = 'home';
-    const url = await UrlUtils.constructManifestUrlAsync(path.join(EXPO_DIR, pathToHome));
+    const url = await UrlUtils.constructManifestUrlAsync(EXPO_GO_DIR);
 
     try {
       const manifestAndAssetRequestHeaders = await getManifestAsync(url, platform);
@@ -215,7 +215,7 @@ export default {
       console.error(
         chalk.red(
           `Unable to generate manifest from ${chalk.cyan(
-            pathToHome
+            EXPO_GO_DIR
           )}: Failed to fetch manifest from ${chalk.cyan(url)}`
         )
       );
@@ -224,6 +224,6 @@ export default {
   },
 
   async TEMPORARY_SDK_VERSION(): Promise<string> {
-    return await getHomeSDKVersionAsync();
+    return await getExpoGoSDKVersionAsync();
   },
 };

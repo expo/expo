@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoMaps.web.js","sourceRoot":"","sources":["../src/ExpoMaps.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,UAAU,CAAC;IACpB,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExpoMaps';\n  },\n};\n"]}
+{"version":3,"file":"ExpoMaps.web.js","sourceRoot":"","sources":["../src/ExpoMaps.web.ts"],"names":[],"mappings":"AAAA,eAAe,EAAE,CAAC","sourcesContent":["export default {};\n"]}

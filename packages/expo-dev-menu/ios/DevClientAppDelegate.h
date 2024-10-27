@@ -8,8 +8,14 @@
 #import <React_RCTAppDelegate/RCTAppDelegate.h>
 #endif
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface DevClientAppDelegate : RCTAppDelegate
 
-- (RCTBridge *)createBridgeAndSetAdapterWithLaunchOptions:(NSDictionary *_Nullable)launchOptions;
+- (void)initRootViewFactory;
+
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
 
 @end
+
+NS_ASSUME_NONNULL_END

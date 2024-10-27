@@ -4,7 +4,7 @@ sidebar_title: Expo Webpack
 description: Learn how to migrate a website using Expo Webpack to Expo Router.
 ---
 
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
+import { NoIcon, PendingIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
 The original **Expo for web** version was based on Webpack 4 and focused primarily on building single-page applications (SPAs). This approach was based on [Create React App](https://create-react-app.dev/) and enabled building simple web apps with Expo SDK and React Native for web.
@@ -15,7 +15,7 @@ Both React Navigation and Expo Router are Expo frameworks for routing and naviga
 
 ## Pitch
 
-> **warning** `@expo/webpack-config` is in maintenance-mode and not receiving any new feature updates.
+> **warning** `@expo/webpack-config` is deprecated and not receiving any new feature updates.
 
 Expo Router supports [static rendering on web](/router/reference/static-rendering), which enables search engine optimization (SEO), social media previews, and faster loading times, unlike Expo Webpack. Along with the benefits of React Navigation, it enables automatic deep linking, [type safety](/router/reference/typed-routes), [deferred bundling](/router/reference/async-routes), [modular HTML templates](/router/reference/static-rendering#root-html), [static rendering on web](/router/reference/static-rendering), and more.
 
@@ -23,7 +23,7 @@ Expo Router is also designed to fix the main cross-platform issue with Expo Webp
 
 ## Anti-pitch
 
-Expo Router uses a custom bundler stack based on [Metro](https://facebook.github.io/metro/). It is the same bundler used by React Native. While this is great for ensuring maximum code reusability and solves many forked behavior issues from using different bundlers across platforms. This also means certain bundling features may not be available in Expo Router yet.
+Expo Router uses a custom bundler stack based on [Metro](https://metrobundler.dev/). It is the same bundler used by React Native. This is great for ensuring maximum code reusability and solves many forked behavior issues from using different bundlers across platforms. This also means certain bundling features may not be available in Expo Router yet.
 
 Ultimately as a full universal framework, Expo Router is a substantially more robust solution than `@expo/webpack-config`, which is a bundler integration. It should be used for all new Expo web projects.
 
@@ -31,22 +31,27 @@ Ultimately as a full universal framework, Expo Router is a substantially more ro
 
 Unlike `@expo/webpack-config`, Expo Router uses the same CLI commands and features for web and native. Refer to the table below for more information on the differences between Expo Router and `@expo/webpack-config`.
 
-| Feature           | Expo Router                         | `@expo/webpack-config` |
-| ----------------- | ----------------------------------- | ---------------------- |
-| Start command     | `npx expo start`                    | `npx expo start`       |
-| Bundle command    | `npx expo export`                   | `npx expo export:web`  |
-| Output folder     | **dist**                            | **web-build**          |
-| Static folder     | **public**                          | **web**                |
-| Config file       | **metro.config.js**                 | **webpack.config.js**  |
-| Default config    | `@expo/metro-config`                | `@expo/webpack-config` |
-| Multi-platform    | <YesIcon />                         | <NoIcon />             |
-| Fast Refresh      | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Error Overlay     | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Deferred Bundling | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| CSS Modules       | <YesIcon /> (SDK 50)                | <NoIcon />             |
-| Global CSS        | <YesIcon /> (SDK 50)                | <YesIcon />            |
-| Bundle Splitting  | <NoIcon />                          | <YesIcon />            |
-| Tree Shaking      | <NoIcon />                          | <YesIcon />            |
+| Feature                  | Expo Router                                       | `@expo/webpack-config` |
+| ------------------------ | ------------------------------------------------- | ---------------------- |
+| Start command            | `npx expo start`                                  | `npx expo start`       |
+| Bundle command           | `npx expo export`                                 | `npx expo export:web`  |
+| Output folder            | **dist**                                          | **web-build**          |
+| Static folder            | **public**                                        | **web**                |
+| Config file              | **metro.config.js**                               | **webpack.config.js**  |
+| Default config           | `@expo/metro-config`                              | `@expo/webpack-config` |
+| Bundle Splitting         | <YesIcon /> (SDK 50 • web)                        | <YesIcon />            |
+| Global CSS               | <YesIcon /> (SDK 50 • web)                        | <YesIcon />            |
+| CSS Modules              | <YesIcon /> (SDK 50 • web)                        | <NoIcon />             |
+| Static Font Optimization | <YesIcon /> (SDK 50 • web)                        | <NoIcon />             |
+| API Routes               | <YesIcon /> (SDK 50)                              | <NoIcon />             |
+| Multi-platform           | <YesIcon />                                       | <NoIcon />             |
+| Fast Refresh             | <YesIcon />                                       | <NoIcon />             |
+| Error Overlay            | <YesIcon />                                       | <NoIcon />             |
+| Lazy bundling            | <YesIcon />                                       | <NoIcon />             |
+| Static Generation        | <YesIcon />                                       | <NoIcon />             |
+| Environment Variables    | <YesIcon />                                       | <NoIcon />             |
+| `tsconfig.json` paths    | <YesIcon />                                       | <NoIcon />             |
+| Tree Shaking             | <PendingIcon /> ([Partial support][tree-shaking]) | <YesIcon />            |
 
 ## HTML template
 
@@ -112,13 +117,13 @@ In `@expo/webpack-config`, you could bundle your website to be hosted from a sub
 }
 ```
 
-In Expo Router, you can use the experimental `basePath` field in the project's **app.json**:
+In Expo Router, you can use the experimental `baseUrl` field in the project's **app.json**:
 
 ```json app.json
 {
   "expo": {
     "experiments": {
-      "basePath": "/evanbacon/my-website"
+      "baseUrl": "/evanbacon/my-website"
     }
   }
 }
@@ -156,7 +161,7 @@ Like `@expo/webpack-config`, Expo Router supports generating the **favicon.ico**
 
 ## Service workers
 
-> **warning:** Be careful adding service workers as they are known to cause unexpected behavior on web. If you accidentally ship a service worker who aggressively caches your website, users cannot request updates easily. For the best offline mobile experience, create a native app with Expo. Unlike websites with service workers, native apps can be updated through the app store to clear the cached experience. This would be similar to resetting the user's native browser (which they may have to do if the service worker is aggressive enough). See [why service workers are suboptimal](https://github.com/facebook/create-react-app/issues/2398) for more information.
+> **warning:** Be careful adding service workers as they are known to cause unexpected behavior on web. If you accidentally ship a service worker that aggressively caches your website, users cannot request updates easily. For the best offline mobile experience, create a native app with Expo. Unlike websites with service workers, native apps can be updated through the app store to clear the cached experience. This would be similar to resetting the user's native browser (which they may have to do if the service worker is aggressive enough). See [why service workers are suboptimal](https://github.com/facebook/create-react-app/issues/2398) for more information.
 
 Expo Webpack didn't have built-in service worker support. However, you could add it yourself by using the `workbox-webpack-plugin` and adding it to the **webpack.config.js**.
 
@@ -226,7 +231,7 @@ Run the wizard command, selecting `dist` as the root of the app, and the default
   cmd={[
     '$ npx workbox-cli wizard',
     '',
-    '$ ? What is the root of your web app (i.e. which directory do you deploy)? dist/',
+    '$ ? What is the root of your web app (that is which directory do you deploy)? dist/',
     '$ ? Which file types would you like to precache? js, html, ttf, ico, json',
     '$ ? Where would you like your service worker file to be saved? dist/sw.js',
     '$ ? Where would you like to save these configuration options? workbox-config.js',
@@ -234,12 +239,12 @@ Run the wizard command, selecting `dist` as the root of the app, and the default
   ]}
 />
 
-Finally, run `workbox generateSW workbox-config.js` to generate the service worker config. Going forward, you can add a build script in **package.json** to run both scripts in the correct order:
+Finally, run `npx workbox-cli generateSW workbox-config.js` to generate the service worker config. Going forward, you can add a build script in **package.json** to run both scripts in the correct order:
 
 ```json package.json
 {
   "scripts": {
-    "build:web": "expo export -p web && workbox generateSW workbox-config.js"
+    "build:web": "expo export -p web && npx workbox-cli generateSW workbox-config.js"
   }
 }
 ```
@@ -322,3 +327,5 @@ If you used React Navigation for navigating between screens in `@expo/webpack-co
 ## Deployment
 
 See [publishing websites](/distribution/publishing-websites) and select "Expo Router" on how to deploy Expo Router websites to various hosting providers.
+
+[tree-shaking]: /guides/tree-shaking

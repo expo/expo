@@ -1,15 +1,15 @@
 import '@expo/server/install';
 
-import { Response } from '@remix-run/node';
 import type { ExpoRoutesManifestV1, RouteInfo } from 'expo-router/build/routes-manifest';
-import fs from 'fs';
-import path from 'path';
-import { URL } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
 
-import { ExpoRequest, ExpoResponse, ExpoURL, NON_STANDARD_SYMBOL } from './environment';
 import { ExpoRouterServerManifestV1FunctionRoute } from './types';
 
-const debug = require('debug')('expo:server') as typeof console.log;
+const debug =
+  process.env.NODE_ENV === 'development'
+    ? (require('debug')('expo:server') as typeof console.log)
+    : () => {};
 
 function getProcessedManifest(path: string): ExpoRoutesManifestV1<RegExp> {
   // TODO: JSON Schema for validation
@@ -49,14 +49,23 @@ export function createRequestHandler(
   distFolder: string,
   {
     getRoutesManifest: getInternalRoutesManifest,
-    getHtml = async (request, route) => {
-      // serve a static file
+    getHtml = async (_request, route) => {
+      // Serve a static file by exact route name
       const filePath = path.join(distFolder, route.page + '.html');
-
-      if (!fs.existsSync(filePath)) {
-        return null;
+      if (fs.existsSync(filePath)) {
+        return fs.readFileSync(filePath, 'utf-8');
       }
-      return fs.readFileSync(filePath, 'utf-8');
+
+      // Serve a static file by route name with hoisted index
+      // See: https://github.com/expo/expo/pull/27935
+      const hoistedFilePath = route.page.match(/\/index$/)
+        ? path.join(distFolder, route.page.replace(/\/index$/, '') + '.html')
+        : null;
+      if (hoistedFilePath && fs.existsSync(hoistedFilePath)) {
+        return fs.readFileSync(hoistedFilePath, 'utf-8');
+      }
+
+      return null;
     },
     getApiRoute = async (route) => {
       const filePath = path.join(distFolder, route.file);
@@ -68,7 +77,7 @@ export function createRequestHandler(
         return null;
       }
 
-      if (/\.[cj]s$/.test(filePath)) {
+      if (/\.c?js$/.test(filePath)) {
         return require(filePath);
       }
       return import(filePath);
@@ -76,49 +85,49 @@ export function createRequestHandler(
     logApiRouteExecutionError = (error: Error) => {
       console.error(error);
     },
+    handleApiRouteError = async () => {
+      return new Response('Internal server error', {
+        status: 500,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
+    },
   }: {
-    getHtml?: (
-      request: ExpoRequest,
-      route: RouteInfo<RegExp>
-    ) => Promise<string | ExpoResponse | null>;
+    getHtml?: (request: Request, route: RouteInfo<RegExp>) => Promise<string | Response | null>;
     getRoutesManifest?: (distFolder: string) => Promise<ExpoRoutesManifestV1<RegExp> | null>;
     getApiRoute?: (route: RouteInfo<RegExp>) => Promise<any>;
     logApiRouteExecutionError?: (error: Error) => void;
+    handleApiRouteError?: (error: Error) => Promise<Response>;
   } = {}
 ) {
   let routesManifest: ExpoRoutesManifestV1<RegExp> | undefined;
 
   function updateRequestWithConfig(
-    request: ExpoRequest,
+    request: Request,
     config: ExpoRouterServerManifestV1FunctionRoute
   ) {
     const params: Record<string, string> = {};
-    const url = request.url;
-
-    const expoUrl = new ExpoURL(url);
-    const match = config.namedRegex.exec(expoUrl.pathname);
+    const url = new URL(request.url);
+    const match = config.namedRegex.exec(url.pathname);
     if (match?.groups) {
       for (const [key, value] of Object.entries(match.groups)) {
         const namedKey = config.routeKeys[key];
-        expoUrl.searchParams.set(namedKey, value);
         params[namedKey] = value;
       }
     }
 
-    request[NON_STANDARD_SYMBOL] = {
-      url: expoUrl,
-    };
     return params;
   }
 
-  return async function handler(request: ExpoRequest): Promise<Response> {
+  return async function handler(request: Request): Promise<Response> {
     if (getInternalRoutesManifest) {
       const manifest = await getInternalRoutesManifest(distFolder);
       if (manifest) {
         routesManifest = manifest;
       } else {
         // Development error when Expo Router is not setup.
-        return new ExpoResponse('No routes manifest found', {
+        return new Response('No routes manifest found', {
           status: 404,
           headers: {
             'Content-Type': 'text/plain',
@@ -150,17 +159,17 @@ export function createRequestHandler(
 
         // TODO: What's the standard behavior for malformed projects?
         if (!contents) {
-          return new ExpoResponse('Not found', {
+          return new Response('Not found', {
             status: 404,
             headers: {
               'Content-Type': 'text/plain',
             },
           });
-        } else if (contents instanceof ExpoResponse) {
+        } else if (contents instanceof Response) {
           return contents;
         }
 
-        return new ExpoResponse(contents, {
+        return new Response(contents, {
           status: 200,
           headers: {
             'Content-Type': 'text/html',
@@ -177,13 +186,13 @@ export function createRequestHandler(
 
       const func = await getApiRoute(route);
 
-      if (func instanceof ExpoResponse) {
+      if (func instanceof Response) {
         return func;
       }
 
-      const routeHandler = func[request.method];
+      const routeHandler = func?.[request.method];
       if (!routeHandler) {
-        return new ExpoResponse('Method not allowed', {
+        return new Response('Method not allowed', {
           status: 405,
           headers: {
             'Content-Type': 'text/plain',
@@ -196,18 +205,13 @@ export function createRequestHandler(
 
       try {
         // TODO: Handle undefined
-        return (await routeHandler(request, params)) as ExpoResponse;
+        return (await routeHandler(request, params)) as Response;
       } catch (error) {
         if (error instanceof Error) {
           logApiRouteExecutionError(error);
         }
 
-        return new ExpoResponse('Internal server error', {
-          status: 500,
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-        });
+        return handleApiRouteError(error as Error);
       }
     }
 
@@ -225,17 +229,17 @@ export function createRequestHandler(
 
       // TODO: What's the standard behavior for malformed projects?
       if (!contents) {
-        return new ExpoResponse('Not found', {
+        return new Response('Not found', {
           status: 404,
           headers: {
             'Content-Type': 'text/plain',
           },
         });
-      } else if (contents instanceof ExpoResponse) {
+      } else if (contents instanceof Response) {
         return contents;
       }
 
-      return new ExpoResponse(contents, {
+      return new Response(contents, {
         status: 404,
         headers: {
           'Content-Type': 'text/html',
@@ -244,7 +248,7 @@ export function createRequestHandler(
     }
 
     // 404
-    const response = new ExpoResponse('Not found', {
+    const response = new Response('Not found', {
       status: 404,
       headers: {
         'Content-Type': 'text/plain',
@@ -253,5 +257,3 @@ export function createRequestHandler(
     return response;
   };
 }
-
-export { ExpoResponse, ExpoRequest };

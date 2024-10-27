@@ -32,7 +32,7 @@ function _pluginResolver() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
 
 // Show all error info related to plugin resolution.
@@ -66,16 +66,14 @@ function isUnexpectedTokenError(error) {
  * @param _isLegacyPlugin Used to suppress errors thrown by plugins that are applied automatically
  */
 const withStaticPlugin = (config, props) => {
-  var _pluginProps;
   let projectRoot = props.projectRoot;
   if (!projectRoot) {
-    var _config$_internal;
-    projectRoot = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.projectRoot;
+    projectRoot = config._internal?.projectRoot;
     (0, _pluginResolver().assertInternalProjectRoot)(projectRoot);
   }
   let [pluginResolve, pluginProps] = (0, _pluginResolver().normalizeStaticPlugin)(props.plugin);
   // Ensure no one uses this property by accident.
-  (0, _assert().default)(!((_pluginProps = pluginProps) !== null && _pluginProps !== void 0 && _pluginProps._resolverError), `Plugin property '_resolverError' is a reserved property of \`withStaticPlugin\``);
+  (0, _assert().default)(!pluginProps?._resolverError, `Plugin property '_resolverError' is a reserved property of \`withStaticPlugin\``);
   let withPlugin;
   if (
   // Function was provided, no need to resolve: [withPlugin, {}]

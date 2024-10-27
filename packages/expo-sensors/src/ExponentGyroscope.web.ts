@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 
 import {
   assertSensorEventEnabledAsync,
@@ -10,9 +10,6 @@ import {
 const eventName = 'devicemotion';
 
 export default {
-  get name(): string {
-    return 'ExponentGyroscope';
-  },
   async isAvailableAsync(): Promise<boolean> {
     if (typeof DeviceMotionEvent === 'undefined') {
       return false;
@@ -20,10 +17,11 @@ export default {
     return await isSensorEnabledAsync(eventName);
   },
   _handleMotion({ accelerationIncludingGravity }) {
-    SyntheticPlatformEmitter.emit('gyroscopeDidUpdate', {
+    DeviceEventEmitter.emit('gyroscopeDidUpdate', {
       x: accelerationIncludingGravity.x,
       y: accelerationIncludingGravity.y,
       z: accelerationIncludingGravity.z,
+      timestamp: accelerationIncludingGravity.timeStamp / 1000,
     });
   },
   getPermissionsAsync,

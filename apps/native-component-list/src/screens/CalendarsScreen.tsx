@@ -1,6 +1,6 @@
-import { StackNavigationProp } from '@react-navigation/stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import React from 'react';
+import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import Button from '../components/Button';
@@ -44,76 +44,34 @@ const CalendarRow = (props: {
     </View>
   );
 };
-CalendarRow.navigationOptions = {
-  title: 'Calendars',
-};
 
-interface State {
-  haveCalendarPermissions: boolean;
-  haveReminderPermissions: boolean;
-  calendars: Calendar.Calendar[];
-  activeCalendarId?: string;
-  activeCalendarEvents: Calendar.Event[];
-  showAddNewEventForm: boolean;
-  editingEvent?: Calendar.Event;
-}
+export default function CalendarsScreen({ navigation }: { navigation: StackNavigation }) {
+  const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
+  const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
 
-export default class CalendarsScreen extends React.Component<
-  { navigation: StackNavigation },
-  State
-> {
-  static navigationOptions = {
-    title: 'Calendars',
-  };
+  const [calendars, setCalendars] = useState<Calendar.Calendar[]>([]);
 
-  readonly state: State = {
-    haveCalendarPermissions: false,
-    haveReminderPermissions: false,
-    calendars: [],
-    activeCalendarEvents: [],
-    showAddNewEventForm: false,
-  };
-
-  _askForCalendarPermissions = async () => {
-    const response = await Calendar.requestCalendarPermissionsAsync();
-    const granted = response.status === 'granted';
-    this.setState({
-      haveCalendarPermissions: granted,
-    });
-    return granted;
-  };
-
-  _askForReminderPermissions = async () => {
-    if (Platform.OS === 'android') return true;
-    const response = await Calendar.requestRemindersPermissionsAsync();
-    const granted = response.status === 'granted';
-    this.setState({
-      haveReminderPermissions: granted,
-    });
-    return granted;
-  };
-
-  _findCalendars = async () => {
-    const calendarGranted = await this._askForCalendarPermissions();
-    const reminderGranted = await this._askForReminderPermissions();
+  const findCalendars = async () => {
+    const calendarGranted = (await askForCalendarPermissions()).granted;
+    const reminderGranted =
+      Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
     if (calendarGranted && reminderGranted) {
       const eventCalendars = (await Calendar.getCalendarsAsync('event')) as unknown as any[];
       const reminderCalendars = (
         Platform.OS === 'ios' ? await Calendar.getCalendarsAsync('reminder') : []
       ) as any[];
-      this.setState({ calendars: [...eventCalendars, ...reminderCalendars] });
+      setCalendars([...eventCalendars, ...reminderCalendars]);
     }
   };
 
-  _addCalendar = async () => {
+  const addCalendar = async () => {
     const sourceDetails = Platform.select({
       default: () => ({}),
       ios: () => ({
-        sourceId: this.state.calendars.find((cal) => cal.source && cal.source.name === 'Default')
-          ?.source.id,
+        sourceId: calendars.find((cal) => cal.source && cal.source.name === 'Default')?.source.id,
       }),
       android: () => {
-        const calendar = this.state.calendars.find(
+        const calendar = calendars.find(
           (cal) => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
         );
         return calendar ? { source: calendar.source, ownerAccount: calendar.ownerAccount } : {};
@@ -130,26 +88,26 @@ export default class CalendarsScreen extends React.Component<
     try {
       await Calendar.createCalendarAsync(newCalendar);
       Alert.alert('Calendar saved successfully');
-      this._findCalendars();
+      findCalendars();
     } catch (e) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
 
-  _updateCalendar = async (calendarId: string) => {
+  const updateCalendar = async (calendarId: string) => {
     const newCalendar = {
       title: 'cool updated calendar',
     };
     try {
       await Calendar.updateCalendarAsync(calendarId, newCalendar);
       Alert.alert('Calendar saved successfully');
-      this._findCalendars();
+      findCalendars();
     } catch (e) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
 
-  _deleteCalendar = async (calendar: any) => {
+  const deleteCalendar = async (calendar: any) => {
     Alert.alert(`Are you sure you want to delete ${calendar.title}?`, 'This cannot be undone.', [
       {
         text: 'Cancel',
@@ -157,11 +115,11 @@ export default class CalendarsScreen extends React.Component<
       },
       {
         text: 'OK',
-        onPress: async () => {
+        async onPress() {
           try {
             await Calendar.deleteCalendarAsync(calendar.id);
             Alert.alert('Calendar deleted successfully');
-            this._findCalendars();
+            findCalendars();
           } catch (e) {
             Alert.alert('Calendar not deleted successfully', e.message);
           }
@@ -170,31 +128,37 @@ export default class CalendarsScreen extends React.Component<
     ]);
   };
 
-  render() {
-    if (this.state.calendars.length) {
-      return (
-        <ScrollView style={styles.container}>
-          <Button onPress={this._addCalendar} title="Add New Calendar" />
-          {this.state.calendars.map((calendar) => (
-            <CalendarRow
-              calendar={calendar}
-              key={calendar.id}
-              navigation={this.props.navigation}
-              updateCalendar={this._updateCalendar}
-              deleteCalendar={this._deleteCalendar}
-            />
-          ))}
-        </ScrollView>
-      );
-    }
-
+  if (calendars.length) {
     return (
-      <View style={styles.container}>
-        <Button onPress={this._findCalendars} title="Find my Calendars" />
-      </View>
+      <ScrollView style={styles.container}>
+        <Button onPress={addCalendar} title="Add New Calendar" />
+        {calendars.map((calendar) => (
+          <CalendarRow
+            calendar={calendar}
+            key={calendar.id}
+            navigation={navigation}
+            updateCalendar={updateCalendar}
+            deleteCalendar={deleteCalendar}
+          />
+        ))}
+      </ScrollView>
     );
   }
+
+  return (
+    <View style={styles.container}>
+      <Button onPress={findCalendars} title="Find my Calendars" />
+    </View>
+  );
 }
+
+CalendarRow.navigationOptions = {
+  title: 'Calendars',
+};
+
+CalendarsScreen.navigationOptions = {
+  title: 'Calendars',
+};
 
 const styles = StyleSheet.create({
   container: {

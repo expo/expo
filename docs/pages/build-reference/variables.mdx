@@ -4,11 +4,10 @@ sidebar_title: Environment variables and secrets
 description: Learn how to use environment variables and secrets in an EAS Build.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
-import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
-The [Environment variables in Expo guide](/guides/environment-variables) describes how to use **.env** files to set environment variables that can be inlined in your JavaScript code. The Expo CLI will substitute properly prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
+[Environment variables in Expo](/guides/environment-variables) describes how to use **.env** files to set environment variables that can be inlined in your JavaScript code. The Expo CLI will substitute properly prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
 
 Because your EAS Build job runs on a remote server, these **.env** files might not be available. For instance, **.env** files are excluded from your uploaded project if they are listed in **.gitignore** or not committed to your local version control system. Additionally, you may want to use environment variables outside of your JavaScript code to customize your app binary at build time, such as setting a bundle identifier or a private key for an error reporting service. Therefore, EAS Build lets you set per-build-profile environment variables within **eas.json** as well as sensitive values that should not be committed to source control via EAS Secrets.
 
@@ -52,7 +51,7 @@ Then you can set the same environment variable for each build profile in **eas.j
 
 Any reference to `process.env.EXPO_PUBLIC_API_URL` will be substituted for the applicable value depending on the environment.
 
-> `EXPO_PUBLIC_` variable replacement is available in SDK 49 and higher. See notes for [SDK 48 and lower](/guides/environment-variables#environment-variables-in-sdk-48-and-lower).
+> `EXPO_PUBLIC_` variable replacement is available in SDK 49 and higher.
 
 ### For use by your Expo config
 
@@ -133,9 +132,9 @@ You can manage secrets through the Expo website and EAS CLI.
 
 ### Secrets on the Expo website
 
-To create **account-wide secrets**, navigate to [the "Secrets" tab in your account or organization settings](https://expo.dev/accounts/[account]/settings/secrets).
+To create **account-wide secrets**, navigate to [Secrets tab](https://expo.dev/accounts/[account]/settings/secrets) in your account's settings.
 
-To create **app-specific secrets**, navigate to [the "Secrets" tab in your project dashboard](https://expo.dev/accounts/[account]/projects/[project]/secrets). If you haven't published your project yet and it isn't visible on the website, you can create it on the website from this link.
+To create **app-specific secrets**, navigate to the [Secrets tab](https://expo.dev/accounts/[account]/projects/[project]/secrets) in your project's dashboard.
 
 ### Adding secrets with EAS CLI
 
@@ -154,17 +153,12 @@ To view any existing secrets for this project, run `eas secret:list`:
   cmd={[
     '$ eas secret:list',
     'Secrets for this account and project:',
-    '┌────────────────┬────────┬─────────┬──────────────────────────────────────┬─────────────────┐',
-    '│ Name           │ Type   │ Scope   │ ID                                   │ Updated at      │',
-    '├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤',
-    '│ APP_UPLOAD_KEY │ string │ account │ 366bd434-b538-4192-887c-036c0eddedec │ Oct 05 11:51:46 │',
-    '├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤',
-    '│ NPM_TOKEN      │ string │ project │ 03f4881f-88fd-4d94-9e35-a5c34d39c2f2 │ Oct 05 11:51:33 │',
-    '├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤',
-    '│ SECRET_FILE    │ file   │ project │ 72c7ac1e-78d0-4fa2-b105-229260cecc88 │ Oct 05 11:52:12 │',
-    '├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤',
-    '│ sentryApiKey   │ string │ project │ 88dd0296-9119-4d50-a91b-1f646733f569 │ Oct 05 11:51:40 │',
-    '└────────────────┴────────┴─────────┴──────────────────────────────────────┴─────────────────┘',
+    '| Name           | Type   | Scope   | ID                                   | Updated at      |',
+    '|----------------|--------|---------|--------------------------------------|-----------------|',
+    '| APP_UPLOAD_KEY | string | account | 366bd434-b538-4192-887c-036c0eddedec | Oct 05 11:51:46 |',
+    '| NPM_TOKEN      | string | project | 03f4881f-88fd-4d94-9e35-a5c34d39c2f2 | Oct 05 11:51:33 |',
+    '| SECRET_FILE    | file   | project | 72c7ac1e-78d0-4fa2-b105-229260cecc88 | Oct 05 11:52:12 |',
+    '| sentryApiKey   | string | project | 88dd0296-9119-4d50-a91b-1f646733f569 | Oct 05 11:51:40 |',
   ]}
 />
 
@@ -175,7 +169,7 @@ If you're using a **.env** file for storing your secrets locally, you can use th
 <Terminal
   cmd={[
     '$ eas secret:push --scope project --env-file ./eas/.env',
-    '✔ Creating secrets on account johndoe…',
+    '✔ Creating secrets on account johndoe...',
     '✔ Created the following secrets on account johndoe:',
     '- ABC',
     '- DEF',
@@ -248,7 +242,7 @@ Upload the file to EAS.
 <Terminal
   cmd={[
     '$ eas secret:create --scope project --name GOOGLE_SERVICES_JSON --type file --value ./path/to/google-services.json',
-    '✔ ️Created a new secret GOOGLE_SERVICES_JSON on project @user/myproject.',
+    '✔ Created a new secret GOOGLE_SERVICES_JSON on project @user/myproject.',
   ]}
 />
 
@@ -260,10 +254,10 @@ Use **app.config.js** to read the path to **google-services.json**.
 
 ```js app.config.js
 export default {
-  // ...
+  /* @hide ...*/ /* @end */
   android: {
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
-    // ...
+    /* @hide ...*/ /* @end */
   },
 };
 ```

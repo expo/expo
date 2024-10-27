@@ -1,11 +1,10 @@
 package expo.modules.notifications.notifications.emitting
 
 import android.os.Bundle
-import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.notifications.ModuleNotFoundException
 import expo.modules.notifications.notifications.NotificationSerializer
+import expo.modules.notifications.notifications.debug.DebugLogging
 import expo.modules.notifications.notifications.interfaces.NotificationListener
 import expo.modules.notifications.notifications.interfaces.NotificationManager
 import expo.modules.notifications.notifications.model.Notification
@@ -17,16 +16,18 @@ private const val MESSAGES_DELETED_EVENT_NAME = "onNotificationsDeleted"
 
 open class NotificationsEmitter : Module(), NotificationListener {
   private lateinit var notificationManager: NotificationManager
-  private var lastNotificationResponse: NotificationResponse? = null
-  private var eventEmitter: EventEmitter? = null
+  private var lastNotificationResponseBundle: Bundle? = null
 
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationsEmitter")
 
-    OnCreate {
-      eventEmitter = appContext.legacyModule<EventEmitter>()
-        ?: throw ModuleNotFoundException(EventEmitter::class)
+    Events(
+      "onDidReceiveNotification",
+      "onNotificationsDeleted",
+      "onDidReceiveNotificationResponse"
+    )
 
+    OnCreate {
       // Register the module as a listener in NotificationManager singleton module.
       // Deregistration happens in onDestroy callback.
       notificationManager = requireNotNull(appContext.legacyModuleRegistry.getSingletonModule("NotificationManager", NotificationManager::class.java))
@@ -37,8 +38,13 @@ open class NotificationsEmitter : Module(), NotificationListener {
       notificationManager.removeListener(this@NotificationsEmitter)
     }
 
-    AsyncFunction("getLastNotificationResponseAsync") {
-      lastNotificationResponse?.let(NotificationSerializer::toBundle)
+    AsyncFunction<Bundle?>("getLastNotificationResponseAsync") {
+      lastNotificationResponseBundle
+    }
+
+    AsyncFunction("clearLastNotificationResponseAsync") {
+      lastNotificationResponseBundle = null
+      null
     }
   }
 
@@ -49,7 +55,9 @@ open class NotificationsEmitter : Module(), NotificationListener {
    * @param notification Notification received
    */
   override fun onNotificationReceived(notification: Notification) {
-    eventEmitter?.emit(NEW_MESSAGE_EVENT_NAME, NotificationSerializer.toBundle(notification))
+    val bundle = NotificationSerializer.toBundle(notification)
+    DebugLogging.logBundle("NotificationsEmitter.onNotificationReceived", bundle)
+    sendEvent(NEW_MESSAGE_EVENT_NAME, bundle)
   }
 
   /**
@@ -60,12 +68,18 @@ open class NotificationsEmitter : Module(), NotificationListener {
    * @return Whether notification has been handled
    */
   override fun onNotificationResponseReceived(response: NotificationResponse): Boolean {
-    lastNotificationResponse = response
-    eventEmitter?.let {
-      it.emit(NEW_RESPONSE_EVENT_NAME, NotificationSerializer.toBundle(response))
-      return true
-    }
-    return false
+    val bundle = NotificationSerializer.toBundle(response)
+    DebugLogging.logBundle("NotificationsEmitter.onNotificationResponseReceived", bundle)
+    lastNotificationResponseBundle = bundle
+    sendEvent(NEW_RESPONSE_EVENT_NAME, lastNotificationResponseBundle)
+    return true
+  }
+
+  override fun onNotificationResponseIntentReceived(extras: Bundle?) {
+    val bundle = NotificationSerializer.toResponseBundleFromExtras(extras)
+    DebugLogging.logBundle("NotificationsEmitter.onNotificationResponseIntentReceived", bundle)
+    lastNotificationResponseBundle = bundle
+    sendEvent(NEW_RESPONSE_EVENT_NAME, lastNotificationResponseBundle)
   }
 
   /**
@@ -73,6 +87,6 @@ open class NotificationsEmitter : Module(), NotificationListener {
    * Emits a [MESSAGES_DELETED_EVENT_NAME] event.
    */
   override fun onNotificationsDropped() {
-    eventEmitter?.emit(MESSAGES_DELETED_EVENT_NAME, Bundle.EMPTY)
+    sendEvent(MESSAGES_DELETED_EVENT_NAME, Bundle.EMPTY)
   }
 }

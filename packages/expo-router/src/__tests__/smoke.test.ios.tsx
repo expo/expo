@@ -1,22 +1,26 @@
 import React, { Text } from 'react-native';
 
 import { Slot, router, useGlobalSearchParams } from '../exports';
+import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
 import { act, renderRouter, screen } from '../testing-library';
 
-it('404', async () => {
-  const Index = jest.fn(() => <Redirect href="/404" />);
+it('404', () => {
+  renderRouter(
+    {
+      index: () => null,
+    },
+    {
+      initialUrl: '/404',
+    }
+  );
 
-  renderRouter({
-    index: Index,
-  });
-
-  expect(await screen.findByText('Unmatched Route')).toBeOnTheScreen();
+  expect(screen.getByText('Unmatched Route')).toBeOnTheScreen();
   expect(screen).toHavePathname('/404');
   expect(screen).toHaveSegments(['+not-found']);
-  expect(screen).toHaveSearchParams({ 'not-found': '404' });
+  expect(screen).toHaveSearchParams({ 'not-found': ['404'] });
 });
 
 it('can render a route', async () => {
@@ -28,6 +32,78 @@ it('can render a route', async () => {
   expect(screen).toHavePathname('/');
   expect(screen).toHaveSegments([]);
   expect(screen).toHaveSearchParams({});
+});
+
+describe('initialUrl', () => {
+  /*
+   * initialUrl sets the initial URL for the router.
+   * This is not only useful for testing, but is critical for static rendering
+   * which must set the initial URL for every page
+   */
+  it('can render with an initial URL', () => {
+    renderRouter(
+      {
+        home: () => <Text>Hello</Text>,
+      },
+      {
+        initialUrl: '/home',
+      }
+    );
+
+    expect(screen.getByText('Hello')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/home');
+    expect(screen).toHaveSegments(['home']);
+    expect(screen).toHaveSearchParams({});
+  });
+
+  it('can render with an initial URL in a group', () => {
+    renderRouter(
+      {
+        '(a)/home': () => <Text>Hello</Text>,
+      },
+      {
+        initialUrl: '/home',
+      }
+    );
+
+    expect(screen.getByText('Hello')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/home');
+    expect(screen).toHaveSegments(['(a)', 'home']);
+    expect(screen).toHaveSearchParams({});
+  });
+
+  it('can render with an index initial URL in a group', () => {
+    renderRouter(
+      {
+        '(a)/index': () => <Text>Hello</Text>,
+      },
+      {
+        initialUrl: '/',
+      }
+    );
+
+    expect(screen.getByText('Hello')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/');
+    expect(screen).toHaveSegments(['(a)']);
+    expect(screen).toHaveSearchParams({});
+  });
+
+  it('will render the correct group', () => {
+    renderRouter(
+      {
+        '(a)/index': () => <Text>Hello</Text>,
+        '(b)/index': () => <Text>World</Text>,
+      },
+      {
+        initialUrl: '/(b)',
+      }
+    );
+
+    expect(screen.getByText('World')).toBeOnTheScreen();
+    expect(screen).toHavePathname('/');
+    expect(screen).toHaveSegments(['(b)']);
+    expect(screen).toHaveSearchParams({});
+  });
 });
 
 it('can handle dynamic routes', async () => {
@@ -89,7 +165,7 @@ it('layouts', async () => {
   });
 
   expect(await screen.findByText('Other')).toBeOnTheScreen();
-  expect(Layout).toHaveBeenCalledTimes(2);
+  expect(Layout).toHaveBeenCalledTimes(1);
   expect(Index).toHaveBeenCalledTimes(1);
   expect(Other).toHaveBeenCalledTimes(1);
 });
@@ -116,9 +192,9 @@ it('nested layouts', async () => {
 
   expect(await screen.findByText('HomeNested')).toBeOnTheScreen();
 
-  expect(AppLayout).toHaveBeenCalledTimes(3);
-  expect(TabsLayout).toHaveBeenCalledTimes(2);
-  expect(StackLayout).toHaveBeenCalledTimes(2);
+  expect(AppLayout).toHaveBeenCalledTimes(1);
+  expect(TabsLayout).toHaveBeenCalledTimes(1);
+  expect(StackLayout).toHaveBeenCalledTimes(1);
   expect(Index).toHaveBeenCalledTimes(1);
   expect(Home).toHaveBeenCalledTimes(1);
   expect(HomeNested).toHaveBeenCalledTimes(1);
@@ -153,17 +229,63 @@ it('deep linking nested groups', async () => {
   );
 
   // Start in a deeply nested navigator
-  expect(await screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
+  expect(screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
 
   act(() => router.replace('/(app)/(tabs)/home'));
 
-  expect(await screen.getByTestId('Home')).toBeOnTheScreen();
+  expect(screen.getByTestId('Home')).toBeOnTheScreen();
 
   expect(RootLayout).toHaveBeenCalledTimes(1);
-  expect(AppLayout).toHaveBeenCalledTimes(2);
+  expect(AppLayout).toHaveBeenCalledTimes(1);
   expect(TabsLayout).toHaveBeenCalledTimes(1);
   expect(HomeLayout).toHaveBeenCalledTimes(1);
   expect(OtherTabsLayout).toHaveBeenCalledTimes(1);
   expect(NestedTabsLayout).toHaveBeenCalledTimes(1);
   expect(OtherTabsIndex).toHaveBeenCalledTimes(1);
+});
+
+// Skipped due to 0.74.0-rc.2 regression.
+// react-native-gesture-handler is failing in Fabric.
+// https://exponent-internal.slack.com/archives/C0447EFTS74/p1709588600921339?thread_ts=1709578927.565339&cid=C0447EFTS74
+// Please enable once `react-native-gesture-handler` is updated
+it.skip('can navigate across the drawer navigator', () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="index" />,
+    '(group)/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group)/one': () => <Text testID="one" />,
+    '(group)/two': () => <Text testID="two" />,
+    '(group_two)/three': () => <Text testID="three" />,
+    '(group_two)/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group_two)/nested/folder/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group_two)/nested/folder/four': () => <Text testID="four" />,
+  });
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeOnTheScreen();
+
+  // Navigate to a drawer screen
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
+
+  // Navigate within the drawer
+  act(() => router.push('/two'));
+  expect(screen).toHavePathname('/two');
+  expect(screen.getByTestId('two')).toBeOnTheScreen();
+
+  // Navigate to a different drawer
+  act(() => router.push('/three'));
+  expect(screen).toHavePathname('/three');
+  expect(screen.getByTestId('three')).toBeOnTheScreen();
+
+  // Navigate to a nested folder
+  act(() => router.push('/nested/folder/four'));
+  expect(screen).toHavePathname('/nested/folder/four');
+  expect(screen.getByTestId('four')).toBeOnTheScreen();
+
+  // Navigate back to one
+  act(() => router.push('/one'));
+  expect(screen).toHavePathname('/one');
+  expect(screen.getByTestId('one')).toBeOnTheScreen();
 });

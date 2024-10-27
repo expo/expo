@@ -4,7 +4,7 @@ import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'exp
  */
 export type RecurringEventOptions = {
     /**
-     * Whether or not future events in the recurring series should also be updated. If `true`, will
+     * Whether future events in the recurring series should also be updated. If `true`, will
      * apply the given changes to the recurring instance specified by `instanceStartDate` and all
      * future events in the series. If `false`, will only apply the given changes to the instance
      * specified by `instanceStartDate`.
@@ -42,29 +42,26 @@ export type Calendar = {
     source: Source;
     /**
      * Type of calendar this object represents.
-     * Possible values: [`CalendarType`](#calendarcalendartype).
      * @platform ios
      */
-    type?: string;
+    type?: CalendarType;
     /**
      * Color used to display this calendar's events.
      */
     color: string;
     /**
      * Whether the calendar is used in the Calendar or Reminders OS app.
-     * Possible values: [`EntityTypes`](#calendarentitytypes).
      * @platform ios
      */
-    entityType?: string;
+    entityType?: EntityTypes;
     /**
      * Boolean value that determines whether this calendar can be modified.
      */
     allowsModifications: boolean;
     /**
      * Availability types that this calendar supports.
-     * Possible values: Array of [`Availability`](#calendaravailability).
      */
-    allowedAvailabilities: string[];
+    allowedAvailabilities: Availability[];
     /**
      * Boolean value indicating whether this is the device's primary calendar.
      * @platform android
@@ -87,16 +84,14 @@ export type Calendar = {
     timeZone?: string;
     /**
      * Alarm methods that this calendar supports.
-     * Possible values: Array of [`AlarmMethod`](#calendaralarmmethod).
      * @platform android
      */
-    allowedReminders?: string[];
+    allowedReminders?: AlarmMethod[];
     /**
      * Attendee types that this calendar supports.
-     * Possible values: Array of [`AttendeeType`](#calendarattendeetype).
      * @platform android
      */
-    allowedAttendeeTypes?: string[];
+    allowedAttendeeTypes?: AttendeeType[];
     /**
      * Indicates whether the OS displays events on this calendar.
      * @platform android
@@ -110,10 +105,9 @@ export type Calendar = {
     isSynced?: boolean;
     /**
      * Level of access that the user has for the calendar.
-     * Possible values: [`CalendarAccessLevel`](#calendarcalendaraccesslevel).
      * @platform android
      */
-    accessLevel?: string;
+    accessLevel?: CalendarAccessLevel;
 };
 /**
  * A source account that owns a particular calendar. Expo apps will typically not need to interact with `Source` objects.
@@ -130,7 +124,7 @@ export type Source = {
      * along with `name`, or the OS will delete the calendar.
      * On iOS, one of [`SourceType`](#calendarsourcetype)s.
      */
-    type: string;
+    type: string | SourceType;
     /**
      * Name for the account that owns this calendar and was used to sync the calendar to the device.
      */
@@ -196,7 +190,7 @@ export type Event = {
     /**
      * Object representing rules for recurring or repeating events. Set to `null` for one-time events.
      */
-    recurrenceRule: RecurrenceRule;
+    recurrenceRule: RecurrenceRule | null;
     /**
      * Date object or string representing the time when the event starts.
      */
@@ -221,14 +215,12 @@ export type Event = {
     allDay: boolean;
     /**
      * The availability setting for the event.
-     * Possible values: [`Availability`](#calendaravailability).
      */
-    availability: string;
+    availability: Availability;
     /**
      * Status of the event.
-     * Possible values: [`EventStatus`](#calendareventstatus).
      */
-    status: string;
+    status: EventStatus;
     /**
      * Organizer of the event.
      * @platform ios
@@ -241,10 +233,9 @@ export type Event = {
     organizerEmail?: string;
     /**
      * User's access level for the event.
-     * Possible values: [`EventAccessLevel`](#calendareventaccesslevel).
      * @platform android
      */
-    accessLevel?: string;
+    accessLevel?: EventAccessLevel;
     /**
      * Whether invited guests can modify the details of the event.
      * @platform android
@@ -318,9 +309,9 @@ export type Reminder = {
      */
     alarms?: Alarm[];
     /**
-     * Object representing rules for recurring or repeated reminders. Null for one-time tasks.
+     * Object representing rules for recurring or repeated reminders. `null` for one-time tasks.
      */
-    recurrenceRule?: RecurrenceRule;
+    recurrenceRule?: RecurrenceRule | null;
     /**
      * Date object or string representing the start date of the reminder task.
      */
@@ -359,19 +350,16 @@ export type Attendee = {
     name: string;
     /**
      * Role of the attendee at the event.
-     * Possible values: [`AttendeeRole`](#calendarattendeerole).
      */
-    role: string;
+    role: AttendeeRole;
     /**
      * Status of the attendee in relation to the event.
-     * Possible values: [`AttendeeStatus`](#calendarattendeestatus).
      */
-    status: string;
+    status: AttendeeStatus;
     /**
      * Type of the attendee.
-     * Possible values: [`AttendeeType`](#calendarattendeetype).
      */
-    type: string;
+    type: AttendeeType;
     /**
      * URL for the attendee.
      * @platform ios
@@ -384,7 +372,7 @@ export type Attendee = {
     email?: string;
 };
 /**
- * A method for having the OS automatically remind the user about an calendar item.
+ * A method for having the OS automatically remind the user about a calendar item.
  */
 export type Alarm = {
     /**
@@ -400,11 +388,10 @@ export type Alarm = {
     relativeOffset?: number;
     structuredLocation?: AlarmLocation;
     /**
-     * Method of alerting the user that this alarm should use; on iOS this is always a notification.
-     * Possible values: [`AlarmMethod`](#calendaralarmmethod).
+     * Method of alerting the user that this alarm should use. On iOS this is always a notification.
      * @platform android
      */
-    method?: string;
+    method?: AlarmMethod;
 };
 export type AlarmLocation = {
     /**
@@ -418,6 +405,9 @@ export type AlarmLocation = {
         longitude?: number;
     };
 };
+/**
+ * @platform ios
+ */
 export declare enum DayOfTheWeek {
     Sunday = 1,
     Monday = 2,
@@ -427,6 +417,9 @@ export declare enum DayOfTheWeek {
     Friday = 6,
     Saturday = 7
 }
+/**
+ * @platform ios
+ */
 export declare enum MonthOfTheYear {
     January = 1,
     February = 2,
@@ -447,14 +440,13 @@ export declare enum MonthOfTheYear {
  * which is in turn based on [the iCal RFC](https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
  * so you can refer to those to learn more about this potentially complex interface.
  *
- * Not all of the combinations make sense. For example, when frequency is `DAILY`, setting `daysOfTheMonth` makes no sense.
+ * Not all the combinations make sense. For example, when frequency is `DAILY`, setting `daysOfTheMonth` makes no sense.
  */
 export type RecurrenceRule = {
     /**
      * How often the calendar item should recur.
-     * Possible values: [`Frequency`](#calendarfrequency).
      */
-    frequency: string;
+    frequency: Frequency;
     /**
      * Interval at which the calendar item should recur. For example, an `interval: 2` with `frequency: DAILY`
      * would yield an event that recurs every other day.
@@ -524,6 +516,131 @@ export type DaysOfTheWeek = {
     weekNumber?: number;
 };
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
+/**
+ * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
+ * */
+export declare enum CalendarDialogResultActions {
+    /**
+     * On Android, this is the only possible result because the OS doesn't provide enough information to determine the user's action -
+     * the user may have canceled the dialog, modified the event, or deleted it.
+     *
+     * On iOS, this means the user simply closed the dialog.
+     * */
+    done = "done",
+    /**
+     * The user canceled or dismissed the dialog.
+     * @platform ios
+     * */
+    canceled = "canceled",
+    /**
+     * The user deleted the event.
+     * @platform ios
+     * */
+    deleted = "deleted",
+    /**
+     * The user responded to and saved a pending event invitation.
+     * @platform ios
+     * */
+    responded = "responded",
+    /**
+     * The user saved a new event or modified an existing one.
+     * @platform ios
+     * */
+    saved = "saved"
+}
+/**
+ * The result of presenting the calendar dialog for opening (viewing) an event.
+ * */
+export type OpenEventDialogResult = {
+    /**
+     * Indicates how user responded to the dialog.
+     * On Android, the `action` is always `done`.
+     * On iOS, it can be `done`, `canceled`, `deleted` or `responded`.
+     * */
+    action: Extract<CalendarDialogResultActions, 'done' | 'canceled' | 'deleted' | 'responded'>;
+};
+/**
+ * The result of presenting a calendar dialog for creating or editing an event.
+ * */
+export type DialogEventResult = {
+    /**
+     * How user responded to the dialog.
+     * On Android, this is always `done` (Android doesn't provide enough information to determine the user's action -
+     * the user may have canceled the dialog, saved or deleted the event).
+     *
+     * On iOS, it can be `saved`, `canceled` or `deleted`.
+     * */
+    action: Extract<CalendarDialogResultActions, 'done' | 'saved' | 'canceled' | 'deleted'>;
+    /**
+     * The ID of the event that was created or edited. On Android, this is always `null`.
+     *
+     * On iOS, this is a string when user confirms the creation or editing of an event. Otherwise, it's `null`.
+     * */
+    id: string | null;
+};
+export type PresentationOptions = {
+    /**
+     * Whether to launch the Activity as a new [task](https://developer.android.com/reference/android/content/Intent#FLAG_ACTIVITY_NEW_TASK).
+     * If `true`, the promise resolves with `'done'` action immediately after opening the calendar activity.
+     * @default true
+     * @platform android
+     */
+    startNewActivityTask?: boolean;
+};
+export type OpenEventPresentationOptions = PresentationOptions & {
+    /**
+     * Whether to allow the user to edit the previewed event.
+     * This property applies only to events in calendars created by the user.
+     *
+     * Note that if the user edits the event, the returned action is the one that user performs last.
+     * For example, when user previews the event, confirms some edits and finally dismisses the dialog, the event is edited, but response is `canceled`.
+     *
+     * @default false
+     * @platform ios
+     * */
+    allowsEditing?: boolean;
+    /**
+     * Determines whether event can be shown in calendar day view preview.
+     * This property applies only to invitations.
+     *
+     * @default false
+     * @platform ios
+     * */
+    allowsCalendarPreview?: boolean;
+};
+export type CalendarDialogParams = {
+    /**
+     * ID of the event to be presented in the calendar UI.
+     */
+    id: string;
+    /**
+     * Date object representing the start time of the desired instance, if looking for a single instance
+     * of a recurring event. If this is not provided and **id** represents a recurring event, the first
+     * instance of that event will be returned by default.
+     * @platform ios
+     */
+    instanceStartDate?: string | Date;
+};
+/**
+ * Launches the calendar UI provided by the OS to create a new event.
+ * @param eventData A map of details for the event to be created.
+ * @param presentationOptions Configuration that influences how the calendar UI is presented.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export declare function createEventInCalendarAsync(eventData?: Omit<Partial<Event>, 'id'>, presentationOptions?: PresentationOptions): Promise<DialogEventResult>;
+/**
+ * Launches the calendar UI provided by the OS to preview an event.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export declare function openEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: OpenEventPresentationOptions): Promise<OpenEventDialogResult>;
+/**
+ * Launches the calendar UI provided by the OS to edit or delete an event. On Android, this is the same as `openEventInCalendarAsync`.
+ * @return A promise which resolves with information about the dialog result.
+ * @header systemProvidedUI
+ */
+export declare function editEventInCalendarAsync(params: CalendarDialogParams, presentationOptions?: PresentationOptions): Promise<DialogEventResult>;
 /**
  * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
  *
@@ -646,7 +763,7 @@ export declare function deleteAttendeeAsync(id: string): Promise<void>;
  * @return A promise which fulfils with an array of [`Reminder`](#reminder) objects matching the search criteria.
  * @platform ios
  */
-export declare function getRemindersAsync(calendarIds: (string | null)[], status: string | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
+export declare function getRemindersAsync(calendarIds: (string | null)[], status: ReminderStatus | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
 /**
  * Returns a specific reminder selected by ID.
  * @param id ID of the reminder to return.
@@ -695,6 +812,8 @@ export declare function getSourceAsync(id: string): Promise<Source>;
  * Sends an intent to open the specified event in the OS Calendar app.
  * @param id ID of the event to open.
  * @platform android
+ * @deprecated Use [`openEventInCalendarAsync`](#openeventincalendarasyncparams-presentationoptions) instead.
+ * @header systemProvidedUI
  */
 export declare function openEventInCalendar(id: string): void;
 /**
@@ -745,105 +864,204 @@ export declare const useCalendarPermissions: (options?: PermissionHookOptions<ob
  * ```
  */
 export declare const useRemindersPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
-export declare const EntityTypes: {
-    EVENT: string;
-    REMINDER: string;
-};
-export declare const Frequency: {
-    DAILY: string;
-    WEEKLY: string;
-    MONTHLY: string;
-    YEARLY: string;
-};
-export declare const Availability: {
-    NOT_SUPPORTED: string;
-    BUSY: string;
-    FREE: string;
-    TENTATIVE: string;
-    UNAVAILABLE: string;
-};
-export declare const CalendarType: {
-    LOCAL: string;
-    CALDAV: string;
-    EXCHANGE: string;
-    SUBSCRIBED: string;
-    BIRTHDAYS: string;
-    UNKNOWN: string;
-};
-export declare const EventStatus: {
-    NONE: string;
-    CONFIRMED: string;
-    TENTATIVE: string;
-    CANCELED: string;
-};
-export declare const SourceType: {
-    LOCAL: string;
-    EXCHANGE: string;
-    CALDAV: string;
-    MOBILEME: string;
-    SUBSCRIBED: string;
-    BIRTHDAYS: string;
-};
-export declare const AttendeeRole: {
-    UNKNOWN: string;
-    REQUIRED: string;
-    OPTIONAL: string;
-    CHAIR: string;
-    NON_PARTICIPANT: string;
-    ATTENDEE: string;
-    ORGANIZER: string;
-    PERFORMER: string;
-    SPEAKER: string;
-    NONE: string;
-};
-export declare const AttendeeStatus: {
-    UNKNOWN: string;
-    PENDING: string;
-    ACCEPTED: string;
-    DECLINED: string;
-    TENTATIVE: string;
-    DELEGATED: string;
-    COMPLETED: string;
-    IN_PROCESS: string;
-    INVITED: string;
-    NONE: string;
-};
-export declare const AttendeeType: {
-    UNKNOWN: string;
-    PERSON: string;
-    ROOM: string;
-    GROUP: string;
-    RESOURCE: string;
-    OPTIONAL: string;
-    REQUIRED: string;
-    NONE: string;
-};
-export declare const AlarmMethod: {
-    ALARM: string;
-    ALERT: string;
-    EMAIL: string;
-    SMS: string;
-    DEFAULT: string;
-};
-export declare const EventAccessLevel: {
-    CONFIDENTIAL: string;
-    PRIVATE: string;
-    PUBLIC: string;
-    DEFAULT: string;
-};
-export declare const CalendarAccessLevel: {
-    CONTRIBUTOR: string;
-    EDITOR: string;
-    FREEBUSY: string;
-    OVERRIDE: string;
-    OWNER: string;
-    READ: string;
-    RESPOND: string;
-    ROOT: string;
-    NONE: string;
-};
-export declare const ReminderStatus: {
-    COMPLETED: string;
-    INCOMPLETE: string;
-};
+/**
+ * platform ios
+ */
+export declare enum EntityTypes {
+    EVENT = "event",
+    REMINDER = "reminder"
+}
+export declare enum Frequency {
+    DAILY = "daily",
+    WEEKLY = "weekly",
+    MONTHLY = "monthly",
+    YEARLY = "yearly"
+}
+export declare enum Availability {
+    /**
+     * @platform ios
+     */
+    NOT_SUPPORTED = "notSupported",
+    BUSY = "busy",
+    FREE = "free",
+    TENTATIVE = "tentative",
+    /**
+     * @platform ios
+     */
+    UNAVAILABLE = "unavailable"
+}
+/**
+ * @platform ios
+ */
+export declare enum CalendarType {
+    LOCAL = "local",
+    CALDAV = "caldav",
+    EXCHANGE = "exchange",
+    SUBSCRIBED = "subscribed",
+    BIRTHDAYS = "birthdays",
+    UNKNOWN = "unknown"
+}
+export declare enum EventStatus {
+    NONE = "none",
+    CONFIRMED = "confirmed",
+    TENTATIVE = "tentative",
+    CANCELED = "canceled"
+}
+/**
+ * @platform ios
+ */
+export declare enum SourceType {
+    LOCAL = "local",
+    EXCHANGE = "exchange",
+    CALDAV = "caldav",
+    MOBILEME = "mobileme",
+    SUBSCRIBED = "subscribed",
+    BIRTHDAYS = "birthdays"
+}
+export declare enum AttendeeRole {
+    /**
+     * @platform ios
+     */
+    UNKNOWN = "unknown",
+    /**
+     * @platform ios
+     */
+    REQUIRED = "required",
+    /**
+     * @platform ios
+     */
+    OPTIONAL = "optional",
+    /**
+     * @platform ios
+     */
+    CHAIR = "chair",
+    /**
+     * @platform ios
+     */
+    NON_PARTICIPANT = "nonParticipant",
+    /**
+     * @platform android
+     */
+    ATTENDEE = "attendee",
+    /**
+     * @platform android
+     */
+    ORGANIZER = "organizer",
+    /**
+     * @platform android
+     */
+    PERFORMER = "performer",
+    /**
+     * @platform android
+     */
+    SPEAKER = "speaker",
+    /**
+     * @platform android
+     */
+    NONE = "none"
+}
+export declare enum AttendeeStatus {
+    /**
+     * @platform ios
+     */
+    UNKNOWN = "unknown",
+    /**
+     * @platform ios
+     */
+    PENDING = "pending",
+    ACCEPTED = "accepted",
+    DECLINED = "declined",
+    TENTATIVE = "tentative",
+    /**
+     * @platform ios
+     */
+    DELEGATED = "delegated",
+    /**
+     * @platform ios
+     */
+    COMPLETED = "completed",
+    /**
+     * @platform ios
+     */
+    IN_PROCESS = "inProcess",
+    /**
+     * @platform android
+     */
+    INVITED = "invited",
+    /**
+     * @platform android
+     */
+    NONE = "none"
+}
+export declare enum AttendeeType {
+    /**
+     * @platform ios
+     */
+    UNKNOWN = "unknown",
+    /**
+     * @platform ios
+     */
+    PERSON = "person",
+    /**
+     * @platform ios
+     */
+    ROOM = "room",
+    /**
+     * @platform ios
+     */
+    GROUP = "group",
+    RESOURCE = "resource",
+    /**
+     * @platform android
+     */
+    OPTIONAL = "optional",
+    /**
+     * @platform android
+     */
+    REQUIRED = "required",
+    /**
+     * @platform android
+     */
+    NONE = "none"
+}
+/**
+ * @platform android
+ */
+export declare enum AlarmMethod {
+    ALARM = "alarm",
+    ALERT = "alert",
+    EMAIL = "email",
+    SMS = "sms",
+    DEFAULT = "default"
+}
+/**
+ * @platform android
+ */
+export declare enum EventAccessLevel {
+    CONFIDENTIAL = "confidential",
+    PRIVATE = "private",
+    PUBLIC = "public",
+    DEFAULT = "default"
+}
+/**
+ * @platform android
+ */
+export declare enum CalendarAccessLevel {
+    CONTRIBUTOR = "contributor",
+    EDITOR = "editor",
+    FREEBUSY = "freebusy",
+    OVERRIDE = "override",
+    OWNER = "owner",
+    READ = "read",
+    RESPOND = "respond",
+    ROOT = "root",
+    NONE = "none"
+}
+/**
+ * @platform ios
+ */
+export declare enum ReminderStatus {
+    COMPLETED = "completed",
+    INCOMPLETE = "incomplete"
+}
 //# sourceMappingURL=Calendar.d.ts.map

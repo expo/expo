@@ -98,9 +98,6 @@ async function handlePermissionsQueryAsync(): Promise<PermissionResponse> {
 }
 
 export default {
-  get name(): string {
-    return 'ExpoBarCodeScannerModule';
-  },
   get BarCodeType() {
     return {
       code39mod43: 'code39mod43',

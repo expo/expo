@@ -1,0 +1,84 @@
+---
+title: Apple Developer Program roles and permissions for EAS Build
+sidebar_title: Apple Developer Program roles and permissions
+description: Learn about the Apple Developer account membership requirements for creating an EAS Build.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+
+An Apple Developer account with at least App-Manager Role is required to create iOS device builds on EAS. This account allows you to generate [app signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) such as certificates, identifiers, and profiles, submit the app for review, and manage app's distribution.
+
+An Apple Developer user profile must have **Access to Certificates, Identifiers, and Profiles** enabled in their App Store Connect user permissions to generate app signing credentials. If the Apple Developer account is an individual account, only the authorized user of the account can have this access. For an organization Apple Developer account, multiple team members can have this access, but some organizations may choose to limit this access to certain team members.
+
+<ContentSpotlight
+  alt="Access to Certificates, Identifiers, and Profiles settings in App Store Connect."
+  caption="Access to Certificates, Identifiers, and Profiles settings in App Store Connect."
+  src="/static/images/apple-access-settings.png"
+  className="max-w-[400px]"
+/>
+
+This guide provides steps that an authorized user with **Access to Certificates, Identifiers, and Profiles** can follow to ensure app signing credentials are generated and available to their team members who use EAS. It also provides steps for the team developer to create an EAS Build by using pre-generated credentials.
+
+> See [Apple's documentation on Program Roles](https://developer.apple.com/support/roles/) for details on the different roles and their permissions based on the type of Developer account and the permissions that are required for each role.
+
+## Steps for Apple Developer account's authorized user
+
+The authorized user of the Apple Developer account needs to generate the following credentials:
+
+- **Distribution signing certificate**: Required to sign development and release builds that are installed on an iOS device.
+- **Ad hoc provisioning profile**: Required to sign builds that are installed on a device outside of the Apple App Store.
+- **Distribution provisioning profile**: Required to sign the build that is submitted to the Apple App Store.
+- **Push key**: Required when using a push notification service.
+
+For details on Distribution certificate, Provision profiles, and Push keys, see [required iOS app credentials](/app-signing/app-credentials/#ios).
+
+With EAS CLI, all of the above credentials can be created and synced automatically with the Apple Developer account. Once the authorized user logs in to their [Expo account](/accounts/account-types/), they can create or update the provisioning profile by running `eas credentials` using the EAS CLI.
+
+<Terminal cmd={['$ eas login', '', '$ eas credentials']} />
+
+The CLI will prompt for selecting a [build profile](/build/eas-json/#build-profiles) to use for the EAS Build. If the Apple Developer account's authorized user is creating a production build, follow these steps to [create a distribution provisioning profile](/tutorial/eas/ios-production-build/#create-a-distribution-provisioning-profile). To create a developer build, follow these steps to [create an ad hoc provisioning profile](/tutorial/eas/ios-development-build-for-devices/#provisioning-profile).
+
+This ensures that the provisioning profile associated with the Expo account has necessary permissions.
+
+> For projects with existing credentials, see [Using existing credentials](/app-signing/existing-credentials/) for details on how to sync these to EAS or manage them manually.
+
+## Steps for the team developer
+
+As a developer on the team, when running `eas build -p ios` in the terminal window, the EAS CLI asks you to login to an Apple Developer account.
+
+<Terminal
+  cmd={[
+    '? Do you want to log in to your Apple account? > (Y/n)',
+    '',
+    'No problem! 👌 If any of the next steps will require Apple account access we will ask you again about it.',
+  ]}
+/>
+
+Press <kbd>n</kbd> to skip logging into Apple Developer account if you don't have access (and avoid logging into your personal Apple Developer account, if any). The CLI displays message about skipping provisioning profile validation and other app signing credential validation and will continue creating the EAS Build with existing credentials
+
+The EAS CLI needs to use the provisioning profile associated with the Expo account to create a build for iOS. When you skip login, the EAS Build will use the last provisioning profile and other credentials that were updated by the Apple Developer account's authorized user in your organization's Expo account.
+
+## Additional information
+
+### Uploading pre-generated Apple credentials
+
+Some development teams may choose to generate distribution certificates and provisioning profiles outside of EAS. These credentials can be added by any EAS user with Developer or higher permissions using `eas credentials` or under **Project** > **Configuration** > **Credentials** using the Expo dashboard.
+
+When uploading the credentials, you will need the **.p12** and **.mobileprovision** files, and any passwords set when generating the distribution certificate.
+
+### Provisioning profile expiry and updates
+
+The associated provisioning profile needs to be updated if certain [iOS capabilities](/build-reference/ios-capabilities/) (such as, entitlements) are added or removed, or at the annual expiry of the profile. This step is handled by the Apple Developer account's authorized user.
+
+### Federated Apple Developer accounts
+
+#### EAS Build
+
+EAS CLI can only accept an Apple account's email and password to login into your Apple Developer account. You cannot login into [Federated Apple Developer account](https://support.apple.com/en-in/guide/apple-business-manager/axmb19317543/web) and make updates to the distribution certificate or provisioning profile. If your build credentials do not require any changes, you can skip logging in. Then, you can proceed with the build and EAS CLI will continue using your current uploaded credentials.
+
+However, you can provide an Apple Store Connect (ASC) API token with Admin access to check and update Apple credentials when running `eas build` command. Follow the steps in [Provide an ASC API Token for your Apple Team](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team) to create a build by passing the required token value to the `eas build` command.
+
+#### EAS Submit
+
+EAS Submit uses the ASC API token for submitting to TestFlight. If you have a Federated Apple Developer account, you can follow the standard EAS Submit setup. It lets you automatically submit your builds using `eas build --auto-submit`.

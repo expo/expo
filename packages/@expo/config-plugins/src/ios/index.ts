@@ -2,6 +2,7 @@ import * as Bitcode from './Bitcode';
 import * as BuildProperties from './BuildProperties';
 import * as BuildScheme from './BuildScheme';
 import * as BundleIdentifier from './BundleIdentifier';
+import * as DevelopmentTeam from './DevelopmentTeam';
 import * as DeviceFamily from './DeviceFamily';
 import * as Entitlements from './Entitlements';
 import * as Google from './Google';
@@ -12,6 +13,7 @@ import * as Name from './Name';
 import * as Orientation from './Orientation';
 import * as Paths from './Paths';
 import * as Permissions from './Permissions';
+import * as PrivacyInfo from './PrivacyInfo';
 import * as ProvisioningProfile from './ProvisioningProfile';
 import * as RequiresFullScreen from './RequiresFullScreen';
 import * as Scheme from './Scheme';
@@ -33,6 +35,7 @@ export {
   BundleIdentifier,
   BuildProperties,
   BuildScheme,
+  DevelopmentTeam,
   DeviceFamily,
   Google,
   Maps,
@@ -48,4 +51,5 @@ export {
   UsesNonExemptEncryption,
   Version,
   XcodeProjectFile,
+  PrivacyInfo,
 };

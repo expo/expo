@@ -1,91 +1,95 @@
-import { VideoView, useVideoPlayer } from '@expo/video';
-import React, { useCallback, useEffect, useRef } from 'react';
-import { PixelRatio, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform } from 'react-native';
 
-import Button from '../../components/Button';
+import { optionalRequire } from '../../navigation/routeBuilder';
+import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
-export default function VideoScreen() {
-  const ref = useRef<VideoView>(null);
+export const VideoScreens = [
+  {
+    name: 'DRM',
+    route: 'video/drm',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoDRMScreen'));
+    },
+  },
+  {
+    name: 'Fullscreen',
+    route: 'video/fullscreen',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoFullscreenScreen'));
+    },
+  },
+  {
+    name: 'Now Playing',
+    route: 'video/now-playing',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoNowPlayingScreen'));
+    },
+  },
+  {
+    name: 'Picture In Picture',
+    route: 'video/pip',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoPictureInPictureScreen'));
+    },
+  },
+  {
+    name: 'Playback Controls',
+    route: 'video/playback',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoPlaybackControlsScreen'));
+    },
+  },
+  {
+    name: 'Sources',
+    route: 'video/sources',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoSourcesScreen'));
+    },
+  },
+  {
+    // Note: Renamed "Events" to "Video Events" to avoid conflict with expo-image screens
+    name: 'Video Events',
+    route: 'video/events',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoEventsScreen'));
+    },
+  },
+  {
+    name: 'Generating video thumbnails',
+    route: 'video/thumbnails',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoThumbnailsScreen'));
+    },
+  },
+];
 
-  const enterFullscreen = useCallback(() => {
-    ref.current?.enterFullscreen();
-  }, [ref]);
-
-  const player = useVideoPlayer(
-    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-  );
-
-  const togglePlayer = useCallback(() => {
-    if (player.isPlaying) {
-      player.pause();
-    } else {
-      player.play();
-    }
-  }, [player]);
-
-  const replaceItem = useCallback(() => {
-    player.replace(
-      'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
-    );
-  }, []);
-
-  const seekBy = useCallback(() => {
-    player.seekBy(10);
-  }, []);
-
-  const replay = useCallback(() => {
-    player.replay();
-  }, []);
-
-  const toggleMuted = useCallback(() => {
-    player.isMuted = !player.isMuted;
-  }, []);
-
-  useEffect(() => {
-    player.play();
-  }, []);
-
-  return (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
-      <VideoView
-        ref={ref}
-        style={styles.video}
-        player={player}
-        nativeControls={false}
-        contentFit="contain"
-        contentPosition={{ dx: 0, dy: 0 }}
-        allowsFullscreen
-        showsTimecodes={false}
-        requiresLinearPlayback
-      />
-
-      <View style={styles.buttons}>
-        <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
-        <Button style={styles.button} title="Replace" onPress={replaceItem} />
-        <Button style={styles.button} title="Seek by 10 seconds" onPress={seekBy} />
-        <Button style={styles.button} title="Replay" onPress={replay} />
-        <Button style={styles.button} title="Toggle mute" onPress={toggleMuted} />
-        <Button style={styles.button} title="Enter fullscreen" onPress={enterFullscreen} />
-      </View>
-    </ScrollView>
-  );
+if (Platform.OS === 'ios') {
+  VideoScreens.push({
+    // Name "Live Text Interaction" is already taken by the expo-image screens
+    name: 'Video Live Text Interaction',
+    route: 'video/live-text-interaction',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoLiveTextInteractionScreen'));
+    },
+  });
 }
 
-const styles = StyleSheet.create({
-  contentContainer: {
-    padding: 10,
-    alignItems: 'center',
-  },
-  video: {
-    width: 400,
-    height: 300,
-    borderBottomWidth: 1.0 / PixelRatio.get(),
-    borderBottomColor: '#cccccc',
-  },
-  buttons: {
-    flexDirection: 'column',
-  },
-  button: {
-    margin: 5,
-  },
-});
+export default function VideoScreen() {
+  const apis: ListElement[] = VideoScreens.map((screen) => {
+    return {
+      name: screen.name,
+      isAvailable: true,
+      route: `/components/${screen.route}`,
+    };
+  });
+  return <ComponentListScreen apis={apis} sort={false} />;
+}

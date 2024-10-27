@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import fs from 'fs/promises';
 import path from 'path';
 
 import * as Directories from '../Directories';
@@ -8,53 +7,23 @@ import * as Packages from '../Packages';
 import { filterAsync } from '../Utils';
 
 const BARE_EXPO_DIR = path.join(Directories.getAppsDir(), 'bare-expo', 'android');
-const BARE_EXPO_PACKAGE_JSON_PATH = path.join(
-  Directories.getAppsDir(),
-  'bare-expo',
-  'package.json'
-);
 
 const excludedInTests = [
   'expo-module-template',
   'expo-module-template-local',
-  'expo-notifications',
   'expo-splash-screen',
   'expo-modules-test-core',
   'expo-dev-client',
+  'expo-dev-launcher',
 ];
 
-type TestType = 'local' | 'instrumented';
+const testTypes = ['local', 'instrumented', 'spotless'] as const;
+const testTypeSet = new Set(testTypes);
+type TestType = (typeof testTypes)[number];
 
 function consoleErrorOutput(output: string, label: string, colorifyLine: (string) => string): void {
   const lines = output.trim().split(/\r\n?|\n/g);
   console.error(lines.map((line) => `${chalk.gray(label)} ${colorifyLine(line)}`).join('\n'));
-}
-
-/**
- * Modify the package.json of the bare-expo project, by removing expo-updates from
- * the list of packages that are excluded from autolinking. This will allow expo-updates
- * code to be compiled and unit tested. Returns the original package.json text so that the
- * file can be restored at the end of testing.
- */
-async function modifyBareExpoPackageJson() {
-  const packageJsonOriginalText = await fs.readFile(BARE_EXPO_PACKAGE_JSON_PATH, {
-    encoding: 'utf-8',
-  });
-  const packageJson: any = JSON.parse(packageJsonOriginalText);
-  if (packageJson?.expo?.autolinking?.exclude) {
-    const excluded = new Set<string>(packageJson?.expo?.autolinking?.exclude || []);
-    if (excluded.has('expo-updates')) {
-      excluded.delete('expo-updates');
-      packageJson.expo.autolinking.exclude = [...excluded];
-    }
-  }
-  const packageJsonModifiedText = JSON.stringify(packageJson, null, 2);
-  await fs.writeFile(BARE_EXPO_PACKAGE_JSON_PATH, packageJsonModifiedText, { encoding: 'utf-8' });
-  return packageJsonOriginalText;
-}
-
-async function restoreBareExpoPackageJson(packageJsonOriginalText: string) {
-  await fs.writeFile(BARE_EXPO_PACKAGE_JSON_PATH, packageJsonOriginalText, { encoding: 'utf-8' });
 }
 
 export async function androidNativeUnitTests({
@@ -66,11 +35,11 @@ export async function androidNativeUnitTests({
 }) {
   if (!type) {
     throw new Error(
-      'Must specify which type of unit test to run with `--type local` or `--type instrumented`.'
+      `Must specify which type of unit test to run. type must be one of ${testTypes.join(',')}`
     );
   }
-  if (type !== 'local' && type !== 'instrumented') {
-    throw new Error('Invalid type specified. Must use `--type local` or `--type instrumented`.');
+  if (!testTypeSet.has(type)) {
+    throw new Error(`Invalid type specified. type must be one of ${testTypes.join(',')}`);
   }
 
   const allPackages = await Packages.getListOfPackagesAsync();
@@ -104,39 +73,46 @@ export async function androidNativeUnitTests({
     console.log(chalk.yellow(pkg.packageSlug));
   });
 
-  let packageJsonOriginalText;
+  if (type === 'instrumented') {
+    const testCommand = 'connectedAndroidTest';
+    const uninstallTestCommand = 'uninstallDebugAndroidTest';
 
-  try {
-    packageJsonOriginalText = await modifyBareExpoPackageJson();
-    if (type === 'instrumented') {
-      const testCommand = 'connectedAndroidTest';
-      const uninstallTestCommand = 'uninstallDebugAndroidTest';
+    // TODO: remove this once avd cache saved to storage
+    await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
 
-      // TODO: remove this once avd cache saved to storage
-      await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
+    // We should build and test expo-modules-core first
+    // that to make the `isExpoModulesCoreTests` in _expo-modules-core/android/build.gradle_ working.
+    // Otherwise, the `./gradlew :expo-modules-core:connectedAndroidTest :expo-eas-client:connectedAndroidTest`
+    // will have duplicated fbjni.so when building expo-eas-client.
+    const isExpoModulesCore = (pkg: Packages.Package) => pkg.packageName === 'expo-modules-core';
+    const isNotExpoModulesCore = (pkg: Packages.Package) => pkg.packageName !== 'expo-modules-core';
 
-      // We should build and test expo-modules-core first
-      // that to make the `isExpoModulesCoreTests` in _expo-modules-core/android/build.gradle_ working.
-      // Otherwise, the `./gradlew :expo-modules-core:connectedAndroidTest :expo-eas-client:connectedAndroidTest`
-      // will have duplicated fbjni.so when building expo-eas-client.
-      const isExpoModulesCore = (pkg: Packages.Package) => pkg.packageName === 'expo-modules-core';
-      const isNotExpoModulesCore = (pkg: Packages.Package) =>
-        pkg.packageName !== 'expo-modules-core';
-      await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, BARE_EXPO_DIR);
+    await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, BARE_EXPO_DIR);
 
-      await runGradlew(androidPackages.filter(isNotExpoModulesCore), testCommand, BARE_EXPO_DIR);
+    await runGradlew(androidPackages.filter(isNotExpoModulesCore), testCommand, BARE_EXPO_DIR);
 
-      // Cleanup installed test app
-      await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
-    } else {
-      const testCommand = 'testDebugUnitTest';
-      await runGradlew(androidPackages, testCommand, BARE_EXPO_DIR);
+    // Cleanup installed test app
+    await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
+  } else if (type === 'spotless') {
+    const spotlessApplyCommand = 'spotlessApply';
+    const spotlessCheckCommand = 'spotlessCheck';
+    try {
+      console.log(chalk.green('Running spotlessCheck...'));
+      await runGradlew(androidPackages, spotlessCheckCommand, BARE_EXPO_DIR);
+      console.log(chalk.green('spotlessCheck succeeded'));
+    } catch (e: any) {
+      console.log(
+        chalk.yellow(`spotlessCheck failed: ${e}. Attempting to fix with spotlessApply...`)
+      );
+      await runGradlew(androidPackages, spotlessApplyCommand, BARE_EXPO_DIR);
+      chalk.green('spotlessApply succeeded');
     }
-
-    console.log(chalk.green('Finished android unit tests successfully.'));
-  } finally {
-    restoreBareExpoPackageJson(packageJsonOriginalText);
+  } else {
+    const testCommand = 'testDebugUnitTest';
+    await runGradlew(androidPackages, testCommand, BARE_EXPO_DIR);
   }
+
+  console.log(chalk.green('Finished android unit tests successfully.'));
 }
 
 async function runGradlew(packages: Packages.Package[], testCommand: string, cwd: string) {
@@ -165,7 +141,7 @@ async function runGradlew(packages: Packages.Package[], testCommand: string, cwd
 export default (program: any) => {
   program
     .command('android-native-unit-tests')
-    .option('-t, --type <string>', 'Type of unit test to run: local or instrumented')
+    .option('-t, --type <string>', 'Type of unit test to run: local, instrumented, or spotless')
     .option(
       '--packages <string>',
       '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'

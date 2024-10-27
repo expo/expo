@@ -1,0 +1,45 @@
+---
+title: Integrating Expo tools into existing native apps
+sidebar_title: Overview
+hideTOC: true
+description: An overview of how you can integrate Expo tools into existing native apps ("brownfield" apps).
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+An existing native app that was built using another technology, whose main entry point is _not_ a React Native view, is commonly referred to as a "brownfield" app. For example, if your app was built using UIKit and Swift, and you want to use React Native for a single screen then that is considered an "existing native app" and "brownfield".
+
+In contrast, "greenfield" apps are created using Expo or React Native from the start or where React Native is the entry point and where all other UI branches off from.
+
+By these definitions, if you have an "existing native app" for Android or iOS and you want to learn how to use Expo and React Native in your project (perhaps on a single screen or even a single feature), then this guide is for you.
+
+## Compatibility with existing native apps
+
+> **info** Support for integrating Expo modules into existing native projects is still experimental. If you encounter issues, [create an issue on GitHub](https://github.com/expo/expo/issues). Not all features of the tools and services below will be available when used in the context of an existing native app.
+
+Expo is primarily built with greenfield apps in mind. Not all Expo tools and services are compatible with existing native projects.
+
+| Tool/Service                                                                                         | Supports brownfield? |
+| ---------------------------------------------------------------------------------------------------- | -------------------- |
+| [Expo SDK](/versions/latest/) - an extended standard library for React Native                        | Yes                  |
+| [Expo Modules API](/modules/overview/) - build native extensions using an idiomatic Swift/Kotlin API | Yes                  |
+| [Expo Router](/router/introduction/) - file-based routing and navigation                             | No                   |
+| [Expo CLI](/more/expo-cli/) - tools to run and develop your app from your terminal                   | No                   |
+| [Expo Dev Client](/versions/latest/sdk/dev-client/) - adds in-app developer tooling to Debug builds  | No                   |
+| [EAS Build](/build/introduction/) - a CI/CD service built specifically for Expo/React Native         | Yes                  |
+| [EAS Submit](/submit/introduction/) - a hosted service that uploads your app to stores               | Yes                  |
+| [EAS Update](/eas-update/introduction/) - instant updates of your app JavaScript and assets          | No                   |
+
+## Next steps
+
+<BoxLink
+  title="Integrating your first React Native view"
+  description="Learn how to add a React Native root view to your existing native app in the React Native docs."
+  href="https://reactnative.dev/docs/integration-with-existing-apps"
+/>
+
+<BoxLink
+  title="Install Expo modules"
+  description="Install the Expo Modules API and use it to add existing Expo modules or write your own native extensions."
+  href="/brownfield/installing-expo-modules/"
+/>

@@ -48,8 +48,8 @@ export function parse(url: string): ParsedURL {
       !parsed.hostname && !parsed.pathname
         ? null
         : parsed.pathname === ''
-        ? null
-        : parsed.pathname.replace(/^\//, ''),
+          ? null
+          : parsed.pathname.replace(/^\//, ''),
     queryParams,
     scheme: parsed.protocol.replace(/:$/, ''),
   };

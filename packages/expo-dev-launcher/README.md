@@ -1,6 +1,6 @@
 # expo-dev-launcher
 
-`expo-dev-launcher` is an npm package installable in any Expo or React Native project. Once installed, any Debug builds of your application will gain the ability to load projects from Expo CLI. Release builds of your application will not change other than the addition of a few header files. This package is intended to be included in your project through [`expo-dev-client`](https://docs.expo.dev/clients/introduction/).
+`expo-dev-launcher` is an npm package installable in any Expo or React Native project. Once installed, any Debug builds of your application will gain the ability to load projects from Expo CLI. Release builds of your application will not change other than the addition of a few header files. This package is intended to be included in your project through [`expo-dev-client`](https://docs.expo.dev/versions/latest/sdk/dev-client/).
 
 ## Documentation
 
@@ -12,11 +12,11 @@ The `expo-dev-launcher` repository consists of two different parts, the exported
 
 Local development is usually done through `bare-expo`.
 
-To use `dev-client` when running `bare-expo` on Android, open [MainApplication.java](/apps/bare-expo/android/app/src/main/java/dev/expo/payments/MainApplication.java) and set the `USE_DEV_CLIENT` value to `true`.
+To use `dev-client` when running `bare-expo` on Android, open [MainApplication.kt](/apps/bare-expo/android/app/src/main/java/dev/expo/payments/MainApplication.kt) and set the `USE_DEV_CLIENT` value to `true`.
 
 ```diff
-- static final boolean USE_DEV_CLIENT = false;
-+ static final boolean USE_DEV_CLIENT = true;
+- private const val USE_DEV_CLIENT = false;
++ private const val USE_DEV_CLIENT = true;
 ```
 
 To use `dev-client` when running `bare-expo` on iOS, open [AppDelegate.mm](/apps/bare-expo/ios/BareExpo/AppDelegate.mm) and set the `USE_DEV_CLIENT` value to `YES`.

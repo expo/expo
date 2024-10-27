@@ -1,9 +1,8 @@
-import { css } from '@emotion/react';
-import { breakpoints, spacing } from '@expo/styleguide-base';
-import { FileCode01Icon } from '@expo/styleguide-icons';
+import { mergeClasses } from '@expo/styleguide';
+import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { PropsWithChildren } from 'react';
 
-import { cleanCopyValue } from '~/components/base/code';
+import { cleanCopyValue } from '~/common/code-utilities';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
@@ -38,9 +37,19 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
     });
 
   return (
-    <div css={[codeBlocksWrapperStyle, connected && codeBlockConnectedWrapperStyle]} {...rest}>
+    <div
+      className={mergeClasses(
+        'grid grid-cols-2 gap-4',
+        connected && 'lg-gutters:gap-0 lg-gutters:mb-4',
+        connected &&
+          '[&>div:nth-child(odd)>div]:lg-gutters:border-r-0 [&>div:nth-child(odd)>div]:lg-gutters:!rounded-r-none',
+        connected && '[&>div:nth-child(even)>div]:lg-gutters:!rounded-l-none',
+        '[&_pre]:border-0 [&_pre]:m-0',
+        'max-lg-gutters:grid-cols-1'
+      )}
+      {...rest}>
       {codeBlocks.map((codeBlock, index) => (
-        <Snippet key={index} css={snippetWrapperStyle}>
+        <Snippet key={index} className="mb-0 last:max-lg-gutters:mb-4">
           <SnippetHeader title={tabNames[index]} Icon={FileCode01Icon}>
             <CopyAction text={cleanCopyValue(codeBlock.props.children.props.children)} />
           </SnippetHeader>
@@ -50,53 +59,3 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
     </div>
   );
 }
-
-const codeBlocksWrapperStyle = css({
-  display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
-  gap: spacing[4],
-  gridAutoRows: '1fr',
-
-  pre: {
-    border: 0,
-    margin: 0,
-    gridTemplateRows: 'minmax(100px, 1fr)',
-    height: '100%',
-  },
-
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    gridTemplateColumns: 'minmax(0, 1fr)',
-    gridAutoRows: 'auto',
-  },
-});
-
-const codeBlockConnectedWrapperStyle = css({
-  [`@media screen and (min-width: ${breakpoints.large}px)`]: {
-    gridGap: 0,
-
-    '> div:nth-of-type(odd)': {
-      '> div': {
-        borderRight: 0,
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-      },
-    },
-
-    '> div:nth-of-type(even)': {
-      '> div': {
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-      },
-    },
-  },
-});
-
-const snippetWrapperStyle = css({
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    marginBottom: 0,
-
-    '&:last-of-type': {
-      marginBottom: spacing[4],
-    },
-  },
-});

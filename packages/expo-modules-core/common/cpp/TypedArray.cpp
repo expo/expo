@@ -35,11 +35,11 @@ TypedArrayKind TypedArray::getKind(jsi::Runtime &runtime) const {
 };
 
 size_t TypedArray::byteOffset(jsi::Runtime &runtime) const {
-  return getProperty(runtime, "byteOffset").asNumber();
+  return static_cast<size_t>(getProperty(runtime, "byteOffset").asNumber());
 }
 
 size_t TypedArray::byteLength(jsi::Runtime &runtime) const {
-  return getProperty(runtime, "byteLength").asNumber();
+  return static_cast<size_t>(getProperty(runtime, "byteLength").asNumber());
 }
 
 jsi::ArrayBuffer TypedArray::getBuffer(jsi::Runtime &runtime) const {
@@ -51,7 +51,7 @@ jsi::ArrayBuffer TypedArray::getBuffer(jsi::Runtime &runtime) const {
   }
 }
 
-void* TypedArray::getRawPointer(jsi::Runtime &runtime) {
+void* TypedArray::getRawPointer(jsi::Runtime &runtime) const {
   return reinterpret_cast<void *>(getBuffer(runtime).data(runtime) + byteOffset(runtime));
 }
 
@@ -64,7 +64,6 @@ bool isTypedArray(jsi::Runtime &runtime, const jsi::Object &jsObj) {
     .getPropertyAsFunction(runtime, "isView")
     .callWithThis(runtime, ArrayBuffer, {jsi::Value(runtime, jsObj)});
 
-  assert(isViewResult.isBool());
   return isViewResult.getBool();
 }
 

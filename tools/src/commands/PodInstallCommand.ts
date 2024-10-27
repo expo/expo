@@ -14,7 +14,7 @@ type ActionOptions = {
   all: boolean;
 };
 
-const importantProjects = ['ios', 'apps/bare-expo/ios'];
+const importantProjects = ['apps/bare-expo/ios', 'apps/expo-go/ios'];
 const otherProjects = ['apps/fabric-tester/ios', 'apps/native-tests/ios'];
 
 async function action(options: ActionOptions) {

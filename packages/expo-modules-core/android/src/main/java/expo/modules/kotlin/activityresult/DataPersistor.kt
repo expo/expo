@@ -7,6 +7,7 @@ import android.os.Parcel
 import android.text.format.DateUtils
 import android.util.Base64
 import androidx.core.os.bundleOf
+import expo.modules.kotlin.safeGetSerializable
 import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
@@ -64,7 +65,7 @@ class DataPersistor(context: Context) {
         bundle
           .keySet()
           .associateWith { key ->
-            bundle.getSerializable(key) ?: throw IllegalStateException("For a key '$key' there should be a serializable class available")
+            bundle.safeGetSerializable<Serializable>(key) ?: throw IllegalStateException("For a key '$key' there should be a serializable class available")
           }
       }
   }
@@ -82,7 +83,7 @@ class DataPersistor(context: Context) {
   }
 
   fun retrieveSerializable(key: String): Serializable? {
-    return retrievedData.getSerializable(key)
+    return retrievedData.safeGetSerializable<Serializable>(key)
   }
 
   fun persist() {

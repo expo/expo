@@ -4,6 +4,8 @@ sidebar_title: Overview
 description: An overview of Expo's push notification service.
 ---
 
+import { Bell03Icon } from '@expo/styleguide-icons/outline/Bell03Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 
 Expo makes implementing push notifications easy. All the hassle with device information and communicating with Firebase Cloud Messaging (FCM) or Apple Push Notification Service (APNs) is done behind the scenes. This allows you to treat Android and iOS notifications in the same way and save time both on the front-end and back-end.
@@ -12,30 +14,26 @@ Expo makes implementing push notifications easy. All the hassle with device info
   title="Setup push notifications, get a push token and credentials"
   description="Learn how to set up push notifications, get credentials for development and production, and test sending push notifications with a minimal working example."
   href="/push-notifications/push-notifications-setup"
+  Icon={Bell03Icon}
 />
 
 <BoxLink
   title="Send a push notification"
   description="Learn how to call Expo's Push API with the token when you want to send a notification."
   href="/push-notifications/sending-notifications"
+  Icon={Bell03Icon}
 />
 
 <BoxLink
   title="Receive a push notification"
   description="Learn how to respond to a notification received by your app and take action based on the event."
   href="/push-notifications/receiving-notifications"
+  Icon={Bell03Icon}
 />
 
 <BoxLink
-  title="Common questions and FAQs"
+  title="Frequently asked questions (FAQs)"
   description="A collection of common questions about Expo's push notification service."
   href="/push-notifications/faq"
-/>
-
-## Next
-
-<BoxLink
-  title="Setup push notifications"
-  description="Learn how to setup push notifications, get credentials for development and production, and test sending push notifications."
-  href="/push-notifications/push-notifications-setup"
+  Icon={Bell03Icon}
 />

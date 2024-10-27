@@ -1,5 +1,7 @@
 import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
 
+import { DiscoveryDocument } from './Discovery';
+
 // @needsAudit
 export enum CodeChallengeMethod {
   /**
@@ -89,7 +91,7 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
 /**
  * Represents an OAuth authorization request as JSON.
  */
-export interface AuthRequestConfig {
+export type AuthRequestConfig = {
   /**
    * Specifies what is returned from the authorization server.
    *
@@ -159,4 +161,6 @@ export interface AuthRequestConfig {
    * @default true
    */
   usePKCE?: boolean;
-}
+};
+
+export type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;

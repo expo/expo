@@ -6,23 +6,23 @@ packageName: 'expo-file-system'
 iconUrl: '/static/images/packages/expo-file-system.png'
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
-import { AndroidPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-file-system` provides access to a file system stored locally on the device. Within Expo Go, each project has a separate file system and has no access to the file system of other Expo projects. However, it can save content shared by other projects to the local filesystem, as well as share local files with other projects. It is also capable of uploading and downloading files from network URLs.
 
 {/* TODO: update this image so we don't have to force a white background on it */}
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"
   src="/static/images/sdk/file-system/file-system-diagram.png"
-  style={{ maxWidth: 850, maxHeight: 600 }}
-  containerStyle={{ backgroundColor: '#fff' }}
+  className="max-w-[850px] max-h-[600px]"
+  containerClassName="bg-palette-white"
 />
 
 <PlatformsSection android emulator ios simulator />
@@ -111,7 +111,7 @@ try {
   }}
 >
 
-```typescript
+```js
 import * as FileSystem from 'expo-file-system';
 
 const gifDir = FileSystem.cacheDirectory + 'giphy/';
@@ -208,8 +208,8 @@ import * as FileSystem from 'expo-file-system';
 
 The API takes `file://` URIs pointing to local files on the device to identify files. Each app only has read and write access to locations under the following directories:
 
-- [`FileSystem.documentDirectory`](#documendirectory)
-- [`FileSystem.cacheDirectory`](#cachedirectory)
+- [`FileSystem.documentDirectory`](#filesystemdocumentdirectory)
+- [`FileSystem.cacheDirectory`](#filesystemcachedirectory)
 
 So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the app's user documents directory would be `FileSystem.documentDirectory + 'myDirectory/myFile'`.
 
@@ -248,7 +248,7 @@ In this table, you can see what type of URI can be handled by each method. For e
 
 ### Android
 
-The following permissions are added automatically through this library's `AndroidManifest.xml`.
+The following permissions are added automatically through this library's **AndroidManifest.xml**:
 
 <AndroidPermissions permissions={['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE', 'INTERNET']} />
 

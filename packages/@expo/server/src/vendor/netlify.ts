@@ -1,9 +1,8 @@
 import type { HandlerEvent, HandlerResponse } from '@netlify/functions';
-import { Headers, readableStreamToString, RequestInit } from '@remix-run/node';
+import { readableStreamToString } from '@remix-run/node';
 import { AbortController } from 'abort-controller';
 
 import { createRequestHandler as createExpoHandler } from '..';
-import { ExpoRequest, ExpoResponse } from '../environment';
 
 export function createRequestHandler({ build }: { build: string }) {
   const handleRequest = createExpoHandler(build);
@@ -15,7 +14,7 @@ export function createRequestHandler({ build }: { build: string }) {
   };
 }
 
-export async function respond(res: ExpoResponse): Promise<HandlerResponse> {
+export async function respond(res: Response): Promise<HandlerResponse> {
   const contentType = res.headers.get('Content-Type');
   let body: string | undefined;
   const isBase64Encoded = isBinaryType(contentType);
@@ -28,11 +27,14 @@ export async function respond(res: ExpoResponse): Promise<HandlerResponse> {
     }
   }
 
-  const multiValueHeaders = res.headers.raw();
+  const headers: Record<string, any> = {};
+  for (const [key, value] of res.headers.entries()) {
+    headers[key] = value;
+  }
 
   return {
     statusCode: res.status,
-    multiValueHeaders,
+    headers,
     body,
     isBase64Encoded,
   };
@@ -77,7 +79,7 @@ function getRawPath(event: HandlerEvent): string {
   return rawPath;
 }
 
-export function convertRequest(event: HandlerEvent): ExpoRequest {
+export function convertRequest(event: HandlerEvent): Request {
   let url: URL;
 
   if (process.env.NODE_ENV !== 'development') {
@@ -107,9 +109,10 @@ export function convertRequest(event: HandlerEvent): ExpoRequest {
         ? Buffer.from(event.body, 'base64')
         : Buffer.from(event.body, 'base64').toString()
       : event.body;
+    init.duplex = 'half';
   }
 
-  return new ExpoRequest(url.href, init);
+  return new Request(url.href, init);
 }
 
 /**

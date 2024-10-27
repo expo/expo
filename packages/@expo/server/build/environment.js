@@ -1,65 +1,47 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoRequest = exports.ExpoURL = exports.NON_STANDARD_SYMBOL = exports.ExpoResponse = exports.installGlobals = void 0;
+exports.installGlobals = exports.ExpoResponse = exports.ExpoRequest = void 0;
+/* eslint-disable no-var */
+require("./assertion");
 const node_1 = require("@remix-run/node");
-const node_url_1 = require("node:url");
-// Ensure these are available for the API Routes.
+/** @deprecated */
+exports.ExpoRequest = Request;
+/** @deprecated */
+exports.ExpoResponse = Response;
 function installGlobals() {
-    (0, node_1.installGlobals)();
-    // @ts-expect-error
-    global.Request = ExpoRequest;
-    // @ts-expect-error
-    global.Response = ExpoResponse;
-    // @ts-expect-error
-    global.ExpoResponse = ExpoResponse;
-    // @ts-expect-error
-    global.ExpoRequest = ExpoRequest;
-}
-exports.installGlobals = installGlobals;
-class ExpoResponse extends node_1.Response {
-    // TODO: Drop when we upgrade to node-fetch v3
-    static json(data = undefined, init = {}) {
-        const body = JSON.stringify(data);
-        if (body === undefined) {
-            throw new TypeError('data is not JSON serializable');
-        }
-        const headers = new node_1.Headers(init?.headers);
-        if (!headers.has('content-type')) {
-            headers.set('content-type', 'application/json');
-        }
-        return new ExpoResponse(body, {
-            ...init,
-            headers,
-        });
-    }
-}
-exports.ExpoResponse = ExpoResponse;
-exports.NON_STANDARD_SYMBOL = Symbol('non-standard');
-class ExpoURL extends node_url_1.URL {
-    static from(url, config) {
-        const expoUrl = new ExpoURL(url);
-        const match = config.namedRegex.exec(expoUrl.pathname);
-        if (match?.groups) {
-            for (const [key, value] of Object.entries(match.groups)) {
-                const namedKey = config.routeKeys[key];
-                expoUrl.searchParams.set(namedKey, value);
-            }
-        }
-        return expoUrl;
-    }
-}
-exports.ExpoURL = ExpoURL;
-class ExpoRequest extends node_1.Request {
-    [exports.NON_STANDARD_SYMBOL];
-    constructor(info, init) {
-        super(info, init);
-        this[exports.NON_STANDARD_SYMBOL] = {
-            url: new ExpoURL(typeof info !== 'string' && 'url' in info ? info.url : String(info)),
+    // Use global polyfills from Undici
+    (0, node_1.installGlobals)({ nativeFetch: true });
+    global.ExpoRequest = Request;
+    global.ExpoResponse = Response;
+    if (typeof Response.error !== 'function') {
+        Response.error = function error() {
+            return new Response(null, { status: 500 });
         };
     }
-    get expoUrl() {
-        return this[exports.NON_STANDARD_SYMBOL].url;
+    if (typeof Response.json !== 'function') {
+        Response.json = function json(data, init) {
+            return new Response(JSON.stringify(data), init);
+        };
+    }
+    if (typeof Response.redirect !== 'function') {
+        Response.redirect = function redirect(url, status) {
+            if (!status)
+                status = 302;
+            switch (status) {
+                case 301:
+                case 302:
+                case 303:
+                case 307:
+                case 308:
+                    return new Response(null, {
+                        headers: { Location: new URL(url).toString() },
+                        status,
+                    });
+                default:
+                    throw new RangeError(`Invalid status code ${status}`);
+            }
+        };
     }
 }
-exports.ExpoRequest = ExpoRequest;
+exports.installGlobals = installGlobals;
 //# sourceMappingURL=environment.js.map

@@ -7,6 +7,7 @@
  */
 export declare function fetchAsync(url: string): Promise<{
     body: string;
+    status: number;
     headers: Record<string, string>;
 }>;
 //# sourceMappingURL=fetchAsync.native.d.ts.map

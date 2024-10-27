@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import React from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -32,9 +32,7 @@ const CREDENTIAL_MESSAGES = {
   [AppleAuthenticationCredentialState.TRANSFERRED]: 'Credentials transferred.', // Whatever that means...
 };
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class AppleAuthenticationScreen extends React.Component<{}, State> {
+export default class AppleAuthenticationScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'Apple Authentication',
   };
@@ -48,7 +46,7 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
     credentialState: null,
   };
 
-  _subscription?: Subscription;
+  _subscription?: EventSubscription;
 
   componentDidMount() {
     this.checkAvailability();

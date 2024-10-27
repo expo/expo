@@ -25,14 +25,13 @@ function _Errors() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Resolve the Expo SDK Version either from the input Expo config or from the installed
  * version of the `expo` package.
  */
 function getExpoSDKVersion(projectRoot, exp = {}) {
-  var _exp$sdkVersion;
-  return (_exp$sdkVersion = exp === null || exp === void 0 ? void 0 : exp.sdkVersion) !== null && _exp$sdkVersion !== void 0 ? _exp$sdkVersion : getExpoSDKVersionFromPackage(projectRoot);
+  return exp?.sdkVersion ?? getExpoSDKVersionFromPackage(projectRoot);
 }
 
 /**

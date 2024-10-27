@@ -1,10 +1,13 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <UIKit/UIKit.h>
+#ifdef RCT_NEW_ARCH_ENABLED
 
-#ifdef RN_FABRIC_ENABLED
+#import <UIKit/UIKit.h>
+#import <React/React-Core-umbrella.h>
+
 #ifdef __cplusplus
-#import <React/RCTViewComponentView.h>
+
+#import <React/RCTViewComponentView.h> // Allows non-umbrella since it's coming from React-RCTFabric
 
 @interface ExpoFabricViewObjC : RCTViewComponentView
 @end
@@ -17,19 +20,16 @@
 
 #endif // __cplusplus
 #else // Paper
-#import <React/RCTView.h>
 
 @interface ExpoFabricViewObjC : RCTView
 @end
 
-#endif // RN_FABRIC_ENABLED
+#endif // !RCT_NEW_ARCH_ENABLED
 
 @class EXAppContext;
 
 // Addition to the interface that is visible in both Swift and Objective-C
 @interface ExpoFabricViewObjC (ExpoFabricViewInterface)
-
-@property (nonatomic, strong, nullable) UIView *contentView;
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
 
@@ -40,10 +40,5 @@
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 
 - (void)prepareForRecycle;
-
-#pragma mark - Methods injected to the class in runtime
-
-- (nullable EXAppContext *)__injectedAppContext;
-- (nonnull NSString *)__injectedModuleName;
 
 @end

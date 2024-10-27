@@ -3,18 +3,17 @@ title: Typed routes
 description: Learn how to use statically typed links and routes in Expo Router.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 import { FileTree } from '~/ui/components/FileTree';
 
-> Available from Expo SDK 49 and Expo Router v2 when using TypeScript. Expo Router supports standard TypeScript out of the box. See the [TypeScript](/guides/typescript/) guide for more information on how to set it up.
+> Available when using TypeScript in your project. Expo Router supports standard TypeScript out of the box. See the [TypeScript](/guides/typescript/) guide for more information on how to set it up.
 
 Expo Router supports generating TypeScript types automatically with Expo CLI. This enables `<Link>`, and the [hooks API](/router/reference/hooks) to be statically typed. This feature is currently in beta and is not enabled by default.
 
 ## Get started
 
 ### Quick start
-If you created your project using the [Expo Router quick start guide](/routing/installation/#quick-start) then your project is already configured to use typed routes. The Expo CLI will generate the required type file the first time you run `npx expo start`. Then, you can use autocomplete for `href` props whenever you use an Expo Router `<Link>` component in a **.tsx** file.
+
+If you created your project using the [Expo Router quick start guide](/router/installation/#quick-start) then your project is already configured to use typed routes. The Expo CLI will generate the required type file the first time you run `npx expo start`. Then, you can use autocomplete for `href` props whenever you use an Expo Router `<Link>` component in a **.tsx** file.
 
 ### Manual configuration
 
@@ -161,7 +160,7 @@ Expo CLI will add the following global types to your project when typed routes i
 
 - Sets `process.env.NODE_ENV = "development" | "production" | "test"`
 - Allows the importing of `.[css|sass|scss]` files
-- Sets the exports of `*.module.[css|sass|scss]` to be `Record<string, string`
+- Sets the exports of `*.module.[css|sass|scss]` to be `Record<string, string>`
 - Add types for Metro's `require.context`. This is enabled by `expo/metro-config` and used for static route generation.
 
 ### React Native Web

@@ -1,8 +1,11 @@
 package expo.modules.kotlin.defaultmodules
 
-import expo.modules.kotlin.uuidv5.*
+import com.facebook.react.ReactActivity
+import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.uuidv5.InvalidNamespaceException
+import expo.modules.kotlin.uuidv5.uuidv5
 import java.util.UUID
 
 class CoreModule : Module() {
@@ -19,6 +22,40 @@ class CoreModule : Module() {
         throw InvalidNamespaceException(namespace)
       }
       return@Function uuidv5(namespaceUUID, name).toString()
+    }
+
+    Function("getViewConfig") { viewName: String ->
+      val holder = runtimeContext.registry.getModuleHolder(viewName)
+        ?: return@Function null
+
+      val viewManagerDefinition = holder.definition.viewManagerDefinition
+        ?: return@Function null
+
+      val validAttributes = viewManagerDefinition
+        .props
+        .keys
+        .associateWith { true }
+
+      val directEventTypes = viewManagerDefinition
+        .callbacksDefinition
+        ?.names
+        ?.associate {
+          val normalizedEventName = normalizeEventName(it)
+          normalizedEventName to mapOf(
+            "registrationName" to it
+          )
+        }
+
+      return@Function mapOf(
+        "validAttributes" to validAttributes,
+        "directEventTypes" to directEventTypes
+      )
+    }
+
+    AsyncFunction("reloadAppAsync") { _: String ->
+      val reactActivity = appContext.throwingActivity as? ReactActivity ?: return@AsyncFunction
+      val reactDelegate = reactActivity.reactDelegate ?: return@AsyncFunction
+      reactDelegate.reload()
     }
   }
 }

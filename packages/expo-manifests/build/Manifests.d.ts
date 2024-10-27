@@ -1,14 +1,15 @@
-import { ExpoConfig } from '@expo/config-types';
-export interface ManifestAsset {
+import type { ExpoConfig } from 'expo/config';
+export type ManifestAsset = {
     url: string;
-}
+};
+export type ExpoClientConfig = ExpoConfig & {
+    /**
+     * Only present during development using `@expo/cli`.
+     */
+    hostUri?: string;
+};
 export type ManifestExtra = ClientScopingConfig & {
-    expoClient?: ExpoConfig & {
-        /**
-         * Only present during development using @expo/cli.
-         */
-        hostUri?: string;
-    };
+    expoClient?: ExpoClientConfig;
     expoGo?: ExpoGoConfig;
     eas?: EASConfig;
 };
@@ -29,13 +30,12 @@ export type ClientScopingConfig = {
 export type ExpoGoConfig = {
     mainModuleName?: string;
     debuggerHost?: string;
-    developer?: {
+    developer?: Record<string, any> & {
         tool?: string;
-        [key: string]: any;
     };
     packagerOpts?: ExpoGoPackagerOpts;
 };
-export type ExpoGoPackagerOpts = {
+export type ExpoGoPackagerOpts = Record<string, any> & {
     hostType?: string;
     dev?: boolean;
     strict?: boolean;
@@ -43,12 +43,11 @@ export type ExpoGoPackagerOpts = {
     urlType?: string;
     urlRandomness?: string;
     lanType?: string;
-    [key: string]: any;
 };
 /**
- * A modern manifest.
+ * A `expo-updates` manifest.
  */
-export type NewManifest = {
+export type ExpoUpdatesManifest = {
     id: string;
     createdAt: string;
     runtimeVersion: string;
@@ -58,13 +57,21 @@ export type NewManifest = {
     extra?: ManifestExtra;
 };
 /**
- * An embedded bare manifest.
- *
- * Generated during build in createManifest.js build step script.
+ * @deprecated renamed to `ExpoUpdatesManifest`, will be removed in a few versions.
  */
-export type BareManifest = {
+export type NewManifest = ExpoUpdatesManifest;
+/**
+ * An embedded manifest.
+ *
+ * Generated during build in **createManifest.js** build step script.
+ */
+export type EmbeddedManifest = {
     id: string;
     commitTime: number;
     assets: any[];
 };
+/**
+ * @deprecated Renamed to `EmbeddedManifest`, will be removed in a few versions.
+ */
+export type BareManifest = EmbeddedManifest;
 //# sourceMappingURL=Manifests.d.ts.map

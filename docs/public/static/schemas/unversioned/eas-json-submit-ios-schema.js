@@ -8,8 +8,7 @@ export default [
     name: 'ascAppId',
     type: 'string',
     description: [
-      'App Store Connect unique application Apple ID number. When set, results in skipping the app creation step.',
-      '[Learn more on this](https://expo.fyi/asc-app-id).',
+      '[App Store Connect unique application Apple ID number](https://expo.fyi/asc-app-id). When set, results in skipping the app creation step.',
     ],
   },
   {
@@ -40,42 +39,42 @@ export default [
     name: 'appName',
     type: 'string',
     description: [
-      'The name of your app as it will appear on the App Store. Defaults to `expo.name` from the app config.',
+      'The name of your app as it will appear on the App Store. Defaults to `expo.name` from the [app config](/workflow/configuration/).',
     ],
   },
   {
     name: 'ascApiKeyPath',
     type: 'string',
     description: [
-      'The path to your App Store Connect Api Key .p8 file. [Learn more](https://expo.fyi/creating-asc-api-key).',
+      'The path to your [App Store Connect Api Key **.p8** file](https://expo.fyi/creating-asc-api-key).',
     ],
   },
   {
     name: 'ascApiKeyIssuerId',
     type: 'string',
     description: [
-      'The Issuer ID of your App Store Connect Api Key. [Learn more](https://expo.fyi/creating-asc-api-key).',
+      'The Issuer ID of your [App Store Connect Api Key](https://expo.fyi/creating-asc-api-key).',
     ],
   },
   {
     name: 'ascApiKeyId',
     type: 'string',
     description: [
-      'The Key ID of your App Store Connect Api Key. [Learn more](https://expo.fyi/creating-asc-api-key).',
+      'The Key ID of your [App Store Connect Api Key](https://expo.fyi/creating-asc-api-key).',
     ],
   },
   {
     name: 'bundleIdentifier',
     type: 'string',
     description: [
-      'The Bundle identifier that will be used when accessing submit credentials managed by Expo, it does not have any effect if you are using local credentials. In most cases this value will be autodetected, but if you have multiple Xcode schemes and targets, this value might be necessary.',
+      'The bundle identifier that will be used when accessing submit credentials managed by Expo. It does not have any effect if you are using local credentials. In most cases, this value will be autodetected. However, if you have multiple Xcode schemes and targets, this value might be necessary.',
     ],
   },
   {
     name: 'metadataPath',
     type: 'string',
     description: [
-      'The path to your store configuration file. [Learn more](https://docs.expo.dev/eas/metadata/).'
+      'The path to your [store configuration file](/eas/metadata/).'
     ],
   }
 ];

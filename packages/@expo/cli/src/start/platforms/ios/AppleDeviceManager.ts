@@ -96,10 +96,14 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     return this.device.udid;
   }
 
-  async getAppVersionAsync(appId: string): Promise<string | null> {
+  async getAppVersionAsync(
+    appId: string,
+    { containerPath }: { containerPath?: string } = {}
+  ): Promise<string | null> {
     return await SimControl.getInfoPlistValueAsync(this.device, {
       appId,
       key: 'CFBundleShortVersionString',
+      containerPath,
     });
   }
 
@@ -159,7 +163,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
 
   private async waitForAppInstalledAsync(applicationId: string): Promise<boolean> {
     while (true) {
-      if (await this.isAppInstalledAsync(applicationId)) {
+      if (await this.isAppInstalledAndIfSoReturnContainerPathForIOSAsync(applicationId)) {
         return true;
       }
       await delayAsync(100);
@@ -172,20 +176,22 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     });
   }
 
-  async isAppInstalledAsync(appId: string) {
-    return !!(await SimControl.getContainerPathAsync(this.device, {
-      appId,
-    }));
+  async isAppInstalledAndIfSoReturnContainerPathForIOSAsync(appId: string) {
+    return (
+      (await SimControl.getContainerPathAsync(this.device, {
+        appId,
+      })) ?? false
+    );
   }
 
-  async openUrlAsync(url: string) {
+  async openUrlAsync(url: string, options: { appId?: string } = {}) {
     // Non-compliant URLs will be treated as application identifiers.
     if (!validateUrl(url, { requireProtocol: true })) {
       return await this.launchApplicationIdAsync(url);
     }
 
     try {
-      await SimControl.openUrlAsync(this.device, { url });
+      await SimControl.openUrlAsync(this.device, { url, appId: options.appId });
     } catch (error: any) {
       // 194 means the device does not conform to a given URL, in this case we'll assume that the desired app is not installed.
       if (error.status === 194) {
@@ -208,7 +214,11 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     await osascript.execAsync(`tell application "Simulator" to activate`);
   }
 
-  async ensureExpoGoAsync(sdkVersion?: string): Promise<boolean> {
+  getExpoGoAppId(): string {
+    return EXPO_GO_BUNDLE_IDENTIFIER;
+  }
+
+  async ensureExpoGoAsync(sdkVersion: string): Promise<boolean> {
     const installer = new ExpoGoInstaller('ios', EXPO_GO_BUNDLE_IDENTIFIER, sdkVersion);
     return installer.ensureAsync(this);
   }

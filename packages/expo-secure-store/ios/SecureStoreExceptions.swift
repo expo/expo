@@ -12,6 +12,12 @@ internal class MissingPlistKeyException: Exception {
   }
 }
 
+internal class SecAccessControlError: GenericException<Int?> {
+  override var reason: String {
+    return "Unable to construct SecAccessControl: \(param.map { "code " + String($0) } ?? "unknown error")"
+  }
+}
+
 internal class KeyChainException: GenericException<OSStatus> {
   override var reason: String {
     switch param {
@@ -55,6 +61,9 @@ internal class KeyChainException: GenericException<OSStatus> {
       return "Authentication failed. Provided passphrase/PIN is incorrect or there is no user authentication method configured for this device."
 
     default:
+      if let errorMessage = SecCopyErrorMessageString(param, nil) as? String {
+        return errorMessage
+      }
       return "Unknown Keychain Error."
     }
   }

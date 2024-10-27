@@ -19,12 +19,10 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-// EXPO_VERSIONING_NEEDS_EXPOVIEW_R
-
 // must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
 private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
-
+private const val KEY_FOR_PREFS_FORCERTL = "RCTI18nUtil_forceRTL"
 private const val LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
 private const val CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
@@ -38,7 +36,7 @@ class LocalizationModule : Module() {
       bundledConstants.toShallowMap()
     }
 
-    AsyncFunction("getLocalizationAsync") {
+    AsyncFunction<Bundle>("getLocalizationAsync") {
       return@AsyncFunction bundledConstants
     }
 
@@ -53,7 +51,7 @@ class LocalizationModule : Module() {
     Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
 
     OnCreate {
-      appContext?.reactContext?.let {
+      appContext.reactContext?.let {
         setRTLFromStringResources(it)
       }
       observer = {
@@ -72,14 +70,31 @@ class LocalizationModule : Module() {
     // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
     // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
     val supportsRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_supportsRTL)
-    if (supportsRTL != "true" && supportsRTL != "false") return
-    context
-      .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
-      .edit()
-      .also {
-        it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
-        it.apply()
+    val forcesRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_forcesRTL)
+
+    if (forcesRTL == "true") {
+      context
+        .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+        .edit()
+        .also {
+          it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, true)
+          it.putBoolean(KEY_FOR_PREFS_FORCERTL, true)
+          it.apply()
+        }
+    } else {
+      if (supportsRTL == "true" || supportsRTL == "false") {
+        context
+          .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+          .edit()
+          .also {
+            it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
+            if (forcesRTL == "false") {
+              it.putBoolean(KEY_FOR_PREFS_FORCERTL, false)
+            }
+            it.apply()
+          }
       }
+    }
   }
 
   // TODO: Bacon: add set language
@@ -116,6 +131,7 @@ class LocalizationModule : Module() {
         }
         locales
       } else {
+        @Suppress("DEPRECATION")
         listOf(configuration.locale)
       }
     }
@@ -129,9 +145,32 @@ class LocalizationModule : Module() {
         else -> "metric"
       }
     } else {
-      if (getRegionCode(locale).equals("uk")) "uk"
-      else if (USES_IMPERIAL.contains(getRegionCode(locale))) "us"
-      else "metric"
+      if (getRegionCode(locale).equals("uk")) {
+        "uk"
+      } else if (USES_IMPERIAL.contains(getRegionCode(locale))) {
+        "us"
+      } else {
+        "metric"
+      }
+    }
+  }
+
+  private fun getCurrencyProperties(locale: Locale): Map<String, Any?> {
+    return try {
+      mapOf(
+        // Android (except MIUI) has no separate region selection, so `languageCurrencyCode` and `languageCurrencySymbol` are the same as `currencyCode` and `currencySymbol`, and both are specific to the current locale in the list.
+        "currencyCode" to Currency.getInstance(locale).currencyCode,
+        "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+        "languageCurrencyCode" to Currency.getInstance(locale).currencyCode,
+        "languageCurrencySymbol" to Currency.getInstance(locale).getSymbol(locale)
+      )
+    } catch (e: Exception) {
+      mapOf(
+        "currencyCode" to null,
+        "currencySymbol" to null,
+        "languageCurrencyCode" to null,
+        "languageCurrencySymbol" to null
+      )
     }
   }
 
@@ -145,21 +184,18 @@ class LocalizationModule : Module() {
         locales.add(
           mapOf(
             "languageTag" to locale.toLanguageTag(),
+            // On Android `regionCode` is the same as `countryCode`, except for miui where there's an additional region picker.
             "regionCode" to getRegionCode(locale),
+            "languageRegionCode" to getCountryCode(locale),
             "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
             "languageCode" to locale.language,
-
             // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
             "decimalSeparator" to decimalFormat.decimalSeparator.toString(),
             "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
 
             "measurementSystem" to getMeasurementSystem(locale),
-            "currencyCode" to decimalFormat.currency.currencyCode,
-
-            // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
-            "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
-            "temperatureUnit" to getTemperatureUnit(locale),
-          )
+            "temperatureUnit" to getTemperatureUnit(locale)
+          ) + getCurrencyProperties(locale)
         )
       } catch (e: Exception) {
         // warn about the problematic locale

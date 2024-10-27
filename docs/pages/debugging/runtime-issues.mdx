@@ -4,12 +4,10 @@ description: Learn about different techniques available to debug your Expo proje
 sidebar_title: Runtime issues
 ---
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Step } from '~/ui/components/Step';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
-import Video from '~/components/plugins/Video';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors into two categories:
 
@@ -64,7 +62,7 @@ Build the app from Android Studio and connect the debugger. See [Google's docume
 
 </Step>
 
-> You can delete the **android** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself (which is bare workflow).
+> You can delete the **android** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself.
 
 #### Xcode
 
@@ -100,7 +98,7 @@ You can now utilize [**Low-level debugger (LLDB)**](https://developer.apple.com/
 
 </Step>
 
-> You can delete the **ios** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself (which is bare workflow).
+> You can delete the **ios** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself.
 
 ## Production errors
 
@@ -117,7 +115,11 @@ It can be a frustrating scenario when a production app crashes. There is very li
 
 Start by reproducing the crash using your production app and then **find an associated crash report**. For Android, you can use `adb logcat` and for iOS you can use the Console app in Xcode.
 
-<Video url="https://www.youtube.com/watch?v=LvCci4Bwmpc" />
+<VideoBoxLink
+  videoId="LvCci4Bwmpc"
+  title="How to use Logcat & macOS Console to debug"
+  description="In this tutorial, you'll learn how to use native device logging features like ADB Logcat and macOS Console to find bugs in your code and quickly fix them."
+/>
 
 #### Crash reports using adb logcat
 
@@ -131,7 +133,7 @@ The Android Debug Bridge (`adb`) program is part of the Android SDK and allows y
 
 If your iOS app is on TestFlight or the App Store, you can use the [Crashes Organizer](https://developer.apple.com/news/?id=nra79npr) in Xcode.
 
-If not, you can use the **Console** app in Xcode by connecting your device to your mac. Follow the steps below on how to access the Console app:
+If not, you can use the **Console** app in Xcode by connecting your device to your Mac. Follow the steps below on how to access the Console app:
 
 <Step label="1">
 
@@ -143,7 +145,7 @@ Open Xcode app, and then open **Devices and Simulators** window by pressing <kbd
 
 If you have connected a physical device, select it under **Devices**. Otherwise, if you are using a simulator, select it under **Simulators**.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Devices and Simulators window in Xcode."
   src="/static/images/debugging/devices-simulators.png"
 />
@@ -154,7 +156,7 @@ If you have connected a physical device, select it under **Devices**. Otherwise,
 
 Click on **Open Console** button shown in the window to open the console app.
 
-<ImageSpotlight
+<ContentSpotlight
   alt="Devices and Simulators window in Xcode."
   src="/static/images/debugging/open-console.png"
 />
@@ -169,15 +171,16 @@ For more information, see Apple's [Diagnosing Issues Using Crash Reports and Dev
 
 This might indicate that there is a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React DevTools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
 
+### Using error reporting services
+
+Implementing a crash and bug reporting service in your production app offers several benefits, such as:
+
+- Real-time insights on production deployments with information to reproduce crashes and bugs.
+- Setting up an alert system to get notified about fatal JavaScript errors or any other event you configure.
+- Using a web dashboard to see details on exceptions such as stack traces, device information, and so on.
+
+With Expo, you can integrate a reporting service like [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/) to get more insights in real-time.
+
 ## Stuck?
 
 The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the same error as you, so make sure to read the documentation, search the [forums](https://chat.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [Stack Overflow](https://stackoverflow.com/).
-
-## Next step
-
-<BoxLink
-  title="Debugging tools"
-  description="Learn about different tools available to debug runtime issues in your Expo project."
-  href="/debugging/tools"
-  Icon={BookOpen02Icon}
-/>

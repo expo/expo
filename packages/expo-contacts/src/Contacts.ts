@@ -1,5 +1,11 @@
-import { PermissionResponse, PermissionStatus, UnavailabilityError, uuid } from 'expo-modules-core';
-import { Platform, Share } from 'react-native';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  UnavailabilityError,
+  uuid,
+} from 'expo-modules-core';
+import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
 
@@ -15,11 +21,11 @@ export type Date = {
   /**
    * Day.
    */
-  day?: number;
+  day: number;
   /**
    * Month - adjusted for JavaScript `Date` which starts at `0`.
    */
-  month?: number;
+  month: number;
   /**
    * Year.
    */
@@ -31,9 +37,9 @@ export type Date = {
   /**
    * Localized display name.
    */
-  label: string;
+  label?: string;
   /**
-   * Format for the input date.
+   * Format for the date. This is provided by the OS, do not set this manually.
    */
   format?: CalendarFormatType;
 };
@@ -83,12 +89,14 @@ export type PhoneNumber = {
   isPrimary?: boolean;
   /**
    * Phone number without format.
-   * @example `8674305`
+   * @example
+   * `8674305`
    */
   digits?: string;
   /**
    * Country code.
-   * @example `+1`
+   * @example
+   * `us`
    */
   countryCode?: string;
   /**
@@ -223,7 +231,7 @@ export type UrlAddress = {
  */
 export type Image = {
   /**
-   * A **local image URI**.
+   * A local image URI.
    * > **Note**: If you have a remote URI, download it first using  [`FileSystem.downloadAsync`](/versions/latest/sdk/filesystem/#filesystemdownloadasyncuri-fileuri-options).
    */
   uri?: string;
@@ -276,11 +284,11 @@ export type Contact = {
    */
   maidenName?: string;
   /**
-   * Dr. Mr. Mrs. ect…
+   * Dr., Mr., Mrs., and so on.
    */
   namePrefix?: string;
   /**
-   * Jr. Sr. ect…
+   * Jr., Sr., an so on.
    */
   nameSuffix?: string;
   /**
@@ -313,7 +321,7 @@ export type Contact = {
   department?: string;
   /**
    * Additional information.
-   * > On iOS 13+, the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
+   * > The `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
    * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
    * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
    */
@@ -387,7 +395,7 @@ export type ContactResponse = {
    */
   hasNextPage: boolean;
   /**
-   * This will be `true if there are previous contacts that weren't retrieved due to `pageOffset` limit.
+   * This will be `true` if there are previous contacts that weren't retrieved due to `pageOffset` limit.
    */
   hasPreviousPage: boolean;
 };
@@ -548,7 +556,7 @@ export type Container = {
   type: ContainerType;
 };
 
-export { PermissionStatus, PermissionResponse };
+export { PermissionStatus, PermissionResponse, PermissionExpiration };
 
 /**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.
@@ -558,10 +566,11 @@ export async function isAvailableAsync(): Promise<boolean> {
   return !!ExpoContacts.getContactsAsync;
 }
 
+// @docsMissing
 export async function shareContactAsync(
   contactId: string,
   message: string,
-  shareOptions: object = {}
+  shareOptions: ShareOptions = {}
 ): Promise<any> {
   if (Platform.OS === 'ios') {
     const url = await writeContactToFileAsync({
@@ -811,7 +820,7 @@ export async function addExistingGroupToContainerAsync(
 }
 
 /**
- * Create a group with a name, and add it to a container. If the container is undefined, the default container will be targeted.
+ * Create a group with a name, and add it to a container. If the container is `undefined`, the default container will be targeted.
  * @param name Name of the new group.
  * @param containerId The container you to add membership to.
  * @return A promise that fulfills with ID of the new group.
@@ -938,6 +947,19 @@ export async function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
   }
 
   return await ExpoContacts.getGroupsAsync(groupQuery);
+}
+
+/**
+ * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
+ * obtain this permission by calling the [`Contacts.requestPermissionsAsync()`](#contactsrequestpermissionsasync) method. On iOS, no permissions are
+ * required to use this method.
+ * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
+ */
+export async function presentContactPickerAsync(): Promise<Contact | null> {
+  if (!ExpoContacts.presentContactPickerAsync) {
+    throw new UnavailabilityError('Contacts', 'presentContactPickerAsync');
+  }
+  return await ExpoContacts.presentContactPickerAsync();
 }
 
 /**

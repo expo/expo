@@ -5,7 +5,8 @@
 #import <functional>
 
 #import <jsi/jsi.h>
-#import <ReactCommon/RCTTurboModule.h>
+#import <React/RCTBridgeModule.h>
+#import <React/React-Core-umbrella.h>
 #import <ReactCommon/TurboModuleUtils.h>
 #import <ExpoModulesCore/ObjectDeallocator.h>
 
@@ -19,17 +20,6 @@ namespace expo {
 using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
 
 void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> jsInvoker, std::shared_ptr<react::Promise> promise, PromiseInvocationBlock setupBlock);
-
-#pragma mark - Classes
-
-using ClassConstructor = std::function<void(jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count)>;
-
-std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor);
-
-/**
- Creates a new object, using the provided object as the prototype.
- */
-std::shared_ptr<jsi::Object> createObjectWithPrototype(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> prototype);
 
 #pragma mark - Weak objects
 
@@ -60,3 +50,18 @@ jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *messa
 } // namespace expo
 
 #endif
+
+#import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <ExpoModulesCore/EXJavaScriptRuntime.h>
+
+NS_SWIFT_NAME(JSIUtils)
+@interface EXJSIUtils : NSObject
+
++ (nonnull EXJavaScriptObject *)createNativeModuleObject:(nonnull EXJavaScriptRuntime *)runtime;
+
++ (void)emitEvent:(nonnull NSString *)eventName
+         toObject:(nonnull EXJavaScriptObject *)object
+    withArguments:(nonnull NSArray<id> *)arguments
+        inRuntime:(nonnull EXJavaScriptRuntime *)runtime;
+
+@end

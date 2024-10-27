@@ -1,4 +1,4 @@
-import { CodedError, NativeModulesProxy } from 'expo-modules-core';
+import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 import { Platform, NativeModules } from 'react-native';
 import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
@@ -6,15 +6,16 @@ export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
 if (!ExponentConstants) {
     console.warn("No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?");
 }
+const ExpoUpdates = requireOptionalNativeModule('ExpoUpdates');
 let rawUpdatesManifest = null;
 // If expo-updates defines a non-empty manifest, prefer that one
-if (NativeModulesProxy.ExpoUpdates) {
+if (ExpoUpdates) {
     let updatesManifest;
-    if (NativeModulesProxy.ExpoUpdates.manifest) {
-        updatesManifest = NativeModulesProxy.ExpoUpdates.manifest;
+    if (ExpoUpdates.manifest) {
+        updatesManifest = ExpoUpdates.manifest;
     }
-    else if (NativeModulesProxy.ExpoUpdates.manifestString) {
-        updatesManifest = JSON.parse(NativeModulesProxy.ExpoUpdates.manifestString);
+    else if (ExpoUpdates.manifestString) {
+        updatesManifest = JSON.parse(ExpoUpdates.manifestString);
     }
     if (updatesManifest && Object.keys(updatesManifest).length > 0) {
         rawUpdatesManifest = updatesManifest;
@@ -45,19 +46,12 @@ if (ExponentConstants && ExponentConstants.manifest) {
 }
 let rawManifest = rawUpdatesManifest ?? rawDevLauncherManifest ?? rawAppConfig;
 const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {});
-let warnedAboutManifestField = false;
 const constants = {
     ...nativeConstants,
     // Ensure this is null in bare workflow
     appOwnership: appOwnership ?? null,
 };
 Object.defineProperties(constants, {
-    installationId: {
-        get() {
-            return nativeConstants.installationId;
-        },
-        enumerable: false,
-    },
     /**
      * Use `manifest` property by default.
      * This property is only used for internal purposes.
@@ -67,7 +61,7 @@ Object.defineProperties(constants, {
     __unsafeNoWarnManifest: {
         get() {
             const maybeManifest = getManifest(true);
-            if (!maybeManifest || !isBareManifest(maybeManifest)) {
+            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -77,7 +71,7 @@ Object.defineProperties(constants, {
     __unsafeNoWarnManifest2: {
         get() {
             const maybeManifest = getManifest(true);
-            if (!maybeManifest || !isManifest(maybeManifest)) {
+            if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -86,12 +80,8 @@ Object.defineProperties(constants, {
     },
     manifest: {
         get() {
-            if (__DEV__ && !warnedAboutManifestField) {
-                console.warn(`Constants.manifest has been deprecated in favor of Constants.expoConfig.`);
-                warnedAboutManifestField = true;
-            }
             const maybeManifest = getManifest();
-            if (!maybeManifest || !isBareManifest(maybeManifest)) {
+            if (!maybeManifest || !isEmbeddedManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -101,7 +91,7 @@ Object.defineProperties(constants, {
     manifest2: {
         get() {
             const maybeManifest = getManifest();
-            if (!maybeManifest || !isManifest(maybeManifest)) {
+            if (!maybeManifest || !isExpoUpdatesManifest(maybeManifest)) {
                 return null;
             }
             return maybeManifest;
@@ -114,15 +104,15 @@ Object.defineProperties(constants, {
             if (!maybeManifest) {
                 return null;
             }
-            // if running an embedded update, maybeManifest is a BareManifest which doesn't have
+            // if running an embedded update, maybeManifest is a EmbeddedManifest which doesn't have
             // the expo config. Instead, the embedded expo-constants app.config should be used.
-            if (NativeModulesProxy.ExpoUpdates && NativeModulesProxy.ExpoUpdates.isEmbeddedLaunch) {
+            if (ExpoUpdates && ExpoUpdates.isEmbeddedLaunch) {
                 return rawAppConfig;
             }
-            if (isManifest(maybeManifest)) {
+            if (isExpoUpdatesManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoClient ?? null;
             }
-            else if (isBareManifest(maybeManifest)) {
+            else if (isEmbeddedManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -135,10 +125,10 @@ Object.defineProperties(constants, {
             if (!maybeManifest) {
                 return null;
             }
-            if (isManifest(maybeManifest)) {
+            if (isExpoUpdatesManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoGo ?? null;
             }
-            else if (isBareManifest(maybeManifest)) {
+            else if (isEmbeddedManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -151,10 +141,10 @@ Object.defineProperties(constants, {
             if (!maybeManifest) {
                 return null;
             }
-            if (isManifest(maybeManifest)) {
+            if (isExpoUpdatesManifest(maybeManifest)) {
                 return maybeManifest.extra?.eas ?? null;
             }
-            else if (isBareManifest(maybeManifest)) {
+            else if (isEmbeddedManifest(maybeManifest)) {
                 return maybeManifest;
             }
             return null;
@@ -171,10 +161,10 @@ Object.defineProperties(constants, {
         enumerable: false,
     },
 });
-function isBareManifest(manifest) {
-    return !isManifest(manifest);
+function isEmbeddedManifest(manifest) {
+    return !isExpoUpdatesManifest(manifest);
 }
-function isManifest(manifest) {
+function isExpoUpdatesManifest(manifest) {
     return 'metadata' in manifest;
 }
 function getManifest(suppressWarning = false) {

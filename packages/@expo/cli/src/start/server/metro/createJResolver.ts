@@ -14,8 +14,6 @@ import { dirname, isAbsolute, resolve as pathResolve } from 'path';
 import { sync as resolveSync, SyncOpts as UpstreamResolveOptions } from 'resolve';
 import * as resolve from 'resolve.exports';
 
-import { directoryExistsSync, fileExistsSync } from '../../../utils/dir';
-
 /**
  * Allows transforming parsed `package.json` contents.
  *
@@ -25,7 +23,7 @@ import { directoryExistsSync, fileExistsSync } from '../../../utils/dir';
  *
  * @returns Transformed `package.json` contents.
  */
-export type PackageFilter = (pkg: PackageJSON, file: string, dir: string) => PackageJSON;
+type PackageFilter = (pkg: PackageJSON, file: string, dir: string) => PackageJSON;
 
 /**
  * Allows transforming a path within a package.
@@ -36,9 +34,9 @@ export type PackageFilter = (pkg: PackageJSON, file: string, dir: string) => Pac
  *
  * @returns Relative path that will be joined from the `package.json` location.
  */
-export type PathFilter = (pkg: PackageJSON, path: string, relativePath: string) => string;
+type PathFilter = (pkg: PackageJSON, path: string, relativePath: string) => string;
 
-export type ResolverOptions = {
+type ResolverOptions = {
   /** Directory to begin resolving from. */
   basedir: string;
   /** List of export conditions. */
@@ -71,48 +69,48 @@ export type ResolverOptions = {
   enablePackageExports?: boolean;
 
   blockList: RegExp[];
+
+  getPackageForModule: import('metro-resolver').CustomResolutionContext['getPackageForModule'];
 } & Pick<
   UpstreamResolveOptions,
-  'readPackageSync' | 'moduleDirectory' | 'extensions' | 'preserveSymlinks' | 'includeCoreModules'
+  | 'readPackageSync'
+  | 'realpathSync'
+  | 'moduleDirectory'
+  | 'extensions'
+  | 'preserveSymlinks'
+  | 'includeCoreModules'
 >;
 
-type UpstreamResolveOptionsWithConditions = UpstreamResolveOptions & ResolverOptions;
+type UpstreamResolveOptionsWithConditions = UpstreamResolveOptions &
+  ResolverOptions & {
+    pathExists: (file: string) => boolean;
+  };
 
-export type SyncResolver = (path: string, options: ResolverOptions) => string;
-export type AsyncResolver = (path: string, options: ResolverOptions) => Promise<string>;
-
-export type Resolver = SyncResolver | AsyncResolver;
-
-const defaultResolver: SyncResolver = (
-  path,
-  { enablePackageExports, blockList = [], ...options }
-) => {
+const defaultResolver = (
+  path: string,
+  {
+    enablePackageExports,
+    blockList = [],
+    ...options
+  }: Omit<ResolverOptions, 'defaultResolver' | 'getPackageForModule'> & {
+    isDirectory: (file: string) => boolean;
+    isFile: (file: string) => boolean;
+    pathExists: (file: string) => boolean;
+  }
+): string => {
   // @ts-expect-error
   const resolveOptions: UpstreamResolveOptionsWithConditions = {
     ...options,
-
-    isDirectory(file) {
-      if (blockList.some((regex) => regex.test(file))) {
-        return false;
-      }
-      return directoryExistsSync(file);
-    },
-    isFile(file) {
-      if (blockList.some((regex) => regex.test(file))) {
-        return false;
-      }
-      return fileExistsSync(file);
-    },
-    preserveSymlinks: enablePackageExports ? false : options.preserveSymlinks,
+    preserveSymlinks: options.preserveSymlinks,
     defaultResolver,
   };
 
   // resolveSync dereferences symlinks to ensure we don't create a separate
   // module instance depending on how it was referenced.
-  const result = resolveSync(
-    enablePackageExports ? getPathInModule(path, resolveOptions) : path,
-    resolveOptions
-  );
+  const result = resolveSync(enablePackageExports ? getPathInModule(path, resolveOptions) : path, {
+    ...resolveOptions,
+    preserveSymlinks: !options.preserveSymlinks,
+  });
 
   return result;
 };
@@ -132,53 +130,26 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
 
   let moduleName = segments.shift();
 
-  if (moduleName) {
-    if (moduleName.startsWith('@')) {
-      moduleName = `${moduleName}/${segments.shift()}`;
-    }
+  if (!moduleName) {
+    return path;
+  }
 
-    // Disable package exports for babel/runtime for https://github.com/facebook/metro/issues/984/
-    if (moduleName === '@babel/runtime') {
-      return path;
-    }
+  if (moduleName.startsWith('@')) {
+    moduleName = `${moduleName}/${segments.shift()}`;
+  }
 
-    // self-reference
-    const closestPackageJson = findClosestPackageJson(options.basedir, options);
-    if (closestPackageJson) {
-      const pkg = options.readPackageSync!(options.readFileSync!, closestPackageJson);
-      assert(pkg, 'package.json should be read by `readPackageSync`');
+  // Disable package exports for babel/runtime for https://github.com/facebook/metro/issues/984/
+  if (moduleName === '@babel/runtime') {
+    return path;
+  }
 
-      if (pkg.name === moduleName) {
-        const resolved = resolve.exports(
-          pkg,
-          (segments.join('/') || '.') as resolve.Exports.Entry,
-          createResolveOptions(options.conditions)
-        );
+  // self-reference
+  const closestPackageJson = findClosestPackageJson(options.basedir, options);
+  if (closestPackageJson) {
+    const pkg = options.readPackageSync!(options.readFileSync!, closestPackageJson);
+    assert(pkg, 'package.json should be read by `readPackageSync`');
 
-        if (resolved) {
-          return pathResolve(dirname(closestPackageJson), resolved[0]);
-        }
-
-        if (pkg.exports) {
-          throw new Error(
-            "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Please report an issue"
-          );
-        }
-      }
-    }
-
-    let packageJsonPath = '';
-
-    try {
-      packageJsonPath = resolveSync(`${moduleName}/package.json`, options);
-    } catch {
-      // ignore if package.json cannot be found
-    }
-
-    if (packageJsonPath && options.isFile!(packageJsonPath)) {
-      const pkg = options.readPackageSync!(options.readFileSync!, packageJsonPath);
-      assert(pkg, 'package.json should be read by `readPackageSync`');
-
+    if (pkg.name === moduleName) {
       const resolved = resolve.exports(
         pkg,
         (segments.join('/') || '.') as resolve.Exports.Entry,
@@ -186,7 +157,7 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
       );
 
       if (resolved) {
-        return pathResolve(dirname(packageJsonPath), resolved[0]);
+        return pathResolve(dirname(closestPackageJson), resolved[0]);
       }
 
       if (pkg.exports) {
@@ -195,6 +166,37 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
         );
       }
     }
+  }
+
+  let packageJsonPath = '';
+
+  try {
+    packageJsonPath = resolveSync(`${moduleName}/package.json`, options);
+  } catch {
+    // ignore if package.json cannot be found
+  }
+
+  if (!packageJsonPath) {
+    return path;
+  }
+
+  const pkg = options.readPackageSync!(options.readFileSync!, packageJsonPath);
+  assert(pkg, 'package.json should be read by `readPackageSync`');
+
+  const resolved = resolve.exports(
+    pkg,
+    (segments.join('/') || '.') as resolve.Exports.Entry,
+    createResolveOptions(options.conditions)
+  );
+
+  if (resolved) {
+    return pathResolve(dirname(packageJsonPath), resolved[0]);
+  }
+
+  if (pkg.exports) {
+    throw new Error(
+      "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Please report an issue"
+    );
   }
 
   return path;
@@ -214,7 +216,7 @@ const shouldIgnoreRequestForExports = (path: string) => path.startsWith('.') || 
 // https://github.com/lukeed/escalade/blob/2477005062cdbd8407afc90d3f48f4930354252b/src/sync.js
 function findClosestPackageJson(
   start: string,
-  options: UpstreamResolveOptions
+  options: UpstreamResolveOptionsWithConditions
 ): string | undefined {
   let dir = pathResolve('.', start);
   if (!options.isDirectory!(dir)) {
@@ -223,7 +225,7 @@ function findClosestPackageJson(
 
   while (true) {
     const pkgJsonFile = pathResolve(dir, './package.json');
-    const hasPackageJson = options.isFile!(pkgJsonFile);
+    const hasPackageJson = options.pathExists!(pkgJsonFile);
 
     if (hasPackageJson) {
       return pkgJsonFile;

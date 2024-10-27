@@ -1,15 +1,22 @@
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, UpdatesNativeStateMachineContext } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
+/**
+ * Whether `expo-updates` is enabled. This may be false in a variety of cases including:
+ * - enabled set to false in configuration
+ * - missing or invalid URL in configuration
+ * - missing runtime version or SDK version in configuration
+ * - error accessing storage on device during initialization
+ *
+ * When false, the embedded update is loaded.
+ */
+export declare const isEnabled: boolean;
 /**
  * The UUID that uniquely identifies the currently running update. The
- * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
- * will always use lowercase letters. This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * UUID is represented in its canonical string form and will always use lowercase letters.
+ * This value is `null` when running in a local development environment or any other environment where `expo-updates` is disabled.
+ * @example
+ * `"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"`
  */
 export declare const updateId: string | null;
-/**
- * The name of the release channel currently configured in this standalone or bare app when using
- * classic updates. When using Expo Updates, the value of this field is always `"default"`.
- */
-export declare const releaseChannel: string;
 /**
  * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
  *
@@ -21,7 +28,7 @@ export declare const channel: string | null;
  */
 export declare const runtimeVersion: string | null;
 /**
- * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ * Determines if and when `expo-updates` checks for and downloads updates automatically on startup.
  */
 export declare const checkAutomatically: UpdatesCheckAutomaticallyValue | null;
 /**
@@ -38,6 +45,15 @@ export declare const localAssets: LocalAssets;
  * can use this constant to provide special behavior for this rare case.
  */
 export declare const isEmergencyLaunch: boolean;
+/**
+ * If `isEmergencyLaunch` is set to true, this will contain a string error message describing
+ * what failed during initialization.
+ */
+export declare const emergencyLaunchReason: string | null;
+/**
+ * Number of milliseconds it took to launch.
+ */
+export declare const launchDuration: number | null;
 /**
  * This will be true if the currently running update is the one embedded in the build,
  * and not one downloaded from the updates server.
@@ -68,6 +84,8 @@ export declare const createdAt: Date | null;
  * Instructs the app to reload using the most recently downloaded version. This is useful for
  * triggering a newly downloaded update to launch without the user needing to manually restart the
  * app.
+ * Unlike `Expo.reloadAppAsync()` provided by the `expo` package,
+ * this function not only reloads the app but also changes the loaded JavaScript bundle to that of the most recently downloaded update.
  *
  * It is not recommended to place any meaningful logic after a call to `await
  * Updates.reloadAsync()`. This is because the promise is resolved after verifying that the app can
@@ -76,8 +94,8 @@ export declare const createdAt: Date | null;
  * executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and
  * the state of the native module and main threads.
  *
- * This method cannot be used in development mode, and the returned promise will be rejected if you
- * try to do so.
+ * This method cannot be used in Expo Go or development mode, and the returned promise will be rejected if you
+ * try to do so. It also rejects when `expo-updates` is not enabled.
  *
  * @return A promise that fulfills right before the reload instruction is sent to the JS runtime, or
  * rejects if it cannot find a reference to the JS runtime. If the promise is rejected in production
@@ -101,26 +119,28 @@ export declare function reloadAsync(): Promise<void>;
  *
  * @return A promise that fulfills with an [`UpdateCheckResult`](#updatecheckresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when `expo-updates` is not enabled.
  */
 export declare function checkForUpdateAsync(): Promise<UpdateCheckResult>;
 /**
  * Retrieves the current extra params.
+ *
+ * This method cannot be used in Expo Go or development mode. It also rejects when `expo-updates` is not enabled.
  */
-export declare function getExtraParamsAsync(): Promise<{
-    [key: string]: string;
-}>;
+export declare function getExtraParamsAsync(): Promise<Record<string, string>>;
 /**
  * Sets an extra param if value is non-null, otherwise unsets the param.
- * Extra params are sent as an [Expo Structured Field Value Dictionary](https://docs.expo.dev/technical-specs/expo-sfv-0/)
+ * Extra params are sent as an [Expo Structured Field Value Dictionary](/technical-specs/expo-sfv-0/)
  * in the `Expo-Extra-Params` header of update requests. A compliant update server may use these params when selecting an update to serve.
+ *
+ * This method cannot be used in Expo Go or development mode. It also rejects when `expo-updates` is not enabled.
  */
 export declare function setExtraParamAsync(key: string, value: string | null | undefined): Promise<void>;
 /**
- * Retrieves the most recent expo-updates log entries.
+ * Retrieves the most recent `expo-updates` log entries.
  *
- * @param maxAge Sets the max age of retrieved log entries in milliseconds. Default to 3600000 ms (1 hour).
+ * @param maxAge Sets the max age of retrieved log entries in milliseconds. Default to `3600000` ms (1 hour).
  *
  * @return A promise that fulfills with an array of [`UpdatesLogEntry`](#updateslogentry) objects;
  *
@@ -128,7 +148,7 @@ export declare function setExtraParamAsync(key: string, value: string | null | u
  */
 export declare function readLogEntriesAsync(maxAge?: number): Promise<UpdatesLogEntry[]>;
 /**
- * Clears existing expo-updates log entries.
+ * Clears existing `expo-updates` log entries.
  *
  * > For now, this operation does nothing on the client.  Once log persistence has been
  * > implemented, this operation will actually remove existing logs.
@@ -150,20 +170,8 @@ export declare function clearLogEntriesAsync(): Promise<void>;
  *
  * @return A promise that fulfills with an [`UpdateFetchResult`](#updatefetchresult) object.
  *
- * The promise rejects if the app is in development mode, or if there is an unexpected error or
- * timeout communicating with the server.
+ * The promise rejects in Expo Go or if the app is in development mode, or if there is an unexpected error or
+ * timeout communicating with the server. It also rejects when `expo-updates` is not enabled.
  */
 export declare function fetchUpdateAsync(): Promise<UpdateFetchResult>;
-/**
- * @hidden
- */
-export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string): void;
-/**
- * @hidden
- */
-export declare function transformNativeStateMachineContext(originalNativeContext: any): any;
-/**
- * @hidden
- */
-export declare function getNativeStateMachineContextAsync(): Promise<UpdatesNativeStateMachineContext>;
 //# sourceMappingURL=Updates.d.ts.map

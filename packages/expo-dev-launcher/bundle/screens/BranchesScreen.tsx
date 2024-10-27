@@ -2,6 +2,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Heading, View, Divider, Spacer, Text } from 'expo-dev-client-components';
 import * as React from 'react';
 
+import { ExtensionsStackParamList } from './ExtensionsStack';
 import { BasicButton } from '../components/BasicButton';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
@@ -12,7 +13,6 @@ import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useUser } from '../providers/UserContextProvider';
 import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
-import { ExtensionsStackParamList } from './ExtensionsStack';
 
 type BranchesScreenProps = {
   navigation: StackNavigationProp<ExtensionsStackParamList>;

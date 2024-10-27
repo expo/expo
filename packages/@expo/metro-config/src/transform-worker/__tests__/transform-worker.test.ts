@@ -1,8 +1,8 @@
-import upstreamTransformer, { JsTransformOptions } from 'metro-transform-worker';
-
+import * as upstreamTransformer from '../metro-transform-worker';
+import type { JsTransformOptions } from '../metro-transform-worker';
 import { transform } from '../transform-worker';
 
-jest.mock('metro-transform-worker', () => ({
+jest.mock('../metro-transform-worker', () => ({
   transform: jest.fn(),
 }));
 
@@ -18,9 +18,8 @@ const doTransformForOutput = async (
   jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
     dependencies: [],
     output: [
-      {
-        data: {},
-      },
+      // @ts-expect-error
+      {},
     ],
   });
   const output = await doTransform(filename, src, options);
@@ -169,9 +168,11 @@ describe('CSS Modules', () => {
               // Required CSS metadata for static export
               css: {
                 code: '._R_BGG_container{background:red}',
+                externalImports: [],
                 functionMap: null,
                 lineCount: 1,
                 map: [],
+                skipCache: false,
               },
             },
             type: 'js/module',
@@ -205,9 +206,11 @@ describe('CSS Modules', () => {
               css: {
                 // Not minified, formatted actually.
                 code: ['._R_BGG_container {', '  background: red;', '}', ''].join('\n'),
+                externalImports: [],
                 functionMap: null,
                 lineCount: 4,
                 map: [],
+                skipCache: false,
               },
             },
             type: 'js/module',
@@ -237,6 +240,7 @@ describe('Expo Router server files (+html, +api)', () => {
             dev: true,
             minify: false,
             customTransformOptions: {
+              __proto__: null,
               environment: 'client',
             },
             platform: 'web',
@@ -254,6 +258,7 @@ describe('Expo Router server files (+html, +api)', () => {
             dev: true,
             minify: false,
             customTransformOptions: {
+              __proto__: null,
               environment: 'client',
             },
             platform,
@@ -269,6 +274,7 @@ describe('Expo Router server files (+html, +api)', () => {
           dev: false,
           minify: true,
           customTransformOptions: {
+            __proto__: null,
             environment: 'client',
           },
           platform: 'web',
@@ -294,6 +300,7 @@ describe('Expo Router server files (+html, +api)', () => {
           dev: true,
           minify: false,
           customTransformOptions: {
+            __proto__: null,
             environment: 'node',
           },
           platform: 'ios',

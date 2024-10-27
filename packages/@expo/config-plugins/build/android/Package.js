@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getApplicationIdAsync = getApplicationIdAsync;
 exports.getPackage = getPackage;
+exports.kotlinSanitized = kotlinSanitized;
 exports.renameJniOnDiskForType = renameJniOnDiskForType;
 exports.renamePackageOnDisk = renamePackageOnDisk;
 exports.renamePackageOnDiskForType = renamePackageOnDiskForType;
@@ -73,7 +74,7 @@ function _warnings() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = (0, _debug().default)('expo:config-plugins:android:package');
 const withPackageGradle = config => {
   return (0, _androidPlugins().withAppBuildGradle)(config, config => {
@@ -94,8 +95,7 @@ const withPackageRefactor = config => {
 };
 exports.withPackageRefactor = withPackageRefactor;
 function getPackage(config) {
-  var _config$android$packa, _config$android;
-  return (_config$android$packa = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.package) !== null && _config$android$packa !== void 0 ? _config$android$packa : null;
+  return config.android?.package ?? null;
 }
 function getPackageRoot(projectRoot, type) {
   return _path().default.join(projectRoot, 'android', 'app', 'src', type, 'java');
@@ -107,7 +107,7 @@ function getCurrentPackageName(projectRoot, packageRoot) {
   return packagePathParts.join('.');
 }
 function getCurrentPackageForProjectFile(projectRoot, packageRoot, fileName, type) {
-  const filePath = (0, _glob().sync)(_path().default.join(projectRoot, `android/app/src/${type}/java/**/${fileName}.@(java|kt)`))[0];
+  const filePath = (0, _glob().globSync)(_path().default.join(projectRoot, `android/app/src/${type}/java/**/${fileName}.@(java|kt)`))[0];
   if (!filePath) {
     return null;
   }
@@ -158,7 +158,7 @@ async function renameJniOnDiskForType({
     return;
   }
   const jniRoot = _path().default.join(projectRoot, 'android', 'app', 'src', type, 'jni');
-  const filesToUpdate = [...(0, _glob().sync)('**/*', {
+  const filesToUpdate = [...(0, _glob().globSync)('**/*', {
     cwd: jniRoot,
     absolute: true
   })];
@@ -204,7 +204,7 @@ async function renamePackageOnDiskForType({
   });
 
   // Move everything from the old directory over
-  (0, _glob().sync)('**/*', {
+  (0, _glob().globSync)('**/*', {
     cwd: currentPackagePath
   }).forEach(relativePath => {
     const filepath = _path().default.join(currentPackagePath, relativePath);
@@ -231,7 +231,7 @@ async function renamePackageOnDiskForType({
       oldPathParts.pop();
     }
   }
-  const filesToUpdate = [...(0, _glob().sync)('**/*', {
+  const filesToUpdate = [...(0, _glob().globSync)('**/*', {
     cwd: newPackagePath,
     absolute: true
   })];
@@ -240,12 +240,17 @@ async function renamePackageOnDiskForType({
     // NOTE(EvanBacon): We dropped this file in SDK 48 but other templates may still use it.
     filesToUpdate.push(_path().default.join(projectRoot, 'android', 'app', 'BUCK'));
   }
+  const kotlinSanitizedPackageName = kotlinSanitized(packageName);
   // Replace all occurrences of the path in the project
   filesToUpdate.forEach(filepath => {
     try {
       if (_fs().default.lstatSync(filepath).isFile()) {
         let contents = _fs().default.readFileSync(filepath).toString();
-        contents = replacePackageName(contents, currentPackageName, packageName);
+        if (_path().default.extname(filepath) === '.kt') {
+          contents = replacePackageName(contents, currentPackageName, kotlinSanitizedPackageName);
+        } else {
+          contents = replacePackageName(contents, currentPackageName, packageName);
+        }
         if (['.h', '.cpp'].includes(_path().default.extname(filepath))) {
           contents = contents.replace(new RegExp(transformJavaClassDescriptor(currentPackageName).replace(/\//g, '\\'), 'g'), transformJavaClassDescriptor(packageName));
         }
@@ -271,7 +276,6 @@ function setPackageInBuildGradle(config, buildGradle) {
   return buildGradle.replace(pattern, `$1 '${packageName}'`);
 }
 async function getApplicationIdAsync(projectRoot) {
-  var _matchResult$;
   const buildGradlePath = (0, _Paths().getAppBuildGradleFilePath)(projectRoot);
   if (!_fs().default.existsSync(buildGradlePath)) {
     return null;
@@ -279,7 +283,7 @@ async function getApplicationIdAsync(projectRoot) {
   const buildGradle = await _fs().default.promises.readFile(buildGradlePath, 'utf8');
   const matchResult = buildGradle.match(/applicationId ['"](.*)['"]/);
   // TODO add fallback for legacy cases to read from AndroidManifest.xml
-  return (_matchResult$ = matchResult === null || matchResult === void 0 ? void 0 : matchResult[1]) !== null && _matchResult$ !== void 0 ? _matchResult$ : null;
+  return matchResult?.[1] ?? null;
 }
 
 /**
@@ -303,5 +307,17 @@ function replacePackageName(content, oldName, newName) {
  */
 function transformJavaClassDescriptor(packageName) {
   return `L${packageName.replace(/\./g, '/')}`;
+}
+
+/**
+ * Make a package name safe to use in a kotlin file,
+ * e.g. is.pvin.hello -> `is`.pvin.hello
+ */
+function kotlinSanitized(packageName) {
+  const stringsToWrap = ['is', 'in', 'as', 'fun'];
+  const parts = packageName.split('.');
+  const cleanParts = parts.map(part => stringsToWrap.includes(part) ? '`' + part + '`' : part);
+  const cleanName = cleanParts.join('.');
+  return cleanName;
 }
 //# sourceMappingURL=Package.js.map

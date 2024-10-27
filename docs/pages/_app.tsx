@@ -9,7 +9,10 @@ import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/use-nprogress';
 import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 import { AnalyticsProvider } from '~/providers/Analytics';
+import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
+import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
 import { markdownComponents } from '~/ui/components/Markdown';
+import * as Tooltip from '~/ui/components/Tooltip';
 
 import 'global-styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
@@ -32,16 +35,20 @@ Sentry.init({
   dsn: 'https://1a2f5c8cec574bcea3971b74f91504d6@o30871.ingest.sentry.io/1526800',
   beforeSend: preprocessSentryError,
   environment: isDev ? 'development' : 'production',
-  denyUrls: isDev
-    ? undefined
-    : [
-        /https:\/\/docs-expo-dev\.translate\.goog/,
-        /https:\/\/translated\.turbopages\.org/,
-        /https:\/\/docs\.expo\.dev\/index\.html/,
-        /https:\/\/expo\.nodejs\.cn/,
-      ],
-  integrations: [new Sentry.BrowserTracing()],
-  tracesSampleRate: 0.001,
+  denyUrls: [
+    /https:\/\/docs-expo-dev\.translate\.goog/,
+    /https:\/\/translated\.turbopages\.org/,
+    /https:\/\/docs\.expo\.dev\/index\.html/,
+    /https:\/\/expo\.nodejs\.cn/,
+  ],
+  integrations: [Sentry.browserTracingIntegration(), Sentry.extraErrorDataIntegration()],
+  tracesSampleRate: 0.002,
+  replaysSessionSampleRate: 0.0001,
+  replaysOnErrorSampleRate: 0.05,
+});
+
+import('@sentry/react').then(lazyLoadedSentry => {
+  Sentry.addIntegration(lazyLoadedSentry.replayIntegration());
 });
 
 const rootMarkdownComponents = {
@@ -56,19 +63,25 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <AnalyticsProvider>
       <ThemeProvider>
-        <MDXProvider components={rootMarkdownComponents}>
-          <Global
-            styles={css({
-              'html, body, kbd, button, input, select': {
-                fontFamily: regularFont.style.fontFamily,
-              },
-              'code, pre, table.diff': {
-                fontFamily: monospaceFont.style.fontFamily,
-              },
-            })}
-          />
-          <Component {...pageProps} />
-        </MDXProvider>
+        <TutorialChapterCompletionProvider>
+          <CodeBlockSettingsProvider>
+            <MDXProvider components={rootMarkdownComponents}>
+              <Tooltip.Provider>
+                <Global
+                  styles={css({
+                    'html, body, kbd, button, input, select': {
+                      fontFamily: regularFont.style.fontFamily,
+                    },
+                    'code, pre, table.diff': {
+                      fontFamily: monospaceFont.style.fontFamily,
+                    },
+                  })}
+                />
+                <Component {...pageProps} />
+              </Tooltip.Provider>
+            </MDXProvider>
+          </CodeBlockSettingsProvider>
+        </TutorialChapterCompletionProvider>
       </ThemeProvider>
     </AnalyticsProvider>
   );

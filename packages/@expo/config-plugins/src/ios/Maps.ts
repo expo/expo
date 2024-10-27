@@ -1,11 +1,9 @@
 import { ExpoConfig } from '@expo/config-types';
-import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { ConfigPlugin, InfoPlist } from '../Plugin.types';
-import { createInfoPlistPlugin, withAppDelegate } from '../plugins/ios-plugins';
-import { withDangerousMod } from '../plugins/withDangerousMod';
+import { createInfoPlistPlugin, withAppDelegate, withPodfile } from '../plugins/ios-plugins';
 import { mergeContents, MergeResults, removeContents } from '../utils/generateCode';
 
 const debug = require('debug')('expo:config-plugins:ios:maps') as typeof console.log;
@@ -143,39 +141,38 @@ function isReactNativeMapsAutolinked(config: Pick<ExpoConfig, '_internal'>): boo
 }
 
 const withMapsCocoaPods: ConfigPlugin<{ useGoogleMaps: boolean }> = (config, { useGoogleMaps }) => {
-  return withDangerousMod(config, [
-    'ios',
-    async (config) => {
-      const filePath = path.join(config.modRequest.platformProjectRoot, 'Podfile');
-      const contents = await fs.promises.readFile(filePath, 'utf-8');
-      let results: MergeResults;
-      // Only add the block if react-native-maps is installed in the project (best effort).
-      // Generally prebuild runs after a yarn install so this should always work as expected.
-      const googleMapsPath = isReactNativeMapsInstalled(config.modRequest.projectRoot);
-      const isLinked = isReactNativeMapsAutolinked(config);
-      debug('Is Expo Autolinked:', isLinked);
-      debug('react-native-maps path:', googleMapsPath);
-      if (isLinked && googleMapsPath && useGoogleMaps) {
-        try {
-          results = addMapsCocoaPods(contents);
-        } catch (error: any) {
-          if (error.code === 'ERR_NO_MATCH') {
-            throw new Error(
-              `Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`
-            );
-          }
-          throw error;
+  return withPodfile(config, async (config) => {
+    // Only add the block if react-native-maps is installed in the project (best effort).
+    // Generally prebuild runs after a yarn install so this should always work as expected.
+    const googleMapsPath = isReactNativeMapsInstalled(config.modRequest.projectRoot);
+    const isLinked = isReactNativeMapsAutolinked(config);
+    debug('Is Expo Autolinked:', isLinked);
+    debug('react-native-maps path:', googleMapsPath);
+
+    let results: MergeResults;
+
+    if (isLinked && googleMapsPath && useGoogleMaps) {
+      try {
+        results = addMapsCocoaPods(config.modResults.contents);
+      } catch (error: any) {
+        if (error.code === 'ERR_NO_MATCH') {
+          throw new Error(
+            `Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`
+          );
         }
-      } else {
-        // If the package is no longer installed, then remove the block.
-        results = removeMapsCocoaPods(contents);
+        throw error;
       }
-      if (results.didMerge || results.didClear) {
-        await fs.promises.writeFile(filePath, results.contents);
-      }
-      return config;
-    },
-  ]);
+    } else {
+      // If the package is no longer installed, then remove the block.
+      results = removeMapsCocoaPods(config.modResults.contents);
+    }
+
+    if (results.didMerge || results.didClear) {
+      config.modResults.contents = results.contents;
+    }
+
+    return config;
+  });
 };
 
 const withGoogleMapsAppDelegate: ConfigPlugin<{ apiKey: string | null }> = (config, { apiKey }) => {

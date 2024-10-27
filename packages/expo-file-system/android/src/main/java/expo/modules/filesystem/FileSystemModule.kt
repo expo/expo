@@ -28,7 +28,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Headers
-import okhttp3.JavaNetCookieJar
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -54,7 +53,6 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.math.BigInteger
-import java.net.CookieHandler
 import java.net.URLConnection
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -368,7 +366,7 @@ open class FileSystemModule : Module() {
       }
     }
 
-    AsyncFunction("getTotalDiskCapacityAsync") {
+    AsyncFunction<Double>("getTotalDiskCapacityAsync") {
       val root = StatFs(Environment.getDataDirectory().absolutePath)
       val blockCount = root.blockCountLong
       val blockSize = root.blockSizeLong
@@ -377,7 +375,7 @@ open class FileSystemModule : Module() {
       return@AsyncFunction capacity.toDouble().coerceAtMost(2.0.pow(53.0) - 1)
     }
 
-    AsyncFunction("getFreeDiskStorageAsync") {
+    AsyncFunction<Double>("getFreeDiskStorageAsync") {
       val external = StatFs(Environment.getDataDirectory().absolutePath)
       val availableBlocks = external.availableBlocksLong
       val blockSize = external.blockSizeLong
@@ -453,8 +451,6 @@ open class FileSystemModule : Module() {
     }
 
     AsyncFunction("requestDirectoryPermissionsAsync") { initialFileUrl: String?, promise: Promise ->
-      val currentActivity = appContext.currentActivity
-        ?: throw Exceptions.MissingActivity()
       if (dirPermissionsRequest != null) {
         throw FileSystemPendingPermissionsRequestException()
       }
@@ -466,12 +462,14 @@ open class FileSystemModule : Module() {
       }
 
       dirPermissionsRequest = promise
-      currentActivity.startActivityForResult(intent, DIR_PERMISSIONS_REQUEST_CODE)
+      appContext.throwingActivity.startActivityForResult(intent, DIR_PERMISSIONS_REQUEST_CODE)
     }
 
     AsyncFunction("uploadAsync") { url: String, fileUriString: String, options: FileSystemUploadOptions, promise: Promise ->
       val request = createUploadRequest(
-        url, fileUriString, options
+        url,
+        fileUriString,
+        options
       ) { requestBody -> requestBody }
 
       okHttpClient?.let {
@@ -519,7 +517,7 @@ open class FileSystemModule : Module() {
       val request = createUploadRequest(
         url,
         fileUriString,
-        options,
+        options
       ) { requestBody -> CountingRequestBody(requestBody, progressListener) }
 
       val call = okHttpClient!!.newCall(request)
@@ -669,7 +667,11 @@ open class FileSystemModule : Module() {
       val call = client.newCall(request)
       taskHandlers[uuid] = DownloadTaskHandler(fileUri, call)
       val params = DownloadResumableTaskParams(
-        options, call, fileUri.toFile(), resumeData != null, promise
+        options,
+        call,
+        fileUri.toFile(),
+        resumeData != null,
+        promise
       )
       moduleCoroutineScope.launch {
         downloadResumableTask(params)
@@ -695,8 +697,6 @@ open class FileSystemModule : Module() {
 
     OnActivityResult { _, (requestCode, resultCode, data) ->
       if (requestCode == DIR_PERMISSIONS_REQUEST_CODE && dirPermissionsRequest != null) {
-        val currentActivity =
-          appContext.currentActivity ?: throw Exceptions.MissingActivity()
         val result = Bundle()
         if (resultCode == Activity.RESULT_OK && data != null) {
           val treeUri = data.data
@@ -705,7 +705,7 @@ open class FileSystemModule : Module() {
               and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             )
           treeUri?.let {
-            currentActivity.contentResolver.takePersistableUriPermission(it, takeFlags)
+            appContext.throwingActivity.contentResolver.takePersistableUriPermission(it, takeFlags)
           }
           result.putBoolean("granted", true)
           result.putString("directoryUri", treeUri.toString())
@@ -858,12 +858,9 @@ open class FileSystemModule : Module() {
   }
 
   private fun contentUriFromFile(file: File): Uri {
-    val currentActivity = appContext.currentActivity
-      ?: throw Exceptions.MissingActivity()
-
     return FileProvider.getUriForFile(
-      currentActivity.application,
-      "${currentActivity.application.packageName}.FileSystemFileProvider",
+      appContext.throwingActivity.application,
+      "${appContext.throwingActivity.application.packageName}.FileSystemFileProvider",
       file
     )
   }
@@ -991,10 +988,7 @@ open class FileSystemModule : Module() {
           .connectTimeout(60, TimeUnit.SECONDS)
           .readTimeout(60, TimeUnit.SECONDS)
           .writeTimeout(60, TimeUnit.SECONDS)
-        val cookieHandler: CookieHandler = appContext.legacyModule()
-          ?: throw CookieHandlerNotFoundException()
 
-        builder.cookieJar(JavaNetCookieJar(cookieHandler))
         client = builder.build()
       }
       return client
@@ -1065,7 +1059,9 @@ open class FileSystemModule : Module() {
     val file = DocumentFile.fromSingleUri(context, uri)
     return if (file != null && file.isFile) {
       file
-    } else DocumentFile.fromTreeUri(context, uri)
+    } else {
+      DocumentFile.fromTreeUri(context, uri)
+    }
   }
 
   // extension functions of Uri class

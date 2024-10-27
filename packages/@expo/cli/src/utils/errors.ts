@@ -50,7 +50,10 @@ export class SilentError extends CommandError {
   }
 }
 
-export function logCmdError(error: Error): never {
+export function logCmdError(error: any): never {
+  if (!(error instanceof Error)) {
+    throw error;
+  }
   if (error instanceof AbortCommandError || error instanceof SilentError) {
     // Do nothing, this is used for prompts or other cases that were custom logged.
     process.exit(0);

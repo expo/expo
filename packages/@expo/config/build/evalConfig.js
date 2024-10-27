@@ -47,7 +47,7 @@ function _environment() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Transpile and evaluate the dynamic config object.
  * This method is shared between the standard reading method in getConfig, and the headless script.
@@ -111,8 +111,7 @@ function extractLocationFromSyntaxError(error) {
 // An example is a module that includes an import statement.
 function extractImportantStackFromNodeError(error) {
   if (isSyntaxError(error)) {
-    var _error$stack;
-    const traces = (_error$stack = error.stack) === null || _error$stack === void 0 ? void 0 : _error$stack.split('\n').filter(line => !line.startsWith('    at '));
+    const traces = error.stack?.split('\n').filter(line => !line.startsWith('    at '));
     if (!traces) return null;
 
     // Remove redundant line
@@ -138,11 +137,10 @@ function isSyntaxError(error) {
  * @param request
  */
 function resolveConfigExport(result, configFile, request) {
-  var _request$config, _result, _result2;
   // add key to static config that we'll check for after the dynamic is evaluated
   // to see if the static config was used in determining the dynamic
   const hasBaseStaticConfig = _environment().NON_STANDARD_SYMBOL;
-  if (request !== null && request !== void 0 && request.config) {
+  if (request?.config) {
     // @ts-ignore
     request.config[hasBaseStaticConfig] = true;
   }
@@ -163,13 +161,13 @@ function resolveConfigExport(result, configFile, request) {
   // to suggest that there *may* be a problem.
   const mayHaveUnusedStaticConfig =
   // @ts-ignore
-  (request === null || request === void 0 ? void 0 : (_request$config = request.config) === null || _request$config === void 0 ? void 0 : _request$config[hasBaseStaticConfig]) && !((_result = result) !== null && _result !== void 0 && _result[hasBaseStaticConfig]);
+  request?.config?.[hasBaseStaticConfig] && !result?.[hasBaseStaticConfig];
   if (result) {
     delete result._hasBaseStaticConfig;
   }
 
   // If the expo object exists, ignore all other values.
-  if ((_result2 = result) !== null && _result2 !== void 0 && _result2.expo) {
+  if (result?.expo) {
     result = (0, _Serialize().serializeSkippingMods)(result.expo);
   } else {
     result = (0, _Serialize().serializeSkippingMods)(result);

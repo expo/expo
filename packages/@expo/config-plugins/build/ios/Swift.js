@@ -50,7 +50,7 @@ function _iosPlugins() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const templateBridgingHeader = `//
 //  Use this file to import your target's public headers that you would like to expose to Swift.
 //
@@ -127,7 +127,7 @@ function getDesignatedSwiftBridgingHeaderFileReference({
   } of Object.values(configurations || {})) {
     // Guessing that this is the best way to emulate Xcode.
     // Using `project.addToBuildSettings` modifies too many targets.
-    if (typeof (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.PRODUCT_NAME) !== 'undefined') {
+    if (typeof buildSettings?.PRODUCT_NAME !== 'undefined') {
       if (typeof buildSettings.SWIFT_OBJC_BRIDGING_HEADER === 'string' && buildSettings.SWIFT_OBJC_BRIDGING_HEADER) {
         return buildSettings.SWIFT_OBJC_BRIDGING_HEADER;
       }
@@ -152,7 +152,7 @@ function linkBridgingHeaderFile({
   } of Object.values(configurations || {})) {
     // Guessing that this is the best way to emulate Xcode.
     // Using `project.addToBuildSettings` modifies too many targets.
-    if (typeof (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.PRODUCT_NAME) !== 'undefined') {
+    if (typeof buildSettings?.PRODUCT_NAME !== 'undefined') {
       buildSettings.SWIFT_OBJC_BRIDGING_HEADER = bridgingHeader;
     }
   }

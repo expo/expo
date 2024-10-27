@@ -1,10 +1,21 @@
 {
   "name": "expo-sqlite",
-  "version": "12.2.1",
-  "description": "Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.",
+  "version": "15.0.0",
+  "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "default": "./build/index.js",
+      "types": "./build/index.d.ts"
+    },
+    "./async-storage": {
+      "default": "./async-storage.js",
+      "types": "./async-storage.d.ts"
+    }
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -18,7 +29,6 @@
     "react-native",
     "expo",
     "sqlite",
-    "websql",
     "sql"
   ],
   "repository": {
@@ -35,15 +45,17 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "@expo/websql": "^1.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@testing-library/react-native": "^12.5.2",
     "@types/better-sqlite3": "^7.6.6",
-    "better-sqlite3": "^9.0.0",
-    "expo-module-scripts": "^3.0.0"
+    "better-sqlite3": "^11.0.0",
+    "expo-module-scripts": "^4.0.0",
+    "react-error-boundary": "^4.0.11"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

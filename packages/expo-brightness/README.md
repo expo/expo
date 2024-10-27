@@ -11,8 +11,8 @@ Provides an API to get and set screen brightness.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/brightness.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/brightness/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/brightness/)
 
 # Installation in managed Expo projects
 
@@ -28,10 +28,6 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-brightness
 ```
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
 ### Configure for Android
 
 Add `android.permission.WRITE_SETTINGS` permission to your manifest (`android/app/src/main/AndroidManifest.xml`):
@@ -39,6 +35,10 @@ Add `android.permission.WRITE_SETTINGS` permission to your manifest (`android/ap
 ```xml
 <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 ```
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

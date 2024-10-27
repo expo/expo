@@ -1,4 +1,4 @@
-import { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus, Subscription } from 'expo-modules-core';
+import { type EventSubscription, PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus } from 'expo-modules-core';
 export declare enum BrightnessMode {
     /**
      * Means that the current brightness mode cannot be determined.
@@ -52,8 +52,7 @@ export declare function setBrightnessAsync(brightnessValue: number): Promise<voi
  */
 export declare function getSystemBrightnessAsync(): Promise<number>;
 /**
- * > __WARNING:__ This method is experimental.
- *
+ * @experimental
  * Sets the global system screen brightness and changes the brightness mode to
  * `MANUAL`. Requires `SYSTEM_BRIGHTNESS` permissions.
  * @param brightnessValue A number between `0` and `1`, inclusive, representing the desired screen
@@ -127,5 +126,5 @@ export declare const usePermissions: (options?: PermissionHookOptions<object> | 
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  * @platform ios
  */
-export declare function addBrightnessListener(listener: (event: BrightnessEvent) => void): Subscription;
+export declare function addBrightnessListener(listener: (event: BrightnessEvent) => void): EventSubscription;
 //# sourceMappingURL=Brightness.d.ts.map

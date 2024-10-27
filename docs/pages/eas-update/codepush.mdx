@@ -9,15 +9,7 @@ import { Step } from '~/ui/components/Step';
 
 This guide explains how to transition a React Native project that uses CodePush to use EAS Update which offers [many advantages](/eas-update/introduction/#pitch). It assumes that you're using the default React Native project structure. For assistance with migrating brownfield native apps to EAS Update, [reach out to us directly](https://expo.dev/contact).
 
-## Prerequisites
-
-<Collapsible summary="An Expo user account">
-
-EAS Update is available to anyone with an Expo account, regardless of whether you pay for EAS or use our free tier. You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
-
-[Learn more about different plans and benefits](https://expo.dev/pricing).
-
-</Collapsible>
+To learn more about the differences between CodePush and EAS Update, see [Conceptual differences between CodePush and EAS Update](#conceptual-differences-between-codepush-and-eas-update) and the [What to do without CodePush post on the Expo Blog](https://expo.dev/blog/what-to-do-without-codepush).
 
 <Step label="1">
 ## Uninstall CodePush
@@ -28,14 +20,14 @@ Remove the CodePush SDK from your project by uninstalling the `react-native-code
 
 <Terminal cmd={['$ npm uninstall react-native-code-push']} />
 
-You'll also need to remove CodePush references from JS and native code. Follow this [guide](https://github.com/Microsoft/react-native-code-push/issues/1101#issuecomment-350204507) for more detailed instructions.
+You'll also need to remove CodePush references from JS and native code. See this [GitHub comment](https://github.com/Microsoft/react-native-code-push/issues/1101#issuecomment-350204507) for more detailed instructions.
 
 </Step>
 
 <Step label="2">
-## Ensure proper `app.json`
+## Add an `expo` key to your `app.json`
 
-Ensure that your project has an `app.json` file with an `expo` object. If you don't have anything specific to configure in your `app.json` file yet, you can simply create a minimal `app.json` file with an empty `expo` object like this:
+Ensure that your project has an **app.json** file with an `expo` object. If you don't have anything specific to configure in your **app.json** file yet, you can create a minimal file with an empty `expo` object like this:
 
 ```json app.json
 {
@@ -48,67 +40,16 @@ Ensure that your project has an `app.json` file with an `expo` object. If you do
 </Step>
 
 <Step label="3">
-## Install the `expo` package
+## Follow the "Getting Started" guide
 
-Install the `expo` package by running the command:
-
-<Terminal cmd={['npx install-expo-modules@latest']} />
-
-If the command fails, refer to the ["Installing Expo modules" guide](/bare/installing-expo-modules/#manual-installation).
+The instructions in the [EAS Update Getting Started guide](/eas-update/getting-started/) will guide you through setting up EAS Update in your project.
 
 </Step>
 
 <Step label="4">
-## Turn off resource bundle signing (Xcode 14+ only)
+## Resubmit your app
 
-In Xcode 14 and higher, resource bundles are signed by default, which requires setting the development team for each resource bundle target.
-To resolve this issue, downgrade to an older Xcode version using the `image` field in **eas.json**, or turn off signing resource bundles in your Podfile. See the ["disable bundle resource signing" example](https://expo.fyi/r/disable-bundle-resource-signing).
-
-</Step>
-
-<Step label="5">
-## Install the latest EAS CLI
-
-EAS CLI is the command-line app that you will use to interact with EAS services from your terminal. To install it, run the command:
-
-<Terminal cmd={['$ npm install -g eas-cli']} />
-
-You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
-
-> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli@latest`, just remember to use that instead of `eas` whenever it's called for in the documentation.
-
-</Step>
-
-<Step label="6">
-## Log in to your Expo account
-
-If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
-
-<Terminal cmd={['$ eas login']} />
-
-You can check whether you are logged in by running `eas whoami`.
-
-</Step>
-
-<Step label="7">
-## Configure project, deploy builds and publish updates
-
-We have finished all the steps tailored for a CodePush-enabled bare React Native project. To proceed with the configuration of your project, please begin with Step 4 in [the main guide](/eas-update/getting-started/#create-a-build-for-the-project) and follow it through to completion.
-
-> You may need to edit some of the code `eas update:configure` generates depending on how you build and run your project. See [Updating bare app](/eas-update/updating-your-app/) for more details about the native changes.
-
-</Step>
-
-<Step label="8">
-## Verifying the migration and resubmitting your app
-
-After completing the migration and setting up your project with EAS Update, you should test your app to ensure that over-the-air updates are working correctly. To do this:
-
-1. Install the currently published version of your app on a device or simulator.
-2. Deploy a new update to your app using EAS Update.
-3. Launch the app and ensure that it loads the latest update from EAS. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
-
-Keep in mind that since you have changed the update provider from CodePush to EAS Update, you will need to rebuild your app and submit the new build to the respective app stores (Apple App Store and Google Play Store) to ensure the update mechanism works as expected for your end-users.
+Since you have changed the update provider from CodePush to EAS Update, you will need to rebuild your app and submit the new build to the respective app stores (Google Play Store and Apple App Store) to ensure the update mechanism works as expected for your end-users.
 
 Please follow the respective store guidelines for submitting a new build of your application:
 
@@ -118,3 +59,23 @@ Please follow the respective store guidelines for submitting a new build of your
 After successfully submitting your app, users will be able to download and use the latest build with EAS Update integration. If your app is not updating as expected, [validate your configuration](/eas-update/debug).
 
 </Step>
+
+## Conceptual differences between CodePush and EAS Update
+
+CodePush and EAS Update are both services that allow you to send hotfixes to the JavaScript code of your app, but they take slightly different approaches, and so you may need to adapt your release process when moving to EAS Update.
+
+<Collapsible summary="Differences in how updates are organized within streams">
+
+**CodePush has single streams of updates for deployments**. What this means is that you can point a build to a deployment, and it will pull updates from that. If you want to change the deployment that is targeted by a build, you can do this at runtime through a JavaScript API.
+
+**EAS Update has multiple streams of updates** — one that correspond to your source control branches (called branches), and another called channels, which point to branches. The mapping between channels and branches is handled on the server side, and a channel can point to different branches for each runtime version (additionally, more advanced logic may be expressed, such as to support incremental rollouts). Builds are not directly associated with branches, but rather with channels. Each build points to a single channel, which is set at build time and cannot be modified at runtime. The reason for this is that it ensures that certain branches (eg: development, staging) don't automatically go out to production -- your preview updates don't go to your production users. This helps you separate the two main uses of EAS Update: previews and production hotfixes.
+
+</Collapsible>
+
+<Collapsible summary="Differences in how updates are selected at runtime">
+
+A key distinction between CodePush and EAS Update that can impact your release process is that **with CodePush, the client controls the target update deployment at runtime**, and **with EAS Update, it is controlled on the server side, by mapping channels to branches**. This means that you can't include code in your app using EAS Update to instruct it to load a different stream of updates depending on runtime criteria, such as the current user role (eg: distribute beta releases to employees) - it will only load the branch that is mapped on EAS Update servers to the corresponding channel (such as production or staging).
+
+The ability to control the target deployment at runtime is commonly used with CodePush in staging environments to allow non-technical stakeholders to test features from a single build on Google Play Beta / TestFlight. The current alternative for this with EAS Update is to use [development builds](/eas-update/expo-dev-client/). We're currently working on providing a way to do this with release builds.
+
+</Collapsible>

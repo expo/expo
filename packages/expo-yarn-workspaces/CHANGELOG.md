@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 2.3.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.0 — 2023-12-12
+
+### 🎉 New features
+
+- Delete custom `resolver.extraNodeModules` in favor of the default symlinks support in Metro v0.79.0. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Remove deprecated Metro `resolver.providesModuleNodeModules` field. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove additional `cjs` in `sourceExts` in favor of upstream `expo/metro-config` version. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `watchFolders` in favor of upstream `expo/metro-config` version. ([#25506](https://github.com/expo/expo/pull/25506) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 2.2.4 — 2023-10-17
 
 _This version does not introduce any user-facing changes._

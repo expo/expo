@@ -1,27 +1,4 @@
-import {
-  withUserTrackingPermission,
-  DEFAULT_NSUserTrackingUsageDescription,
-} from '../withTrackingTransparency';
-
-const configWithDefaultNSUserTrackingUsageDescription = {
-  slug: 'testSlug',
-  name: 'testName',
-  ios: {
-    infoPlist: {
-      NSUserTrackingUsageDescription: DEFAULT_NSUserTrackingUsageDescription,
-    },
-  },
-};
-
-const configWithCustomNSUserTrackingUsageDescription = {
-  slug: 'testSlug',
-  name: 'testName',
-  ios: {
-    infoPlist: {
-      NSUserTrackingUsageDescription: 'my custom string',
-    },
-  },
-};
+import withUserTrackingPermission from '../withTrackingTransparency';
 
 describe('Expo Tracking Transparency', () => {
   it('sets default `NSUserTrackingUsageDescription` permission message in the config', () => {
@@ -30,39 +7,24 @@ describe('Expo Tracking Transparency', () => {
         slug: 'testSlug',
         name: 'testName',
       })
-    ).toMatchObject(configWithDefaultNSUserTrackingUsageDescription);
-  });
-
-  it('does not add duplicate `NSUserTrackingUsageDescription` permission message in the config', () => {
-    expect(
-      withUserTrackingPermission({
-        slug: 'testSlug',
-        name: 'testName',
+    ).toMatchObject({
+      _internal: {
+        pluginHistory: {
+          'expo-tracking-transparency': {
+            name: 'expo-tracking-transparency',
+            version: expect.any(String),
+          },
+        },
+      },
+      android: { permissions: ['com.google.android.gms.permission.AD_ID'] },
+      mods: {
+        android: { manifest: expect.anything() },
         ios: {
-          infoPlist: {
-            NSUserTrackingUsageDescription: DEFAULT_NSUserTrackingUsageDescription,
-          },
+          infoPlist: expect.anything(),
         },
-      })
-    ).toMatchObject(configWithDefaultNSUserTrackingUsageDescription);
-  });
-
-  it('overwrites existing `NSUserTrackingUsageDescription` permission message in the config', () => {
-    expect(
-      withUserTrackingPermission(
-        {
-          slug: 'testSlug',
-          name: 'testName',
-          ios: {
-            infoPlist: {
-              NSUserTrackingUsageDescription: DEFAULT_NSUserTrackingUsageDescription,
-            },
-          },
-        },
-        {
-          userTrackingPermission: 'my custom string',
-        }
-      )
-    ).toMatchObject(configWithCustomNSUserTrackingUsageDescription);
+      },
+      name: 'testName',
+      slug: 'testSlug',
+    });
   });
 });

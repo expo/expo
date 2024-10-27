@@ -3,8 +3,8 @@ package expo.modules.kotlin.viewevent
 import android.view.View
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
-import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.utilities.ifNull
+import expo.modules.kotlin.getUnimoduleProxy
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverter
 import expo.modules.kotlin.types.putGeneric
@@ -22,14 +22,11 @@ open class ViewEvent<T>(
 
   override operator fun invoke(arg: T) {
     val reactContext = view.context as ReactContext
-    val nativeModulesProxy = reactContext
-      .catalystInstance
-      ?.getNativeModule("NativeUnimoduleProxy") as? NativeModulesProxy
-      ?: return
+    val nativeModulesProxy = reactContext.getUnimoduleProxy() ?: return
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
 
     if (!isValidated) {
-      val holder = appContext.registry.getModuleHolder(view::class.java).ifNull {
+      val holder = appContext.hostingRuntimeContext.registry.getModuleHolder(view::class.java).ifNull {
         logger.warn("⚠️ Cannot get module holder for ${view::class.java}")
         return
       }
@@ -49,7 +46,7 @@ open class ViewEvent<T>(
     appContext
       .callbackInvoker
       ?.emit(
-        viewId = view.id,
+        view = view,
         eventName = name,
         eventBody = convertEventBody(arg),
         coalescingKey = coalescingKey?.invoke(arg)

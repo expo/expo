@@ -13,23 +13,15 @@ import java.util.Map;
 
 public class ModuleRegistry {
   private final Map<Class, InternalModule> mInternalModulesMap = new HashMap<>();
-  private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
-  private final Map<Class, ExportedModule> mExportedModulesByClassMap = new HashMap<>();
   private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
   private final List<WeakReference<RegistryLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
   private volatile boolean mIsInitialized = false;
 
   public ModuleRegistry(
     Collection<InternalModule> internalModules,
-    Collection<ExportedModule> exportedModules,
-    Collection<ViewManager> viewManagers,
     Collection<SingletonModule> singletonModules) {
     for (InternalModule internalModule : internalModules) {
       registerInternalModule(internalModule);
-    }
-
-    for (ExportedModule module : exportedModules) {
-      registerExportedModule(module);
     }
 
     for (SingletonModule singleton : singletonModules) {
@@ -46,18 +38,6 @@ public class ModuleRegistry {
   @SuppressWarnings("unchecked")
   public <T> T getModule(Class<T> interfaceClass) {
     return (T) mInternalModulesMap.get(interfaceClass);
-  }
-
-  public ExportedModule getExportedModule(String name) {
-    return mExportedModulesMap.get(name);
-  }
-
-  public ExportedModule getExportedModuleOfClass(Class moduleClass) {
-    return mExportedModulesByClassMap.get(moduleClass);
-  }
-
-  public Collection<ExportedModule> getAllExportedModules() {
-    return mExportedModulesMap.values();
   }
 
   public <T> T getSingletonModule(String singletonName, Class<T> singletonClass) {
@@ -78,12 +58,6 @@ public class ModuleRegistry {
 
   public InternalModule unregisterInternalModule(Class exportedInterface) {
     return mInternalModulesMap.remove(exportedInterface);
-  }
-
-  public void registerExportedModule(ExportedModule module) {
-    String moduleName = module.getName();
-    mExportedModulesMap.put(moduleName, module);
-    mExportedModulesByClassMap.put(module.getClass(), module);
   }
 
   public void registerSingletonModule(SingletonModule singleton) {
@@ -120,13 +94,12 @@ public class ModuleRegistry {
   }
 
   public void initialize() {
-    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
-    lifecycleListeners.addAll(mExportedModulesMap.values());
-    lifecycleListeners.addAll(mInternalModulesMap.values());
+    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>(mInternalModulesMap.values());
 
     for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
-      if (ref.get() != null) {
-        lifecycleListeners.add(ref.get());
+      RegistryLifecycleListener listener = ref.get();
+      if (listener != null) {
+        lifecycleListeners.add(listener);
       }
     }
 
@@ -136,13 +109,12 @@ public class ModuleRegistry {
   }
 
   public void onDestroy() {
-    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
-    lifecycleListeners.addAll(mExportedModulesMap.values());
-    lifecycleListeners.addAll(mInternalModulesMap.values());
+    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>(mInternalModulesMap.values());
 
     for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
-      if (ref.get() != null) {
-        lifecycleListeners.add(ref.get());
+      RegistryLifecycleListener listener = ref.get();
+      if (listener != null) {
+        lifecycleListeners.add(listener);
       }
     }
 

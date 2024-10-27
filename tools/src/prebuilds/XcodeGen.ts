@@ -2,17 +2,17 @@ import fs from 'fs-extra';
 import path from 'path';
 import semver from 'semver';
 
-import { Podspec } from '../CocoaPods';
-import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
-import { arrayize, spawnAsync } from '../Utils';
 import {
   ProjectSpec,
   ProjectSpecDependency,
   ProjectSpecPlatform,
   XcodeConfig,
 } from './XcodeGen.types';
+import { Podspec } from '../CocoaPods';
+import { EXPOTOOLS_DIR, EXPO_GO_IOS_DIR } from '../Constants';
+import { arrayize, spawnAsync } from '../Utils';
 
-const PODS_DIR = path.join(IOS_DIR, 'Pods');
+const PODS_DIR = path.join(EXPO_GO_IOS_DIR, 'Pods');
 const PODS_PUBLIC_HEADERS_DIR = path.join(PODS_DIR, 'Headers', 'Public');
 const PODS_PRIVATE_HEADERS_DIR = path.join(PODS_DIR, 'Headers', 'Private');
 const PLATFORMS_MAPPING: Record<string, ProjectSpecPlatform> = {
@@ -56,10 +56,13 @@ export async function createSpecFromPodspecAsync(
   dependencyResolver: (dependencyName: string) => Promise<ProjectSpecDependency | null>
 ): Promise<ProjectSpec> {
   const platforms = Object.keys(podspec.platforms);
-  const deploymentTarget = platforms.reduce((acc, platform) => {
-    acc[PLATFORMS_MAPPING[platform]] = podspec.platforms[platform];
-    return acc;
-  }, {} as Record<ProjectSpecPlatform, string>);
+  const deploymentTarget = platforms.reduce(
+    (acc, platform) => {
+      acc[PLATFORMS_MAPPING[platform]] = podspec.platforms[platform];
+      return acc;
+    },
+    {} as Record<ProjectSpecPlatform, string>
+  );
 
   const dependenciesNames = podspec.dependencies ? Object.keys(podspec.dependencies) : [];
 

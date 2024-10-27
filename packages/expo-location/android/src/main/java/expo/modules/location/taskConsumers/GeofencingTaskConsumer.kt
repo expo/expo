@@ -202,7 +202,6 @@ class GeofencingTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtil
   }
 
   private fun bundleFromRegion(identifier: String, region: Map<String, Any>): PersistableBundle {
-
     return PersistableBundle().apply {
       val radius = getParamAsDouble(region["radius"], "Region: radius: `${region["radius"]}` can't be cast to Double")
       val longitude = getParamAsDouble(region["longitude"], "Region: longitude: `${region["longitude"]}` can't be cast to Double")

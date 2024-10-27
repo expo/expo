@@ -40,6 +40,7 @@
   [EXUtilities performSynchronouslyOnMainThread:^{
     UIView *rootView = self.rootView;
     self.splashScreenView.frame = rootView.bounds;
+    self.splashScreenView.layer.zPosition = MAXFLOAT;
     [rootView addSubview:self.splashScreenView];
     self.splashScreenShown = YES;
     if (successCallback) {

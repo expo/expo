@@ -19,6 +19,7 @@ export declare function compileModsAsync(config: ExportedConfig, props: {
     assertMissingModProviders?: boolean;
     ignoreExistingNativeFiles?: boolean;
 }): Promise<ExportedConfig>;
+export declare function sortMods(commands: [string, any][], precedences: Record<string, number>): [string, any][];
 /**
  * A generic plugin compiler.
  *

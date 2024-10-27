@@ -1,86 +1,82 @@
-import { DeviceEventEmitter } from 'expo-modules-core';
-import { EventEmitter, EventSubscription } from 'fbemitter';
+import { EventEmitter as JsEventEmitter } from 'fbemitter';
 
-import { transformNativeStateMachineContext } from './Updates';
-import type { UpdateEvent, UpdatesNativeStateChangeEvent } from './Updates.types';
+import ExpoUpdatesModule from './ExpoUpdates';
+import type {
+  UpdatesNativeStateChangeEvent,
+  UpdatesNativeStateMachineContext,
+} from './Updates.types';
 
-let _emitter: EventEmitter | null;
+export let latestContext = transformNativeStateMachineContext(ExpoUpdatesModule.initialContext);
 
-function _getEmitter(): EventEmitter {
-  if (!_emitter) {
-    _emitter = new EventEmitter();
-    DeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
-    DeviceEventEmitter.addListener(
-      'Expo.nativeUpdatesStateChangeEvent',
-      _emitNativeStateChangeEvent
-    );
-  }
-  return _emitter;
-}
+ExpoUpdatesModule.addListener('Expo.nativeUpdatesStateChangeEvent', _handleNativeStateChangeEvent);
 
-// Reemits native UpdateEvents sent during the startup update check
-function _emitEvent(params): void {
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
-  }
-  let newParams = { ...params };
-  if (typeof params === 'string') {
-    newParams = JSON.parse(params);
-  }
-  if (newParams.manifestString) {
-    newParams.manifest = JSON.parse(newParams.manifestString);
-    delete newParams.manifestString;
-  }
-  _emitter.emit('Expo.updatesEvent', newParams);
-}
+const _jsEventEmitter = new JsEventEmitter();
 
 // Reemits native state change events
-function _emitNativeStateChangeEvent(params: any) {
-  if (!_emitter) {
-    throw new Error(`EventEmitter must be initialized to use from its listener`);
+function _handleNativeStateChangeEvent(params: any) {
+  const newParams = typeof params === 'string' ? JSON.parse(params) : { ...params };
+  const transformedContext = transformNativeStateMachineContext(newParams.context);
+
+  // only process state change events if they are in order
+  if (transformedContext.sequenceNumber <= latestContext.sequenceNumber) {
+    return;
   }
-  let newParams = { ...params };
-  if (typeof params === 'string') {
-    newParams = JSON.parse(params);
-  }
-  newParams.context = transformNativeStateMachineContext(newParams.context);
-  _emitter.emit('Expo.updatesStateChangeEvent', newParams);
+
+  newParams.context = transformedContext;
+  latestContext = transformedContext;
+  _jsEventEmitter.emit('Expo.updatesStateChangeEvent', newParams);
 }
 
 /**
- * @deprecated Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
- * This API is deprecated and will be removed in a future release corresponding with SDK 51.
- * Use [`useUpdates()`](#useupdates) instead.
- *
- * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
- * and should not return any value.
- * @return An `EventSubscription` object on which you can call `remove()` to unsubscribe the
- * listener.
- */
-export function addListener(listener: (event: UpdateEvent) => void): EventSubscription {
-  const emitter = _getEmitter();
-  return emitter.addListener('Expo.updatesEvent', listener);
-}
-
-// Internal methods
-
-/**
+ * Add listener for state change events
  * @hidden
  */
 export const addUpdatesStateChangeListener = (
   listener: (event: UpdatesNativeStateChangeEvent) => void
 ) => {
-  // Add listener for state change events
-  const emitter = _getEmitter();
-  return emitter.addListener('Expo.updatesStateChangeEvent', listener);
+  return _jsEventEmitter.addListener('Expo.updatesStateChangeEvent', listener);
 };
 
 /**
+ * Allows JS test to emit a simulated native state change event (used in unit testing)
  * @hidden
  */
-export const emitStateChangeEvent = (event: UpdatesNativeStateChangeEvent) => {
-  // Allows JS to emit a state change event (used in testing)
-  _emitNativeStateChangeEvent(event);
+export const emitTestStateChangeEvent = (event: UpdatesNativeStateChangeEvent) => {
+  _handleNativeStateChangeEvent(event);
 };
+
+/**
+ * Allows JS test to reset latest context (and sequence number)
+ * @hidden
+ */
+export const resetLatestContext = () => {
+  latestContext = transformNativeStateMachineContext(ExpoUpdatesModule.initialContext);
+};
+
+function transformNativeStateMachineContext(
+  originalNativeContext: UpdatesNativeStateMachineContext & {
+    latestManifestString?: string;
+    downloadedManifestString?: string;
+    lastCheckForUpdateTimeString?: string;
+    rollbackString?: string;
+  }
+): UpdatesNativeStateMachineContext {
+  const nativeContext = { ...originalNativeContext };
+  if (nativeContext.latestManifestString) {
+    nativeContext.latestManifest = JSON.parse(nativeContext.latestManifestString);
+    delete nativeContext.latestManifestString;
+  }
+  if (nativeContext.downloadedManifestString) {
+    nativeContext.downloadedManifest = JSON.parse(nativeContext.downloadedManifestString);
+    delete nativeContext.downloadedManifestString;
+  }
+  if (nativeContext.lastCheckForUpdateTimeString) {
+    nativeContext.lastCheckForUpdateTime = new Date(nativeContext.lastCheckForUpdateTimeString);
+    delete nativeContext.lastCheckForUpdateTimeString;
+  }
+  if (nativeContext.rollbackString) {
+    nativeContext.rollback = JSON.parse(nativeContext.rollbackString);
+    delete nativeContext.rollbackString;
+  }
+  return nativeContext;
+}

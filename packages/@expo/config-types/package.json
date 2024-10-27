@@ -1,17 +1,19 @@
 {
   "name": "@expo/config-types",
-  "version": "50.0.0-alpha.3",
+  "version": "52.0.0-preview.0",
   "description": "Types for the Expo config object app.config.ts",
   "types": "build/ExpoConfig.d.ts",
   "main": "build/ExpoConfig.js",
   "scripts": {
-    "watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc",
+    "build": "expo-module tsc",
+    "clean": "expo-module clean",
     "generate": "ts-node ./scripts/generate.ts",
-    "prepare": "yarn run clean && yarn build",
-    "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint . && npx prettier --write src/ExpoConfig.ts",
-    "test": "jest"
+    "lint": "expo-module lint",
+    "prepare": "expo-module clean && expo-module tsc",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "test": "expo-module test",
+    "typecheck": "expo-module typecheck",
+    "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
   "repository": {
     "type": "git",
@@ -35,8 +37,8 @@
     "build"
   ],
   "devDependencies": {
-    "@expo/babel-preset-cli": "^0.2.24",
-    "json-schema-to-typescript": "^10.0.0",
+    "expo-module-scripts": "^4.0.0",
+    "json-schema-to-typescript": "^14.0.5",
     "ts-node": "^10.9.1"
   },
   "publishConfig": {

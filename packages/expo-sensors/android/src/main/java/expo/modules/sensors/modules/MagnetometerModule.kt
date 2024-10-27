@@ -3,7 +3,6 @@ package expo.modules.sensors.modules
 
 import android.hardware.Sensor
 import android.os.Bundle
-import expo.modules.interfaces.sensors.services.MagnetometerServiceInterface
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.UseSensorProxy
@@ -13,11 +12,12 @@ private const val EventName = "magnetometerDidUpdate"
 
 class MagnetometerModule : Module() {
   private val sensorProxy by lazy {
-    createSensorProxy<MagnetometerServiceInterface>(EventName) { sensorEvent ->
+    createSensorProxy(EventName, Sensor.TYPE_MAGNETIC_FIELD, appContext) { sensorEvent ->
       Bundle().apply {
         putDouble("x", sensorEvent.values[0].toDouble())
         putDouble("y", sensorEvent.values[1].toDouble())
         putDouble("z", sensorEvent.values[2].toDouble())
+        putDouble("timestamp", sensorEvent.timestamp / 1_000_000_000.0)
       }
     }
   }

@@ -44,9 +44,12 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
     if self is UITextField || self is UITextView || String(describing: type(of: self)) == "WKContentView" {
       return []
     }
-    let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction } as! [DevMenuExportedAction]
-    let actionsWithKeyCommands = actions.filter { $0.keyCommand != nil }
-    var keyCommands = actionsWithKeyCommands.map { $0.keyCommand! }
+
+    var keyCommands = [
+      UIKeyCommand(input: "r", modifierFlags: [], action: #selector(UIResponder.EXDevMenu_handleKeyCommand(_:))),
+      UIKeyCommand(input: "i", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_handleKeyCommand(_:))),
+      UIKeyCommand(input: "p", modifierFlags: .command, action: #selector(UIResponder.EXDevMenu_handleKeyCommand(_:)))
+    ]
     keyCommands.insert(contentsOf: DevMenuKeyCommandsInterceptor.globalKeyCommands, at: 0)
     keyCommands.append(contentsOf: self.EXDevMenu_keyCommands)
     return keyCommands
@@ -55,14 +58,22 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   @objc
   public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
     tryHandleKeyCommand(key) {
-      let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction } as! [DevMenuExportedAction]
-      guard let action = actions.first(where: { $0.keyCommand == key }) else {
+      if key.input == "r" && key.modifierFlags.isEmpty {
+        DevMenuManager.shared.reload()
+        DevMenuManager.shared.closeMenu()
         return
       }
 
-      if action.isAvailable() {
-        action.call()
+      if key.input == "i" && key.modifierFlags == .command {
+        DevMenuManager.shared.toggleInspector()
         DevMenuManager.shared.closeMenu()
+        return
+      }
+
+      if key.input == "p" && key.modifierFlags == .command {
+        DevMenuManager.shared.togglePerformanceMonitor()
+        DevMenuManager.shared.closeMenu()
+        return
       }
     }
   }

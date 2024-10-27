@@ -11,7 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-**`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
+`expo-speech` provides an API that allows you to utilize Text-to-speech functionality in your app.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -24,7 +24,6 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Speech' dependencies={['expo-speech']}>
 
 ```jsx
-import * as React from 'react';
 import { View, StyleSheet, Button } from 'react-native';
 import * as Speech from 'expo-speech';
 
@@ -41,7 +40,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -50,7 +48,6 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
-/* @end */
 ```
 
 </SnackInline>

@@ -75,6 +75,7 @@ type ManifestApplicationAttributes = {
   'android:allowBackup'?: StringBoolean;
   'android:largeHeap'?: StringBoolean;
   'android:requestLegacyExternalStorage'?: StringBoolean;
+  'android:supportsPictureInPicture'?: StringBoolean;
   'android:usesCleartextTraffic'?: StringBoolean;
   [key: string]: string | undefined;
 };
@@ -155,7 +156,7 @@ export type AndroidManifest = {
 type ManifestQueryIntent = Omit<ManifestIntentFilter, '$'>;
 
 export type ManifestQuery = {
-  package: {
+  package?: {
     $: {
       'android:name': string;
     };
@@ -165,7 +166,7 @@ export type ManifestQuery = {
     $: {
       'android:authorities': string;
     };
-  };
+  }[];
 };
 
 export async function writeAndroidManifestAsync(
@@ -193,8 +194,8 @@ function isManifest(xml: XML.XMLObject): xml is AndroidManifest {
 /** Returns the `manifest.application` tag ending in `.MainApplication` */
 export function getMainApplication(androidManifest: AndroidManifest): ManifestApplication | null {
   return (
-    androidManifest?.manifest?.application?.filter(
-      (e) => e?.$?.['android:name'].endsWith('.MainApplication')
+    androidManifest?.manifest?.application?.filter((e) =>
+      e?.$?.['android:name'].endsWith('.MainApplication')
     )[0] ?? null
   );
 }

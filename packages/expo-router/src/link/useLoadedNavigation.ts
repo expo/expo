@@ -1,9 +1,11 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, NavigationState, useNavigation } from '@react-navigation/native';
 import { useCallback, useState, useEffect, useRef } from 'react';
 
 import { useExpoRouter } from '../global-state/router-store';
 
-type GenericNavigation = NavigationProp<ReactNavigation.RootParamList>;
+type GenericNavigation = NavigationProp<ReactNavigation.RootParamList> & {
+  getState(): NavigationState | undefined;
+};
 
 /** Returns a callback which is invoked when the navigation state has loaded. */
 export function useLoadedNavigation() {
@@ -24,7 +26,7 @@ export function useLoadedNavigation() {
       const pendingCallbacks = pending.current;
       pending.current = [];
       pendingCallbacks.forEach((callback) => {
-        callback(navigation);
+        callback(navigation as GenericNavigation);
       });
     }
   }, [navigation]);

@@ -1,11 +1,11 @@
 # expo-apple-authentication
 
-This library provides Apple authentication for iOS standalone apps in the managed and bare workflows. Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines. Learn more about Apple authentication on the ["Sign In with Apple" website](https://developer.apple.com/sign-in-with-apple/).
+This library provides Apple authentication for iOS. Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines. Learn more about Apple authentication on the ["Sign In with Apple" website](https://developer.apple.com/sign-in-with-apple/).
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/apple-authentication.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/apple-authentication/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/apple-authentication/)
 
 # Installation in managed Expo projects
 

@@ -1,1 +1,1 @@
-module.exports = require("../build/symbolicate");
+export * from '../src/symbolicate';

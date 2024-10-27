@@ -27,6 +27,9 @@ yarn-error.log
 .*.swn
 .*.swm
 
+# VS Code
+.vscode/launch.json
+
 # Sublime Text
 *.sublime-project
 *.sublime-workspace
@@ -54,39 +57,17 @@ xcuserdata
 # Android
 *.apk
 *.hprof
-/android/**/build
-/android/**/.cxx
-/android/**/local.properties
-/android/captures
-/android/expoview/libs/ReactAndroid-temp
-/android/versioned-react-native/packages
-/android/versioned-react-native/ReactAndroid
 ReactAndroid-temp.aar
-/android/prebuiltHermes
-/android/versioned-abis/**/*.aar
 
 # Tools
 jarjar-rules.txt
 
 # Dynamic Macros
-/ios/Exponent/Supporting/EXBuildConstants.plist.bak
-/ios/Exponent/Supporting/EXBuildConstants.plist.json
-/ios/Exponent/Supporting/EXBuildConstants.plist
-/ios/Exponent/Supporting/GoogleService-Info.plist
-/ios/Exponent/Supporting/Info.plist.bak
-/ios/Exponent/Supporting/Info.plist.json
-/android/expoview/src/main/java/host/exp/exponent/generated/ExponentBuildConstants.java
-/android/app/src/androidTest/java/host/exp/exponent/generated/TestBuildConstants.java
 .kernel-ngrok-url
 
 # Template files
-/android/app/src/main/AndroidManifest.xml
-/android/app/google-services.json
 /apps/bare-expo/android/app/google-services.json
 /apps/bare-expo/ios/BareExpo/GoogleService-Info.plist
-/ios/Exponent/Generated/EXKeys.h
-/ios/ExponentIntegrationTests/EXTestEnvironment.plist
-/exponent-view-template/ios/Podfile
 
 # Template projects
 templates/**/android/**/generated/*
@@ -94,10 +75,6 @@ templates/**/android/app/build
 templates/**/Pods/**
 templates/**/Podfile.lock
 templates/**/yarn.lock
-templates/**/*.tgz
-
-# EYW template
-/packages/expo-yarn-workspaces/workspace-template/yarn.lock
 
 # Codemod
 .codemod.bookmark
@@ -140,8 +117,8 @@ docs/pages/versions/*/react-native/ADDED_*.md
 docs/pages/versions/*/react-native/REMOVED_*.md
 docs/pages/versions/*/react-native/*.diff
 
-# Home
-/home/dist
+# Expo Go
+/apps/expo-go/src/dist
 
 # Prebuilds
 /packages/**/*.xcframework
@@ -150,7 +127,4 @@ docs/pages/versions/*/react-native/*.diff
 !crsqlite.xcframework
 
 # iOS
-/ios/Pods
-/ios/build
 **/ios/.xcode.env.local
-/ios/versioned-react-native/*/ReactNative/sdks/hermes-engine/destroot

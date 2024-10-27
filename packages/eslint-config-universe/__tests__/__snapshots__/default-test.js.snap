@@ -12,7 +12,7 @@ exports[`lints with the default config: fixtures/all-00.js 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 0,
+  "fixableWarningCount": 4,
   "messages": [
     {
       "column": 14,
@@ -25,8 +25,80 @@ exports[`lints with the default config: fixtures/all-00.js 1`] = `
       "ruleId": "no-unused-vars",
       "severity": 1,
     },
+    {
+      "column": 9,
+      "endColumn": 10,
+      "endLine": 44,
+      "fix": {
+        "range": [
+          531,
+          541,
+        ],
+        "text": "const f = 1;",
+      },
+      "line": 44,
+      "message": "'f' is never reassigned. Use 'const' instead.",
+      "messageId": "useConst",
+      "nodeType": "Identifier",
+      "ruleId": "prefer-const",
+      "severity": 1,
+    },
+    {
+      "column": 1,
+      "endColumn": 1,
+      "endLine": 48,
+      "fix": {
+        "range": [
+          574,
+          575,
+        ],
+        "text": "",
+      },
+      "line": 47,
+      "message": "Delete \`⏎\`",
+      "messageId": "delete",
+      "nodeType": null,
+      "ruleId": "prettier/prettier",
+      "severity": 1,
+    },
+    {
+      "column": 1,
+      "endColumn": 5,
+      "endLine": 49,
+      "fix": {
+        "range": [
+          598,
+          602,
+        ],
+        "text": "",
+      },
+      "line": 49,
+      "message": "Delete \`····\`",
+      "messageId": "delete",
+      "nodeType": null,
+      "ruleId": "prettier/prettier",
+      "severity": 1,
+    },
+    {
+      "column": 9,
+      "endColumn": 11,
+      "endLine": 60,
+      "fix": {
+        "range": [
+          715,
+          717,
+        ],
+        "text": "* ",
+      },
+      "line": 60,
+      "message": "Replace \`·*\` with \`*·\`",
+      "messageId": "replace",
+      "nodeType": null,
+      "ruleId": "prettier/prettier",
+      "severity": 1,
+    },
   ],
-  "output": "import 'hi';
+  "source": "import 'hi';
 
 import a from 'a';
 import { b } from 'b';
@@ -69,11 +141,12 @@ export class Example {
   }
 
   async byeAsync() {
-    const f = 1;
+    let f = 1;
     _fn(a, b, c, c1, d, e, f);
 
-    await import('z');
 
+    await import('z');
+    
     for await (const v of gen()) {
       _fn(v);
     }
@@ -84,11 +157,11 @@ export class Example {
 
 function _fn() {}
 
-function* gen() {}
+function *gen() {}
 ",
   "suppressedMessages": [],
   "usedDeprecatedRules": [],
-  "warningCount": 1,
+  "warningCount": 5,
 }
 `;
 
@@ -117,7 +190,7 @@ exports[`lints with the default config: fixtures/all-01.ts 1`] = `
       "line": 25,
       "message": "'_notIgnored' is defined but never used.",
       "messageId": "unusedVar",
-      "nodeType": "Identifier",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
@@ -222,7 +295,7 @@ exports[`lints with the default config: fixtures/all-03.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 0,
+  "fixableWarningCount": 1,
   "messages": [
     {
       "column": 7,
@@ -231,7 +304,7 @@ exports[`lints with the default config: fixtures/all-03.ts 1`] = `
       "line": 1,
       "message": "'tsUnused1' is assigned a value but never used.",
       "messageId": "unusedVar",
-      "nodeType": "Identifier",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
@@ -242,7 +315,7 @@ exports[`lints with the default config: fixtures/all-03.ts 1`] = `
       "line": 3,
       "message": "'tsUnused2' is defined but never used.",
       "messageId": "unusedVar",
-      "nodeType": "Identifier",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
@@ -253,7 +326,7 @@ exports[`lints with the default config: fixtures/all-03.ts 1`] = `
       "line": 5,
       "message": "'asCast' is assigned a value but never used.",
       "messageId": "unusedVar",
-      "nodeType": "Identifier",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
@@ -264,22 +337,40 @@ exports[`lints with the default config: fixtures/all-03.ts 1`] = `
       "line": 6,
       "message": "'angleBracketCast' is assigned a value but never used.",
       "messageId": "unusedVar",
-      "nodeType": "Identifier",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
+    {
+      "column": 28,
+      "endColumn": 37,
+      "endLine": 6,
+      "fix": {
+        "range": [
+          125,
+          134,
+        ],
+        "text": "x as string",
+      },
+      "line": 6,
+      "message": "Use 'as string' instead of '<string>'.",
+      "messageId": "as",
+      "nodeType": "TSTypeAssertion",
+      "ruleId": "@typescript-eslint/consistent-type-assertions",
+      "severity": 1,
+    },
   ],
-  "output": "const tsUnused1 = 0;
+  "source": "const tsUnused1 = 0;
 
 function tsUnused2() {
   const x: any = 'hi';
   const asCast = x as string;
-  const angleBracketCast = x as string;
+  const angleBracketCast = <string>x;
 }
 ",
   "suppressedMessages": [],
   "usedDeprecatedRules": [],
-  "warningCount": 4,
+  "warningCount": 5,
 }
 `;
 
@@ -288,15 +379,34 @@ exports[`lints with the default config: fixtures/all-04.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 0,
-  "messages": [],
-  "output": "export const blah = (): string[] => {
+  "fixableWarningCount": 1,
+  "messages": [
+    {
+      "column": 25,
+      "endColumn": 38,
+      "endLine": 1,
+      "fix": {
+        "range": [
+          24,
+          37,
+        ],
+        "text": "string[]",
+      },
+      "line": 1,
+      "message": "Array type using 'Array<string>' is forbidden. Use 'string[]' instead.",
+      "messageId": "errorStringArray",
+      "nodeType": "TSTypeReference",
+      "ruleId": "@typescript-eslint/array-type",
+      "severity": 1,
+    },
+  ],
+  "source": "export const blah = (): Array<string> => {
   return ['1'];
 };
 ",
   "suppressedMessages": [],
   "usedDeprecatedRules": [],
-  "warningCount": 0,
+  "warningCount": 1,
 }
 `;
 
@@ -305,13 +415,50 @@ exports[`lints with the default config: fixtures/all-05.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 0,
-  "messages": [],
-  "output": "export const blah = 3!;
+  "fixableWarningCount": 2,
+  "messages": [
+    {
+      "column": 21,
+      "endColumn": 23,
+      "endLine": 1,
+      "fix": {
+        "range": [
+          21,
+          22,
+        ],
+        "text": "",
+      },
+      "line": 1,
+      "message": "Forbidden extra non-null assertion.",
+      "messageId": "noExtraNonNullAssertion",
+      "nodeType": "TSNonNullExpression",
+      "ruleId": "@typescript-eslint/no-extra-non-null-assertion",
+      "severity": 1,
+    },
+    {
+      "column": 25,
+      "endColumn": 25,
+      "endLine": 1,
+      "fix": {
+        "range": [
+          24,
+          24,
+        ],
+        "text": "
 ",
+      },
+      "line": 1,
+      "message": "Insert \`⏎\`",
+      "messageId": "insert",
+      "nodeType": null,
+      "ruleId": "prettier/prettier",
+      "severity": 1,
+    },
+  ],
+  "source": "export const blah = 3!!;",
   "suppressedMessages": [],
   "usedDeprecatedRules": [],
-  "warningCount": 0,
+  "warningCount": 2,
 }
 `;
 
@@ -320,18 +467,171 @@ exports[`lints with the default config: fixtures/all-06.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 0,
-  "messages": [],
-  "output": "export const numberTest: number | null = null;
-export const booleanTest: boolean | null = null;
-export const symbolTest: symbol | null = null;
-export const objectTest: object | null = null;
-export const stringTest: string | null = null;
-export const objectShorthandTest: object | null = null;
+  "fixableWarningCount": 6,
+  "messages": [
+    {
+      "column": 26,
+      "endColumn": 32,
+      "endLine": 1,
+      "fix": {
+        "range": [
+          25,
+          31,
+        ],
+        "text": "number",
+      },
+      "line": 1,
+      "message": "Prefer using the primitive \`number\` as a type name, rather than the upper-cased \`Number\`.",
+      "messageId": "bannedClassType",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-wrapper-object-types",
+      "severity": 1,
+    },
+    {
+      "column": 27,
+      "endColumn": 34,
+      "endLine": 2,
+      "fix": {
+        "range": [
+          73,
+          80,
+        ],
+        "text": "boolean",
+      },
+      "line": 2,
+      "message": "Prefer using the primitive \`boolean\` as a type name, rather than the upper-cased \`Boolean\`.",
+      "messageId": "bannedClassType",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-wrapper-object-types",
+      "severity": 1,
+    },
+    {
+      "column": 26,
+      "endColumn": 32,
+      "endLine": 3,
+      "fix": {
+        "range": [
+          121,
+          127,
+        ],
+        "text": "symbol",
+      },
+      "line": 3,
+      "message": "Prefer using the primitive \`symbol\` as a type name, rather than the upper-cased \`Symbol\`.",
+      "messageId": "bannedClassType",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-wrapper-object-types",
+      "severity": 1,
+    },
+    {
+      "column": 26,
+      "endColumn": 32,
+      "endLine": 4,
+      "fix": {
+        "range": [
+          168,
+          174,
+        ],
+        "text": "object",
+      },
+      "line": 4,
+      "message": "Prefer using the primitive \`object\` as a type name, rather than the upper-cased \`Object\`.",
+      "messageId": "bannedClassType",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-wrapper-object-types",
+      "severity": 1,
+    },
+    {
+      "column": 26,
+      "endColumn": 32,
+      "endLine": 5,
+      "fix": {
+        "range": [
+          215,
+          221,
+        ],
+        "text": "string",
+      },
+      "line": 5,
+      "message": "Prefer using the primitive \`string\` as a type name, rather than the upper-cased \`String\`.",
+      "messageId": "bannedClassType",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-wrapper-object-types",
+      "severity": 1,
+    },
+    {
+      "column": 35,
+      "endColumn": 37,
+      "endLine": 6,
+      "line": 6,
+      "message": "The \`{}\` ("empty object") type allows any non-nullish value, including literals like \`0\` and \`""\`.
+- If that's what you want, disable this lint rule with an inline comment or configure the 'allowObjectTypes' rule option.
+- If you want a type meaning "any object", you probably want \`object\` instead.
+- If you want a type meaning "any value", you probably want \`unknown\` instead.",
+      "messageId": "noEmptyObject",
+      "nodeType": "TSTypeLiteral",
+      "ruleId": "@typescript-eslint/no-empty-object-type",
+      "severity": 1,
+      "suggestions": [
+        {
+          "data": {
+            "replacement": "object",
+          },
+          "desc": "Replace \`{}\` with \`object\`.",
+          "fix": {
+            "range": [
+              271,
+              273,
+            ],
+            "text": "object",
+          },
+          "messageId": "replaceEmptyObjectType",
+        },
+        {
+          "data": {
+            "replacement": "unknown",
+          },
+          "desc": "Replace \`{}\` with \`unknown\`.",
+          "fix": {
+            "range": [
+              271,
+              273,
+            ],
+            "text": "unknown",
+          },
+          "messageId": "replaceEmptyObjectType",
+        },
+      ],
+    },
+    {
+      "column": 52,
+      "endColumn": 52,
+      "endLine": 6,
+      "fix": {
+        "range": [
+          288,
+          288,
+        ],
+        "text": "
 ",
+      },
+      "line": 6,
+      "message": "Insert \`⏎\`",
+      "messageId": "insert",
+      "nodeType": null,
+      "ruleId": "prettier/prettier",
+      "severity": 1,
+    },
+  ],
+  "source": "export const numberTest: Number | null = null;
+export const booleanTest: Boolean | null = null;
+export const symbolTest: Symbol | null = null;
+export const objectTest: Object | null = null;
+export const stringTest: String | null = null;
+export const objectShorthandTest: {} | null = null;",
   "suppressedMessages": [],
   "usedDeprecatedRules": [],
-  "warningCount": 0,
+  "warningCount": 7,
 }
 `;
 
@@ -340,20 +640,208 @@ exports[`lints with the default config: fixtures/all-07.js 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 0,
-  "messages": [],
-  "output": "import b from 'b';
-import c from 'c';
-
-import d from './d';
-
-const a = require('a');
-const e = require('e');
-
-export default a + b + c + d + e;
+  "fixableWarningCount": 10,
+  "messages": [
+    {
+      "column": 11,
+      "endColumn": 23,
+      "endLine": 1,
+      "fix": {
+        "range": [
+          23,
+          23,
+        ],
+        "text": "
 ",
+      },
+      "line": 1,
+      "message": "There should be at least one empty line between import groups",
+      "nodeType": "CallExpression",
+      "ruleId": "import/order",
+      "severity": 1,
+    },
+    {
+      "column": 1,
+      "endColumn": 21,
+      "endLine": 2,
+      "fix": {
+        "range": [
+          44,
+          44,
+        ],
+        "text": "",
+      },
+      "line": 2,
+      "message": "Import in body of module; reorder to top.",
+      "nodeType": "ImportDeclaration",
+      "ruleId": "import/first",
+      "severity": 1,
+    },
+    {
+      "column": 1,
+      "endColumn": 21,
+      "endLine": 2,
+      "fix": {
+        "range": [
+          44,
+          44,
+        ],
+        "text": "
+",
+      },
+      "line": 2,
+      "message": "There should be at least one empty line between import groups",
+      "nodeType": "ImportDeclaration",
+      "ruleId": "import/order",
+      "severity": 1,
+    },
+    {
+      "column": 1,
+      "endColumn": 21,
+      "endLine": 2,
+      "fix": {
+        "range": [
+          0,
+          45,
+        ],
+        "text": "import d from './d';
+const a = require('a');
+",
+      },
+      "line": 2,
+      "message": "\`./d\` import should occur before import of \`a\`",
+      "nodeType": "ImportDeclaration",
+      "ruleId": "import/order",
+      "severity": 1,
+    },
+    {
+      "column": 11,
+      "endColumn": 23,
+      "endLine": 3,
+      "fix": {
+        "range": [
+          68,
+          68,
+        ],
+        "text": "
+",
+      },
+      "line": 3,
+      "message": "There should be at least one empty line between import groups",
+      "nodeType": "CallExpression",
+      "ruleId": "import/order",
+      "severity": 1,
+    },
+    {
+      "column": 1,
+      "endColumn": 19,
+      "endLine": 4,
+      "fix": {
+        "range": [
+          87,
+          87,
+        ],
+        "text": "",
+      },
+      "line": 4,
+      "message": "Import in body of module; reorder to top.",
+      "nodeType": "ImportDeclaration",
+      "ruleId": "import/first",
+      "severity": 1,
+    },
+    {
+      "column": 1,
+      "endColumn": 19,
+      "endLine": 4,
+      "fix": {
+        "range": [
+          0,
+          88,
+        ],
+        "text": "import c from 'c';
+const a = require('a');
+import d from './d';
+const e = require('e');
+",
+      },
+      "line": 4,
+      "message": "\`c\` import should occur before import of \`a\`",
+      "nodeType": "ImportDeclaration",
+      "ruleId": "import/order",
+      "severity": 1,
+    },
+    {
+      "column": 1,
+      "endColumn": 19,
+      "endLine": 5,
+      "fix": {
+        "range": [
+          0,
+          106,
+        ],
+        "text": "import d from './d';
+import c from 'c';
+import b from 'b';
+const a = require('a');
+const e = require('e');",
+      },
+      "line": 5,
+      "message": "Import in body of module; reorder to top.",
+      "nodeType": "ImportDeclaration",
+      "ruleId": "import/first",
+      "severity": 1,
+    },
+    {
+      "column": 1,
+      "endColumn": 19,
+      "endLine": 5,
+      "fix": {
+        "range": [
+          0,
+          107,
+        ],
+        "text": "import b from 'b';
+const a = require('a');
+import d from './d';
+const e = require('e');
+import c from 'c';
+",
+      },
+      "line": 5,
+      "message": "\`b\` import should occur before import of \`a\`",
+      "nodeType": "ImportDeclaration",
+      "ruleId": "import/order",
+      "severity": 1,
+    },
+    {
+      "column": 34,
+      "endColumn": 34,
+      "endLine": 7,
+      "fix": {
+        "range": [
+          141,
+          141,
+        ],
+        "text": "
+",
+      },
+      "line": 7,
+      "message": "Insert \`⏎\`",
+      "messageId": "insert",
+      "nodeType": null,
+      "ruleId": "prettier/prettier",
+      "severity": 1,
+    },
+  ],
+  "source": "const a = require('a');
+import d from './d';
+const e = require('e');
+import c from 'c';
+import b from 'b';
+
+export default a + b + c + d + e;",
   "suppressedMessages": [],
   "usedDeprecatedRules": [],
-  "warningCount": 0,
+  "warningCount": 10,
 }
 `;

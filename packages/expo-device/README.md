@@ -11,8 +11,8 @@ Provides specific information about the device running the application.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/device.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/device/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/device/)
 
 # Installation in managed Expo projects
 

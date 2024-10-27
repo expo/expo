@@ -1,16 +1,13 @@
-const { Platform } = require('expo-modules-core');
+const { Platform } = jest.requireActual('expo-modules-core');
 
-jest.mock('expo-file-system', () => {
-  const FileSystem = jest.requireActual('expo-file-system');
-  return {
-    ...FileSystem,
-    bundleDirectory: 'file:///Expo.app/',
-    cacheDirectory: 'file:///Caches/Expo.app/',
-    bundledAssets: ['asset_test1.png'],
-    getInfoAsync: jest.fn(),
-    downloadAsync: jest.fn(),
-  };
-});
+jest.mock('../PlatformUtils', () => ({
+  ...jest.requireActual('../PlatformUtils'),
+  getLocalAssets: () => {
+    return {
+      test1: 'file:///Expo.app/asset_test1.png',
+    };
+  },
+}));
 
 jest.mock('@react-native/assets-registry/registry', () => ({
   getAssetByID: jest.fn(),
@@ -20,6 +17,24 @@ jest.mock('react-native/Libraries/Image/resolveAssetSource', () => {
   return {
     default: jest.fn(),
     setCustomSourceTransformer: jest.fn(),
+  };
+});
+
+jest.mock('../ExpoAsset', () => {
+  const ExpoAsset = jest.requireActual('../ExpoAsset');
+  return {
+    ...ExpoAsset,
+    downloadAsync: jest.fn(
+      async () => 'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png'
+    ),
+  };
+});
+
+jest.mock('../ExpoAsset.web', () => {
+  const ExpoAsset = jest.requireActual('../ExpoAsset.web');
+  return {
+    ...ExpoAsset,
+    downloadAsync: jest.fn(async () => 'https://example.com/icon.png'),
   };
 });
 
@@ -34,9 +49,11 @@ jest.mock('../ImageAssets', () => {
 const mockImageMetadata = {
   name: 'test',
   type: 'png',
+  uri: 'https://example.com/icon.png',
   hash: 'cafecafecafecafecafecafecafecafe',
   scales: [1],
   httpServerLocation: '/assets',
+  fileUris: ['https://example.com/icon.png'],
   fileHashes: ['cafecafecafecafecafecafecafecafe'],
 };
 
@@ -46,6 +63,14 @@ afterEach(() => {
 
 if (Platform.OS !== 'web') {
   describe(`source resolution with React Native`, () => {
+    jest.doMock('expo-constants', () => {
+      const Constants = jest.requireActual('expo-constants');
+      return {
+        ...Constants,
+        appOwnership: Constants.AppOwnership.Expo,
+      };
+    });
+
     it(`automatically registers a source resolver`, () => {
       require('../index');
       const {
@@ -125,79 +150,41 @@ it(`throws when creating an asset from a missing module`, () => {
 });
 
 it(`downloads uncached assets`, async () => {
-  const FileSystem = require('expo-file-system');
   const { Asset } = require('../index');
 
   const asset = Asset.fromMetadata(mockImageMetadata);
   expect(asset.localUri).toBeNull();
 
-  FileSystem.getInfoAsync.mockReturnValueOnce({ exists: false });
-  FileSystem.downloadAsync.mockReturnValueOnce({ md5: mockImageMetadata.hash });
   await asset.downloadAsync();
 
   expect(asset.downloading).toBe(false);
   expect(asset.downloaded).toBe(true);
   expect(asset.localUri).toBe(
     Platform.select({
-      web: 'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe',
+      web: 'https://example.com/icon.png',
       default: 'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png',
     })
   );
 });
 
-it(`throws when the file's checksum does not match`, async () => {
-  const FileSystem = require('expo-file-system');
+it(`uses the local file system's cache directory for downloads`, async () => {
   const { Asset } = require('../index');
 
   const asset = Asset.fromMetadata(mockImageMetadata);
-  expect(asset.localUri).toBeNull();
 
-  FileSystem.getInfoAsync.mockReturnValueOnce({ exists: false });
-  FileSystem.downloadAsync.mockReturnValueOnce({ md5: 'deadf00ddeadf00ddeadf00ddeadf00d' });
-  if (Platform.OS === 'web') {
-    expect(await asset.downloadAsync()).toEqual(
-      expect.objectContaining({
-        downloaded: true,
-        downloading: false,
-        hash: 'cafecafecafecafecafecafecafecafe',
-        height: 1,
-        localUri: 'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe',
-        name: undefined,
-        type: 'png',
-        uri: 'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe',
-      })
-    );
-  } else {
-    await expect(asset.downloadAsync()).rejects.toThrowError('failed MD5 integrity check');
-  }
-});
-
-it(`uses the local filesystem's cache directory for downloads`, async () => {
-  const FileSystem = require('expo-file-system');
-  const { Asset } = require('../index');
-
-  const asset = Asset.fromMetadata(mockImageMetadata);
-  FileSystem.getInfoAsync.mockReturnValueOnce({
-    exists: true,
-    md5: mockImageMetadata.hash,
-  });
   await asset.downloadAsync();
   expect(asset.downloaded).toBe(true);
-  expect(FileSystem.downloadAsync).not.toHaveBeenCalled();
 });
 
 if (Platform.OS !== 'web') {
   it(`coalesces downloads`, async () => {
-    const FileSystem = require('expo-file-system');
     const { Asset } = require('../index');
 
     const asset = Asset.fromMetadata(mockImageMetadata);
-    FileSystem.getInfoAsync.mockReturnValue({ exists: false });
-    FileSystem.downloadAsync.mockReturnValue({ md5: mockImageMetadata.hash });
 
     await Promise.all([asset.downloadAsync(), asset.downloadAsync()]);
-    expect(FileSystem.getInfoAsync).toHaveBeenCalledTimes(1);
-    expect(FileSystem.downloadAsync).toHaveBeenCalledTimes(1);
+    const ExpoAsset = jest.requireMock('../ExpoAsset');
+    expect(ExpoAsset.downloadAsync).toHaveBeenCalledTimes(1);
   });
 }
 
@@ -225,14 +212,6 @@ if (Platform.OS === 'web') {
 
 describe('embedding', () => {
   beforeAll(() => {
-    jest.doMock('expo-constants', () => {
-      const Constants = jest.requireActual('expo-constants');
-      return {
-        ...Constants,
-        appOwnership: 'standalone',
-        manifest: {},
-      };
-    });
     // @ts-ignore: the type declaration marks __DEV__ as read-only
     __DEV__ = false;
   });

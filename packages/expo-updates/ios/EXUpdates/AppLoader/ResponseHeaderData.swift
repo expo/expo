@@ -27,16 +27,10 @@ public final class ResponseHeaderData {
    */
   private let manifestFiltersRaw: String?
 
-  /**
-   * Classic updates Expo Go manifest signature
-   */
-  let manifestSignature: String?
-
-  public required init(protocolVersionRaw: String?, serverDefinedHeadersRaw: String?, manifestFiltersRaw: String?, manifestSignature: String?) {
+  public required init(protocolVersionRaw: String?, serverDefinedHeadersRaw: String?, manifestFiltersRaw: String?) {
     self.protocolVersionRaw = protocolVersionRaw
     self.serverDefinedHeadersRaw = serverDefinedHeadersRaw
     self.manifestFiltersRaw = manifestFiltersRaw
-    self.manifestSignature = manifestSignature
   }
 
   lazy var protocolVersion: Int? = {

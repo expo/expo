@@ -24,7 +24,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Print usage' dependencies={['expo-print', 'expo-sharing']}>
 
 ```jsx
-import * as React from 'react';
+import { useState } from 'react';
 import { View, StyleSheet, Button, Platform, Text } from 'react-native';
 import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
@@ -46,7 +46,7 @@ const html = `
 `;
 
 export default function App() {
-  const [selectedPrinter, setSelectedPrinter] = React.useState();
+  const [selectedPrinter, setSelectedPrinter] = useState();
 
   const print = async () => {
     // On iOS/android prints the given html. On web prints the HTML from the current page.
@@ -88,7 +88,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -104,7 +103,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -173,4 +171,4 @@ They are set by `@page` style block and you can override them in your HTML code:
 </style>
 ```
 
-See [@page docs on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@page) for more details.
+See [`@page` documentation on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@page) for more details.

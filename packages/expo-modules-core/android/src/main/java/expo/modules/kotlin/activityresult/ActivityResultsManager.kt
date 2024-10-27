@@ -48,7 +48,7 @@ class ActivityResultsManager(
 
   // region Lifecycle
 
-  fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     registry.dispatchResult(requestCode, resultCode, data)
   }
 

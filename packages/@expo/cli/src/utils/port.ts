@@ -79,7 +79,7 @@ export async function choosePortAsync(
 ): Promise<number | null> {
   try {
     const port = await freeportAsync(defaultPort, { hostnames: [host ?? null] });
-    if (port === defaultPort) {
+    if (port === defaultPort || defaultPort === 0) {
       return port;
     }
 

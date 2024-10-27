@@ -18,9 +18,22 @@ A React component that blurs everything underneath the view. Common usage of thi
 
 <PlatformsSection emulator android ios simulator web />
 
-#### Known issues&ensp;<PlatformTags platforms={['android']} />
+#### Known issues
 
-`BlurView` may render incorrectly during screen transitions made by `react-native-screens`.
+##### Incorrect rendering during screen transitions&nbsp;<PlatformTags platforms={['android']} />
+
+On Android, `BlurView` may render incorrectly during screen transitions made by `react-native-screens`.
+
+##### Component render re-order in case of dynamic list
+
+The blur effect does not update when `BlurView` is rendered before dynamic content is rendered using, for example, `FlatList`. To fix this, make sure that `BlurView` is rendered after the dynamic content component. For example:
+
+```jsx
+<View>
+  <FlatList />
+  <BlurView />
+</View>
+```
 
 ## Installation
 
@@ -39,7 +52,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.background}>
-        {[...Array(20).keys()].map((i) => (
+        {[...Array(20).keys()].map(i => (
           <View
             key={`box-${i}`}
             style={[styles.box, i % 2 === 1 ? styles.boxOdd : styles.boxEven]}
@@ -59,7 +72,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -93,7 +105,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-/* @end */
 ```
 
 </SnackInline>

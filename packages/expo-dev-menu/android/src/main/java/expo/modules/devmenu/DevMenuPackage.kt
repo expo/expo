@@ -12,35 +12,14 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
-import expo.modules.devmenu.extensions.DevMenuExtension
-import expo.modules.devmenu.react.DevMenuAwareReactActivity
-
-object DevMenuPackageDelegate {
-  @JvmField
-  var enableAutoSetup: Boolean? = null
-
-  internal fun shouldEnableAutoSetup(activityContext: Context?): Boolean {
-    if (enableAutoSetup != null) {
-      // if someone else has set this explicitly, use that value
-      return enableAutoSetup!!
-    }
-    if (activityContext != null && activityContext is DevMenuAwareReactActivity) {
-      // Backwards compatibility -- if the MainActivity is already an instance of
-      // DevMenuAwareReactActivity, we skip auto-setup.
-      return false
-    }
-    return true
-  }
-}
 
 class DevMenuPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(
-      DevMenuExtension(reactContext),
-    )
+    return emptyList()
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> {
@@ -48,7 +27,7 @@ class DevMenuPackage : Package, ReactPackage {
   }
 
   override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
-    if (!DevMenuPackageDelegate.shouldEnableAutoSetup(activityContext) || !BuildConfig.DEBUG) {
+    if (!BuildConfig.DEBUG) {
       return emptyList()
     }
 
@@ -56,7 +35,12 @@ class DevMenuPackage : Package, ReactPackage {
       object : ReactActivityLifecycleListener {
         override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
           if (!DevMenuManager.isInitialized()) {
-            DevMenuManager.initializeWithReactNativeHost((activity.application as ReactApplication).reactNativeHost)
+            DevMenuManager.initializeWithReactHost(
+              ReactHostWrapper(
+                reactNativeHost = (activity.application as ReactApplication).reactNativeHost,
+                reactHost = (activity.application as ReactApplication).reactHost
+              )
+            )
           } else {
             DevMenuManager.synchronizeDelegate()
           }
@@ -66,7 +50,7 @@ class DevMenuPackage : Package, ReactPackage {
   }
 
   override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
-    if (!DevMenuPackageDelegate.shouldEnableAutoSetup(activityContext) || !BuildConfig.DEBUG) {
+    if (!BuildConfig.DEBUG) {
       return emptyList()
     }
 

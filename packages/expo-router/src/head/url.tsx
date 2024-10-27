@@ -4,7 +4,7 @@ const protocolWarningString = `{ plugins: [["expo-router", { origin: "...<URL>..
 
 /** `lodash.memoize` */
 function memoize<T extends (...args: any[]) => any>(fn: T): T {
-  const cache: { [key: string]: any } = {};
+  const cache: Record<string, any> = {};
   return ((...args: any[]) => {
     const key = JSON.stringify(args);
     if (cache[key]) {

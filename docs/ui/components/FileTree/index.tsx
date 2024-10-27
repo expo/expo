@@ -1,4 +1,7 @@
-import { FileCode01Icon, FolderIcon, LayoutAlt01Icon, PackageIcon } from '@expo/styleguide-icons';
+import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
+import { FolderIcon } from '@expo/styleguide-icons/outline/FolderIcon';
+import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon';
+import { PackageIcon } from '@expo/styleguide-icons/outline/PackageIcon';
 import { HTMLAttributes, ReactNode } from 'react';
 
 import { TextWithNote } from './TextWithNote';

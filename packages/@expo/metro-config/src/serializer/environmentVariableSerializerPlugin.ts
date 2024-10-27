@@ -17,13 +17,13 @@ export function getTransformEnvironment(url: string): string | null {
   return match ? match[1] : null;
 }
 
-function getAllExpoPublicEnvVars() {
+function getAllExpoPublicEnvVars(inputEnv: NodeJS.ProcessEnv = process.env) {
   // Create an object containing all environment variables that start with EXPO_PUBLIC_
   const env = {};
-  for (const key in process.env) {
+  for (const key in inputEnv) {
     if (key.startsWith('EXPO_PUBLIC_')) {
-      // @ts-ignore
-      env[key] = process.env[key];
+      // @ts-expect-error: TS doesn't know that the key starts with EXPO_PUBLIC_
+      env[key] = inputEnv[key];
     }
   }
   return env;
@@ -34,13 +34,14 @@ function isServerEnvironment(graph: ReadOnlyGraph, options: SerializerOptions): 
   if (!graph.transformOptions.customTransformOptions) {
     if (options.sourceUrl) {
       const env = getTransformEnvironment(options.sourceUrl);
-      return env === 'node';
+      return env === 'node' || env === 'react-server';
     }
     return false;
   }
 
   // Other requests will use customTransformOptions.environment.
-  return graph.transformOptions.customTransformOptions.environment === 'node';
+  const env = graph.transformOptions.customTransformOptions.environment;
+  return env === 'node' || env === 'react-server';
 }
 
 /** Strips the process.env polyfill in server environments to allow for accessing environment variables off the global. */
@@ -86,36 +87,54 @@ export function environmentVariableSerializerPlugin(
     return [entryPoint, preModules, graph, options];
   }
 
-  // Set the process.env object to the current environment variables object
-  // ensuring they aren't iterable, settable, or enumerable.
-  const str = `process.env=Object.defineProperties(process.env, {${Object.keys(
-    getAllExpoPublicEnvVars()
-  )
-    .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`)
-    .join(',')}});`;
+  const code = getEnvVarDevString();
 
-  const [firstModule, ...restModules] = preModules;
-  // const envCode = `var process=this.process||{};${str}`;
-  // process.env
-  return [
-    entryPoint,
-    [
-      // First module defines the process.env object.
-      firstModule,
-      // Second module modifies the process.env object.
-      getEnvPrelude(str),
-      // Now we add the rest
-      ...restModules,
-    ],
-    graph,
-    options,
-  ];
+  const prelude = preModules.find((module) => module.path === '\0polyfill:environment-variables');
+  if (prelude) {
+    debug('Injecting environment variables in virtual module.');
+
+    // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
+    prelude.output[0].data.code = code;
+    return [entryPoint, preModules, graph, options];
+  }
+
+  // Old system which doesn't work very well since Metro doesn't serialize graphs the same way in all cases.
+  // e.g. the `.map` endpoint is serialized differently to error symbolication.
+
+  // Inject the new module at index 1
+  // @ts-expect-error: The preModules are mutable and we need to mutate them in order to ensure the changes are applied outside of the serializer.
+  preModules.splice(
+    // Inject at index 1 to ensure it runs after the prelude (which injects env vars).
+    1,
+    0,
+    getEnvPrelude(code)
+  );
+
+  return [entryPoint, preModules, graph, options];
 }
 
-function getEnvPrelude(contents: string): Module<MixedOutput> {
-  const code = '// HMR env vars from Expo CLI (dev-only)\n' + contents;
-  const name = '__env__';
+export function getEnvVarDevString(env: NodeJS.ProcessEnv = process.env) {
+  // Set the process.env object to the current environment variables object
+  // ensuring they aren't iterable, settable, or enumerable.
+  const str =
+    `process.env=Object.defineProperties(process.env, {` +
+    Object.keys(getAllExpoPublicEnvVars(env))
+      .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(env[key])} }`)
+      .join(',') +
+    '});';
+  const code = '/* HMR env vars from Expo CLI (dev-only) */ ' + str;
+
   const lineCount = countLines(code);
+  if (lineCount !== 1) {
+    throw new Error(
+      `Virtual environment variable code must be one line, got "${lineCount}" lines.`
+    );
+  }
+  return code;
+}
+
+function getEnvPrelude(code: string): Module<MixedOutput> {
+  const name = `\0polyfill:environment-variables`;
 
   return {
     dependencies: new Map(),
@@ -127,8 +146,7 @@ function getEnvPrelude(contents: string): Module<MixedOutput> {
         type: 'js/script/virtual',
         data: {
           code,
-          // @ts-expect-error: typed incorrectly upstream
-          lineCount,
+          lineCount: 1,
           map: [],
         },
       },

@@ -6,13 +6,14 @@ packageName: 'expo-updates'
 iconUrl: '/static/images/packages/expo-updates.png'
 ---
 
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
-import { ConfigReactNative, ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon } from '@expo/styleguide-icons';
+import { ConfigReactNative, ConfigPluginExample } from '~/ui/components/ConfigSection';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 The `expo-updates` library allows you to programmatically control and respond to new updates made available to your app.
 
@@ -20,7 +21,9 @@ The `expo-updates` library allows you to programmatically control and respond to
 
 ## Installation
 
-<APIInstallSection href="/bare/installing-updates/" />
+<APIInstallSection hideBareInstructions />
+
+If you're installing this in a [bare React Native app](/bare/overview/), you should also follow these [additional installation instructions](/bare/installing-updates/).
 
 ## Configuration in app.json/app.config.js
 
@@ -105,7 +108,7 @@ Every custom updates server must implement the [Expo Updates protocol](/technica
 
 There are build-time configuration options that control the behavior of `expo-updates`.
 
-On Android, these options are set as `meta-data` tags adjacent to the tags added during installation in the **AndroidManifest.xml** file. You can also define these options at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`, and the provided values will override any value specified in **AndroidManifest.xml**.
+On Android, these options are set as `meta-data` tags adjacent to the tags added during installation in the **AndroidManifest.xml** file. You can also define these options at runtime by passing a `Map` as the second parameter of `UpdatesController.overrideConfiguration()`, and the provided values will override any value specified in **AndroidManifest.xml**.
 
 On iOS, these properties are set as keys in **Expo.plist** file. You can also set them at runtime by calling `[EXUpdatesAppController.sharedInstance setConfiguration:]` at any point before calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override any values specified in **Expo.plist**.
 

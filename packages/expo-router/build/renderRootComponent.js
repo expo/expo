@@ -22,14 +22,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRootComponent = void 0;
 const expo_1 = require("expo");
 const SplashScreen = __importStar(require("expo-splash-screen"));
-const react_1 = __importDefault(require("react"));
+const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 function isBaseObject(obj) {
     if (Object.prototype.toString.call(obj) !== '[object Object]') {
@@ -76,13 +73,15 @@ function renderRootComponent(Component) {
             // @ts-expect-error: This function is native-only and for internal-use only.
             SplashScreen._internal_preventAutoHideAsync?.();
         });
-        if (process.env.NODE_ENV !== 'production') {
-            const { withErrorOverlay } = require('@expo/metro-runtime/error-overlay');
-            (0, expo_1.registerRootComponent)(withErrorOverlay(Component));
-        }
-        else {
-            (0, expo_1.registerRootComponent)(Component);
-        }
+        React.startTransition(() => {
+            if (process.env.NODE_ENV !== 'production') {
+                const { withErrorOverlay } = require('@expo/metro-runtime/error-overlay');
+                (0, expo_1.registerRootComponent)(withErrorOverlay(Component));
+            }
+            else {
+                (0, expo_1.registerRootComponent)(Component);
+            }
+        });
     }
     catch (e) {
         // Hide the splash screen if there was an error so the user can see it.
@@ -94,7 +93,7 @@ function renderRootComponent(Component) {
         // * A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.
         (0, expo_1.registerRootComponent)(() => <react_native_1.View />);
         // Console is pretty useless on native, on web you get interactive stack traces.
-        if (react_native_1.Platform.OS === 'web') {
+        if (process.env.EXPO_OS === 'web') {
             console.error(error);
             console.error(`A runtime error has occurred while rendering the root component.`);
         }

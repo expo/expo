@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import glob from 'glob-promise';
-import once from 'lodash/once';
+import { glob } from 'glob';
 import ncp from 'ncp';
 import path from 'path';
 import xcode from 'xcode';
@@ -51,8 +50,8 @@ interface VendoredModuleConfig {
   warnings?: string[];
 }
 
-const IOS_DIR = Directories.getIosDir();
-const ANDROID_DIR = Directories.getAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 
 const SvgModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -75,20 +74,6 @@ const SvgModifier: ModuleModifier = async function (
 
   await removeMacFiles();
   await addHeaderImport();
-};
-
-const MapsModifier: ModuleModifier = async function (
-  moduleConfig: VendoredModuleConfig,
-  clonedProjectPath: string
-): Promise<void> {
-  const fixGoogleMapsImports = async () => {
-    const targetPath = path.join(clonedProjectPath, 'ios', 'AirGoogleMaps', 'AIRGoogleMap.m');
-    let content = await fs.readFile(targetPath, 'utf8');
-    content = content.replace(/^#import "(GMU.+?\.h)"$/gm, '#import <Google-Maps-iOS-Utils/$1>');
-    await fs.writeFile(targetPath, content, 'utf8');
-  };
-
-  await fixGoogleMapsImports();
 };
 
 const ReanimatedModifier: ModuleModifier = async function (
@@ -190,26 +175,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   await prepareIOSNativeFiles();
   await transformGestureHandlerImports();
 };
-
-const PickerModifier: ModuleModifier = once(async function (moduleConfig, clonedProjectPath) {
-  const addResourceImportAsync = async () => {
-    const files = [
-      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPicker.java`,
-      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPickerManager.java`,
-    ];
-    await Promise.all(
-      files
-        .map((file) => path.resolve(file))
-        .map(async (file) => {
-          let content = await fs.readFile(file, 'utf8');
-          content = content.replace(/^(package .+)$/gm, '$1\n\nimport host.exp.expoview.R;');
-          await fs.writeFile(file, content, 'utf8');
-        })
-    );
-  };
-
-  await addResourceImportAsync();
-});
 
 const GestureHandlerModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -512,21 +477,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'lottie-react-native': {
-    repoUrl: 'https://github.com/react-native-community/lottie-react-native.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        iosPrefix: 'LRN',
-        sourceIosPath: 'src/ios/LottieReactNative',
-        targetIosPath: 'Api/Components/Lottie',
-        sourceAndroidPath: 'src/android/src/main/java/com/airbnb/android/react/lottie',
-        targetAndroidPath: 'modules/api/components/lottie',
-        sourceAndroidPackage: 'com.airbnb.android.react.lottie',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.lottie',
-      },
-    ],
-  },
   'react-native-svg': {
     repoUrl: 'https://github.com/react-native-community/react-native-svg.git',
     installableInManagedApps: true,
@@ -540,40 +490,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/svg',
         sourceAndroidPackage: 'com.horcrux.svg',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.svg',
-      },
-    ],
-  },
-  'react-native-maps': {
-    repoUrl: 'https://github.com/react-native-community/react-native-maps.git',
-    installableInManagedApps: true,
-    moduleModifier: MapsModifier,
-    steps: [
-      {
-        sourceIosPath: 'ios/AirGoogleMaps',
-        targetIosPath: 'Api/Components/GoogleMaps',
-      },
-      {
-        recursive: true,
-        sourceIosPath: 'ios/AirMaps',
-        targetIosPath: 'Api/Components/Maps',
-        sourceAndroidPath: 'android/src/main/java/com/rnmaps/maps',
-        targetAndroidPath: 'modules/api/components/maps',
-        sourceAndroidPackage: 'com.rnmaps.maps',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
-      },
-    ],
-  },
-  '@react-native-community/netinfo': {
-    repoUrl: 'https://github.com/react-native-community/react-native-netinfo.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/NetInfo',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/netinfo',
-        targetAndroidPath: 'modules/api/netinfo',
-        sourceAndroidPackage: 'com.reactnativecommunity.netinfo',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.netinfo',
       },
     ],
   },
@@ -649,86 +565,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceAndroidPackage: 'com.facebook.react.viewmanagers',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
         cleanupTargetPath: false,
-      },
-    ],
-  },
-  '@react-native-community/datetimepicker': {
-    repoUrl: 'https://github.com/react-native-community/react-native-datetimepicker.git',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/DateTimePicker',
-        sourceAndroidPath: 'android/src/main/java/com/reactcommunity/rndatetimepicker',
-        targetAndroidPath: 'modules/api/components/datetimepicker',
-        sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
-      },
-      {
-        sourceAndroidPath: 'android/src/paper/java/com/reactcommunity/rndatetimepicker',
-        targetAndroidPath: 'modules/api/components/datetimepicker',
-        sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
-        cleanupTargetPath: false,
-      },
-    ],
-    warnings: [
-      `NOTE: In Expo, native Android styles are prefixed with ${chalk.magenta(
-        'ReactAndroid'
-      )}. Please ensure that ${chalk.magenta(
-        'resourceName'
-      )}s used for grabbing style of dialogs are being resolved properly.`,
-    ],
-  },
-  '@react-native-masked-view/masked-view': {
-    repoUrl: 'https://github.com/react-native-masked-view/masked-view',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/MaskedView',
-        sourceAndroidPath: 'android/src/main/java/org/reactnative/maskedview',
-        targetAndroidPath: 'modules/api/components/maskedview',
-        sourceAndroidPackage: 'org.reactnative.maskedview',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
-      },
-    ],
-  },
-  '@react-native-segmented-control/segmented-control': {
-    repoUrl: 'https://github.com/react-native-segmented-control/segmented-control',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/SegmentedControl',
-      },
-    ],
-  },
-  '@react-native-picker/picker': {
-    repoUrl: 'https://github.com/react-native-picker/picker',
-    installableInManagedApps: true,
-    moduleModifier: PickerModifier,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/Picker',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/picker',
-        targetAndroidPath: 'modules/api/components/picker',
-        sourceAndroidPackage: 'com.reactnativecommunity.picker',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
-      },
-    ],
-  },
-  '@stripe/stripe-react-native': {
-    repoUrl: 'https://github.com/stripe/stripe-react-native',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceAndroidPath: 'android/src/main/java/com/reactnativestripesdk',
-        targetAndroidPath: 'modules/api/components/reactnativestripesdk',
-        sourceAndroidPackage: 'com.reactnativestripesdk',
-        targetAndroidPackage:
-          'versioned.host.exp.exponent.modules.api.components.reactnativestripesdk',
       },
     ],
   },

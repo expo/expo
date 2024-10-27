@@ -22,6 +22,7 @@ public class TrackingTransparencyModule: Module {
         reject: promise.legacyRejecter
       )
     }
+    .runOnQueue(.main)
 
     AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.askForPermission(
@@ -31,5 +32,6 @@ public class TrackingTransparencyModule: Module {
         reject: promise.legacyRejecter
       )
     }
+    .runOnQueue(.main)
   }
 }

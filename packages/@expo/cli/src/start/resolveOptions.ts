@@ -1,6 +1,8 @@
 import assert from 'assert';
+import chalk from 'chalk';
 
-import { hasDirectDevClientDependency } from '../utils/analytics/getDevClientProperties';
+import { canResolveDevClient, hasDirectDevClientDependency } from './detectDevClient';
+import { Log } from '../log';
 import { AbortCommandError, CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
 
@@ -79,27 +81,30 @@ export async function resolveSchemeAsync(
   projectRoot: string,
   options: { scheme?: string; devClient?: boolean }
 ): Promise<string | null> {
-  const resolveFrom = require('resolve-from') as typeof import('resolve-from');
-
-  const isDevClientPackageInstalled = (() => {
-    try {
-      // we check if `expo-dev-launcher` is installed instead of `expo-dev-client`
-      // because someone could install only launcher.
-      resolveFrom(projectRoot, 'expo-dev-launcher');
-      return true;
-    } catch {
-      return false;
-    }
-  })();
-
   if (typeof options.scheme === 'string') {
     // Use the custom scheme
     return options.scheme ?? null;
-  } else if (options.devClient || isDevClientPackageInstalled) {
+  }
+
+  if (options.devClient || canResolveDevClient(projectRoot)) {
     const { getOptionalDevClientSchemeAsync } =
       require('../utils/scheme') as typeof import('../utils/scheme');
     // Attempt to find the scheme or warn the user how to setup a custom scheme
-    return await getOptionalDevClientSchemeAsync(projectRoot);
+    const resolvedScheme = await getOptionalDevClientSchemeAsync(projectRoot);
+    if (!resolvedScheme.scheme) {
+      if (resolvedScheme.resolution === 'shared') {
+        // This can happen if one of the native projects has no URI schemes defined in it.
+        // Normally, this should never happen.
+        Log.warn(
+          chalk`Could not find a shared URI scheme for the dev client between the local {bold /ios} and {bold /android} directories. App launches (QR code, interstitial, terminal keys) may not work as expected. You can configure a custom scheme using the {bold --scheme} option, or by running {bold npx expo prebuild} to regenerate the native directories with URI schemes.`
+        );
+      } else if (['ios', 'android'].includes(resolvedScheme.resolution)) {
+        Log.warn(
+          chalk`The {bold /${resolvedScheme.resolution}} project does not contain any URI schemes. Expo CLI will not be able to use links to launch the project. You can configure a custom URI scheme using the {bold --scheme} option.`
+        );
+      }
+    }
+    return resolvedScheme.scheme;
   } else {
     // Ensure this is reset when users don't use `--scheme`, `--dev-client` and don't have the `expo-dev-client` package installed.
     return null;

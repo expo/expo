@@ -6,9 +6,11 @@ import ExpoModulesCore
 internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
   let viewController: SFSafariViewController
   let onDismiss: (String) -> Void
+  let didPresent: () -> Void
 
-  init(url: URL, options: WebBrowserOptions, onDismiss: @escaping (String) -> Void) {
+  init(url: URL, options: WebBrowserOptions, onDismiss: @escaping (String) -> Void, didPresent: @escaping () -> Void) {
     self.onDismiss = onDismiss
+    self.didPresent = didPresent
 
     let configuration = SFSafariViewController.Configuration()
     configuration.barCollapsingEnabled = options.enableBarCollapsing
@@ -30,12 +32,16 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
     while currentViewController?.presentedViewController != nil {
       currentViewController = currentViewController?.presentedViewController
     }
-    currentViewController?.present(viewController, animated: true, completion: nil)
+    currentViewController?.present(viewController, animated: true) {
+      self.didPresent()
+    }
   }
 
-  func dismiss() {
+  func dismiss(completion: ((String) -> Void)? = nil) {
     viewController.dismiss(animated: true) {
-      self.finish(type: "dismiss")
+      let type = "dismiss"
+      self.finish(type: type)
+      completion?(type)
     }
   }
 
@@ -44,7 +50,7 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
   func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
     finish(type: "cancel")
   }
-  
+
   // MARK: - UIAdaptivePresentationControllerDelegate
 
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {

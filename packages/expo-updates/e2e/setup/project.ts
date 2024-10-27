@@ -3,44 +3,71 @@
 import spawnAsync from '@expo/spawn-async';
 import { rmSync, existsSync } from 'fs';
 import fs from 'fs/promises';
-import glob from 'glob';
 import nullthrows from 'nullthrows';
 import path from 'path';
+
+/*
+ * Change this to your own Expo account name
+ */
+export const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
 
 const dirName = __dirname; /* eslint-disable-line */
 
 // Package dependencies in chunks based on peer dependencies.
-const expoDependencyChunks = [
-  ['@expo/config-types', '@expo/env'],
-  ['@expo/config'],
-  [
-    '@expo/cli',
-    '@expo/config-plugins',
-    'expo',
-    'expo-asset',
-    'expo-modules-core',
-    'expo-modules-autolinking',
-  ],
-  ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
-  [
-    'babel-preset-expo',
-    'expo-application',
-    'expo-device',
-    'expo-eas-client',
-    'expo-file-system',
-    'expo-font',
-    'expo-json-utils',
-    'expo-keep-awake',
-    'expo-manifests',
-    'expo-splash-screen',
-    'expo-status-bar',
-    'expo-structured-headers',
-    'expo-updates',
-    'expo-updates-interface',
-  ],
-];
+function getExpoDependencyChunks({
+  includeDevClient,
+  includeTV,
+}: {
+  includeDevClient: boolean;
+  includeTV: boolean;
+}) {
+  return [
+    ['@expo/config-types', '@expo/env', '@expo/json-file'],
+    ['@expo/config'],
+    ['@expo/config-plugins'],
+    ['expo-modules-core'],
+    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
+    ['expo-manifests'],
+    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
+    [
+      'babel-preset-expo',
+      'expo-application',
+      'expo-device',
+      'expo-eas-client',
+      'expo-file-system',
+      'expo-font',
+      'expo-json-utils',
+      'expo-keep-awake',
+      'expo-splash-screen',
+      'expo-status-bar',
+      'expo-structured-headers',
+      'expo-updates',
+      'expo-updates-interface',
+    ],
+    ...(includeDevClient
+      ? [['expo-dev-menu-interface'], ['expo-dev-menu'], ['expo-dev-launcher'], ['expo-dev-client']]
+      : []),
+    ...(includeTV
+      ? [
+          [
+            'expo-av',
+            'expo-blur',
+            'expo-image',
+            'expo-linear-gradient',
+            'expo-localization',
+            'expo-crypto',
+            'expo-network',
+            'expo-secure-store',
+            'expo-video',
+          ],
+        ]
+      : []),
+  ];
+}
 
-const expoDependencyNames: string[] = expoDependencyChunks.flat();
+function getExpoDependencyNamesForDependencyChunks(expoDependencyChunks: string[][]): string[] {
+  return expoDependencyChunks.flat();
+}
 
 const expoResolutions = {};
 
@@ -90,26 +117,13 @@ async function packExpoDependency(
     )
   );
 
+  let dependencyTarballPath: string;
   try {
-    await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
-      cwd: dependencyPath,
-      stdio: process.env.CI ? 'ignore' : 'pipe',
-    });
+    dependencyTarballPath = await spawnNpmPackAsync({ cwd: dependencyPath, outputDir: destPath });
   } finally {
     // Restore the original package JSON
     await fs.copyFile(packageJsonCopyPath, packageJsonPath);
     await fs.rm(packageJsonCopyPath);
-  }
-
-  // Ensure the file was created as expected
-  const dependencyTarballName =
-    dependencyComponents[0] === '@expo'
-      ? `expo-${dependencyComponents[1]}`
-      : `${dependencyComponents[0]}`;
-  const dependencyTarballPath = glob.sync(path.join(destPath, `${dependencyTarballName}-*.tgz`))[0];
-
-  if (!dependencyTarballPath) {
-    throw new Error(`Failed to locate packed ${dependencyName} in ${destPath}`);
   }
 
   // Return the dependency in the form needed by package.json, as a relative path
@@ -119,6 +133,30 @@ async function packExpoDependency(
     dependency,
     e2eVersion,
   };
+}
+
+async function spawnNpmPackAsync({
+  cwd,
+  outputDir,
+}: {
+  cwd: string;
+  outputDir: string;
+}): Promise<string> {
+  const { stdout } = await spawnAsync(
+    'npm',
+    // Run `npm pack --json` without the script logging (see: https://github.com/npm/cli/issues/7354)
+    ['--foreground-scripts=false', 'pack', '--json', '--pack-destination', outputDir],
+    { cwd, stdio: 'pipe' }
+  );
+
+  // Validate the tarball output data
+  const output = JSON.parse(stdout);
+  if (output.length !== 1) {
+    throw new Error(`Expected a single tarball to be created, received: ${output.length}`);
+  }
+
+  // Return the absolute path to the tarball
+  return path.join(outputDir, output[0].filename);
 }
 
 async function copyCommonFixturesToProject(
@@ -177,10 +215,17 @@ async function copyCommonFixturesToProject(
       ...easJson,
       build: {
         ...easJson.build,
-        updates_testing: {
-          ...easJson.build.updates_testing,
+        updates_testing_debug: {
+          ...easJson.build.updates_testing_debug,
           env: {
-            ...easJson.build.updates_testing.env,
+            ...easJson.build.updates_testing_debug.env,
+            TEST_TV_BUILD: '1',
+          },
+        },
+        updates_testing_release: {
+          ...easJson.build.updates_testing_release,
+          env: {
+            ...easJson.build.updates_testing_release.env,
             TEST_TV_BUILD: '1',
           },
         },
@@ -199,15 +244,14 @@ async function preparePackageJson(
   repoRoot: string,
   configureE2E: boolean,
   isTV: boolean,
-  shouldGenerateTestUpdateBundles: boolean
+  shouldGenerateTestUpdateBundles: boolean,
+  includeDevClient: boolean
 ) {
   // Create the project subfolder to hold NPM tarballs built from the current state of the repo
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
 
-  const tvDependencyChunk = isTV ? ['expo-av', 'expo-image', 'expo-localization'] : [];
-
-  const allDependencyChunks = [...expoDependencyChunks, tvDependencyChunk];
+  const allDependencyChunks = getExpoDependencyChunks({ includeDevClient, includeTV: isTV });
 
   console.time('Done packing dependencies');
   for (const dependencyChunk of allDependencyChunks) {
@@ -237,7 +281,8 @@ async function preparePackageJson(
       };
 
   const extraScriptsAssetExclusion = {
-    'reset-to-embedded': 'npx ts-node ./scripts/reset-app.ts App.tsx.embedded',
+    'reset-to-embedded':
+      'npx ts-node ./scripts/reset-app.ts App.tsx.embedded; (rm -rf android/build android/app/build)',
     'set-to-update-1':
       'npx ts-node ./scripts/reset-app.ts App.tsx.update1; eas update --branch=main --message=Update1',
     'set-to-update-2':
@@ -257,6 +302,7 @@ async function preparePackageJson(
         'detox:ios:release:test': 'detox test -c ios.release',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
+        postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;
@@ -273,12 +319,13 @@ async function preparePackageJson(
         'jest-circus': '^29.3.1',
         prettier: '^2.8.1',
         'ts-jest': '^29.0.5',
+        'patch-package': '^8.0.0',
       }
     : {};
 
   // Remove the default Expo dependencies from create-expo-app
   let packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf-8'));
-  for (const dependencyName of expoDependencyNames) {
+  for (const dependencyName of getExpoDependencyNamesForDependencyChunks(allDependencyChunks)) {
     if (packageJson.dependencies[dependencyName]) {
       delete packageJson.dependencies[dependencyName];
     }
@@ -297,14 +344,16 @@ async function preparePackageJson(
     devDependencies: {
       '@types/react': '~18.0.14',
       '@types/react-native': '~0.70.6',
-      'ts-node': '^10.9.1',
-      typescript: '^4.6.3',
       ...extraDevDependencies,
       ...packageJson.devDependencies,
+      'ts-node': '10.9.1',
+      typescript: '5.2.2',
     },
     resolutions: {
       ...expoResolutions,
       ...packageJson.resolutions,
+      typescript: '5.2.2',
+      '@isaacs/cliui': 'npm:cliui@8.0.1', // Fix string-width ESM error
     },
   };
 
@@ -313,12 +362,12 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.72.6-0',
-        '@react-native-tvos/config-tv': '~0.0.2',
+        'react-native': 'npm:react-native-tvos@~0.76.0-0rc4',
+        '@react-native-tvos/config-tv': '^0.0.11',
       },
       expo: {
         install: {
-          exclude: ['react-native'],
+          exclude: ['react-native', 'typescript'],
         },
       },
     };
@@ -375,9 +424,9 @@ async function prepareLocalUpdatesModule(repoRoot: string) {
   const originalExpoModuleConfig = JSON.parse(originalExpoModuleConfigJsonString);
   const expoModuleConfig = {
     ...originalExpoModuleConfig,
-    ios: {
-      ...originalExpoModuleConfig.ios,
-      modules: [...originalExpoModuleConfig.ios.modules, 'E2ETestModule'],
+    apple: {
+      ...originalExpoModuleConfig.apple,
+      modules: [...originalExpoModuleConfig.apple.modules, 'E2ETestModule'],
     },
     android: {
       ...originalExpoModuleConfig.android,
@@ -412,6 +461,7 @@ function transformAppJsonForE2E(
       '@react-native-tvos/config-tv',
       {
         isTV: true,
+        tvosDeploymentTarget: '15.1',
         showVerboseWarnings: true,
       },
     ]);
@@ -424,16 +474,66 @@ function transformAppJsonForE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
+      newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
-        ...appJson.updates,
+        ...appJson.expo.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
+        assetPatternsToBeBundled: ['includedAssets/*'],
       },
       extra: {
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
+      },
+    },
+  };
+}
+
+/**
+ * Modifies app.json in the E2E test app to add the properties we need, and sets the runtime version policy to fingerprint
+ */
+export function transformAppJsonForE2EWithFingerprint(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2EWithFallbackToCacheTimeout(
+    appJson,
+    projectName,
+    runtimeVersion,
+    isTV
+  );
+  return {
+    ...transformedForE2E,
+    expo: {
+      ...transformedForE2E.expo,
+      runtimeVersion: {
+        policy: 'fingerprint',
+      },
+    },
+  };
+}
+
+/**
+ * Modifies app.json in the E2E test app to add the properties we need, plus a fallback to cache timeout for testing startup procedure
+ */
+export function transformAppJsonForE2EWithFallbackToCacheTimeout(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2E(appJson, projectName, runtimeVersion, isTV);
+  return {
+    ...transformedForE2E,
+    expo: {
+      ...transformedForE2E.expo,
+      updates: {
+        ...transformedForE2E.expo.updates,
+        fallbackToCacheTimeout: 5000,
       },
     },
   };
@@ -456,6 +556,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
+      newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       extra: {
@@ -516,6 +617,7 @@ export async function initAsync(
     isTV = false,
     shouldGenerateTestUpdateBundles = true,
     shouldConfigureCodeSigning = true,
+    includeDevClient = false,
   }: {
     repoRoot: string;
     runtimeVersion: string;
@@ -530,6 +632,7 @@ export async function initAsync(
     isTV?: boolean;
     shouldGenerateTestUpdateBundles?: boolean;
     shouldConfigureCodeSigning?: boolean;
+    includeDevClient?: boolean;
   }
 ) {
   console.log('Creating expo app');
@@ -544,16 +647,10 @@ export async function initAsync(
   // pack typescript template
   const templateName = 'expo-template-blank-typescript';
   const localTSTemplatePath = path.join(repoRoot, 'templates', templateName);
-  await spawnAsync('npm', ['pack', '--pack-destination', repoRoot], {
+  const localTSTemplatePathName = await spawnNpmPackAsync({
     cwd: localTSTemplatePath,
-    stdio: 'ignore',
+    outputDir: repoRoot,
   });
-
-  const localTSTemplatePathName = glob.sync(path.join(repoRoot, `${templateName}-*.tgz`))[0];
-
-  if (!localTSTemplatePathName) {
-    throw new Error(`Failed to locate packed template in ${repoRoot}`);
-  }
 
   // initialize project (do not do NPM install, we do that later)
   await spawnAsync(
@@ -586,7 +683,8 @@ export async function initAsync(
     repoRoot,
     configureE2E,
     isTV,
-    shouldGenerateTestUpdateBundles
+    shouldGenerateTestUpdateBundles,
+    includeDevClient
   );
 
   // configure app.json
@@ -608,18 +706,10 @@ export async function initAsync(
   const prebuildTemplateName = 'expo-template-bare-minimum';
 
   const localTemplatePath = path.join(repoRoot, 'templates', prebuildTemplateName);
-  await spawnAsync('npm', ['pack', '--pack-destination', projectRoot], {
+  const localTemplatePathName = await spawnNpmPackAsync({
     cwd: localTemplatePath,
-    stdio: 'ignore',
+    outputDir: projectRoot,
   });
-
-  const localTemplatePathName = glob.sync(
-    path.join(projectRoot, `${prebuildTemplateName}-*.tgz`)
-  )[0];
-
-  if (!localTemplatePathName) {
-    throw new Error(`Failed to locate packed template in ${projectRoot}`);
-  }
 
   await spawnAsync(localCliBin, ['prebuild', '--no-install', '--template', localTemplatePathName], {
     env: {
@@ -663,6 +753,10 @@ export async function initAsync(
       '-keep class org.apache.commons.** { *; }',
       '-dontwarn androidx.appcompat.graphics.drawable.DrawableWrapper',
       '-dontwarn com.facebook.react.views.slider.**',
+      '-dontwarn javax.lang.model.element.Modifier',
+      '-dontwarn org.checkerframework.checker.nullness.qual.EnsuresNonNullIf',
+      '-dontwarn org.checkerframework.dataflow.qual.Pure',
+      '-keep class com.google.common.util.concurrent.ListenableFuture { *; }',
       '',
     ].join('\n'),
     'utf-8'
@@ -694,15 +788,11 @@ export async function setupE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'scripts'],
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV }
   );
 
-  // copy png assets and install extra package
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'test.png'),
-    path.join(projectRoot, 'test.png')
-  );
+  // install extra fonts package
   await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
     cwd: projectRoot,
     stdio: 'inherit',
@@ -723,6 +813,8 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     { appJsFileName: 'App-apitest.tsx', repoRoot, isTV: false }
   );
 
+  const projectName = path.basename(projectRoot);
+
   // disable JS debugging on Android
   const mainApplicationPath = path.join(
     projectRoot,
@@ -732,9 +824,9 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     'main',
     'java',
     'com',
-    'douglowderexpo',
-    'MyUpdateableApp',
-    'MainApplication.java'
+    EXPO_ACCOUNT_NAME,
+    projectName,
+    'MainApplication.kt'
   );
   const mainApplicationText = await fs.readFile(mainApplicationPath, { encoding: 'utf-8' });
   const mainApplicationTextModified = mainApplicationText.replace('BuildConfig.DEBUG', 'false');
@@ -747,7 +839,7 @@ export async function setupUpdatesDisabledE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'scripts'],
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
     {
       appJsFileName: 'App-updates-disabled.tsx',
       repoRoot,
@@ -755,11 +847,7 @@ export async function setupUpdatesDisabledE2EAppAsync(
     }
   );
 
-  // copy png assets and install extra package
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'test.png'),
-    path.join(projectRoot, 'test.png')
-  );
+  // install extra fonts package
   await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
     cwd: projectRoot,
     stdio: 'inherit',
@@ -768,6 +856,107 @@ export async function setupUpdatesDisabledE2EAppAsync(
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-disabled.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesErrorRecoveryE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-error-recovery.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesFingerprintE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    [
+      'tsconfig.json',
+      '.fingerprintignore',
+      '.detoxrc.json',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'includedAssets',
+      'scripts',
+    ],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-fingerprint.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesStartupE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-startup.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
+  );
+}
+
+export async function setupUpdatesDevClientE2EAppAsync(
+  projectRoot: string,
+  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+) {
+  await copyCommonFixturesToProject(
+    projectRoot,
+    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+  );
+
+  // install extra fonts package
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // Copy Detox test file to e2e/tests directory
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'Updates-dev-client.e2e.ts'),
     path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }

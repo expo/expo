@@ -1,24 +1,26 @@
 import { ExpoConfig, PackageJSONConfig } from '@expo/config';
-import JsonFile from '@expo/json-file';
 import assert from 'assert';
 import chalk from 'chalk';
-import resolveFrom from 'resolve-from';
+import npmPackageArg from 'npm-package-arg';
 import semver from 'semver';
+import semverRangeSubset from 'semver/ranges/subset';
 
 import { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
+import { resolveAllPackageVersionsAsync } from './resolvePackages';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
 
-interface IncorrectDependency {
+type IncorrectDependency = {
   packageName: string;
   packageType: 'dependencies' | 'devDependencies';
   expectedVersionOrRange: string;
   actualVersion: string;
-}
+};
+
+type DependenciesToCheck = { known: string[]; unknown: string[] };
 
 /**
  * Print a list of incorrect dependency versions.
@@ -51,7 +53,6 @@ function logInvalidDependency({
   actualVersion,
 }: IncorrectDependency) {
   Log.warn(
-    // chalk` - {underline ${packageName}} - expected version: {underline ${expectedVersionOrRange}} - actual version installed: {underline ${actualVersion}}`
     chalk`  {bold ${packageName}}{cyan @}{red ${actualVersion}} - expected version: {green ${expectedVersionOrRange}}`
   );
 }
@@ -67,7 +68,7 @@ export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
   incorrectDeps.forEach((dep) => logInvalidDependency(dep));
 
   Log.warn(
-    'Your project may not work correctly until you install the correct versions of the packages.'
+    'Your project may not work correctly until you install the expected versions of the packages.'
   );
 
   return false;
@@ -108,13 +109,16 @@ export async function getVersionedDependenciesAsync(
 
   // intersection of packages from package.json and bundled native modules
   const { known: resolvedPackagesToCheck, unknown } = getPackagesToCheck(
-    resolvedDependencies,
-    combinedKnownPackages
+    combinedKnownPackages,
+    resolvedDependencies
   );
   debug(`Comparing known versions: %O`, resolvedPackagesToCheck);
   debug(`Skipping packages that cannot be versioned automatically: %O`, unknown);
   // read package versions from the file system (node_modules)
-  const packageVersions = await resolvePackageVersionsAsync(projectRoot, resolvedPackagesToCheck);
+  const packageVersions = await resolveAllPackageVersionsAsync(
+    projectRoot,
+    resolvedPackagesToCheck
+  );
   debug(`Package versions: %O`, packageVersions);
   // find incorrect dependencies by comparing the actual package versions with the bundled native module version ranges
   let incorrectDeps = findIncorrectDependencies(pkg, packageVersions, combinedKnownPackages);
@@ -122,14 +126,62 @@ export async function getVersionedDependenciesAsync(
 
   if (pkg?.expo?.install?.exclude) {
     const packagesToExclude = pkg.expo.install.exclude;
-    const incorrectAndExcludedDeps = incorrectDeps.filter((dep) =>
-      packagesToExclude.includes(dep.packageName)
+
+    // Parse the exclude list to ensure we can factor in any specified version ranges
+    const parsedPackagesToExclude = packagesToExclude.reduce(
+      (acc: Record<string, npmPackageArg.Result>, packageName: string) => {
+        const npaResult = npmPackageArg(packageName);
+        if (typeof npaResult.name === 'string') {
+          acc[npaResult.name] = npaResult;
+        } else {
+          acc[packageName] = npaResult;
+        }
+        return acc;
+      },
+      {}
     );
+
+    const incorrectAndExcludedDeps = incorrectDeps
+      .filter((dep) => {
+        if (parsedPackagesToExclude[dep.packageName]) {
+          const { name, raw, rawSpec, type } = parsedPackagesToExclude[dep.packageName];
+          const suggestedRange = combinedKnownPackages[name];
+
+          // If only the package name itself is specified, then we keep it in the exclude list
+          if (name === raw) {
+            return true;
+          } else if (type === 'version') {
+            return suggestedRange === rawSpec;
+          } else if (type === 'range') {
+            // Fall through exclusions if the suggested range is invalid
+            if (!semver.validRange(suggestedRange)) {
+              debug(
+                `Invalid semver range in combined known packages for package ${name} in expo.install.exclude: %O`,
+                suggestedRange
+              );
+              return false;
+            }
+
+            return semverRangeSubset(suggestedRange, rawSpec);
+          } else {
+            debug(
+              `Unsupported npm package argument type for package ${name} in expo.install.exclude: %O`,
+              type
+            );
+          }
+        }
+
+        return false;
+      })
+      .map((dep) => dep.packageName);
+
     debug(
       `Incorrect dependency warnings filtered out by expo.install.exclude: %O`,
-      incorrectAndExcludedDeps.map((dep) => dep.packageName)
+      incorrectAndExcludedDeps
     );
-    incorrectDeps = incorrectDeps.filter((dep) => !packagesToExclude.includes(dep.packageName));
+    incorrectDeps = incorrectDeps.filter(
+      (dep) => !incorrectAndExcludedDeps.includes(dep.packageName)
+    );
   }
 
   return incorrectDeps;
@@ -143,9 +195,9 @@ function getFilteredObject(keys: string[], object: Record<string, string>) {
 }
 
 function getPackagesToCheck(
-  dependencies: Record<string, string> | null | undefined,
-  bundledNativeModules: BundledNativeModules
-): { known: string[]; unknown: string[] } {
+  bundledNativeModules: BundledNativeModules,
+  dependencies?: Record<string, string> | null
+): DependenciesToCheck {
   const dependencyNames = Object.keys(dependencies ?? {});
   const known: string[] = [];
   const unknown: string[] = [];
@@ -159,42 +211,6 @@ function getPackagesToCheck(
   return { known, unknown };
 }
 
-async function resolvePackageVersionsAsync(
-  projectRoot: string,
-  packages: string[]
-): Promise<Record<string, string>> {
-  const packageVersionsFromPackageJSON = await Promise.all(
-    packages.map((packageName) => getPackageVersionAsync(projectRoot, packageName))
-  );
-  return packages.reduce(
-    (acc, packageName, idx) => {
-      acc[packageName] = packageVersionsFromPackageJSON[idx];
-      return acc;
-    },
-    {} as Record<string, string>
-  );
-}
-
-async function getPackageVersionAsync(projectRoot: string, packageName: string): Promise<string> {
-  let packageJsonPath: string | undefined;
-  try {
-    packageJsonPath = resolveFrom(projectRoot, `${packageName}/package.json`);
-  } catch (error: any) {
-    // This is a workaround for packages using `exports`. If this doesn't
-    // include `package.json`, we have to use the error message to get the location.
-    if (error.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
-      packageJsonPath = error.message.match(/("exports"|defined) in (.*)$/i)?.[2];
-    }
-  }
-  if (!packageJsonPath) {
-    throw new CommandError(
-      `"${packageName}" is added as a dependency in your project's package.json but it doesn't seem to be installed. Please run "yarn" or "npm install" to fix this issue.`
-    );
-  }
-  const packageJson = await JsonFile.readAsync<BundledNativeModules>(packageJsonPath);
-  return packageJson.version;
-}
-
 function findIncorrectDependencies(
   pkg: PackageJSONConfig,
   packageVersions: Record<string, string>,
@@ -205,7 +221,7 @@ function findIncorrectDependencies(
   for (const packageName of packages) {
     const expectedVersionOrRange = bundledNativeModules[packageName];
     const actualVersion = packageVersions[packageName];
-    if (isDependencyVersionIncorrect(packageName, expectedVersionOrRange, actualVersion)) {
+    if (isDependencyVersionIncorrect(packageName, actualVersion, expectedVersionOrRange)) {
       incorrectDeps.push({
         packageName,
         packageType: findDependencyType(pkg, packageName),
@@ -219,27 +235,20 @@ function findIncorrectDependencies(
 
 function isDependencyVersionIncorrect(
   packageName: string,
-  expectedVersionOrRange: string | undefined,
-  actualVersion: string
+  actualVersion: string,
+  expectedVersionOrRange?: string
 ) {
-  if (typeof expectedVersionOrRange !== 'string') {
+  if (!expectedVersionOrRange) {
     return false;
   }
 
   // we never want to go backwards with the expo patch version
   if (packageName === 'expo') {
-    if (semver.ltr(actualVersion, expectedVersionOrRange)) {
-      return true;
-    }
-    return false;
+    return semver.ltr(actualVersion, expectedVersionOrRange);
   }
 
   // all other packages: version range is based on Expo SDK version, so we always want to match range
-  if (!semver.intersects(expectedVersionOrRange, actualVersion)) {
-    return true;
-  }
-
-  return false;
+  return !semver.intersects(expectedVersionOrRange, actualVersion);
 }
 
 function findDependencyType(

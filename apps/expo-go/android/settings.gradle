@@ -1,0 +1,73 @@
+pluginManagement {
+    includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
+
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    mavenLocal()
+    google()
+  }
+}
+plugins { id("com.facebook.react.settings") }
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+  def command = [
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+    'react-native-config',
+    '--json',
+    '--platform',
+    'android'
+  ].toList()
+  ex.autolinkLibrariesFromCommand(command)
+}
+
+include ':app'
+
+apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
+apply from: new File(rootDir, "versioning_linking.gradle")
+
+includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile().toString())
+
+include ':expoview'
+include ':tools'
+include ':packages:react-native:ReactAndroid'
+project(':packages:react-native:ReactAndroid').projectDir = new File(rootDir, '../../../react-native-lab/react-native/packages/react-native/ReactAndroid')
+dependencyResolutionManagement {
+  versionCatalogs {
+    defaultLibrariesExtensionName = "expoLibs"
+    libs {
+      from(files("../../../react-native-lab/react-native/packages/react-native/gradle/libs.versions.toml"))
+    }
+  }
+}
+include ':packages:react-native:ReactAndroid:hermes-engine'
+project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../../../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine')
+include ':expo-modules-test-core'
+project(':expo-modules-test-core').projectDir = new File(rootDir, '../../../packages/expo-modules-test-core/android')
+
+[
+    // ADD_NEW_SUPPORTED_ABIS_HERE
+].forEach({ abiVariant ->
+  include ":expoview-$abiVariant"
+  project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
+})
+
+useExpoModules([
+    searchPaths: [
+        '../../../packages'
+    ],
+    exclude : [
+        'expo-module-template',
+        'expo-module-template-local',
+        'react-native-reanimated',
+        'expo-dev-menu-interface',
+        'expo-dev-menu',
+        'expo-dev-launcher',
+        'expo-dev-client',
+        'expo-maps',
+        'expo-network-addons',
+    ]
+])

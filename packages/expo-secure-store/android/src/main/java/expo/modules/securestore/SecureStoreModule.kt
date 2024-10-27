@@ -66,6 +66,15 @@ open class SecureStoreModule : Module() {
       }
     }
 
+    Function("canUseBiometricAuthentication") {
+      return@Function try {
+        authenticationHelper.assertBiometricsSupport()
+        true
+      } catch (e: AuthenticationException) {
+        false
+      }
+    }
+
     OnCreate {
       authenticationHelper = AuthenticationHelper(reactContext, appContext.legacyModuleRegistry)
       hybridAESEncryptor = HybridAESEncryptor(reactContext, mAESEncryptor)
@@ -124,13 +133,20 @@ open class SecureStoreModule : Module() {
     try {
       when (scheme) {
         AESEncryptor.NAME -> {
-          val secretKeyEntry = getPreferredKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
-            ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
+          val secretKeyEntry = getKeyEntryCompat(SecretKeyEntry::class.java, mAESEncryptor, options, requireAuthentication, usesKeystoreSuffix) ?: run {
+            Log.w(
+              TAG,
+              "An entry was found for key $key under keychain ${options.keychainService}, but there is no corresponding KeyStore key. " +
+                "This situation occurs when the app is reinstalled. The value will be removed to avoid future errors. Returning null"
+            )
+            deleteItemImpl(key, options)
+            return null
+          }
           return mAESEncryptor.decryptItem(key, encryptedItem, secretKeyEntry, options, authenticationHelper)
         }
         HybridAESEncryptor.NAME -> {
-          val privateKeyEntry = getPreferredKeyEntry(PrivateKeyEntry::class.java, hybridAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
-            ?: throw DecryptException("Could not find a keychain for key $key$legacyReadFailedWarning", key, options.keychainService)
+          val privateKeyEntry = getKeyEntryCompat(PrivateKeyEntry::class.java, hybridAESEncryptor, options, requireAuthentication, usesKeystoreSuffix)
+            ?: return null
           return hybridAESEncryptor.decryptItem(key, encryptedItem, privateKeyEntry, options, authenticationHelper)
         }
         else -> {
@@ -141,7 +157,15 @@ open class SecureStoreModule : Module() {
       Log.w(TAG, "The requested key has been permanently invalidated. Returning null")
       return null
     } catch (e: BadPaddingException) {
-      throw (DecryptException("Could not decrypt the value with provided keychain $legacyReadFailedWarning", key, options.keychainService, e))
+      // The key from the KeyStore is unable to decode the entry. This is because a new key was generated, but the entries are encrypted using the old one.
+      // This usually means that the user has reinstalled the app. We can safely remove the old value and return null as it's impossible to decrypt it.
+      Log.w(
+        TAG,
+        "Failed to decrypt the entry for $key under keychain ${options.keychainService}. " +
+          "The entry in shared preferences is out of sync with the keystore. It will be removed, returning null."
+      )
+      deleteItemImpl(key, options)
+      return null
     } catch (e: GeneralSecurityException) {
       throw (DecryptException(e.message, key, options.keychainService, e))
     } catch (e: CodedException) {
@@ -175,8 +199,8 @@ open class SecureStoreModule : Module() {
        versions we store an asymmetric key pair and use hybrid encryption. We store the scheme we
        use in the encrypted JSON item so that we know how to decode and decrypt it when reading
        back a value.
-      */
-      val secretKeyEntry: SecretKeyEntry = getKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
+       */
+      val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
       val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
       saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
@@ -240,10 +264,13 @@ open class SecureStoreModule : Module() {
   }
 
   private fun removeKeyFromKeystore(keyStoreAlias: String, keychainService: String) {
+    keyStore.deleteEntry(keyStoreAlias)
+    removeAllEntriesUnderKeychainService(keychainService)
+  }
+
+  private fun removeAllEntriesUnderKeychainService(keychainService: String) {
     val sharedPreferences = getSharedPreferences()
     val allEntries: Map<String, *> = sharedPreferences.all
-
-    keyStore.deleteEntry(keyStoreAlias)
 
     // In order to avoid decryption failures we need to remove all entries that are using the deleted encryption key
     for ((key: String, value) in allEntries) {
@@ -293,26 +320,36 @@ open class SecureStoreModule : Module() {
     encryptor: KeyBasedEncryptor<E>,
     options: SecureStoreOptions,
     requireAuthentication: Boolean
-  ): E {
+  ): E? {
     val keystoreAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication)
-    val keyStoreEntry = if (!keyStore.containsAlias(keystoreAlias)) {
-      // Android won't allow us to generate the keys if the device doesn't support biometrics or no biometrics are enrolled
-      if (requireAuthentication) {
-        authenticationHelper.assertBiometricsSupport()
-      }
-      encryptor.initializeKeyStoreEntry(keyStore, options)
-    } else {
+    return if (keyStore.containsAlias(keystoreAlias)) {
       val entry = keyStore.getEntry(keystoreAlias, null)
       if (!keyStoreEntryClass.isInstance(entry)) {
         throw KeyStoreException("The entry for the keystore alias \"$keystoreAlias\" is not a ${keyStoreEntryClass.simpleName}")
       }
       keyStoreEntryClass.cast(entry)
         ?: throw KeyStoreException("The entry for the keystore alias \"$keystoreAlias\" couldn't be cast to correct class")
+    } else {
+      null
     }
-    return keyStoreEntry
   }
 
-  private fun <E : KeyStore.Entry> getPreferredKeyEntry(
+  private fun <E : KeyStore.Entry> getOrCreateKeyEntry(
+    keyStoreEntryClass: Class<E>,
+    encryptor: KeyBasedEncryptor<E>,
+    options: SecureStoreOptions,
+    requireAuthentication: Boolean
+  ): E {
+    return getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthentication) ?: run {
+      // Android won't allow us to generate the keys if the device doesn't support biometrics or no biometrics are enrolled
+      if (requireAuthentication) {
+        authenticationHelper.assertBiometricsSupport()
+      }
+      encryptor.initializeKeyStoreEntry(keyStore, options)
+    }
+  }
+
+  private fun <E : KeyStore.Entry> getKeyEntryCompat(
     keyStoreEntryClass: Class<E>,
     encryptor: KeyBasedEncryptor<E>,
     options: SecureStoreOptions,

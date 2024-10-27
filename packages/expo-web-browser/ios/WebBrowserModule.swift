@@ -7,6 +7,7 @@ import AuthenticationServices
 final public class WebBrowserModule: Module {
   private var currentWebBrowserSession: WebBrowserSession?
   private var currentAuthSession: WebAuthSession?
+  private var vcDidPresent = false
 
   private func isValid(url: URL) -> Bool {
     return url.scheme == "http" || url.scheme == "https"
@@ -16,6 +17,11 @@ final public class WebBrowserModule: Module {
     Name("ExpoWebBrowser")
 
     AsyncFunction("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) in
+      if vcDidPresent {
+        self.currentWebBrowserSession = nil
+        vcDidPresent = false
+      }
+
       guard self.currentWebBrowserSession == nil else {
         throw WebBrowserAlreadyOpenException()
       }
@@ -27,15 +33,19 @@ final public class WebBrowserModule: Module {
       self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) { [promise] type in
         promise.resolve(["type": type])
         self.currentWebBrowserSession = nil
+      } didPresent: {
+        self.vcDidPresent = true
       }
 
       self.currentWebBrowserSession?.open()
     }
     .runOnQueue(.main)
 
-    AsyncFunction("dismissBrowser") {
-      currentWebBrowserSession?.dismiss()
-      currentWebBrowserSession = nil
+    AsyncFunction("dismissBrowser") { (promise: Promise) in
+      currentWebBrowserSession?.dismiss { type in
+        self.currentWebBrowserSession = nil
+        promise.resolve(["type": type])
+      }
     }
     .runOnQueue(.main)
 

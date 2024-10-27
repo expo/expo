@@ -8,8 +8,11 @@ const ENABLED_CALLER = {
   isDev: false,
   isServer: false,
 };
+
 describe(getInlineEnvVarsEnabled, () => {
   it(`enables under the correct conditions`, () => {
+    process.env.NODE_ENV = 'test';
+    process.env.BABEL_ENV = 'test';
     // Defaults to on.
     expect(getInlineEnvVarsEnabled({})).toBe(true);
 
@@ -149,7 +152,13 @@ it(`does not inline environment variables inside of node modules`, () => {
 
   const options = {
     ...DEF_OPTIONS,
-    filename: '/node_modules/foo/bar.js',
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: true,
+      isNodeModule: true,
+    }),
   };
 
   const sourceCode = `

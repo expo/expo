@@ -33,16 +33,9 @@ function _fsExtra() {
   };
   return data;
 }
-function _jimpCompact() {
-  const data = _interopRequireDefault(require("jimp-compact"));
-  _jimpCompact = function () {
-    return data;
-  };
-  return data;
-}
-function path() {
-  const data = _interopRequireWildcard(require("path"));
-  path = function () {
+function _path() {
+  const data = _interopRequireDefault(require("path"));
+  _path = function () {
     return data;
   };
   return data;
@@ -54,11 +47,7 @@ function _AssetContents() {
   };
   return data;
 }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-// @ts-ignore
-
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:assets');
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreen.imageset';
@@ -72,7 +61,6 @@ const withIosSplashAssets = (config, splash) => {
     return config;
   }
   return (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
-    var _splash$dark, _splash$dark2;
     const iosNamedProjectRoot = _configPlugins().IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
     await createSplashScreenBackgroundImageAsync({
       iosNamedProjectRoot,
@@ -82,9 +70,9 @@ const withIosSplashAssets = (config, splash) => {
       projectRoot: config.modRequest.projectRoot,
       iosNamedProjectRoot,
       image: splash.image,
-      darkImage: (_splash$dark = splash.dark) === null || _splash$dark === void 0 ? void 0 : _splash$dark.image,
+      darkImage: splash.dark?.image,
       tabletImage: splash.tabletImage,
-      darkTabletImage: (_splash$dark2 = splash.dark) === null || _splash$dark2 === void 0 ? void 0 : _splash$dark2.tabletImage
+      darkTabletImage: splash.dark?.tabletImage
     });
     return config;
   }]);
@@ -102,7 +90,7 @@ async function configureImageAssets({
   tabletImage,
   darkTabletImage
 }) {
-  const imageSetPath = path().resolve(iosNamedProjectRoot, IMAGESET_PATH);
+  const imageSetPath = _path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH);
 
   // ensure old SplashScreen imageSet is removed
   await _fsExtra().default.remove(imageSetPath);
@@ -126,8 +114,11 @@ async function configureImageAssets({
   });
 }
 async function createPngFileAsync(color, filePath) {
-  const png = new (_jimpCompact().default)(1, 1, color);
-  return png.writeAsync(filePath);
+  const pngBuffer = await (0, _imageUtils().createSquareAsync)({
+    size: 1,
+    color
+  });
+  await _fsExtra().default.writeFile(filePath, pngBuffer);
 }
 async function createBackgroundImagesAsync({
   iosNamedProjectRoot,
@@ -138,7 +129,7 @@ async function createBackgroundImagesAsync({
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
-      await createPngFileAsync(item, path().resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH, fileName));
+      await createPngFileAsync(item, _path().default.resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH, fileName));
     },
     anyItem: color,
     darkItem: darkColor,
@@ -168,7 +159,7 @@ async function copyImageFiles({
       });
       // Write image buffer to the file system.
       // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
-      await _fsExtra().default.writeFile(path().resolve(iosNamedProjectRoot, IMAGESET_PATH, fileName), source);
+      await _fsExtra().default.writeFile(_path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH, fileName), source);
     },
     anyItem: image,
     darkItem: darkImage,
@@ -190,12 +181,11 @@ async function createSplashScreenBackgroundImageAsync({
   iosNamedProjectRoot,
   splash
 }) {
-  var _splash$dark3, _splash$dark4;
   const color = splash.backgroundColor;
-  const darkColor = (_splash$dark3 = splash.dark) === null || _splash$dark3 === void 0 ? void 0 : _splash$dark3.backgroundColor;
+  const darkColor = splash.dark?.backgroundColor;
   const tabletColor = splash.tabletBackgroundColor;
-  const darkTabletColor = (_splash$dark4 = splash.dark) === null || _splash$dark4 === void 0 ? void 0 : _splash$dark4.tabletBackgroundColor;
-  const imagesetPath = path().join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
+  const darkTabletColor = splash.dark?.tabletBackgroundColor;
+  const imagesetPath = _path().default.join(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH);
   // Ensure the Images.xcassets/... path exists
   await _fsExtra().default.remove(imagesetPath);
   await _fsExtra().default.ensureDir(imagesetPath);
@@ -207,7 +197,7 @@ async function createSplashScreenBackgroundImageAsync({
     darkTabletColor: darkTabletColor ? darkTabletColor : null
   });
   await writeContentsJsonFileAsync({
-    assetPath: path().resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH),
+    assetPath: _path().default.resolve(iosNamedProjectRoot, BACKGROUND_IMAGESET_PATH),
     image: PNG_FILENAME,
     darkImage: darkColor ? DARK_PNG_FILENAME : null,
     tabletImage: tabletColor ? TABLET_PNG_FILENAME : null,
@@ -265,7 +255,7 @@ function buildContentsJsonImages({
   darkTabletImage && (0, _AssetContents().createContentsJsonItem)({
     idiom: 'ipad',
     appearances: darkAppearances,
-    filename: darkTabletImage !== null && darkTabletImage !== void 0 ? darkTabletImage : undefined,
+    filename: darkTabletImage ?? undefined,
     scale: '1x'
   }), darkTabletImage && (0, _AssetContents().createContentsJsonItem)({
     idiom: 'ipad',

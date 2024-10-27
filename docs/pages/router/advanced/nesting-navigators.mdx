@@ -4,8 +4,6 @@ description: Learn how to nest navigators in Expo Router.
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 > **warning** Navigation UI elements (Link, Tabs, Stack) may move out of the Expo Router library in the future.
 
@@ -17,31 +15,31 @@ Consider the following file structure which is used as an example:
 
 <FileTree
   files={[
-    'app/_layout.js',
-    'app/index.js',
-    'app/home/_layout.js',
-    'app/home/feed.js',
-    'app/home/messages.js',
+    'app/_layout.tsx',
+    'app/index.tsx',
+    'app/home/_layout.tsx',
+    'app/home/feed.tsx',
+    'app/home/messages.tsx',
   ]}
 />
 
-In the above example, **app/home/feed.js** matches `/home/feed`, and **app/home/messages.js** matches `/home/messages`.
+In the above example, **app/home/feed.tsx** matches `/home/feed`, and **app/home/messages.tsx** matches `/home/messages`.
 
-```jsx app/_layout.js
+```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default Stack;
 ```
 
-Both **app/home/\_layout.js** and **app/index.js** below are nested in the **app/\_layout.js** layout so that it will be rendered as a stack.
+Both **app/home/\_layout.tsx** and **app/index.tsx** below are nested in the **app/\_layout.tsx** layout so that it will be rendered as a stack.
 
-```jsx app/home/_layout.js
+```tsx app/home/_layout.tsx
 import { Tabs } from 'expo-router';
 
 export default Tabs;
 ```
 
-```jsx app/index.js
+```tsx app/index.tsx
 import { Link } from 'expo-router';
 
 export default function Root() {
@@ -49,9 +47,9 @@ export default function Root() {
 }
 ```
 
-Both **app/home/feed.js** and **app/home/messages.js** below are nested in the **home/\_layout.js** layout, so it will be rendered as a tab.
+Both **app/home/feed.tsx** and **app/home/messages.tsx** below are nested in the **home/\_layout.tsx** layout, so it will be rendered as a tab.
 
-```jsx app/home/feed.js
+```tsx app/home/feed.tsx
 import { View, Text } from 'react-native';
 
 export default function Feed() {
@@ -63,7 +61,7 @@ export default function Feed() {
 }
 ```
 
-```jsx app/home/messages.js
+```tsx app/home/messages.tsx
 import { View, Text } from 'react-native';
 
 export default function Messages() {
@@ -81,7 +79,7 @@ In React Navigation, navigating to a specific nested screen can be controlled by
 
 For example, from the initial screen inside the `root` navigator, you want to navigate to a screen called `media` inside `settings` (a nested navigator). In React Navigation, this is done as shown in the example below:
 
-```js React Navigation
+```jsx React Navigation
 navigation.navigate('root', {
   screen: 'settings',
   params: {
@@ -92,15 +90,6 @@ navigation.navigate('root', {
 
 In Expo Router, you can use `router.push()` to achieve the same result. There is no need to pass the screen name in the params explicitly.
 
-```js Expo Router
+```jsx Expo Router
 router.push('/root/settings/media');
 ```
-
-## Next steps
-
-<BoxLink
-  title="Modals"
-  Icon={BookOpen02Icon}
-  description="Learn how to use modals in Expo Router."
-  href="/router/advanced/modals"
-/>

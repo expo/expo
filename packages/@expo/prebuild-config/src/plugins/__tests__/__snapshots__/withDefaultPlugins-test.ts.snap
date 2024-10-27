@@ -405,7 +405,6 @@ exports[`built-in plugins compiles mods 1`] = `
       "usesNonExemptEncryption": true,
     },
     "entitlements": {
-      "aps-environment": "development",
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
       ],
@@ -449,7 +448,7 @@ exports[`built-in plugins compiles mods 1`] = `
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
-        "armv7",
+        "arm64",
       ],
       "UIRequiresFullScreen": true,
       "UIStatusBarStyle": "UIStatusBarStyleDefault",
@@ -498,6 +497,7 @@ exports[`built-in plugins compiles mods 1`] = `
     "web",
   ],
   "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
   "splash": {
@@ -667,10 +667,10 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Automatically convert third-party libraries to use AndroidX",
+            "value": "Enable AAPT2 PNG crunching",
           },
           {
-            "key": "android.enableJetifier",
+            "key": "android.enablePngCrunchInReleaseBuilds",
             "type": "property",
             "value": "true",
           },
@@ -787,6 +787,18 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
+          {
+            "type": "comment",
+            "value": "Use legacy packaging to compress native libraries in the resulting APK.",
+          },
+          {
+            "key": "expo.useLegacyPackaging",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
+          },
         ],
         "manifest": {
           "manifest": {
@@ -802,14 +814,14 @@ exports[`built-in plugins introspects mods 1`] = `
                   "android:label": "@string/app_name",
                   "android:name": ".MainApplication",
                   "android:roundIcon": "@mipmap/ic_launcher_round",
+                  "android:supportsRtl": "true",
                   "android:theme": "@style/AppTheme",
                 },
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|uiMode",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
                       "android:exported": "true",
-                      "android:label": "@string/app_name",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
                       "android:screenOrientation": "unspecified",
@@ -925,6 +937,12 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
                       "android:value": "650",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
                     },
                   },
                   {
@@ -1076,6 +1094,12 @@ exports[`built-in plugins introspects mods 1`] = `
                 },
                 "_": "true",
               },
+              {
+                "$": {
+                  "name": "expo_runtime_version",
+                },
+                "_": "1.0",
+              },
             ],
           },
         },
@@ -1117,15 +1141,9 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
-                      "name": "android:windowTranslucentStatus",
+                      "name": "android:statusBarColor",
                     },
-                    "_": "true",
-                  },
-                  {
-                    "$": {
-                      "name": "colorPrimaryDark",
-                    },
-                    "_": "@color/colorPrimaryDark",
+                    "_": "@android:color/transparent",
                   },
                   {
                     "$": {
@@ -1193,7 +1211,6 @@ exports[`built-in plugins introspects mods 1`] = `
       },
       "ios": {
         "entitlements": {
-          "aps-environment": "development",
           "com.apple.developer.associated-domains": [
             "applinks:https://pillarvalley.netlify.app",
           ],
@@ -1204,6 +1221,7 @@ exports[`built-in plugins introspects mods 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
+          "EXUpdatesRuntimeVersion": "1.0",
         },
         "infoPlist": {
           "CADisableMinimumFrameDurationOnPhone": true,
@@ -1241,7 +1259,7 @@ exports[`built-in plugins introspects mods 1`] = `
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
-            "armv7",
+            "arm64",
           ],
           "UIRequiresFullScreen": true,
           "UIStatusBarStyle": "UIStatusBarStyleDefault",
@@ -1262,6 +1280,7 @@ exports[`built-in plugins introspects mods 1`] = `
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
           "expo.jsEngine": "hermes",
+          "newArchEnabled": "false",
         },
         "splashScreenStoryboard": {
           "document": {
@@ -1663,7 +1682,6 @@ exports[`built-in plugins introspects mods 1`] = `
       "usesNonExemptEncryption": true,
     },
     "entitlements": {
-      "aps-environment": "development",
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
       ],
@@ -1707,7 +1725,7 @@ exports[`built-in plugins introspects mods 1`] = `
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
-        "armv7",
+        "arm64",
       ],
       "UIRequiresFullScreen": true,
       "UIStatusBarStyle": "UIStatusBarStyleDefault",
@@ -1756,6 +1774,7 @@ exports[`built-in plugins introspects mods 1`] = `
     "web",
   ],
   "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
   "splash": {
@@ -1831,6 +1850,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           },
         },
         "gradleProperties": [
+          {
+            "key": "newArchEnabled",
+            "type": "property",
+            "value": "false",
+          },
           {
             "key": "hermesEnabled",
             "type": "property",
@@ -1958,6 +1982,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                 ],
                 "meta-data": [
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
+                    },
+                  },
                   {
                     "$": {
                       "android:name": "expo.modules.updates.ENABLED",
@@ -2120,6 +2150,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 },
                 "_": "true",
               },
+              {
+                "$": {
+                  "name": "expo_runtime_version",
+                },
+                "_": "1.0",
+              },
             ],
           },
         },
@@ -2143,15 +2179,9 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
-                      "name": "android:windowTranslucentStatus",
+                      "name": "android:statusBarColor",
                     },
-                    "_": "true",
-                  },
-                  {
-                    "$": {
-                      "name": "colorPrimaryDark",
-                    },
-                    "_": "@color/colorPrimaryDark",
+                    "_": "@android:color/transparent",
                   },
                   {
                     "$": {
@@ -2193,7 +2223,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       },
       "ios": {
         "entitlements": {
-          "aps-environment": "development",
           "com.apple.developer.associated-domains": [
             "applinks:https://pillarvalley.netlify.app",
           ],
@@ -2204,6 +2233,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
+          "EXUpdatesRuntimeVersion": "1.0",
         },
         "infoPlist": {
           "CADisableMinimumFrameDurationOnPhone": true,
@@ -2265,6 +2295,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "podfileProperties": {
           "expo.jsEngine": "hermes",
+          "newArchEnabled": "false",
         },
         "splashScreenStoryboard": {
           "document": {
@@ -2620,7 +2651,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
       "usesNonExemptEncryption": true,
     },
     "entitlements": {
-      "aps-environment": "development",
       "com.apple.developer.associated-domains": [
         "applinks:https://pillarvalley.netlify.app",
       ],
@@ -2717,6 +2747,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     "web",
   ],
   "primaryColor": "#fff000",
+  "runtimeVersion": "1.0",
   "scheme": "my-app-redirect",
   "slug": "mycoolapp",
   "splash": {

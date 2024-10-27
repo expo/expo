@@ -28,8 +28,6 @@ struct MetadataOptions: Record {
   @Field
   var keywords: [String]?
   @Field
-  var dateModified: Date?
-  @Field
   var userInfo: [String: AnyHashable]?
   @Field
   var description: String?

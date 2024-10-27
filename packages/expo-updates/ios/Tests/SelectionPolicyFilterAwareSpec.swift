@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class SelectionPolicyFilterAwareSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var updateDefault1: Update!
     var updateDefault2: Update!
     var updateRollout0: Update!
@@ -45,8 +45,8 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
       ])
       let database = UpdatesDatabase()
 
-      updateRollout0 = NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: [
+      updateRollout0 = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e71",
           "createdAt": "2021-01-10T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -59,8 +59,8 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
         database: database
       )
 
-      updateDefault1 = NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: [
+      updateDefault1 = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e72",
           "createdAt": "2021-01-11T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -73,8 +73,8 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
         database: database
       )
       
-      updateRollout1 = NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: [
+      updateRollout1 = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e73",
           "createdAt": "2021-01-12T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -87,8 +87,8 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
         database: database
       )
       
-      updateDefault2 = NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: [
+      updateDefault2 = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e74",
           "createdAt": "2021-01-13T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -101,8 +101,8 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
         database: database
       )
       
-      updateRollout2 = NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: [
+      updateRollout2 = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e75",
           "createdAt": "2021-01-14T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -115,8 +115,8 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
         database: database
       )
       
-      updateMultipleFilters = NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: [
+      updateMultipleFilters = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e72",
           "createdAt": "2021-01-11T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -129,8 +129,8 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
         database: database
       )
       
-      updateNoMetadata = NewUpdate.update(
-        withNewManifest: NewManifest(rawManifestJSON: [
+      updateNoMetadata = ExpoUpdatesUpdate.update(
+        withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e72",
           "createdAt": "2021-01-11T19:39:22.480Z",
           "runtimeVersion": "1.0",

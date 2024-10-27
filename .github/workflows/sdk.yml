@@ -32,12 +32,15 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
-        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
+        if: github.event_name == 'pull_request'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -56,7 +59,7 @@ jobs:
           else
             # On push event check packages changed since previous remote head.
             # In pull requests and workflow_dispatch events check all packages changed in the entire PR.
-            bin/expotools check-packages --since ${{ github.event.before || github.base_ref || 'main' }}
+            bin/expotools check-packages --since ${{ github.base_ref || github.event.before || 'main' }}
           fi
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3

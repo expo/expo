@@ -1,33 +1,62 @@
 ---
-title: Configure with app.json/app.config.js
-description: Learn about what is app config and how you can dynamically use it by customizing it.
+title: Configure with app config
+description: Learn about what app.json/app.config.js/app.config.ts files are and how you can customize and use them dynamically.
 ---
 
-import PossibleRedirectNotification from '~/components/plugins/PossibleRedirectNotification';
+import { DocsLogo } from '@expo/styleguide';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import PossibleRedirectNotification from '~/ui/components/PossibleRedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
 
 <PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
 
-The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring how a project loads in [Expo Go](/get-started/expo-go/), [Expo Prebuild](/workflow/prebuild) generation, and the OTA update manifest. You can think of this as an `index.html` but for React Native apps.
+The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring [Expo Prebuild](/workflow/prebuild) generation, how a project loads in [Expo Go](/get-started/expo-go/), and the OTA update manifest.
 
-It must be located at the root of your project, next to the **package.json**. Here is a bare-minimum example:
+It must be located at the root of your project, next to the **package.json**. Here is a minimal example:
 
-```json
+```json app.json
 {
-  "expo": {
-    "name": "My app",
-    "slug": "my-app"
-  }
+  "name": "My app",
+  "slug": "my-app"
 }
 ```
 
-Most configuration from the app config is accessible at runtime from the JavaScript code using [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties). Sensitive information such as secret keys are removed.
+If your Expo config has a top-level `expo: {}` object, then this will be used in place of the root object and all other keys will be ignored.
+
+<BoxLink
+  title="App config schema reference"
+  description="Explore the full schema of the app config (app.json/app.config.js)."
+  href="/versions/latest/config/app/"
+  Icon={DocsLogo}
+/>
 
 ## Properties
 
-The app config configures many things such as app name, icon, splash screen, deep linking scheme, API keys to use for some services and so on. For a complete list of available properties, see [app.json/app.config.js reference](/versions/latest/config/app/).
+The app config configures many things such as app name, icon, splash screen, deep linking scheme, API keys to use for some services and so on. For a complete list of available properties, see [app.json/app.config.js/app.config.ts reference](/versions/latest/config/app/).
 
 > **info** Do you use Visual Studio Code? If so, we recommend that you install the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) extension to get auto-completion of properties in **app.json** files.
+
+## Reading configuration values in your app
+
+Most configuration in the app config is accessible at runtime from your JavaScript code, using [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties). You **should not** include any sensitive information in the app config (with a few exceptions for fields that are filtered out, as outlined below).
+
+You can verify which configuration will be embedded in your builds/updates and available at runtime by running `npx expo config --type public`.
+
+<Collapsible summary="Which fields are filtered out of the public app config?">
+
+The following fields are filtered out of the public app config (and not accessible through the `Constants.expoConfig` object):
+
+- [`hooks`](/versions/latest/config/app/#hooks)
+- [`ios.config`](/versions/latest/config/app/#config)
+- [`android.config`](/versions/latest/config/app/#config-1)
+- [`updates.codeSigningCertificate`](/versions/latest/config/app/#codesigningcertificate)
+- [`updates.codeSigningMetadata`](/versions/latest/config/app/#codesigningmetadata)
+
+</Collapsible>
+
+> **warning** You should also avoid importing **app.json** or **app.config.js** directly in your JavaScript code, because this will import the entire file rather than a processed version of it. Instead, use [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties) to access the configuration.
 
 ## Extending configuration
 
@@ -37,10 +66,10 @@ Library authors can extend the app config by using [Expo Config plugins](/config
 
 ## Dynamic configuration
 
-For more customization, you can use the JavaScript or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of) (**app.config.js**, or **app.config.ts**). These configs have the following properties:
+For more customization, you can use the JavaScript (**app.config.js**) or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of) (**app.config.ts**). These configs have the following properties:
 
 - Comments, variables, and single quotes.
-- Importing/requiring other JavaScript files. Using import/export syntax in external files is not supported. All imported files must be transpiled to support your current version of Node.js.
+- ESM import syntax (the `import` keyword) is not supported, except when using [TypeScript with `ts-node`](/guides/typescript/#appconfigjs). JS files that are compatible with your current version of Node.js can be imported with `require()`.
 - TypeScript support with nullish coalescing and optional chaining.
 - Updated whenever Metro bundler reloads.
 - Provide environment information to your app.
@@ -75,9 +104,7 @@ For example, your **app.json** could look like this:
 
 ```json app.json
 {
-  "expo": {
-    "name": "My App"
-  }
+  "name": "My App"
 }
 ```
 
@@ -134,7 +161,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 });
 ```
 
-If you want to import other TypeScript files or customize the language features, we recommend using `ts-node` as described in [Using TypeScript](/guides/typescript#appconfigjs).
+To import other TypeScript files into **app.config.ts** or customize the language features, we recommend using [`ts-node`](/guides/typescript/#appconfigjs). `ts-node` also enables using `import` syntax in any file imported by **app.config.ts**. This means you can write local [config plugins](/config-plugins/introduction/) in TypeScript with full language features.
 
 ### Configuration resolution rules
 
@@ -145,3 +172,6 @@ There are two different types of configs: static (**app.config.json**, **app.jso
 3. If the dynamic config returns a function, then the static config is passed to the function with `({ config }) => ({})`. This function can then mutate the static config values. Think of this like middleware for the static config.
 4. The return value from the dynamic config is used as the final config. It cannot have any promises.
 5. All functions in the config are evaluated and serialized before any tool in the Expo ecosystem uses it. The config must be a JSON manifest when it is hosted.
+6. If the final config object has a top-level `expo: {}` object, then this will be used in place of the root object and all other keys will be ignored.
+
+Running `npx expo config` will display the final configuration that will be used in Expo CLI after resolution has occurred.

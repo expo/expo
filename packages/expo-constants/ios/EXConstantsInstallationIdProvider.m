@@ -1,5 +1,4 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
-
 #import <EXConstants/EXConstantsInstallationIdProvider.h>
 
 static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallationUUIDKey";
@@ -9,6 +8,7 @@ static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUU
 
 - (NSString *)getOrCreateInstallationId
 {
+#if TARGET_OS_IOS || TARGET_OS_TV
   NSString *installationId = [self getInstallationId];
   if (installationId) {
     return installationId;
@@ -17,6 +17,9 @@ static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUU
   installationId = [[NSUUID UUID] UUIDString];
   [self setInstallationId:installationId error:NULL];
   return installationId;
+#elif TARGET_OS_OSX
+  return nil;
+#endif
 }
 
 - (nullable NSString *)getInstallationId
@@ -37,7 +40,7 @@ static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUU
   if (installationId) {
     return installationId;
   }
-  
+  // Uses required reason API based on the following reason: CA92.1
   NSString *legacyUUID = [[NSUserDefaults standardUserDefaults] stringForKey:kEXDeviceInstallationUUIDLegacyKey];
   if (legacyUUID) {
     installationId = legacyUUID;

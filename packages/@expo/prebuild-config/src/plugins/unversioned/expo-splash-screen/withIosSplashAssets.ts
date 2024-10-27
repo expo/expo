@@ -1,10 +1,8 @@
 import { ConfigPlugin, IOSConfig, withDangerousMod } from '@expo/config-plugins';
-import { generateImageAsync } from '@expo/image-utils';
+import { createSquareAsync, generateImageAsync } from '@expo/image-utils';
 import Debug from 'debug';
 import fs from 'fs-extra';
-// @ts-ignore
-import Jimp from 'jimp-compact';
-import * as path from 'path';
+import path from 'path';
 
 import { IOSSplashConfig } from './getIosSplashConfig';
 import {
@@ -97,9 +95,9 @@ async function configureImageAssets({
   });
 }
 
-async function createPngFileAsync(color: string, filePath: string) {
-  const png = new Jimp(1, 1, color);
-  return png.writeAsync(filePath);
+async function createPngFileAsync(color: string, filePath: string): Promise<void> {
+  const pngBuffer = await createSquareAsync({ size: 1, color });
+  await fs.writeFile(filePath, pngBuffer);
 }
 
 async function createBackgroundImagesAsync({

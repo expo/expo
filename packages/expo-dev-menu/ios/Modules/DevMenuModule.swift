@@ -19,6 +19,8 @@ open class DevMenuModule: Module {
     }
 
     AsyncFunction("addDevMenuCallbacks") { (callbacks: [[String: Any]]) in
+      DevMenuManager.shared.registeredCallbacks.removeAll()
+
       callbacks.forEach { callback in
         guard let name = callback["name"] as? String else {
           return

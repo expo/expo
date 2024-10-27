@@ -1,3 +1,5 @@
+// Copyright © 2024 650 Industries.
+'use client';
 import * as React from 'react';
 import { Platform, processColor } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
@@ -6,7 +8,7 @@ import NativeLinearGradient from './NativeLinearGradient';
  */
 export class LinearGradient extends React.Component {
     render() {
-        const { colors, locations, start, end, ...props } = this.props;
+        const { colors, locations, start, end, dither, ...props } = this.props;
         let resolvedLocations = locations;
         if (locations && colors.length !== locations.length) {
             console.warn('LinearGradient colors and locations props should be arrays of the same length');
@@ -15,7 +17,7 @@ export class LinearGradient extends React.Component {
         return (<NativeLinearGradient {...props} colors={Platform.select({
                 web: colors,
                 default: colors.map(processColor),
-            })} locations={resolvedLocations} startPoint={_normalizePoint(start)} endPoint={_normalizePoint(end)}/>);
+            })} dither={Platform.select({ android: dither })} locations={resolvedLocations} startPoint={_normalizePoint(start)} endPoint={_normalizePoint(end)}/>);
     }
 }
 function _normalizePoint(point) {

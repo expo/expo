@@ -3,7 +3,7 @@
 fastlane_require 'fileutils'
 fastlane_require 'shellwords'
 
-fastlane_version "2.141.0"
+fastlane_version "2.225.0"
 default_platform :ios
 
 STAGING_API_URL = 'https://staging.exp.host/'
@@ -11,26 +11,28 @@ STAGING_API_URL = 'https://staging.exp.host/'
 # path relative to Fastfile
 output_directory = File.expand_path('./Deployment')
 
+EXPO_GO_PATH = File.expand_path('../apps/expo-go')
+
 def update_bundle_versions
   bundle_short_version = Actions.lane_context[SharedValues::VERSION_NUMBER]
   bundle_version = bundle_short_version + ".10" + number_of_commits.to_s
 
   puts "Setting CFBundleVersion for Exponent to #{bundle_version}..."
   set_info_plist_value(
-    path: "./ios/Exponent/Supporting/Info.plist",
+    path: File.join(EXPO_GO_PATH, 'ios/Exponent/Supporting/Info.plist'),
     key: "CFBundleVersion",
     value: bundle_version
   )
 
   puts "Setting CFBundleVersion to #{bundle_version} and CFBundleShortVersionString #{bundle_short_version} for ExpoNotificationServiceExtension..."
   set_info_plist_value(
-    path: "./ios/ExpoNotificationServiceExtension/Info.plist",
+    path: File.join(EXPO_GO_PATH, 'ios/ExpoNotificationServiceExtension/Info.plist'),
     key: "CFBundleVersion",
     value: bundle_version
   )
 
   set_info_plist_value(
-    path: "./ios/ExpoNotificationServiceExtension/Info.plist",
+    path: File.join(EXPO_GO_PATH, 'ios/ExpoNotificationServiceExtension/Info.plist'),
     key: "CFBundleShortVersionString",
     value: bundle_short_version
   )
@@ -42,7 +44,7 @@ end
 
 def save_original_info_plists
   update_info_plist(
-    xcodeproj: "ios/Exponent.xcodeproj",
+    xcodeproj: File.join(EXPO_GO_PATH, 'ios/Exponent.xcodeproj'),
     plist_path: "Exponent/Supporting/Info.plist",
     block: proc do |plist|
       @original_info_plist = Marshal.load(Marshal.dump(plist))
@@ -50,7 +52,7 @@ def save_original_info_plists
   )
 
   update_info_plist(
-    xcodeproj: "ios/Exponent.xcodeproj",
+    xcodeproj: File.join(EXPO_GO_PATH, 'ios/Exponent.xcodeproj'),
     plist_path: "ExpoNotificationServiceExtension/Info.plist",
     block: proc do |plist|
       @original_notification_extension_info_plist = Marshal.load(Marshal.dump(plist))
@@ -60,7 +62,7 @@ end
 
 def restore_original_info_plists
   update_info_plist(
-    xcodeproj: "ios/Exponent.xcodeproj",
+    xcodeproj: File.join(EXPO_GO_PATH, 'ios/Exponent.xcodeproj'),
     plist_path: "Exponent/Supporting/Info.plist",
     block: proc do |plist|
       puts "Restoring original Exponent/Info.plist..."
@@ -69,7 +71,7 @@ def restore_original_info_plists
   )
 
   update_info_plist(
-    xcodeproj: "ios/Exponent.xcodeproj",
+    xcodeproj: File.join(EXPO_GO_PATH, 'ios/Exponent.xcodeproj'),
     plist_path: "ExpoNotificationServiceExtension/Info.plist",
     block: proc do |plist|
       puts "Restoring original ExpoNotificationServiceExtension/Info.plist..."
@@ -80,7 +82,7 @@ end
 
 def remove_background_location
   update_info_plist(
-    xcodeproj: "ios/Exponent.xcodeproj",
+    xcodeproj: File.join(EXPO_GO_PATH, 'ios/Exponent.xcodeproj'),
     plist_path: "Exponent/Supporting/Info.plist",
     block: proc do |plist|
       puts "Removing background location permission strings and background mode..."
@@ -99,7 +101,7 @@ end
 
 def remove_background_audio
   update_info_plist(
-    xcodeproj: "ios/Exponent.xcodeproj",
+    xcodeproj: File.join(EXPO_GO_PATH, 'ios/Exponent.xcodeproj'),
     plist_path: "Exponent/Supporting/Info.plist",
     block: proc do |plist|
       puts "Removing background audio background mode..."
@@ -110,7 +112,7 @@ end
 
 def remove_background_notification
   update_info_plist(
-    xcodeproj: "ios/Exponent.xcodeproj",
+    xcodeproj: File.join(EXPO_GO_PATH, 'ios/Exponent.xcodeproj'),
     plist_path: "Exponent/Supporting/Info.plist",
     block: proc do |plist|
       puts "Removing remote-notification from UIBackgroundModes..."
@@ -130,8 +132,8 @@ platform :ios do
   before_all do
     FileUtils.mkdir_p(output_directory)
     Actions.lane_context[SharedValues::VERSION_NUMBER] = get_version_number(
-      xcodeproj: "./ios/Exponent.xcodeproj",
-      target: "Expo Go (versioned)"
+      xcodeproj: File.join(EXPO_GO_PATH, 'ios/Exponent.xcodeproj'),
+      target: "Expo Go"
     )
     save_original_info_plists
     update_bundle_versions
@@ -175,7 +177,7 @@ platform :ios do
     run_tests(
       workspace: workspace,
       scheme: generated_scheme,
-      devices: ["iPhone 14 Pro (16.4)"],
+      devices: ["iPhone 16 Pro (18.0)"],
       configuration: 'Debug',
       clean: false,
       skip_build: true,
@@ -189,7 +191,7 @@ platform :ios do
 
   lane :test do
     scan(
-      workspace: "ios/Exponent.xcworkspace",
+      workspace: File.join(EXPO_GO_PATH, 'ios/Exponent.xcworkspace'),
       scheme: "Exponent",
       devices: ["iPhone SE", "iPhone X"],
       clean: false,
@@ -200,11 +202,9 @@ platform :ios do
     directory = "./ios/simulator-build"
     puts "Build will be written to: " + File.expand_path(directory)
 
-    flavor = options.fetch(:flavor, "versioned")
-
     xcbuild(
-      workspace: "ios/Exponent.xcworkspace",
-      scheme: "Expo Go (#{flavor})",
+      workspace: File.join(EXPO_GO_PATH, 'ios/Exponent.xcworkspace'),
+      scheme: "Expo Go",
       sdk: "iphonesimulator",
       configuration: "Release",
       derivedDataPath: directory,
@@ -220,11 +220,9 @@ platform :ios do
     )
     puts "Build will be written to: " + File.expand_path(directory)
 
-    flavor = options.fetch(:flavor, "versioned")
-
     xcbuild(
-      workspace: "ios/Exponent.xcworkspace",
-      scheme: "Expo Go (#{flavor})",
+      workspace: File.join(EXPO_GO_PATH, 'ios/Exponent.xcworkspace'),
+      scheme: "Expo Go",
       configuration: "Release",
       derivedDataPath: directory,
       sdk: "iphoneos",
@@ -255,11 +253,9 @@ platform :ios do
 
     configure_for_app_store
 
-    flavor = options.fetch(:flavor, "versioned")
-
     gym(
-      workspace: "ios/Exponent.xcworkspace",
-      scheme: "Expo Go (#{flavor})",
+      workspace: File.join(EXPO_GO_PATH, 'ios/Exponent.xcworkspace'),
+      scheme: "Expo Go",
       configuration: "Release",
       xcargs: xcodebuild_args,
       clean: true,
@@ -313,37 +309,34 @@ platform :android do
     # UI.message "APK version #{version_name} has been uploaded to staging"
   end
 
-  lane :start do |flavor: "unversioned"|
+  lane :start do
     gradle(
-      project_dir: "android",
+      project_dir: "apps/expo-go/android",
       task: "install",
       build_type: "Debug",
-      flavor: flavor,
     )
     adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
   end
 
-  lane :build do |build_type: "Debug", flavor: "versioned", sign: true, aab: false|
+  lane :build do |build_type: "Debug", sign: true, aab: false|
     ENV['ANDROID_UNSIGNED'] = '1' unless sign
     gradle(
-      project_dir: "android",
+      project_dir: "apps/expo-go/android",
       task: aab ? "app:bundle": "app:assemble",
-      flavor: flavor,
       build_type: build_type,
     )
   end
 
-  lane :upload_crashlytics_symbols do |flavor: "versioned"|
+  lane :upload_crashlytics_symbols do
     gradle(
       project_dir: "android",
       task: "app:uploadCrashlyticsSymbolFile",
-      flavor: flavor,
       build_type: "Release",
     )
   end
 
   lane :prod_release do
-    build_gradle = File.read("../android/app/build.gradle")
+    build_gradle = File.read("../apps/expo-go/android/app/build.gradle")
 
     verify_changelog_exists(version_code: build_gradle.match(/versionCode (\d+)/)[1])
     verify_upload_to_staging(version_name: build_gradle.match(/versionName '([\d\.]+)'/)[1])
@@ -351,7 +344,7 @@ platform :android do
     supply(
       package_name: "host.exp.exponent",
       metadata_path: "./fastlane/android/metadata",
-      aab: "./android/app/build/outputs/bundle/versionedRelease/app-versioned-release.aab",
+      aab: "./apps/expo-go/android/app/build/outputs/bundle/release/app-release.aab",
       track: "production",
       skip_upload_images: true,
       skip_upload_screenshots: true

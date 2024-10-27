@@ -1,82 +1,93 @@
-import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import Link from 'next/link';
-import * as React from 'react';
+import { forwardRef, useState, type MouseEvent } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
-import { Tag } from '~/ui/components/Tag';
-import { MONOSPACE, CALLOUT } from '~/ui/components/Text';
-
-const STYLES_LINK = css`
-  transition: 50ms ease color;
-  display: flex;
-  text-decoration: none;
-  margin-bottom: 6px;
-  cursor: pointer;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  align-items: center;
-  justify-content: space-between;
-
-  :focus-visible {
-    position: relative;
-    z-index: 10;
-  }
-`;
-
-const STYLES_LINK_LABEL = css`
-  color: ${theme.text.secondary};
-
-  :hover {
-    color: ${theme.text.link};
-  }
-`;
-
-const STYLES_LINK_MONOSPACE = css`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  ${typography.fontSizes[13]}
-`;
-
-const STYLES_LINK_ACTIVE = css`
-  color: ${theme.text.link};
-`;
-
-const STYLES_TOOLTIP = css`
-  border-radius: 3px;
-  position: absolute;
-  background-color: ${theme.background.subtle};
-  max-width: 400px;
-  border: 1px solid ${theme.border.default};
-  padding: 3px 6px;
-  display: inline-block;
-`;
-
-const STYLES_TOOLTIP_TEXT = css`
-  ${typography.fontSizes[13]}
-  color: ${theme.text.default};
-  word-break: break-word;
-  word-wrap: normal;
-`;
-
-const STYLES_TOOLTIP_CODE = css`
-  ${typography.fontSizes[12]}
-`;
-
-const STYLES_TAG_CONTAINER = css`
-  display: inline-flex;
-`;
+import { MONOSPACE, CALLOUT, FOOTNOTE } from '~/ui/components/Text';
+import * as Tooltip from '~/ui/components/Tooltip';
 
 const NESTING_OFFSET = 12;
 
+type SidebarLinkProps = {
+  heading: Heading;
+  isActive: boolean;
+  shortenCode: boolean;
+  onClick: (event: MouseEvent<HTMLAnchorElement>) => void;
+};
+
+const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkProps>(
+  ({ heading, isActive, shortenCode, onClick }, ref) => {
+    const { slug, level, title, type, tags } = heading;
+
+    // preset for monospace, tail ellipsis, and removing extra bits like details of function signatures
+    const isCode = type === HeadingType.InlineCode;
+    // preset for monospace, tail ellipsis, don't touch the title otherwise
+    const isCodeOrFilePath = isCode || type === HeadingType.CodeFilePath;
+
+    const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL);
+    const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
+
+    const [tooltipVisible, setTooltipVisible] = useState(false);
+
+    const onMouseOver = (event: MouseEvent<HTMLAnchorElement>) => {
+      setTooltipVisible(isOverflowing(event.currentTarget));
+    };
+
+    const onMouseOut = () => {
+      setTooltipVisible(false);
+    };
+
+    const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
+    const isDeprecated = tags && tags.length > 0 ? tags.find(tag => tag === 'deprecated') : null;
+
+    return (
+      <Tooltip.Root open={tooltipVisible}>
+        <Tooltip.Trigger asChild>
+          <Link
+            ref={ref}
+            onMouseOver={isCode ? onMouseOver : undefined}
+            onMouseOut={isCode ? onMouseOut : undefined}
+            href={'#' + slug}
+            onClick={onClick}
+            className={mergeClasses(
+              'flex mb-1.5 truncate items-center justify-between !text-pretty',
+              convertToIndentClass(paddingLeft),
+              'focus-visible:relative focus-visible:z-10'
+            )}>
+            <TitleElement
+              className={mergeClasses(
+                'w-full !text-secondary hocus:!text-link',
+                isCodeOrFilePath && 'truncate !text-2xs',
+                isActive && '!text-link',
+                isDeprecated && 'opacity-80 line-through'
+              )}>
+              {displayTitle}
+            </TitleElement>
+          </Link>
+        </Tooltip.Trigger>
+        <Tooltip.Content
+          side="bottom"
+          align="start"
+          collisionPadding={{
+            right: 22,
+          }}>
+          <FOOTNOTE tag={isCode ? 'code' : undefined}>{displayTitle}</FOOTNOTE>
+        </Tooltip.Content>
+      </Tooltip.Root>
+    );
+  }
+);
+
 /**
- * Replaces `Module.someFunction(arguments: argType)`
- * with `someFunction()`
+ * Replaces `Module.someFunction<T>(arguments: argType)` with `someFunction()`
  */
 const trimCodedTitle = (str: string) => {
-  const dotIdx = str.indexOf('.');
-  if (dotIdx > 0) str = str.substring(dotIdx + 1);
+  if (!str.includes('...')) {
+    const dotIdx = str.indexOf('.');
+    if (dotIdx > 0) str = str.substring(dotIdx + 1);
+  }
+
+  str = str.replace(/<.+>/g, '');
 
   const parIdx = str.indexOf('(');
   if (parIdx > 0) str = str.substring(0, parIdx + 1) + ')';
@@ -85,9 +96,8 @@ const trimCodedTitle = (str: string) => {
 };
 
 /**
- * Determines if element is overflowing
- * (its children width exceeds container width)
- * @param {HTMLElement} el element to check
+ * Determines if element is overflowing (children width exceeds container width).
+ * @param {HTMLElement} el HTML element to check
  */
 const isOverflowing = (el: HTMLElement) => {
   if (!el || !el.children) {
@@ -96,88 +106,20 @@ const isOverflowing = (el: HTMLElement) => {
 
   const childrenWidth = Array.from(el.children).reduce((sum, child) => sum + child.scrollWidth, 0);
   const indent = parseInt(window.getComputedStyle(el).paddingLeft, 10);
-  return childrenWidth >= el.scrollWidth - indent;
+  return childrenWidth > 220 && childrenWidth >= el.scrollWidth - indent;
 };
 
-type TooltipProps = React.PropsWithChildren<{
-  isCode?: boolean;
-  topOffset: number;
-}>;
-
-const Tooltip = ({ children, isCode, topOffset }: TooltipProps) => {
-  const ContentWrapper = isCode ? MONOSPACE : CALLOUT;
-  return (
-    <div css={STYLES_TOOLTIP} style={{ right: 24, top: topOffset }}>
-      <ContentWrapper css={[STYLES_TOOLTIP_TEXT, isCode && STYLES_TOOLTIP_CODE]}>
-        {children}
-      </ContentWrapper>
-    </div>
-  );
-};
-
-type SidebarLinkProps = {
-  heading: Heading;
-  isActive: boolean;
-  shortenCode: boolean;
-  onClick: (event: React.MouseEvent<HTMLAnchorElement>) => void;
-};
-
-const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, SidebarLinkProps>(
-  ({ heading, isActive, shortenCode, onClick }, ref) => {
-    const { slug, level, title, type, tags } = heading;
-
-    const isCode = type === HeadingType.InlineCode;
-    const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL);
-    const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
-
-    const [tooltipVisible, setTooltipVisible] = React.useState(false);
-    const [tooltipOffset, setTooltipOffset] = React.useState(-20);
-    const onMouseOver = (event: React.MouseEvent<HTMLAnchorElement>) => {
-      setTooltipVisible(isOverflowing(event.currentTarget));
-      setTooltipOffset(
-        event.currentTarget.getBoundingClientRect().top + event.currentTarget.offsetHeight
-      );
-    };
-
-    const onMouseOut = () => {
-      setTooltipVisible(false);
-    };
-
-    const TitleElement = isCode ? MONOSPACE : CALLOUT;
-
-    return (
-      <>
-        {tooltipVisible && isCode && (
-          <Tooltip topOffset={tooltipOffset} isCode={isCode}>
-            {displayTitle}
-          </Tooltip>
-        )}
-        <Link
-          ref={ref}
-          onMouseOver={isCode ? onMouseOver : undefined}
-          onMouseOut={isCode ? onMouseOut : undefined}
-          href={'#' + slug}
-          onClick={onClick}
-          css={[STYLES_LINK, paddingLeft && { paddingLeft }]}>
-          <TitleElement
-            css={[
-              STYLES_LINK_LABEL,
-              isCode && STYLES_LINK_MONOSPACE,
-              isActive && STYLES_LINK_ACTIVE,
-            ]}>
-            {displayTitle}
-          </TitleElement>
-          {tags && tags.length ? (
-            <div css={STYLES_TAG_CONTAINER}>
-              {tags.map(tag => (
-                <Tag name={tag} type="toc" key={`${displayTitle}-${tag}`} />
-              ))}
-            </div>
-          ) : undefined}
-        </Link>
-      </>
-    );
+function convertToIndentClass(spacing: number) {
+  switch (spacing) {
+    case 12:
+      return 'pl-3';
+    case 24:
+      return 'pl-6';
+    case 36:
+      return 'pl-9';
+    default:
+      return '';
   }
-);
+}
 
 export default DocumentationSidebarRightLink;

@@ -7,8 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const node_fs_1 = __importDefault(require("node:fs"));
 // @ts-ignore: types node
 const node_path_1 = __importDefault(require("node:path"));
-function requireContext(base = '.', scanSubDirectories = true, regularExpression = /\.[tj]sx?$/) {
-    const files = {};
+function requireContext(base = '.', scanSubDirectories = true, regularExpression = /\.[tj]sx?$/, files = {}) {
     function readDirectory(directory) {
         node_fs_1.default.readdirSync(directory).forEach((file) => {
             const fullPath = node_path_1.default.resolve(directory, file);
@@ -18,18 +17,26 @@ function requireContext(base = '.', scanSubDirectories = true, regularExpression
                     readDirectory(fullPath);
                 return;
             }
-            if (!regularExpression.test(fullPath))
+            if (!regularExpression.test(relativePath))
                 return;
             files[relativePath] = true;
         });
     }
-    readDirectory(base);
+    if (node_fs_1.default.existsSync(base)) {
+        readDirectory(base);
+    }
     const context = Object.assign(function Module(file) {
         return require(node_path_1.default.join(base, file));
     }, {
         keys: () => Object.keys(files),
         resolve: (key) => key,
         id: '0',
+        __add(file) {
+            files[file] = true;
+        },
+        __delete(file) {
+            delete files[file];
+        },
     });
     return context;
 }

@@ -11,8 +11,12 @@ echo "Configuring module"
 "$script_dir/expo-module-configure"
 "$script_dir/expo-module-build"
 
-if [[ -d plugin ]]; then 
-  echo "Configuring plugin"
-  "$script_dir/expo-module-clean" plugin
-  "$script_dir/expo-module-build" plugin
-fi
+extra_module_build_types=("plugin" "cli" "utils" "scripts")
+for i in "${extra_module_build_types[@]}"
+do
+  if [[ -d "$i" ]]; then
+    echo "Configuring $i"
+    "$script_dir/expo-module-clean" "$i"
+    "$script_dir/expo-module-build" "$i"
+  fi
+done

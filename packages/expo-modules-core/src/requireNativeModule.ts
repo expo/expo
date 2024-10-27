@@ -1,31 +1,5 @@
-import { NativeModules } from 'react-native';
-
 import NativeModulesProxy from './NativeModulesProxy';
-
-type ExpoObject = {
-  modules:
-    | undefined
-    | {
-        [key: string]: any;
-      };
-  uuidv4: () => string;
-  uuidv5: (name: string, namespace: string) => string;
-};
-
-declare global {
-  // eslint-disable-next-line no-var
-  var expo: ExpoObject | undefined;
-
-  /**
-   * @deprecated `global.ExpoModules` is deprecated, use `global.expo.modules` instead.
-   */
-  // eslint-disable-next-line no-var
-  var ExpoModules:
-    | undefined
-    | {
-        [key: string]: any;
-      };
-}
+import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
 
 /**
  * Imports the native module registered with given name. In the first place it tries to load
@@ -57,28 +31,5 @@ export function requireOptionalNativeModule<ModuleType = any>(
 ): ModuleType | null {
   ensureNativeModulesAreInstalled();
 
-  return (
-    globalThis.expo?.modules?.[moduleName] ??
-    globalThis.ExpoModules?.[moduleName] ??
-    NativeModulesProxy[moduleName] ??
-    null
-  );
-}
-
-/**
- * Ensures that the native modules are installed in the current runtime.
- * Otherwise, it synchronously calls a native function that installs them.
- */
-function ensureNativeModulesAreInstalled(): void {
-  if (globalThis.expo) {
-    return;
-  }
-  try {
-    // TODO: ExpoModulesCore shouldn't be optional here,
-    // but to keep backwards compatibility let's just ignore it in SDK 50.
-    // In most cases the modules were already installed from the native side.
-    NativeModules.ExpoModulesCore?.installModules();
-  } catch (error) {
-    console.error(`Unable to install Expo modules: ${error}`);
-  }
+  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
 }

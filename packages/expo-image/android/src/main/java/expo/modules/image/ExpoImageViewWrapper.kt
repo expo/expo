@@ -26,11 +26,13 @@ import expo.modules.image.events.OkHttpProgressListener
 import expo.modules.image.okhttp.GlideUrlWrapper
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.DecodeFormat
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.ImageTransition
-import expo.modules.image.records.SourceMap
+import expo.modules.image.records.Source
+import expo.modules.image.svg.SVGPictureDrawable
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.tracing.beginAsyncTraceBlock
 import expo.modules.kotlin.tracing.trace
@@ -44,7 +46,7 @@ import kotlin.math.min
 @SuppressLint("ViewConstructor")
 class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   private val activity: Activity
-    get() = appContext.currentActivity ?: throw MissingActivity()
+    get() = appContext.throwingActivity
 
   internal val requestManager = getOrCreateRequestManager(appContext, activity)
   private val progressListener = OkHttpProgressListener(WeakReference(this))
@@ -72,13 +74,14 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal val onProgress by EventDispatcher<ImageProgressEvent>()
   internal val onError by EventDispatcher<ImageErrorEvent>()
   internal val onLoad by EventDispatcher<ImageLoadEvent>()
+  internal val onDisplay by EventDispatcher<Unit>()
 
-  internal var sources: List<SourceMap> = emptyList()
-  private val bestSource: SourceMap?
+  internal var sources: List<Source> = emptyList()
+  private val bestSource: Source?
     get() = getBestSource(sources)
 
-  internal var placeholders: List<SourceMap> = emptyList()
-  private val bestPlaceholder: SourceMap?
+  internal var placeholders: List<Source> = emptyList()
+  private val bestPlaceholder: Source?
     get() = getBestSource(placeholders)
 
   internal var blurRadius: Int? = null
@@ -127,7 +130,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var tintColor: Int? = null
     set(value) {
       field = value
-      activeView.setTintColor(value)
+      // To apply the tint color to the SVG, we need to recreate the drawable.
+      if (activeView.drawable is SVGPictureDrawable) {
+        shouldRerender = true
+      } else {
+        activeView.setTintColor(value)
+      }
     }
 
   internal var isFocusableProp: Boolean = false
@@ -160,6 +168,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       shouldRerender = true
     }
 
+  internal var decodeFormat: DecodeFormat = DecodeFormat.ARGB_8888
+    set(value) {
+      field = value
+      shouldRerender = true
+    }
+
   internal var autoplay: Boolean = true
 
   internal var priority: Priority = Priority.NORMAL
@@ -167,7 +181,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   private var borderRadius = FloatArray(9) { YogaConstants.UNDEFINED }
   private var borderWidth = FloatArray(9) { YogaConstants.UNDEFINED }
-  private var borderColor = Array(9) { YogaConstants.UNDEFINED to YogaConstants.UNDEFINED }
+  private var borderColor = Array(9) { YogaConstants.UNDEFINED.toInt() to YogaConstants.UNDEFINED }
 
   fun setBorderRadius(index: Int, radius: Float) {
     borderRadius[index] = radius
@@ -179,9 +193,9 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     activeView.setBorderWidth(index, width)
   }
 
-  fun setBorderColor(index: Int, rgb: Float, alpha: Float) {
+  fun setBorderColor(index: Int, rgb: Int, alpha: Float) {
     borderColor[index] = rgb to alpha
-    activeView.setBorderColor(index, rgb, alpha)
+    activeView.setBorderColor(index, rgb)
   }
 
   fun setIsAnimating(setAnimating: Boolean) {
@@ -204,7 +218,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   /**
    * Currently loaded source
    */
-  private var loadedSource: GlideModel? = null
+  private var loadedSource: GlideModelProvider? = null
 
   /**
    * Whether the transformation matrix should be reapplied
@@ -229,7 +243,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     view.isFocusable = isFocusableProp
     view.contentDescription = accessibilityLabel
     borderColor.forEachIndexed { index, (rgb, alpha) ->
-      view.setBorderColor(index, rgb, alpha)
+      view.setBorderColor(index, rgb)
     }
     borderRadius.forEachIndexed { index, value ->
       view.setBorderRadius(index, value)
@@ -301,6 +315,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           }
 
           configureView(newView, target, resource, isPlaceholder)
+
+          // Dispatch "onDisplay" event only for the main source (no placeholder).
+          if (target.hasSource) {
+            onDisplay.invoke(Unit)
+          }
+
           if (transitionDuration <= 0) {
             clearPreviousView()
             newView.alpha = 1f
@@ -388,7 +408,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
   }
 
-  private fun getBestSource(sources: List<SourceMap>): SourceMap? {
+  private fun getBestSource(sources: List<Source>): Source? {
     if (sources.isEmpty()) {
       return null
     }
@@ -402,7 +422,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       return null
     }
 
-    var bestSource: SourceMap? = null
+    var bestSource: Source? = null
     var bestFit = Double.MAX_VALUE
 
     sources.forEach {
@@ -427,19 +447,15 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   private fun createPropOptions(): RequestOptions {
     return RequestOptions()
-      .apply {
-        priority(this@ExpoImageViewWrapper.priority.toGlidePriority())
-
-        if (cachePolicy != CachePolicy.MEMORY_AND_DISK && cachePolicy != CachePolicy.MEMORY) {
-          skipMemoryCache(true)
-        }
-        if (cachePolicy == CachePolicy.NONE || cachePolicy == CachePolicy.MEMORY) {
-          diskCacheStrategy(DiskCacheStrategy.NONE)
-        }
-
-        blurRadius?.let {
-          transform(BlurTransformation(min(it, 25), 4))
-        }
+      .priority(this@ExpoImageViewWrapper.priority.toGlidePriority())
+      .customize(`when` = cachePolicy != CachePolicy.MEMORY_AND_DISK && cachePolicy != CachePolicy.MEMORY) {
+        skipMemoryCache(true)
+      }
+      .customize(`when` = cachePolicy == CachePolicy.NONE || cachePolicy == CachePolicy.MEMORY) {
+        diskCacheStrategy(DiskCacheStrategy.NONE)
+      }
+      .customize(blurRadius) {
+        transform(BlurTransformation(min(it, 25), 4))
       }
   }
 
@@ -451,14 +467,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     requestManager.clear(secondTarget)
   }
 
-  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false) = trace(Trace.tag, "rerenderIfNeeded(shouldRerenderBecauseOfResize=$shouldRerenderBecauseOfResize)") {
-    val bestSource = bestSource
-    val bestPlaceholder = bestPlaceholder
-
-    val sourceToLoad = bestSource?.createGlideModel(context)
-    val placeholder = bestPlaceholder?.createGlideModel(context)
+  private fun cleanIfNeeded(
+    newBestSource: Source?,
+    newBestSourceModel: GlideModelProvider?,
+    newBestPlaceholderModel: GlideModelProvider?
+  ): Boolean {
     // We only clean the image when the source is set to null and we don't have a placeholder or the view is empty.
-    if (width == 0 || height == 0 || (bestSource == null || sourceToLoad == null) && placeholder == null) {
+    if (width == 0 || height == 0 || (newBestSource == null || newBestSourceModel == null) && newBestPlaceholderModel == null) {
       firstView.recycleView()
       secondView.recycleView()
 
@@ -469,31 +484,80 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       loadedSource = null
       transformationMatrixChanged = false
       clearViewBeforeChangingSource = false
-      return@trace
+      return true
     }
 
-    val shouldRerender = sourceToLoad != loadedSource || shouldRerender || (sourceToLoad == null && placeholder != null)
-    if (shouldRerender || shouldRerenderBecauseOfResize) {
-      if (clearViewBeforeChangingSource) {
-        val activeView = if (firstView.drawable != null) {
-          firstView
-        } else {
-          secondView
+    return false
+  }
+
+  private fun createDownsampleStrategy(target: ImageViewWrapperTarget): DownsampleStrategy {
+    return if (!allowDownscaling) {
+      DownsampleStrategy.NONE
+    } else if (
+      contentFit != ContentFit.Fill &&
+      contentFit != ContentFit.None
+    ) {
+      ContentFitDownsampleStrategy(target, contentFit)
+    } else {
+      // it won't downscale the image if the image is smaller than hardware bitmap size limit
+      SafeDownsampleStrategy(decodeFormat)
+    }
+  }
+
+  private fun clearViewBeforeChangingSource() {
+    if (clearViewBeforeChangingSource) {
+      val activeView = if (firstView.drawable != null) {
+        firstView
+      } else {
+        secondView
+      }
+
+      activeView
+        .recycleView()
+        ?.apply {
+          clear(requestManager)
+        }
+    }
+  }
+
+  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false) =
+    trace(Trace.tag, "rerenderIfNeeded(shouldRerenderBecauseOfResize=$shouldRerenderBecauseOfResize)") {
+      val bestSource = bestSource
+      val bestPlaceholder = bestPlaceholder
+
+      val sourceToLoad = bestSource?.createGlideModelProvider(context)
+      val placeholder = bestPlaceholder?.createGlideModelProvider(context)
+
+      if (cleanIfNeeded(bestSource, sourceToLoad, placeholder)) {
+        // the view was cleaned
+        return@trace
+      }
+
+      val shouldRerender = sourceToLoad != loadedSource || shouldRerender || (sourceToLoad == null && placeholder != null)
+      if (!shouldRerender && !shouldRerenderBecauseOfResize) {
+        // In the case where the source didn't change, but the transformation matrix has to be
+        // recalculated, we can apply the new transformation right away.
+        // When the source and the matrix is different, we don't want to do anything.
+        // We don't want to changed the transformation of the currently displayed image.
+        // The new matrix will be applied when new resource is loaded.
+        if (transformationMatrixChanged) {
+          activeView.applyTransformationMatrix()
         }
 
-        activeView
-          .recycleView()
-          ?.apply {
-            clear(requestManager)
-          }
+        transformationMatrixChanged = false
+        clearViewBeforeChangingSource = false
+
+        return@trace
       }
+
+      clearViewBeforeChangingSource()
 
       this.shouldRerender = false
       loadedSource = sourceToLoad
-      val options = bestSource?.createOptions(context)
+      val options = bestSource?.createGlideOptions(context)
       val propOptions = createPropOptions()
 
-      val model = sourceToLoad?.glideData
+      val model = sourceToLoad?.getGlideModel()
       if (model is GlideUrlWrapper) {
         model.progressListener = progressListener
       }
@@ -506,60 +570,40 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
       newTarget.hasSource = sourceToLoad != null
 
-      val downsampleStrategy = if (allowDownscaling) {
-        ContentFitDownsampleStrategy(newTarget, contentFit)
-      } else {
-        DownsampleStrategy.NONE
-      }
+      val downsampleStrategy = createDownsampleStrategy(newTarget)
 
       val request = requestManager
         .asDrawable()
         .load(model)
-        .apply {
-          if (placeholder != null) {
-            thumbnail(requestManager.load(placeholder.glideData))
-            val newPlaceholderContentFit = if (bestPlaceholder.isBlurhash() || bestPlaceholder.isThumbhash()) {
-              contentFit
-            } else {
-              placeholderContentFit
-            }
-            newTarget.placeholderContentFit = newPlaceholderContentFit
+        .customize(bestPlaceholder, placeholder) { placeholderSource, placeholderModel ->
+          val newPlaceholderContentFit = if (!placeholderSource.usesPlaceholderContentFit()) {
+            contentFit
+          } else {
+            placeholderContentFit
           }
-        }
-        .apply {
-          options?.let {
-            apply(it)
-          }
+          newTarget.placeholderContentFit = newPlaceholderContentFit
+
+          thumbnail(requestManager.load(placeholderModel.getGlideModel()))
+            .apply(placeholderSource.createGlideOptions(context))
         }
         .downsample(downsampleStrategy)
         .addListener(GlideRequestListener(WeakReference(this)))
         .encodeQuality(100)
+        .format(decodeFormat.toGlideFormat())
         .apply(propOptions)
-
-      tintColor?.let {
-        val tintColorOptions = RequestOptions().apply {
-          set(CustomOptions.tintColor, it)
+        .apply(options)
+        .customize(tintColor) {
+          apply(RequestOptions().set(CustomOptions.tintColor, it))
         }
-        request.apply(tintColorOptions)
-      }
 
       val cookie = Trace.getNextCookieValue()
       beginAsyncTraceBlock(Trace.tag, Trace.loadNewImageBlock, cookie)
       newTarget.setCookie(cookie)
       request.into(newTarget)
-    } else {
-      // In the case where the source didn't change, but the transformation matrix has to be
-      // recalculated, we can apply the new transformation right away.
-      // When the source and the matrix is different, we don't want to do anything.
-      // We don't want to changed the transformation of the currently displayed image.
-      // The new matrix will be applied when new resource is loaded.
-      if (transformationMatrixChanged) {
-        activeView.applyTransformationMatrix()
-      }
+
+      transformationMatrixChanged = false
+      clearViewBeforeChangingSource = false
     }
-    transformationMatrixChanged = false
-    clearViewBeforeChangingSource = false
-  }
 
   init {
     val matchParent = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)

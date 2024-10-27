@@ -10,6 +10,41 @@
 
 ### 💡 Others
 
+## 7.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Add shims for `react-server` environments. ([#31622](https://github.com/expo/expo/pull/31622) by [@EvanBacon](https://github.com/EvanBacon))
+- Add native `getLinkingURL` function. ([#29405](https://github.com/expo/expo/pull/29405) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30473](https://github.com/expo/expo/pull/30473) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+
+## 6.3.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.3.0 — 2024-04-18
+
+_This version does not introduce any user-facing changes._
+
+## 6.2.2 - 2024-01-12
+
+_This version does not introduce any user-facing changes._
+
+## 6.2.1 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
 ## 6.2.0 — 2023-11-14
 
 ### 💡 Others

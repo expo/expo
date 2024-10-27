@@ -1,6 +1,7 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
 #import <EXAV/EXAVPlayerData.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 // This struct is passed between the MTAudioProcessingTap callbacks.
 typedef struct AVAudioTapProcessorContext {
@@ -123,11 +124,37 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   return self;
 }
 
+- (void) warnIfNonExistingFile:(NSURL *)url {
+  if ([url.scheme isEqualToString:@"file"]) {
+    NSString *filePath = [url path];
+    BOOL isDirectory;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL fileExists = [fileManager fileExistsAtPath:filePath isDirectory:&isDirectory];
+    if (!fileExists || isDirectory) {
+      EXLogWarn(@"Expo-av: attempted to load an asset that doesn't exist: %@. This can happen when you persist an absolute path and then try to load from it. Make sure the provided path is relative to the application sandbox, e.g. `${FileSystem.documentDirectory}/some_file.m4a`.", url.path);
+    }
+  }
+}
+
 - (void)_loadNewPlayer
 {
   NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-  AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
-  
+  NSURL *assetUrl = _url;
+  [self warnIfNonExistingFile:assetUrl];
+
+  // Ideally we would load the _url directly into the [AVURLAsset URLAssetWithURL:...], but iOS 17 introduced changes/bug, which breaks creating
+  // an AVURLAsset from data uris. As a workaround we save the data into a file and play the audio from that file.
+  if ([self _isBase64Audio:_url] && [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){17, 0, 0}]) {
+    NSURL *temporaryFileUrl = [self _saveBase64UrlToTempFile:_url];
+    if (temporaryFileUrl == nil) {
+      NSString *errorMessage = @"Failed to convert base64 string to an audio file";
+      [self _finishLoadWithError:errorMessage];
+      return;
+    }
+    assetUrl = temporaryFileUrl;
+  }
+
+  AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:assetUrl options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
   // unless we preload, the asset will not necessarily load the duration by the time we try to play it.
   // http://stackoverflow.com/questions/20581567/avplayer-and-avfoundationerrordomain-code-11819
   EX_WEAKIFY(self);
@@ -147,12 +174,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
       [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
     } else {
       NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
-      if (self.loadFinishBlock) {
-        self.loadFinishBlock(NO, nil, errorMessage);
-        self.loadFinishBlock = nil;
-      } else if (self.errorCallback) {
-        self.errorCallback(errorMessage);
-      }
+      [self _finishLoadWithError:errorMessage];
     }
   }];
 }
@@ -170,7 +192,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
         self.currentPosition = self.player.currentTime;
 
         self.player.currentItem.audioTimePitchAlgorithm = self.pitchCorrectionQuality;
-        self.player.volume = self.volume.floatValue;
+        self.player.volume = self.volume.doubleValue;
         self.player.muted = self.isMuted;
         [self _updateLooping:self.isLooping];
 
@@ -196,13 +218,34 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   return _shouldPlay && ![_rate isEqualToNumber:@(0)];
 }
 
+- (BOOL)_hasZeroTolerance:(NSDictionary *)parameters
+{
+  if ([parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath] == nil) {
+    return NO;
+  }
+    
+  NSNumber *seekMillisToleranceBefore = parameters[EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath];
+    
+  if (CMTimeCompare(CMTimeMakeWithSeconds(seekMillisToleranceBefore.doubleValue / 1000, NSEC_PER_SEC), kCMTimeZero) != 0) {
+    return NO;
+  }
+    
+  if ([parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath] == nil) {
+    return NO;
+  }
+
+  NSNumber *seekMillisToleranceAfter = parameters[EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath];
+    
+  return CMTimeCompare(CMTimeMakeWithSeconds(seekMillisToleranceAfter.doubleValue / 1000, NSEC_PER_SEC), kCMTimeZero) == 0;
+}
+
 - (NSError *)_tryPlayPlayerWithRateAndMuteIfNecessary
 {
   if (_player && [self _shouldPlayerPlay]) {
     NSError *error = [_exAV promoteAudioSessionIfNecessary];
     if (!error) {
       _player.muted = _isMuted;
-      _player.rate = [_rate floatValue];
+      _player.rate = [_rate doubleValue];
     }
     return error;
   }
@@ -239,9 +282,9 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     NSNumber *currentPositionMillis = parameters[EXAVPlayerDataStatusPositionMillisKeyPath];
     
     // We only seek if the new position is different from _currentPosition by a whole number of milliseconds.
-    mustSeek = currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
+    mustSeek = [self _hasZeroTolerance:parameters] || currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
     if (mustSeek) {
-      newPosition = CMTimeMakeWithSeconds(currentPositionMillis.floatValue / 1000, NSEC_PER_SEC);
+      newPosition = CMTimeMakeWithSeconds(currentPositionMillis.doubleValue / 1000, NSEC_PER_SEC);
     }
   }
   
@@ -252,13 +295,13 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   // We need to set toleranceBefore only if we will seek
   if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath] != nil) {
     NSNumber *seekMillisToleranceBefore = parameters[EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath];
-    toleranceBefore = CMTimeMakeWithSeconds(seekMillisToleranceBefore.floatValue / 1000, NSEC_PER_SEC);
+    toleranceBefore = CMTimeMakeWithSeconds(seekMillisToleranceBefore.doubleValue / 1000, NSEC_PER_SEC);
   }
   
   // We need to set toleranceAfter only if we will seek
   if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath] != nil) {
     NSNumber *seekMillisToleranceAfter = parameters[EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath];
-    toleranceAfter = CMTimeMakeWithSeconds(seekMillisToleranceAfter.floatValue / 1000, NSEC_PER_SEC);
+    toleranceAfter = CMTimeMakeWithSeconds(seekMillisToleranceAfter.doubleValue / 1000, NSEC_PER_SEC);
   }
   
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldPlayKeyPath] != nil) {
@@ -309,7 +352,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
       _player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
     }
 
-    _player.volume = _volume.floatValue;
+    _player.volume = _volume.doubleValue;
     
     // Apply parameters necessary after seek.
     EX_WEAKIFY(self);
@@ -376,7 +419,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 - (NSNumber *)_getRoundedMillisFromCMTime:(CMTime)time
 {
-  return CMTIME_IS_INVALID(time) || CMTIME_IS_INDEFINITE(time) ? nil : @((long) (CMTimeGetSeconds(time) * 1000));
+  return CMTIME_IS_INVALID(time) || CMTIME_IS_INDEFINITE(time) ? nil : @((long) round((CMTimeGetSeconds(time) * 1000)));
 }
 
 - (NSNumber *)_getClippedValueForValue:(NSNumber *)value withMin:(NSNumber *)min withMax:(NSNumber *)max
@@ -655,7 +698,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   
   EX_WEAKIFY(self);
   
-  CMTime interval = CMTimeMakeWithSeconds(_progressUpdateIntervalMillis.floatValue / 1000.0, NSEC_PER_SEC);
+  CMTime interval = CMTimeMakeWithSeconds(_progressUpdateIntervalMillis.doubleValue / 1000.0, NSEC_PER_SEC);
   
   void (^timeObserverBlock)(CMTime time) = ^(CMTime time) {
     EX_ENSURE_STRONGIFY(self);
@@ -728,8 +771,13 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
             case AVPlayerStatusUnknown:
               break;
             case AVPlayerStatusReadyToPlay:
-              if (!strongSelf.isLoaded && strongSelf.player.currentItem.status == AVPlayerItemStatusReadyToPlay) {
-                [strongSelf _finishLoadingNewPlayer];
+              if (!strongSelf.isLoaded) {
+                if (strongSelf.player.currentItem.status == AVPlayerItemStatusReadyToPlay) {
+                  [strongSelf _finishLoadingNewPlayer];
+                } else if (strongSelf.player.currentItem.status == AVPlayerItemStatusFailed) {
+                  NSString* errorMessage = strongSelf.player.currentItem.error.localizedDescription;
+                  [strongSelf _finishLoadWithError:errorMessage];
+                }
               }
               break;
             case AVPlayerStatusFailed: {
@@ -739,12 +787,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
                 NSString *reasonMessage = [strongSelf.player.error.localizedFailureReason stringByAppendingString:@" - "];
                 errorMessage = [reasonMessage stringByAppendingString:errorMessage];
               }
-              if (strongSelf.loadFinishBlock) {
-                strongSelf.loadFinishBlock(NO, nil, errorMessage);
-                strongSelf.loadFinishBlock = nil;
-              } else if (strongSelf.errorCallback) {
-                strongSelf.errorCallback(errorMessage);
-              }
+              [strongSelf _finishLoadWithError:errorMessage];
               break;
             }
           }
@@ -759,7 +802,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
             strongSelf.replayResolve = nil;
           }
 
-          int observedRate = strongSelf.observedRate.floatValue * 1000;
+          int observedRate = strongSelf.observedRate.doubleValue * 1000;
           int currentRate = strongSelf.player.rate * 1000;
 
           if (abs(observedRate - currentRate) > 1) {
@@ -820,12 +863,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
                 NSString *reasonMessage = [strongSelf.player.currentItem.error.localizedFailureReason stringByAppendingString:@" - "];
                 errorMessage = [reasonMessage stringByAppendingString:errorMessage];
               }
-              if (strongSelf.loadFinishBlock) {
-                strongSelf.loadFinishBlock(NO, nil, errorMessage);
-                strongSelf.loadFinishBlock = nil;
-              } else if (strongSelf.errorCallback) {
-                strongSelf.errorCallback(errorMessage);
-              }
+              [strongSelf _finishLoadWithError:errorMessage];
               strongSelf.isLoaded = NO;
               break;
             }
@@ -1103,6 +1141,53 @@ void EXTapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudio
     }
   }
   return validatedHeaders;
+}
+
+// http://blog.ablepear.com/2010/08/how-to-get-file-extension-for-mime-type.html
+- (NSString *)_fileExtensionForMimeType:(NSString *)mimeType {
+  CFStringRef cfMimeType = (__bridge CFStringRef)mimeType;
+  CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, cfMimeType, NULL);
+  return (__bridge NSString *)(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension));
+}
+
+- (NSURL *)_saveBase64UrlToTempFile:(NSURL *)url {
+  // base64 string format: `data:<mimeType>;base64,<data>` <- data contains only A-Z, a-z, 0-9, +, /, = characters
+  NSString *base64String = [url absoluteString];
+  NSInteger mimeTypeStartIndex = [[base64String componentsSeparatedByString:@":"] objectAtIndex:0].length + 1;
+  NSInteger mimeTypeEndIndex = [[base64String componentsSeparatedByString:@";"] objectAtIndex:0].length;
+  NSInteger dataStartIndex = [[base64String componentsSeparatedByString:@","] objectAtIndex:0].length + 1;
+  NSString *mimeType = [base64String substringWithRange:NSMakeRange(mimeTypeStartIndex, mimeTypeEndIndex - mimeTypeStartIndex)];
+  NSString *fileType = [self _fileExtensionForMimeType:mimeType];
+  NSString *base64DataString = [base64String substringFromIndex:dataStartIndex];
+  
+  NSData *fileData = [[NSData alloc] initWithBase64EncodedString:base64DataString options:0];
+  if (!fileData) {
+    return nil;
+  }
+
+  NSString *tempDirectory = NSTemporaryDirectory();
+  NSString *tempFileName = [NSString stringWithFormat:@"%@.%@", [[NSUUID UUID] UUIDString], fileType];
+  NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:tempFileName];
+  NSError *error = nil;
+
+  [fileData writeToFile:tempFilePath options:NSDataWritingAtomic error:&error];
+  if (error) {
+    return nil;
+  }
+  return [NSURL fileURLWithPath:tempFilePath];
+}
+
+- (Boolean)_isBase64Audio:(NSURL *)url {
+  return [[url absoluteString] hasPrefix:@"data:audio/"];
+}
+
+- (void)_finishLoadWithError:(NSString *)errorMessage {
+  if (self.loadFinishBlock) {
+    self.loadFinishBlock(NO, nil, errorMessage);
+    self.loadFinishBlock = nil;
+  } else if (self.errorCallback) {
+    self.errorCallback(errorMessage);
+  }
 }
 
 @end

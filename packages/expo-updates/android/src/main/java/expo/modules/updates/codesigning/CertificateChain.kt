@@ -64,7 +64,9 @@ class CertificateChain(private val certificateStrings: List<String>) {
       }?.let {
         if (it is DEROctetString) {
           it.octets.decodeToString()
-        } else null
+        } else {
+          null
+        }
       }?.let {
         val components = it.split(',').map { component -> component.trim() }
         if (components.size != 2) {

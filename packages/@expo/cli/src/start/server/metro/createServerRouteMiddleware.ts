@@ -4,17 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoResponse } from '@expo/server';
-import { createRequestHandler } from '@expo/server/build/vendor/http';
-import requireString from 'require-from-string';
+
+import type { ProjectConfig } from '@expo/config';
 import resolve from 'resolve';
+import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
 
-import { ForwardHtmlError } from './MetroBundlerDevServer';
-import { bundleApiRoute } from './bundleApiRoutes';
 import { fetchManifest } from './fetchRouterManifest';
-import { getErrorOverlayHtmlAsync, logMetroError, logMetroErrorAsync } from './metroErrorInterface';
-import { Log } from '../../../log';
+import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
+import { warnInvalidWebOutput } from './router';
+import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -26,14 +25,24 @@ const resolveAsync = promisify(resolve) as any as (
 export function createRouteHandlerMiddleware(
   projectRoot: string,
   options: {
-    mode?: string;
     appDir: string;
-    port?: number;
-    baseUrl: string;
-    getWebBundleUrl: () => string;
+    routerRoot: string;
     getStaticPageAsync: (pathname: string) => Promise<{ content: string }>;
-  }
+    bundleApiRoute: (
+      functionFilePath: string
+    ) => Promise<null | Record<string, Function> | Response>;
+    config: ProjectConfig;
+  } & import('expo-router/build/routes-manifest').Options
 ) {
+  if (!resolveFrom.silent(projectRoot, 'expo-router')) {
+    throw new CommandError(
+      'static and server rendering requires the expo-router package to be installed in your project.'
+    );
+  }
+
+  const { createRequestHandler } =
+    require('@expo/server/build/vendor/http') as typeof import('@expo/server/build/vendor/http');
+
   return createRequestHandler(
     { build: '' },
     {
@@ -64,20 +73,13 @@ export function createRouteHandlerMiddleware(
           return content;
         } catch (error: any) {
           // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
-          if (error instanceof ForwardHtmlError) {
-            return new ExpoResponse(error.html, {
-              status: error.statusCode,
-              headers: {
-                'Content-Type': 'text/html',
-              },
-            });
-          }
 
           try {
-            return new ExpoResponse(
+            return new Response(
               await getErrorOverlayHtmlAsync({
                 error,
                 projectRoot,
+                routerRoot: options.routerRoot,
               }),
               {
                 status: 500,
@@ -87,8 +89,9 @@ export function createRouteHandlerMiddleware(
               }
             );
           } catch (staticError: any) {
+            debug('Failed to render static error overlay:', staticError);
             // Fallback error for when Expo Router is misconfigured in the project.
-            return new ExpoResponse(
+            return new Response(
               '<span><h3>Internal Error:</h3><b>Project is not setup correctly for static rendering (check terminal for more info):</b><br/>' +
                 error.message +
                 '<br/><br/>' +
@@ -107,33 +110,37 @@ export function createRouteHandlerMiddleware(
       logApiRouteExecutionError(error) {
         logMetroError(projectRoot, { error });
       },
-      async getApiRoute(route) {
-        const resolvedFunctionPath = await resolveAsync(route.page, {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-          basedir: options.appDir,
+      async handleApiRouteError(error) {
+        const htmlServerError = await getErrorOverlayHtmlAsync({
+          error,
+          projectRoot,
+          routerRoot: options.routerRoot!,
         });
 
-        const middlewareContents = await bundleApiRoute(
-          projectRoot,
-          resolvedFunctionPath!,
-          options
-        );
-        if (!middlewareContents) {
-          // TODO: Error handling
-          return null;
+        return new Response(htmlServerError, {
+          status: 500,
+          headers: {
+            'Content-Type': 'text/html',
+          },
+        });
+      },
+      async getApiRoute(route) {
+        const { exp } = options.config;
+        if (exp.web?.output !== 'server') {
+          warnInvalidWebOutput();
         }
+
+        const resolvedFunctionPath = await resolveAsync(route.file, {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          basedir: options.appDir,
+        })!;
 
         try {
           debug(`Bundling middleware at: ${resolvedFunctionPath}`);
-          return requireString(middlewareContents);
+          return await options.bundleApiRoute(resolvedFunctionPath!);
         } catch (error: any) {
-          if (error instanceof Error) {
-            await logMetroErrorAsync({ projectRoot, error });
-          } else {
-            Log.error('Failed to load middleware: ' + error);
-          }
-          return new ExpoResponse(
-            'Failed to load middleware: ' + resolvedFunctionPath + '\n\n' + error.message,
+          return new Response(
+            'Failed to load API Route: ' + resolvedFunctionPath + '\n\n' + error.message,
             {
               status: 500,
               headers: {

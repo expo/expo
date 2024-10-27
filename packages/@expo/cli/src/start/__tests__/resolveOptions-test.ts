@@ -1,8 +1,15 @@
-import { asMock } from '../../__tests__/asMock';
-import { hasDirectDevClientDependency } from '../../utils/analytics/getDevClientProperties';
+import { Log } from '../../log';
 import { resolvePortAsync } from '../../utils/port';
-import { resolveHostType, resolveOptionsAsync, resolvePortsAsync } from '../resolveOptions';
+import { getOptionalDevClientSchemeAsync } from '../../utils/scheme';
+import { canResolveDevClient, hasDirectDevClientDependency } from '../detectDevClient';
+import {
+  resolveSchemeAsync,
+  resolveHostType,
+  resolveOptionsAsync,
+  resolvePortsAsync,
+} from '../resolveOptions';
 
+jest.mock('../../log');
 jest.mock('../../utils/port', () => {
   return {
     resolvePortAsync: jest.fn(),
@@ -10,13 +17,135 @@ jest.mock('../../utils/port', () => {
 });
 jest.mock('../../utils/scheme', () => {
   return {
-    getOptionalDevClientSchemeAsync: jest.fn(async () => []),
+    getOptionalDevClientSchemeAsync: jest.fn(async () => ({
+      scheme: 'myapp',
+      resolution: 'config',
+    })),
   };
 });
-jest.mock('../../utils/analytics/getDevClientProperties', () => {
+jest.mock('../detectDevClient', () => {
   return {
+    canResolveDevClient: jest.fn(async () => false),
     hasDirectDevClientDependency: jest.fn(() => false),
   };
+});
+
+describe(resolveSchemeAsync, () => {
+  it(`returns null with no options and no dev client installed`, async () => {
+    jest.mocked(canResolveDevClient).mockReturnValueOnce(false);
+
+    expect(
+      await resolveSchemeAsync('/', {
+        scheme: undefined,
+        devClient: false,
+      })
+    ).toBe(null);
+    expect(getOptionalDevClientSchemeAsync).not.toHaveBeenCalled();
+  });
+
+  it(`always gives scheme option the highest priority`, async () => {
+    expect(
+      await resolveSchemeAsync('/', {
+        scheme: 'myapp',
+        devClient: true,
+      })
+    ).toBe('myapp');
+    expect(canResolveDevClient).not.toBeCalled();
+    expect(getOptionalDevClientSchemeAsync).not.toHaveBeenCalled();
+  });
+
+  it(`does not check if dev client can be resolved when dev client flag is passed`, async () => {
+    expect(
+      await resolveSchemeAsync('/', {
+        scheme: undefined,
+        devClient: true,
+      })
+    ).toBe('myapp');
+    expect(canResolveDevClient).not.toHaveBeenCalled();
+    expect(getOptionalDevClientSchemeAsync).toHaveBeenCalled();
+  });
+
+  it(`checks for schemes if dev client is installed in the project and scheme isn't passed`, async () => {
+    jest.mocked(canResolveDevClient).mockReturnValueOnce(true);
+    expect(
+      await resolveSchemeAsync('/', {
+        scheme: undefined,
+        devClient: false,
+      })
+    ).toBe('myapp');
+    expect(canResolveDevClient).toHaveBeenCalled();
+  });
+
+  it(`warns when a native directory doesn't define schemes and dev client is installed`, async () => {
+    jest.mocked(getOptionalDevClientSchemeAsync).mockResolvedValueOnce({
+      scheme: null,
+      resolution: 'android',
+    });
+    expect(
+      await resolveSchemeAsync('/', {
+        scheme: undefined,
+        devClient: true,
+      })
+    ).toBe(null);
+    expect(getOptionalDevClientSchemeAsync).toHaveBeenCalled();
+    expect(Log.warn).toHaveBeenCalled();
+  });
+  it(`warns when both native directories are defined and neither define a shared scheme`, async () => {
+    jest.mocked(getOptionalDevClientSchemeAsync).mockResolvedValueOnce({
+      scheme: null,
+      resolution: 'shared',
+    });
+    expect(
+      await resolveSchemeAsync('/', {
+        scheme: undefined,
+        devClient: true,
+      })
+    ).toBe(null);
+    expect(getOptionalDevClientSchemeAsync).toHaveBeenCalled();
+    expect(Log.warn).toHaveBeenCalled();
+  });
+  it(`does not warn when the config resolution of a scheme returns null`, async () => {
+    jest.mocked(getOptionalDevClientSchemeAsync).mockResolvedValueOnce({
+      scheme: null,
+      resolution: 'config',
+    });
+    expect(
+      await resolveSchemeAsync('/', {
+        scheme: undefined,
+        devClient: true,
+      })
+    ).toBe(null);
+    expect(getOptionalDevClientSchemeAsync).toHaveBeenCalled();
+    expect(Log.warn).not.toHaveBeenCalled();
+  });
+  it(`does not warn when a scheme can be resolved from the project`, async () => {
+    jest.mocked(getOptionalDevClientSchemeAsync).mockResolvedValueOnce({
+      scheme: 'a',
+      resolution: 'ios',
+    });
+    expect(
+      await resolveSchemeAsync('/', {
+        scheme: undefined,
+        devClient: true,
+      })
+    ).toBe('a');
+    expect(getOptionalDevClientSchemeAsync).toHaveBeenCalled();
+    expect(Log.warn).not.toHaveBeenCalled();
+  });
+  it(`does not warn when a scheme can be resolved from both projects`, async () => {
+    jest.mocked(getOptionalDevClientSchemeAsync).mockResolvedValueOnce({
+      scheme: 'a',
+      resolution: 'shared',
+    });
+    expect(
+      await resolveSchemeAsync('/', {
+        scheme: undefined,
+        devClient: true,
+      })
+    ).toBe('a');
+    expect(getOptionalDevClientSchemeAsync).toHaveBeenCalled();
+    expect(Log.warn).not.toHaveBeenCalled();
+  });
 });
 
 describe(resolveOptionsAsync, () => {
@@ -81,14 +210,16 @@ describe(resolveHostType, () => {
 
 describe(resolvePortsAsync, () => {
   beforeEach(() => {
-    asMock(resolvePortAsync).mockImplementation(async (root, { defaultPort, fallbackPort }) => {
-      if (typeof defaultPort === 'string' && defaultPort) {
-        return parseInt(defaultPort, 10);
-      } else if (typeof defaultPort === 'number' && defaultPort) {
-        return defaultPort;
-      }
-      return fallbackPort;
-    });
+    jest
+      .mocked(resolvePortAsync)
+      .mockImplementation(async (root, { defaultPort, fallbackPort }) => {
+        if (typeof defaultPort === 'string' && defaultPort) {
+          return parseInt(defaultPort, 10);
+        } else if (typeof defaultPort === 'number' && defaultPort) {
+          return defaultPort;
+        }
+        return fallbackPort;
+      });
   });
   it(`resolves default port for metro`, async () => {
     await expect(resolvePortsAsync('/noop', {}, { webOnly: false })).resolves.toStrictEqual({

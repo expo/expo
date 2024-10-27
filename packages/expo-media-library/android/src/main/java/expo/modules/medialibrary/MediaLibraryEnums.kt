@@ -1,6 +1,31 @@
 package expo.modules.medialibrary
 
+import android.Manifest
+import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
+import expo.modules.kotlin.types.Enumerable
+
+enum class GranularPermission(val value: String) : Enumerable {
+  AUDIO("audio"),
+  PHOTO("photo"),
+  VIDEO("video");
+
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  fun toManifestPermission(): String {
+    return when (this) {
+      AUDIO -> Manifest.permission.READ_MEDIA_AUDIO
+      PHOTO -> Manifest.permission.READ_MEDIA_IMAGES
+      VIDEO -> Manifest.permission.READ_MEDIA_VIDEO
+    }
+  }
+}
+
+enum class AccessPrivileges(val value: String) {
+  ALL("all"),
+  LIMITED("limited"),
+  NONE("none")
+}
 
 enum class MediaType(val apiName: String, val mediaColumn: Int?) {
   AUDIO("audio", MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO),

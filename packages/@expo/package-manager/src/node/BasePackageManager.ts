@@ -1,4 +1,4 @@
-import spawnAsync, { SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import spawnAsync, { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
@@ -67,17 +67,24 @@ export abstract class BasePackageManager implements PackageManager {
     return cwd;
   }
 
-  runAsync(command: string[]) {
+  runAsync(command: string[], options: SpawnOptions = {}) {
     this.log?.(`> ${this.name} ${command.join(' ')}`);
-    return spawnAsync(this.bin, command, this.options);
+    return spawnAsync(this.bin, command, { ...this.options, ...options });
+  }
+
+  runBinAsync(command: string[], options: SpawnOptions = {}) {
+    this.log?.(`> ${this.name} ${command.join(' ')}`);
+    return spawnAsync(this.bin, command, { ...this.options, ...options });
   }
 
   async versionAsync() {
-    return await this.runAsync(['--version']).then(({ stdout }) => stdout.trim());
+    const { stdout } = await this.runAsync(['--version'], { stdio: undefined });
+    return stdout.trim();
   }
 
   async getConfigAsync(key: string) {
-    return await this.runAsync(['config', 'get', key]).then(({ stdout }) => stdout.trim());
+    const { stdout } = await this.runAsync(['config', 'get', key]);
+    return stdout.trim();
   }
 
   async removeLockfileAsync() {

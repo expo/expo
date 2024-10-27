@@ -1,3 +1,6 @@
+// Copyright © 2024 650 Industries.
+'use client';
+
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React from 'react';
 import {
@@ -18,6 +21,7 @@ import { useExpoRouter } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import { Link } from '../link/Link';
 import { matchDeepDynamicRouteName } from '../matchers';
+import { hasViewControllerBasedStatusBarAppearance } from '../utils/statusbar';
 
 const INDENT = 24;
 
@@ -26,7 +30,6 @@ export function getNavOptions(): NativeStackNavigationOptions {
     title: 'sitemap',
     headerShown: false,
     presentation: 'modal',
-    animation: 'default',
     headerLargeTitle: false,
     headerTitleStyle: {
       color: 'white',
@@ -48,7 +51,7 @@ export function Sitemap() {
   const { width } = useWindowDimensions();
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      {!hasViewControllerBasedStatusBarAppearance && <StatusBar barStyle="light-content" />}
       <View
         style={[
           styles.main,

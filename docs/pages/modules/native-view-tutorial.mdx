@@ -1,11 +1,11 @@
 ---
 title: 'Tutorial: Creating a native view'
 sidebar_title: Create a native view
-description: A tutorial on creating a native view that renders a WebView with Expo modules API.
+description: A tutorial on creating a native view that renders a WebView with Expo Modules API.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 In this tutorial, we are going to build a module with a native view that will render a WebView. We will be using the [WebView](https://developer.android.com/reference/android/webkit/WebView) component for Android and [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview) for iOS. It is possible to implement web support using [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), but we'll leave that as an exercise for the reader.
 
@@ -15,7 +15,7 @@ First, we'll create a new module. On this page, we will use the name `expo-web-v
 
 <Terminal cmd={['$ npx create-expo-module expo-web-view']} />
 
-> **Tip**: Since you aren't going to actually ship this library, you can hit <kbd>return</kbd> for all of the prompts to accept the default values.
+> **Tip**: Since you aren't going to actually ship this library, you can hit <kbd>return</kbd> for all the prompts to accept the default values.
 
 ## 2. Set up our workspace
 
@@ -59,11 +59,11 @@ class ExpoWebViewModule : Module() {
 }
 ```
 
-```typescript src/index.ts
+```tsx src/index.ts
 export { default as WebView, Props as WebViewProps } from './ExpoWebView';
 ```
 
-```typescript src/ExpoWebView.tsx
+```tsx src/ExpoWebView.tsx
 import { ViewProps } from 'react-native';
 import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
@@ -77,7 +77,7 @@ export default function ExpoWebView(props: Props) {
 }
 ```
 
-```typescript example/App.tsx
+```ts example/App.tsx
 import { WebView } from 'expo-web-view';
 
 export default function App() {
@@ -222,7 +222,7 @@ class ExpoWebViewModule : Module() {
 
 All we need to do here is add the `url` prop to the `Props` type.
 
-```typescript src/ExpoWebView.tsx
+```tsx src/ExpoWebView.tsx
 import { ViewProps } from 'react-native';
 import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
@@ -242,7 +242,7 @@ export default function ExpoWebView(props: Props) {
 
 Finally, we can pass in a URL to our WebView component in the example app.
 
-```typescript example/App.tsx
+```tsx example/App.tsx
 import { WebView } from 'expo-web-view';
 
 export default function App() {
@@ -374,7 +374,7 @@ class ExpoWebViewModule : Module() {
 
 Note that event payloads are included within the `nativeEvent` property of the event, so to access the `url` from the `onLoad` event we would read `event.nativeEvent.url`.
 
-```typescript src/ExpoWebView.tsx
+```tsx src/ExpoWebView.tsx
 import { ViewProps } from 'react-native';
 import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
@@ -399,7 +399,7 @@ export default function ExpoWebView(props: Props) {
 
 Now we can update the example app to show an alert when the page has loaded. Copy in the following code, then rebuild and run your app, and you should see the alert!
 
-```typescript example/App.tsx
+```tsx example/App.tsx
 import { WebView } from 'expo-web-view';
 
 export default function App() {
@@ -419,7 +419,7 @@ Now that we have a web view, we can build a web browser UI around it. Have some 
 
 <Collapsible summary="example/App.tsx">
 
-```typescript
+```tsx
 import { useState } from 'react';
 import { ActivityIndicator, Platform, Text, TextInput, View } from 'react-native';
 import { WebView } from 'expo-web-view';
@@ -499,4 +499,4 @@ function LoadingView({ isLoading }: { isLoading: boolean }) {
 
 Congratulations, you have created your first simple yet non-trivial Expo module with a native view for Android and iOS! Learn more about the API in the [Expo Module API reference](/modules/module-api/).
 
-If you enjoyed this tutorial and haven't done the native module tutorial, see [creating a native module](/modules/native-module-tutorial/) next.
+If you enjoyed this tutorial and haven't done the native module tutorial, see [creating a native module](/modules/native-module-tutorial/).

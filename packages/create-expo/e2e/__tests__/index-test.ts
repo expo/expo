@@ -1,54 +1,30 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 
-const cli = require.resolve('../../build/index.js');
-const projectRoot = getTemporaryPath();
-
-function getTemporaryPath() {
-  return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
-}
-
-function execute(args: string[], env: Record<string, string> = {}) {
-  return spawnAsync('node', [cli, ...args], {
-    cwd: projectRoot,
-    env: {
-      ...process.env,
-      ...env,
-    },
-  });
-}
-
-async function executePassingAsync(args: string[], env?: Record<string, string>) {
-  const results = await execute(args, env);
-  expect(results.status).toBe(0);
-  return results;
-}
-
-function fileExists(projectName: string, filePath: string) {
-  return fs.existsSync(path.join(projectRoot, projectName, filePath));
-}
-
-function getRoot(...args: string[]) {
-  return path.join(projectRoot, ...args);
-}
-
-// 3 minutes -- React Native takes a while to install
-const extendedTimeout = 3 * 1000 * 60;
+import {
+  createTestPath,
+  ensureFolderExists,
+  execute,
+  executePassing,
+  expectExecutePassing,
+  expectFileExists,
+  expectFileNotExists,
+  forcePackageManagerEnv,
+  getTestPath,
+  projectRoot,
+} from './utils';
 
 beforeAll(async () => {
-  jest.setTimeout(extendedTimeout);
-  fs.mkdirSync(projectRoot);
+  ensureFolderExists(projectRoot);
 });
 
 it('prevents overwriting directories with projects', async () => {
   const projectName = 'cannot-overwrite-files';
-  const projectRoot = getRoot(projectName);
-  // Create the project root aot
-  fs.mkdirSync(projectRoot);
+
+  createTestPath(projectName);
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
-  fs.writeFileSync(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
+  fs.writeFileSync(getTestPath(projectName, 'package.json'), '{ "version": "1.0.0" }');
 
   expect.assertions(1);
   try {
@@ -58,192 +34,205 @@ it('prevents overwriting directories with projects', async () => {
   }
 });
 
-it(
-  'creates a full basic project by default',
-  async () => {
-    const projectName = 'defaults-to-basic';
-    await execute([projectName]);
+it('creates a full basic project by default', async () => {
+  const projectName = 'defaults-to-basic';
+  await executePassing([projectName]);
 
-    expect(fileExists(projectName, 'package.json')).toBeTruthy();
-    expect(fileExists(projectName, 'App.js')).toBeTruthy();
-    expect(fileExists(projectName, '.gitignore')).toBeTruthy();
-    // expect(fileExists(projectName, 'node_modules')).toBeTruthy();
-    expect(fileExists(projectName, 'ios/')).not.toBeTruthy();
-    expect(fileExists(projectName, 'android/')).not.toBeTruthy();
-    expect(fileExists(projectName, 'app.json')).toBeTruthy();
+  expectFileExists(projectName, 'package.json');
+  expectFileExists(projectName, 'app/_layout.tsx');
+  expectFileExists(projectName, '.gitignore');
+  expectFileExists(projectName, 'app.json');
+  // expect(fileExists(projectName, 'node_modules')).toBeTruthy();
+  expectFileNotExists(projectName, 'ios/');
+  expectFileNotExists(projectName, 'android/');
 
-    // Ensure the app.json is written properly
-    const appJsonPath = path.join(projectRoot, projectName, 'app.json');
-    const appJson = JSON.parse(fs.readFileSync(appJsonPath, { encoding: 'utf8' }));
-    expect(appJson.expo.name).toBe('defaults-to-basic');
-    expect(appJson.expo.slug).toBe('defaults-to-basic');
-  },
-  extendedTimeout
-);
+  // Ensure the app.json is written properly
+  const appJsonPath = path.join(projectRoot, projectName, 'app.json');
+  const appJson = JSON.parse(fs.readFileSync(appJsonPath, { encoding: 'utf8' }));
+  expect(appJson.expo.name).toBe('defaults-to-basic');
+  expect(appJson.expo.slug).toBe('defaults-to-basic');
+
+  // Ensure the package.json is written properly
+  const packageJsonPath = path.join(projectRoot, projectName, 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, { encoding: 'utf8' }));
+  expect(packageJson.name).toBe('defaults-to-basic');
+});
+
+it('throws when fetch is disabled', async () => {
+  const projectName = 'throws-when-fetch-disabled';
+  let result: Awaited<ReturnType<typeof execute>>;
+
+  try {
+    result = await execute([projectName, '--example', 'with-router'], {
+      env: { NODE_OPTIONS: '--no-experimental-fetch' },
+    });
+  } catch (error: any) {
+    result = error;
+  }
+
+  expect(result).toMatchObject({
+    stderr: expect.stringContaining('Node.js built-in fetch is required to continue'),
+  });
+});
+
+it('uses pnpm', async () => {
+  const projectName = 'uses-pnpm';
+  const results = await executePassing([projectName, '--no-install'], {
+    // Run: DEBUG=create-expo-app:* pnpm create expo-app
+    env: forcePackageManagerEnv('pnpm'),
+  });
+
+  // Test that the user was warned about deps
+  expect(results.stdout).toMatch(/make sure you have modules installed/);
+  expect(results.stdout).toMatch(/pnpm install/);
+
+  expectFileExists(projectName, 'package.json');
+  expectFileExists(projectName, 'app/_layout.tsx');
+  expectFileExists(projectName, '.gitignore');
+  // Check if it skipped install
+  expectFileNotExists(projectName, 'node_modules');
+
+  // Check if `pnpm` node linker is set
+  expectFileExists(projectName, '.npmrc');
+  const { stdout } = expectExecutePassing(
+    await spawnAsync('pnpm', ['config', 'get', 'node-linker'], { cwd: getTestPath(projectName) })
+  );
+  expect(stdout).toContain('hoisted');
+});
+
+it('uses Bun', async () => {
+  const projectName = 'uses-bun';
+  const results = await executePassing([projectName, '--no-install'], {
+    // Run: DEBUG=create-expo-app:* bunx create-expo-app
+    env: forcePackageManagerEnv('bun'),
+  });
+
+  // Test that the user was warned about deps
+  expect(results.stdout).toMatch(/make sure you have modules installed/);
+  expect(results.stdout).toMatch(/bun install/);
+
+  expectFileExists(projectName, 'package.json');
+  expectFileExists(projectName, 'app/_layout.tsx');
+  expectFileExists(projectName, '.gitignore');
+  // Check if it skipped install
+  expectFileNotExists(projectName, 'node_modules');
+});
+
+it('uses npm', async () => {
+  const projectName = 'uses-npm';
+  const results = await executePassing([projectName, '--no-install'], {
+    // Run: DEBUG=create-expo-app:* npm create expo-app
+    env: forcePackageManagerEnv('npm'),
+  });
+
+  // Test that the user was warned about deps
+  expect(results.stdout).toMatch(/make sure you have modules installed/);
+  expect(results.stdout).toMatch(/npm install/);
+
+  expectFileExists(projectName, 'package.json');
+  expectFileExists(projectName, 'app/_layout.tsx');
+  expectFileExists(projectName, '.gitignore');
+  // Check if it skipped install
+  expectFileNotExists(projectName, 'node_modules');
+});
+
+it('uses yarn', async () => {
+  const projectName = 'uses-yarn';
+  const results = await executePassing([projectName, '--no-install'], {
+    // Run: DEBUG=create-expo-app:* yarn create expo-app
+    env: forcePackageManagerEnv('yarn'),
+  });
+
+  // Test that the user was warned about deps
+  expect(results.stdout).toMatch(/make sure you have modules installed/);
+  expect(results.stdout).toMatch(/yarn install/);
+
+  expectFileExists(projectName, 'package.json');
+  expectFileExists(projectName, 'app/_layout.tsx');
+  expectFileExists(projectName, '.gitignore');
+  // Check if it skipped install
+  expectFileNotExists(projectName, 'node_modules');
+});
 
 describe('yes', () => {
-  it(
-    'creates a default project in the current directory',
-    async () => {
-      const projectName = 'yes-default-directory';
-      const projectRoot = getRoot(projectName);
-      // Create the project root aot
-      fs.mkdirSync(projectRoot);
+  it('creates a default project in the current directory', async () => {
+    const projectName = 'yes-default-directory';
 
-      const results = await spawnAsync('node', [cli, '--yes', '--no-install'], {
-        cwd: projectRoot,
-      });
-      expect(results.status).toBe(0);
+    await executePassing([projectName, '--no-install', '--yes']);
 
-      expect(fileExists(projectName, 'package.json')).toBeTruthy();
-      expect(fileExists(projectName, 'App.js')).toBeTruthy();
-      expect(fileExists(projectName, '.gitignore')).toBeTruthy();
-      expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
-    },
-    extendedTimeout
-  );
-  it(
-    'creates a default project in a new directory',
-    async () => {
-      const projectName = 'yes-new-directory';
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'app/_layout.tsx');
+    expectFileExists(projectName, '.gitignore');
+    expectFileNotExists(projectName, 'node_modules');
+  });
 
-      const results = await spawnAsync('node', [cli, projectName, '-y', '--no-install'], {
-        cwd: projectRoot,
-      });
-      expect(results.status).toBe(0);
+  it('creates a default project in a new directory', async () => {
+    const projectName = 'yes-other-directory';
 
-      expect(fileExists(projectName, 'package.json')).toBeTruthy();
-      expect(fileExists(projectName, 'App.js')).toBeTruthy();
-      expect(fileExists(projectName, '.gitignore')).toBeTruthy();
-      expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
-    },
-    extendedTimeout
-  );
+    await executePassing([projectName, '--no-install', '-y']);
 
-  it(
-    'uses pnpm',
-    async () => {
-      const projectName = 'uses-pnpm';
-      const results = await execute([projectName, '--no-install'], {
-        // Run: DEBUG=create-expo-app:* pnpm create expo-app
-        npm_config_user_agent: `pnpm`,
-      });
-
-      // Test that the user was warned about deps
-      expect(results.stdout).toMatch(/make sure you have modules installed/);
-      expect(results.stdout).toMatch(/pnpm install/);
-
-      expect(fileExists(projectName, 'package.json')).toBeTruthy();
-      expect(fileExists(projectName, 'App.js')).toBeTruthy();
-      expect(fileExists(projectName, '.gitignore')).toBeTruthy();
-      // Check if it skipped install
-      expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
-    },
-    extendedTimeout
-  );
-  it(
-    'uses Bun',
-    async () => {
-      const projectName = 'uses-bun';
-      const results = await execute([projectName, '--no-install'], {
-        // Run: DEBUG=create-expo-app:* bunx create-expo-app
-        npm_config_user_agent: `bun`,
-      });
-
-      // Test that the user was warned about deps
-      expect(results.stdout).toMatch(/make sure you have modules installed/);
-      expect(results.stdout).toMatch(/bun install/);
-
-      expect(fileExists(projectName, 'package.json')).toBeTruthy();
-      expect(fileExists(projectName, 'App.js')).toBeTruthy();
-      expect(fileExists(projectName, '.gitignore')).toBeTruthy();
-      // Check if it skipped install
-      expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
-    },
-    extendedTimeout
-  );
-  it(
-    'uses npm',
-    async () => {
-      const projectName = 'uses-npm';
-      const results = await execute([projectName, '--no-install'], {
-        // Run: DEBUG=create-expo-app:* npm create expo-app
-        npm_config_user_agent: `npm/8.1.0 node/v16.13.0 darwin x64 workspaces/false`,
-      });
-
-      // Test that the user was warned about deps
-      expect(results.stdout).toMatch(/make sure you have modules installed/);
-      expect(results.stdout).toMatch(/npm install/);
-
-      expect(fileExists(projectName, 'package.json')).toBeTruthy();
-      expect(fileExists(projectName, 'App.js')).toBeTruthy();
-      expect(fileExists(projectName, '.gitignore')).toBeTruthy();
-      // Check if it skipped install
-      expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
-    },
-    extendedTimeout
-  );
-
-  it(
-    'uses yarn',
-    async () => {
-      const projectName = 'uses-yarn';
-      const results = await execute([projectName, '--no-install'], {
-        // Run: DEBUG=create-expo-app:* yarn create expo-app
-        npm_config_user_agent: `yarn/1.22.17 npm/? node/v16.13.0 darwin x64`,
-      });
-
-      // Test that the user was warned about deps
-      expect(results.stdout).toMatch(/make sure you have modules installed/);
-      expect(results.stdout).toMatch(/yarn install/);
-
-      expect(fileExists(projectName, 'package.json')).toBeTruthy();
-      expect(fileExists(projectName, 'App.js')).toBeTruthy();
-      expect(fileExists(projectName, '.gitignore')).toBeTruthy();
-      // Check if it skipped install
-      expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
-    },
-    extendedTimeout
-  );
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'app/_layout.tsx');
+    expectFileExists(projectName, '.gitignore');
+    expectFileNotExists(projectName, 'node_modules');
+  });
 
   xit('creates a default project in a new directory with a custom template', async () => {
     const projectName = 'yes-custom-template';
 
-    const results = await spawnAsync(
-      'node',
-      [cli, projectName, '--yes', '--template', 'blank', '--no-install'],
-      {
-        cwd: projectRoot,
-      }
-    );
-    expect(results.status).toBe(0);
+    await executePassing([projectName, '--no-install', '--yes', '--template', 'blank']);
 
-    expect(fileExists(projectName, 'package.json')).toBeTruthy();
-    expect(fileExists(projectName, 'App.js')).toBeTruthy();
-    expect(fileExists(projectName, '.gitignore')).toBeTruthy();
-    expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'app/_layout.tsx');
+    expectFileExists(projectName, '.gitignore');
+    // Check if it skipped install
+    expectFileNotExists(projectName, 'node_modules');
+
+    // Ensure the app.json is written properly
+    const appJsonPath = path.join(projectRoot, projectName, 'app.json');
+    const appJson = JSON.parse(fs.readFileSync(appJsonPath, { encoding: 'utf8' }));
+    expect(appJson.expo.name).toBe('yes-custom-template');
+    expect(appJson.expo.slug).toBe('yes-custom-template');
+
+    // Ensure the package.json is written properly
+    const packageJsonPath = path.join(projectRoot, projectName, 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, { encoding: 'utf8' }));
+    expect(packageJson.name).toBe('yes-custom-template');
   });
 });
 
 xdescribe('templates', () => {
   it('allows overwriting directories with tolerable files', async () => {
     const projectName = 'can-overwrite';
-    const projectRoot = getRoot(projectName);
+    const projectRoot = createTestPath(projectName);
     // Create the project root aot
     fs.mkdirSync(projectRoot);
     // Create a fake package.json -- this is a terminal file that cannot be overwritten.
     fs.writeFileSync(path.join(projectRoot, 'LICENSE'), 'hello world');
 
-    await executePassingAsync([
+    executePassing([
       projectName,
+      '--no-install',
       '--template',
       'https://github.com/expo/examples/tree/master/blank',
-      '--no-install',
     ]);
-    expect(fileExists(projectName, 'package.json')).toBeTruthy();
-    expect(fileExists(projectName, 'App.js')).toBeTruthy();
-    expect(fileExists(projectName, '.gitignore')).toBeTruthy();
-    expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
+
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'App.js');
+    expectFileExists(projectName, '.gitignore');
+    // Check if it skipped install
+    expectFileNotExists(projectName, 'node_modules');
+
+    // Ensure the app.json is written properly
+    const appJsonPath = path.join(projectRoot, 'app.json');
+    const appJson = JSON.parse(fs.readFileSync(appJsonPath, { encoding: 'utf8' }));
+    expect(appJson.expo.name).toBe('can-overwrite');
+    expect(appJson.expo.slug).toBe('can-overwrite');
+
+    // Ensure the package.json is written properly
+    const packageJsonPath = path.join(projectRoot, 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, { encoding: 'utf8' }));
+    expect(packageJson.name).toBe('can-overwrite');
   });
 
   it('throws when an invalid template is used', async () => {
@@ -258,39 +247,40 @@ xdescribe('templates', () => {
     } catch (error: any) {
       expect(error.stderr).toMatch(/Could not locate the template/i);
     }
-    expect(fs.existsSync(getRoot(projectName, 'package.json'))).toBeFalsy();
+    expect(fs.existsSync(getTestPath(projectName, 'package.json'))).toBeFalsy();
   });
 
   it('downloads a valid template', async () => {
     const projectName = 'valid-template-name';
-    await executePassingAsync([projectName, '--template', 'blank']);
 
-    expect(fileExists(projectName, 'package.json')).toBeTruthy();
-    expect(fileExists(projectName, 'App.js')).toBeTruthy();
-    expect(fileExists(projectName, 'README.md')).toBeTruthy();
-    expect(fileExists(projectName, '.gitignore')).toBeTruthy();
+    await executePassing([projectName, '--template', 'blank']);
+
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'App.js');
+    expectFileExists(projectName, 'README.md');
+    expectFileExists(projectName, '.gitignore');
     // Check if it skipped install
-    expect(fileExists(projectName, 'node_modules')).toBeTruthy();
+    expectFileNotExists(projectName, 'node_modules');
   });
 
   it(`doesn't prompt to install cocoapods in a project without an ios folder`, async () => {
     const projectName = 'no-install-no-pods-no-prompt';
-    const results = await executePassingAsync([projectName, '--template', 'blank', '--no-install']);
+    const results = await executePassing([projectName, '--no-install', '--template', 'blank']);
 
     // Ensure it doesn't warn to install pods since blank doesn't have an ios folder.
     expect(results.stdout).not.toMatch(/make sure you have CocoaPods installed/);
     expect(results.stdout).not.toMatch(/npx pod-install/);
 
-    expect(fileExists(projectName, 'package.json')).toBeTruthy();
-    expect(fileExists(projectName, 'App.js')).toBeTruthy();
-    expect(fileExists(projectName, '.gitignore')).toBeTruthy();
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'App.js');
+    expectFileExists(projectName, '.gitignore');
     // Ensure it skipped install
-    expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
+    expectFileNotExists(projectName, 'node_modules');
   });
 
   it('uses npm', async () => {
     const projectName = 'uses-npm';
-    const results = await execute([projectName, '--use-npm', '--no-install']);
+    const results = await executePassing([projectName, '--no-install', '--use-npm']);
 
     // Test that the user was warned about deps
     expect(results.stdout).toMatch(/make sure you have modules installed/);
@@ -300,49 +290,50 @@ xdescribe('templates', () => {
       expect(results.stdout).toMatch(/npx pod-install/);
     }
 
-    expect(fileExists(projectName, 'package.json')).toBeTruthy();
-    expect(fileExists(projectName, 'App.js')).toBeTruthy();
-    expect(fileExists(projectName, '.gitignore')).toBeTruthy();
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'app/_layout.tsx');
+    expectFileExists(projectName, '.gitignore');
     // Check if it skipped install
-    expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
+    expectFileNotExists(projectName, 'node_modules');
   });
 
   it('downloads a github repo with sub-project', async () => {
     const projectName = 'full-url';
-    const results = await executePassingAsync([
+    const results = await executePassing([
       projectName,
+      '--no-install',
       '--template',
       'https://github.com/expo/examples/tree/master/blank',
-      '--no-install',
     ]);
 
     // Test that the user was warned about deps
     expect(results.stdout).toMatch(/make sure you have modules installed/);
     expect(results.stdout).toMatch(/yarn/);
-    expect(fileExists(projectName, 'package.json')).toBeTruthy();
-    expect(fileExists(projectName, 'App.js')).toBeTruthy();
-    expect(fileExists(projectName, 'README.md')).toBeTruthy();
-    expect(fileExists(projectName, '.gitignore')).toBeTruthy();
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'App.js');
+    expectFileExists(projectName, 'README.md');
+    expectFileExists(projectName, '.gitignore');
     // Check if it skipped install
-    expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
+    expectFileNotExists(projectName, 'node_modules');
   });
 
   it('downloads a github repo with the template path option', async () => {
     const projectName = 'partial-url-and-path';
-    await executePassingAsync([
+
+    await executePassing([
       projectName,
+      '--no-install',
       '--template',
       'https://github.com/expo/examples/tree/master',
       '--template-path',
       'blank',
-      '--no-install',
     ]);
 
-    expect(fileExists(projectName, 'package.json')).toBeTruthy();
-    expect(fileExists(projectName, 'App.js')).toBeTruthy();
-    expect(fileExists(projectName, 'README.md')).toBeTruthy();
-    expect(fileExists(projectName, '.gitignore')).toBeTruthy();
+    expectFileExists(projectName, 'package.json');
+    expectFileExists(projectName, 'App.js');
+    expectFileExists(projectName, 'README.md');
+    expectFileExists(projectName, '.gitignore');
     // Check if it skipped install
-    expect(fileExists(projectName, 'node_modules')).not.toBeTruthy();
+    expectFileNotExists(projectName, 'node_modules');
   });
 });
