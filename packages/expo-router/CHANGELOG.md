@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixes [#25001](https://github.com/expo/expo/issues/25001) [#32338](https://github.com/expo/expo/issues/29928) issue with pushing screens to the stack that use the same route with different params. router.push() now always pushes a screen to the stack that appropriately navigates backwards through the history. ([#32338](https://github.com/expo/expo/pull/32338) by [@KennethStarkRL](https://github.com/KennethStarkRL))
+- Fixes [#25001](https://github.com/expo/expo/issues/25001) [#32338](https://github.com/expo/expo/issues/29928) issue with pushing screens to the stack that use the same route with different params. router.push() now always pushes a screen to the stack that appropriately navigates backwards through the history. ([#32386](https://github.com/expo/expo/pull/32386) by [@KennethStarkRL](https://github.com/KennethStarkRL))
 
 ### 💡 Others
 
