@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix build issue with after switch to Swift concurrency. ([#TBC](https://github.com/expo/expo/pull/) by [@eingin](https://github.com/Eingin))
+- [iOS] Fix build issue with after switch to Swift concurrency. ([#32379](https://github.com/expo/expo/pull/32379) by [@Eingin](https://github.com/Eingin))
 
 ### 💡 Others
 

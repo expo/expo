@@ -801,10 +801,10 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
           )
           await scanner.setOnBarcodeScanned { [weak self] body in
               guard let self else {
-                  return
+                return
               }
               if let body {
-                  self.onBarcodeScanned(body)
+                self.onBarcodeScanned(body)
               }
           }
       }
