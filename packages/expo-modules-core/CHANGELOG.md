@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed updating props on SwiftUI views on the New Architecture. ([#32381](https://github.com/expo/expo/pull/32381) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 2.0.0-preview.4 — 2024-10-25
