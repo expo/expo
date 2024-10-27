@@ -791,16 +791,23 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   private func createBarcodeScanner() -> BarcodeScanner {
-    let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
-    scanner.setPreviewLayer(layer: previewLayer)
-    scanner.onBarcodeScanned = { [weak self] body in
-      guard let self else {
-        return
+      let scanner = BarcodeScanner(
+        session: session,
+        sessionQueue: sessionQueue
+      )
+      Task {
+          await scanner.setPreviewLayer(
+            layer: previewLayer
+          )
+          await scanner.setOnBarcodeScanned { [weak self] body in
+              guard let self else {
+                  return
+              }
+              if let body {
+                  self.onBarcodeScanned(body)
+              }
+          }
       }
-      if let body {
-        self.onBarcodeScanned(body)
-      }
-    }
 
     return scanner
   }

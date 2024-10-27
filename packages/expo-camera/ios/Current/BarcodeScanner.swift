@@ -76,6 +76,10 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
     }
   }
 
+  func setOnBarcodeScanned(_ onBarcodeScanned: @escaping ([String: Any]?) -> Void) {
+    self.onBarcodeScanned = onBarcodeScanned
+  }
+
   func maybeStartBarcodeScanning() async {
     guard isScanningBarcodes else {
       return

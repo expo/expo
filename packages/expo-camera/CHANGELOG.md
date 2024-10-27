@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix build issue with after switch to Swift concurrency. ([#TBC](https://github.com/expo/expo/pull/) by [@eingin](https://github.com/Eingin))
+
 ### 💡 Others
 
 ## 16.0.2 — 2024-10-25
