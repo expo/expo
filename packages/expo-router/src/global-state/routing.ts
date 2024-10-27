@@ -173,7 +173,12 @@ export function linkTo(
     return;
   }
 
-  return navigationRef.dispatch(getNavigateAction(state, rootState, event, withAnchor));
+  const navigateAction = getNavigateAction(state, rootState, event);
+
+  if(event === 'PUSH'){
+    return navigationRef.dispatch(native_1.StackActions.push(rootState.routes[0].name,{screen:navigateAction.payload.name,params:navigateAction.payload.params}));
+  }
+  return navigationRef.dispatch(navigateAction);
 }
 
 function getNavigateAction(
@@ -247,30 +252,6 @@ function getNavigateAction(
     params = payload;
 
     actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
-  }
-
-  // Expo Router uses only three actions, but these don't directly translate to all navigator actions
-  if (type === 'PUSH') {
-    // Only stack navigators have a push action, and even then we want to use NAVIGATE (see below)
-    type = 'NAVIGATE';
-
-    /*
-     * The StackAction.PUSH does not work correctly with Expo Router.
-     *
-     * Expo Router provides a getId() function for every route, altering how React Navigation handles stack routing.
-     * Ordinarily, PUSH always adds a new screen to the stack. However, with getId() present, it navigates to the screen with the matching ID instead (by moving the screen to the top of the stack)
-     * When you try and push to a screen with the same ID, no navigation will occur
-     * Refer to: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L279-L290
-     *
-     * Expo Router needs to retain the default behavior of PUSH, consistently adding new screens to the stack, even if their IDs are identical.
-     *
-     * To resolve this issue, we switch to using a NAVIGATE action with a new key. In the navigate action, screens are matched by either key or getId() function.
-     * By generating a unique new key, we ensure that the screen is always pushed onto the stack.
-     *
-     */
-    if (navigationState.type === 'stack') {
-      rootPayload.params.__EXPO_ROUTER_key = `${rootPayload.name}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
-    }
   }
 
   if (navigationState.type === 'expo-tab') {
