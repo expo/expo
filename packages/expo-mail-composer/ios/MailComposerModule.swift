@@ -38,9 +38,25 @@ public class MailComposerModule: Module {
       }
     }
     .runOnQueue(.main)
-  }
-}
 
-private func canSendMail() -> Bool {
-  return MFMailComposeViewController.canSendMail()
+    // Function to check the availability of listed mail clients on the device
+    Function("getClients") { () -> [MailClient] in
+      return self.getAvailableMailClients()
+    }
+  }
+
+  // Private function to check each mail client for availability
+  private func getAvailableMailClients() -> [MailClient] {
+    var availableClients = [MailClient]()
+    for client in mailClients {
+      if let url = URL(string: client.url), UIApplication.shared.canOpenURL(url) {
+        availableClients.append(client)
+      }
+    }
+    return availableClients
+  }
+
+  private func canSendMail() -> Bool {
+    return MFMailComposeViewController.canSendMail()
+  }
 }

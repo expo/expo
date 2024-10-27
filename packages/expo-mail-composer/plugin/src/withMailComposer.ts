@@ -1,11 +1,11 @@
-import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from '@expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from 'expo/config-plugins';
 
 const pkg = require('expo-mail-composer/package.json');
 
 /**
- * Keep the mail client URIs in sync with those in the file `src/openClientAsync.ios.ts`.
+ * Keep the mail client URLs in sync with those in the file `ios/MailClients.swift`.
  */
-const mailClients: string[] = [
+const mailClientURLs: string[] = [
   'airmail',
   'message',
   'bluemail',
@@ -34,7 +34,7 @@ const withMailComposer: ConfigPlugin = (config) => {
   return withInfoPlist(config, (config) => {
     config.modResults.LSApplicationQueriesSchemes = [
       ...(config.modResults.LSApplicationQueriesSchemes ?? []),
-      ...mailClients,
+      ...mailClientURLs,
     ];
 
     return config;

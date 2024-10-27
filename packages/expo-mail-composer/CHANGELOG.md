@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add open mail client functionality. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
+- Add get mail client functionality. ([#25468](https://github.com/expo/expo/pull/25468) by [@reichhartd](https://github.com/reichhartd))
 
 ### 🐛 Bug fixes
 

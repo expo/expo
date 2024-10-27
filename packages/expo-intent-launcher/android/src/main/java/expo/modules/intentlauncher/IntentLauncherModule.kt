@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException
+import expo.modules.intentlauncher.exceptions.PackageNotFoundException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
@@ -68,6 +69,12 @@ class IntentLauncherModule : Module() {
       } catch (e: Throwable) {
         promise.reject(e.toCodedException())
       }
+    }
+
+    Function("openPackage") { packageName: String ->
+      val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
+        ?: throw PackageNotFoundException(packageName)
+      appContext.throwingActivity.startActivity(launchIntent)
     }
 
     OnActivityResult { _, payload ->

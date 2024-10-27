@@ -156,4 +156,9 @@ export declare enum ResultCode {
  * @return A promise which fulfils with `IntentLauncherResult` object.
  */
 export declare function startActivityAsync(activityAction: ActivityAction | string, params?: IntentLauncherParams): Promise<IntentLauncherResult>;
+/**
+ * Opens an application by its package name.
+ * @param packageName e.g., `com.google.android.gm` for Gmail.
+ */
+export declare function openPackage(packageName: string): any;
 //# sourceMappingURL=IntentLauncher.d.ts.map

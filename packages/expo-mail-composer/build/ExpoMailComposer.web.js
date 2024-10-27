@@ -15,7 +15,9 @@ function checkValue(value) {
     return arr.join(',');
 }
 export default {
-    async openClientAsync(options) { },
+    getClients() {
+        return [];
+    },
     async composeAsync(options) {
         if (typeof window === 'undefined') {
             return { status: MailComposerStatus.CANCELLED };

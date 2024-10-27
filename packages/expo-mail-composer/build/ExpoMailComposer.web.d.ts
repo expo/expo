@@ -1,6 +1,6 @@
-import { MailClientOptions, MailComposerOptions, MailComposerResult } from './MailComposer.types';
+import { MailClient, MailComposerOptions, MailComposerResult } from './MailComposer.types';
 declare const _default: {
-    openClientAsync(options: MailClientOptions): Promise<void>;
+    getClients(): MailClient[];
     composeAsync(options: MailComposerOptions): Promise<MailComposerResult>;
     isAvailableAsync(): Promise<boolean>;
 };

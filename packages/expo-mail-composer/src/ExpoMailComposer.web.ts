@@ -1,5 +1,5 @@
 import {
-  MailClientOptions,
+  MailClient,
   MailComposerOptions,
   MailComposerResult,
   MailComposerStatus,
@@ -24,7 +24,9 @@ function checkValue(value?: string[] | string): string | null {
 }
 
 export default {
-  async openClientAsync(options: MailClientOptions): Promise<void> {},
+  getClients(): MailClient[] {
+    return [];
+  },
   async composeAsync(options: MailComposerOptions): Promise<MailComposerResult> {
     if (typeof window === 'undefined') {
       return { status: MailComposerStatus.CANCELLED };

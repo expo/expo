@@ -1,17 +1,11 @@
-import { MailClientOptions, MailComposerOptions, MailComposerResult } from './MailComposer.types';
+import { MailClient, MailComposerOptions, MailComposerResult } from './MailComposer.types';
 /**
- * Opens an email client on the device.
- * This is particularly useful for scenarios like sending a login link (akin to Slack's "Magic Link" functionality) or
- * for verifying the user's email address during registration.
- *
- * If only one email client is installed and detected, it will be automatically opened.
- * If multiple clients are available, a pop-up will prompt the user to choose from the available options.
- * If no email client is found, the promise resolves without triggering any action.
- * @param options Configuration options for the mail client selector.
- * @returns A promise that resolves once an email client is opened or the operation is cancelled.
- * @platform android ios
+ * Retrieves a list of available email clients installed on the device.
+ * This can be used to present options to the user for sending emails through their preferred email client,
+ * or to open an email client so the user can access their mailbox — for example, to open a confirmation email sent by your app.
+ * @returns An array of available mail clients.
  */
-export declare function openClientAsync(options?: MailClientOptions): Promise<void>;
+export declare function getClients(): MailClient[];
 /**
  * Opens a mail modal for iOS and a mail app intent for Android and fills the fields with provided
  * data. On iOS you will need to be signed into the Mail app.

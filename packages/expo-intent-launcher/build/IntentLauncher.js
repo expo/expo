@@ -122,4 +122,14 @@ export async function startActivityAsync(activityAction, params = {}) {
     }
     return ExpoIntentLauncher.startActivity(activityAction, params);
 }
+/**
+ * Opens an application by its package name.
+ * @param packageName e.g., `com.google.android.gm` for Gmail.
+ */
+export function openPackage(packageName) {
+    if (!ExpoIntentLauncher.openPackage) {
+        throw new UnavailabilityError('IntentLauncher', 'openPackage');
+    }
+    return ExpoIntentLauncher.openPackage(packageName);
+}
 //# sourceMappingURL=IntentLauncher.js.map

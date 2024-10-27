@@ -1,26 +1,14 @@
-import { Platform } from 'expo-modules-core';
-
 import ExpoMailComposer from './ExpoMailComposer';
-import { MailClientOptions, MailComposerOptions, MailComposerResult } from './MailComposer.types';
-import { openClientAsyncIos } from './openClientAsync.ios';
+import { MailClient, MailComposerOptions, MailComposerResult } from './MailComposer.types';
 
 /**
- * Opens an email client on the device.
- * This is particularly useful for scenarios like sending a login link (akin to Slack's "Magic Link" functionality) or
- * for verifying the user's email address during registration.
- *
- * If only one email client is installed and detected, it will be automatically opened.
- * If multiple clients are available, a pop-up will prompt the user to choose from the available options.
- * If no email client is found, the promise resolves without triggering any action.
- * @param options Configuration options for the mail client selector.
- * @returns A promise that resolves once an email client is opened or the operation is cancelled.
- * @platform android ios
+ * Retrieves a list of available email clients installed on the device.
+ * This can be used to present options to the user for sending emails through their preferred email client,
+ * or to open an email client so the user can access their mailbox — for example, to open a confirmation email sent by your app.
+ * @returns An array of available mail clients.
  */
-export async function openClientAsync(options: MailClientOptions = {}): Promise<void> {
-  if (Platform.OS === 'ios') {
-    return await openClientAsyncIos(options);
-  }
-  return await ExpoMailComposer.openClientAsync(options);
+export function getClients(): MailClient[] {
+  return ExpoMailComposer.getClients();
 }
 
 // @needsAudit

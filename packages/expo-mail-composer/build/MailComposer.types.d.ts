@@ -1,18 +1,30 @@
 /**
- * Configuration options for the mail client selection prompt.
+ * Represents a mail client available on the device.
  */
-export type MailClientOptions = {
+export type MailClient = {
     /**
-     *  Title for the mail app selection prompt.
-     * This title is displayed when the user is asked to choose an email client.
+     * The display name of the mail client.
      */
-    title?: string;
+    label: string;
     /**
-     * Label for the cancel button in the mail app selection prompt.
-     * This label is used on the button that allows the user to cancel the action of choosing a mail client.
+     * The package name of the mail client application.
+     * You can use this package name with the `openPackage` function from `expo-intent-launcher` to open the mail client.
+     * @platform android
+     */
+    packageName?: string;
+    /**
+     * The icon of the mail client application as a base64-encoded PNG image string.
+     * The string is prefixed with `data:image/png;base64,` and can be used directly in an `expo-image` `<Image>`
+     * component's `source` prop.
+     * @platform android
+     */
+    icon?: string;
+    /**
+     * The URL scheme of the mail client.
+     * You can use this URL with the `openURL` function from `expo-linking` to open the mail client.
      * @platform ios
      */
-    cancelLabel?: string;
+    url?: string;
 };
 /**
  * A map defining the data to fill the mail.

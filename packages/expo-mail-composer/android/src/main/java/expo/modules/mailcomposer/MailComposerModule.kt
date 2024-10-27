@@ -2,13 +2,18 @@ package expo.modules.mailcomposer
 
 import android.content.Intent
 import android.content.pm.LabeledIntent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.AdaptiveIconDrawable
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import android.content.pm.ResolveInfo
+import java.io.ByteArrayOutputStream
 
 class MailComposerModule : Module() {
   private val context
@@ -24,31 +29,12 @@ class MailComposerModule : Module() {
       return@AsyncFunction true
     }
 
-    AsyncFunction("openClientAsync") { options: MailClientOptions, promise: Promise ->
-      val emailIntent = Intent(Intent.ACTION_VIEW, Uri.parse(MAILTO_URI))
-      val pm = currentActivity.packageManager
-      val resInfo = pm.queryIntentActivities(emailIntent, 0)
-      if (resInfo.isNotEmpty()) {
-        val intentChooser = createLaunchIntent(resInfo[0])
-        intentChooser?.let {
-          val openInChooser = Intent.createChooser(it, options.title)
-          val extraIntents = resInfo.drop(1).mapNotNull { ri ->
-            createLaunchIntent(ri)?.let { intent ->
-              LabeledIntent(intent, ri.activityInfo.packageName, ri.loadLabel(pm), ri.icon)
-            }
-          }.toTypedArray()
-          openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, extraIntents)
-          currentActivity.startActivity(openInChooser)
-          // Ist das korrekt?
-          promise.resolve(true)
-        } ?: promise.reject(ERROR_UNABLE_TO_CREATE_INTENT, "Unable to create launch intent for email client", null)
-      } else {
-        promise.reject(ERROR_NO_EMAIL_APPS_AVAILABLE, "No email apps available", null)
-      }
+    Function("getClients") {
+      return@Function getAvailableMailClients()
     }
 
     AsyncFunction("composeAsync") { options: MailComposerOptions, promise: Promise ->
-      val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse("mailto:") }
+      val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse(MAILTO_URI) }
       val application = appContext.throwingActivity.application
       val resolveInfo = context.packageManager.queryIntentActivities(intent, 0)
 
@@ -73,10 +59,8 @@ class MailComposerModule : Module() {
         )
       }.toMutableList()
 
-      val chooser = Intent.createChooser(
-        mailIntents.removeAt(mailIntents.size - 1),
-        null
-      ).apply {
+      val primaryIntent = mailIntents.removeAt(mailIntents.size - 1)
+      val chooser = Intent.createChooser(primaryIntent, null).apply {
         putExtra(Intent.EXTRA_INITIAL_INTENTS, mailIntents.toTypedArray())
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
       }
@@ -97,14 +81,53 @@ class MailComposerModule : Module() {
     }
   }
 
-  private fun createLaunchIntent(resolveInfo: ResolveInfo): Intent? =
-    currentActivity.packageManager.getLaunchIntentForPackage(resolveInfo.activityInfo.packageName)?.apply {
-      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+  // Function to get available mail clients
+  private fun getAvailableMailClients(): List<MailClient> {
+    val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+      data = Uri.parse(MAILTO_URI)
     }
+    val pm = context.packageManager
+    val resolveInfoList = pm.queryIntentActivities(emailIntent, 0)
+
+    return resolveInfoList.map { resolveInfo ->
+      val packageName = resolveInfo.activityInfo.packageName
+      val appInfo = pm.getApplicationInfo(packageName, 0)
+      val appName = pm.getApplicationLabel(appInfo).toString()
+
+      // Get the app icon as a base64-encoded string
+      val iconDrawable = resolveInfo.loadIcon(pm)
+      val iconBase64 = iconDrawable?.let { drawable ->
+        val bitmap = when (drawable) {
+          is BitmapDrawable -> drawable.bitmap
+          is AdaptiveIconDrawable -> {
+            // Create a bitmap from AdaptiveIconDrawable
+            val bitmap = Bitmap.createBitmap(
+              drawable.intrinsicWidth,
+              drawable.intrinsicHeight,
+              Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            bitmap
+          }
+          else -> null
+        }
+
+        bitmap?.let {
+          val outputStream = ByteArrayOutputStream()
+          it.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+          val iconBytes = outputStream.toByteArray()
+          "data:image/png;base64," + Base64.encodeToString(iconBytes, Base64.NO_WRAP)
+        } ?: ""
+      } ?: ""
+
+      MailClient(label = appName, packageName = packageName, icon = iconBase64)
+    }
+  }
 
   companion object {
-    private const val ERROR_UNABLE_TO_CREATE_INTENT = "E_UNABLE_TO_CREATE_INTENT"
-    private const val ERROR_NO_EMAIL_APPS_AVAILABLE = "E_NO_EMAIL_APPS_AVAILABLE"
     private const val REQUEST_CODE = 8675
+    private const val MAILTO_URI = "mailto:"
   }
 }

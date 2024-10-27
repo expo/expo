@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-mail-composer/package.json');
 /**
- * Keep the mail client URIs in sync with those in the file `src/openClientAsync.ios.ts`.
+ * Keep the mail client URLs in sync with those in the file `ios/MailClients.swift`.
  */
-const mailClients = [
+const mailClientURLs = [
     'airmail',
     'message',
     'bluemail',
@@ -33,7 +33,7 @@ const withMailComposer = (config) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults.LSApplicationQueriesSchemes = [
             ...(config.modResults.LSApplicationQueriesSchemes ?? []),
-            ...mailClients,
+            ...mailClientURLs,
         ];
         return config;
     });

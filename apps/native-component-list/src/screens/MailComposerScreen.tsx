@@ -1,6 +1,9 @@
+import { Image } from 'expo-image';
+import { openPackage } from 'expo-intent-launcher';
+import { openURL } from 'expo-linking';
 import * as MailComposer from 'expo-mail-composer';
 import React from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View, Platform, Text } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
@@ -25,15 +28,19 @@ export default function MailComposerScreen() {
 
   return (
     <View style={styles.container}>
-      <Button
-        onPress={() =>
-          MailComposer.openClientAsync({
-            title: 'Which email app do you use?',
-            cancelLabel: 'Cancel',
-          })
-        }
-        title="Open client"
-      />
+      {MailComposer.getClients().map(({ label, packageName, icon, url }) => (
+        <View style={styles.clientContainer} key={label}>
+          {icon && <Image style={styles.image} source={icon} />}
+          <Text>{label}</Text>
+          <Button
+            onPress={Platform.select({
+              android: () => packageName && openPackage(packageName),
+              ios: () => url && openURL(url),
+            })}
+            title="Open client"
+          />
+        </View>
+      ))}
       <Button onPress={sendMailAsync} title="Send birthday wishes" style={styles.sendMailButton} />
       {status && <MonoText>Status: {status}</MonoText>}
     </View>
@@ -50,9 +57,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  capabilitiesContainer: {
-    alignItems: 'stretch',
-    paddingBottom: 20,
+  clientContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 64,
+    marginBottom: 32,
+  },
+  image: {
+    width: 64,
+    aspectRatio: 1,
   },
   sendMailButton: {
     marginTop: 10,

@@ -180,3 +180,14 @@ export async function startActivityAsync(
   }
   return ExpoIntentLauncher.startActivity(activityAction, params);
 }
+
+/**
+ * Opens an application by its package name.
+ * @param packageName e.g., `com.google.android.gm` for Gmail.
+ */
+export function openPackage(packageName: string) {
+  if (!ExpoIntentLauncher.openPackage) {
+    throw new UnavailabilityError('IntentLauncher', 'openPackage');
+  }
+  return ExpoIntentLauncher.openPackage(packageName);
+}
