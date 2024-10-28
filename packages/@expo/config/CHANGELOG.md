@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Properly handle app manifest plugin modifications.
+- Properly handle app manifest plugin modifications. ([#32405](https://github.com/expo/expo/pull/32405) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
