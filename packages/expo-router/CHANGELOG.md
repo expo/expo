@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix deep links to apps that use unusual characters in their schemes.
+
 ### 💡 Others
 
 ## 4.0.0-preview.3 — 2024-10-26
