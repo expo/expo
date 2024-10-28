@@ -33,13 +33,6 @@ function _fsExtra() {
   };
   return data;
 }
-function _jimpCompact() {
-  const data = _interopRequireDefault(require("jimp-compact"));
-  _jimpCompact = function () {
-    return data;
-  };
-  return data;
-}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -129,7 +122,6 @@ async function copyImageFiles({
   darkTabletImage,
   logoWidth
 }) {
-  const logo = await _jimpCompact().default.read(image);
   await Promise.all([{
     ratio: 1,
     suffix: ''
@@ -139,14 +131,24 @@ async function copyImageFiles({
   }, {
     ratio: 3,
     suffix: '@3x'
-  }].map(({
+  }].map(async ({
     ratio,
     suffix
   }) => {
     const filePath = _path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH, `${PNG_FILENAME}${suffix}.png`);
     const size = logoWidth * ratio;
-    const height = Math.ceil(size * (logo.bitmap.height / logo.bitmap.width));
-    return logo.clone().resize(size, height).writeAsync(filePath);
+    const {
+      source
+    } = await (0, _imageUtils().generateImageAsync)({
+      projectRoot,
+      cacheType: IMAGE_CACHE_NAME
+    }, {
+      src: image,
+      width: size,
+      height: size,
+      resizeMode: 'contain'
+    });
+    return await _fsExtra().default.writeFile(filePath, source);
   }));
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
@@ -209,7 +211,6 @@ function buildContentsJsonImages({
   darkImage && (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',
     appearances: darkAppearances,
-    filename: darkImage,
     scale: '1x'
   }), darkImage && (0, _AssetContents().createContentsJsonItem)({
     idiom: 'universal',

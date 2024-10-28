@@ -32,13 +32,6 @@ function _fsExtra() {
   };
   return data;
 }
-function _jimpCompact() {
-  const data = _interopRequireDefault(require("jimp-compact"));
-  _jimpCompact = function () {
-    return data;
-  };
-  return data;
-}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -54,8 +47,6 @@ function _withAndroidManifestIcons() {
   return data;
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-// @ts-ignore
-
 const {
   Colors
 } = _configPlugins().AndroidConfig;
@@ -285,7 +276,7 @@ async function generateMultiLayerImageAsync(projectRoot, {
       scale,
       backgroundColor: backgroundColor ?? 'transparent',
       borderRadiusRatio,
-      foreground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP
+      isForeground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP
     });
     if (backgroundImage) {
       const backgroundLayer = await generateIconAsync(projectRoot, {
@@ -349,20 +340,36 @@ async function generateIconAsync(projectRoot, {
   scale,
   backgroundColor,
   borderRadiusRatio,
-  foreground
+  isForeground
 }) {
-  const baseline = foreground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
-  const iconSizePx = baseline * scale;
-  const image = await _jimpCompact().default.read(src);
-  const newSize = iconSizePx * 0.4;
-  image.scaleToFit(newSize, newSize);
-  let background = await _jimpCompact().default.create(iconSizePx, iconSizePx, foreground ? 'transparent' : backgroundColor);
-  const x = (iconSizePx - image.bitmap.width) / 2;
-  const y = (iconSizePx - image.bitmap.height) / 2;
-  if (borderRadiusRatio) {
-    background = background.circle(() => {});
-  }
-  const output = background.composite(image, x, y);
-  return output.getBufferAsync(_jimpCompact().default.MIME_PNG);
+  const baseline = isForeground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
+  const bgIconSizePx = baseline * scale;
+  const iconSizePx = bgIconSizePx * (isForeground ? 0.4 : 0.65);
+  const {
+    source: foreground
+  } = await (0, _imageUtils().generateImageAsync)({
+    projectRoot,
+    cacheType
+  }, {
+    src,
+    resizeMode: 'contain',
+    width: iconSizePx,
+    height: iconSizePx
+  });
+  const background = await (0, _imageUtils().generateImageBackgroundAsync)({
+    width: bgIconSizePx,
+    height: bgIconSizePx,
+    backgroundColor: isForeground ? 'transparent' : backgroundColor,
+    resizeMode: 'cover',
+    borderRadius: borderRadiusRatio ? bgIconSizePx * borderRadiusRatio : undefined
+  });
+  const x = (bgIconSizePx - iconSizePx) / 2;
+  const y = x;
+  return (0, _imageUtils().compositeImagesAsync)({
+    background,
+    foreground,
+    x,
+    y
+  });
 }
 //# sourceMappingURL=withAndroidIcons.js.map

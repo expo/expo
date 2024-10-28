@@ -3,7 +3,6 @@ import { generateImageAsync } from '@expo/image-utils';
 import Debug from 'debug';
 import fs from 'fs-extra';
 // @ts-ignore
-import Jimp from 'jimp-compact';
 import path from 'path';
 
 import { IOSSplashConfig } from './getIosSplashConfig';
@@ -112,14 +111,12 @@ async function copyImageFiles({
   darkTabletImage?: string | null;
   logoWidth: number;
 }) {
-  const logo = await Jimp.read(image);
-
   await Promise.all(
     [
       { ratio: 1, suffix: '' },
       { ratio: 2, suffix: '@2x' },
       { ratio: 3, suffix: '@3x' },
-    ].map(({ ratio, suffix }) => {
+    ].map(async ({ ratio, suffix }) => {
       const filePath = path.resolve(
         iosNamedProjectRoot,
         IMAGESET_PATH,
@@ -127,8 +124,17 @@ async function copyImageFiles({
       );
 
       const size = logoWidth * ratio;
-      const height = Math.ceil(size * (logo.bitmap.height / logo.bitmap.width));
-      return logo.clone().resize(size, height).writeAsync(filePath);
+
+      const { source } = await generateImageAsync(
+        { projectRoot, cacheType: IMAGE_CACHE_NAME },
+        {
+          src: image,
+          width: size,
+          height: size,
+          resizeMode: 'contain',
+        }
+      );
+      return await fs.writeFile(filePath, source);
     })
   );
 
@@ -213,7 +219,6 @@ export function buildContentsJsonImages({
       createContentsJsonItem({
         idiom: 'universal',
         appearances: darkAppearances,
-        filename: darkImage,
         scale: '1x',
       }),
     darkImage &&

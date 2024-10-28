@@ -2,7 +2,6 @@ import { compileModsAsync } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import plist from '@expo/plist';
 import * as fs from 'fs';
-import Jimp from 'jimp-compact';
 import { vol } from 'memfs';
 import * as path from 'path';
 
@@ -11,8 +10,6 @@ import { getDirFromFS } from '../../../__tests__/getDirFromFS';
 import { withIosSplashScreen } from '../withIosSplashScreen';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
-
-jest.mock('jimp-compact');
 
 jest.mock('@expo/config-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins');
@@ -25,20 +22,10 @@ jest.mock('@expo/config-plugins', () => {
 jest.mock('fs');
 
 describe(withIosSplashScreen, () => {
-  const mockImage = {
-    bitmap: { width: 100, height: 100 },
-    clone: jest.fn().mockReturnThis(),
-    resize: jest.fn().mockReturnThis(),
-    blit: jest.fn().mockReturnThis(),
-    quality: jest.fn().mockReturnThis(),
-    writeAsync: jest.fn().mockImplementation(async (outputPath) => {
-      vol.writeFileSync(outputPath, '...');
-    }),
-  };
   const iconPath = path.resolve(__dirname, '../../../__tests__/fixtures/icon.png');
   const icon = fsReal.readFileSync(iconPath, 'utf8');
   const projectRoot = '/app';
-  beforeAll(async () => {
+  beforeEach(async () => {
     vol.fromJSON(
       {
         ...projectFixtures,
@@ -48,12 +35,11 @@ describe(withIosSplashScreen, () => {
     );
   });
 
-  afterAll(() => {
+  afterEach(() => {
     vol.reset();
   });
 
   it(`supports color only mode`, async () => {
-    Jimp.read.mockResolvedValue(mockImage);
     let config: ExpoConfig = {
       name: 'foo',
       slug: 'bar',
@@ -100,7 +86,6 @@ describe(withIosSplashScreen, () => {
   });
 
   it(`runs entire process`, async () => {
-    Jimp.read.mockResolvedValue(mockImage);
     let config: ExpoConfig = {
       name: 'foo',
       slug: 'bar',
@@ -143,10 +128,6 @@ describe(withIosSplashScreen, () => {
       /PNG/
     );
     expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image@3x.png']).toMatch(
-      /PNG/
-    );
-
-    expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/dark_image.png']).toMatch(
       /PNG/
     );
 

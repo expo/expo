@@ -19,9 +19,9 @@ function _withIosSplashScreenStoryboard() {
   };
   return data;
 }
-const withIosSplashScreenImage = (config, splash) => {
+const withIosSplashScreenImage = (config, props) => {
   return (0, _withIosSplashScreenStoryboard().withIosSplashScreenStoryboard)(config, config => {
-    config.modResults = applySplashScreenStoryboard(config.modResults, splash);
+    config.modResults = applySplashScreenStoryboard(config.modResults, props);
     return config;
   });
 };

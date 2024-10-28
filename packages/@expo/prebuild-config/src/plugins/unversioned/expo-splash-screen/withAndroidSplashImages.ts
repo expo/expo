@@ -1,8 +1,11 @@
 import { ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
+import {
+  generateImageAsync,
+  compositeImagesAsync,
+  generateImageBackgroundAsync,
+} from '@expo/image-utils';
 import fs from 'fs-extra';
-// @ts-ignore
-import Jimp from 'jimp-compact';
 import path from 'path';
 
 import {
@@ -15,6 +18,7 @@ import {
 type DRAWABLE_SIZE = 'default' | 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 type THEME = 'light' | 'dark';
 
+const IMAGE_CACHE_NAME = 'splash-android';
 const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
 const DRAWABLES_CONFIGS: {
   [key in DRAWABLE_SIZE]: {
@@ -163,23 +167,39 @@ export async function setSplashImageDrawablesForThemeAsync(
   await Promise.all(
     sizes.map(async (imageKey) => {
       // @ts-ignore
-      const url = config[imageKey];
-      const image = await Jimp.read(url).catch(() => null);
+      const image = config[imageKey];
 
       if (image) {
         const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
-        const width = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
-        const height = Math.ceil(width * (image.bitmap.height / image.bitmap.width)); // compute the height according to the width and image ratio
-
-        // https://developer.android.com/develop/ui/views/launch/splash-screen#dimensions
+        const size = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
         const canvasSize = 288 * multiplier;
-        const canvas = await Jimp.create(canvasSize, canvasSize, 0xffffff00);
-        const input = image.clone().resize(width, height);
 
-        const x = (canvasSize - width) / 2;
-        const y = (canvasSize - height) / 2;
+        const background = await generateImageBackgroundAsync({
+          width: canvasSize,
+          height: canvasSize,
+          backgroundColor: config.backgroundColor ?? 'transparent',
+          resizeMode: 'cover',
+        });
 
-        const output = canvas.blit(input, x, y).quality(100);
+        const { source: foreground } = await generateImageAsync(
+          {
+            projectRoot,
+            cacheType: IMAGE_CACHE_NAME,
+          },
+          {
+            src: image,
+            resizeMode: 'contain',
+            width: size,
+            height: size,
+          }
+        );
+
+        const composedImage = await compositeImagesAsync({
+          background,
+          foreground,
+          x: (canvasSize - size) / 2,
+          y: (canvasSize - size) / 2,
+        });
 
         // Get output path for drawable.
         const outputPath = path.join(
@@ -190,7 +210,7 @@ export async function setSplashImageDrawablesForThemeAsync(
         const folder = path.dirname(outputPath);
         // Ensure directory exists.
         await fs.ensureDir(folder);
-        await output.writeAsync(outputPath);
+        await fs.writeFile(outputPath, composedImage);
       }
       return null;
     })

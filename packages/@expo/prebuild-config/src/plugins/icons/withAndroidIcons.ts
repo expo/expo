@@ -6,10 +6,12 @@ import {
 } from '@expo/config-plugins';
 import { ResourceXML } from '@expo/config-plugins/build/android/Resources';
 import { ExpoConfig } from '@expo/config-types';
-import { compositeImagesAsync } from '@expo/image-utils';
+import {
+  generateImageAsync,
+  compositeImagesAsync,
+  generateImageBackgroundAsync,
+} from '@expo/image-utils';
 import fs from 'fs-extra';
-// @ts-ignore
-import Jimp from 'jimp-compact';
 import path from 'path';
 
 import { withAndroidManifestIcons } from './withAndroidManifestIcons';
@@ -309,7 +311,7 @@ async function generateMultiLayerImageAsync(
       scale,
       backgroundColor: backgroundColor ?? 'transparent',
       borderRadiusRatio,
-      foreground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP,
+      isForeground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP,
     });
 
     if (backgroundImage) {
@@ -387,37 +389,40 @@ async function generateIconAsync(
     scale,
     backgroundColor,
     borderRadiusRatio,
-    foreground,
+    isForeground,
   }: {
     cacheType: string;
     src: string;
     scale: number;
     backgroundColor: string;
     borderRadiusRatio?: number;
-    foreground?: boolean;
+    isForeground?: boolean;
   }
 ) {
-  const baseline = foreground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
-  const iconSizePx = baseline * scale;
+  const baseline = isForeground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
+  const bgIconSizePx = baseline * scale;
+  const iconSizePx = bgIconSizePx * (isForeground ? 0.4 : 0.65);
 
-  const image = await Jimp.read(src);
-  const newSize = iconSizePx * 0.4;
-  image.scaleToFit(newSize, newSize);
-
-  let background = await Jimp.create(
-    iconSizePx,
-    iconSizePx,
-    foreground ? 'transparent' : backgroundColor
+  const { source: foreground } = await generateImageAsync(
+    { projectRoot, cacheType },
+    {
+      src,
+      resizeMode: 'contain',
+      width: iconSizePx,
+      height: iconSizePx,
+    }
   );
 
-  const x = (iconSizePx - image.bitmap.width) / 2;
-  const y = (iconSizePx - image.bitmap.height) / 2;
+  const background = await generateImageBackgroundAsync({
+    width: bgIconSizePx,
+    height: bgIconSizePx,
+    backgroundColor: isForeground ? 'transparent' : backgroundColor,
+    resizeMode: 'cover',
+    borderRadius: borderRadiusRatio ? bgIconSizePx * borderRadiusRatio : undefined,
+  });
 
-  if (borderRadiusRatio) {
-    background = background.circle(() => {});
-  }
+  const x = (bgIconSizePx - iconSizePx) / 2;
+  const y = x;
 
-  const output = background.composite(image, x, y);
-
-  return output.getBufferAsync(Jimp.MIME_PNG);
+  return compositeImagesAsync({ background, foreground, x, y });
 }

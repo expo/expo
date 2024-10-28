@@ -13,16 +13,16 @@ function _configPlugins() {
   };
   return data;
 }
-function _fsExtra() {
-  const data = _interopRequireDefault(require("fs-extra"));
-  _fsExtra = function () {
+function _imageUtils() {
+  const data = require("@expo/image-utils");
+  _imageUtils = function () {
     return data;
   };
   return data;
 }
-function _jimpCompact() {
-  const data = _interopRequireDefault(require("jimp-compact"));
-  _jimpCompact = function () {
+function _fsExtra() {
+  const data = _interopRequireDefault(require("fs-extra"));
+  _fsExtra = function () {
     return data;
   };
   return data;
@@ -42,8 +42,7 @@ function _getAndroidSplashConfig() {
   return data;
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-// @ts-ignore
-
+const IMAGE_CACHE_NAME = 'splash-android';
 const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
 const DRAWABLES_CONFIGS = {
   default: {
@@ -154,27 +153,41 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
   const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
   await Promise.all(sizes.map(async imageKey => {
     // @ts-ignore
-    const url = config[imageKey];
-    const image = await _jimpCompact().default.read(url).catch(() => null);
+    const image = config[imageKey];
     if (image) {
       const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
-      const width = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
-      const height = Math.ceil(width * (image.bitmap.height / image.bitmap.width)); // compute the height according to the width and image ratio
-
-      // https://developer.android.com/develop/ui/views/launch/splash-screen#dimensions
+      const size = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
       const canvasSize = 288 * multiplier;
-      const canvas = await _jimpCompact().default.create(canvasSize, canvasSize, 0xffffff00);
-      const input = image.clone().resize(width, height);
-      const x = (canvasSize - width) / 2;
-      const y = (canvasSize - height) / 2;
-      const output = canvas.blit(input, x, y).quality(100);
+      const background = await (0, _imageUtils().generateImageBackgroundAsync)({
+        width: canvasSize,
+        height: canvasSize,
+        backgroundColor: config.backgroundColor ?? 'transparent',
+        resizeMode: 'cover'
+      });
+      const {
+        source: foreground
+      } = await (0, _imageUtils().generateImageAsync)({
+        projectRoot,
+        cacheType: IMAGE_CACHE_NAME
+      }, {
+        src: image,
+        resizeMode: 'contain',
+        width: size,
+        height: size
+      });
+      const composedImage = await (0, _imageUtils().compositeImagesAsync)({
+        background,
+        foreground,
+        x: (canvasSize - size) / 2,
+        y: (canvasSize - size) / 2
+      });
 
       // Get output path for drawable.
       const outputPath = _path().default.join(androidMainPath, DRAWABLES_CONFIGS[imageKey].modes[theme].path);
       const folder = _path().default.dirname(outputPath);
       // Ensure directory exists.
       await _fsExtra().default.ensureDir(folder);
-      await output.writeAsync(outputPath);
+      await _fsExtra().default.writeFile(outputPath, composedImage);
     }
     return null;
   }));

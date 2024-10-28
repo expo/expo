@@ -26,6 +26,12 @@ exports[`built-in plugins compiles mods 1`] = `
                   {
                     "$": {
                       "minToolsVersion": "9.0",
+                      "name": "Named colors",
+                    },
+                  },
+                  {
+                    "$": {
+                      "minToolsVersion": "9.0",
                       "name": "Safe area layout guides",
                     },
                   },
@@ -90,7 +96,6 @@ exports[`built-in plugins compiles mods 1`] = `
                           {
                             "$": {
                               "id": "EXPO-VIEWCONTROLLER-1",
-                              "modalTransitionStyle": "crossDissolve",
                               "sceneMemberID": "viewController",
                               "storyboardIdentifier": "SplashScreenViewController",
                             },
@@ -110,6 +115,19 @@ exports[`built-in plugins compiles mods 1`] = `
                                       "flexibleMaxX": "YES",
                                       "flexibleMaxY": "YES",
                                       "key": "autoresizingMask",
+                                    },
+                                  },
+                                ],
+                                "color": [
+                                  {
+                                    "$": {
+                                      "alpha": "1",
+                                      "blue": "0.12549019607843137",
+                                      "colorSpace": "custom",
+                                      "customColorSpace": "sRGB",
+                                      "green": "0.0",
+                                      "key": "backgroundColor",
+                                      "red": "0.0",
                                     },
                                   },
                                 ],
@@ -1229,6 +1247,12 @@ exports[`built-in plugins introspects mods 1`] = `
                   {
                     "$": {
                       "minToolsVersion": "9.0",
+                      "name": "Named colors",
+                    },
+                  },
+                  {
+                    "$": {
+                      "minToolsVersion": "9.0",
                       "name": "Safe area layout guides",
                     },
                   },
@@ -1293,7 +1317,6 @@ exports[`built-in plugins introspects mods 1`] = `
                           {
                             "$": {
                               "id": "EXPO-VIEWCONTROLLER-1",
-                              "modalTransitionStyle": "crossDissolve",
                               "sceneMemberID": "viewController",
                               "storyboardIdentifier": "SplashScreenViewController",
                             },
@@ -1313,6 +1336,19 @@ exports[`built-in plugins introspects mods 1`] = `
                                       "flexibleMaxX": "YES",
                                       "flexibleMaxY": "YES",
                                       "key": "autoresizingMask",
+                                    },
+                                  },
+                                ],
+                                "color": [
+                                  {
+                                    "$": {
+                                      "alpha": "1",
+                                      "blue": "0.12549019607843137",
+                                      "colorSpace": "custom",
+                                      "customColorSpace": "sRGB",
+                                      "green": "0.0",
+                                      "key": "backgroundColor",
+                                      "red": "0.0",
                                     },
                                   },
                                 ],
