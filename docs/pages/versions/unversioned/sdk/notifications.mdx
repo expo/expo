@@ -441,14 +441,14 @@ or interacting with it via [notification categories](#manage-notification-catego
 
 A few different listeners are exposed, so we've provided a chart below which will hopefully help you understand when you can expect each one to be triggered:
 
-| User interacted with notification? |        App state         | Listener(s) triggered                                                   |
+| User interacted with notification? | App state                | Listener(s) triggered                                                   |
 | ---------------------------------- | ------------------------ | ----------------------------------------------------------------------- |
-| false                              |        Foreground        | `NotificationReceivedListener`                                          |
+| false                              | Foreground               | `NotificationReceivedListener`                                          |
 | false                              | Foreground or Background | `BackgroundNotificationTask`                                            |
-| false                              |          Killed          | none                                                                    |
-| true                               |        Foreground        | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
-| true                               |        Background        | `NotificationResponseReceivedListener`                                  |
-| true                               |          Killed          | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
+| false                              | Killed                   | none                                                                    |
+| true                               | Foreground               | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
+| true                               | Background               | `NotificationResponseReceivedListener`                                  |
+| true                               | Killed                   | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
 
