@@ -834,7 +834,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
     const { exp } = config;
     // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
-    const isReactServerComponentsEnabled = !!exp.experiments?.reactServerComponents;
+    const isReactServerComponentsEnabled =
+      !!exp.experiments?.reactServerComponents || !!exp.experiments?.reactServerActions;
+    const isReactServerActionsOnlyEnabled =
+      !exp.experiments?.reactServerComponents && !!exp.experiments?.reactServerActions;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
 
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
@@ -984,6 +987,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
+          useClientRouter: isReactServerActionsOnlyEnabled,
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -1022,6 +1026,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           rscPath: '/_flight',
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
+          useClientRouter: isReactServerActionsOnlyEnabled,
         });
         this.rscRenderer = rscMiddleware;
       }

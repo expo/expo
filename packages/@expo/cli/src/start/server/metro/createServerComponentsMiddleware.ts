@@ -44,13 +44,19 @@ export function createServerComponentsMiddleware(
     instanceMetroOptions,
     ssrLoadModule,
     ssrLoadModuleArtifacts,
+    useClientRouter,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
+    useClientRouter: boolean;
   }
 ) {
+  const routerModule = useClientRouter
+    ? 'expo-router/build/rsc/router/noopRouter'
+    : 'expo-router/build/rsc/router/expo-definedRouter';
+
   const rscMiddleware = getRscMiddleware({
     config: {},
     // Disabled in development
@@ -155,13 +161,10 @@ export function createServerComponentsMiddleware(
     reactServerReferences: string[];
     cssModules: SerialAsset[];
   }> {
-    const contents = await ssrLoadModuleArtifacts(
-      'expo-router/build/rsc/router/expo-definedRouter',
-      {
-        environment: 'react-server',
-        platform,
-      }
-    );
+    const contents = await ssrLoadModuleArtifacts(routerModule, {
+      environment: 'react-server',
+      platform,
+    });
 
     // Extract the global CSS modules that are imported from the router.
     // These will be injected in the head of the HTML document for the website.
@@ -200,7 +203,7 @@ export function createServerComponentsMiddleware(
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
     return ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
-      'expo-router/build/rsc/router/expo-definedRouter',
+      routerModule,
       {
         environment: 'react-server',
         platform,

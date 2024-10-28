@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add server action-only mode.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
