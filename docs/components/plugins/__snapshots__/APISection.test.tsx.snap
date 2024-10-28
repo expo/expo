@@ -8997,6 +8997,51 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </table>
       </div>
     </div>
+    <div
+      class="flex flex-row gap-2 items-start mt-4"
+    >
+      <div
+        class="flex flex-row gap-2 items-center"
+      >
+        <svg
+          class="inline-block icon-sm text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g
+            id="corner-down-right-outline-icon"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
+        <span
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem]"
+        data-text="true"
+      >
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          void
+        </code>
+      </p>
+    </div>
   </div>
   <div
     class="emotion-0"
@@ -11446,6 +11491,51 @@ in order to enable/disable the permission.
           </tbody>
         </table>
       </div>
+    </div>
+    <div
+      class="flex flex-row gap-2 items-start mt-4"
+    >
+      <div
+        class="flex flex-row gap-2 items-center"
+      >
+        <svg
+          class="inline-block icon-sm text-icon-secondary"
+          fill="none"
+          role="img"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g
+            id="corner-down-right-outline-icon"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
+        </svg>
+        <span
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary"
+          data-text="true"
+        >
+          Returns:
+        </span>
+      </div>
+      <p
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem]"
+        data-text="true"
+      >
+        <code
+          class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
+          data-text="true"
+        >
+          void
+        </code>
+      </p>
     </div>
   </div>
   <div
