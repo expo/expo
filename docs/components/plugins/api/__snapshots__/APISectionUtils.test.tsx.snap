@@ -28,10 +28,10 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
          
       </span>
       <div
-        class="!bg-palette-green3 !text-palette-green12 !border-palette-green4 select-none emotion-0"
+        class="select-none inline-flex bg-element py-1 px-2 mr-2 rounded-full items-center gap-1 border border-default [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 !bg-palette-green3 !text-palette-green12 !border-palette-green4"
       >
         <svg
-          class="opacity-80 icon-xs text-palette-green12"
+          class="opacity-80 icon-xs text-palette-green12 mt-[-0.5px]"
           fill="none"
           role="img"
           viewBox="0 0 24 24"
@@ -48,7 +48,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
           </g>
         </svg>
         <span
-          class="emotion-1"
+          class="text-2xs !leading-[16px] font-normal [table_&]:text-3xs"
         >
           Android
         </span>
@@ -81,7 +81,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
     class="mb-3.5 last:[&>*]:mb-0"
   >
     <p
-      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mt-1 emotion-2"
+      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mt-1"
       data-text="true"
     >
       <span
