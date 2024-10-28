@@ -27,7 +27,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLinking = exports.series = void 0;
-const core_1 = require("@react-navigation/core");
+const native_1 = require("@react-navigation/native");
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
 const createMemoryHistory_1 = require("./createMemoryHistory");
@@ -73,8 +73,8 @@ const series = (cb) => {
 };
 exports.series = series;
 const linkingHandlers = [];
-function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.getStateFromPath, getPathFromState = core_1.getPathFromState, getActionFromState = core_1.getActionFromState, }, onUnhandledLinking) {
-    const independent = (0, core_1.useNavigationIndependentTree)();
+function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.getStateFromPath, getPathFromState = native_1.getPathFromState, getActionFromState = native_1.getActionFromState, }, onUnhandledLinking) {
+    const independent = (0, native_1.useNavigationIndependentTree)();
     React.useEffect(() => {
         if (process.env.NODE_ENV === 'production') {
             return undefined;
@@ -220,7 +220,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.get
             if (route?.path) {
                 const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
                 if (stateForPath) {
-                    const focusedRoute = (0, core_1.findFocusedRoute)(stateForPath);
+                    const focusedRoute = (0, native_1.findFocusedRoute)(stateForPath);
                     if (focusedRoute &&
                         focusedRoute.name === route.name &&
                         (0, fast_deep_equal_1.default)({ ...focusedRoute.params }, { ...route.params })) {
@@ -253,7 +253,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.get
             // This will allow the initial state to be in the history entry
             const state = ref.current.getRootState();
             if (state) {
-                const route = (0, core_1.findFocusedRoute)(state);
+                const route = (0, native_1.findFocusedRoute)(state);
                 const path = getPathForRoute(route, state);
                 if (previousStateRef.current === undefined) {
                     previousStateRef.current = state;
@@ -273,7 +273,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = core_1.get
                 return;
             }
             const pendingPath = pendingPopStatePathRef.current;
-            const route = (0, core_1.findFocusedRoute)(state);
+            const route = (0, native_1.findFocusedRoute)(state);
             const path = getPathForRoute(route, state);
             previousStateRef.current = state;
             pendingPopStatePathRef.current = undefined;
