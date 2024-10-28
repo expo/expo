@@ -401,15 +401,67 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
   };
 }
 
-/** Merge the config modifications, using an optional possible top-level `expo` object. */
-function mergeConfigModifications(config, modifications) {
-  if (!config.rootConfig.expo) {
-    return (0, _deepmerge().default)(config.rootConfig, modifications);
+/**
+ * Merge the config modifications, using an optional possible top-level `expo` object.
+ * Note, changes in the plugins are merged differently to avoid duplicate entries.
+ */
+function mergeConfigModifications(config, {
+  plugins,
+  ...modifications
+}) {
+  const modifiedExpoConfig = !config.rootConfig.expo ? (0, _deepmerge().default)(config.rootConfig, modifications) : (0, _deepmerge().default)(config.rootConfig.expo, modifications);
+  if (plugins?.length) {
+    // When adding plugins, ensure the config has a plugin list
+    if (!modifiedExpoConfig.plugins) {
+      modifiedExpoConfig.plugins = [];
+    }
+
+    // Create a plugin lookup map
+    const existingPlugins = Object.fromEntries(modifiedExpoConfig.plugins.map(definition => typeof definition === 'string' ? [definition, undefined] : definition));
+    for (const plugin of plugins) {
+      // Unpack the plugin definition, using either the short (string) or normal (array) notation
+      const [pluginName, pluginProps] = Array.isArray(plugin) ? plugin : [plugin];
+      // Abort if the plugin definition is empty
+      if (!pluginName) continue;
+
+      // Add the plugin if it doesn't exist yet, including its properties
+      if (!(pluginName in existingPlugins)) {
+        modifiedExpoConfig.plugins.push(plugin);
+        continue;
+      }
+
+      // If the plugin has properties, and it exists, merge the properties
+      if (pluginProps) {
+        modifiedExpoConfig.plugins = modifiedExpoConfig.plugins.map(existingPlugin => {
+          const [existingPluginName] = Array.isArray(existingPlugin) ? existingPlugin : [existingPlugin];
+
+          // Do not modify other plugins
+          if (existingPluginName !== pluginName) {
+            return existingPlugin;
+          }
+
+          // Add the props to the existing plugin entry
+          if (typeof existingPlugin === 'string') {
+            return [existingPlugin, pluginProps];
+          }
+
+          // Merge the props to the existing plugin properties
+          if (Array.isArray(existingPlugin) && existingPlugin[0]) {
+            return [existingPlugin[0], (0, _deepmerge().default)(existingPlugin[1] ?? {}, pluginProps)];
+          }
+          return existingPlugin;
+        });
+        continue;
+      }
+
+      // If the same plugin exists with properties, and the modification does not contain properties, ignore
+    }
   }
-  return {
+  const finalizedConfig = !config.rootConfig.expo ? modifiedExpoConfig : {
     ...config.rootConfig,
-    expo: (0, _deepmerge().default)(config.rootConfig.expo, modifications)
+    expo: modifiedExpoConfig
   };
+  return finalizedConfig;
 }
 function isMatchingObject(expectedValues, actualValues) {
   for (const key in expectedValues) {
