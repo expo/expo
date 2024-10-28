@@ -31,22 +31,29 @@ export type Href = ExpoRouter.__routes extends {
     pathname: string;
     params?: UnknownInputParams;
 };
-export type HrefParams = ExpoRouter.__routes extends {
-    hrefParams: any;
-} ? ExpoRouter.__routes['hrefParams'] : {
+export type HrefInputParams = ExpoRouter.__routes extends {
+    hrefInputParams: any;
+} ? ExpoRouter.__routes['hrefInputParams'] : {
     pathname: string;
     params?: UnknownInputParams;
 };
+export type HrefOutputParams = ExpoRouter.__routes extends {
+    hrefOutputParams: any;
+} ? ExpoRouter.__routes['hrefOutputParams'] : {
+    pathname: string;
+    params?: UnknownOutputParams;
+};
 export type RouteInputParams<T extends Route> = Extract<Href, {
     pathname: T;
-}> extends never ? HrefParams extends infer H ? H extends Record<'pathname' | 'params', any> ? T extends H['pathname'] ? H['params'] : never : never : never : Extract<HrefParams, {
+}> extends never ? HrefInputParams extends infer H ? H extends Record<'pathname' | 'params', any> ? T extends H['pathname'] ? H['params'] : never : never : never : Extract<HrefInputParams, {
     pathname: T;
 }>['params'];
-export type RouteParams<T extends Route> = Extract<HrefParams, {
+export type RouteOutputParams<T extends Route> = Extract<HrefOutputParams, {
     pathname: T;
-}> extends never ? HrefParams extends infer H ? H extends Record<'pathname' | 'params', any> ? T extends H['pathname'] ? H['params'] : never : never : never : Extract<HrefParams, {
+}> extends never ? HrefOutputParams extends infer H ? H extends Record<'pathname' | 'params', any> ? T extends H['pathname'] ? H['params'] : never : never : never : Extract<HrefOutputParams, {
     pathname: T;
 }>['params'];
+export type RouteParams<T extends Route> = RouteOutputParams<T>;
 /**
  * Routes can have known inputs (e.g query params).
  * Unlike outputs, inputs can be `undefined` or `null`.

@@ -27,47 +27,51 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
     }
     const groupedNodes = groupRouteNodes(routeNode);
     const staticRoutesStrings = ['Router.RelativePathString', 'Router.ExternalPathString'];
-    const staticRoutesObjects = [
+    const staticRouteInputObjects = [
         '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams }',
         '{ pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }',
     ];
+    const staticRouteOutputObjects = [
+        '{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams }',
+        '{ pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams }',
+    ];
     for (const type of groupedNodes.static) {
         staticRoutesStrings.push(contextKeyToType(type + "${`?${string}` | `#${string}` | ''}", partialTypedGroups));
-        staticRoutesObjects.push(`{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownInputParams; }`);
+        staticRouteInputObjects.push(`{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownInputParams; }`);
+        staticRouteOutputObjects.push(`{ pathname: ${contextKeyToType(type, partialTypedGroups)}; params?: Router.UnknownOutputParams; }`);
     }
     const dynamicRouteStrings = [];
-    const dynamicRouteObjects = [];
-    const hrefParamsEntries = [];
+    const dynamicRouteInputObjects = [];
+    const dynamicRouteOutputObjects = [];
     for (const [dynamicRouteTemplate, paramsNames] of groupedNodes.dynamic) {
-        const params = paramsNames
+        const inputParams = paramsNames
             .map((param) => {
             const key = param.startsWith('...') ? param.slice(3) : param;
             const value = param.startsWith('...') ? '(string | number)[]' : 'string | number';
             return `${key}: ${value};`;
         })
             .join('');
-        let paramsString = '';
-        if (params.length) {
-            paramsString = `{ ${params} }`;
-            hrefParamsEntries.push([
-                contextKeyToType(dynamicRouteTemplate, partialTypedGroups),
-                paramsString,
-            ]);
-        }
+        const outputParams = paramsNames
+            .map((param) => {
+            const key = param.startsWith('...') ? param.slice(3) : param;
+            const value = param.startsWith('...') ? 'string[]' : 'string';
+            return `${key}: ${value};`;
+        })
+            .join('');
         dynamicRouteStrings.push(contextKeyToType(dynamicRouteTemplate
             .replaceAll(CATCH_ALL, '${string}')
             .replaceAll(SLUG, '${Router.SingleRoutePart<T>}'), partialTypedGroups));
-        dynamicRouteObjects.push(`{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownInputParams & ${paramsString} }`);
+        dynamicRouteInputObjects.push(`{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownInputParams & { ${inputParams} } }`);
+        dynamicRouteOutputObjects.push(`{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownOutputParams & { ${outputParams} } }`);
     }
     const href = [
         ...staticRoutesStrings,
-        ...staticRoutesObjects,
+        ...staticRouteInputObjects,
         ...dynamicRouteStrings,
-        ...dynamicRouteObjects,
+        ...dynamicRouteInputObjects,
     ].join(' | ');
-    const hrefParams = [...staticRoutesObjects, ...dynamicRouteObjects]
-        .join(' | ')
-        .replaceAll('UnknownInputParams', 'UnknownOutputParams');
+    const hrefInputParams = [...staticRouteInputObjects, ...dynamicRouteInputObjects].join(' | ');
+    const hrefOutputParams = [...staticRouteOutputObjects, ...dynamicRouteOutputObjects].join(' | ');
     const tsExpectError = testIgnoreComments
         ? '// @ts-ignore-error -- During tests we need to ignore the "duplicate" declaration error, as multiple fixture declare types \n      '
         : '';
@@ -79,7 +83,8 @@ export * from 'expo-router';
 declare module 'expo-router' {
   export namespace ExpoRouter {
     export interface __routes<T extends string | object = string> {
-      ${tsExpectError}hrefParams: ${hrefParams};
+      ${tsExpectError}hrefInputParams: ${hrefInputParams};
+      ${tsExpectError}hrefOutputParams: ${hrefOutputParams};
       ${tsExpectError}href: ${href};
     }
   }
