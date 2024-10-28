@@ -473,7 +473,7 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
     '/fruit/banana': () => <Text testID="banana">Banana</Text>,
   });
 
-  act(() => router.push('/fruit/banana', { unstable_ignoreAnchor: false }));
+  act(() => router.push('/fruit/banana', { withAnchor: true }));
   expect(screen.getByTestId('banana')).toBeDefined();
   act(() => router.back());
   expect(screen.getByTestId('apple')).toBeDefined();

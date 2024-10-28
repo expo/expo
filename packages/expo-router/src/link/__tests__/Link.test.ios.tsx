@@ -145,7 +145,7 @@ it('can preserve the initialRoute', () => {
   renderRouter({
     index: function MyIndexRoute() {
       return (
-        <Link testID="link" unstable_ignoreAnchor={false} href="/fruit/banana">
+        <Link testID="link" withAnchor href="/fruit/banana">
           Press me
         </Link>
       );
@@ -174,7 +174,7 @@ it('can preserve the initialRoute with shared groups', () => {
   renderRouter({
     index: function MyIndexRoute() {
       return (
-        <Link testID="link" unstable_ignoreAnchor={false} href="/(foo)/fruit/banana">
+        <Link testID="link" withAnchor href="/(foo)/fruit/banana">
           Press me
         </Link>
       );

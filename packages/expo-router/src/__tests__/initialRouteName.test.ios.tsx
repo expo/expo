@@ -87,7 +87,7 @@ it('render the initial route with local params', async () => {
   expect(screen.getByTestId('first')).toHaveTextContent('{"fruit":"apple","id":"1"}');
 });
 
-it('push should ignore (group)/index as an initial route if not specified', () => {
+it('push should include (group)/index as an anchor route when using withAnchor', () => {
   renderRouter({
     index: () => null,
     '(group)/_layout': {
@@ -106,11 +106,12 @@ it('push should ignore (group)/index as an initial route if not specified', () =
     stale: true,
   });
 
-  act(() => router.push('/orange'));
+  act(() => router.push('/orange', { withAnchor: true }));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
     index: 1,
     key: expect.any(String),
+    preloadedRoutes: [],
     routeNames: ['index', '(group)', '_sitemap', '+not-found'],
     routes: [
       {
@@ -124,15 +125,14 @@ it('push should ignore (group)/index as an initial route if not specified', () =
         name: '(group)',
         params: {
           initial: false,
-          params: {
-            initial: false,
-          },
+          params: {},
           screen: 'orange',
         },
         path: undefined,
         state: {
           index: 1,
           key: expect.any(String),
+          preloadedRoutes: [],
           routeNames: ['test', 'orange'],
           routes: [
             {
@@ -143,9 +143,7 @@ it('push should ignore (group)/index as an initial route if not specified', () =
             {
               key: expect.any(String),
               name: 'orange',
-              params: {
-                initial: false,
-              },
+              params: {},
               path: undefined,
             },
           ],
@@ -180,6 +178,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
   expect(store.rootStateSnapshot()).toStrictEqual({
     index: 1,
     key: expect.any(String),
+    preloadedRoutes: [],
     routeNames: ['index', '(group)', '_sitemap', '+not-found'],
     routes: [
       {

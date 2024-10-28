@@ -469,11 +469,12 @@ it('push should also add anchor routes', () => {
     stale: true,
   });
 
-  act(() => router.push('/orange'));
+  act(() => router.push('/orange', { withAnchor: true }));
 
   expect(store.rootStateSnapshot()).toStrictEqual({
     index: 1,
     key: expect.any(String),
+    preloadedRoutes: [],
     routeNames: ['index', '(group)', '_sitemap', '+not-found'],
     routes: [
       {
@@ -486,15 +487,14 @@ it('push should also add anchor routes', () => {
         key: expect.any(String),
         name: '(group)',
         params: {
+          params: {},
           initial: false,
-          params: {
-            initial: false,
-          },
           screen: 'orange',
         },
         path: undefined,
         state: {
           index: 1,
+          preloadedRoutes: [],
           key: expect.any(String),
           routeNames: ['apple', 'index', 'orange'],
           routes: [
@@ -506,9 +506,7 @@ it('push should also add anchor routes', () => {
             {
               key: expect.any(String),
               name: 'orange',
-              params: {
-                initial: false,
-              },
+              params: {},
               path: undefined,
             },
           ],
