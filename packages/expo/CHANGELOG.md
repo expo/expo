@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix react-native-webview Android `decelerationRate` prop issue.
+- Fix react-native-webview Android `decelerationRate` prop issue. ([#32420](https://github.com/expo/expo/pull/32420) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
