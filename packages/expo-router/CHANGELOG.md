@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix deep links to apps that use unusual characters in their schemes. ([#32424](https://github.com/expo/expo/pull/32424) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 4.0.0-preview.4 — 2024-10-28
