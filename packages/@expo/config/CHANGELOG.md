@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Properly handle app manifest plugin modifications. ([#32405](https://github.com/expo/expo/pull/32405) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 10.0.2 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- Properly handle app manifest plugin modifications. ([#32405](https://github.com/expo/expo/pull/32405) by [@byCedric](https://github.com/byCedric))
 
 ## 10.0.1 — 2024-10-25
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-splash-screen",
-  "version": "0.28.2",
+  "version": "0.28.3",
   "description": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
   "main": "build",
   "types": "build",
