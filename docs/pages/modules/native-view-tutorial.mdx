@@ -9,10 +9,11 @@ import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this tutorial, you will build an example module with a native view that renders a WebView. For Android, you will use the [`WebView`](https://developer.android.com/reference/android/webkit/WebView) component, and for iOS, [`WKWebView`](https://developer.apple.com/documentation/webkit/wkwebview). Web support can be implemented using an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), but is left as an exercise for you.
+In this tutorial, you'll build an example module with a native view that renders a `WebView`. For Android, you'll use the [`WebView`](https://developer.android.com/reference/android/webkit/WebView) component, and for iOS, [`WKWebView`](https://developer.apple.com/documentation/webkit/wkwebview). Web support can be implemented using an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), but is left as an exercise for you.
 
 <Step label="1">
 
@@ -132,9 +133,33 @@ You should now see a blank purple screen. While it's not very exciting, it's a g
 
 ## Add the system WebView as a subview
 
-Add the system WebView with a hardcoded URL as a subview of `ExpoWebView`. The `ExpoWebView` class extends `ExpoView`, which extends `RCTView` from React Native, and eventually extends `View` on Android and `UIView` on iOS. 
+Add the system `WebView` with a hardcoded URL as a subview of `ExpoWebView`. The `ExpoWebView` class extends `ExpoView`, which extends `RCTView` from React Native, and eventually extends `View` on Android and `UIView` on iOS.
 
-Ensure that the WebView subview uses the same layout as `ExpoWebView`, whose layout is calculated by React Native's layout engine.
+Ensure that the `WebView` subview uses the same layout as `ExpoWebView`, whose layout is calculated by React Native's layout engine.
+
+### Android view
+
+On Android, use `LayoutParams` to set the WebView's layout to match the `ExpoWebView` layout. You can do this when you instantiate the WebView.
+
+```kotlin android/src/main/java/expo/modules/webview/ExpoWebView.kt
+package expo.modules.webview
+
+import android.content.Context
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.views.ExpoView
+
+class ExpoWebView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+  internal val webView = WebView(context).also {
+    it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    it.webViewClient = object : WebViewClient() {}
+    addView(it)
+
+    it.loadUrl("https://docs.expo.dev/modules/")
+  }
+}
+```
 
 ### iOS view
 
@@ -163,30 +188,6 @@ class ExpoWebView: ExpoView {
 }
 ```
 
-### Android view
-
-On Android, use `LayoutParams` to set the WebView's layout to match the `ExpoWebView` layout. You can do this when you instantiate the WebView.
-
-```kotlin android/src/main/java/expo/modules/webview/ExpoWebView.kt
-package expo.modules.webview
-
-import android.content.Context
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.views.ExpoView
-
-class ExpoWebView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
-  internal val webView = WebView(context).also {
-    it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    it.webViewClient = object : WebViewClient() {}
-    addView(it)
-
-    it.loadUrl("https://docs.expo.dev/modules/")
-  }
-}
-```
-
 ### Example app
 
 No changes are required. Rebuild and run the app using the following commands:
@@ -195,15 +196,15 @@ No changes are required. Rebuild and run the app using the following commands:
   cmdCopy="npx expo prebuild --clean && npx expo run:ios"
   cmd={[
     '# Prebuild the example app with the --clean flag to ensure a clean build',
-    'npx expo prebuild --clean',
-    '# Run the example app on iOS',
-    'npx expo run:ios',
+    '$ npx expo prebuild --clean',
     '# Run the example app on Android',
-    'npx expo run:android',
+    '$ npx expo run:android',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
   ]}
 />
 
-After that, you will see the [Expo Modules API overview page](/modules/overview) rendered. If the changes aren't reflected, try reinstalling the app.
+After that, you'll see the [Expo Modules API overview page](/modules/overview) rendered. If the changes aren't reflected, try reinstalling the app.
 
 </Step>
 
@@ -211,7 +212,7 @@ After that, you will see the [Expo Modules API overview page](/modules/overview)
 
 ## Add a prop to set the URL
 
-To set a prop on the view, you need to define the prop name and setter inside `ExpoWebViewModule`. In this case, you can access the `webView` property directly for convenience. However, in real-world scenarios, keep the logic inside the `ExpoWebView` class to minimize how much `ExpoWebViewModule` knows about its internals.
+To set a prop on the view, define the prop name and setter inside `ExpoWebViewModule`. In this case, you can access the `webView` property directly for convenience. However, in real-world scenarios, keep the logic inside the `ExpoWebView` class to minimize how much `ExpoWebViewModule` knows about its internals.
 
 Use the [Prop definition component](/modules/module-api/#prop) to define the prop. In the prop setter block, you can access both the view and the prop. Specify that the URL is of type `URL` &mdash; the Expo modules API will convert strings to the native `URL` type.
 
@@ -280,7 +281,7 @@ export default function ExpoWebView(props: Props) {
 
 ### Example app
 
-Finally, pass a URL to your WebView component in the example app.
+Finally, pass a `URL` to your `WebView` component in the example app.
 
 ```tsx example/App.tsx
 import { WebView } from 'expo-web-view';
@@ -295,15 +296,15 @@ Rebuild the example app:
 <Terminal
   cmdCopy="npx expo prebuild --clean && npx expo run:ios"
   cmd={[
-    'npx expo prebuild --clean',
+    '$ npx expo prebuild --clean',
     '# Run the example app on iOS',
-    'npx expo run:ios',
+    '$ npx expo run:ios',
     '# Run the example app on Android',
-    'npx expo run:android',
+    '$ npx expo run:android',
   ]}
 />
 
-After that, you will see the [Expo homepage](https://expo.dev) in the WebView.
+After that, you'll see the [Expo homepage](https://expo.dev) in the WebView.
 
 </Step>
 
@@ -454,7 +455,7 @@ export default function ExpoWebView(props: Props) {
 
 ### Example app
 
-Update the example app to show an alert when the page has loaded. Copy the following code, then rebuild and run your app, and you will see the alert!
+Update the example app to show an alert when the page has loaded. Copy the following code, then rebuild and run your app, and you'll see the alert!
 
 ```tsx example/App.tsx
 import { WebView } from 'expo-web-view';
@@ -552,7 +553,10 @@ function LoadingView({ isLoading }: { isLoading: boolean }) {
 
 </Collapsible>
 
-![A simple web browser UI built around our WebView](/static/images/modules/native-view-tutorial/web-browser.png)
+<ContentSpotlight
+  alt="A simple web browser UI built around our WebView"
+  src="/static/images/modules/native-view-tutorial/web-browser.png"
+/>
 
 </Step>
 
