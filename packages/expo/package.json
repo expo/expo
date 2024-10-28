@@ -66,7 +66,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.19.3",
+    "@expo/cli": "0.19.4",
     "@expo/config": "10.0.2",
     "@expo/config-plugins": "9.0.3",
     "@expo/metro-config": "0.19.0-preview.2",

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.0-preview.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.0-preview.3 — 2024-10-26
 
 ### 🎉 New features
