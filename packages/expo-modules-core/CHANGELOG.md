@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed updating props on SwiftUI views on the New Architecture. ([#32381](https://github.com/expo/expo/pull/32381) by [@tsapeta](https://github.com/tsapeta))
 - Fixed build error when `use_frameworks!`. ([#32358](https://github.com/expo/expo/pull/32358) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
