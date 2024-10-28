@@ -17,6 +17,7 @@ describe('plugin resolver', () => {
     });
     it('module', () => {
       expect(moduleNameIsDirectFileReference('app')).toBe(false);
+      expect(moduleNameIsDirectFileReference('@bugsnag/plugin-expo-eas-sourcemaps')).toBe(false);
       expect(moduleNameIsDirectFileReference('@expo/app')).toBe(false);
     });
     it('module folder', () => {
@@ -26,6 +27,7 @@ describe('plugin resolver', () => {
     it('module file', () => {
       expect(moduleNameIsDirectFileReference('app/index.js')).toBe(true);
       expect(moduleNameIsDirectFileReference('@expo/app/index')).toBe(true);
+      expect(moduleNameIsDirectFileReference('@sentry/react-native/expo')).toBe(true);
     });
   });
 
@@ -35,6 +37,8 @@ describe('plugin resolver', () => {
     // eslint-disable-next-line no-useless-escape -- package references don't have backslashes - even on Windows
     expect(moduleNameIsPackageReference(`@expo\app`)).toBe(false);
     expect(moduleNameIsPackageReference(`@expo/app/path.js`)).toBe(false);
+    expect(moduleNameIsPackageReference(`@bugsnag/plugin-expo-eas-sourcemaps`)).toBe(true);
+    expect(moduleNameIsPackageReference(`@sentry/react-native/expo`)).toBe(false);
   });
 
   describe(resolvePluginForModule, () => {
@@ -48,13 +52,24 @@ describe('plugin resolver', () => {
       });
 
       it('a path to plugin library which does not contain app.plugin.js file', () => {
+        const spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn);
+
         /**
+         * TODO @vonovak we might want to flip the expectation in the future.
          * Packages must export a plugin via app.plugin.js, this rule was added to prevent popular packages like lodash from being mistaken for a config plugin and breaking the prebuild.
          * https://docs.expo.dev/config-plugins/development-and-debugging/#expo-install
          * */
-        expect(() => resolvePluginForModule(projectRoot, 'test-plugin')).toThrow(
+        expect(() => resolvePluginForModule(projectRoot, 'test-plugin')).not.toThrow(
           `Failed to resolve plugin for module "test-plugin" relative to`
         );
+        expect(console.warn)
+          .toHaveBeenCalledWith(`"test-plugin" config plugin is being resolved from its package.json main entry (node_modules/test-plugin/lib/commonjs/index.js).
+This approach is deprecated and will throw an error in Expo SDK53.
+
+To fix this:
+1. Report this issue to the maintainer of "test-plugin" - they need to migrate to using \`app.plugin.js\` instead.
+2. For immediate unblocking, reference the config plugin file directly: node_modules/test-plugin/lib/commonjs/index.js`);
+        spy.mockRestore();
       });
     });
 
@@ -87,6 +102,18 @@ describe('plugin resolver', () => {
           filePath: `${projectRoot}/node_modules/test-lib/app.plugin.js`,
           isPluginFile: true,
         });
+      });
+
+      it('test library which does not have app.plugin.js file but has main entry', () => {
+        const spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn);
+        // https://docs.expo.dev/config-plugins/plugins-and-mods/#node-module-default-file
+        // TODO @vonovak we might want this to throw in the future (see the TODO and test case above).
+        expect(resolvePluginForModule(projectRoot, 'test-plugin')).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-plugin/lib/commonjs/index.js`,
+          isPluginFile: false,
+        });
+        expect(console.warn).toHaveBeenCalledTimes(1);
+        spy.mockRestore();
       });
 
       it('test-lib library name with file path', () => {

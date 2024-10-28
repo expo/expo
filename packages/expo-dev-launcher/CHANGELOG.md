@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 5.0.4 — 2024-10-25
+
+### 🐛 Bug fixes
+
 - Fixed `java.nio.channels.ClosedChannelException` crash from network inspector. ([#32352](https://github.com/expo/expo/pull/32352) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

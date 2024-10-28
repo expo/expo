@@ -1,21 +1,30 @@
 import { SharedRef } from 'expo';
 
-import { getResults } from './utils.web';
-import { ImageResult, SaveFormat, SaveOptions } from '../ImageManipulator.types';
+import { ImageResult, SaveOptions } from '../ImageManipulator.types';
+import { blobToBase64String } from './utils.web';
 
 export default class ImageManipulatorImageRef extends SharedRef<'image'> {
-  private canvas: HTMLCanvasElement;
+  readonly nativeRefType: string = 'image';
+
+  readonly uri: string;
   readonly width: number;
   readonly height: number;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(uri: string, width: number, height: number) {
     super();
-    this.canvas = canvas;
-    this.width = canvas.width;
-    this.height = canvas.height;
+    this.uri = uri;
+    this.width = width;
+    this.height = height;
   }
 
-  async saveAsync(options: SaveOptions = { format: SaveFormat.PNG }): Promise<ImageResult> {
-    return getResults(this.canvas, options);
+  async saveAsync(options: SaveOptions = { base64: false }): Promise<ImageResult> {
+    return {
+      uri: this.uri,
+      width: this.width,
+      height: this.height,
+      base64: options.base64
+        ? await blobToBase64String(await fetch(this.uri).then((response) => response.blob()))
+        : undefined,
+    };
   }
 }

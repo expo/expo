@@ -8,7 +8,18 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.19.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.3 — 2024-10-25
+
+### 🐛 Bug fixes
+
 - fix async routes in web ssr ([#32331](https://github.com/expo/expo/pull/32331) by [@EvanBacon](https://github.com/EvanBacon))
+- Avoid broadcasting binary data over messages websocket. ([#32400](https://github.com/expo/expo/pull/32400) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

@@ -146,10 +146,7 @@ export async function resolveAppProjectConfigAsync(
     if (gradle == null || manifest == null) {
       return {};
     }
-    const packageName = await parsePackageNameAsync(
-      path.join(androidDir, manifest),
-      path.join(androidDir, gradle)
-    );
+    const packageName = await parsePackageNameAsync(androidDir, manifest, gradle);
 
     return {
       android: {

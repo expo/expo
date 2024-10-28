@@ -12,6 +12,12 @@
 
 - Only add `UISupportedInterfaceOrientations~ipad` if tablet support is also enabled. ([#32361](https://github.com/expo/expo/pull/32361) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 9.0.3 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- bring back resolution from package.json main field ([#32355](https://github.com/expo/expo/pull/32355) by [@vonovak](https://github.com/vonovak))
+
 ## 9.0.2 — 2024-10-24
 
 _This version does not introduce any user-facing changes._

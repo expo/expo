@@ -4,7 +4,7 @@ import AVFoundation
 let BARCODE_TYPES_KEY = "barcodeTypes"
 
 actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
-  var onBarcodeScanned: (([String: Any]?) -> Void)?
+  private var onBarcodeScanned: (([String: Any]?) -> Void)?
   var isScanningBarcodes = false
 
   // MARK: - Properties
@@ -74,6 +74,10 @@ actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
     metadataOutput?.connections.forEach {
       $0.isEnabled = enabled
     }
+  }
+
+  func setOnBarcodeScanned(_ onBarcodeScanned: @escaping ([String: Any]?) -> Void) {
+    self.onBarcodeScanned = onBarcodeScanned
   }
 
   func maybeStartBarcodeScanning() async {

@@ -1,7 +1,5 @@
 import { CodedError } from 'expo-modules-core';
 
-import { ImageResult, SaveOptions } from '../ImageManipulator.types';
-
 export function getContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
   const ctx = canvas.getContext('2d');
   if (!ctx) {
@@ -10,25 +8,15 @@ export function getContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D 
   return ctx;
 }
 
-export function getResults(canvas: HTMLCanvasElement, options?: SaveOptions): ImageResult {
-  let uri: string;
-  if (options) {
-    const { format = 'png' } = options;
-    if (options.format === 'png' && options.compress !== undefined) {
-      console.warn('compress is not supported with png format.');
-    }
-    const quality = Math.min(1, Math.max(0, options.compress ?? 1));
-    uri = canvas.toDataURL('image/' + format, quality);
-  } else {
-    // defaults to PNG with no loss
-    uri = canvas.toDataURL();
-  }
-  return {
-    uri,
-    width: canvas.width,
-    height: canvas.height,
-    base64: uri.replace(/^data:image\/\w+;base64,/, ''),
-  };
+export async function blobToBase64String(blob: Blob): Promise<string> {
+  const dataURL = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = () =>
+      reject(new Error(`Unable to convert blob to base64 string: ${reader.error}`));
+    reader.readAsDataURL(blob);
+  });
+  return dataURL.replace(/^data:image\/\w+;base64,/, '');
 }
 
 export function loadImageAsync(uri: string): Promise<HTMLCanvasElement> {
