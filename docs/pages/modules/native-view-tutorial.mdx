@@ -12,25 +12,25 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this tutorial, you will build a module with a native view that renders a WebView. For Android, you will use the [WebView](https://developer.android.com/reference/android/webkit/WebView) component, and for iOS, you'll use [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview). Web support can be implemented using an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), but that will be left as an exercise for you.
+In this tutorial, you will build an example module with a native view that renders a WebView. For Android, you will use the [`WebView`](https://developer.android.com/reference/android/webkit/WebView) component, and for iOS, [`WKWebView`](https://developer.apple.com/documentation/webkit/wkwebview). Web support can be implemented using an [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), but is left as an exercise for you.
 
 <Step label="1">
 
 ## Initialize a new module
 
-First, create a new module. In this example, the module is named `expo-web-view`/`ExpoWebView`, but you can choose any name. Just adjust the instructions accordingly:
+Start by creating a new module. In this example, the module is named `expo-web-view`.
 
 <Terminal cmd={['$ npx create-expo-module expo-web-view']} />
 
-> **info** Since you won't be shipping this library, press <kbd>return</kbd> for all prompts to accept the default values.
+> **info** Since this is an example library and won't be published, press <kbd>return</kbd> for all prompts to accept the default values.
 
 </Step>
 
 <Step label="2">
 
-## Set up your workspace
+## Set up workspace
 
-Next, clean up the default module to start with a clean slate. Delete the files that you won't use in this guide.
+Clean up the default module to start with a clean slate by deleting the following files:
 
 <Terminal
   cmdCopy="cd expo-web-view && rm src/ExpoWebView.types.ts src/ExpoWebView.web.tsx src/ExpoWebViewModule.ts src/ExpoWebViewModule.web.ts"
@@ -102,7 +102,7 @@ export default function App() {
 
 ## Run the example project
 
-Next, run the example project to ensure everything works. You need to start the TypeScript compiler to watch for changes and rebuild the module JavaScript. In another terminal window, compile and run the example app.
+To ensure everything is working, start the TypeScript compiler to watch for changes and rebuild the module's JavaScript:
 
 <Terminal
   cmdCopy="npm run build"
@@ -132,7 +132,9 @@ You should now see a blank purple screen. While it's not very exciting, it's a g
 
 ## Add the system WebView as a subview
 
-Next, add the system WebView with a hardcoded URL as a subview of `ExpoWebView`. Your `ExpoWebView` class extends `ExpoView`, which extends `RCTView` from React Native, and eventually extends `UIView` on iOS and `View` on Android. Make sure the WebView subview uses the same layout as `ExpoWebView`, whose layout is calculated by React Native's layout engine.
+Add the system WebView with a hardcoded URL as a subview of `ExpoWebView`. The `ExpoWebView` class extends `ExpoView`, which extends `RCTView` from React Native, and eventually extends `View` on Android and `UIView` on iOS. 
+
+Ensure that the WebView subview uses the same layout as `ExpoWebView`, whose layout is calculated by React Native's layout engine.
 
 ### iOS view
 
@@ -163,7 +165,7 @@ class ExpoWebView: ExpoView {
 
 ### Android view
 
-On Android, use `LayoutParams` to set the WebView's layout to match the layout of `ExpoWebView`. You can do this when you instantiate the WebView.
+On Android, use `LayoutParams` to set the WebView's layout to match the `ExpoWebView` layout. You can do this when you instantiate the WebView.
 
 ```kotlin android/src/main/java/expo/modules/webview/ExpoWebView.kt
 package expo.modules.webview
@@ -201,7 +203,7 @@ No changes are required. Rebuild and run the app using the following commands:
   ]}
 />
 
-After that, you will see the [Expo Modules API overview page](/modules/). If the changes aren't reflected, try reinstalling the app.
+After that, you will see the [Expo Modules API overview page](/modules/overview) rendered. If the changes aren't reflected, try reinstalling the app.
 
 </Step>
 
@@ -209,9 +211,9 @@ After that, you will see the [Expo Modules API overview page](/modules/). If the
 
 ## Add a prop to set the URL
 
-To set a prop on your view, you need to define the prop name and setter inside `ExpoWebViewModule`. In this case, you'll access the `webView` property directly for convenience. However, in many real-world cases, it's better to keep this logic inside the `ExpoWebView` class to minimize how much `ExpoWebViewModule` knows about the internals of `ExpoWebView`.
+To set a prop on the view, you need to define the prop name and setter inside `ExpoWebViewModule`. In this case, you can access the `webView` property directly for convenience. However, in real-world scenarios, keep the logic inside the `ExpoWebView` class to minimize how much `ExpoWebViewModule` knows about its internals.
 
-Use the [Prop definition component](/modules/module-api/#prop) to define the prop. In the prop setter block, you can access both the view and the prop. Specify that the URL is of type `URL` — the Expo modules API will handle converting strings to the native `URL` type for you.
+Use the [Prop definition component](/modules/module-api/#prop) to define the prop. In the prop setter block, you can access both the view and the prop. Specify that the URL is of type `URL` &mdash; the Expo modules API will convert strings to the native `URL` type.
 
 ### iOS module
 
@@ -554,7 +556,7 @@ function LoadingView({ isLoading }: { isLoading: boolean }) {
 
 </Step>
 
-Congratulations, you've created your first Expo module with a native view for Android and iOS!
+Congratulations! You've created your first Expo module with a native view for Android and iOS.
 
 ## Next steps
 
