@@ -17,6 +17,7 @@ function expoUseDomDirectivePlugin(api) {
     // TODO: Is exporting
     const isProduction = api.caller(common_1.getIsProd);
     const platform = api.caller((caller) => caller?.platform);
+    const projectRoot = api.caller(common_1.getPossibleProjectRoot);
     return {
         name: 'expo-use-dom-directive',
         visitor: {
@@ -59,6 +60,23 @@ function expoUseDomDirectivePlugin(api) {
                 if (!hasDefaultExport) {
                     throw path.buildCodeFrameError('The "use dom" directive requires a default export to be present in the file.');
                 }
+                // Assert that _layout routes cannot be used in DOM components.
+                const fileBasename = (0, path_1.basename)(filePath);
+                if (projectRoot &&
+                    // Detecting if the file is in the router root would be extensive as it would cause a more complex
+                    // cache key for each file. Instead, let's just check if the file is in the project root and is not a node_module,
+                    // then we can assert that users should not use `_layout` or `+api` with "use dom".
+                    filePath.includes(projectRoot) &&
+                    !filePath.match(/node_modules/)) {
+                    if (fileBasename.match(/^_layout\.[jt]sx?$/)) {
+                        throw path.buildCodeFrameError('Layout routes cannot be marked as DOM components because they cannot render native views.');
+                    }
+                    else if (
+                    // No API routes
+                    fileBasename.match(/\+api\.[jt]sx?$/)) {
+                        throw path.buildCodeFrameError('API routes cannot be marked as DOM components.');
+                    }
+                }
                 const outputKey = url_1.default.pathToFileURL(filePath).href;
                 const proxyModule = [
                     `import React from 'react';`,
@@ -81,7 +99,7 @@ function expoUseDomDirectivePlugin(api) {
                 else {
                     proxyModule.push(
                     // Add the basename to improve the Safari debug preview option.
-                    `const source = { uri: new URL("/_expo/@dom/${(0, path_1.basename)(filePath)}?file=" + ${JSON.stringify(outputKey)}, require("react-native/Libraries/Core/Devtools/getDevServer")().url).toString() };`);
+                    `const source = { uri: new URL("/_expo/@dom/${fileBasename}?file=" + ${JSON.stringify(outputKey)}, require("react-native/Libraries/Core/Devtools/getDevServer")().url).toString() };`);
                 }
                 proxyModule.push(`
 export default React.forwardRef((props, ref) => {

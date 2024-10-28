@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Assert that layout routes and API routes cannot be DOM components.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
