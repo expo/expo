@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Update `@react-navigation/core` imports to `@react-navigation/native`
+- Update `@react-navigation/core` imports to `@react-navigation/native` ([#32391](https://github.com/expo/expo/pull/32391) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
