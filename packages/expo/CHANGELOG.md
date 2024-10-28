@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Allowing DOM component `ref` to call WebView functions. ([#32419](https://github.com/expo/expo/pull/32419) by [@kudo](https://github.com/kudo))
+
 ## 52.0.0-preview.7 — 2024-10-28
 
 _This version does not introduce any user-facing changes._
