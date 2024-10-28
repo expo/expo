@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove deprecation warning for config plugins using `main` entry point as plugin file. ([#32426](https://github.com/expo/expo/pull/32426) by [@byCedric](https://github.com/byCedric))
+
 ## 9.0.3 — 2024-10-28
 
 ### 🐛 Bug fixes
