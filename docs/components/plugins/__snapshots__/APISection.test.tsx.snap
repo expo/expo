@@ -225,7 +225,7 @@ button.
 not appear on the screen.
     </p>
     <blockquote
-      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
@@ -288,7 +288,7 @@ for more details.
           data-text="true"
         >
           <a
-            class="relative decoration-0 scroll-m-6 text-secondary flex flex-row gap-2 items-center"
+            class="relative decoration-0 scroll-m-6 text-tertiary flex flex-row gap-2 items-center font-medium"
             href="#appleauthenticationbuttonprops"
             id="appleauthenticationbuttonprops"
           >
@@ -1055,11 +1055,11 @@ This should come from the user field of an
     
 
     <blockquote
-      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0"
       data-testid="callout-container"
     >
       <div
-        class="select-none mt-1 [table_&]:mt-0.5"
+        class="select-none [table_&]:mt-0.5 mt-0.5"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -1081,7 +1081,7 @@ This should come from the user field of an
         </svg>
       </div>
       <div
-        class="text-default w-full leading-normal last:mb-0"
+        class="text-default w-full last:mb-0 text-xs [&_p]:text-xs [&_code]:text-[90%]"
       >
         
 
@@ -2472,7 +2472,7 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
@@ -3347,7 +3347,7 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
@@ -3658,7 +3658,7 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
@@ -3986,7 +3986,7 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+      class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
       data-testid="callout-container"
     >
       <div
@@ -4406,7 +4406,7 @@ After calling this function, the listener will no longer receive any events from
         data-text="true"
       >
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
           data-text="true"
         >
           AppleAuthenticationButtonStyle Values
@@ -4671,7 +4671,7 @@ After calling this function, the listener will no longer receive any events from
         data-text="true"
       >
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
           data-text="true"
         >
           AppleAuthenticationButtonType Values
@@ -4975,7 +4975,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <blockquote
-        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
         data-testid="callout-container"
       >
         <div
@@ -5033,7 +5033,7 @@ for more details.
         data-text="true"
       >
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
           data-text="true"
         >
           AppleAuthenticationCredentialState Values
@@ -5317,7 +5317,7 @@ for more details.
         data-text="true"
       >
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
           data-text="true"
         >
           AppleAuthenticationOperation Values
@@ -5623,11 +5623,11 @@ for more details.
       
 
       <blockquote
-        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-1 [table_&]:mt-0.5"
+          class="select-none [table_&]:mt-0.5 mt-0.5"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -5649,7 +5649,7 @@ for more details.
           </svg>
         </div>
         <div
-          class="text-default w-full leading-normal last:mb-0"
+          class="text-default w-full last:mb-0 text-xs [&_p]:text-xs [&_code]:text-[90%]"
         >
           
 
@@ -5665,7 +5665,7 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
         data-testid="callout-container"
       >
         <div
@@ -5723,7 +5723,7 @@ for more details.
         data-text="true"
       >
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
           data-text="true"
         >
           AppleAuthenticationScope Values
@@ -5899,7 +5899,7 @@ for more details.
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0 !mb-3.5"
         data-testid="callout-container"
       >
         <div
@@ -5957,7 +5957,7 @@ for more details.
         data-text="true"
       >
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
           data-text="true"
         >
           AppleAuthenticationUserDetectionStatus Values
@@ -6197,14 +6197,14 @@ exports[`APISection expo-barcode-scanner 1`] = `
     class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !shadow-none"
   >
     <div
-      class="[table_&]:mt-0 [table_&]:mb-3.5 [table_&]:last:mb-0 mx-[-21px] mt-[-21px] max-md-gutters:mx-[-17px]"
+      class="[table_&]:mt-0 [table_&]:mb-3.5 [table_&]:last:mb-0 mx-[-21px] mt-[-21px] max-lg-gutters:mx-[-17px]"
     >
       <blockquote
-        class="border flex gap-2 rounded-md py-3 px-4 mb-4 bg-warning border-warning [&_code]:bg-palette-yellow4 [&_code]:border-palette-yellow6 dark:[&_code]:bg-palette-yellow5 dark:[&_code]:border-palette-yellow7 [&_p]:!mb-0 [table_&]:last-of-type:mb-2.5 pl-6 pr-4 shadow-none rounded-b-none rounded-t-lg max-md-gutters:px-4"
+        class="border flex gap-2 rounded-md py-3 px-4 mb-4 [table_&]:last:mb-0 bg-warning border-warning [&_code]:bg-palette-yellow4 [&_code]:border-palette-yellow6 dark:[&_code]:bg-palette-yellow5 dark:[&_code]:border-palette-yellow7 [&_p]:!mb-0 [table_&]:last-of-type:mb-2.5 pl-6 pr-4 shadow-none rounded-b-none rounded-t-lg max-md-gutters:px-4"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-1 [table_&]:mt-0.5"
+          class="select-none [table_&]:mt-0.5 mt-0.5"
         >
           <svg
             class="icon-sm text-warning"
@@ -6226,7 +6226,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </svg>
         </div>
         <div
-          class="text-default w-full leading-normal last:mb-0"
+          class="text-default w-full last:mb-0 text-xs [&_p]:text-xs [&_code]:text-[90%]"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words mb-3.5"
@@ -6373,7 +6373,7 @@ for more details.
           data-text="true"
         >
           <a
-            class="relative decoration-0 scroll-m-6 text-secondary flex flex-row gap-2 items-center"
+            class="relative decoration-0 scroll-m-6 text-tertiary flex flex-row gap-2 items-center font-medium"
             href="#barcodescannerprops"
             id="barcodescannerprops"
           >
@@ -6621,11 +6621,11 @@ provided with an
         
 
         <blockquote
-          class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
+          class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0"
           data-testid="callout-container"
         >
           <div
-            class="select-none mt-1 [table_&]:mt-0.5"
+            class="select-none [table_&]:mt-0.5 mt-0.5"
           >
             <svg
               class="icon-sm text-icon-default"
@@ -6647,7 +6647,7 @@ provided with an
             </svg>
           </div>
           <div
-            class="text-default w-full leading-normal last:mb-0"
+            class="text-default w-full last:mb-0 text-xs [&_p]:text-xs [&_code]:text-[90%]"
           >
             
 
@@ -7204,7 +7204,7 @@ This uses both
         data-text="true"
       >
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
           data-text="true"
         >
           <svg
@@ -7808,11 +7808,11 @@ the platform.
               
 
               <blockquote
-                class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
+                class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0"
                 data-testid="callout-container"
               >
                 <div
-                  class="select-none mt-1 [table_&]:mt-0.5"
+                  class="select-none [table_&]:mt-0.5 mt-0.5"
                 >
                   <svg
                     class="icon-sm text-icon-default"
@@ -7834,7 +7834,7 @@ the platform.
                   </svg>
                 </div>
                 <div
-                  class="text-default w-full leading-normal last:mb-0"
+                  class="text-default w-full last:mb-0 text-xs [&_p]:text-xs [&_code]:text-[90%]"
                 >
                   
 
@@ -8056,7 +8056,7 @@ code.
       data-text="true"
     >
       <span
-        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
         data-text="true"
       >
         PermissionResponse Properties
@@ -9661,7 +9661,7 @@ you don't get this value.
         data-text="true"
       >
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
           data-text="true"
         >
           PermissionStatus Values
@@ -10346,11 +10346,11 @@ exports[`APISection expo-pedometer 1`] = `
       
 
       <blockquote
-        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-1 [table_&]:mt-0.5"
+          class="select-none [table_&]:mt-0.5 mt-0.5"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -10372,7 +10372,7 @@ exports[`APISection expo-pedometer 1`] = `
           </svg>
         </div>
         <div
-          class="text-default w-full leading-normal last:mb-0"
+          class="text-default w-full last:mb-0 text-xs [&_p]:text-xs [&_code]:text-[90%]"
         >
           
 
@@ -10869,11 +10869,11 @@ provided with a single argument that is
       
 
       <blockquote
-        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last-of-type:mb-0 [&_code]:bg-element [&_p]:!mb-0"
+        class="bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4 [table_&]:last:mb-0 [&_code]:bg-element [&_p]:!mb-0"
         data-testid="callout-container"
       >
         <div
-          class="select-none mt-1 [table_&]:mt-0.5"
+          class="select-none [table_&]:mt-0.5 mt-0.5"
         >
           <svg
             class="icon-sm text-icon-default"
@@ -10895,7 +10895,7 @@ provided with a single argument that is
           </svg>
         </div>
         <div
-          class="text-default w-full leading-normal last:mb-0"
+          class="text-default w-full last:mb-0 text-xs [&_p]:text-xs [&_code]:text-[90%]"
         >
           
 
@@ -11033,7 +11033,7 @@ On iOS, the
       data-text="true"
     >
       <span
-        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
         data-text="true"
       >
         PermissionResponse Properties
@@ -11870,7 +11870,7 @@ After calling this function, the listener will no longer receive any events from
         data-text="true"
       >
         <span
-          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+          class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
           data-text="true"
         >
           PermissionStatus Values

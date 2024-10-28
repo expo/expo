@@ -85,7 +85,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       data-text="true"
     >
       <span
-        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium text-secondary flex flex-row gap-2 items-center"
+        class="text-[14px] leading-[1.5715] tracking-[-0.006rem] text-tertiary flex flex-row gap-2 items-center font-medium"
         data-text="true"
       >
         <svg
