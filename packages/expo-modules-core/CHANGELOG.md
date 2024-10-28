@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build error when `use_frameworks!`. ([#32358](https://github.com/expo/expo/pull/32358) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.0.0-preview.4 — 2024-10-25
