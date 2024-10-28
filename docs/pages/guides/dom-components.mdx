@@ -4,6 +4,7 @@ sidebar_title: DOM components
 description: Learn about rendering React DOM elements in Expo native apps.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
 > Experimentally available in **SDK 52 and above**. To try out the latest DOM components features, you can install the [canary release](/versions/unversioned/#canary-releases).
@@ -13,6 +14,28 @@ import { Terminal } from '~/ui/components/Snippet';
 Expo offers a novel approach to work with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app by moving on a per-component basis.
 
 While the Expo native runtime generally does not support elements like `<div>` or `<img>`, there may be instances where you need to quickly incorporate web components. In such cases, DOM components provide a useful solution.
+
+## Prerequisites
+
+<Collapsible summary="Your project must use Expo CLI and extend the Expo Metro Config">
+
+If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`), then you're all set, and you can skip this step.
+
+If you don't have the `expo` package in your project yet, then install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
+
+<Terminal cmd={['$ npx install-expo-modules@latest']} />
+
+If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
+
+</Collapsible>
+
+<Collapsible summary="Expo Metro Runtime, React DOM, and React Native Web">
+
+If you are using Expo Router and Expo Web, you can skip this step. Otherwise, install the following packages:
+
+<Terminal cmd={['$ npx expo install @expo/metro-runtime react-dom react-native-web']} />
+
+</Collapsible>
 
 ## Usage
 
