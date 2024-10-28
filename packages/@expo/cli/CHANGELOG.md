@@ -15,7 +15,7 @@
 ### 🐛 Bug fixes
 
 - fix async routes in web ssr ([#32331](https://github.com/expo/expo/pull/32331) by [@EvanBacon](https://github.com/EvanBacon))
-- Avoid broadcasting binary data over messages websocket.
+- Avoid broadcasting binary data over messages websocket. ([#32400](https://github.com/expo/expo/pull/32400) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
