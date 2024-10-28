@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -9,7 +10,6 @@ import NestedComponents from '../components/06-nested';
 import ForwardRef, { type ForwardedImperativeRef } from '../components/07-forward-ref';
 import NativeModuleProxy from '../components/08-native-module-proxy';
 import RouterDemo from '../components/09-router';
-import { useLocalSearchParams } from 'expo-router';
 
 export default function Page() {
   const [index, setIndex] = useState(0);
@@ -70,6 +70,18 @@ export default function Page() {
           title="Update text"
           onPress={() => {
             forwardedRef.current?.updateText(Date.now().toString());
+          }}
+        />
+        <Button
+          title="Update color using webView ref"
+          onPress={() => {
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = 100;
+            const lightness = 85;
+            forwardedRef.current?.injectJavaScript(`
+              (function() {
+                document.getElementById('rect').style.backgroundColor = 'hsl(${hue}, ${saturation}%, ${lightness}%)';
+              })();`);
           }}
         />
       </TestCase>
