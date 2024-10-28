@@ -1,5 +1,5 @@
 import { useEvent } from 'expo';
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { PermissionResponse, useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useState, useMemo } from 'react';
 
 import {
@@ -11,7 +11,7 @@ import {
   RecordingStatus,
 } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
@@ -35,10 +35,7 @@ export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
   return useEvent(player, PLAYBACK_STATUS_UPDATE, currentStatus);
 }
 
-export function useAudioSampleListener(
-  player: AudioPlayer,
-  listener: (data: { channels: { frames: number[] }[]; timestamp: number }) => void
-) {
+export function useAudioSampleListener(player: AudioPlayer, listener: (data: AudioSample) => void) {
   player.setAudioSamplingEnabled(true);
   useEffect(() => {
     if (!player.isAudioSamplingSupported) {
@@ -92,6 +89,12 @@ export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void>
   return await AudioModule.setAudioModeAsync(mode);
 }
 
-export { AudioModule, AudioPlayer, AudioRecorder };
-export * from './Audio.types';
-export * from './RecordingConstants';
+export async function requestRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.requestRecordingPermissionsAsync();
+}
+
+export async function getRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.getRecordingPermissionsAsync();
+}
+
+export { AudioModule };

@@ -1,6 +1,5 @@
 import { useEvent } from 'expo';
 import { useEffect, useState, useMemo } from 'react';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { createRecordingOptions } from './utils/options';
@@ -59,7 +58,11 @@ export async function setIsAudioActiveAsync(active) {
 export async function setAudioModeAsync(mode) {
     return await AudioModule.setAudioModeAsync(mode);
 }
-export { AudioModule, AudioPlayer, AudioRecorder };
-export * from './Audio.types';
-export * from './RecordingConstants';
+export async function requestRecordingPermissionsAsync() {
+    return await AudioModule.requestRecordingPermissionsAsync();
+}
+export async function getRecordingPermissionsAsync() {
+    return await AudioModule.getRecordingPermissionsAsync();
+}
+export { AudioModule };
 //# sourceMappingURL=ExpoAudio.web.js.map
