@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Properly handle app manifest plugin modifications.
+
 ### 💡 Others
 
 ## 10.0.1 — 2024-10-25
