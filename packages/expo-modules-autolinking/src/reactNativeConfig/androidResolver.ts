@@ -22,15 +22,16 @@ export async function resolveDependencyConfigImplAndroidAsync(
   }
   const androidDir = path.join(packageRoot, 'android');
   const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: true });
-  if (!manifest || !gradle) {
+  if (!manifest && !gradle) {
     return null;
   }
 
   const packageName =
-    reactNativeConfig?.packageName ||
-    (await parsePackageNameAsync(path.join(androidDir, manifest), path.join(androidDir, gradle)));
+    reactNativeConfig?.packageName || (await parsePackageNameAsync(androidDir, manifest, gradle));
+  if (!packageName) {
+    return null;
+  }
   const nativePackageClassName = await parseNativePackageClassNameAsync(packageRoot, androidDir);
-
   if (!nativePackageClassName) {
     return null;
   }
@@ -87,18 +88,19 @@ export async function resolveDependencyConfigImplAndroidAsync(
  * Parse the `RNConfigDependencyAndroid.packageName`
  */
 export async function parsePackageNameAsync(
+  androidDir: string,
   manifestPath: string | null,
   gradlePath: string | null
-) {
+): Promise<string | null> {
   if (gradlePath) {
-    const gradleContents = await fs.readFile(gradlePath, 'utf8');
+    const gradleContents = await fs.readFile(path.join(androidDir, gradlePath), 'utf8');
     const match = gradleContents.match(/namespace\s*[=]*\s*["'](.+?)["']/);
     if (match) {
       return match[1];
     }
   }
   if (manifestPath) {
-    const manifestContents = await fs.readFile(manifestPath, 'utf8');
+    const manifestContents = await fs.readFile(path.join(androidDir, manifestPath), 'utf8');
     const match = manifestContents.match(/package="(.+?)"/);
     if (match) {
       return match[1];

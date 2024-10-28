@@ -71,6 +71,7 @@ class RouterStore {
     canDismiss = routing_1.canDismiss.bind(this);
     setParams = routing_1.setParams.bind(this);
     navigate = routing_1.navigate.bind(this);
+    reload = routing_1.reload.bind(this);
     initialize(context, navigationRef, linkingConfigOptions = {}) {
         // Clean up any previous state
         this.initialState = undefined;

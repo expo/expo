@@ -1,6 +1,7 @@
-import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
+export { PermissionStatus, } from 'expo-modules-core';
 // @docsMissing
 /**
  * @platform ios
@@ -34,7 +35,6 @@ export var MonthOfTheYear;
     MonthOfTheYear[MonthOfTheYear["November"] = 11] = "November";
     MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
 })(MonthOfTheYear || (MonthOfTheYear = {}));
-export { PermissionStatus };
 /**
  * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
  * */

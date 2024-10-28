@@ -1,7 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { type Ref, Component } from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
-export default class CameraView extends Component<CameraProps> {
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
+export default class CameraView extends Component<CameraViewProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
      */
@@ -37,7 +37,7 @@ export default class CameraView extends Component<CameraProps> {
         type: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
         flash: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
     };
-    static defaultProps: CameraProps;
+    static defaultProps: CameraViewProps;
     _cameraHandle?: number | null;
     _cameraRef: import("react").RefObject<CameraViewRef>;
     _lastEvents: {

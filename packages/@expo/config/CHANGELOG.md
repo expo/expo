@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 10.0.2 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- Properly handle app manifest plugin modifications. ([#32405](https://github.com/expo/expo/pull/32405) by [@byCedric](https://github.com/byCedric))
+
+## 10.0.1 — 2024-10-25
+
+### 💡 Others
+
+- Bump `sucrase@3.34.0` to `sucrase@3.35.0` to to remove transitive dependency on `glob@7` ([#32274](https://github.com/expo/expo/pull/32274) by [@kitten](https://github.com/kitten))
+
 ## 10.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

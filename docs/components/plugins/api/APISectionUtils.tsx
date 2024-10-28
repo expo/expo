@@ -125,18 +125,21 @@ export const mdComponentsNoValidation: MDComponents = {
 
 const nonLinkableTypes = [
   'B',
+  'BufferSource',
   'CodedError',
   'ColorValue',
   'ComponentClass',
   'ComponentProps',
   'ComponentType',
   'E',
+  'EmitterSubscription',
   'EventName',
   'EventSubscription',
   'ForwardRefExoticComponent',
   'GeneratedHref',
   'GestureResponderEvent',
   'GetPermissionMethod',
+  'InferEventParameter',
   'K',
   'Listener',
   'ModuleType',
@@ -195,6 +198,7 @@ const replaceableTypes: Partial<Record<string, string>> = {
 const hardcodedTypeLinks: Record<string, string> = {
   ArrayBuffer:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer',
+  Asset: '/versions/latest/sdk/asset/#asset',
   AsyncIterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator',
   AVMetadata: '/versions/latest/sdk/av/#avmetadata',
@@ -213,6 +217,7 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
+  Extract: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union',
   // Conflicts with the File class from expo-file-system@next. TODO: Fix this.
   // File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
@@ -365,6 +370,7 @@ export const resolveTypeName = (
   }
 
   const {
+    element,
     elements,
     elementType,
     name,
@@ -420,6 +426,8 @@ export const resolveTypeName = (
         } else {
           return renderWithLink({ name, typePackage: typeDefinition.package, sdkVersion });
         }
+      } else if (type === 'namedTupleMember' && element) {
+        return `${name}: ${element.name}`;
       } else {
         return name;
       }
@@ -506,14 +514,14 @@ export const resolveTypeName = (
     } else if (type === 'tuple' && elements) {
       return (
         <>
-          [
+          <span className="text-quaternary">[</span>
           {elements.map((elem, i) => (
             <span key={`tuple-${name}-${i}`}>
               {resolveTypeName(elem, sdkVersion)}
-              {i + 1 !== elements.length ? ', ' : null}
+              {i + 1 !== elements.length ? <span className="text-quaternary">, </span> : null}
             </span>
           ))}
-          ]
+          <span className="text-quaternary">]</span>
         </>
       );
     } else if (type === 'query' && queryType) {

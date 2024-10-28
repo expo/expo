@@ -39,6 +39,7 @@
 		78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */; };
 		78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82529204F826700CBD9D9 /* EXApiV2Result.m */; };
 		8397AA3E2CC969A5000A6349 /* EXVersionedNetworkInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8397AA3D2CC96997000A6349 /* EXVersionedNetworkInterceptor.swift */; };
+		83B4FA5F2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm in Sources */ = {isa = PBXBuildFile; fileRef = 83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */; };
 		84713BFB28584A0100E86B56 /* EXErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84713BFA28584A0100E86B56 /* EXErrorView.xib */; };
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8764788C270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift */; };
@@ -258,6 +259,8 @@
 		78D82528204F826700CBD9D9 /* EXApiV2Result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Result.h; sourceTree = "<group>"; };
 		78D82529204F826700CBD9D9 /* EXApiV2Result.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Result.m; sourceTree = "<group>"; };
 		8397AA3D2CC96997000A6349 /* EXVersionedNetworkInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXVersionedNetworkInterceptor.swift; sourceTree = "<group>"; };
+		83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EXGoReactNativeFeatureFlags.mm; sourceTree = "<group>"; };
+		83B4FA602CCA98FF007374E2 /* EXGoReactNativeFeatureFlags.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXGoReactNativeFeatureFlags.h; sourceTree = "<group>"; };
 		83BF8C0E87795C6808128A31 /* Pods-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go/Pods-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
 		84713BFA28584A0100E86B56 /* EXErrorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EXErrorView.xib; sourceTree = "<group>"; };
 		8746D75D24D04B2300BFAD22 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -785,6 +788,8 @@
 				F1F7433D24ABECD500EA5023 /* AppDelegate.swift */,
 				B56C65C5204768F2002B2424 /* EXHomeAppManager.h */,
 				B56C65C4204768F2002B2424 /* EXHomeAppManager.m */,
+				83B4FA602CCA98FF007374E2 /* EXGoReactNativeFeatureFlags.h */,
+				83B4FA5E2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm */,
 				B56C65C0204768F2002B2424 /* EXRootViewController.h */,
 				B56C65C1204768F2002B2424 /* EXRootViewController.m */,
 				B56C65C9204769B6002B2424 /* Menu */,
@@ -1824,6 +1829,7 @@
 				B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */,
 				0799CFDA21839B520039E97C /* EXSession.m in Sources */,
 				B54D2913205307380019411A /* EXAppLoadingCancelView.m in Sources */,
+				83B4FA5F2CCA98E1007374E2 /* EXGoReactNativeFeatureFlags.mm in Sources */,
 				317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */,
 				31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */,
 				B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */,

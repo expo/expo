@@ -73,6 +73,20 @@ function resolvePluginForModule(projectRoot, pluginReference) {
         filePath: pluginPackageFile
       };
     }
+    const packageMainEntry = _resolveFrom().default.silent(projectRoot, pluginReference);
+    if (packageMainEntry) {
+      const relativePluginPath = packageMainEntry.replace(projectRoot, '').replace(/^\//, '');
+      console.warn(`"${pluginReference}" config plugin is being resolved from its package.json main entry (${relativePluginPath}).
+This approach is deprecated and will throw an error in Expo SDK53.
+
+To fix this:
+1. Report this issue to the maintainer of "${pluginReference}" - they need to migrate to using \`app.plugin.js\` instead.
+2. For immediate unblocking, reference the config plugin file directly: ${relativePluginPath}`);
+      return {
+        isPluginFile: false,
+        filePath: packageMainEntry
+      };
+    }
   }
   throw new (_errors().PluginError)(`Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}"`, 'PLUGIN_NOT_FOUND');
 }

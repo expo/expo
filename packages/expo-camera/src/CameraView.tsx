@@ -5,7 +5,7 @@ import {
   CameraCapturedPicture,
   CameraOrientation,
   CameraPictureOptions,
-  CameraProps,
+  CameraViewProps,
   CameraRecordingOptions,
   CameraViewRef,
   ScanningOptions,
@@ -74,7 +74,7 @@ function _onPictureSaved({
   }
 }
 
-export default class CameraView extends Component<CameraProps> {
+export default class CameraView extends Component<CameraViewProps> {
   /**
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
    */
@@ -133,7 +133,7 @@ export default class CameraView extends Component<CameraProps> {
   // Values under keys from this object will be transformed to native options
   static ConversionTables = ConversionTables;
 
-  static defaultProps: CameraProps = {
+  static defaultProps: CameraViewProps = {
     zoom: 0,
     facing: 'back',
     enableTorch: false,

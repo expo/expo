@@ -15,5 +15,6 @@ exports.router = {
     back: () => router_store_1.store.goBack(),
     canGoBack: () => router_store_1.store.canGoBack(),
     setParams: (params) => router_store_1.store.setParams(params),
+    reload: () => router_store_1.store.reload(),
 };
 //# sourceMappingURL=imperative-api.js.map

@@ -8,9 +8,23 @@
 
 ### 🐛 Bug fixes
 
-- Fixed network inspector support for react-native 0.76. ([#32290](https://github.com/expo/expo/pull/32290) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+## 5.0.4 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fixed `java.nio.channels.ClosedChannelException` crash from network inspector. ([#32352](https://github.com/expo/expo/pull/32352) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Skipped internal bundles from debugging targets. ([#32322](https://github.com/expo/expo/pull/32322) by [@kudo](https://github.com/kudo))
+
+## 5.0.3 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- Fixed network inspector support for react-native 0.76. ([#32290](https://github.com/expo/expo/pull/32290) by [@kudo](https://github.com/kudo))
 
 ## 5.0.2 — 2024-10-24
 

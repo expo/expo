@@ -57,10 +57,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 - (instancetype)init
 {
   if (self = [super init]) {
-    // init app registry: keep track of RN bridges we are running
+    // init app registry: keep track of RN Hosts we are running
     _appRegistry = [[EXKernelAppRegistry alloc] init];
 
-    // init service registry: classes which manage shared resources among all bridges
+    // init service registry: classes which manage shared resources among all hosts
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
     // Set the delegate of dev menu manager. Maybe it should be a separate class? Will see later once the delegate protocol gets too big.
@@ -97,7 +97,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (void)sendUrl:(NSString *)urlString toAppRecord:(EXKernelAppRecord *)app
 {
-  // fire a Linking url event on this (possibly versioned) bridge
   EXReactAppManager *appManager = app.appManager;
   id linkingModule = [self nativeModuleForAppManager:appManager named:@"LinkingManager"];
   if (!linkingModule) {
@@ -120,7 +119,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
       return module;
     }
   } else {
-    // bridge can be null if the record is in an error state and never created a bridge.
+    // Host can be null if the record is in an error state and never created a host.
     if (host) {
       DDLogError(@"Host does not support the API");
     }
@@ -129,9 +128,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   return nil;
 }
 
-/**
- *  If the bridge has a batchedBridge or parentBridge selector, posts the notification on that object as well.
- */
 - (void)_postNotificationName: (NSNotificationName)name
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];

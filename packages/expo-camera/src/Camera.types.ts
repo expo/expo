@@ -301,7 +301,7 @@ export type BarcodeScanningResult = {
 export type ScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
 
 // @needsAudit
-export type CameraProps = ViewProps & {
+export type CameraViewProps = ViewProps & {
   /**
    * Camera facing. Use one of `CameraType`. When `front`, use the front-facing camera.
    * When `back`, use the back-facing camera.

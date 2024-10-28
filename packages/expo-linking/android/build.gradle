@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'expo.modules.linking'
-version = '7.0.1'
+version = '7.0.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -35,7 +35,7 @@ android {
   namespace "expo.modules.linking"
   defaultConfig {
     versionCode 1
-    versionName "7.0.1"
+    versionName "7.0.2"
   }
   lintOptions {
     abortOnError false

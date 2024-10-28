@@ -16,7 +16,6 @@
 #import "EXAppViewController.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
-#import <EXSplashScreen/EXSplashScreenService.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
@@ -110,7 +109,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
   [self _invalidateAndClearDelegate:NO];
 
-  // Assert early so we can catch the error before instantiating the bridge, otherwise we would be passing a
+  // Assert early so we can catch the error before instantiating the RCTHost, otherwise we would be passing a
   // nullish scope key to the scoped modules.
   // Alternatively we could skip instantiating the scoped modules but then singletons like the one used in
   // expo-updates would be loaded as bare modules. In the case of expo-updates, this would throw a fatal error
@@ -128,8 +127,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     [self _startObservingNotificationsForHost];
     
     if (!_isHeadless) {
-      // We don't want to run the whole JS app if app launches in the background,
-      // so we're omitting creation of RCTRootView that triggers runApplication and sets up React view hierarchy.
       _reactRootView = [self.reactAppInstance.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
     }
 
@@ -238,13 +235,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   return NO;
 }
 
-#pragma mark - RCTBridgeDelegate
-
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-{
-  return [self bundleUrl];
-}
-
 - (void)loadSourceForHost:(NSURL *)sourceURL onComplete:(RCTSourceLoadBlock)loadCallback {
   // clear any potentially old loading state
   if (_appRecord.scopeKey) {
@@ -335,7 +325,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 {
   if ([notification.name isEqualToString:RCTInstanceDidLoadBundle]) {
     _isReactHostRunning = YES;
-    _hasBridgeEverLoaded = YES;
+    _hasHostEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
     // TODO: temporary solution for hiding LoadingProgressWindow
@@ -548,7 +538,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 #pragma mark - RN configuration
 
-- (NSDictionary *)launchOptionsForBridge
+- (NSDictionary *)launchOptionsForHost
 {
   return @{};
 }

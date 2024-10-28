@@ -558,21 +558,21 @@ Create a **EmojiList.tsx** file inside the **components** directory and add the 
 ```tsx components/EmojiList.tsx
 import { useState } from 'react';
 import { StyleSheet, FlatList, Platform, Pressable } from 'react-native';
-import { Image } from 'expo-image';
+import { Image, type ImageSource } from 'expo-image';
 
 type Props = {
-  onSelect: (image: string) => void;
+  onSelect: (image: ImageSource) => void;
   onCloseModal: () => void;
 };
 
 export default function EmojiList({ onSelect, onCloseModal }: Props) {
-  const [emoji] = useState([
-    require('../assets/images/emoji1.png'),
-    require('../assets/images/emoji2.png'),
-    require('../assets/images/emoji3.png'),
-    require('../assets/images/emoji4.png'),
-    require('../assets/images/emoji5.png'),
-    require('../assets/images/emoji6.png'),
+  const [emoji] = useState<ImageSource[]>([
+    require("../assets/images/emoji1.png"),
+    require("../assets/images/emoji2.png"),
+    require("../assets/images/emoji3.png"),
+    require("../assets/images/emoji4.png"),
+    require("../assets/images/emoji5.png"),
+    require("../assets/images/emoji6.png"),
   ]);
 
   return (
@@ -633,6 +633,9 @@ import EmojiPicker from '@/components/EmojiPicker';
 /* @tutinfo Import the <CODE>EmojiList</CODE> component. */
 import EmojiList from '@/components/EmojiList';
 /* @end */
+/* @tutinfo Import the type <CODE>ImageSource</CODE>. */
+import { type ImageSource } from 'expo-image';
+/* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -641,7 +644,7 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   /* @tutinfo Define a state variable. */
-  const [pickedEmoji, setPickedEmoji] = useState<string | undefined>(undefined);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
   /* @end */
 
   const pickImageAsync = async () => {
@@ -748,10 +751,11 @@ Now, we'll put the emoji sticker on the image. Create a new file in the **compon
 ```tsx components/EmojiSticker.tsx|collapseHeight=300
 import { View } from 'react-native';
 import { Image } from 'expo-image';
+import { type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;
-  stickerSource: string;
+  stickerSource: ImageSource;
 };
 
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {

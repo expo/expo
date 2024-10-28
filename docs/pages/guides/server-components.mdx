@@ -405,6 +405,31 @@ Routes marked with `static` output will be rendered at build-time and embeded in
 
 The current default is `dynamic` rendering. In the future, we'll change the caching and optimizations to be smarter and more automatic.
 
+## Reloading server components
+
+Server Components are reloaded on every request in development. This means that you can make changes to your server components and see them reflected immediately in the client runtime. You may want to manually trigger a reload event programatically to refetch data or re-render the component. This can be done using the `router.reload()` function from the `useRouter` hook.
+
+```tsx components/button.tsx
+'use client';
+import { useRouter } from 'expo-router';
+import { Text } from 'react-native';
+
+export function Button() {
+  const router = useRouter();
+  return (
+    <Text
+      onPress={() => {
+        // Reload the current route.
+        router.reload();
+      }}>
+      Reload current route
+    </Text>
+  );
+}
+```
+
+If the route was rendered at build-time, it will not be re-rendered on the client. This is because the rendering code is not included in the production server.
+
 ## Secrets
 
 Server Components can access secrets and server-side APIs. You can use the `process.env` object to access environment variables. You can ensure a module never runs on the client by importing the `server-only` module in your project.
@@ -456,6 +481,7 @@ Library authors can test their modules support Server Components by using `jest-
 - Server Rendering RSC payloads to HTML is not supported yet.
 - `generateStaticParams` is not yet supported.
 - HTML `form` integration with Server Actions is not supported yet (this partially works automatically, but data is not encrypted).
+- `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
 - Server Actions that invoke other server actions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.
 
 ## Deployment

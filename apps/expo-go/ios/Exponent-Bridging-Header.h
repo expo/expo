@@ -22,3 +22,4 @@
 #import "EXStatusBarManager.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXClientReleaseType.h"
+#import "EXGoReactNativeFeatureFlags.h"

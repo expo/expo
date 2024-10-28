@@ -1,24 +1,8 @@
-import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
-import semver from 'semver';
 
-import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from './checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
-import { DirectPackageInstallCheck } from './checks/DirectPackageInstallCheck';
-import { ExpoConfigCommonIssueCheck } from './checks/ExpoConfigCommonIssueCheck';
-import { ExpoConfigSchemaCheck } from './checks/ExpoConfigSchemaCheck';
-import { GlobalPackageInstalledLocallyCheck } from './checks/GlobalPackageInstalledLocallyCheck';
-import { IllegalPackageCheck } from './checks/IllegalPackageCheck';
-import { InstalledDependencyVersionCheck } from './checks/InstalledDependencyVersionCheck';
-import { MetroConfigCheck } from './checks/MetroConfigCheck';
-import { NativeToolingVersionCheck } from './checks/NativeToolingVersionCheck';
-import { PackageJsonCheck } from './checks/PackageJsonCheck';
-import { PackageManagerVersionCheck } from './checks/PackageManagerVersionCheck';
-import { ProjectSetupCheck } from './checks/ProjectSetupCheck';
-import { ReactNativeDirectoryCheck } from './checks/ReactNativeDirectoryCheck';
-import { StoreCompatibilityCheck } from './checks/StoreCompatibilityCheck';
-import { SupportPackageVersionCheck } from './checks/SupportPackageVersionCheck';
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
-import { getReactNativeDirectoryCheckEnabled } from './utils/doctorConfig';
+import { resolveChecksInScope } from './utils/checkResolver';
 import { env } from './utils/env';
 import { isNetworkError } from './utils/errors';
 import { isInteractive } from './utils/interactive';
@@ -129,46 +113,6 @@ export async function runChecksAsync(
   );
 }
 
-export function getChecksInScopeForProject(exp: ExpoConfig, pkg: PackageJSONConfig) {
-  // add additional checks here
-  const checks = [
-    new PackageManagerVersionCheck(),
-    new IllegalPackageCheck(),
-    new GlobalPackageInstalledLocallyCheck(),
-    new SupportPackageVersionCheck(),
-    new ExpoConfigSchemaCheck(),
-    new ExpoConfigCommonIssueCheck(),
-    new DirectPackageInstallCheck(),
-    new PackageJsonCheck(),
-    new ProjectSetupCheck(),
-    new MetroConfigCheck(),
-    new NativeToolingVersionCheck(),
-    new AppConfigFieldsNotSyncedToNativeProjectsCheck(),
-    new StoreCompatibilityCheck(),
-  ];
-
-  if (getReactNativeDirectoryCheckEnabled(exp, pkg)) {
-    chalk.yellow(
-      'Enabled experimental React Native Directory checks. Unset the EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK environment variable to disable this check.'
-    );
-    checks.push(new ReactNativeDirectoryCheck());
-  }
-
-  if (env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK) {
-    Log.log(
-      chalk.yellow(
-        'Checking dependencies for compatibility with the installed Expo SDK version is disabled. Unset the EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK environment variable to re-enable this check.'
-      )
-    );
-  } else {
-    checks.push(new InstalledDependencyVersionCheck());
-  }
-  return checks.filter(
-    (check) =>
-      exp.sdkVersion === 'UNVERSIONED' || semver.satisfies(exp.sdkVersion!, check.sdkVersionRange)
-  );
-}
-
 export async function actionAsync(projectRoot: string) {
   await warnUponCmdExe();
 
@@ -183,14 +127,14 @@ export async function actionAsync(projectRoot: string) {
       return;
     }
 
-    const filteredChecks = getChecksInScopeForProject(projectConfig.exp, projectConfig.pkg);
+    const checksInScope = resolveChecksInScope(projectConfig.exp, projectConfig.pkg);
 
-    const spinner = startSpinner(`Running ${filteredChecks.length} checks on your project...`);
+    const spinner = startSpinner(`Running ${checksInScope.length} checks on your project...`);
 
     const checkParams = { projectRoot, ...projectConfig };
 
     const jobs = await runChecksAsync(
-      filteredChecks,
+      checksInScope,
       checkParams,
       printCheckResultSummaryOnComplete
     );
