@@ -23,12 +23,6 @@
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
     "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resources"
   },
-  "resolutions": {
-    "@typescript-eslint/eslint-plugin": "^7",
-    "@typescript-eslint/parser": "^7",
-    "string-width": "^4",
-    "wrap-ansi": "^7"
-  },
   "dependencies": {
     "@expo/styleguide": "^8.3.0",
     "@expo/styleguide-base": "^1.0.1",
@@ -49,7 +43,7 @@
     "front-matter": "^4.0.2",
     "github-slugger": "^2.0.0",
     "lodash": "^4.17.21",
-    "next": "^14.2.12",
+    "next": "^15.0.1",
     "nprogress": "0.2.0",
     "path-browserify": "^1.0.1",
     "prism-react-renderer": "^2.3.1",
@@ -93,8 +87,8 @@
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.4",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.12",
-    "eslint-config-universe": "^13.0.0",
+    "eslint-config-next": "^15.0.1",
+    "eslint-config-universe": "^14.0.0",
     "eslint-plugin-lodash": "^8.0.0",
     "eslint-plugin-mdx": "^3.1.5",
     "eslint-plugin-tailwindcss": "^3.17.4",
