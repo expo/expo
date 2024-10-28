@@ -557,4 +557,44 @@ describe(modifyConfigAsync, () => {
       )
     );
   });
+
+  describe('plugins modifications', () => {
+    it('does not add duplicate entries in the plugins array when modifying', async () => {
+      createProject('/plugins-duplicates-simple', {
+        'app.json': JSON.stringify({ ...appFile, plugins: ['expo-router'] }),
+      });
+
+      await expect(
+        modifyConfigAsync('/plugins-duplicates-simple', {
+          plugins: ['expo-router'],
+        })
+      ).resolves.toMatchObject({
+        type: 'success',
+        config: {
+          ...appFile,
+          // Should not cause duplicates
+          plugins: ['expo-router'],
+        },
+      });
+    });
+
+    it('merges plugin options when plugin already exists when modifying', async () => {
+      createProject('/plugins-duplicates-complex', {
+        'app.json': JSON.stringify({ ...appFile, plugins: [['expo-router', { prop: 'value' }]] }),
+      });
+
+      await expect(
+        modifyConfigAsync('/plugins-duplicates-complex', {
+          plugins: [['expo-router', { other: true }]],
+        })
+      ).resolves.toMatchObject({
+        type: 'success',
+        config: {
+          ...appFile,
+          // Should not cause duplicates, and have properties merged
+          plugins: [['expo-router', expect.objectContaining({ prop: 'value', other: true })]],
+        },
+      });
+    });
+  });
 });
