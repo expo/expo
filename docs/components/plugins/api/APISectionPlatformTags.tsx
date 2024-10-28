@@ -49,7 +49,7 @@ export const APISectionPlatformTags = ({
         </CALLOUT>
       )}
       <PlatformTags
-        prefix={isCompatibleVersion ? prefix : prefix ?? 'Only for:'}
+        prefix={isCompatibleVersion ? prefix : (prefix ?? 'Only for:')}
         platforms={platformNames}
       />
     </div>
