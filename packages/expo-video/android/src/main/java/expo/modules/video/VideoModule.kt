@@ -3,6 +3,7 @@
 package expo.modules.video
 
 import android.net.Uri
+import android.util.Log
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
@@ -16,6 +17,7 @@ import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
+import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
@@ -316,6 +318,17 @@ class VideoModule : Module() {
         }
         .set { ref: VideoPlayer, intervalSeconds: Float ->
           ref.intervalUpdateClock.interval = (intervalSeconds * 1000).toLong()
+        }
+
+      Property("audioMixingMode")
+        .get { ref: VideoPlayer ->
+          ref.audioMixingMode
+        }
+        .set { ref: VideoPlayer, audioMixingMode: AudioMixingMode ->
+          Log.w("DUPA", "COSIEDZIEJEEEE")
+          appContext.mainQueue.launch {
+            ref.audioMixingMode = audioMixingMode
+          }
         }
 
       Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->

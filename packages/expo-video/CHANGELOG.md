@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+-[Android][iOS] Add `audioMixingMode` property to control how the player interacts with other audio in the system.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

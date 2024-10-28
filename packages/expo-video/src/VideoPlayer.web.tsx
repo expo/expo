@@ -6,6 +6,7 @@ import type {
   VideoPlayerStatus,
   VideoSource,
   VideoPlayer,
+  AudioMixingMode,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -61,6 +62,7 @@ export default class VideoPlayerWeb
   _error: PlayerError | null = null;
   _timeUpdateLoop: number | null = null;
   _timeUpdateEventInterval: number = 0;
+  audioMixingMode: AudioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.

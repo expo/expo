@@ -52,44 +52,66 @@ class VideoManager {
 
   internal func setAppropriateAudioSessionOrWarn() {
     let audioSession = AVAudioSession.sharedInstance()
-    var audioSessionCategoryOptions: AVAudioSession.CategoryOptions = []
+    let audioMixingMode = findAudioMixingMode()
+    var audioSessionCategoryOptions: AVAudioSession.CategoryOptions = audioSession.categoryOptions
 
-    let isAnyPlayerPlaying = videoPlayers.allObjects.contains { player in
-      player.isPlaying
-    }
-    let areAllPlayersMuted = videoPlayers.allObjects.allSatisfy { player in
-      player.isMuted
-    }
-    let needsPiPSupport = videoViews.allObjects.contains { view in
-      view.allowPictureInPicture
+    let isOutputtingAudio = videoPlayers.allObjects.contains { player in
+      player.isPlaying && !player.isMuted
     }
     let anyPlayerShowsNotification = videoPlayers.allObjects.contains { player in
       player.showNowPlayingNotification
     }
-    // The notification won't be shown if we allow the audio to mix with others
-    let shouldAllowMixing = (!isAnyPlayerPlaying || areAllPlayersMuted) && !anyPlayerShowsNotification
-    let isOutputtingAudio = !areAllPlayersMuted && isAnyPlayerPlaying
-    let shouldUpdateToAllowMixing = !audioSession.categoryOptions.contains(.mixWithOthers) && shouldAllowMixing
 
-    if shouldAllowMixing {
+    let shouldMixOverride = audioMixingMode == .mixWithOthers
+    let doNotMixOverride = audioMixingMode == .doNotMix
+    let shouldDuckOthers = audioMixingMode == .duckOthers && isOutputtingAudio
+
+    // The now playing notification won't be shown if we allow the audio to mix with others
+    let autoShouldMix = !isOutputtingAudio && !anyPlayerShowsNotification
+    let shouldMixWithOthers = shouldMixOverride || autoShouldMix
+
+    if shouldMixWithOthers && !shouldDuckOthers && !doNotMixOverride {
       audioSessionCategoryOptions.insert(.mixWithOthers)
+    } else {
+      audioSessionCategoryOptions.remove(.mixWithOthers)
     }
 
-    if isOutputtingAudio || needsPiPSupport || shouldUpdateToAllowMixing || anyPlayerShowsNotification {
+    if shouldDuckOthers && !doNotMixOverride {
+      audioSessionCategoryOptions.insert(.duckOthers)
+    } else {
+      audioSessionCategoryOptions.remove(.duckOthers)
+    }
+
+    if audioSession.categoryOptions != audioSessionCategoryOptions {
       do {
-        try audioSession.setCategory(.playback, mode: .moviePlayback)
+        try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
       } catch {
         log.warn("Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
       }
     }
 
     // Make sure audio session is active if any video is playing
-    if isAnyPlayerPlaying {
+    if isOutputtingAudio || doNotMixOverride {
       do {
         try audioSession.setActive(true)
       } catch {
         log.warn("Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
       }
     }
+
+    // The now playing notification requires correct audio session category, notify the manager of about the change.
+    NowPlayingManager.shared.refreshNowPlaying()
+  }
+
+  private func findAudioMixingMode() -> AudioMixingMode? {
+    let playingPlayers = videoPlayers.allObjects.filter({ player in
+      player.isPlaying
+    })
+    var audioMixingMode: AudioMixingMode = .mixWithOthers
+
+    for videoPlayer in playingPlayers where (audioMixingMode.priority()) > videoPlayer.audioMixingMode.priority() {
+      audioMixingMode = videoPlayer.audioMixingMode
+    }
+    return audioMixingMode
   }
 }
