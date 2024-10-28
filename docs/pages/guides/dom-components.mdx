@@ -233,7 +233,7 @@ export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
 });
 ```
 
-React is meant to have a unilateral data flow, so the concept of using callbacks to go back up the tree is not idiomatic. Expect the behavior to be flakey and possibly phased out in the future with newer versions of React. The preferred way to send data back up the tree is to use native actions which update state that is then passed back to the DOM component.
+React is meant to have a unilateral data flow, so the concept of using callbacks to go back up the tree is not idiomatic. Expect the behavior to be flakey and possibly phased out in the future with newer versions of React. The preferred way to send data back up the tree is to use native actions, which update the state and then pass it back to the DOM component.
 
 ## Feature detection
 
@@ -305,7 +305,7 @@ The `router.canGoBack()` and `router.canDismiss()` functions are also unsupporte
 
 Avoid using standard web `<a />` anchor elements for navigation as these will change the DOM component origin in a way that users may not be able to navigate back from. Prefer launching `WebBrowser`s if you want to present external websites.
 
-Because DOM components cannot render native children, layout routes (`_layout`) can never be DOM components. You can render DOM components from layout routes to create headers, backgrounds, etc. but the layout route itself should always be native.
+Since DOM components cannot render native children, layout routes (`_layout`) can never be DOM components. You can render DOM components from layout routes to create headers, backgrounds, and more, but the layout route itself should always be native.
 
 ## Measuring DOM components
 
