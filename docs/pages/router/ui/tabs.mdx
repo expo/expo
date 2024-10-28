@@ -38,6 +38,8 @@ Expo Router offers a set of components to create custom Tabs layouts. Unlike the
 
 The `<TabList />` component is the "holding" component for routes. `<TabTrigger />`'s defined as a child of the `<TabList />` specific what routes are present as a tab. A `<TabTrigger />` within a `<TabList />` must include a `name` and a `href` prop. `<TabList />` needs to be an immediate child of `<Tabs />`
 
+`<TabList />` is both the configuration and default appearance of the `<Tabs />`. Triggers present within the `<TabList />` dictate what routes are possible within the `<Tabs />`
+
 > `name` can be any `string`. This is a user-defined name for the Tab.
 
 ### Dynamic routes
@@ -69,7 +71,25 @@ A `<TabTrigger />` can link to a deeply nested route. `<TabTrigger name="route" 
 
 ## Rendering routes
 
-The `<TabSlot />` component renders the current route. `<TabSlot />` be can be nested inside other components.
+The `<TabSlot />` component renders the current route. `<TabSlot />` be can be nested inside other components but cannot be within the `<TabList />`
+
+```tsx app/_layout.tsx
+<Tabs>
+  <TabList>
+    <TabTrigger name="home" href="/">
+      <Text>Home</Text>
+    </TabTrigger>
+  </TabList>
+  {/* customize how `<TabSlot />` is rendered */}
+  /* @info TabSlot be nested inside custom components */
+  <View>
+    <View>
+      <TabSlot />
+    </View>
+  </View>
+  /* @end */
+</Tabs>
+```
 
 ## Switching tabs
 
@@ -96,6 +116,71 @@ A `<TabTrigger />` elsewhere in your application does not need the `href` prop. 
 All components are rendered unstyled as a `<View />`, except `<TabTrigger />` which renders as a `<Pressable />`. This allows you to provide a custom `style` prop to customize their appearance.
 
 If you need to change the structure of a component, you can override its underlying component by using the `asChild` props. The component then acts as a slot, and will forward its props to its immediate child.
+
+```tsx
+<Tabs>
+  <TabSlot />
+  /* @info Change the appearance of the <TabList /> */
+  <TabList asChild>
+    {/* Render a custom TabList */}
+    <CustomTabList>
+      <TabTrigger name="home" href="/">
+        <Text>Home</Text>
+      </TabTrigger>
+    </CustomTabList>
+  </TabList>
+  /* @end */
+</Tabs>
+```
+
+```tsx
+<Tabs>
+  <TabSlot />
+  <TabList asChild>
+    /* @info Change the appearance of the <TabTrigger /> */
+    <TabTrigger name="home" href="/" asChild>
+      {/* Render a custom button */}
+      <CustomButton>
+        <Text>Home</Text>
+      </CustomButton>
+    </TabTrigger>
+    /* @end */
+  </TabList>
+</Tabs>
+```
+
+### Multiple tab bars
+
+The `<TabList />` is both the configuration and default appearance of the `<Tabs />`, but its not the only way to render a tab bar. By hiding the `<TabList />`, you can construct custom tab bars using `<TabTrigger />`
+
+```tsx
+<Tabs>
+  <TabSlot />
+  {/* A custom tab bar */}
+  <View>
+    /* @info A custom tab bar. TabTrigger's outside of TabList do not need the `href` prop */
+    <View>
+      <TabTrigger name="home">
+        <Text>Home</Text>
+      </TabTrigger>
+      <TabTrigger name="article">
+        <Text>article</Text>
+      </TabTrigger>
+    </View>
+    /* @end */
+  </View>
+  /* @info TabList needs to be rendered, but not necessary displayed */
+  <TabList style={{ display: 'none' }}>
+    /* @end */
+    <TabTrigger name="home" href="/">
+      <Text>Home</Text>
+    </TabTrigger>
+    <TabTrigger name="article" href="/article">
+      <Text>article</Text>
+    </TabTrigger>
+  </TabList>
+</Tabs>
+```
 
 ### Hooks
 
@@ -125,10 +210,6 @@ Not rendering the `<TabTrigger />` will remove that tab (and its navigation stat
 ### How do I create animated tabs?
 
 You can provide a custom renderer to `<TabSlot />` to customize how it renders a screen. You can use this to detect when screen is focused an animate appropriately.
-
-### Do I need `<TabList />`?
-
-`<TabList />` needs to be rendered, but not necessary displayed. `<TabList style={{ display: 'none' }} />` will hide the `<TabList />` and you create create your own visual display using `<TabTrigger />`
 
 ### Can I use relative hrefs?
 
