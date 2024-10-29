@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix unresponsive terminal after opening React Native DevTools.
+- Fix unresponsive terminal after opening React Native DevTools. ([#32451](https://github.com/expo/expo/pull/32451) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
