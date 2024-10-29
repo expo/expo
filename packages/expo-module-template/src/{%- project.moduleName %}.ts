@@ -1,4 +1,4 @@
-import { NativeModule, requireNativeModule } from 'expo-modules-core';
+import { NativeModule, requireNativeModule } from 'expo';
 
 import { <%- project.moduleName %>Events } from './<%- project.moduleName %>.types';
 

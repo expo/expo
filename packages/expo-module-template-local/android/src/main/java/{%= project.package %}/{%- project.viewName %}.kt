@@ -13,7 +13,7 @@ class <%- project.viewName %>(context: Context, appContext: AppContext) : ExpoVi
     private val onLoad by EventDispatcher()
 
     // Defines a WebView that will be used as the root subview.
-    internal val webView = WebView(context).also {
+    internal val webView = WebView(context).apply {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     it.webViewClient = object : WebViewClient() {
       override fun onPageFinished(view: WebView, url: String) {

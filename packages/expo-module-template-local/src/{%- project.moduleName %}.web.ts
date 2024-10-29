@@ -1,4 +1,4 @@
-import { registerWebModule, NativeModule } from "expo-modules-core";
+import { registerWebModule, NativeModule } from 'expo';
 
 import { ChangeEventPayload } from './<%- project.name %>.types';
 
