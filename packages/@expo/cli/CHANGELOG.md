@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.19.5 — 2024-10-29
+
+### 💡 Others
+
 - Simplify automatically adding config plugins to app manifest through `expo install`. ([#32426](https://github.com/expo/expo/pull/32426) by [@byCedric](https://github.com/byCedric))
 
 ## 0.19.4 — 2024-10-28
