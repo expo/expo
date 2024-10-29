@@ -23,7 +23,7 @@ export const APISectionPlatformTags = ({
   const { platforms: defaultPlatforms } = usePageMetadata();
   const { version } = usePageApiVersion();
 
-  const isUnversionedVersion = version === 'unversioned';
+  const isCompatibleVersion = ['unversioned', 'v52.0.0'].includes(version);
   const platformsData = platforms || getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
 
@@ -31,7 +31,7 @@ export const APISectionPlatformTags = ({
     ? userProvidedPlatforms
     : platformsData.length > 0
       ? platformsData?.map(platformData => getCommentContent(platformData.content))
-      : isUnversionedVersion && !disableFallback
+      : isCompatibleVersion && !disableFallback
         ? defaultPlatforms?.map(platform => platform.replace('*', ''))
         : [];
 
@@ -48,7 +48,7 @@ export const APISectionPlatformTags = ({
         </CALLOUT>
       )}
       <PlatformTags
-        prefix={isUnversionedVersion ? prefix : prefix ?? 'Only for:'}
+        prefix={isCompatibleVersion ? prefix : prefix ?? 'Only for:'}
         platforms={platformNames}
       />
     </div>
