@@ -6,7 +6,7 @@ import { Image, Text } from 'react-native';
 export async function renderPage(params: { title: string }) {
   return (
     <>
-      <Text>Platform: {process.env.EXPO_OS}</Text>
+      <Text testID="index-text">Platform: {process.env.EXPO_OS}</Text>
       <Text testID="secret-text">Secret: {process.env.TEST_SECRET_VALUE}</Text>
       <Text>Render: {Date.now()}</Text>
 
