@@ -24,7 +24,7 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
 };
 
 const renderEnumValue = (value: any, fallback?: string) =>
-  typeof value === 'string' ? `"${value}"` : value ?? fallback;
+  typeof value === 'string' ? `"${value}"` : (value ?? fallback);
 
 function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefinitionData }) {
   return (
