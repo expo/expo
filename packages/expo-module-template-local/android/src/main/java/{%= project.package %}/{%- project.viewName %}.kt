@@ -16,13 +16,15 @@ class <%- project.viewName %>(context: Context, appContext: AppContext) : ExpoVi
   internal val webView = WebView(context).apply {
     layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
     webViewClient = object : WebViewClient() {
-      override fun onPageFinished(view: WebView, url: Url) {
+      override fun onPageFinished(view: WebView, url: String) {
         // Sends an event to JavaScript. Triggers a callback defined on the view component in JavaScript.
         onLoad(mapOf("url" to url))
       }
     }
+  }
 
+  init {
     // Adds the WebView to the view hierarchy.
-    addView(this)
+    addView(webView)
   }
 }
