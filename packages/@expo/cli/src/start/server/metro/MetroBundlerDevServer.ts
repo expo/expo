@@ -676,6 +676,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     debug('React server action boundaries from client:', reactServerReferences);
 
+    // When we export the server actions that were imported from the client, we may need to re-bundle the client with the new client boundaries.
     const { clientBoundaries: nestedClientBoundaries } =
       await this.rscRenderer!.exportServerActionsAsync(
         {
@@ -702,8 +703,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         extraOptions
       );
     }
-
-    // TODO: Re-bundle client with server actions from client server actions.
 
     // Inject the global CSS that was imported during the server render.
     bundle.artifacts.push(...cssModules);
