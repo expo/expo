@@ -19,7 +19,7 @@ In this tutorial, you'll build an example module with a native view that renders
 
 ## Initialize a new module
 
-Start by creating a new module. In this example, the module is named `expo-web-view`.
+Create a new module by running the following command and name the example module `expo-web-view`:
 
 <Terminal cmd={['$ npx create-expo-module expo-web-view']} />
 
@@ -477,7 +477,7 @@ export default function App() {
 
 ## Bonus: Build a web browser UI around it
 
-Now that you have a WebView, build a web browser UI around it. Try rebuilding a browser UI, and feel free to add new native capabilities as needed (for example, support for back or reload buttons). If you need inspiration, see the simple example below.
+Now that you have a WebView, build a web browser UI around it. Try rebuilding a browser UI, and feel free to add new native capabilities as needed (for example, support for back or reload buttons). If you need inspiration, see the example below.
 
 <Collapsible summary="example/App.tsx">
 
@@ -556,6 +556,7 @@ function LoadingView({ isLoading }: { isLoading: boolean }) {
 <ContentSpotlight
   alt="A simple web browser UI built around our WebView"
   src="/static/images/modules/native-view-tutorial/web-browser.png"
+  className="max-w-[600px]"
 />
 
 </Step>
