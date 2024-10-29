@@ -35,7 +35,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
     // We don't request AudioFocus if we want to mix the audio with others
     if (audioMixingMode == AudioMixingMode.MIX_WITH_OTHERS || !anyPlayerRequiresFocus) {
       abandonAudioFocus()
-      this.currentMixingMode = audioMixingMode
+      currentMixingMode = audioMixingMode
       return
     }
     val audioFocusType = when (audioMixingMode) {
@@ -63,7 +63,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
           }
         ).build()
       }
-      this.currentFocusRequest = newFocusRequest
+      currentFocusRequest = newFocusRequest
       audioManager.requestAudioFocus(newFocusRequest)
     } else {
       @Suppress("DEPRECATION")
@@ -73,7 +73,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
         audioFocusType
       )
     }
-    this.currentMixingMode = audioMixingMode
+    currentMixingMode = audioMixingMode
   }
 
   private fun abandonAudioFocus() {
@@ -186,9 +186,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   private fun playerRequiresFocus(weakPlayer: WeakReference<VideoPlayer>): Boolean {
     return weakPlayer.get()?.let {
       (!it.muted && it.playing && it.volume > 0) || it.audioMixingMode == AudioMixingMode.DO_NOT_MIX
-    } ?: run {
-      false
-    }
+    } ?: false
   }
 
   private fun pausePlayerIfUnmuted(weakPlayer: WeakReference<VideoPlayer>) {
@@ -228,13 +226,13 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   }
 
   private fun findAudioMixingMode(): AudioMixingMode {
-    val playingPlayers = players.filter { player ->
-      player.get()?.playing == true
+    val playingPlayers = players.mapNotNull { player ->
+      player.get()?.takeIf { it.playing }
     }
     var audioMixingMode: AudioMixingMode = AudioMixingMode.MIX_WITH_OTHERS
 
     for (videoPlayer in playingPlayers) {
-      val playerAudioMixingMode = videoPlayer.get()?.audioMixingMode ?: continue
+      val playerAudioMixingMode = videoPlayer.audioMixingMode
       if (audioMixingMode.priority > playerAudioMixingMode.priority) {
         audioMixingMode = playerAudioMixingMode
       }

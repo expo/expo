@@ -390,7 +390,5 @@ export type BufferOptions = {
  * - `doNotMix`: The player will pause playback in other apps, even when it's muted.
  *
  * > On iOS, the Now Playing notification is dependent on the audio mode. If the audio mode is different from `doNotMix` or `auto` this feature will not work.
- *
- * @default 'auto'
  */
 export type AudioMixingMode = 'mixWithOthers' | 'duckOthers' | 'auto' | 'doNotMix';

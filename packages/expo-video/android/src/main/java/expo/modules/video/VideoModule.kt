@@ -3,7 +3,6 @@
 package expo.modules.video
 
 import android.net.Uri
-import android.util.Log
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
@@ -325,7 +324,6 @@ class VideoModule : Module() {
           ref.audioMixingMode
         }
         .set { ref: VideoPlayer, audioMixingMode: AudioMixingMode ->
-          Log.w("DUPA", "COSIEDZIEJEEEE")
           appContext.mainQueue.launch {
             ref.audioMixingMode = audioMixingMode
           }
