@@ -76,7 +76,7 @@ const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
 export const mdComponents: MDComponents = {
-  blockquote: ({ children }) => <Callout>{children}</Callout>,
+  blockquote: ({ children }) => <Callout size="sm">{children}</Callout>,
   code: ({ className, children, node }: CodeComponentProps) => {
     return className ? (
       <PrismCodeBlock className={className} title={node?.data?.meta}>
@@ -640,7 +640,7 @@ export const BoxSectionHeader = ({
         'max-lg-gutters:-mx-4',
         className
       )}>
-      <TextWrapper weight="medium" className="text-secondary flex flex-row gap-2 items-center">
+      <TextWrapper className="text-tertiary flex flex-row gap-2 items-center font-medium">
         {Icon && <Icon className="icon-sm text-icon-secondary" />}
         {text}
       </TextWrapper>
@@ -862,7 +862,7 @@ export const CommentTextBlock = ({
   const exampleText = examples?.map((example, index) => (
     <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:mb-0')}>
       {inlineHeaders ? (
-        <DEMI theme="secondary" className="flex flex-row gap-1.5 items-center mb-1.5">
+        <DEMI className="flex flex-row gap-1.5 items-center mb-1.5 text-secondary">
           <CodeSquare01Icon className="icon-sm" />
           Example
         </DEMI>
