@@ -6,8 +6,7 @@ import WebKit
 class <%- project.viewName %>: ExpoView {
   let webView = WKWebView()
   let onLoad = EventDispatcher()
-  var delegate: WebViewDelegate? = nil
-  
+  var delegate: WebViewDelegate?
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
