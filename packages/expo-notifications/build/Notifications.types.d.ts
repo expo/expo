@@ -340,12 +340,10 @@ export type TimeIntervalTriggerInput = {
 };
 /**
  * Input for time-based, schedulable triggers.
- * For these triggers you can check the next trigger date
- * with [`getNextTriggerDateAsync`](#notificationsgetnexttriggerdateasynctrigger).
+ * For these triggers you can check the next trigger date with [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger).
  * If you pass in a `number` (Unix timestamp) or `Date`, it will be processed as a
- * trigger input of type [`CalendarTriggerTypes.DATE`](#date). Otherwise, the input must be
- * an object, with a `type` value set to one of the allowed values in
- * [`CalendarTriggerTypes`](#calendartriggertypes).
+ * trigger input of type [`SchedulableTriggerInputTypes.DATE`](#date). Otherwise, the input must be
+ * an object, with a `type` value set to one of the allowed values in [`SchedulableTriggerInputTypes`](#schedulabletriggerinputtypes).
  * If the input is an object, date components passed in will be validated, and
  * an error is thrown if they are outside their allowed range (for example, the `minute` and
  * `second` components must be between 0 and 59 inclusive).
@@ -358,6 +356,7 @@ export type SchedulableNotificationTriggerInput = CalendarTriggerInput | TimeInt
 export type NotificationTriggerInput = null | ChannelAwareTriggerInput | SchedulableNotificationTriggerInput;
 /**
  * An enum corresponding to values appropriate for Android's [`Notification#priority`](https://developer.android.com/reference/android/app/Notification#priority) field.
+ * @platform android
  */
 export declare enum AndroidNotificationPriority {
     MIN = "min",
@@ -701,5 +700,6 @@ export type NotificationCategoryOptions = {
      */
     allowAnnouncement?: boolean;
 };
+export type MaybeNotificationResponse = NotificationResponse | null | undefined;
 export { PermissionExpiration, PermissionResponse, EventSubscription, PermissionStatus, } from 'expo-modules-core';
 //# sourceMappingURL=Notifications.types.d.ts.map
