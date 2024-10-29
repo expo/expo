@@ -131,12 +131,12 @@ export async function loadMetroConfigAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
-    webOutput: exp.web?.output ?? 'single',
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled:
       (exp.experiments?.reactServerComponents || exp.experiments?.reactCanary) ?? false,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
+    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponents,
     getMetroBundler,
   });
 
@@ -296,10 +296,7 @@ function pruneCustomTransformOptions(
   if (
     transformOptions.customTransformOptions?.asyncRoutes &&
     // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
-    !(
-      filePath.match(/\/expo-router\/_ctx\.(ios|android|web)\.js$/) ||
-      filePath.match(/\/expo-router\/build\/import-mode\/index\.js$/)
-    )
+    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
   ) {
     delete transformOptions.customTransformOptions.asyncRoutes;
   }

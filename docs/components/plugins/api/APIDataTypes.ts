@@ -1,4 +1,4 @@
-import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
+import { TypeDocKind } from './APISectionUtils';
 
 // Generic data type
 
@@ -36,6 +36,10 @@ export type TypeDefinitionData = {
   name?: string;
   type: string;
   types?: TypeDefinitionData[];
+  element?: {
+    name: string;
+    type: string;
+  };
   elements?: TypeDefinitionData[];
   elementType?: {
     name?: string;

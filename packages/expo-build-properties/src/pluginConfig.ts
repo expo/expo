@@ -39,6 +39,7 @@ export interface PluginConfigType {
  */
 export interface PluginConfigTypeAndroid {
   /**
+   * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
    * Enable React Native new architecture for Android platform.
    */
   newArchEnabled?: boolean;
@@ -223,6 +224,7 @@ export type AndroidMavenRepositoryCredentials =
  */
 export interface PluginConfigTypeIos {
   /**
+   * @deprecated Use app config [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) instead.
    * Enable React Native new architecture for iOS platform.
    */
   newArchEnabled?: boolean;
@@ -372,15 +374,15 @@ export interface ExtraIosPodDependency {
    */
   git?: string;
   /**
-   * The git branch to fetch. See the {@link git} property for more information.
+   * The git branch to fetch. See the `git` property for more information.
    */
   branch?: string;
   /**
-   * The git tag to fetch. See the {@link git} property for more information.
+   * The git tag to fetch. See the `git` property for more information.
    */
   tag?: string;
   /**
-   * The git commit to fetch. See the {@link git} property for more information.
+   * The git commit to fetch. See the `git` property for more information.
    */
   commit?: string;
 }

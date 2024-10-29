@@ -73,7 +73,7 @@ struct AudioUtils {
     if let directory {
       let fileUrl = createRecordingUrl(from: directory, with: options)
       do {
-        return try AVAudioRecorder(url: fileUrl, settings: AudioUtils.setRecordingOptions(options))
+        return try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
       } catch {
         return AVAudioRecorder()
       }
@@ -90,7 +90,7 @@ struct AudioUtils {
     return AVPlayer()
   }
 
-  static func setRecordingOptions(_ options: RecordingOptions) -> [String: Any] {
+  static func createRecordingOptions(_ options: RecordingOptions) -> [String: Any] {
     let strategy = options.bitRateStrategy?.toAVBitRateStrategy() ?? AVAudioBitRateStrategy_Variable
 
     var settings = [String: Any]()

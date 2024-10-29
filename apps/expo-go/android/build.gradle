@@ -22,7 +22,7 @@ buildscript {
   dependencies {
     classpath expoLibs.android.gradle.plugin
     classpath 'com.google.gms:google-services:4.3.5'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.6'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
@@ -99,6 +99,7 @@ subprojects { project ->
   if (project.name == "ReactAndroid") { return; }
   if (project.name.startsWith("vendored_")) { return; }
   if (project.projectDir.toString().contains("/node_modules/")) { return; }
+  if (project.projectDir.toString().contains("/modules/")) { return; }
 
   plugins.apply("com.diffplug.spotless")
   spotless {

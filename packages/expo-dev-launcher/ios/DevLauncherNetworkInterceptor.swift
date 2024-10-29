@@ -9,18 +9,18 @@ var isHookInstalled = false
 
 @objc(EXDevLauncherNetworkInterceptor)
 public final class DevLauncherNetworkInterceptor: NSObject, ExpoRequestCdpInterceptorDelegate {
-  fileprivate static var inspectorPackagerConn: RCTInspectorPackagerConnection?
+  private let metroConnection: RCTReconnectingWebSocket
 
-  public override init() {
-    super.init()
+  @objc
+  public init(bundleUrl: URL) {
     assert(Thread.isMainThread)
+    self.metroConnection = RCTReconnectingWebSocket(
+      url: Self.createNetworkInspectorUrl(bundleUrl: bundleUrl),
+      queue: .main)
+    self.metroConnection.start()
+    super.init()
 
     if !isHookInstalled {
-      EXDevLauncherUtils.swizzleClassMethod(
-        selector: #selector(RCTInspectorDevServerHelper.connect(withBundleURL:)),
-        withSelector: #selector(RCTInspectorDevServerHelper.EXDevLauncher_connect(withBundleURL:)),
-        forClass: RCTInspectorDevServerHelper.self
-      )
       EXDevLauncherUtils.swizzleClassMethod(
         selector: #selector(getter: URLSessionConfiguration.default),
         withSelector: #selector(URLSessionConfiguration.EXDevLauncher_urlSessionConfiguration),
@@ -35,70 +35,24 @@ public final class DevLauncherNetworkInterceptor: NSObject, ExpoRequestCdpInterc
   deinit {
     assert(Thread.isMainThread)
     ExpoRequestCdpInterceptor.shared.setDelegate(nil)
+    self.metroConnection.stop()
+  }
+
+  private static func createNetworkInspectorUrl(bundleUrl: URL) -> URL {
+    let host = bundleUrl.host ?? "localhost"
+    let port = bundleUrl.port ?? 8081
+    let scheme = bundleUrl.scheme == "https" ? "wss" : "ws"
+    let urlString = "\(scheme)://\(host):\(port)/inspector/network"
+    guard let url = URL(string: urlString) else {
+      fatalError("Invalid network inspector URL: \(urlString)")
+    }
+    return url
   }
 
   // MARK: ExpoRequestCdpInterceptorDelegate implementations
 
   public func dispatch(_ event: String) {
-    Self.inspectorPackagerConn?.sendWrappedEventToAllPages(event)
-  }
-}
-
-extension RCTInspectorDevServerHelper {
-  private typealias ConnectFunc = @convention(c) (AnyObject, Selector, URL)
-    -> RCTInspectorPackagerConnection?
-
-  /**
-   Swizzled `RCTInspectorDevServerHelper.connect(withBundleURL:)` for us to get the `RCTInspectorPackagerConnection` instance
-   */
-  @objc
-  static func EXDevLauncher_connect(withBundleURL bundleURL: URL)
-    -> RCTInspectorPackagerConnection? {
-    let inspectorPackagerConn = try? EXDevLauncherUtils.invokeOriginalClassMethod(
-      selector: #selector(RCTInspectorDevServerHelper.connect(withBundleURL:)),
-      forClass: RCTInspectorDevServerHelper.self,
-      A0: bundleURL
-    ) as? RCTInspectorPackagerConnection
-
-    // Exclude the connections for dev-client bundles
-    if !bundleURL.absoluteString.starts(with: Bundle.main.bundleURL.absoluteString) {
-      DevLauncherNetworkInterceptor.inspectorPackagerConn = inspectorPackagerConn
-    }
-    return inspectorPackagerConn
-  }
-}
-
-extension RCTInspectorPackagerConnection {
-  /**
-   Indicates whether the packager connection is established and ready to send messages
-   */
-  func isReadyToSend() -> Bool {
-    guard isConnected() else {
-      return false
-    }
-    guard let webSocket = value(forKey: "_webSocket") as? AnyObject,
-      let readyState = webSocket.value(forKey: "readyState") as? Int else {
-      return false
-    }
-    // To support both RCTSRWebSocket (RN < 0.72) and SRWebSocket (RN >= 0.72)
-    // and not to introduce extra podspec dependencies,
-    // we use the internal and hardcoded value here.
-    // Given the fact that both RCTSRWebSocket and SRWebSocket has the readyState property
-    // and the open state is 1.
-    let OPEN_STATE = 1
-    return readyState == OPEN_STATE
-  }
-
-  /**
-   Sends message from native to inspector proxy
-   */
-  func sendWrappedEventToAllPages(_ event: String) {
-    guard isReadyToSend() else {
-      return
-    }
-    for page in RCTInspector.pages() where !page.title.contains("Reanimated") {
-      perform(NSSelectorFromString("sendWrappedEvent:message:"), with: String(page.id), with: event)
-    }
+    self.metroConnection.send(Data(event.utf8))
   }
 }
 

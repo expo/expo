@@ -19,7 +19,7 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.76.0-rc.5",
+    "react-native": "0.76.0",
     "react": "18.3.1",
     "@react-navigation/bottom-tabs": "7.0.0-rc.33",
     "@react-navigation/core": "7.0.0-rc.15",
@@ -29,7 +29,7 @@
     "@react-navigation/native-stack": "7.0.0-rc.28",
     "@react-navigation/routers": "7.0.0-rc.8",
     "@react-navigation/stack": "7.0.0-rc.27",
-    "react-native-screens": "4.0.0-beta.12",
+    "react-native-screens": "4.0.0-beta.14",
     "**/util": "~0.12.4"
   },
   "dependencies": {

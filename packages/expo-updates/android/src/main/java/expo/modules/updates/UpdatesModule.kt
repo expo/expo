@@ -8,20 +8,26 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.updates.events.UpdatesJSEvent
+import expo.modules.kotlin.types.Enumerable
+import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.statemachine.UpdatesStateContext
 import java.lang.ref.WeakReference
 import java.util.Date
+
+enum class UpdatesJSEvent(val eventName: String) : Enumerable {
+  StateChange("Expo.nativeUpdatesStateChangeEvent")
+}
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
  * and updates state, along with methods to check for and download new updates, reload with the
  * newest downloaded update applied, and read/clear native log entries.
  */
-class UpdatesModule : Module() {
+class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   private val logger: UpdatesLogger
     get() = UpdatesLogger(context)
 
@@ -31,21 +37,23 @@ class UpdatesModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
 
-    Events(
-      UpdatesJSEvent.StateChange.eventName
-    )
+    Events<UpdatesJSEvent>()
 
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
       UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnStartObserving {
-      UpdatesController.onEventListenerStartObserving(appContext.eventEmitter(this@UpdatesModule))
+    OnStartObserving(UpdatesJSEvent.StateChange) {
+      UpdatesController.setUpdatesEventManagerObserver(WeakReference(this@UpdatesModule))
     }
 
-    OnStopObserving {
+    OnStopObserving(UpdatesJSEvent.StateChange) {
+      UpdatesController.removeUpdatesEventManagerObserver()
+    }
 
+    OnDestroy {
+      UpdatesController.removeUpdatesEventManagerObserver()
     }
 
     AsyncFunction("reload") { promise: Promise ->
@@ -240,5 +248,9 @@ class UpdatesModule : Module() {
         completionHandler
       )
     }
+  }
+
+  override fun onStateMachineContextEvent(context: UpdatesStateContext) {
+    sendEvent(UpdatesJSEvent.StateChange, Bundle().apply { putBundle("context", context.bundle) })
   }
 }

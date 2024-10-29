@@ -1,11 +1,11 @@
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
 import { DoctorCheck } from '../checks/checks.types';
 import {
-  getChecksInScopeForProject,
   printCheckResultSummaryOnComplete,
   printFailedCheckIssueAndAdvice,
   runChecksAsync,
 } from '../doctor';
+import { resolveChecksInScope } from '../utils/checkResolver';
 import { Log } from '../utils/log';
 
 jest.mock(`../utils/log`);
@@ -50,7 +50,7 @@ class MockUnexpectedThrowCheck implements DoctorCheck {
   runAsync = jest.fn(() => Promise.reject(new Error('Unexpected error thrown from check.')));
 }
 
-describe(getChecksInScopeForProject, () => {
+describe(resolveChecksInScope, () => {
   beforeEach(() => {
     delete process.env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK;
   });
@@ -58,7 +58,7 @@ describe(getChecksInScopeForProject, () => {
   it('skips the InstalledDependencyVersionCheck if environment variable is set', async () => {
     process.env.EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK = '1';
     jest.mocked(Log.log).mockReset();
-    const checks = getChecksInScopeForProject({
+    const checks = resolveChecksInScope({
       name: 'foo',
       slug: 'foo',
       sdkVersion: 'UNVERSIONED',
@@ -74,7 +74,7 @@ describe(getChecksInScopeForProject, () => {
   });
 
   it('includes the InstalledDependencyVersionCheck if environment variable is not set', async () => {
-    const checks = getChecksInScopeForProject({
+    const checks = resolveChecksInScope({
       name: 'foo',
       slug: 'foo',
       sdkVersion: 'UNVERSIONED',

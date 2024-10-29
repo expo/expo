@@ -1,5 +1,4 @@
-import { NotificationResponse } from './Notifications.types';
-type MaybeNotificationResponse = NotificationResponse | null | undefined;
+import { MaybeNotificationResponse } from './Notifications.types';
 /**
  * A React hook always returns the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
@@ -37,5 +36,4 @@ type MaybeNotificationResponse = NotificationResponse | null | undefined;
  * @header listen
  */
 export default function useLastNotificationResponse(): MaybeNotificationResponse;
-export {};
 //# sourceMappingURL=useLastNotificationResponse.d.ts.map

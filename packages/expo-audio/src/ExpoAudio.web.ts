@@ -1,4 +1,5 @@
 import { useEvent } from 'expo';
+import { PermissionResponse } from 'expo-modules-core';
 import { useEffect, useState, useMemo } from 'react';
 
 import {
@@ -9,8 +10,9 @@ import {
   RecordingOptions,
   RecordingStatus,
 } from './Audio.types';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { AudioRecorder, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
+import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
@@ -33,16 +35,16 @@ export function useAudioPlayer(
 
 export function useAudioPlayerStatus(player: AudioModule.AudioPlayerWeb): AudioStatus {
   const currentStatus = useMemo(() => player.currentStatus, [player.id]);
-  return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
+  return useEvent(player, PLAYBACK_STATUS_UPDATE, currentStatus);
 }
 
 export function useAudioSampleListener(
   player: AudioModule.AudioPlayerWeb,
-  listener: (data: { channels: { frames: number[] }[]; timestamp: number }) => void
+  listener: (data: AudioSample) => void
 ) {
   player.setAudioSamplingEnabled(true);
   useEffect(() => {
-    const subscription = player.addListener('onAudioSampleUpdate', listener);
+    const subscription = player.addListener(AUDIO_SAMPLE_UPDATE, listener);
     return () => {
       player.setAudioSamplingEnabled(false);
       subscription.remove();
@@ -60,7 +62,7 @@ export function useAudioRecorder(
   }, [JSON.stringify(platformOptions)]);
 
   useEffect(() => {
-    const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
+    const subscription = recorder.addListener(RECORDING_STATUS_UPDATE, (status) => {
       statusListener?.(status);
     });
     return () => {
@@ -94,6 +96,12 @@ export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
   return await AudioModule.setAudioModeAsync(mode);
 }
 
-export { AudioModule, AudioPlayer, AudioRecorder };
-export * from './Audio.types';
-export * from './RecordingConstants';
+export async function requestRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.requestRecordingPermissionsAsync();
+}
+
+export async function getRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.getRecordingPermissionsAsync();
+}
+
+export { AudioModule };

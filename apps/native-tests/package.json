@@ -9,17 +9,17 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~51.0.0",
-    "expo-camera": "~15.0.0",
-    "expo-dev-client": "~4.0.0",
-    "expo-face-detector": "~12.7.0",
-    "expo-image": "~1.12.0",
-    "expo-notifications": "~0.28.0",
-    "expo-splash-screen": "~0.27.0",
+    "expo": "~52.0.0-preview.0",
+    "expo-camera": "~16.0.0",
+    "expo-dev-client": "~5.0.0-preview.0",
+    "expo-face-detector": "~13.0.0",
+    "expo-image": "~2.0.0-preview.0",
+    "expo-notifications": "~0.29.0",
+    "expo-splash-screen": "~0.28.0",
     "native-component-list": "*",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.0-rc.5"
+    "react-native": "0.76.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

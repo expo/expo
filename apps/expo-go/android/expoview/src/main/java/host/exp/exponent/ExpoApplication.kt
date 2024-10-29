@@ -4,7 +4,6 @@ package host.exp.exponent
 import android.app.Application
 import android.os.Debug
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import host.exp.exponent.analytics.EXL
@@ -74,8 +73,10 @@ abstract class ExpoApplication : Application() {
     }
 
     SoLoader.init(applicationContext, OpenSourceMergedSoMapping)
+    ExpoGoReactNativeFeatureFlags.setup()
     // For the New Architecture, we load the native entry point for this app.
-    load()
+    // We should keep the code in sync with `DefaultNewArchitectureEntryPoint.load()`
+    SoLoader.loadLibrary("react_newarchdefaults")
 
     // Add exception handler. This is used by the entire process, so only need to add it here.
     Thread.setDefaultUncaughtExceptionHandler(

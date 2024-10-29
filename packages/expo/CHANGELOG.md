@@ -4,6 +4,50 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fix react-native-webview Android `decelerationRate` prop issue. ([#32420](https://github.com/expo/expo/pull/32420) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Allowing DOM component `ref` to call WebView functions. ([#32419](https://github.com/expo/expo/pull/32419) by [@kudo](https://github.com/kudo))
+
+## 52.0.0-preview.7 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.6 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.5 — 2024-10-26
+
+### 🎉 New features
+
+- Add router support to DOM components. ([#32338](https://github.com/expo/expo/pull/32338) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 52.0.0-preview.4 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.3 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -36,6 +80,7 @@
 - Reloads DOM components WebView while app in background and browser renderer processes are gone. ([#31318](https://github.com/expo/expo/pull/31318) by [@kudo](https://github.com/kudo))
 - Add missing `types` folder from published package ([#31339](https://github.com/expo/expo/pull/31339) by [@marklawlor](https://github.com/marklawlor))
 - Fixed leaking `web-streams-polyfill` imported on web bundles for API routes. ([#31611](https://github.com/expo/expo/pull/31611) by [@byCedric](https://github.com/byCedric))
+- Fixed `@expo/dom-webview` resolving error for DOM components. ([#31983](https://github.com/expo/expo/pull/31983) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -51,13 +96,12 @@
 - Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
 - Added a default `AppEntryNotFound` component and prevent the `Invariant Violation: "main" has not been registered.` error. ([#31813](https://github.com/expo/expo/pull/31813) by [@kudo](https://github.com/kudo))
 - Decoupled the usage from `@react-native-community/cli-tools`. ([#31966](https://github.com/expo/expo/pull/31966) by [@kudo](https://github.com/kudo))
-
-### 📚 3rd party library updates
+- Promoted `DevToolsPluginClient.useTransportationNext` as default and removed the option. ([#31852](https://github.com/expo/expo/pull/31852) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552), [#32285](https://github.com/expo/expo/pull/32285) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 51.0.34 - 2024-09-24
 

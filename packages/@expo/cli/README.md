@@ -6,7 +6,7 @@
   </a>
 </p>
 
-<p align="center">The fastest way to build and run universal React Native apps for iOS, Android, and the web</p>
+<p align="center">The fastest way to build and run universal React Native apps for Android, iOS, and the web</p>
 
 <p align="center">
 

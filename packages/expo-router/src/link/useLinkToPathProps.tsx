@@ -5,6 +5,7 @@ import * as expo from '../fork/getPathFromState-forks';
 import { useExpoRouter } from '../global-state/router-store';
 import { LinkToOptions } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
+import { emitDomLinkEvent } from './useDomComponentNavigation';
 
 function eventShouldPreventDefault(
   e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent
@@ -39,6 +40,9 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
 
   const onPress = (event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
     if (shouldHandleMouseEvent(event)) {
+      if (emitDomLinkEvent(href, options)) {
+        return;
+      }
       linkTo(href, options);
     }
   };

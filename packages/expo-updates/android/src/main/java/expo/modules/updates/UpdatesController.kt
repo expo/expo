@@ -2,8 +2,7 @@ package expo.modules.updates
 
 import android.content.Context
 import com.facebook.react.ReactApplication
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.events.EventEmitter
+import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
@@ -152,13 +151,13 @@ class UpdatesController {
       }
     }
 
-    internal fun onEventListenerStartObserving(eventEmitter: EventEmitter?) {
-      singletonInstance?.eventManager?.eventEmitter = eventEmitter
+    internal fun setUpdatesEventManagerObserver(observer: WeakReference<IUpdatesEventManagerObserver>) {
+      singletonInstance?.eventManager?.observer = observer
       singletonInstance?.onEventListenerStartObserving()
     }
 
-    internal fun onEventListenerStopObserving() {
-      singletonInstance?.eventManager?.eventEmitter = null
+    internal fun removeUpdatesEventManagerObserver() {
+      singletonInstance?.eventManager?.observer = null
     }
   }
 }

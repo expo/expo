@@ -129,11 +129,6 @@ class Kernel : KernelInterface() {
   private var hasError = false
 
   private fun updateKernelRNOkHttp() {
-    if (BuildConfig.DEBUG) {
-      // FIXME: 8/9/17
-      // broke with lib versioning
-      // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    }
     ReactNativeStaticHelpers.setExponentNetwork(exponentNetwork)
   }
 
@@ -232,8 +227,7 @@ class Kernel : KernelInterface() {
             exponentManifest,
             KernelData(
               kernelInitialURL,
-              localBundlePath,
-              kernelMainModuleName
+              localBundlePath
             )
           )
           val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
@@ -241,13 +235,13 @@ class Kernel : KernelInterface() {
 
           if (nativeHost.devSupportEnabled) {
             Exponent.enableDeveloperSupport(
-              kernelDebuggerHost,
-              kernelMainModuleName
+              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost(),
+              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
             )
           }
 
           reactNativeHost = nativeHost
-          reactHost?.onHostResume(activityContext)
+          reactHost?.onHostResume(activityContext, null)
           isRunning = true
           EventBus.getDefault().postSticky(KernelStartedRunningEvent())
           EXL.d(TAG, "Kernel started running.")
@@ -272,10 +266,6 @@ class Kernel : KernelInterface() {
     }
   }
 
-  private val kernelDebuggerHost: String
-    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost()
-  private val kernelMainModuleName: String
-    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
   private val bundleUrl: String?
     get() {
       return try {

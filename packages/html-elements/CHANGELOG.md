@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 0.11.0 — 2024-10-22
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))

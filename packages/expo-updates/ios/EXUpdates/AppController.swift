@@ -350,13 +350,13 @@ public class AppController: NSObject {
     }
   }
 
-  internal static func onEventListenerStartObserving(_ eventEmitter: EXEventEmitterService?) {
-    _sharedInstance?.eventManager.eventEmitter = eventEmitter
+  internal static func setUpdatesEventManagerObserver(_ observer: UpdatesEventManagerObserver) {
+    _sharedInstance?.eventManager.observer = observer
     _sharedInstance?.onEventListenerStartObserving()
   }
 
-  internal static func onEventListenerStopObserving() {
-    _sharedInstance?.eventManager.eventEmitter = nil
+  internal static func removeUpdatesEventManagerObserver() {
+    _sharedInstance?.eventManager.observer = nil
   }
 }
 

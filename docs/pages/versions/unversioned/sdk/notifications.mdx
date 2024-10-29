@@ -19,7 +19,7 @@ import { PlatformTags } from '~/ui/components/Tag';
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
-> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` is unavailable in Expo Go from SDK 52. A [development build](/develop/development-builds/introduction/) is required to use push notifications. Scheduled notifications (local notifications) remain available in Expo Go.
+> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` is unavailable in Expo Go from SDK 53. A [development build](/develop/development-builds/introduction/) is required to use push notifications. Scheduled notifications (local notifications) remain available in Expo Go.
 
 ## Features
 
@@ -432,23 +432,23 @@ Learn how to configure the native projects in the [installation instructions in 
 
 ### iOS
 
-No usage description is required, see [notification-related permissions](#fetching-information-about-notifications-related-permissions).
+No usage description is required, see [notification-related permissions](#fetch-information-about-notifications-related-permissions).
 
 ## Notification events listeners
 
 Notification events include incoming notifications, interactions your users perform with notifications (this can be tapping on a notification,
-or interacting with it via [notification categories](#managing-notification-categories-interactive-notifications)), and rare occasions when your notifications may be dropped.
+or interacting with it via [notification categories](#manage-notification-categories-interactive-notifications)), and rare occasions when your notifications may be dropped.
 
 A few different listeners are exposed, so we've provided a chart below which will hopefully help you understand when you can expect each one to be triggered:
 
-| User interacted with notification? |        App state         | Listener(s) triggered                                                   |
-| :--------------------------------- | :----------------------: | ----------------------------------------------------------------------- |
-| false                              |        Foreground        | `NotificationReceivedListener`                                          |
+| User interacted with notification? | App state                | Listener(s) triggered                                                   |
+| ---------------------------------- | ------------------------ | ----------------------------------------------------------------------- |
+| false                              | Foreground               | `NotificationReceivedListener`                                          |
 | false                              | Foreground or Background | `BackgroundNotificationTask`                                            |
-| false                              |          Killed          | none                                                                    |
-| true                               |        Foreground        | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
-| true                               |        Background        | `NotificationResponseReceivedListener`                                  |
-| true                               |          Killed          | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
+| false                              | Killed                   | none                                                                    |
+| true                               | Foreground               | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
+| true                               | Background               | `NotificationResponseReceivedListener`                                  |
+| true                               | Killed                   | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
 
@@ -589,7 +589,6 @@ export interface FirebaseData {
   subtitle?: string;
   sound?: boolean | string;
   vibrate?: boolean | number[];
-  priority?: AndroidNotificationPriority;
   badge?: number;
 }
 ```
@@ -606,7 +605,7 @@ This value will be one of the following, accessible under `Notifications.IosAuth
 - `PROVISIONAL`: The application is provisionally authorized to post noninterruptive user notifications
 - `EPHEMERAL`: The app is authorized to schedule or receive notifications for a limited amount of time
 
-### Manage notification categories (interactive notifications)
+### Manage notification categories for interactive notifications
 
 Notification categories allow you to create interactive push notifications, so that a user can respond directly to the incoming notification
 either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification
@@ -637,7 +636,7 @@ We encourage you to always ensure appropriate channels with informative names ar
 ### Custom notification icon and colors&ensp;<PlatformTags platforms={['android']} />
 
 You can configure the [`notification.icon`](../config/app.mdx#notification) and [`notification.color`](../config/app.mdx#notification) keys
-in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#expo-config).
+in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#configurable-properties).
 These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles)

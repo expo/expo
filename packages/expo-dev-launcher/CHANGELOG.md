@@ -4,6 +4,42 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 5.0.4 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fixed `java.nio.channels.ClosedChannelException` crash from network inspector. ([#32352](https://github.com/expo/expo/pull/32352) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Skipped internal bundles from debugging targets. ([#32322](https://github.com/expo/expo/pull/32322) by [@kudo](https://github.com/kudo))
+
+## 5.0.3 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- Fixed network inspector support for react-native 0.76. ([#32290](https://github.com/expo/expo/pull/32290) by [@kudo](https://github.com/kudo))
+
+## 5.0.2 — 2024-10-24
+
+### 🎉 New features
+
+- Add support for react-native 0.76 ([#32285](https://github.com/expo/expo/pull/32285) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30861](https://github.com/expo/expo/pull/30861) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -30,8 +66,7 @@
 - Refactor expo-updates context injection ([#31951](https://github.com/expo/expo/pull/31951) by [@wschurman](https://github.com/wschurman))
 - Remove unused `semver` dependency. ([#32063](https://github.com/expo/expo/pull/32063) by [@kitten](https://github.com/kitten))
 - [ios] Remove appContext property from updates interface. ([#32103](https://github.com/expo/expo/pull/32103) by [@wschurman](https://github.com/wschurman))
-
-### 📚 3rd party library updates
+- Fixed broken unit tests since React Native 0.76 bump. ([#32210](https://github.com/expo/expo/pull/32210) by [@kudo](https://github.com/kudo))
 
 ## 4.0.27 - 2024-08-23
 

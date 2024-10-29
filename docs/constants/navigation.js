@@ -175,6 +175,7 @@ const general = [
       [
         makePage('workflow/web.mdx'),
         makePage('distribution/publishing-websites.mdx'),
+        makePage('guides/dom-components.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
       ],
       { expanded: false }
@@ -423,6 +424,7 @@ const general = [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
     makePage('distribution/app-transfers.mdx'),
+    makePage('distribution/app-size.mdx'),
   ]),
   makeSection(
     'More',
@@ -710,7 +712,8 @@ function pagesFromDir(dir) {
   return fs
     .readdirSync(path.resolve(PAGES_DIR, dir), { withFileTypes: true })
     .filter(entity => entity.isFile())
-    .map(file => makePage(path.join(dir, file.name)));
+    .map(file => makePage(path.join(dir, file.name)))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /**

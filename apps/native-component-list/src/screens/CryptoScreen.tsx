@@ -65,7 +65,6 @@ const DIGEST_STRING: FunctionDescription = {
       name: 'algorithm',
       type: 'string',
       values: [
-        CryptoDigestAlgorithm.MD2,
         CryptoDigestAlgorithm.MD5,
         CryptoDigestAlgorithm.SHA1,
         CryptoDigestAlgorithm.SHA256,

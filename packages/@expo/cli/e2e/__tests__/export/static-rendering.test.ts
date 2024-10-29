@@ -128,7 +128,7 @@ describe('exports static', () => {
       .filter(Boolean);
 
     const mapFiles = files.filter((file) => file?.endsWith('.map'));
-    expect(mapFiles).toEqual([expect.stringMatching(/_expo\/static\/js\/web\/index-.*\.map/)]);
+    expect(mapFiles).toEqual([expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.map/)]);
 
     for (const file of mapFiles) {
       // Ensure the bundle does not contain a source map reference
@@ -152,11 +152,10 @@ describe('exports static', () => {
       // Ensure the bundle does not contain a source map reference
       const jsBundle = fs.readFileSync(path.join(outputDir, file!), 'utf8');
       expect(jsBundle).toMatch(
-        /^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/index-.*\.map$/gm
+        /^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/entry-.*\.map$/gm
       );
-      // expect(jsBundle).toMatch(/^\/\/\# sourceURL=\/_expo\/static\/js\/web\/index-.*\.js$/gm);
       const mapFile = jsBundle.match(
-        /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/index-.*\.map)$/m
+        /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/entry-.*\.map)$/m
       )?.[1];
 
       expect(fs.existsSync(path.join(outputDir, mapFile!))).toBe(true);

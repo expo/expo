@@ -102,23 +102,17 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
 /**
  Resizes the animated image to fit in the given size and scale.
  */
-func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) async -> UIImage {
-  // If there are no image frames, only resize the main image.
-  guard let images = image.images else {
-    return resize(image: image, toSize: size, scale: scale)
+func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
+  if image.sd_isAnimated,
+    let animatedImage = image as? AnimatedImage,
+    let actualCoder = animatedImage.animatedCoder {
+    let animatedCoder = ResizedAnimatedCoder(actualCoder: actualCoder, size: size, scale: scale)
+    if let result = AnimatedImage(animatedCoder: animatedCoder, scale: scale) {
+      return result
+    }
   }
 
-  // Resize all animated image frames.
-  let resizedImages = await concurrentMap(images) { image in
-    return resize(image: image, toSize: size, scale: scale)
-  }
-
-  // Create the new animated image with the resized frames.
-  // `animatedImage(with:duration:)` can return `nil`, probably when scales are not the same
-  // so it should never happen in our case, but let's make sure to handle it gracefully.
-  if let newAnimatedImage = UIImage.animatedImage(with: resizedImages, duration: image.duration) {
-    return newAnimatedImage
-  }
+  // fallback to a resized static image
   return resize(image: image, toSize: size, scale: scale)
 }
 
