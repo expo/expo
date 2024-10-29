@@ -123,7 +123,7 @@ div.tippy-box {
 }
 
 .tippy-box[data-theme~='expo'] .tippy-content {
-  @apply text-sm text-default rounded-md py-3 px-4;
+  @apply text-sm text-palette-white rounded-md py-3 px-4;
   line-height: 1.525;
   background: #000;
 }
@@ -133,7 +133,7 @@ div.tippy-box {
 }
 
 .tippy-content a {
-  @apply text-default;
+  @apply text-palette-white;
 }
 
 /* Diff */
