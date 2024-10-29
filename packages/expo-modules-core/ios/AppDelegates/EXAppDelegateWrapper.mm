@@ -56,11 +56,12 @@
 #if !TARGET_OS_OSX
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-result"
   [_expoAppDelegate application:application didFinishLaunchingWithOptions:launchOptions];
 #pragma clang diagnostic pop
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+  return YES;
 }
 #endif // !TARGET_OS_OSX
 

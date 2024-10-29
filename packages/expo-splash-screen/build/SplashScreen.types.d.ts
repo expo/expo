@@ -1,3 +1,4 @@
+import { NativeModule } from 'expo-modules-core/types';
 export type SplashScreenOptions = {
     /**
      * The duration of the fade out animation in milliseconds.
@@ -11,10 +12,10 @@ export type SplashScreenOptions = {
      */
     fade?: boolean;
 };
-export type SplashScreenNativeModule = {
+export interface SplashScreenNativeModule extends NativeModule {
     setOptions: (options: SplashScreenOptions) => void;
     preventAutoHideAsync: () => Promise<boolean>;
     hide: () => void;
     hideAsync: () => Promise<void>;
-};
+}
 //# sourceMappingURL=SplashScreen.types.d.ts.map
