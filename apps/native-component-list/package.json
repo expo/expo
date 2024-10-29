@@ -157,7 +157,7 @@
     "@types/fbemitter": "^2.0.32",
     "@types/i18n-js": "^3.0.1",
     "@types/pixi.js": "^4.8.6",
-    "@types/react": "~18.2.79",
+    "@types/react": "~18.3.12",
     "@types/three": "^0.137.0",
     "babel-jest": "^29.2.1",
     "expo-module-scripts": "^4.0.0",
