@@ -86,7 +86,7 @@ export interface LinkProps<T extends string | object> extends Omit<TextProps, 'h
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];
     className?: string;
-}): false | "" | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | (import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle> | import("react-native").RecursiveArray<import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle>> | readonly (import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle>)[] | {
+}): false | "" | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | (import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | import("react-native").RecursiveArray<import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle>> | readonly (import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle>)[] | {
     $$css: boolean;
     __routerLinkClassName: string;
 })[] | null | undefined;

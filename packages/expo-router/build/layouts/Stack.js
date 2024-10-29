@@ -1,3 +1,4 @@
+'use client';
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stack = void 0;

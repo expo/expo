@@ -1,3 +1,4 @@
+'use client';
 // A fork of `useFocusEffect` that waits for the navigation state to load before
 // running the effect. This is especially useful for native redirects.
 import * as React from 'react';

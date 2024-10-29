@@ -1,3 +1,4 @@
+'use client';
 import { useNavigation as useUpstreamNavigation, NavigationProp } from '@react-navigation/native';
 import React from 'react';
 

@@ -25,7 +25,7 @@ export { ExpoRoot } from './ExpoRoot';
 export { Unmatched } from './views/Unmatched';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
-export { ScreenProps } from './useScreens';
+export type { ScreenProps } from './useScreens';
 
 // Platform
 /**
@@ -36,6 +36,6 @@ export { SplashScreen } from './views/Splash';
 // React Navigation
 export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
-export { ResultState } from './fork/getStateFromPath';
+export type { ResultState } from './fork/getStateFromPath';
 
 export type * from './types';

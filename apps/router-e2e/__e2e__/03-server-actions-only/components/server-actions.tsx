@@ -2,6 +2,7 @@
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image, Text } from 'react-native';
+import { Link } from 'expo-router';
 
 export async function renderPage(params: { title: string }) {
   return (
@@ -18,6 +19,7 @@ export async function renderPage(params: { title: string }) {
 
       <Ionicons name="airplane" />
       <Text testID="server-contents">{params.title}</Text>
+      <Link href="/second">Second</Link>
     </>
   );
 }

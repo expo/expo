@@ -5,7 +5,7 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
     backBehavior?: import("@react-navigation/routers/lib/typescript/commonjs/src/TabRouter").BackBehavior | undefined;
 } & {
     defaultStatus?: import("@react-navigation/native").DrawerStatus | undefined;
-} & import("@react-navigation/drawer/lib/typescript/commonjs/src/types").DrawerNavigationConfig, "children" | "initialRouteName" | "id" | "screenOptions" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/drawer/lib/typescript/commonjs/src/types").DrawerNavigationConfig, "children" | "initialRouteName" | "screenOptions" | "id" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: DrawerNavigationState<ParamListBase>;
@@ -73,7 +73,7 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
     backBehavior?: import("@react-navigation/routers/lib/typescript/commonjs/src/TabRouter").BackBehavior | undefined;
 } & {
     defaultStatus?: import("@react-navigation/native").DrawerStatus | undefined;
-} & import("@react-navigation/drawer/lib/typescript/commonjs/src/types").DrawerNavigationConfig, "children" | "initialRouteName" | "id" | "screenOptions" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+} & import("@react-navigation/drawer/lib/typescript/commonjs/src/types").DrawerNavigationConfig, "children" | "initialRouteName" | "screenOptions" | "id" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: DrawerNavigationState<ParamListBase>;
