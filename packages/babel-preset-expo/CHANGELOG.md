@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Assert that layout routes and API routes cannot be DOM components. ([#32422](https://github.com/expo/expo/pull/32422) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.0.0-preview.2 — 2024-10-29
+
+### 🎉 New features
+
+- Assert that layout routes and API routes cannot be DOM components. ([#32422](https://github.com/expo/expo/pull/32422) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 12.0.0-preview.1 — 2024-10-24
 

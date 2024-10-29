@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.4 — 2024-10-29
 
 ### 💡 Others
