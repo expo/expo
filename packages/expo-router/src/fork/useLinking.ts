@@ -1,4 +1,5 @@
 import {
+  LinkingOptions,
   findFocusedRoute,
   getActionFromState as getActionFromStateDefault,
   getPathFromState as getPathFromStateDefault,
@@ -7,8 +8,7 @@ import {
   type NavigationState,
   type ParamListBase,
   useNavigationIndependentTree,
-} from '@react-navigation/core';
-import { LinkingOptions } from '@react-navigation/native';
+} from '@react-navigation/native';
 import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 
