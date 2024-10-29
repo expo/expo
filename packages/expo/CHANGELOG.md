@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 52.0.0-preview.9 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
 ## 52.0.0-preview.8 — 2024-10-29
 
 ### 🐛 Bug fixes
