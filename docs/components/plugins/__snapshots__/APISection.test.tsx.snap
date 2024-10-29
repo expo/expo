@@ -43,7 +43,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="!shadow-none emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !shadow-none"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -280,7 +280,7 @@ for more details.
     </blockquote>
     <div>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !text-secondary !font-medium emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !text-secondary !font-medium"
         data-text="true"
       >
         <span
@@ -329,7 +329,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-2"
+        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -344,7 +344,7 @@ for more details.
               class="inline"
             >
               <code
-                class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-3"
+                class="text-default leading-[1.6154] font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
                 data-text="true"
               >
                 buttonStyle
@@ -406,7 +406,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-2"
+        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -421,7 +421,7 @@ for more details.
               class="inline"
             >
               <code
-                class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-3"
+                class="text-default leading-[1.6154] font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
                 data-text="true"
               >
                 buttonType
@@ -483,7 +483,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-2"
+        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -498,7 +498,7 @@ for more details.
               class="inline"
             >
               <code
-                class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-3"
+                class="text-default leading-[1.6154] font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
                 data-text="true"
               >
                 cornerRadius
@@ -568,7 +568,7 @@ for more details.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-2"
+        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -583,7 +583,7 @@ for more details.
               class="inline"
             >
               <code
-                class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-3"
+                class="text-default leading-[1.6154] font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
                 data-text="true"
               >
                 onPress
@@ -664,7 +664,7 @@ in here.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-2"
+        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -679,7 +679,7 @@ in here.
               class="inline"
             >
               <code
-                class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-3"
+                class="text-default leading-[1.6154] font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
                 data-text="true"
               >
                 style
@@ -918,7 +918,7 @@ properties.
     </a>
   </h2>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -933,7 +933,7 @@ properties.
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-13"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             getCredentialStateAsync(user)
@@ -1196,7 +1196,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -1211,7 +1211,7 @@ value depending on the state of the credential.
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-13"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             isAvailableAsync()
@@ -1340,7 +1340,7 @@ value depending on the state of the credential.
     </div>
   </div>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -1355,7 +1355,7 @@ value depending on the state of the credential.
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-13"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             refreshAsync(options)
@@ -1582,7 +1582,7 @@ refresh operation.
     </div>
   </div>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -1597,7 +1597,7 @@ refresh operation.
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-13"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             signInAsync(options)
@@ -1871,7 +1871,7 @@ sign-in operation.
     </div>
   </div>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -1886,7 +1886,7 @@ sign-in operation.
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-13"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             signOutAsync(options)
@@ -2187,7 +2187,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -2202,7 +2202,7 @@ sign-out operation.
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-13"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             addRevokeListener(listener)
@@ -2380,7 +2380,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -2926,7 +2926,7 @@ developers.
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -3280,7 +3280,7 @@ may be
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -3591,7 +3591,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -3919,7 +3919,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -4159,7 +4159,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -4333,7 +4333,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !p-0"
   >
     <div
       class="px-5 pt-4"
@@ -4402,7 +4402,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mb-0 !border-b-0 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mb-0 !border-b-0"
         data-text="true"
       >
         <span
@@ -4421,7 +4421,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#white"
           id="white"
         >
@@ -4462,7 +4462,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE ＝ 0
@@ -4482,7 +4482,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#white_outline"
           id="white_outline"
         >
@@ -4523,7 +4523,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
@@ -4543,7 +4543,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#black"
           id="black"
         >
@@ -4584,7 +4584,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.BLACK ＝ 2
@@ -4598,7 +4598,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !p-0"
   >
     <div
       class="px-5 pt-4"
@@ -4667,7 +4667,7 @@ After calling this function, the listener will no longer receive any events from
         .
       </p>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mb-0 !border-b-0 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mb-0 !border-b-0"
         data-text="true"
       >
         <span
@@ -4686,7 +4686,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#sign_in"
           id="sign_in"
         >
@@ -4727,7 +4727,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
@@ -4747,7 +4747,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#continue"
           id="continue"
         >
@@ -4788,7 +4788,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationButtonType.CONTINUE ＝ 1
@@ -4818,10 +4818,10 @@ After calling this function, the listener will no longer receive any events from
              
           </span>
           <div
-            class="!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4 select-none emotion-34"
+            class="select-none inline-flex bg-element py-1 px-2 mr-2 rounded-full items-center gap-1 border border-default [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 !bg-palette-blue3 !text-palette-blue12 !border-palette-blue4"
           >
             <svg
-              class="opacity-80 icon-xs text-palette-blue12"
+              class="opacity-80 icon-xs text-palette-blue12 mt-[-0.5px]"
               fill="none"
               role="img"
               viewBox="0 0 24 24"
@@ -4838,7 +4838,7 @@ After calling this function, the listener will no longer receive any events from
               </g>
             </svg>
             <span
-              class="emotion-35"
+              class="text-2xs !leading-[16px] font-normal [table_&]:text-3xs"
             >
               iOS 13.2+
             </span>
@@ -4851,7 +4851,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#sign_up"
           id="sign_up"
         >
@@ -4892,7 +4892,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
@@ -4906,7 +4906,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <div
-    class="!p-0 emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !p-0"
   >
     <div
       class="px-5 pt-4"
@@ -5029,7 +5029,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mb-0 !border-b-0 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mb-0 !border-b-0"
         data-text="true"
       >
         <span
@@ -5048,7 +5048,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#revoked"
           id="revoked"
         >
@@ -5089,7 +5089,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationCredentialState.REVOKED ＝ 0
@@ -5103,7 +5103,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#authorized"
           id="authorized"
         >
@@ -5144,7 +5144,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationCredentialState.AUTHORIZED ＝ 1
@@ -5158,7 +5158,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#not_found"
           id="not_found"
         >
@@ -5199,7 +5199,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationCredentialState.NOT_FOUND ＝ 2
@@ -5213,7 +5213,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#transferred"
           id="transferred"
         >
@@ -5254,7 +5254,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationCredentialState.TRANSFERRED ＝ 3
@@ -5262,7 +5262,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !p-0"
   >
     <div
       class="px-5 pt-4"
@@ -5313,7 +5313,7 @@ for more details.
         </a>
       </h3>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mb-0 !border-b-0 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mb-0 !border-b-0"
         data-text="true"
       >
         <span
@@ -5332,7 +5332,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#implicit"
           id="implicit"
         >
@@ -5373,7 +5373,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationOperation.IMPLICIT ＝ 0
@@ -5393,7 +5393,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#login"
           id="login"
         >
@@ -5434,7 +5434,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGIN ＝ 1
@@ -5448,7 +5448,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#refresh"
           id="refresh"
         >
@@ -5489,7 +5489,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationOperation.REFRESH ＝ 2
@@ -5503,7 +5503,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#logout"
           id="logout"
         >
@@ -5544,7 +5544,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGOUT ＝ 3
@@ -5552,7 +5552,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !p-0"
   >
     <div
       class="px-5 pt-4"
@@ -5719,7 +5719,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mb-0 !border-b-0 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mb-0 !border-b-0"
         data-text="true"
       >
         <span
@@ -5738,7 +5738,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#full_name"
           id="full_name"
         >
@@ -5779,7 +5779,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationScope.FULL_NAME ＝ 0
@@ -5793,7 +5793,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#email"
           id="email"
         >
@@ -5834,7 +5834,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationScope.EMAIL ＝ 1
@@ -5842,7 +5842,7 @@ for more details.
     </div>
   </div>
   <div
-    class="!p-0 emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !p-0"
   >
     <div
       class="px-5 pt-4"
@@ -5953,7 +5953,7 @@ for more details.
         </div>
       </blockquote>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mb-0 !border-b-0 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mb-0 !border-b-0"
         data-text="true"
       >
         <span
@@ -5972,7 +5972,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#unsupported"
           id="unsupported"
         >
@@ -6013,7 +6013,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
@@ -6033,7 +6033,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#unknown"
           id="unknown"
         >
@@ -6074,7 +6074,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
@@ -6094,7 +6094,7 @@ for more details.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#likely_real"
           id="likely_real"
         >
@@ -6135,7 +6135,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
@@ -6194,7 +6194,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="!shadow-none emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !shadow-none"
   >
     <div
       class="[table_&]:mt-0 [table_&]:mb-3.5 [table_&]:last:mb-0 mx-[-21px] mt-[-21px] max-md-gutters:mx-[-17px]"
@@ -6365,7 +6365,7 @@ for more details.
     </p>
     <div>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !text-secondary !font-medium emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !text-secondary !font-medium"
         data-text="true"
       >
         <span
@@ -6414,7 +6414,7 @@ for more details.
       class="[&>*:last-child]:!mb-0"
     >
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-2"
+        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6429,7 +6429,7 @@ for more details.
               class="inline"
             >
               <code
-                class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-3"
+                class="text-default leading-[1.6154] font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
                 data-text="true"
               >
                 barCodeTypes
@@ -6530,7 +6530,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-2"
+        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6545,7 +6545,7 @@ minimize battery usage.
               class="inline"
             >
               <code
-                class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-3"
+                class="text-default leading-[1.6154] font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
                 data-text="true"
               >
                 onBarCodeScanned
@@ -6685,7 +6685,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="!pb-4 [&>*:last-child]:!mb-0 emotion-2"
+        class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0 !pb-4 [&>*:last-child]:!mb-0"
       >
         <h3
           class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6700,7 +6700,7 @@ data has been retrieved.
               class="inline"
             >
               <code
-                class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-3"
+                class="text-default leading-[1.6154] font-medium wrap-anywhere mb-1 inline-block prose-code:mb-0"
                 data-text="true"
               >
                 type
@@ -6927,7 +6927,7 @@ Same as
     </a>
   </h2>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -6942,7 +6942,7 @@ Same as
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-9"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             usePermissions(options)
@@ -7200,7 +7200,7 @@ This uses both
       class="mb-3.5 last:[&>*]:mb-0"
     >
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mt-1 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mt-1"
         data-text="true"
       >
         <span
@@ -7339,7 +7339,7 @@ This uses both
     </a>
   </h2>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -7354,7 +7354,7 @@ This uses both
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-9"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             BarCodeScanner.getPermissionsAsync()
@@ -7486,7 +7486,7 @@ This uses both
     </div>
   </div>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -7501,7 +7501,7 @@ This uses both
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-9"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             BarCodeScanner.requestPermissionsAsync()
@@ -7655,7 +7655,7 @@ This uses both
     </div>
   </div>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -7670,7 +7670,7 @@ This uses both
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-9"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             BarCodeScanner.scanFromURLAsync(url, barCodeTypes)
@@ -7998,7 +7998,7 @@ code.
     </a>
   </h2>
   <div
-    class="emotion-2"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8052,7 +8052,7 @@ code.
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] emotion-1"
+      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4"
       data-text="true"
     >
       <span
@@ -8286,7 +8286,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8446,7 +8446,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8599,7 +8599,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8719,7 +8719,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -8890,7 +8890,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -9044,7 +9044,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -9320,7 +9320,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -9470,7 +9470,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -9606,7 +9606,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="!p-0 emotion-0"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !p-0"
   >
     <div
       class="px-5 pt-4"
@@ -9657,7 +9657,7 @@ you don't get this value.
         </a>
       </h3>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mb-0 !border-b-0 emotion-1"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mb-0 !border-b-0"
         data-text="true"
       >
         <span
@@ -9676,7 +9676,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#denied"
           id="denied"
         >
@@ -9717,7 +9717,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -9737,7 +9737,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#granted"
           id="granted"
         >
@@ -9778,7 +9778,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -9798,7 +9798,7 @@ you don't get this value.
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#undetermined"
           id="undetermined"
         >
@@ -9839,7 +9839,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"
@@ -9898,7 +9898,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -9913,7 +9913,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-1"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             getPermissionsAsync()
@@ -10023,7 +10023,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <div
       class="flex flex-row items-center mb-2"
@@ -10040,10 +10040,10 @@ exports[`APISection expo-pedometer 1`] = `
            
         </span>
         <div
-          class="!bg-palette-blue3 !text-palette-blue12 !border-palette-blue4 select-none emotion-3"
+          class="select-none inline-flex bg-element py-1 px-2 mr-2 rounded-full items-center gap-1 border border-default [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 !bg-palette-blue3 !text-palette-blue12 !border-palette-blue4"
         >
           <svg
-            class="opacity-80 icon-xs text-palette-blue12"
+            class="opacity-80 icon-xs text-palette-blue12 mt-[-0.5px]"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -10060,7 +10060,7 @@ exports[`APISection expo-pedometer 1`] = `
             </g>
           </svg>
           <span
-            class="emotion-4"
+            class="text-2xs !leading-[16px] font-normal [table_&]:text-3xs"
           >
             iOS
           </span>
@@ -10081,7 +10081,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-1"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             getStepCountAsync(start, end)
@@ -10390,7 +10390,7 @@ a start date that is more than seven days in the past returns only the available
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -10405,7 +10405,7 @@ a start date that is more than seven days in the past returns only the available
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-1"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             isAvailableAsync()
@@ -10528,7 +10528,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -10543,7 +10543,7 @@ available on this device.
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-1"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             requestPermissionsAsync()
@@ -10653,7 +10653,7 @@ available on this device.
     </div>
   </div>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -10668,7 +10668,7 @@ available on this device.
           class="inline"
         >
           <code
-            class="text-default leading-[1.6154] font-medium wrap-anywhere emotion-1"
+            class="text-default leading-[1.6154] font-medium wrap-anywhere"
             data-text="true"
           >
             watchStepCount(callback)
@@ -10975,7 +10975,7 @@ On iOS, the
     </a>
   </h2>
   <div
-    class="emotion-0"
+    class="rounded-lg border border-secondary p-5 [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 shadow-none mb-5 pt-4 px-5 pb-0 [&_h4]:mt-0"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -11029,7 +11029,7 @@ On iOS, the
       An object obtained by permissions get and request functions.
     </p>
     <p
-      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] emotion-13"
+      class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4"
       data-text="true"
     >
       <span
@@ -11263,7 +11263,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="emotion-14"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -11379,7 +11379,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-14"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -11539,7 +11539,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="emotion-14"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -11641,7 +11641,7 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="emotion-14"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4"
   >
     <h3
       class="text-default text-[20px] font-semibold leading-normal tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group"
@@ -11815,7 +11815,7 @@ After calling this function, the listener will no longer receive any events from
     </a>
   </h2>
   <div
-    class="!p-0 emotion-14"
+    class="rounded-lg border border-secondary p-5 shadow-xs mb-6 [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 !p-0"
   >
     <div
       class="px-5 pt-4"
@@ -11866,7 +11866,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h3>
       <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] !mb-0 !border-b-0 emotion-13"
+        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle max-lg-gutters:-mx-4 !mb-0 !border-b-0"
         data-text="true"
       >
         <span
@@ -11885,7 +11885,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#denied"
           id="denied"
         >
@@ -11926,7 +11926,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -11946,7 +11946,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#granted"
           id="granted"
         >
@@ -11987,7 +11987,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -12007,7 +12007,7 @@ After calling this function, the listener will no longer receive any events from
         data-heading="true"
       >
         <a
-          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6 !mt-0"
+          class="inline-flex gap-1.5 items-center relative text-[inherit] decoration-0 scroll-m-6"
           href="#undetermined"
           id="undetermined"
         >
@@ -12048,7 +12048,7 @@ After calling this function, the listener will no longer receive any events from
         </a>
       </h4>
       <code
-        class="text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 text-secondary mb-3"
+        class="text-secondary text-xs inline-flex mb-3"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"

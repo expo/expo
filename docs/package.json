@@ -30,11 +30,10 @@
     "wrap-ansi": "^7"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.0",
-    "@expo/styleguide": "^8.2.6",
+    "@expo/styleguide": "^8.3.0",
     "@expo/styleguide-base": "^1.0.1",
-    "@expo/styleguide-icons": "^2.0.1",
-    "@expo/styleguide-search-ui": "^2.1.0",
+    "@expo/styleguide-icons": "^2.0.3",
+    "@expo/styleguide-search-ui": "^2.1.2",
     "@mdx-js/loader": "^2.2.1",
     "@mdx-js/mdx": "^2.2.1",
     "@mdx-js/react": "^2.2.1",
@@ -73,7 +72,6 @@
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.6.4",
-    "@emotion/jest": "^11.13.0",
     "@expo/spawn-async": "^1.7.2",
     "@tailwindcss/typography": "^0.5.12",
     "@testing-library/dom": "^10.4.0",

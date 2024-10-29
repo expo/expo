@@ -1,5 +1,6 @@
-import { CommentData, CommentTagData } from '~/components/plugins/api/APIDataTypes';
-import { getAllTagData, getCommentContent } from '~/components/plugins/api/APISectionUtils';
+import { CommentData, CommentTagData } from './APIDataTypes';
+import { getAllTagData, getCommentContent } from './APISectionUtils';
+
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { PlatformTags, StatusTag } from '~/ui/components/Tag';

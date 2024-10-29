@@ -1,17 +1,17 @@
+import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import { Fragment, ReactNode } from 'react';
 
-import { APIBox } from '~/components/plugins/APIBox';
-import { APIDataType } from '~/components/plugins/api/APIDataType';
+import { APIDataType } from './APIDataType';
 import {
   PropData,
   TypeDeclarationContentData,
   TypeDefinitionData,
   TypeGeneralData,
   TypeSignaturesData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   resolveTypeName,
   renderFlags,
@@ -24,12 +24,14 @@ import {
   ParamsTableHeadRow,
   renderDefaultValue,
   renderIndexSignature,
-  STYLES_APIBOX,
   getTagNamesList,
   H3Code,
   getCommentContent,
   listParams,
-} from '~/components/plugins/api/APISectionUtils';
+} from './APISectionUtils';
+import { STYLES_APIBOX } from './styles';
+
+import { APIBox } from '~/components/plugins/APIBox';
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN, RawH4 } from '~/ui/components/Text';
 
@@ -138,7 +140,7 @@ const renderType = (
   if (type.declaration) {
     // Object Types
     return (
-      <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
@@ -177,7 +179,7 @@ const renderType = (
     );
   } else if (type.elements) {
     return (
-      <div key={`type-tuple-${name}`} css={STYLES_APIBOX}>
+      <div key={`type-tuple-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
@@ -204,7 +206,7 @@ const renderType = (
 
     if (propTypes.length) {
       return (
-        <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
+        <div key={`prop-type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
@@ -257,7 +259,7 @@ const renderType = (
     } else if (literalTypes.length) {
       const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
-        <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+        <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
@@ -297,7 +299,9 @@ const renderType = (
     ['array', 'reference'].includes(type.type)
   ) {
     return (
-      <div key={`record-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
+      <div
+        key={`record-definition-${name}`}
+        className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
@@ -316,7 +320,7 @@ const renderType = (
     );
   } else if (type.type === 'intrinsic') {
     return (
-      <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`generic-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
@@ -335,7 +339,7 @@ const renderType = (
     );
   } else if (type.type === 'conditional' && type.checkType) {
     return (
-      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
@@ -380,7 +384,7 @@ const renderType = (
     }
 
     return (
-      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
