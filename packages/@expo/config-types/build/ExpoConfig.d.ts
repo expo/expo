@@ -412,6 +412,274 @@ export interface IOS {
      * Dictionary of arbitrary configuration to add to your standalone app's native *.entitlements (plist). Applied prior to all other Expo-specific configuration. No other validation is performed, so use this at your own risk of rejection from the App Store.
      */
     entitlements?: {
+        /**
+         * Alternative marketplaces
+         */
+        'com.apple.developer.marketplace.app-installation'?: boolean;
+        /**
+         * App Clips
+         */
+        'com.apple.developer.parent-application-identifiers'?: string[];
+        'com.apple.developer.associated-appclip-app-identifiers'?: string[];
+        'com.apple.developer.on-demand-install-capable'?: boolean;
+        /**
+         * Authentication
+         */
+        'com.apple.developer.authentication-services.autofill-credential-provider'?: boolean;
+        'com.apple.developer.applesignin'?: boolean;
+        /**
+         * CarPlay
+         */
+        'com.apple.developer.carplay-audio'?: boolean;
+        'com.apple.developer.carplay-charging'?: boolean;
+        'com.apple.developer.carplay-communication'?: boolean;
+        'com.apple.developer.carplay-maps'?: boolean;
+        'com.apple.developer.carplay-parking'?: boolean;
+        'com.apple.developer.carplay-quick-ordering'?: boolean;
+        /**
+         * @deprecated
+         */
+        'com.apple.developer.carplay-messaging'?: boolean;
+        /**
+         * @deprecated
+         */
+        'com.apple.developer.playable-content'?: boolean;
+        /**
+         * Contacts
+         */
+        'com.apple.developer.contacts.notes'?: boolean;
+        /**
+         * Device Management
+         */
+        'com.apple.developer.automated-device-enrollment.add-devices'?: boolean;
+        /**
+         * Education
+         */
+        'com.apple.developer.ClassKit-environment'?: string;
+        /**
+         * A Boolean value that indicates whether an app may create an assessment session.
+         */
+        'com.apple.developer.automatic-assessment-configuration'?: boolean;
+        /**
+         * Email clients
+         */
+        'com.apple.developer.mail-client'?: boolean;
+        /**
+         * Enterprise
+         */
+        'com.apple.developer.coreml.neural-engine-access'?: boolean;
+        'com.apple.developer.app-compute-category'?: string[];
+        'com.apple.developer.screen-capture.include-passthrough'?: boolean;
+        'com.apple.developer.arkit.main-camera-access.allow'?: boolean;
+        'com.apple.developer.arkit.object-tracking-parameter-adjustment.allow'?: boolean;
+        'com.apple.developer.arkit.barcode-detection.allow'?: boolean;
+        'com.apple.developer.avfoundation.uvc-device-access'?: boolean;
+        /**
+         * Exposure notification
+         */
+        'com.apple.developer.exposure-notification'?: boolean;
+        /**
+         * Family Controls
+         */
+        'com.apple.developer.family-controls'?: boolean;
+        /**
+         * File provider
+         */
+        'com.apple.developer.fileprovider.testing-mode'?: boolean;
+        /**
+         * Games
+         */
+        'com.apple.developer.game-center'?: boolean;
+        /**
+         * Group activities
+         */
+        'com.apple.developer.group-session'?: boolean;
+        /**
+         * Health
+         */
+        'com.apple.developer.healthkit'?: boolean;
+        'com.apple.developer.healthkit.access'?: string[];
+        'com.apple.developer.healthkit.background-delivery'?: boolean;
+        'com.apple.developer.healthkit.recalibrate-estimates'?: boolean;
+        /**
+         * Home automation
+         */
+        'com.apple.developer.homekit'?: boolean;
+        'com.apple.developer.matter.allow-setup-payload'?: boolean;
+        /**
+         * Hypervisor
+         */
+        'com.apple.security.hypervisor'?: boolean;
+        /**
+         * @deprecated
+         */
+        'com.apple.vm.hypervisor'?: boolean;
+        'com.apple.vm.device-access'?: boolean;
+        'com.apple.vm.networking'?: boolean;
+        'com.apple.security.virtualization'?: boolean;
+        /**
+         * iCloud
+         */
+        'com.apple.developer.icloud-container-development-container-identifiers'?: string[];
+        'com.apple.developer.icloud-container-environment'?: string;
+        'com.apple.developer.icloud-container-identifiers'?: string[];
+        'com.apple.developer.icloud-services'?: string[];
+        'com.apple.developer.ubiquity-kvstore-identifier'?: string;
+        /**
+         * Journaling Suggestions
+         */
+        'com.apple.developer.journal.allow'?: string[];
+        /**
+         * Location
+         */
+        'com.apple.developer.location.push'?: boolean;
+        /**
+         * Managed App Distribution
+         */
+        'com.apple.developer.managed-app-distribution.install-ui'?: string[];
+        /**
+         * Media
+         */
+        'com.apple.developer.media-device-discovery-extension'?: boolean;
+        'com.apple.developer.avfoundation.multitasking-camera-access'?: boolean;
+        'com.apple.developer.coremotion.head-pose'?: boolean;
+        'com.apple.developer.spatial-audio.profile-access'?: boolean;
+        /**
+         * Memory
+         */
+        'com.apple.developer.kernel.increased-memory-limit'?: boolean;
+        'com.apple.developer.kernel.extended-virtual-addressing'?: boolean;
+        /**
+         * Metal
+         */
+        'com.apple.developer.sustained-execution'?: boolean;
+        /**
+         * MessageUI
+         */
+        'com.apple.developer.upi-device-validation'?: boolean;
+        /**
+         * Networking
+         */
+        'com.apple.developer.networking.networkextension'?: string[];
+        'com.apple.developer.networking.vpn.api'?: string[];
+        'com.apple.developer.associated-domains'?: string[];
+        'com.apple.developer.networking.multicast'?: boolean;
+        'com.apple.developer.associated-domains.applinks.read-write'?: boolean;
+        'com.apple.developer.networking.manage-thread-network-credentials'?: boolean;
+        'com.apple.developer.networking.slicing.appcategory'?: string[];
+        'com.apple.developer.networking.slicing.trafficcategory'?: string[];
+        'com.apple.developer.networking.vmnet'?: boolean;
+        /**
+         * Notifications
+         */
+        'aps-environment'?: string;
+        'com.apple.developer.aps-environment'?: string;
+        'com.apple.developer.usernotifications.filtering'?: boolean;
+        /**
+         * Privacy
+         */
+        'com.apple.developer.device-information.user-assigned-device-name'?: boolean;
+        /**
+         * Push to talk
+         */
+        'com.apple.developer.push-to-talk'?: boolean;
+        /**
+         * SafetyKit
+         */
+        'com.apple.developer.severe-vehicular-crash-event'?: boolean;
+        /**
+         * Security
+         */
+        'com.apple.security.application-groups'?: string[];
+        'keychain-access-groups'?: string[];
+        'com.apple.developer.default-data-protection'?: string;
+        'com.apple.developer.devicecheck.appattest-environment'?: string;
+        'com.apple.security.smartcard'?: boolean;
+        /**
+         * Sensitive content analysis
+         */
+        'com.apple.developer.sensitivecontentanalysis.client'?: boolean;
+        /**
+         * Sensors
+         */
+        'com.apple.developer.sensorkit.reader.allow'?: boolean;
+        /**
+         * Siri
+         */
+        'com.apple.developer.siri'?: boolean;
+        /**
+         * StoreKit
+         */
+        'com.apple.developer.storekit.external-link.account'?: boolean;
+        'com.apple.developer.storekit.external-purchase'?: boolean;
+        'com.apple.developer.storekit.external-purchase-link'?: boolean;
+        /**
+         * TV
+         */
+        'com.apple.developer.video-subscriber-single-sign-on'?: boolean;
+        'com.apple.smoot.subscriptionservice'?: boolean;
+        /**
+         * Wallet
+         */
+        'com.apple.developer.pass-type-identifiers'?: string[];
+        'com.apple.developer.in-app-payments'?: string[];
+        'com.apple.developer.in-app-identity-presentment'?: {
+            [k: string]: any;
+        };
+        'com.apple.developer.in-app-identity-presentment.merchant-identifiers'?: string[];
+        'com.apple.developer.proximity-reader.identity.display'?: boolean;
+        'com.apple.developer.proximity-reader.identity.read'?: {
+            [k: string]: any;
+        };
+        /**
+         * WeatherKit
+         */
+        'com.apple.developer.weatherkit'?: boolean;
+        /**
+         * Web browsers
+         */
+        'com.apple.developer.web-browser'?: boolean;
+        'com.apple.developer.web-browser.public-key-credential'?: boolean;
+        'com.apple.developer.browser.app-installation'?: boolean;
+        /**
+         * Wireless interfaces
+         */
+        'com.apple.developer.networking.wifi-info'?: boolean;
+        'com.apple.external-accessory.wireless-configuration'?: boolean;
+        'com.apple.developer.networking.multipath'?: boolean;
+        'com.apple.developer.networking.HotspotConfiguration'?: boolean;
+        'com.apple.developer.nfc.readersession.formats'?: string[];
+        'com.apple.developer.nfc.hce'?: boolean;
+        'com.apple.developer.nfc.hce.iso7816.select-identifier-prefixes'?: string[];
+        'com.apple.developer.nfc.hce.default-contactless-app'?: boolean;
+        /**
+         * BrowserEngineKit
+         */
+        'com.apple.developer.embedded-web-browser-engine'?: boolean;
+        'com.apple.developer.memory.transfer_accept'?: string;
+        'com.apple.developer.memory.transfer_send'?: string;
+        'com.apple.developer.web-browser-engine.host'?: boolean;
+        'com.apple.developer.web-browser-engine.networking'?: boolean;
+        'com.apple.developer.web-browser-engine.rendering'?: boolean;
+        'com.apple.developer.web-browser-engine.webcontent'?: boolean;
+        /**
+         * CallKit (Beta)
+         */
+        'com.apple.developer.calling-app'?: boolean;
+        /**
+         * Messages (Beta)
+         */
+        'com.apple.developer.messages.critical-messaging'?: boolean;
+        'com.apple.developer.messaging-app'?: boolean;
+        /**
+         * ScreenCaptureKit
+         */
+        'com.apple.developer.persistent-content-capture'?: boolean;
+        /**
+         * SecureElementCredential
+         */
+        'com.apple.developer.secure-element-credential'?: boolean;
+        'com.apple.developer.secure-element-credential.default-contactless-app'?: boolean;
         [k: string]: any;
     };
     /**
