@@ -1,7 +1,7 @@
 /// <reference types="react" />
 import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
-export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack/lib/typescript/commonjs/src/types").NativeStackNavigatorProps, "children" | "initialRouteName" | "screenOptions" | "id" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack/lib/typescript/commonjs/src/types").NativeStackNavigatorProps, "children" | "initialRouteName" | "id" | "screenOptions" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -61,7 +61,7 @@ export declare const Stack: import("react").ForwardRefExoticComponent<Omit<Omit<
     }>> | undefined) | undefined;
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack/lib/typescript/commonjs/src/types").NativeStackNavigatorProps, "children" | "initialRouteName" | "screenOptions" | "id" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack/lib/typescript/commonjs/src/types").NativeStackNavigatorProps, "children" | "initialRouteName" | "id" | "screenOptions" | "layout" | "screenListeners" | "screenLayout" | "UNSTABLE_getStateForRouteNamesChange"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: import("react").ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
