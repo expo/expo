@@ -1,6 +1,6 @@
 {
   "name": "patch-project",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "An Expo config-plugin and tool to support patch-based CNG",
   "main": "build/withPatchPlugin.js",
   "types": "build/withPatchPlugin.d.ts",
