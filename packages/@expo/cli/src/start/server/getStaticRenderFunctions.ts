@@ -126,5 +126,6 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
 export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
   augmentLogs(projectRoot);
 
+  console.log('src', src);
   return profile(requireString, 'eval-metro-bundle')(src, filename);
 }

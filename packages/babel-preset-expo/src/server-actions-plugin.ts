@@ -365,8 +365,6 @@ export function reactServerActionsPlugin(
             const exportedSpecifier = t.exportSpecifier(id, t.identifier('default'));
             path.replaceWith(path.node.declaration);
             path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
-            // Trigger a re-visit to handle the new export
-            path.skip();
           } else {
             // Convert anonymous function expressions to named function expressions and export them as default.
             // export default foo = async () => {}
@@ -391,16 +389,17 @@ export function reactServerActionsPlugin(
               path.replaceWith(t.variableDeclaration('const', [t.variableDeclarator(id, right)]));
               // Insert `(() => _registerServerReference(foo, "file:///unknown", "default"))();`
               path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
-              // Trigger a re-visit to handle the new export
-              path.skip();
-            } else if (t.isArrowFunctionExpression(path.node.declaration)) {
+            } else if (
+              t.isArrowFunctionExpression(path.node.declaration) &&
+              path.node.declaration
+            ) {
               // export default async () => {}
               // Give the function a name
               // const $$INLINE_ACTION = async () => {}
               const moduleScope = path.scope.getProgramParent();
               const extractedIdentifier = moduleScope.generateUidIdentifier('$$INLINE_ACTION');
 
-              // Transform `export default async () => {}` to `const $$INLINE_ACTION = async () => {}`
+              // @ts-expect-error: Transform `export default async () => {}` to `const $$INLINE_ACTION = async () => {}`
               path.node.declaration = t.variableDeclaration('const', [
                 t.variableDeclarator(extractedIdentifier, path.node.declaration),
               ]);
@@ -413,9 +412,6 @@ export function reactServerActionsPlugin(
                 t.identifier('default')
               );
               path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
-
-              // Trigger a re-visit to handle the new export
-              path.skip();
             } else if (
               // Match `export default foo;`
               t.isIdentifier(path.node.declaration)

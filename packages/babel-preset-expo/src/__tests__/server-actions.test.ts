@@ -389,6 +389,27 @@ export const Test2 = ({ foo }) => {
         export { test as default };"
       `);
     });
+    it('supports top-level directive with default export of named function with JSX', () => {
+      expect(
+        transformTest(`
+  "use server";
+  
+  export default async function test() {
+    return <div>hello</div>
+  }`).code
+      ).toMatchInlineSnapshot(`
+        "/*rsc/actions: {"id":"file:///unknown","names":["default"]}*/
+        import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
+        import { jsx as _jsx } from "react/jsx-runtime";
+        async function test() {
+          return /*#__PURE__*/_jsx("div", {
+            children: "hello"
+          });
+        }
+        (() => _registerServerReference(test, "file:///unknown", "default"))();
+        export { test as default };"
+      `);
+    });
 
     it('supports top-level directive with default export of anonymous function', () => {
       expect(
@@ -420,6 +441,25 @@ export const Test2 = ({ foo }) => {
         export { foo as default };"
       `);
     });
+    it('supports top-level directive with default export of named arrow function with JSX', () => {
+      const code = transformTest(`
+        "use server";
+        export default foo = async (formData) => {
+        return <div />
+        };`).code;
+      // Ensure the JSX is removed
+      expect(code).not.toMatch('<');
+      expect(code).toMatchInlineSnapshot(`
+        "/*rsc/actions: {"id":"file:///unknown","names":["default"]}*/
+        import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
+        import { jsx as _jsx } from "react/jsx-runtime";
+        const foo = async formData => {
+          return /*#__PURE__*/_jsx("div", {});
+        };
+        (() => _registerServerReference(foo, "file:///unknown", "default"))();
+        export { foo as default };"
+      `);
+    });
 
     it('supports top-level directive with default export of anonymous arrow function', () => {
       expect(
@@ -433,6 +473,33 @@ export const Test2 = ({ foo }) => {
         const _$$INLINE_ACTION = async formData => {};
         (() => _registerServerReference(_$$INLINE_ACTION, "file:///unknown", "default"))();
         export { _$$INLINE_ACTION as default };"
+      `);
+    });
+
+    it('supports top-level directive with default export and non-default', () => {
+      expect(
+        transformTest(`
+  "use server";
+
+export const greet = async (inputName: string) => 'hello';
+
+export default function ServerActionsInFile() {
+  return <div>Hey</div>;
+}
+`).code
+      ).toMatchInlineSnapshot(`
+        "/*rsc/actions: {"id":"file:///unknown","names":["greet","default"]}*/
+        import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";
+        import { jsx as _jsx } from "react/jsx-runtime";
+        export const greet = async inputName => 'hello';
+        (() => _registerServerReference(greet, "file:///unknown", "greet"))();
+        function ServerActionsInFile() {
+          return /*#__PURE__*/_jsx("div", {
+            children: "Hey"
+          });
+        }
+        (() => _registerServerReference(ServerActionsInFile, "file:///unknown", "default"))();
+        export { ServerActionsInFile as default };"
       `);
     });
 
