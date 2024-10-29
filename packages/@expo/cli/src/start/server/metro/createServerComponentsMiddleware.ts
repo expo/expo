@@ -106,6 +106,7 @@ export function createServerComponentsMiddleware(
     { platform, entryPoints }: { platform: string; entryPoints: string[] },
     files: ExportAssetMap
   ): Promise<{
+    clientBoundaries: string[];
     manifest: Record<string, [string, string]>;
   }> {
     const uniqueEntryPoints = [...new Set(entryPoints)];
@@ -113,6 +114,7 @@ export function createServerComponentsMiddleware(
     const serverRoot = getMetroServerRootMemo(projectRoot);
 
     const manifest: Record<string, [string, string]> = {};
+    const nestedClientBoundaries: string[] = [];
     for (const entryPoint of uniqueEntryPoints) {
       const contents = await ssrLoadModuleArtifacts(entryPoint, {
         environment: 'react-server',
@@ -122,6 +124,14 @@ export function createServerComponentsMiddleware(
         // Required
         runModule: true,
       });
+
+      const reactClientReferences = contents.artifacts
+        .filter((a) => a.type === 'js')[0]
+        .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+
+      if (reactClientReferences) {
+        nestedClientBoundaries.push(...reactClientReferences!);
+      }
 
       // Naive check to ensure the module runtime is not included in the server action bundle.
       if (contents.src.includes('The experimental Metro feature')) {
@@ -150,7 +160,7 @@ export function createServerComponentsMiddleware(
       contents: 'module.exports = ' + JSON.stringify(manifest),
     });
 
-    return { manifest };
+    return { manifest, clientBoundaries: nestedClientBoundaries };
   }
 
   async function getExpoRouterClientReferencesAsync(

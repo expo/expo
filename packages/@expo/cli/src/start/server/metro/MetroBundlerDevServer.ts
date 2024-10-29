@@ -633,7 +633,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files: ExportAssetMap;
   }> {
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
-    const {
+    let {
       reactClientReferences: clientBoundaries,
       reactServerReferences: serverActionReferencesInServer,
       cssModules,
@@ -649,7 +649,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     debug('Evaluated client boundaries:', clientBoundaries);
 
     // Run metro bundler and create the JS bundles/source maps.
-    const bundle = await this.legacySinglePageExportBundleAsync(
+    let bundle = await this.legacySinglePageExportBundleAsync(
       {
         ...options,
         clientBoundaries,
@@ -676,13 +676,34 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     debug('React server action boundaries from client:', reactServerReferences);
 
-    await this.rscRenderer!.exportServerActionsAsync(
-      {
-        platform: options.platform,
-        entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
-      },
-      files
+    const { clientBoundaries: nestedClientBoundaries } =
+      await this.rscRenderer!.exportServerActionsAsync(
+        {
+          platform: options.platform,
+          entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
+        },
+        files
+      );
+
+    const hasUniqueClientBoundaries = nestedClientBoundaries.some(
+      (boundary) => !clientBoundaries.includes(boundary)
     );
+
+    if (hasUniqueClientBoundaries) {
+      debug('Re-bundling client with nested client boundaries:', nestedClientBoundaries);
+      clientBoundaries = [...new Set(clientBoundaries.concat(nestedClientBoundaries))];
+      // Re-bundle the client with the new client boundaries that only exist in server actions that were imported from the client.
+      // Run metro bundler and create the JS bundles/source maps.
+      bundle = await this.legacySinglePageExportBundleAsync(
+        {
+          ...options,
+          clientBoundaries: [...clientBoundaries, ...nestedClientBoundaries],
+        },
+        extraOptions
+      );
+    }
+
+    // TODO: Re-bundle client with server actions from client server actions.
 
     // Inject the global CSS that was imported during the server render.
     bundle.artifacts.push(...cssModules);
