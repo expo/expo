@@ -8,7 +8,7 @@ export default function <%- project.viewName %>(props: <%- project.viewName %>Pr
       <iframe
         style={{ flex: 1 }}
         src={props.url}
-        onLoad={() => props.onLoad({ url: props.url })}
+        onLoad={() => props.onLoad({ nativeEvent: { url: props.url } })}
       />
     </div>
   );
