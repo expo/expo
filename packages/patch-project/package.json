@@ -1,6 +1,6 @@
 {
   "name": "patch-project",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "An Expo config-plugin and tool to support patch-based CNG",
   "main": "build/withPatchPlugin.js",
   "types": "build/withPatchPlugin.d.ts",
@@ -59,6 +59,6 @@
     "resolve-from": "^5.0.0"
   },
   "peerDependencies": {
-    "expo": "52.0.0-preview.5"
+    "expo": "52.0.0-preview.7"
   }
 }
