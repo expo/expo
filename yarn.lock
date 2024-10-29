@@ -3122,12 +3122,12 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/bottom-tabs@7.0.0-rc.33":
-  version "7.0.0-rc.33"
-  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.0.0-rc.33.tgz#ae52f16b391f18c3663a4d64eed232631c365d8a"
-  integrity sha512-yH1SbV/gmWDVAugYdSD+TLLXNaRVD38Lh556W7YSM4D2XvrwV5yRndO8nBzIil2IJddgy4ulnSZhvk1iQGXRqg==
+"@react-navigation/bottom-tabs@7.0.0-rc.33", "@react-navigation/bottom-tabs@7.0.0-rc.36":
+  version "7.0.0-rc.36"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.0.0-rc.36.tgz#d48d183f8a0adbdf8a07119cc47b3ade6728abc8"
+  integrity sha512-ObXJRWBDy+N4yKlmVu3BWy6Lqy6Xr3uzr3OMTvjJd2K88v2WtS4FywbUZaD3qd4BtijNSyHSIjuHWUHgaqG7vg==
   dependencies:
-    "@react-navigation/elements" "^2.0.0-rc.25"
+    "@react-navigation/elements" "^2.0.0-rc.26"
     color "^4.2.3"
 
 "@react-navigation/core@7.0.0-rc.15", "@react-navigation/core@^7.0.0-rc.15":
@@ -3143,35 +3143,35 @@
     use-latest-callback "^0.2.1"
     use-sync-external-store "^1.2.2"
 
-"@react-navigation/drawer@7.0.0-rc.31":
-  version "7.0.0-rc.31"
-  resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.0.0-rc.31.tgz#c23e95320d8182397499a5356c42ea22b6084258"
-  integrity sha512-+P2mqVMM0vbUd5Q4ZmOvxnvThqLDX8wmkbodHE++aLgIM969j1kaGqKhIO8z2TGdY6AWwmgjLx1J3Zu+dWK0Vg==
+"@react-navigation/drawer@7.0.0-rc.31", "@react-navigation/drawer@7.0.0-rc.33":
+  version "7.0.0-rc.33"
+  resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.0.0-rc.33.tgz#838ebe2089b6069ac3a4d9c24eb6d8f1efcf0936"
+  integrity sha512-t/UOfPj6SVDHDcWz/nT+sGuWOtdDde/BF81DshxlP/vhq7l4bZX7a8sgtLjh2khnzJsz2GEmjzObDDxk5wummw==
   dependencies:
-    "@react-navigation/elements" "^2.0.0-rc.25"
+    "@react-navigation/elements" "^2.0.0-rc.26"
     color "^4.2.3"
-    react-native-drawer-layout "^4.0.0-rc.10"
+    react-native-drawer-layout "^4.0.0-rc.11"
     use-latest-callback "^0.2.1"
 
-"@react-navigation/elements@2.0.0-rc.25", "@react-navigation/elements@^2.0.0-rc.25":
+"@react-navigation/elements@2.0.0-rc.25", "@react-navigation/elements@^2.0.0-rc.26":
   version "2.0.0-rc.25"
   resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.0.0-rc.25.tgz#9d82aaf1a161e6eba326ff1440591ea631034fd2"
   integrity sha512-zhqJt3ZZHFFDcqykXNgkIBTKbzKp6xQL7Eo21J9OASnQQBDUTS2mMpeGKmtUfMVdZNYugIyIwq6WPaX2sVFAPw==
   dependencies:
     color "^4.2.3"
 
-"@react-navigation/native-stack@7.0.0-rc.28":
-  version "7.0.0-rc.28"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.0.0-rc.28.tgz#45629e4da4d8dbff5eb9fe197908dcf7b5e5fb61"
-  integrity sha512-i1iOlgVvfxgbkWnXkQMHP5QOpSfAx2ZhXcZ9HkTBswtM0TgMZLKZ0+QSTNgGk59rY14ZaL+399U9HrD5aVeWBw==
+"@react-navigation/native-stack@7.0.0-rc.30":
+  version "7.0.0-rc.30"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.0.0-rc.30.tgz#49ec9e59d056fd4c76fa00b3da570f4bba8c41e4"
+  integrity sha512-mA7WTW/WP87HsY4oauFVPXlWjhlsRVvAfcjlIxn2CA4aUxg9Tr8tn+E+O4n2yw/WenMJWapikgQeOjuxdB1oeA==
   dependencies:
-    "@react-navigation/elements" "^2.0.0-rc.25"
+    "@react-navigation/elements" "^2.0.0-rc.26"
     warn-once "^0.1.1"
 
-"@react-navigation/native@7.0.0-rc.20":
-  version "7.0.0-rc.20"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.0.0-rc.20.tgz#961addf42ce8ca5e9b51f268c07852ef508dd16b"
-  integrity sha512-fysM5SXgpyalZBYccuzMmT8Eapr5I8GyRMav8NcBAhs/VLmkTPwCYLno4XRAHatQxdXY1MMavwuwcxmmM5wkHQ==
+"@react-navigation/native@7.0.0-rc.20", "@react-navigation/native@7.0.0-rc.21":
+  version "7.0.0-rc.21"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.0.0-rc.21.tgz#055aad0f2835696a501212060f7d0377ec01cb18"
+  integrity sha512-7cPQ6lX+ovR2YQa0AzVI4YnE3tDl01vVi+TZrss4HYXsxuRlKOE45PS1Seel0b7PlLf9df0OhDckPJWoHF+qaQ==
   dependencies:
     "@react-navigation/core" "^7.0.0-rc.15"
     escape-string-regexp "^4.0.0"
@@ -3186,12 +3186,12 @@
   dependencies:
     nanoid "3.3.7"
 
-"@react-navigation/stack@7.0.0-rc.27":
-  version "7.0.0-rc.27"
-  resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-7.0.0-rc.27.tgz#7e90da19866ae0c6bc6cc95639e78a70a5999a17"
-  integrity sha512-i1BguAKaIm8cAesxigkY9zSB9VHpcCHk4LmquxeOK8qiiXvvEBWXqdzUCzpcMZrbGcHuhGqbSG6ct3/XU6H2Eg==
+"@react-navigation/stack@7.0.0-rc.27", "@react-navigation/stack@7.0.0-rc.29":
+  version "7.0.0-rc.29"
+  resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-7.0.0-rc.29.tgz#5b280f8291db1e8c918f8255e4e91cc18654b6ba"
+  integrity sha512-r4rYhwWxtPiIWdl/Ammt2t9kisEPCQ8OwIR4P6qt+KPwhpWGaGAmnC0j4kGRcIW74XQLIy074EG2Io9j74QZOg==
   dependencies:
-    "@react-navigation/elements" "^2.0.0-rc.25"
+    "@react-navigation/elements" "^2.0.0-rc.26"
     color "^4.2.3"
 
 "@remix-run/node@^2.12.0", "@remix-run/node@^2.7.2":
@@ -13464,10 +13464,10 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-drawer-layout@^4.0.0-rc.10:
-  version "4.0.0-rc.10"
-  resolved "https://registry.yarnpkg.com/react-native-drawer-layout/-/react-native-drawer-layout-4.0.0-rc.10.tgz#03102e3fbe27617c385a3ef401e5b8e5360bf0e4"
-  integrity sha512-CAO6ucb8g4VFupjQF0XVZUaEf6/BE6HVn5hh4+6dNLu7iyT7qyQ6IEH22UyV9DtRBGgtyq7yYDwN6ZVdqYLBJg==
+react-native-drawer-layout@^4.0.0-rc.11:
+  version "4.0.0-rc.11"
+  resolved "https://registry.yarnpkg.com/react-native-drawer-layout/-/react-native-drawer-layout-4.0.0-rc.11.tgz#cae94060f24068d15b6699cbda12031daa209f34"
+  integrity sha512-LIKLAdS07GSNKV5f3K6RX+nLQskvSYp4Fe8VV2dvIMwrmEFEKagruM/S3NenwSsh8sewraV1oV4BjHHUq2PSsQ==
   dependencies:
     use-latest-callback "^0.2.1"
 
@@ -13569,10 +13569,10 @@ react-native-safe-area-context@4.12.0:
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.12.0.tgz#17868522a55bbc6757418c94a1b4abdda6b045d9"
   integrity sha512-ukk5PxcF4p3yu6qMZcmeiZgowhb5AsKRnil54YFUUAXVIS7PJcMHGGC+q44fCiBg44/1AJk5njGMez1m9H0BVQ==
 
-react-native-screens@4.0.0-beta.14:
-  version "4.0.0-beta.14"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.0.0-beta.14.tgz#67702d0785df8746220a9d7314bdd31ebedc459c"
-  integrity sha512-O81GMV/ptGiOie+jpI2qdXZP4tktR0vdIw05m8eaAWJshMTC1cRxhmyF4puVKRFh8USN2b/awfA0ikLaTkeipQ==
+react-native-screens@4.0.0-beta.16:
+  version "4.0.0-beta.16"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.0.0-beta.16.tgz#adfa58da04c240ece91361cb7251baf363299434"
+  integrity sha512-djzJDTAkarRcIpsda8jOWJcKI3sc1Iwxzlenb3tuzUxvWwJRA7MmudHCBRyAEPnJaGb/Z6ql8oHBxkYCMUbPnQ==
   dependencies:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
