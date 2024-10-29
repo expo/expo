@@ -24,9 +24,16 @@ public class SplashScreenManager: NSObject {
         loadingView?.center = CGPoint(x: bounds.midX, y: bounds.midY)
       }
       loadingView?.isHidden = false
+#if RCT_NEW_ARCH_ENABLED
+      if let hostView = rootView as? RCTSurfaceHostingProxyRootView, let loadingView {
+        hostView.disableActivityIndicatorAutoHide(true)
+        hostView.loadingView = loadingView
+      }
+#else
       if let loadingView {
         self.rootView?.addSubview(loadingView)
       }
+#endif
     }
   }
 
