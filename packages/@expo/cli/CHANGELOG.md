@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix unresponsive terminal after opening React Native DevTools.
+
 ### 💡 Others
 
 ## 0.19.4 — 2024-10-28
