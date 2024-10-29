@@ -1,3 +1,4 @@
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import { Fragment, ReactNode } from 'react';
 
 import { APIBox } from '~/components/plugins/APIBox';
@@ -156,6 +157,22 @@ const renderType = (
               </div>
             ))
           : null}
+        {type.declaration.signatures && type.declaration.signatures[0].type && (
+          <div className="flex flex-row gap-2 items-start mt-4">
+            <div className="flex flex-row gap-2 items-center">
+              <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
+              <CALLOUT tag="span" theme="secondary" weight="medium">
+                Returns:
+              </CALLOUT>
+            </div>
+            <CALLOUT>
+              <APIDataType
+                typeDefinition={type.declaration.signatures[0].type}
+                sdkVersion={sdkVersion}
+              />
+            </CALLOUT>
+          </div>
+        )}
       </div>
     );
   } else if (type.elements) {
