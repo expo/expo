@@ -216,27 +216,6 @@ To set a prop on the view, define the prop name and setter inside `ExpoWebViewMo
 
 Use the [Prop definition component](/modules/module-api/#prop) to define the prop. In the prop setter block, you can access both the view and the prop. Specify that the URL is of type `URL` &mdash; the Expo modules API will convert strings to the native `URL` type.
 
-### iOS module
-
-```swift ios/ExpoWebViewModule.swift
-import ExpoModulesCore
-
-public class ExpoWebViewModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoWebView")
-
-    View(ExpoWebView.self) {
-      Prop("url") { (view, url: URL) in
-        if view.webView.url != url {
-          let urlRequest = URLRequest(url: url)
-          view.webView.load(urlRequest)
-        }
-      }
-    }
-  }
-}
-```
-
 ### Android module
 
 ```kotlin android/src/main/java/expo/modules/webview/ExpoWebViewModule.kt
@@ -253,6 +232,27 @@ class ExpoWebViewModule : Module() {
     View(ExpoWebView::class) {
       Prop("url") { view: ExpoWebView, url: URL? ->
         view.webView.loadUrl(url.toString())
+      }
+    }
+  }
+}
+```
+
+### iOS module
+
+```swift ios/ExpoWebViewModule.swift
+import ExpoModulesCore
+
+public class ExpoWebViewModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoWebView")
+
+    View(ExpoWebView.self) {
+      Prop("url") { (view, url: URL) in
+        if view.webView.url != url {
+          let urlRequest = URLRequest(url: url)
+          view.webView.load(urlRequest)
+        }
       }
     }
   }
@@ -314,62 +314,6 @@ After that, you'll see the [Expo homepage](https://expo.dev) in the WebView.
 
 [View callbacks](/modules/module-api/#view-callbacks) allow developers to listen for events on components. They are typically registered through props on the component, for example: `<Image onLoad={...} />`. Use the [Events definition component](/modules/module-api/#events) to define an event for your WebView. Call it `onLoad`.
 
-### iOS view and module
-
-On iOS, implement `webView(_:didFinish:)` and make `ExpoWebView` extend `WKNavigationDelegate`. Then, call `onLoad` from that delegate method.
-
-```swift ios/ExpoWebView.swift
-import ExpoModulesCore
-import WebKit
-
-class ExpoWebView: ExpoView, WKNavigationDelegate {
-  let webView = WKWebView()
-  let onLoad = EventDispatcher()
-
-  required init(appContext: AppContext? = nil) {
-    super.init(appContext: appContext)
-    clipsToBounds = true
-    webView.navigationDelegate = self
-    addSubview(webView)
-  }
-
-  override func layoutSubviews() {
-    webView.frame = bounds
-  }
-
-  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-    if let url = webView.url {
-      onLoad([
-        "url": url.absoluteString
-      ])
-    }
-  }
-}
-```
-
-Indicate in `ExpoWebViewModule` that the `View` has an `onLoad` event.
-
-```swift ios/ExpoWebViewModule.swift
-import ExpoModulesCore
-
-public class ExpoWebViewModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoWebView")
-
-    View(ExpoWebView.self) {
-      Events("onLoad")
-
-      Prop("url") { (view, url: URL) in
-        if view.webView.url != url {
-          let urlRequest = URLRequest(url: url)
-          view.webView.load(urlRequest)
-        }
-      }
-    }
-  }
-}
-```
-
 ### Android view and module
 
 On Android, override the `onPageFinished` function. Then, call the `onLoad` event handler that you defined in the module.
@@ -422,6 +366,62 @@ class ExpoWebViewModule : Module() {
 
       Prop("url") { view: ExpoWebView, url: URL? ->
         view.webView.loadUrl(url.toString())
+      }
+    }
+  }
+}
+```
+
+### iOS view and module
+
+On iOS, implement `webView(_:didFinish:)` and make `ExpoWebView` extend `WKNavigationDelegate`. Then, call `onLoad` from that delegate method.
+
+```swift ios/ExpoWebView.swift
+import ExpoModulesCore
+import WebKit
+
+class ExpoWebView: ExpoView, WKNavigationDelegate {
+  let webView = WKWebView()
+  let onLoad = EventDispatcher()
+
+  required init(appContext: AppContext? = nil) {
+    super.init(appContext: appContext)
+    clipsToBounds = true
+    webView.navigationDelegate = self
+    addSubview(webView)
+  }
+
+  override func layoutSubviews() {
+    webView.frame = bounds
+  }
+
+  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    if let url = webView.url {
+      onLoad([
+        "url": url.absoluteString
+      ])
+    }
+  }
+}
+```
+
+Indicate in `ExpoWebViewModule` that the `View` has an `onLoad` event.
+
+```swift ios/ExpoWebViewModule.swift
+import ExpoModulesCore
+
+public class ExpoWebViewModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoWebView")
+
+    View(ExpoWebView.self) {
+      Events("onLoad")
+
+      Prop("url") { (view, url: URL) in
+        if view.webView.url != url {
+          let urlRequest = URLRequest(url: url)
+          view.webView.load(urlRequest)
+        }
       }
     }
   }
