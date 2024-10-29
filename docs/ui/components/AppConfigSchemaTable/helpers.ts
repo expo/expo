@@ -78,3 +78,35 @@ export function createDescription(propertyEntry: [string, Property]) {
 
   return propertyDescription;
 }
+
+export function filterSchemaEntries(entry: FormattedProperty, searchTerm?: string) {
+  if (!searchTerm) {
+    return true;
+  }
+
+  return (
+    entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    entry.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+}
+
+export function flattenProperties(properties: FormattedProperty[]): FormattedProperty[] {
+  const flattened: FormattedProperty[] = [];
+
+  function flatten(property: FormattedProperty, parentPath?: string) {
+    flattened.push({
+      ...property,
+      parent: parentPath,
+    });
+
+    if (property.subproperties && property.subproperties.length > 0) {
+      property.subproperties.forEach(subProp => flatten(subProp, parentPath));
+    }
+  }
+
+  properties.forEach(property =>
+    flatten(property, property.parent ? `${property.parent}.${property.name}` : property.name)
+  );
+
+  return flattened;
+}

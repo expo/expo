@@ -20,7 +20,7 @@ export const APIBox = ({ header, platforms, children, className }: APIBoxProps) 
         STYLES_APIBOX,
         STYLES_APIBOX_WRAPPER,
         className,
-        '!pb-4 last:[&>*]:!mb-1'
+        '!pb-4 last:[&>*]:!mb-0'
       )}>
       {platforms && <APISectionPlatformTags prefix="Only for:" userProvidedPlatforms={platforms} />}
       {header && (
