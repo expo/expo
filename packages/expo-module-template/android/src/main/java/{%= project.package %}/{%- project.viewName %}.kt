@@ -14,8 +14,8 @@ class <%- project.viewName %>(context: Context, appContext: AppContext) : ExpoVi
 
   // Defines a WebView that will be used as the root subview.
   internal val webView = WebView(context).apply {
-    it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    it.webViewClient = object : WebViewClient() {
+    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    webViewClient = object : WebViewClient() {
       override fun onPageFinished(view: WebView, url: Url) {
         // Sends an event to JavaScript. Triggers a callback defined on the view component in JavaScript.
         onLoad(mapOf("url" to url))
@@ -23,6 +23,6 @@ class <%- project.viewName %>(context: Context, appContext: AppContext) : ExpoVi
     }
 
     // Adds the WebView to the view hierarchy.
-    addView(it)
+    addView(this)
   }
 }
