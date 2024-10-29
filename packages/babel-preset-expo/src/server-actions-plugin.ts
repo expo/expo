@@ -420,12 +420,23 @@ export function reactServerActionsPlugin(
               // Match `export default foo;`
               t.isIdentifier(path.node.declaration)
             ) {
-              // Convert `export default foo;` to `export { foo as default };`
-              const exportedSpecifier = t.exportSpecifier(
-                path.node.declaration,
-                t.identifier('default')
-              );
-              path.replaceWith(t.exportNamedDeclaration(null, [exportedSpecifier]));
+              // Ensure the `path.node.declaration` is a function or a variable for a function.
+              const binding = path.scope.getBinding(path.node.declaration.name);
+
+              const isServerActionType =
+                t.isFunctionDeclaration(binding?.path.node ?? path.node.declaration) ||
+                t.isArrowFunctionExpression(binding?.path.node ?? path.node.declaration) ||
+                // `const foo = async () => {}`
+                (t.isVariableDeclarator(binding?.path.node) &&
+                  t.isArrowFunctionExpression(binding?.path.node.init));
+              if (isServerActionType) {
+                // Convert `export default foo;` to `export { foo as default };`
+                const exportedSpecifier = t.exportSpecifier(
+                  path.node.declaration,
+                  t.identifier('default')
+                );
+                path.replaceWith(t.exportNamedDeclaration(null, [exportedSpecifier]));
+              }
             } else {
               // Unclear when this happens.
               throw path.buildCodeFrameError(
@@ -445,6 +456,11 @@ export function reactServerActionsPlugin(
         assertExpoMetadata(state.file.metadata);
 
         if (!state.file.metadata.isModuleMarkedWithUseServerDirective) {
+          return;
+        }
+
+        // This can happen with `export {};` and TypeScript types.
+        if (!path.node.declaration && !path.node.specifiers.length) {
           return;
         }
 
@@ -530,6 +546,14 @@ export function reactServerActionsPlugin(
               );
             }
             return [innerPath.get('id').node!];
+          } else if (
+            // TypeScript type exports
+            innerPath.isTypeAlias() ||
+            innerPath.isTSDeclareFunction() ||
+            innerPath.isTSInterfaceDeclaration() ||
+            innerPath.isTSTypeAliasDeclaration()
+          ) {
+            return [];
           } else {
             throw innerPath.buildCodeFrameError(`Unimplemented server action export`);
           }

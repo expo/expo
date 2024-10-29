@@ -47,11 +47,12 @@ afterAll(() => {
 
 // import { createPlugin as createReactServerPlugin } from '../server-actions-plugin';
 
-function transformTest(sourceCode: string) {
+function transformTest(sourceCode: string, customOptions: { filename?: string } = {}) {
   const options = {
     ...DEF_OPTIONS,
     // plugins: [serverActionPlugin],
     caller: getCaller(ENABLED_CALLER),
+    ...customOptions,
   };
 
   const results = babel.transform(sourceCode, options);
@@ -470,6 +471,40 @@ export default test;
         (() => _registerServerReference(test, "file:///unknown", "default"))();
         export { test as default };"
       `);
+    });
+    it('skips default exports of types', () => {
+      expect(
+        transformTest(
+          `
+"use server";
+type Test = {
+  foo: string;
+}
+export default Test;
+`,
+          {
+            filename: '/unknown.ts',
+          }
+        ).code
+      ).toMatchInlineSnapshot(`"export {};"`);
+    });
+    it('skips exports of type aliases', () => {
+      expect(
+        transformTest(
+          `
+"use server";
+
+export type Test = {
+  foo: string;
+}
+`,
+          {
+            filename: '/unknown.ts',
+          }
+        ).code
+      ).toMatchInlineSnapshot(
+        `"import { registerServerReference as _registerServerReference } from "react-server-dom-webpack/server";"`
+      );
     });
   });
 });
