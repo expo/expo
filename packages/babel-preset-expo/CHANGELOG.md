@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Assert that layout routes and API routes cannot be DOM components. ([#32422](https://github.com/expo/expo/pull/32422) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for server actions that use `export default`.
 
 ### 🐛 Bug fixes
 
