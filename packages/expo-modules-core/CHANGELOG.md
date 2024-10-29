@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Added `shouldUseAndroidLayout` flag to `ExpoView`.
+
 ## 2.0.0-preview.5 — 2024-10-28
 
 ### 🐛 Bug fixes
