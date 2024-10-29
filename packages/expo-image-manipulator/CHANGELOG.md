@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Added support for image refs in `ImageManipulator.manipulate` and `useImageManipulator`. ([#32398](https://github.com/expo/expo/pull/32398) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
