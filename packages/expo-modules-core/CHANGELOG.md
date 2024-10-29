@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 2.0.0-preview.7 — 2024-10-29
+
+### 💡 Others
+
+- [Android] Added `shouldUseAndroidLayout` flag to `ExpoView`. ([#32446](https://github.com/expo/expo/pull/32446) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.0-preview.6 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.0-preview.5 — 2024-10-28
 
 ### 🐛 Bug fixes

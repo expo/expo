@@ -4,7 +4,7 @@ import AppConfigSchemaTable from './';
 import { formatSchema, createDescription } from './helpers';
 import { Property } from './types';
 
-import { attachEmotionSerializer, renderWithHeadings } from '~/common/test-utilities';
+import { renderWithHeadings } from '~/common/test-utilities';
 
 const TEST_SCHEMA: Record<string, Property> = {
   name: {
@@ -92,8 +92,6 @@ const TEST_SCHEMA: Record<string, Property> = {
 };
 
 describe('AppConfigSchemaPropertiesTable', () => {
-  attachEmotionSerializer(expect);
-
   test('correctly matches snapshot', () => {
     const { container } = renderWithHeadings(<AppConfigSchemaTable schema={TEST_SCHEMA} />);
     expect(container).toMatchSnapshot();

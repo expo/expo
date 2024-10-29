@@ -53,7 +53,17 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
 // Default plugin entry file name.
 const pluginFileName = exports.pluginFileName = 'app.plugin.js';
 
-// pluginReference is a node module or a file path, as user entered it in app.config.js
+/**
+ * Resolve the config plugin from a node module or package.
+ * If the module or package does not include a config plugin, this function throws a `PluginError`.
+ * The resolution is done in following order:
+ *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
+ *     - Resolve the config plugin as-is
+ *   2. If the reference a module? e.g. `expo-font`
+ *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
+ *   3. Does the module have a valid config plugin in the `main` field?
+ *     - Resolve the `main` entry point as config plugin
+ */
 function resolvePluginForModule(projectRoot, pluginReference) {
   if (moduleNameIsDirectFileReference(pluginReference)) {
     // Only resolve `./file.js`, `package/file.js`, `@org/package/file.js`
@@ -73,15 +83,9 @@ function resolvePluginForModule(projectRoot, pluginReference) {
         filePath: pluginPackageFile
       };
     }
+    // Try to resole the `main` entry as config plugin
     const packageMainEntry = _resolveFrom().default.silent(projectRoot, pluginReference);
     if (packageMainEntry) {
-      const relativePluginPath = packageMainEntry.replace(projectRoot, '').replace(/^\//, '');
-      console.warn(`"${pluginReference}" config plugin is being resolved from its package.json main entry (${relativePluginPath}).
-This approach is deprecated and will throw an error in Expo SDK53.
-
-To fix this:
-1. Report this issue to the maintainer of "${pluginReference}" - they need to migrate to using \`app.plugin.js\` instead.
-2. For immediate unblocking, reference the config plugin file directly: ${relativePluginPath}`);
       return {
         isPluginFile: false,
         filePath: packageMainEntry

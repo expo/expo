@@ -11,6 +11,7 @@ import {
   MATCH_CONTENTS_EVENT,
   NATIVE_ACTION,
   NATIVE_ACTION_RESULT,
+  REGISTER_DOM_IMPERATIVE_HANDLE_PROPS,
 } from './injection';
 import ExpoDomWebView from './webview/ExpoDOMWebView';
 import RNWebView from './webview/RNWebView';
@@ -23,18 +24,26 @@ interface Props {
 }
 
 const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalProps }, ref) => {
-  if (ref != null && typeof ref == 'object' && ref.current == null) {
+  if (ref != null && typeof ref === 'object' && ref.current == null) {
     ref.current = new Proxy(
       {},
       {
-        get(target, prop) {
+        get(_, prop) {
           const propName = String(prop);
-          return function (...args) {
-            const serializedArgs = args.map((arg) => JSON.stringify(arg)).join(',');
-            webviewRef.current?.injectJavaScript(
-              `window._domRefProxy.${propName}(${serializedArgs})`
-            );
-          };
+          if (domImperativeHandlePropsRef.current?.includes(propName)) {
+            return function (...args) {
+              const serializedArgs = args.map((arg) => JSON.stringify(arg)).join(',');
+              webviewRef.current?.injectJavaScript(
+                `window._domRefProxy.${propName}(${serializedArgs})`
+              );
+            };
+          }
+          if (typeof webviewRef.current?.[propName] === 'function') {
+            return function (...args) {
+              return webviewRef.current?.[propName](...args);
+            };
+          }
+          return undefined;
         },
       }
     );
@@ -42,6 +51,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
 
   const webView = resolveWebView(dom?.useExpoDOMWebView ?? false);
   const webviewRef = React.useRef<WebViewRef>(null);
+  const domImperativeHandlePropsRef = React.useRef<string[]>([]);
   const [containerStyle, setContainerStyle] = React.useState<WebViewProps['containerStyle']>(null);
 
   const emit = React.useCallback(
@@ -125,6 +135,11 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
             height: data.height,
           });
         }
+        return;
+      }
+
+      if (type === REGISTER_DOM_IMPERATIVE_HANDLE_PROPS) {
+        domImperativeHandlePropsRef.current = data;
         return;
       }
 

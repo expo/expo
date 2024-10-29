@@ -62,9 +62,6 @@ extension AppleMapsPOISearch {
   }
 
   private func setSearchFilter(request: MKLocalSearch.Request) {
-    guard #available(iOS 13.0, *) else {
-      return
-    }
     var filter: MKPointOfInterestFilter
     if let categories = pointOfInterestCategories, !categories.isEmpty {
       filter = MKPointOfInterestFilter.init(including: categories)

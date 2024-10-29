@@ -12,6 +12,18 @@
 
 ### 💡 Others
 
+## 4.0.0-preview.6 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Update `@react-navigation/core` imports to `@react-navigation/native` ([#32391](https://github.com/expo/expo/pull/32391) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.5 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix deep links to apps that use unusual characters in their schemes. ([#32424](https://github.com/expo/expo/pull/32424) by [@marklawlor](https://github.com/marklawlor))
+
 ## 4.0.0-preview.4 — 2024-10-28
 
 _This version does not introduce any user-facing changes._

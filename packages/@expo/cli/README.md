@@ -36,7 +36,7 @@
 
 ---
 
-The `@expo/cli` package is a CLI binary that should be used via `expo` like `npx expo start`.
+The `@expo/cli` package is a CLI binary that should be used via the `expo` package, like `npx expo start` (or `npx expo` for short).
 
 ```
 npx expo
