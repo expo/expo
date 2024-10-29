@@ -134,16 +134,18 @@ const LANGUAGE_SAMPLES: {
     },
     hermesError: /error: 'export' statement requires module mode/,
   },
-  {
-    // https://babeljs.io/docs/babel-plugin-proposal-export-default-from
-    // Web preset doesn't transform this
-    name: `export-default-from`,
-    code: `export v from "mod";`,
-    getCompiledCode() {
-      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});Object.defineProperty(exports,"v",{enumerable:true,get:function(){return _mod.default;}});var _mod=_interopRequireDefault(require("mod"));`;
-    },
-    hermesError: /error: expected declaration in export/,
-  },
+  // This is broken as of RN 76 / SDK 52 due to this upstream change:
+  // https://github.com/facebook/react-native/commit/1387f521fdd8f187eab7a4a6a05d4d75a96b4f88#diff-23432c49a1b0fbaa32ac0db0694a712f12f58619619948137f2cccf282fa61ceL28
+  // {
+  //   // https://babeljs.io/docs/babel-plugin-proposal-export-default-from
+  //   // Web preset doesn't transform this
+  //   name: `export-default-from`,
+  //   code: `export v from "mod";`,
+  //   getCompiledCode() {
+  //     return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:true});Object.defineProperty(exports,"v",{enumerable:true,get:function(){return _mod.default;}});var _mod=_interopRequireDefault(require("mod"));`;
+  //   },
+  //   hermesError: /error: expected declaration in export/,
+  // },
   {
     // https://babeljs.io/docs/babel-plugin-syntax-dynamic-import
     name: `dynamic-import`,
