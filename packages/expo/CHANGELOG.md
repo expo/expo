@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 52.0.0-preview.8 — 2024-10-29
+
+### 🐛 Bug fixes
+
 - Fix react-native-webview Android `decelerationRate` prop issue. ([#32420](https://github.com/expo/expo/pull/32420) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others

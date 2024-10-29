@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.1.3 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
 ## 0.1.2 — 2024-10-28
 
 _This version does not introduce any user-facing changes._

@@ -2,7 +2,7 @@
   "name": "expo-template-default",
   "license": "0BSD",
   "main": "expo-router/entry",
-  "version": "52.0.8",
+  "version": "52.0.9",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -18,13 +18,13 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/native": "7.0.0-rc.20",
-    "expo": "~52.0.0-preview.7",
+    "expo": "~52.0.0-preview.8",
     "expo-blur": "~14.0.1",
     "expo-constants": "~17.0.2",
     "expo-font": "~13.0.0",
     "expo-haptics": "~14.0.0",
     "expo-linking": "~7.0.2",
-    "expo-router": "~4.0.0-preview.4",
+    "expo-router": "~4.0.0-preview.5",
     "expo-splash-screen": "~0.28.4",
     "expo-status-bar": "~2.0.0",
     "expo-symbols": "~0.2.0",
@@ -45,7 +45,7 @@
     "@types/react": "~18.3.12",
     "@types/react-test-renderer": "^18.3.0",
     "jest": "^29.2.1",
-    "jest-expo": "52.0.0-preview.1",
+    "jest-expo": "~52.0.0-preview.2",
     "react-test-renderer": "18.3.1",
     "typescript": "^5.3.3"
   }
