@@ -20,7 +20,7 @@ public class ExpoModulesPackageList implements ModulesProvider {
       new expo.modules.imageloader.ImageLoaderPackage(),
       new expo.modules.keepawake.KeepAwakePackage(),
       new expo.modules.permissions.PermissionsPackage(),
-      new host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage(),
+      new expo.modules.splashscreen.SplashScreenPackage(),
       new expo.modules.updates.UpdatesPackage(),
       new org.unimodules.core.BasePackage()
     );
@@ -97,7 +97,7 @@ public class ExpoModulesPackageList implements ModulesProvider {
       new expo.modules.imageloader.ImageLoaderPackage(),
       new expo.modules.keepawake.KeepAwakePackage(),
       new expo.modules.permissions.PermissionsPackage(),
-      new host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage(),
+      new expo.modules.splashscreen.SplashScreenPackage(),
       new expo.modules.updates.UpdatesPackage(),
       new org.unimodules.core.BasePackage()
     );
@@ -175,7 +175,7 @@ public class ExpoModulesPackageList implements ModulesProvider {
       new expo.modules.imageloader.ImageLoaderPackage(),
       new expo.modules.keepawake.KeepAwakePackage(),
       new expo.modules.permissions.PermissionsPackage(),
-      new host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage(),
+      new expo.modules.splashscreen.SplashScreenPackage(),
       new expo.modules.updates.UpdatesPackage(),
       new org.unimodules.core.BasePackage()
     );
