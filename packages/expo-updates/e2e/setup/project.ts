@@ -894,6 +894,7 @@ export async function setupUpdatesFingerprintE2EAppAsync(
     [
       'tsconfig.json',
       '.fingerprintignore',
+      'fingerprint.config.js',
       '.detoxrc.json',
       'eas.json',
       'eas-hooks',
