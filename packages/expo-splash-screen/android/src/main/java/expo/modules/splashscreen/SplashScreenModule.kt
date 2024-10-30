@@ -1,7 +1,5 @@
 package expo.modules.splashscreen
 
-import android.util.Log
-import expo.modules.kotlin.ReactLifecycleDelegate
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
