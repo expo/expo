@@ -28,7 +28,8 @@ function getExpoDependencyChunks({
     ['expo-modules-core'],
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['expo-manifests'],
-    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants', '@expo/image-utils'],
+    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
+    ['@expo/image-utils'],
     [
       'babel-preset-expo',
       'expo-application',
