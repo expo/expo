@@ -1,11 +1,13 @@
 import React
 import UIKit
+import ExpoModulesCore
 
 public class SplashScreenManager: NSObject {
   @objc public static let shared = SplashScreenManager()
   private var loadingView: UIView?
   private var rootView: UIView?
   private var options = SplashScreenOptions()
+  public var preventAutoHideCalled = false
 
   private override init() {}
 
@@ -34,6 +36,15 @@ public class SplashScreenManager: NSObject {
         self.rootView?.addSubview(loadingView)
       }
 #endif
+    }
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(onAppReady), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(onAppReady), name: Notification.Name.RCTJavaScriptDidLoad, object: nil)
+  }
+  
+  @objc private func onAppReady() {
+    if !preventAutoHideCalled {
+      hide()
     }
   }
 
