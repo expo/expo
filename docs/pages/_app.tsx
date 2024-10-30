@@ -13,7 +13,7 @@ import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCo
 import { markdownComponents } from '~/ui/components/Markdown';
 import * as Tooltip from '~/ui/components/Tooltip';
 
-import 'global-styles/global.css';
+import '~/styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
 import 'tippy.js/dist/tippy.css';
@@ -60,36 +60,38 @@ export { reportWebVitals } from '~/providers/Analytics';
 export default function App({ Component, pageProps }: AppProps) {
   useNProgress();
   return (
-    <AnalyticsProvider>
-      <ThemeProvider>
-        <TutorialChapterCompletionProvider>
-          <CodeBlockSettingsProvider>
-            <MDXProvider components={rootMarkdownComponents}>
-              <Tooltip.Provider>
-                {/* eslint-disable-next-line react/no-unknown-property */}
-                <style jsx global>{`
-                  html,
-                  body,
-                  kbd,
-                  button,
-                  input,
-                  select,
-                  tspan,
-                  text {
-                    font-family: ${regularFont.style.fontFamily}, sans-serif;
-                  }
-                  code,
-                  pre,
-                  table.diff {
-                    font-family: ${monospaceFont.style.fontFamily}, monospace;
-                  }
-                `}</style>
-                <Component {...pageProps} />
-              </Tooltip.Provider>
-            </MDXProvider>
-          </CodeBlockSettingsProvider>
-        </TutorialChapterCompletionProvider>
-      </ThemeProvider>
-    </AnalyticsProvider>
+    <>
+      {/* eslint-disable-next-line react/no-unknown-property */}
+      <style jsx global>{`
+        html,
+        body,
+        kbd,
+        button,
+        input,
+        select,
+        tspan,
+        text {
+          font-family: ${regularFont.style.fontFamily}, sans-serif;
+        }
+        code,
+        pre,
+        table.diff {
+          font-family: ${monospaceFont.style.fontFamily}, monospace;
+        }
+      `}</style>
+      <AnalyticsProvider>
+        <ThemeProvider>
+          <TutorialChapterCompletionProvider>
+            <CodeBlockSettingsProvider>
+              <MDXProvider components={rootMarkdownComponents}>
+                <Tooltip.Provider>
+                  <Component {...pageProps} />
+                </Tooltip.Provider>
+              </MDXProvider>
+            </CodeBlockSettingsProvider>
+          </TutorialChapterCompletionProvider>
+        </ThemeProvider>
+      </AnalyticsProvider>
+    </>
   );
 }

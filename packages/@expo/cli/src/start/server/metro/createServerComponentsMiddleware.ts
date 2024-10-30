@@ -44,13 +44,19 @@ export function createServerComponentsMiddleware(
     instanceMetroOptions,
     ssrLoadModule,
     ssrLoadModuleArtifacts,
+    useClientRouter,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
+    useClientRouter: boolean;
   }
 ) {
+  const routerModule = useClientRouter
+    ? 'expo-router/build/rsc/router/noopRouter'
+    : 'expo-router/build/rsc/router/expo-definedRouter';
+
   const rscMiddleware = getRscMiddleware({
     config: {},
     // Disabled in development
@@ -100,6 +106,7 @@ export function createServerComponentsMiddleware(
     { platform, entryPoints }: { platform: string; entryPoints: string[] },
     files: ExportAssetMap
   ): Promise<{
+    clientBoundaries: string[];
     manifest: Record<string, [string, string]>;
   }> {
     const uniqueEntryPoints = [...new Set(entryPoints)];
@@ -107,6 +114,7 @@ export function createServerComponentsMiddleware(
     const serverRoot = getMetroServerRootMemo(projectRoot);
 
     const manifest: Record<string, [string, string]> = {};
+    const nestedClientBoundaries: string[] = [];
     for (const entryPoint of uniqueEntryPoints) {
       const contents = await ssrLoadModuleArtifacts(entryPoint, {
         environment: 'react-server',
@@ -116,6 +124,14 @@ export function createServerComponentsMiddleware(
         // Required
         runModule: true,
       });
+
+      const reactClientReferences = contents.artifacts
+        .filter((a) => a.type === 'js')[0]
+        .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+
+      if (reactClientReferences) {
+        nestedClientBoundaries.push(...reactClientReferences!);
+      }
 
       // Naive check to ensure the module runtime is not included in the server action bundle.
       if (contents.src.includes('The experimental Metro feature')) {
@@ -144,7 +160,7 @@ export function createServerComponentsMiddleware(
       contents: 'module.exports = ' + JSON.stringify(manifest),
     });
 
-    return { manifest };
+    return { manifest, clientBoundaries: nestedClientBoundaries };
   }
 
   async function getExpoRouterClientReferencesAsync(
@@ -155,13 +171,10 @@ export function createServerComponentsMiddleware(
     reactServerReferences: string[];
     cssModules: SerialAsset[];
   }> {
-    const contents = await ssrLoadModuleArtifacts(
-      'expo-router/build/rsc/router/expo-definedRouter',
-      {
-        environment: 'react-server',
-        platform,
-      }
-    );
+    const contents = await ssrLoadModuleArtifacts(routerModule, {
+      environment: 'react-server',
+      platform,
+    });
 
     // Extract the global CSS modules that are imported from the router.
     // These will be injected in the head of the HTML document for the website.
@@ -200,7 +213,7 @@ export function createServerComponentsMiddleware(
 
   async function getExpoRouterRscEntriesGetterAsync({ platform }: { platform: string }) {
     return ssrLoadModule<typeof import('expo-router/build/rsc/router/expo-definedRouter')>(
-      'expo-router/build/rsc/router/expo-definedRouter',
+      routerModule,
       {
         environment: 'react-server',
         platform,

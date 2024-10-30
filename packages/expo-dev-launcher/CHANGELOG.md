@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 5.0.6 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.4 — 2024-10-25
 
 ### 🐛 Bug fixes

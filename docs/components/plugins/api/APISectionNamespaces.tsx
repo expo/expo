@@ -1,24 +1,21 @@
 import ReactMarkdown from 'react-markdown';
 
-import {
-  ClassDefinitionData,
-  GeneratedData,
-  PropData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { renderMethod } from '~/components/plugins/api/APISectionMethods';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { ClassDefinitionData, GeneratedData, PropData } from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { renderMethod } from './APISectionMethods';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   CommentTextBlock,
   getTagData,
   getTagNamesList,
   mdComponents,
-  STYLES_APIBOX,
   TypeDocKind,
   H3Code,
   getCommentContent,
   BoxSectionHeader,
-} from '~/components/plugins/api/APISectionUtils';
+} from './APISectionUtils';
+import { STYLES_APIBOX } from './styles';
+
 import { H2, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionNamespacesProps = {
@@ -46,7 +43,7 @@ const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JS
   const returnComment = getTagData('returns', comment);
 
   return (
-    <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
+    <div key={`class-definition-${name}`} className={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} sticky />
       <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>

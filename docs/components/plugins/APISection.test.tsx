@@ -4,11 +4,9 @@ import { createRequire } from 'node:module';
 
 import APISection from './APISection';
 
-import { attachEmotionSerializer, renderWithHeadings } from '~/common/test-utilities';
+import { renderWithHeadings } from '~/common/test-utilities';
 
 const require = createRequire(import.meta.url);
-
-attachEmotionSerializer(expect);
 
 describe('APISection', () => {
   test('no data', () => {

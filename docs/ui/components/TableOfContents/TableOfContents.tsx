@@ -36,7 +36,7 @@ function TableOfContentsLink({ id, element, isActive }: TableOfContentsLinkProps
   const info = useMemo(() => getHeadingInfo(element), [element]);
 
   return (
-    <A css={[getHeadingIndent(element)]} className="block py-1.5" href={`#${id}`}>
+    <A style={getHeadingIndent(element)} className="block py-1.5" href={`#${id}`}>
       <CALLOUT weight={isActive ? 'medium' : 'regular'} tag="span">
         {info.text}
       </CALLOUT>

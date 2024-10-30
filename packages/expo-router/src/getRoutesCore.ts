@@ -519,8 +519,16 @@ function getLayoutNode(node: RouteNode, options: Options) {
   let initialRouteName = childMatchingGroup?.route;
   const loaded = node.loadRoute();
   if (loaded?.unstable_settings) {
-    // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-    initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+    try {
+      // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+      initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        if (!error.message.match(/You cannot dot into a client module/)) {
+          throw error;
+        }
+      }
+    }
 
     if (groupName) {
       // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
@@ -568,8 +576,16 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
     if (!options.internal_stripLoadRoute) {
       const loaded = node.loadRoute();
       if (loaded?.unstable_settings) {
-        // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
-        initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+        try {
+          // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+          initialRouteName = loaded.unstable_settings.initialRouteName ?? initialRouteName;
+        } catch (error: any) {
+          if (error instanceof Error) {
+            if (!error.message.match(/You cannot dot into a client module/)) {
+              throw error;
+            }
+          }
+        }
 
         if (groupName) {
           // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.

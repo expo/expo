@@ -69,7 +69,7 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
 exports.useFilterScreenChildren = useFilterScreenChildren;
 /** Return a navigator that automatically injects matched routes and renders nothing when there are no children. Return type with children prop optional */
 function withLayoutContext(Nav, processor) {
-    const Navigator = (0, react_1.forwardRef)(({ children: userDefinedChildren, ...props }, ref) => {
+    return Object.assign((0, react_1.forwardRef)(({ children: userDefinedChildren, ...props }, ref) => {
         const contextKey = (0, Route_1.useContextKey)();
         const { screens } = useFilterScreenChildren(userDefinedChildren, {
             contextKey,
@@ -80,13 +80,10 @@ function withLayoutContext(Nav, processor) {
         if (!sorted.length) {
             return null;
         }
-        // @ts-expect-error
         return <Nav {...props} id={contextKey} ref={ref} children={sorted}/>;
+    }), {
+        Screen: Screen_1.Screen,
     });
-    // @ts-expect-error
-    Navigator.Screen = Screen_1.Screen;
-    // @ts-expect-error
-    return Navigator;
 }
 exports.withLayoutContext = withLayoutContext;
 //# sourceMappingURL=withLayoutContext.js.map

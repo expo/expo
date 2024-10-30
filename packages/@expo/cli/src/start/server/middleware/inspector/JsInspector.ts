@@ -54,12 +54,27 @@ export async function openJsInspector(metroBaseUrl: string, app: MetroInspectorP
   url.searchParams.set('device', app.reactNative.logicalDeviceId);
   url.searchParams.set('target', app.id);
 
-  const response = await fetch(url, { method: 'POST' });
-  if (!response.ok) {
+  // Request to open the React Native DevTools, but limit it to 1s
+  // This is a workaround as this endpoint might not respond on some devices
+  const response = await fetch(url, {
+    method: 'POST',
+    signal: AbortSignal.timeout(1000),
+  }).catch((error) => {
+    // Only swallow timeout errors
+    if (error.name === 'TimeoutError') {
+      return null;
+    }
+
+    throw error;
+  });
+
+  if (!response) {
+    debug(`No response received from the React Native DevTools.`);
+  } else if (response.ok === false) {
     debug('Failed to open React Native DevTools, received response:', response.status);
   }
 
-  return response.ok;
+  return response?.ok ?? true;
 }
 
 export async function queryInspectorAppAsync(

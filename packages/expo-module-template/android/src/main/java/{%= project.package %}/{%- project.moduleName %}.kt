@@ -2,6 +2,7 @@ package <%- project.package %>
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import java.net.URL
 
 class <%- project.moduleName %> : Module() {
   // Each module class must implement the definition function. The definition consists of components
@@ -38,10 +39,12 @@ class <%- project.moduleName %> : Module() {
     // Enables the module to be used as a native view. Definition components that are accepted as part of
     // the view definition: Prop, Events.
     View(<%- project.viewName %>::class) {
-      // Defines a setter for the `name` prop.
-      Prop("name") { view: <%- project.viewName %>, prop: String ->
-        println(prop)
+      // Defines a setter for the `url` prop.
+      Prop("url") { view: <%- project.viewName %>, url: Url ->
+        view.webView.loadUrl(url.toString())
       }
+      // Defines an event that the view can send to JavaScript.
+      Events("onLoad")
     }
   }
 }
