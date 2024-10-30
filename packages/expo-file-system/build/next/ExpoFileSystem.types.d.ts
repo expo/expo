@@ -140,7 +140,7 @@ export declare class FileHandle {
     close(): void;
     readBytes(length: number): Uint8Array;
     writeBytes(bytes: Uint8Array): void;
-    offset: number;
-    size: number;
+    offset: number | null;
+    size: number | null;
 }
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map
