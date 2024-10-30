@@ -219,15 +219,6 @@ export async function exportEmbedBundleAndAssetsAsync(
     const apiRoutesEnabled =
       devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
 
-    if (apiRoutesEnabled) {
-      await exportStandaloneServerAsync(projectRoot, devServer, {
-        exp,
-        pkg,
-        files,
-        options,
-      });
-    }
-
     // TODO: Remove duplicates...
     const expoDomComponentReferences = bundles.artifacts
       .map((artifact) =>
@@ -247,6 +238,15 @@ export async function exportEmbedBundleAndAssetsAsync(
       exp,
       files
     );
+
+    if (apiRoutesEnabled) {
+      await exportStandaloneServerAsync(projectRoot, devServer, {
+        exp,
+        pkg,
+        files,
+        options,
+      });
+    }
 
     return {
       files,
@@ -302,20 +302,44 @@ async function exportDomComponentsAsync(
       const baseUrl = `/${DOM_COMPONENTS_BUNDLE_DIR}`;
       const relativeImport = './' + path.relative(path.dirname(virtualEntry), generatedEntryPath);
       // Run metro bundler and create the JS bundles/source maps.
-      const bundle = await devServer.legacySinglePageExportBundleAsync({
-        platform: 'web',
-        domRoot: encodeURI(relativeImport),
-        splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
-        mainModuleName: resolveRealEntryFilePath(projectRoot, virtualEntry),
-        mode: options.dev ? 'development' : 'production',
-        engine: isHermes ? 'hermes' : undefined,
-        serializerIncludeMaps: !!sourceMapUrl,
-        bytecode: false,
-        reactCompiler: !!exp.experiments?.reactCompiler,
-        baseUrl: './',
-        // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
-        minify: true,
-      });
+      // const bundle = await devServer.legacySinglePageExportBundleAsync({
+      //   platform: 'web',
+      //   domRoot: encodeURI(relativeImport),
+      //   splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
+      //   mainModuleName: resolveRealEntryFilePath(projectRoot, virtualEntry),
+      //   mode: options.dev ? 'development' : 'production',
+      //   engine: isHermes ? 'hermes' : undefined,
+      //   serializerIncludeMaps: !!sourceMapUrl,
+      //   bytecode: false,
+      //   reactCompiler: !!exp.experiments?.reactCompiler,
+      //   baseUrl: './',
+      //   // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
+      //   minify: true,
+      // });
+
+      // Run metro bundler and create the JS bundles/source maps.
+      const bundle = await devServer.nativeExportBundleAsync(
+        {
+          platform: 'web',
+          domRoot: encodeURI(relativeImport),
+          splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
+          mainModuleName: resolveRealEntryFilePath(projectRoot, virtualEntry),
+          mode: options.dev ? 'development' : 'production',
+          engine: isHermes ? 'hermes' : undefined,
+          serializerIncludeMaps: !!sourceMapUrl,
+          bytecode: false,
+          reactCompiler: !!exp.experiments?.reactCompiler,
+          // baseUrl: './',
+          // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
+          minify: true,
+        },
+        files,
+        {
+          sourceMapUrl,
+          unstable_transformProfile: (options.unstableTransformProfile ||
+            (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
+        }
+      );
 
       const html = await serializeHtmlWithAssets({
         isExporting: true,

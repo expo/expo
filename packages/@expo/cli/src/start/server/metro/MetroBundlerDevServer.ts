@@ -253,7 +253,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
       typeof import('expo-router/build/static/getServerManifest')
     >('expo-router/build/static/getServerManifest.js', {
-      environment: environment ?? (this.isReactServerComponentsEnabled ? 'react-server' : 'node'),
+      environment: 'node', // environment ?? (this.isReactServerComponentsEnabled ? 'react-server' : 'node'),
     });
 
     return {
