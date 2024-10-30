@@ -41,16 +41,27 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(Random
     }
   }
 
-  var offset: Long
+  var offset: Long?
     get() {
-      return fileChannel.position()
+      return try {
+        fileChannel.position()
+      } catch (e: Exception) {
+        null
+      }
     }
     set(value) {
+      if (value == null) {
+        return
+      }
       fileChannel.position(value)
     }
 
-  val size: Long
+  val size: Long?
     get() {
-      return fileChannel.size()
+      return try {
+        fileChannel.size()
+      } catch (e: Exception) {
+        null
+      }
     }
 }

@@ -489,6 +489,22 @@ export async function test({ describe, expect, it, ...t }) {
       expect(() => handle.readBytes(1)).toThrow();
     });
 
+    it('Returns null offset on closed handle', () => {
+      const src = new File(testDirectory + 'file.txt');
+      src.write('abcde');
+      const handle = src.open();
+      handle.close();
+      expect(handle.offset).toBe(null);
+    });
+
+    it('Returns null size on closed handle', () => {
+      const src = new File(testDirectory + 'file.txt');
+      src.write('abcde');
+      const handle = src.open();
+      handle.close();
+      expect(handle.size).toBe(null);
+    });
+
     it('Returns smaller than expected array when reading end of file', () => {
       const src = new File(testDirectory + 'file.txt');
       src.create();

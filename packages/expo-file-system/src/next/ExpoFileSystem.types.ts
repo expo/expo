@@ -176,10 +176,12 @@ export declare class FileHandle {
   /*
    * A property that indicates the current byte offset in the file. Calling `readBytes` or `writeBytes` will read or write a specified amount of bytes starting from this offset. The offset is incremented by the number of bytes read or written.
    * The offset can be set to any value within the file size. If the offset is set to a value greater than the file size, the next write operation will append data to the end of the file.
+   * Null if the file handle is closed.
    */
-  offset: number;
+  offset: number | null;
   /*
    * A size of the file in bytes.
+   * Null if the file handle is closed.
    */
-  size: number;
+  size: number | null;
 }
