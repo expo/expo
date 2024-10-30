@@ -6,6 +6,7 @@ const defaultResizeMode = 'contain';
 const defaultBackgroundColor = '#ffffff';
 
 export interface IOSSplashConfig {
+  logoWidth?: number;
   image?: string | null;
   // tabletImage: string | null;
   backgroundColor: string;

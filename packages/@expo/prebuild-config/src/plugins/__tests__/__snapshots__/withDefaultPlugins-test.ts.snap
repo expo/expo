@@ -13,7 +13,7 @@ exports[`built-in plugins compiles mods 1`] = `
               "launchScreen": "YES",
               "propertyAccessControl": "none",
               "targetRuntime": "iOS.CocoaTouch",
-              "toolsVersion": "16096",
+              "toolsVersion": "32700.99.1234",
               "type": "com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB",
               "useAutolayout": "YES",
               "useSafeAreas": "YES",
@@ -23,6 +23,12 @@ exports[`built-in plugins compiles mods 1`] = `
             "dependencies": [
               {
                 "capability": [
+                  {
+                    "$": {
+                      "minToolsVersion": "9.0",
+                      "name": "Named colors",
+                    },
+                  },
                   {
                     "$": {
                       "minToolsVersion": "9.0",
@@ -47,7 +53,7 @@ exports[`built-in plugins compiles mods 1`] = `
                   {
                     "$": {
                       "identifier": "com.apple.InterfaceBuilder.IBCocoaTouchPlugin",
-                      "version": "16087",
+                      "version": "22685",
                     },
                   },
                 ],
@@ -57,22 +63,14 @@ exports[`built-in plugins compiles mods 1`] = `
               {
                 "$": {
                   "appearance": "light",
-                  "id": "retina5_5",
+                  "id": "retina6_12",
                   "orientation": "portrait",
                 },
               },
             ],
             "resources": [
               {
-                "image": [
-                  {
-                    "$": {
-                      "height": "1",
-                      "name": "SplashScreenBackground",
-                      "width": "1",
-                    },
-                  },
-                ],
+                "image": [],
               },
             ],
             "scenes": [
@@ -120,78 +118,37 @@ exports[`built-in plugins compiles mods 1`] = `
                                     },
                                   },
                                 ],
+                                "color": [
+                                  {
+                                    "$": {
+                                      "alpha": "1",
+                                      "blue": "0.12549019607843137",
+                                      "colorSpace": "custom",
+                                      "customColorSpace": "sRGB",
+                                      "green": "0.0",
+                                      "key": "backgroundColor",
+                                      "red": "0.0",
+                                    },
+                                  },
+                                ],
                                 "constraints": [
                                   {
                                     "constraint": [
                                       {
                                         "$": {
-                                          "firstAttribute": "top",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "1gX-mQ-vu6",
-                                          "secondAttribute": "top",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "leading",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "6tX-OG-Sck",
-                                          "secondAttribute": "leading",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "trailing",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "ABX-8g-7v4",
-                                          "secondAttribute": "trailing",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "bottom",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "jkI-2V-eW5",
-                                          "secondAttribute": "bottom",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "top",
+                                          "firstAttribute": "centerY",
                                           "firstItem": "EXPO-SplashScreen",
-                                          "id": "2VS-Uz-0LU",
-                                          "secondAttribute": "top",
+                                          "id": "0VC-Wk-OaO",
+                                          "secondAttribute": "centerY",
                                           "secondItem": "EXPO-ContainerView",
                                         },
                                       },
                                       {
                                         "$": {
-                                          "firstAttribute": "leading",
+                                          "firstAttribute": "centerX",
                                           "firstItem": "EXPO-SplashScreen",
-                                          "id": "LhH-Ei-DKo",
-                                          "secondAttribute": "leading",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "trailing",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "I6l-TP-6fn",
-                                          "secondAttribute": "trailing",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "bottom",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "nbp-HC-eaG",
-                                          "secondAttribute": "bottom",
+                                          "id": "zR4-NK-mVN",
+                                          "secondAttribute": "centerX",
                                           "secondItem": "EXPO-ContainerView",
                                         },
                                       },
@@ -201,9 +158,9 @@ exports[`built-in plugins compiles mods 1`] = `
                                 "rect": [
                                   {
                                     "$": {
-                                      "height": "736",
+                                      "height": "852",
                                       "key": "frame",
-                                      "width": "414",
+                                      "width": "393",
                                       "x": "0.0",
                                       "y": "0.0",
                                     },
@@ -211,32 +168,7 @@ exports[`built-in plugins compiles mods 1`] = `
                                 ],
                                 "subviews": [
                                   {
-                                    "imageView": [
-                                      {
-                                        "$": {
-                                          "contentMode": "scaleAspectFill",
-                                          "horizontalHuggingPriority": "251",
-                                          "id": "EXPO-SplashScreenBackground",
-                                          "image": "SplashScreenBackground",
-                                          "insetsLayoutMarginsFromSafeArea": "NO",
-                                          "translatesAutoresizingMaskIntoConstraints": "NO",
-                                          "userInteractionEnabled": "NO",
-                                          "userLabel": "SplashScreenBackground",
-                                          "verticalHuggingPriority": "251",
-                                        },
-                                        "rect": [
-                                          {
-                                            "$": {
-                                              "height": "736",
-                                              "key": "frame",
-                                              "width": "414",
-                                              "x": "0.0",
-                                              "y": "0.0",
-                                            },
-                                          },
-                                        ],
-                                      },
-                                    ],
+                                    "imageView": [],
                                   },
                                 ],
                                 "viewLayoutGuide": [
@@ -257,8 +189,8 @@ exports[`built-in plugins compiles mods 1`] = `
                       {
                         "$": {
                           "key": "canvasLocation",
-                          "x": "140.625",
-                          "y": "129.4921875",
+                          "x": "0.0",
+                          "y": "0.0",
                         },
                       },
                     ],
@@ -1194,14 +1126,26 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "AppTheme",
+                  "parent": "Theme.SplashScreen",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "android:windowBackground",
+                      "name": "windowSplashScreenBackground",
                     },
-                    "_": "@drawable/splashscreen",
+                    "_": "@color/splashscreen_background",
+                  },
+                  {
+                    "$": {
+                      "name": "windowSplashScreenAnimatedIcon",
+                    },
+                    "_": "@drawable/splashscreen_logo",
+                  },
+                  {
+                    "$": {
+                      "name": "postSplashScreenTheme",
+                    },
+                    "_": "@style/AppTheme",
                   },
                 ],
               },
@@ -1290,7 +1234,7 @@ exports[`built-in plugins introspects mods 1`] = `
               "launchScreen": "YES",
               "propertyAccessControl": "none",
               "targetRuntime": "iOS.CocoaTouch",
-              "toolsVersion": "16096",
+              "toolsVersion": "32700.99.1234",
               "type": "com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB",
               "useAutolayout": "YES",
               "useSafeAreas": "YES",
@@ -1300,6 +1244,12 @@ exports[`built-in plugins introspects mods 1`] = `
             "dependencies": [
               {
                 "capability": [
+                  {
+                    "$": {
+                      "minToolsVersion": "9.0",
+                      "name": "Named colors",
+                    },
+                  },
                   {
                     "$": {
                       "minToolsVersion": "9.0",
@@ -1324,7 +1274,7 @@ exports[`built-in plugins introspects mods 1`] = `
                   {
                     "$": {
                       "identifier": "com.apple.InterfaceBuilder.IBCocoaTouchPlugin",
-                      "version": "16087",
+                      "version": "22685",
                     },
                   },
                 ],
@@ -1334,22 +1284,14 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "appearance": "light",
-                  "id": "retina5_5",
+                  "id": "retina6_12",
                   "orientation": "portrait",
                 },
               },
             ],
             "resources": [
               {
-                "image": [
-                  {
-                    "$": {
-                      "height": "1",
-                      "name": "SplashScreenBackground",
-                      "width": "1",
-                    },
-                  },
-                ],
+                "image": [],
               },
             ],
             "scenes": [
@@ -1397,78 +1339,37 @@ exports[`built-in plugins introspects mods 1`] = `
                                     },
                                   },
                                 ],
+                                "color": [
+                                  {
+                                    "$": {
+                                      "alpha": "1",
+                                      "blue": "0.12549019607843137",
+                                      "colorSpace": "custom",
+                                      "customColorSpace": "sRGB",
+                                      "green": "0.0",
+                                      "key": "backgroundColor",
+                                      "red": "0.0",
+                                    },
+                                  },
+                                ],
                                 "constraints": [
                                   {
                                     "constraint": [
                                       {
                                         "$": {
-                                          "firstAttribute": "top",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "1gX-mQ-vu6",
-                                          "secondAttribute": "top",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "leading",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "6tX-OG-Sck",
-                                          "secondAttribute": "leading",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "trailing",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "ABX-8g-7v4",
-                                          "secondAttribute": "trailing",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "bottom",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "jkI-2V-eW5",
-                                          "secondAttribute": "bottom",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "top",
+                                          "firstAttribute": "centerY",
                                           "firstItem": "EXPO-SplashScreen",
-                                          "id": "2VS-Uz-0LU",
-                                          "secondAttribute": "top",
+                                          "id": "0VC-Wk-OaO",
+                                          "secondAttribute": "centerY",
                                           "secondItem": "EXPO-ContainerView",
                                         },
                                       },
                                       {
                                         "$": {
-                                          "firstAttribute": "leading",
+                                          "firstAttribute": "centerX",
                                           "firstItem": "EXPO-SplashScreen",
-                                          "id": "LhH-Ei-DKo",
-                                          "secondAttribute": "leading",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "trailing",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "I6l-TP-6fn",
-                                          "secondAttribute": "trailing",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "bottom",
-                                          "firstItem": "EXPO-SplashScreen",
-                                          "id": "nbp-HC-eaG",
-                                          "secondAttribute": "bottom",
+                                          "id": "zR4-NK-mVN",
+                                          "secondAttribute": "centerX",
                                           "secondItem": "EXPO-ContainerView",
                                         },
                                       },
@@ -1478,9 +1379,9 @@ exports[`built-in plugins introspects mods 1`] = `
                                 "rect": [
                                   {
                                     "$": {
-                                      "height": "736",
+                                      "height": "852",
                                       "key": "frame",
-                                      "width": "414",
+                                      "width": "393",
                                       "x": "0.0",
                                       "y": "0.0",
                                     },
@@ -1488,32 +1389,7 @@ exports[`built-in plugins introspects mods 1`] = `
                                 ],
                                 "subviews": [
                                   {
-                                    "imageView": [
-                                      {
-                                        "$": {
-                                          "contentMode": "scaleAspectFill",
-                                          "horizontalHuggingPriority": "251",
-                                          "id": "EXPO-SplashScreenBackground",
-                                          "image": "SplashScreenBackground",
-                                          "insetsLayoutMarginsFromSafeArea": "NO",
-                                          "translatesAutoresizingMaskIntoConstraints": "NO",
-                                          "userInteractionEnabled": "NO",
-                                          "userLabel": "SplashScreenBackground",
-                                          "verticalHuggingPriority": "251",
-                                        },
-                                        "rect": [
-                                          {
-                                            "$": {
-                                              "height": "736",
-                                              "key": "frame",
-                                              "width": "414",
-                                              "x": "0.0",
-                                              "y": "0.0",
-                                            },
-                                          },
-                                        ],
-                                      },
-                                    ],
+                                    "imageView": [],
                                   },
                                 ],
                                 "viewLayoutGuide": [
@@ -1534,8 +1410,8 @@ exports[`built-in plugins introspects mods 1`] = `
                       {
                         "$": {
                           "key": "canvasLocation",
-                          "x": "140.625",
-                          "y": "129.4921875",
+                          "x": "0.0",
+                          "y": "0.0",
                         },
                       },
                     ],
@@ -2206,14 +2082,26 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "AppTheme",
+                  "parent": "Theme.SplashScreen",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "android:windowBackground",
+                      "name": "windowSplashScreenBackground",
                     },
-                    "_": "@drawable/splashscreen",
+                    "_": "@color/splashscreen_background",
+                  },
+                  {
+                    "$": {
+                      "name": "windowSplashScreenAnimatedIcon",
+                    },
+                    "_": "@drawable/splashscreen_logo",
+                  },
+                  {
+                    "$": {
+                      "name": "postSplashScreenTheme",
+                    },
+                    "_": "@style/AppTheme",
                   },
                 ],
               },
@@ -2305,7 +2193,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               "launchScreen": "YES",
               "propertyAccessControl": "none",
               "targetRuntime": "iOS.CocoaTouch",
-              "toolsVersion": "16096",
+              "toolsVersion": "32700.99.1234",
               "type": "com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB",
               "useAutolayout": "YES",
               "useSafeAreas": "YES",
@@ -2339,23 +2227,24 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   {
                     "$": {
                       "identifier": "com.apple.InterfaceBuilder.IBCocoaTouchPlugin",
-                      "version": "16087",
+                      "version": "22685",
                     },
                   },
                 ],
               },
             ],
+            "device": [
+              {
+                "$": {
+                  "appearance": "light",
+                  "id": "retina6_12",
+                  "orientation": "portrait",
+                },
+              },
+            ],
             "resources": [
               {
-                "image": [
-                  {
-                    "$": {
-                      "height": "1",
-                      "name": "SplashScreenBackground",
-                      "width": "1",
-                    },
-                  },
-                ],
+                "image": [],
               },
             ],
             "scenes": [
@@ -2406,8 +2295,13 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                                 "color": [
                                   {
                                     "$": {
+                                      "alpha": "1",
+                                      "blue": "0.12549019607843137",
+                                      "colorSpace": "custom",
+                                      "customColorSpace": "sRGB",
+                                      "green": "0.0",
                                       "key": "backgroundColor",
-                                      "systemColor": "systemBackgroundColor",
+                                      "red": "0.0",
                                     },
                                   },
                                 ],
@@ -2416,37 +2310,19 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                                     "constraint": [
                                       {
                                         "$": {
-                                          "firstAttribute": "top",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "1gX-mQ-vu6",
-                                          "secondAttribute": "top",
+                                          "firstAttribute": "centerY",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "0VC-Wk-OaO",
+                                          "secondAttribute": "centerY",
                                           "secondItem": "EXPO-ContainerView",
                                         },
                                       },
                                       {
                                         "$": {
-                                          "firstAttribute": "leading",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "6tX-OG-Sck",
-                                          "secondAttribute": "leading",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "trailing",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "ABX-8g-7v4",
-                                          "secondAttribute": "trailing",
-                                          "secondItem": "EXPO-ContainerView",
-                                        },
-                                      },
-                                      {
-                                        "$": {
-                                          "firstAttribute": "bottom",
-                                          "firstItem": "EXPO-SplashScreenBackground",
-                                          "id": "jkI-2V-eW5",
-                                          "secondAttribute": "bottom",
+                                          "firstAttribute": "centerX",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "zR4-NK-mVN",
+                                          "secondAttribute": "centerX",
                                           "secondItem": "EXPO-ContainerView",
                                         },
                                       },
@@ -2456,9 +2332,9 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                                 "rect": [
                                   {
                                     "$": {
-                                      "height": "736",
+                                      "height": "852",
                                       "key": "frame",
-                                      "width": "414",
+                                      "width": "393",
                                       "x": "0.0",
                                       "y": "0.0",
                                     },
@@ -2466,38 +2342,13 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                                 ],
                                 "subviews": [
                                   {
-                                    "imageView": [
-                                      {
-                                        "$": {
-                                          "contentMode": "scaleAspectFill",
-                                          "horizontalHuggingPriority": "251",
-                                          "id": "EXPO-SplashScreenBackground",
-                                          "image": "SplashScreenBackground",
-                                          "insetsLayoutMarginsFromSafeArea": "NO",
-                                          "translatesAutoresizingMaskIntoConstraints": "NO",
-                                          "userInteractionEnabled": "NO",
-                                          "userLabel": "SplashScreenBackground",
-                                          "verticalHuggingPriority": "251",
-                                        },
-                                        "rect": [
-                                          {
-                                            "$": {
-                                              "height": "736",
-                                              "key": "frame",
-                                              "width": "414",
-                                              "x": "0.0",
-                                              "y": "0.0",
-                                            },
-                                          },
-                                        ],
-                                      },
-                                    ],
+                                    "imageView": [],
                                   },
                                 ],
                                 "viewLayoutGuide": [
                                   {
                                     "$": {
-                                      "id": "EXPO-SafeArea",
+                                      "id": "Rmq-lb-GrQ",
                                       "key": "safeArea",
                                     },
                                   },
@@ -2506,6 +2357,15 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                             ],
                           },
                         ],
+                      },
+                    ],
+                    "point": [
+                      {
+                        "$": {
+                          "key": "canvasLocation",
+                          "x": "140.625",
+                          "y": "129.4921875",
+                        },
                       },
                     ],
                   },

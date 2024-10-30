@@ -20,13 +20,13 @@
 export async function preventAutoHideAsync() {
     return false;
 }
+export function setOptions(options) { }
 // @needsAudit
 /**
  * Hides the native splash screen immediately. Be careful to ensure that your app has content ready
  * to display when you hide the splash screen, or you may see a blank screen briefly. See the
  * ["Usage"](#usage) section for an example.
  */
-export async function hideAsync() {
-    return false;
-}
+export function hide() { }
+export async function hideAsync() { }
 //# sourceMappingURL=index.js.map

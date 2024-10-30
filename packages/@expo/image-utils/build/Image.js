@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPngInfo = exports.compositeImagesAsync = exports.generateFaviconAsync = exports.generateImageAsync = exports.getMimeType = void 0;
+exports.getPngInfo = exports.compositeImagesAsync = exports.generateFaviconAsync = exports.generateImageAsync = exports.generateImageBackgroundAsync = exports.getMimeType = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
 const parse_png_1 = __importDefault(require("parse-png"));
@@ -168,6 +168,38 @@ async function ensureImageOptionsAsync(imageOptions) {
     }
     return icon;
 }
+async function generateImageBackgroundAsync(imageOptions) {
+    const { width, height, backgroundColor, borderRadius } = imageOptions;
+    const sharp = await getSharpAsync();
+    if (!sharp) {
+        const jimp = await Jimp.createSquareAsync({
+            size: width,
+            color: backgroundColor,
+        });
+        if (borderRadius) {
+            const image = await Jimp.getJimpImageAsync(jimp);
+            // TODO: support setting border radius with Jimp. Currently only support making the image a circle
+            return await Jimp.circleAsync(image);
+        }
+        return jimp;
+    }
+    const sharpBuffer = sharp({
+        create: {
+            width,
+            height,
+            channels: 4,
+            background: backgroundColor,
+        },
+    });
+    if (imageOptions.borderRadius) {
+        const mask = Buffer.from(`<svg><rect x="0" y="0" width="${width}" height="${height}"
+      rx="${borderRadius}" ry="${borderRadius}"
+      fill="${backgroundColor && backgroundColor !== 'transparent' ? backgroundColor : 'none'}" /></svg>`);
+        sharpBuffer.composite([{ input: mask, blend: 'dest-in' }]);
+    }
+    return await sharpBuffer.png().toBuffer();
+}
+exports.generateImageBackgroundAsync = generateImageBackgroundAsync;
 async function generateImageAsync(options, imageOptions) {
     const icon = await ensureImageOptionsAsync(imageOptions);
     if (!options.cacheType) {

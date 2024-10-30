@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-  implementation 'com.facebook.react:react-android'
-  implementation 'androidx.appcompat:appcompat:1.2.0'
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion()}"
+  implementation 'androidx.appcompat:appcompat:1.7.0'
+  implementation "androidx.core:core-splashscreen:1.2.0-alpha02"
+  implementation "com.facebook.react:react-android"
 }

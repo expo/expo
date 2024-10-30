@@ -3,6 +3,7 @@ import {
   compositeImagesAsync,
   generateFaviconAsync,
   generateImageAsync,
+  generateImageBackgroundAsync,
   getPngInfo,
 } from './Image';
 import { ImageFormat, ImageOptions, ResizeMode } from './Image.types';
@@ -30,6 +31,7 @@ export {
   isAvailableAsync,
   sharpAsync,
   generateImageAsync,
+  generateImageBackgroundAsync,
   generateFaviconAsync,
   Cache,
   compositeImagesAsync,

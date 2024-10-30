@@ -45,16 +45,16 @@ const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:and
 
 // DO NOT CHANGE
 const SHOW_SPLASH_ID = 'expo-splash-screen-mainActivity-onCreate-show-splash';
-const withAndroidSplashLegacyMainActivity = config => {
+const withAndroidSplashLegacyMainActivity = (config, props) => {
   return (0, _configPlugins().withMainActivity)(config, config => {
-    config.modResults.contents = setSplashScreenLegacyMainActivity(config, config.modResults.contents, config.modResults.language);
+    config.modResults.contents = setSplashScreenLegacyMainActivity(config, props, config.modResults.contents, config.modResults.language);
     return config;
   });
 };
 exports.withAndroidSplashLegacyMainActivity = withAndroidSplashLegacyMainActivity;
-function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
+function setSplashScreenLegacyMainActivity(config, props, mainActivity, language) {
   debug(`Modify with language: "${language}"`);
-  const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
+  const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config, props);
   if (!splashConfig) {
     // Remove our generated code safely...
     const mod = (0, _generateCode().removeContents)({
