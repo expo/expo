@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [android] Added helper for looking up TaskService instance used by expo-task-manager ([#32300](https://github.com/expo/expo/pull/32300) by [@chrfalch](https://github.com/chrfalch))
+
 ## 2.0.0-preview.7 — 2024-10-29
 
 ### 💡 Others
