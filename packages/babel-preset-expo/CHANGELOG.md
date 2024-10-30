@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add support for server actions that use `export default`. ([#32458](https://github.com/expo/expo/pull/32458) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.0.0-preview.3 — 2024-10-30
+
+### 🎉 New features
+
+- Add support for server actions that use `export default`. ([#32458](https://github.com/expo/expo/pull/32458) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 12.0.0-preview.2 — 2024-10-29
 
