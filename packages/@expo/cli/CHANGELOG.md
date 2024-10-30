@@ -6,11 +6,17 @@
 
 ### 🎉 New features
 
+- Add server action-only mode. ([#32432](https://github.com/expo/expo/pull/32432) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.19.7 — 2024-10-29
+
 ### 🐛 Bug fixes
 
 - Fix unresponsive terminal after opening React Native DevTools. ([#32451](https://github.com/expo/expo/pull/32451) by [@byCedric](https://github.com/byCedric))
-
-### 💡 Others
 
 ## 0.19.6 — 2024-10-29
 

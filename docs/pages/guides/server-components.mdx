@@ -32,7 +32,8 @@ To use React Server Components in your Expo app, you need to:
 {
   "expo": {
     "experiments": {
-      "reactServerComponents": true
+      "reactServerComponents": true,
+      "reactServerActions": true
     }
   }
 }
@@ -147,7 +148,18 @@ You cannot pass functions as props to Server Components. You can only pass seria
 
 ## Server Actions
 
-> Server Actions are gated behind an additional experimental flag. Pass the environment variable `EXPO_UNSTABLE_SERVER_ACTIONS=1` to enable them.
+Server Actions are gated behind an additional experimental flag.
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "reactServerActions": true,
+      "reactServerComponents": true
+    }
+  }
+}
+```
 
 Server Actions are functions that run on the server and can be called from client components. Think of them like fully-typed API routes that are easier to write.
 
