@@ -107,7 +107,7 @@
     "@expo/server": "^0.5.0-preview.0",
     "@radix-ui/react-slot": "1.0.1",
     "@react-navigation/bottom-tabs": "7.0.0-rc.36",
-    "@react-navigation/native": "7.0.0-rc.20",
+    "@react-navigation/native": "7.0.0-rc.21",
     "@react-navigation/native-stack": "7.0.0-rc.30",
     "client-only": "^0.0.1",
     "expo-splash-screen": "0.28.5",
