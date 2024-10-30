@@ -187,7 +187,7 @@ function isTransformError(
 function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }) {
   // Remap direct Metro Node.js errors to a format that will appear more client-friendly in the logbox UI.
   let stack: MetroStackFrame[] | undefined;
-  if (isTransformError(error)) {
+  if (isTransformError(error) && error.filename) {
     // Syntax errors in static rendering.
     stack = [
       {

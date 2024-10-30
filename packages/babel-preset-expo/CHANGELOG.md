@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Don't assert `client-only` in SSR bundles.
+
 ### 💡 Others
 
 ## 12.0.0-preview.3 — 2024-10-30

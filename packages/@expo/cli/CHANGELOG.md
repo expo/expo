@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Don't assert `client-only` in SSR bundles.
 - Fix invalid project randomness when using Ngrok ([#32359](https://github.com/expo/expo/pull/32359) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
