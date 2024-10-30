@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 6.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.4 — 2024-10-29
+
+### 💡 Others
+
+- Add module mocks. ([#32412](https://github.com/expo/expo/pull/32412) by [@aleqsio](https://github.com/aleqsio))
+
+## 6.0.3 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fix build failure on 0.76 with use frameworks. ([#32341](https://github.com/expo/expo/pull/32341) by [@matinzd](https://github.com/matinzd))
+
+### 💡 Others
+
+- Skipped internal bundles from debugging targets. ([#32322](https://github.com/expo/expo/pull/32322) by [@kudo](https://github.com/kudo))
+
 ## 6.0.2 — 2024-10-24
 
 ### 🎉 New features

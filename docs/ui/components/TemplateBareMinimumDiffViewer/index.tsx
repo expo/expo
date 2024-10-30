@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 
 import { VersionSelector } from './VersionSelector';
 
+import packageJson from '~/package.json';
 import versions from '~/public/static/constants/versions.json';
 import diffInfo from '~/public/static/diffs/template-bare-minimum/diffInfo.json';
 import { DiffBlock } from '~/ui/components/Snippet';
@@ -12,6 +13,7 @@ import { RawH3, RawH4 } from '~/ui/components/Text';
 
 // versions used by SDK selector. This has "unversioned" removed on production versions. The diff selectors will match that.
 const { VERSIONS } = versions;
+const BETA_MAJOR_VERSION = packageJson.betaVersion.split('.')[0];
 
 export const TemplateBareMinimumDiffViewer = () => {
   const router = useRouter();
@@ -20,7 +22,7 @@ export const TemplateBareMinimumDiffViewer = () => {
 
   // default to from: last SDK, to: current SDK
   const lastTwoProductionVersions = bareDiffVersions
-    .filter((d: string) => d !== 'unversioned')
+    .filter((d: string) => d !== 'unversioned' && d !== BETA_MAJOR_VERSION)
     .slice(-2);
 
   const fromVersion = router?.query.fromSdk || lastTwoProductionVersions[0];

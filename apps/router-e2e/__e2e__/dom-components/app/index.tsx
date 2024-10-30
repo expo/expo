@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -8,11 +9,12 @@ import PublicAsset from '../components/05-public-asset';
 import NestedComponents from '../components/06-nested';
 import ForwardRef, { type ForwardedImperativeRef } from '../components/07-forward-ref';
 import NativeModuleProxy from '../components/08-native-module-proxy';
+import RouterDemo from '../components/09-router';
 
 export default function Page() {
   const [index, setIndex] = useState(0);
   const forwardedRef = useRef<ForwardedImperativeRef>(null);
-
+  const searchParams = useLocalSearchParams();
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, padding: 56 }}>
       <TestCase name="Actions">
@@ -70,10 +72,28 @@ export default function Page() {
             forwardedRef.current?.updateText(Date.now().toString());
           }}
         />
+        <Button
+          title="Update color using webView ref"
+          onPress={() => {
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = 100;
+            const lightness = 85;
+            forwardedRef.current?.injectJavaScript(`
+              (function() {
+                document.getElementById('rect').style.backgroundColor = 'hsl(${hue}, ${saturation}%, ${lightness}%)';
+              })();`);
+          }}
+        />
       </TestCase>
 
       <TestCase name="NativeModuleProxy">
         <NativeModuleProxy dom={{ matchContents: true, useExpoDOMWebView: true }} />
+      </TestCase>
+      <TestCase name="Router">
+        <RouterDemo
+          dom={{ matchContents: true, useExpoDOMWebView: true }}
+          searchParams={searchParams}
+        />
       </TestCase>
     </ScrollView>
   );

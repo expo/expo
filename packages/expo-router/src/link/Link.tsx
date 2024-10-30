@@ -1,3 +1,4 @@
+'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
 import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef } from 'react';

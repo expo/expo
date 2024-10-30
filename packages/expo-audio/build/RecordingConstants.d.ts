@@ -4,23 +4,18 @@ import { type RecordingOptions } from './Audio.types';
  *
  * # `HIGH_QUALITY`
  * ```ts
- * RecordingOptionsPresets.HIGH_QUALITY = {
- *   isMeteringEnabled: true,
+ * RecordingPresets.HIGH_QUALITY = {
+ *  extension: '.m4a',
+ *   sampleRate: 44100,
+ *   numberOfChannels: 2,
+ *   bitRate: 128000,
  *   android: {
- *     extension: '.m4a',
- *     outputFormat: AndroidOutputFormat.MPEG_4,
- *     audioEncoder: AndroidAudioEncoder.AAC,
- *     sampleRate: 44100,
- *     numberOfChannels: 2,
- *     bitRate: 128000,
+ *     outputFormat: 'mpeg4',
+ *     audioEncoder: 'aac',
  *   },
  *   ios: {
- *     extension: '.m4a',
  *     outputFormat: IOSOutputFormat.MPEG4AAC,
- *     audioQuality: IOSAudioQuality.MAX,
- *     sampleRate: 44100,
- *     numberOfChannels: 2,
- *     bitRate: 128000,
+ *     audioQuality: AudioQuality.MAX,
  *     linearPCMBitDepth: 16,
  *     linearPCMIsBigEndian: false,
  *     linearPCMIsFloat: false,
@@ -34,22 +29,19 @@ import { type RecordingOptions } from './Audio.types';
  *
  * # `LOW_QUALITY`
  * ```ts
- * RecordingOptionsPresets.LOW_QUALITY = {
- *   isMeteringEnabled: true,
+ * RecordingPresets.LOW_QUALITY = {
+ *   extension: '.m4a',
+ *   sampleRate: 44100,
+ *   numberOfChannels: 2,
+ *   bitRate: 64000,
  *   android: {
  *     extension: '.3gp',
- *     outputFormat: AndroidOutputFormat.THREE_GPP,
- *     audioEncoder: AndroidAudioEncoder.AMR_NB,
- *     sampleRate: 44100,
- *     numberOfChannels: 2,
- *     bitRate: 128000,
+ *     outputFormat: '3gp',
+ *     audioEncoder: 'amr_nb',
  *   },
  *   ios: {
- *     extension: '.caf',
- *     audioQuality: IOSAudioQuality.MIN,
- *     sampleRate: 44100,
- *     numberOfChannels: 2,
- *     bitRate: 128000,
+ *     audioQuality: AudioQuality.MIN,
+ *     outputFormat: IOSOutputFormat.MPEG4AAC,
  *     linearPCMBitDepth: 16,
  *     linearPCMIsBigEndian: false,
  *     linearPCMIsFloat: false,

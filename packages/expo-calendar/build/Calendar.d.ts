@@ -1,4 +1,5 @@
-import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionResponse } from 'expo-modules-core';
+export { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo-modules-core';
 /**
  * @platform ios
  */
@@ -122,7 +123,7 @@ export type Source = {
      * Type of the account that owns this calendar and was used to sync it to the device.
      * If `isLocalAccount` is falsy then this must be defined, and must match an account on the device
      * along with `name`, or the OS will delete the calendar.
-     * On iOS, one of [`SourceType`](#calendarsourcetype)s.
+     * On iOS, one of [`SourceType`](#sourcetype)s.
      */
     type: string | SourceType;
     /**
@@ -515,7 +516,6 @@ export type DaysOfTheWeek = {
      */
     weekNumber?: number;
 };
-export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 /**
  * Enum containing all possible user responses to the calendar UI dialogs. Depending on what dialog is presented, a subset of the values applies.
  * */
@@ -852,7 +852,7 @@ export declare function requestRemindersPermissionsAsync(): Promise<PermissionRe
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
  * ```
  */
-export declare const useCalendarPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare const useCalendarPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Check or request permissions to access reminders.
  * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact
@@ -863,7 +863,7 @@ export declare const useCalendarPermissions: (options?: PermissionHookOptions<ob
  * const [status, requestPermission] = Calendar.useRemindersPermissions();
  * ```
  */
-export declare const useRemindersPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export declare const useRemindersPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * platform ios
  */

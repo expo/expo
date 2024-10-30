@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 import { LocalRouteParamsContext } from './Route';
@@ -36,7 +38,7 @@ export function useRouter(): Router {
       setParams: store.setParams,
       canGoBack: store.canGoBack,
       navigate: store.navigate,
-      // TODO(EvanBacon): add `reload`
+      reload: store.reload,
     }),
     []
   );

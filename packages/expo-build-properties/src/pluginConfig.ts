@@ -374,15 +374,15 @@ export interface ExtraIosPodDependency {
    */
   git?: string;
   /**
-   * The git branch to fetch. See the {@link git} property for more information.
+   * The git branch to fetch. See the `git` property for more information.
    */
   branch?: string;
   /**
-   * The git tag to fetch. See the {@link git} property for more information.
+   * The git tag to fetch. See the `git` property for more information.
    */
   tag?: string;
   /**
-   * The git commit to fetch. See the {@link git} property for more information.
+   * The git commit to fetch. See the `git` property for more information.
    */
   commit?: string;
 }

@@ -120,9 +120,9 @@ NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
   return RCTLogLevelWarning;
 }
 
-- (NSDictionary *)launchOptionsForBridge
+- (NSDictionary *)launchOptionsForHost
 {
-  if (!self.hasBridgeEverLoaded) {
+  if (!self.hasHostEverLoaded) {
     return [ExpoKit sharedInstance].launchOptions;
   } else {
     // don't want to re-consume launch options when the bridge reloads.
@@ -159,7 +159,7 @@ NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kEXHomeLaunchUrlDefaultsKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
   } else {
-    initialHomeUrl = [EXKernelLinkingManager initialUrlFromLaunchOptions:[self launchOptionsForBridge]];
+    initialHomeUrl = [EXKernelLinkingManager initialUrlFromLaunchOptions:[self launchOptionsForHost]];
   }
   return initialHomeUrl;
 }

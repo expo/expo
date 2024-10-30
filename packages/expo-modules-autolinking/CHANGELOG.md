@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 2.0.0-preview.2 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- Fixed react-native core autolinking for react-native-unistyles on Android. ([#32375](https://github.com/expo/expo/pull/32375) by [@kudo](https://github.com/kudo))
+
+## 2.0.0-preview.1 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fixed build error from `gradleAarProjects`. ([#32349](https://github.com/expo/expo/pull/32349) by [@kudo](https://github.com/kudo))
+
 ## 2.0.0-preview.0 — 2024-10-22
 
 ### 🛠 Breaking changes

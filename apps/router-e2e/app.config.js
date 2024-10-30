@@ -30,6 +30,7 @@ module.exports = {
     reactCanary: process.env.E2E_CANARY_ENABLED,
     reactCompiler: process.env.E2E_ROUTER_COMPILER,
     reactServerComponents: process.env.E2E_RSC_ENABLED,
+    reactServerActions: process.env.EXPO_UNSTABLE_SERVER_ACTIONS,
   },
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',

@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 16.0.3 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fix build issue with after switch to Swift concurrency. ([#32379](https://github.com/expo/expo/pull/32379) by [@Eingin](https://github.com/Eingin))
+
+## 16.0.2 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
 ## 16.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes
@@ -29,6 +43,8 @@
 - Fixed issue regarding using the "back"-facing on mobile web browswer. ([#30811](https://github.com/expo/expo/pull/30811) by [@entiendoNull](https://github.com/entiendoNull))
 - Fix `takePictureAsync` `quality` option when set to 0. ([#31587](https://github.com/expo/expo/pull/31587) by [@davidavz](https://github.com/davidavz))
 - [iOS] Fix crash related to `sublayers` on 0.75 and above on the new architecture. ([#32194](https://github.com/expo/expo/pull/32194) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix regression in running the cameras cleanup function. ([#32333](https://github.com/expo/expo/pull/32333) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Use an `Actor` to ensure correct order of changes to the barcode scanners outputs. ([#32353](https://github.com/expo/expo/pull/32353) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

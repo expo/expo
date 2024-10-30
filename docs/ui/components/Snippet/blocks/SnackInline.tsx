@@ -24,7 +24,6 @@ type Props = PropsWithChildren<{
   templateId?: string;
   files?: Record<string, string>;
   platforms?: string[];
-  buttonTitle?: string;
   contentHidden?: boolean;
 }>;
 
@@ -35,7 +34,6 @@ export const SnackInline = ({
   templateId,
   files,
   platforms,
-  buttonTitle,
   contentHidden,
   children,
 }: Props) => {
@@ -108,7 +106,7 @@ export const SnackInline = ({
             disabled={!isReady}
             rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}
             type="submit">
-            {buttonTitle || 'Open in Snack'}
+            <span className="max-md-gutters:hidden">Open in </span>Snack
           </SnippetAction>
           <SettingsAction />
         </form>

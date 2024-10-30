@@ -4,7 +4,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div>
     <div
-      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
     >
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
@@ -147,7 +147,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </details>
     </div>
     <div
-      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
     >
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
@@ -365,7 +365,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
@@ -516,7 +516,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </details>
         <div
-          class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+          class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
@@ -593,7 +593,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
@@ -684,7 +684,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+      class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
     >
       <p
         class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
@@ -854,7 +854,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </span>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
@@ -930,7 +930,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
       </div>
       <div
-        class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+        class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
       >
         <p
           class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"
@@ -999,7 +999,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <div
-          class="!mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1 emotion-0"
+          class="rounded-lg border border-secondary p-5 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-2.5 [&_li]:mb-0 [&_.table-wrapper]:shadow-none [&_.table-wrapper]:mb-0 [&_th]:text-tertiary [&_th]:py-2.5 [&_th]:px-4 max-lg-gutters:px-4 mb-3.5 pt-4 px-5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default !pb-4 last:[&>*]:!mb-1"
         >
           <p
             class="text-default font-normal text-[16px] leading-[1.625] tracking-[-0.011rem] [&_strong]:break-words group"

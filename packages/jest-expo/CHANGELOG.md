@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 52.0.0-preview.2 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix mocking for requireOptionalNativeModule. ([#32412](https://github.com/expo/expo/pull/32412) by [@aleqsio](https://github.com/aleqsio))
+
+## 52.0.0-preview.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
 ## 52.0.0-preview.0 — 2024-10-22
 
 ### 🎉 New features

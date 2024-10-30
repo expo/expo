@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "0.29.1",
+  "version": "0.29.4",
   "description": "Provides an API to fetch push notification tokens and to present, schedule, receive, and respond to notifications.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -44,14 +44,11 @@
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~6.0.0",
-    "expo-constants": "~17.0.0",
-    "fs-extra": "^9.1.0"
+    "expo-constants": "~17.0.0"
   },
   "devDependencies": {
-    "@types/node-fetch": "^2.5.7",
     "expo-module-scripts": "^4.0.0",
-    "memfs": "^3.2.0",
-    "node-fetch": "^2.6.7"
+    "memfs": "^3.2.0"
   },
   "peerDependencies": {
     "expo": "*",

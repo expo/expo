@@ -1,6 +1,6 @@
 {
   "name": "expo-constants",
-  "version": "17.0.1",
+  "version": "17.0.2",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",

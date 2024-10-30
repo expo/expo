@@ -245,7 +245,11 @@ if (rootProject instanceof ProjectDescriptor) {
       }
       for (moduleAarProject in module.aarProjects) {
         include(":${moduleAarProject.name}")
-        project(":${moduleAarProject.name}").projectDir = new File(moduleAarProject.projectDir)
+        def projectDir = new File(moduleAarProject.projectDir)
+        if (!projectDir.exists()) {
+          projectDir.mkdirs()
+        }
+        project(":${moduleAarProject.name}").projectDir = projectDir
       }
     }
 

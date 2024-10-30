@@ -629,20 +629,20 @@ This makes setup a bit easier and helps prevent users from forgetting to add a p
 
 This does come with a couple of caveats:
 
-1. Packages must export a plugin via **app.plugin.js**, this rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
+1. Packages can use both use a root **app.plugin.js** file or use the `main` entry point to ship a config plugin. `expo install` only adds config plugins using the root **app.config.js** file automatically to the app manifest. This rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
 2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props then `expo-camera` would throw an error.
 3. Plugins can only be automatically added when the user's project uses a static app config (**app.json** and **app.config.json**). If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
 
-   ```sh
-   Cannot automatically write to dynamic config at: app.config.js
-   Please add the following to your app config
+```sh
+Cannot automatically write to dynamic config at: app.config.js
+Please add the following to your app config
 
-     {
-       "plugins": [
-       "expo-camera"
-       ]
-     }
-   ```
+{
+  "plugins": [
+    "expo-camera"
+  ]
+}
+```
 
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme

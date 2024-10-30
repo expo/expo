@@ -38,7 +38,7 @@ export function SidebarCollapsible({ info, children }: Props) {
 
     const posts: NavigationRoute[] =
       sections
-        ?.map(section => (section.type === 'page' ? [section] : section?.children ?? []))
+        ?.map(section => (section.type === 'page' ? [section] : (section?.children ?? [])))
         .flat() ?? [];
 
     posts.forEach(isSectionActive);

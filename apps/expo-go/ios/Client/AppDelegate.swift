@@ -8,6 +8,8 @@ class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+    ExpoGoReactNativeFeatureFlags.setup()
+
     if application.applicationState != UIApplication.State.background {
       // App launched in foreground
       setUpUserInterfaceForApplication(application, withLaunchOptions: launchOptions)
