@@ -2,7 +2,7 @@
   "name": "expo-template-default",
   "license": "0BSD",
   "main": "expo-router/entry",
-  "version": "52.0.13",
+  "version": "52.0.14",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -24,7 +24,7 @@
     "expo-font": "~13.0.0",
     "expo-haptics": "~14.0.0",
     "expo-linking": "~7.0.2",
-    "expo-router": "~4.0.0-preview.7",
+    "expo-router": "~4.0.0-preview.8",
     "expo-splash-screen": "~0.28.5",
     "expo-status-bar": "~2.0.0",
     "expo-symbols": "~0.2.0",
