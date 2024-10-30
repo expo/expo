@@ -83,13 +83,9 @@ export function withLayoutContext<
   processor?: (
     options: ScreenProps<TOptions, TState, TEventMap>[]
   ) => ScreenProps<TOptions, TState, TEventMap>[]
-): ForwardRefExoticComponent<
-  PropsWithoutRef<PickPartial<ComponentProps<T>, 'children'>> & RefAttributes<unknown>
-> & {
-  Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
-} {
-  const Navigator = forwardRef<unknown, PropsWithoutRef<ComponentProps<T>>>(
-    ({ children: userDefinedChildren, ...props }, ref) => {
+) {
+  return Object.assign(
+    forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
 
       const { screens } = useFilterScreenChildren(userDefinedChildren, {
@@ -105,13 +101,14 @@ export function withLayoutContext<
         return null;
       }
 
-      // @ts-expect-error
       return <Nav {...props} id={contextKey} ref={ref} children={sorted} />;
+    }),
+    {
+      Screen,
     }
-  );
-
-  // @ts-expect-error
-  Navigator.Screen = Screen;
-  // @ts-expect-error
-  return Navigator;
+  ) as ForwardRefExoticComponent<
+    PropsWithoutRef<PickPartial<ComponentProps<T>, 'children'>> & RefAttributes<unknown>
+  > & {
+    Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
+  };
 }
