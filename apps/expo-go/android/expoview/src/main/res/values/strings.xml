@@ -51,6 +51,9 @@
   <string name="devmenu_hide_performance_monitor">Hide Performance Monitor</string>
   <string name="devmenu_show_performance_monitor">Show Performance Monitor</string>
   <string name="devmenu_performance_monitor_unavailable">Performance Monitor Unavailable</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+
 
   <string-array name="currency_array">
       <item>Currency (optional)</item>
