@@ -37,10 +37,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@dotlottie/react-player": "^1.6.19",
     "@expo/dom-webview": "0.0.1",
     "@expo/styleguide-base": "^1.0.1",
-    "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.2.0",
     "@react-native-community/netinfo": "11.4.1",
