@@ -42,6 +42,8 @@ export type NavigationRoute = {
   expanded?: boolean;
   sidebarTitle?: string;
   weight?: number;
+  isNew?: boolean;
+  isDeprecated?: boolean;
   children?: NavigationRoute[];
 };
 
