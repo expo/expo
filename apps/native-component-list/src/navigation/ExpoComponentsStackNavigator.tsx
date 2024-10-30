@@ -24,12 +24,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/BarCodeScannerScreen'));
-    },
-    name: 'BarCodeScanner',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/ModalScreen'));
     },
     name: 'Modal',
