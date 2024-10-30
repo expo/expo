@@ -8,8 +8,8 @@ import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
-import expo.modules.splashscreen.BuildConfig
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenViewController
+import host.exp.expoview.BuildConfig
 
 class ManagedAppSplashScreenViewController(
   activity: Activity,
