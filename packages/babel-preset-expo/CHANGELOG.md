@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Don't assert `client-only` in SSR bundles.
+- Don't assert `client-only` in SSR bundles. ([#32479](https://github.com/expo/expo/pull/32479) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
