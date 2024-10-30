@@ -517,6 +517,7 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 6. [(<em>optional</em>) Customzine `resizeMode`](#-optional-customize-resizemode)
 7. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)
 8. [(<em>optional</em>) Customize StatusBar](#-customize-statusbar-1)
+8. [(<em>optional</em>) Customize Margin](#-customize-margin)
 
 #### 🛠 Configure `res/drawable/splashscreen_image.png`
 
@@ -734,6 +735,22 @@ To make the StatusBar translucent update your `res/values/strings.xml` file with
 </resources>
 ```
 
+#### 🛠 (<em>optional</em>) Customize Margin
+
+The default margin of `splashscreen_image.png` is `top=0`,`left=0`,`right=0` and `bottom=0`. If you want to have different margin, you need to override in `res/values/strings.xml`.
+
+```diff
+--- a/android/app/src/main/res/values/strings.xml
++++ b/android/app/src/main/res/values/strings.xml
+ <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+ <resources>
+   <string name="app_name">sdk42</string>
++  <integer name="expo_splash_screen_top">0</integer>
++  <integer name="expo_splash_screen_left">0</integer>
++  <integer name="expo_splash_screen_right">0</integer>
++  <integer name="expo_splash_screen_bottom">0</integer>
+</resources>
+```
 ## 👏 Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
