@@ -27,20 +27,41 @@ export interface Fingerprint {
   hash: string;
 }
 
-export interface FingerprintDiffItem {
-  /**
-   * The operation type of the diff item.
-   */
-  op: 'added' | 'removed' | 'changed';
-
-  /**
-   * The source of the diff item.
-   *   - When type is 'added', the source is the new source.
-   *   - When type is 'removed', the source is the old source.
-   *   - When type is 'changed', the source is the new source.
-   */
-  source: FingerprintSource;
-}
+export type FingerprintDiffItem =
+  | {
+      /**
+       * The operation type of the diff item.
+       */
+      op: 'added';
+      /**
+       * The added source.
+       */
+      addedSource: FingerprintSource;
+    }
+  | {
+      /**
+       * The operation type of the diff item.
+       */
+      op: 'removed';
+      /**
+       * The removed source.
+       */
+      removedSource: FingerprintSource;
+    }
+  | {
+      /**
+       * The operation type of the diff item.
+       */
+      op: 'changed';
+      /**
+       * The source before.
+       */
+      beforeSource: FingerprintSource;
+      /**
+       * The source after.
+       */
+      afterSource: FingerprintSource;
+    };
 
 export type Platform = 'android' | 'ios';
 

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Show more information in fingerprint diff ([#32486](https://github.com/expo/expo/pull/32486) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
