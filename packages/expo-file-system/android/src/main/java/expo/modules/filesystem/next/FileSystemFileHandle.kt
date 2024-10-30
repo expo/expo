@@ -7,6 +7,11 @@ import java.nio.channels.FileChannel
 class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(RandomAccessFile(file.file, "rw").channel), AutoCloseable {
   private val fileChannel: FileChannel = ref
 
+  private fun ensureIsOpen() {
+    if (!fileChannel.isOpen) {
+      throw UnableToReadHandleException("file handle is closed")
+    }
+  }
   override fun deallocate() {
     close()
   }
@@ -16,9 +21,7 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(Random
   }
 
   fun read(length: Int): ByteArray {
-    if (!fileChannel.isOpen) {
-      throw UnableToReadHandleException("file handle is closed")
-    }
+    ensureIsOpen()
     try {
       val buffer = ByteBuffer.allocate(length.coerceAtMost((fileChannel.size() - fileChannel.position()).toInt()))
       fileChannel.read(buffer)
@@ -29,9 +32,7 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(Random
   }
 
   fun write(data: ByteArray) {
-    if (!fileChannel.isOpen) {
-      throw UnableToWriteHandleException("file handle is closed")
-    }
+    ensureIsOpen()
     try {
       val buffer = ByteBuffer.wrap(data)
       fileChannel.write(buffer)
