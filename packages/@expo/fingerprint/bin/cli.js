@@ -1,24 +1,51 @@
 #!/usr/bin/env node
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 
 let Fingerprint;
 try {
   Fingerprint = require('@expo/fingerprint');
-} catch { }
+} catch {}
 if (!Fingerprint) {
   Fingerprint = require(path.join(__dirname, '..', 'build', 'index'));
 }
 
 (async () => {
-  if (process.argv.length !== 3 && process.argv.length !== 4) {
-    console.log(`Usage: ${path.basename(process.argv[1])} projectRoot [fingerprintFileToDiff]`);
+  const argsWithoutOptions = [];
+  const platforms = [];
+  const pathsToIgnore = [];
+  let shouldAddToIgnore = false;
+  let shouldAddToPlatforms = false;
+  let isDebug = false;
+  for (let i = 0; i < process.argv.length; i++) {
+    const arg = process.argv[i];
+    if (arg === '--ignore-path') {
+      shouldAddToIgnore = true;
+    } else if (shouldAddToIgnore) {
+      pathsToIgnore.push(arg);
+      shouldAddToIgnore = false;
+    } else if (arg === '--platform') {
+      shouldAddToPlatforms = true;
+    } else if (shouldAddToPlatforms) {
+      platforms.push(arg);
+      shouldAddToPlatforms = false;
+    } else if (arg === '--debug') {
+      isDebug = true;
+    } else {
+      argsWithoutOptions.push(arg);
+    }
+  }
+
+  if (argsWithoutOptions.length !== 3 && argsWithoutOptions.length !== 4) {
+    console.log(
+      `Usage: ${path.basename(argsWithoutOptions[1])} projectRoot [fingerprintFileToDiff]`
+    );
     process.exit(1);
   }
 
   let comparatorFingerprint;
-  if (process.argv.length === 4) {
-    const comparator = process.argv[3];
+  if (argsWithoutOptions.length === 4) {
+    const comparator = argsWithoutOptions[3];
     try {
       comparatorFingerprint = JSON.parse(fs.readFileSync(comparator));
     } catch (e) {
@@ -27,14 +54,16 @@ if (!Fingerprint) {
     }
   }
 
-  const projectRoot = process.argv[2];
+  const projectRoot = argsWithoutOptions[2];
 
   const options = {
-    debug: !!process.env.DEBUG,
+    debug: !!(process.env.DEBUG ?? isDebug),
     useRNCoreAutolinkingFromExpo: process.env.USE_RNCORE_AUTOLINKING_FROM_EXPO
       ? ['1', 'true'].includes(process.env.USE_RNCORE_AUTOLINKING_FROM_EXPO)
       : undefined,
-  }
+    ...(platforms.length > 0 ? { platforms } : null),
+    ...(pathsToIgnore.length > 0 ? { pathsToIgnore } : null),
+  };
   try {
     if (comparatorFingerprint) {
       const diff = await Fingerprint.diffFingerprintChangesAsync(
