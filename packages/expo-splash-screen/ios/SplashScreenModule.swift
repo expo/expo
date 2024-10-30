@@ -19,7 +19,7 @@ public class SplashScreenModule: Module {
     AsyncFunction("hideAsync") {
       SplashScreenManager.shared.hide()
     }
-    
+
     OnDestroy {
       SplashScreenManager.shared.removeObservers()
     }
