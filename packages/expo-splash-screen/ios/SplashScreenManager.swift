@@ -84,4 +84,9 @@ public class SplashScreenManager: NSObject {
 
     return !loadingView.isHidden
   }
+  
+  func removeObservers() {
+    NotificationCenter.default.removeObserver(self, name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
+    NotificationCenter.default.removeObserver(self, name: Notification.Name.RCTJavaScriptDidLoad, object: nil)
+  }
 }

@@ -7988,11 +7988,6 @@ expo-progress@^0.0.2:
   resolved "https://registry.yarnpkg.com/expo-progress/-/expo-progress-0.0.2.tgz#0d42470f8f1f019d3ae0f1da377c9bca891f3dd8"
   integrity sha512-RFd6aUxuZSH+ZhFeQB7Z6llnm8MZo7PmmgjoHeN5Hfvq1zc1gjQw0H4pCFcf3h6f08SXg32VMoaoi5A+D7Cs1A==
 
-"expo-splash-screen@file:packages/expo-splash-screen":
-  version "0.28.0"
-  dependencies:
-    "@expo/prebuild-config" "8.0.0"
-
 expo-three@7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-7.0.1.tgz#689688b529b8443fe6c1324000c0714858e37c55"

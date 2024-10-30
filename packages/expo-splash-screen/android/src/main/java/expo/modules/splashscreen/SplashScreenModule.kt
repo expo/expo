@@ -1,5 +1,7 @@
 package expo.modules.splashscreen
 
+import android.util.Log
+import expo.modules.kotlin.ReactLifecycleDelegate
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -18,6 +20,10 @@ class SplashScreenModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSplashScreen")
 
+    AsyncFunction<Unit>("preventAutoHideAsync") {
+      SplashScreenManager.preventAutoHideCalled = true
+    }
+
     Function("setOptions") { options: SplashScreenOptions ->
       // Needs to run on the main thread on apis below 33
       appContext.mainQueue.launch {
@@ -32,6 +38,10 @@ class SplashScreenModule : Module() {
     // For backwards compatibility
     AsyncFunction("hideAsync") {
       SplashScreenManager.hide()
+    }
+
+    OnDestroy {
+      SplashScreenManager.unregisterContentAppearedListener()
     }
   }
 }
