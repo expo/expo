@@ -206,30 +206,25 @@ describe('router.push()', () => {
 });
 describe('useSearchParams', () => {
   expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
-  expectType<UnknownOutputParams & { color: string | number }>(
-    useLocalSearchParams<'/colors/[color]'>()
-  );
+  expectType<UnknownOutputParams & { color: string }>(useLocalSearchParams<'/colors/[color]'>());
   expectError(useLocalSearchParams<'/invalid'>());
   expectError(useLocalSearchParams<Record<'custom', Function>>());
 });
 describe('useLocalSearchParams', () => {
   expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
-  expectType<UnknownOutputParams & { color: string | number }>(
-    useLocalSearchParams<'/colors/[color]'>()
-  );
+  expectType<UnknownOutputParams & { color: string }>(useLocalSearchParams<'/colors/[color]'>());
   expectError(useLocalSearchParams<'/invalid'>());
   expectError(useLocalSearchParams<Record<'custom', Function>>());
 });
 describe('useGlobalSearchParams', () => {
   expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
-  expectType<UnknownOutputParams & { color: string | number }>(
-    useLocalSearchParams<'/colors/[color]'>()
-  );
+  expectType<UnknownOutputParams & { color: string }>(useLocalSearchParams<'/colors/[color]'>());
   expectError(useLocalSearchParams<'/invalid'>());
   expectError(useLocalSearchParams<Record<'custom', Function>>());
 });
 describe('useSegments', () => {
   it('can accept an absolute url', () => {
+    expectType<['apple']>(useSegments<'/apple'>());
     expectType<['apple']>(useSegments<'/apple'>());
   });
   it('only accepts valid possible urls', () => {
