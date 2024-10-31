@@ -47,7 +47,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.29.4):
     - ExpoModulesCore
-  - Expo (52.0.0-preview.13):
+  - Expo (52.0.0-preview.14):
     - ExpoModulesCore
   - expo-dev-client (5.0.0-preview.5):
     - EXManifests
@@ -55,10 +55,10 @@ PODS:
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (5.0.7):
+  - expo-dev-launcher (5.0.8):
     - DoubleConversion
     - EXManifests
-    - expo-dev-launcher/Main (= 5.0.7)
+    - expo-dev-launcher/Main (= 5.0.8)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -84,7 +84,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Main (5.0.7):
+  - expo-dev-launcher/Main (5.0.8):
     - DoubleConversion
     - EXManifests
     - expo-dev-launcher/Unsafe
@@ -113,7 +113,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Tests (5.0.7):
+  - expo-dev-launcher/Tests (5.0.8):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -146,7 +146,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-launcher/Unsafe (5.0.7):
+  - expo-dev-launcher/Unsafe (5.0.8):
     - DoubleConversion
     - EXManifests
     - expo-dev-menu
@@ -386,13 +386,13 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (14.0.0):
     - ExpoModulesCore
-  - ExpoImage (2.0.0-preview.0):
+  - ExpoImage (2.0.0-preview.1):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.19.1)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
-  - ExpoImage/Tests (2.0.0-preview.0):
+  - ExpoImage/Tests (2.0.0-preview.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -435,7 +435,7 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
-  - ExpoModulesCore (2.0.0-preview.8):
+  - ExpoModulesCore (2.0.0-preview.9):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -458,7 +458,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (2.0.0-preview.8):
+  - ExpoModulesCore/Tests (2.0.0-preview.9):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -3237,9 +3237,9 @@ SPEC CHECKSUMS:
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: d2859eb09b260b4e819299782fb5e43da36e248b
   EXNotifications: 3aa75b51d57b5331001befad0a0e073eaaef0203
-  Expo: e8a4e1297fda4f2a4179a8620278b387f373f58e
+  Expo: 51450b6be1cf72fcd2bb48f283e1f0e847dacf50
   expo-dev-client: 06f372189b2c2a61e86337ce3f68574557178418
-  expo-dev-launcher: 4efce5e45d2092c682c11af405b12d647fd85f3c
+  expo-dev-launcher: e003de1740d15b8092211465ef05b56ed9d221b5
   expo-dev-menu: a1da7da53a16a3d0aae6673984db5e9e1948bd20
   expo-dev-menu-interface: 6f83f3119a91557e1d04cf43d6320ef545082fd4
   ExpoAppleAuthentication: 59b0f5cf600284dd03b0d595c112acd067e0eb69
@@ -3262,7 +3262,7 @@ SPEC CHECKSUMS:
   ExpoFont: 2fb6d98e0a5352bebcaa568d6bfbba0e0f2e0097
   ExpoGL: 25f19d2db3ad0e48ee43b16e0272c0e526968c1d
   ExpoHaptics: e636188d1d5f7ccb79f3c1bfab47aaf5a1768c73
-  ExpoImage: bd04fd6e5f97d2a29284bd7113cc51d7c206d17d
+  ExpoImage: 477328a1973421192cd4efda1fe7ccb8f944a10e
   ExpoImageManipulator: 774eb1a17c5db07944d6f9000650d422ebb3ce47
   ExpoImagePicker: 6977a8aa31e7fc21d209e9a5f0772f360f5f5f50
   ExpoInsights: 98f3aeaafd8481e5c0983ce3a59ebd594f1339aa
@@ -3276,7 +3276,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: 63589e1cbfa08220b2e650eecac0457be61ddd69
   ExpoMaps: 03f99cbb20655c2beb1bffdca0e6de6a0124f69e
   ExpoMediaLibrary: a85e3fcc6a85ede0ae2dae2577b8cf02d1051bbb
-  ExpoModulesCore: 7a574fa6503316b8796c280e7256bc6cf6d18e4c
+  ExpoModulesCore: bd0747596285533477365a0232260750b81a2c1b
   ExpoModulesTestCore: c81e21fd6ff61a212f3053d172aa163ad0db4d49
   ExpoNetwork: 786e4a0f27543c9c70d595d24f59759167da854b
   ExpoPrint: 3f9f5a5a19dbda5b30963d5bf078918f024aa29d
@@ -3298,7 +3298,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: ea83cc6f03bec1938c3b8fb4dcb9df71960fba36
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: f4a07ca36169a95b36b9abbedbdb8e69b6247357
-  EXUpdates: 74f693bf274d2f1e1fdc17b5c72b94fb9199ad2b
+  EXUpdates: 95b3c9486e3471d131131b72a8e768075fde6356
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   FBLazyVector: 7075bb12898bc3998fd60f4b7ca422496cc2cdf7
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120

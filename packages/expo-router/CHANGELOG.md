@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Support protocol hrefs on native. ([#31646](https://github.com/expo/expo/pull/31646) by [@marklawlor](https://github.com/marklawlor))
-
 ### 💡 Others
+
+## 4.0.0-preview.10 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Support protocol hrefs on native. ([#31646](https://github.com/expo/expo/pull/31646) by [@marklawlor](https://github.com/marklawlor))
 
 ## 4.0.0-preview.9 — 2024-10-31
 

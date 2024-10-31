@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.0.8 — 2024-10-31
+
+### 💡 Others
+
 - Truncate runtime version in settings screen ([#32489](https://github.com/expo/expo/pull/32489) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 5.0.7 — 2024-10-31

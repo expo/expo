@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "52.0.0-preview.13",
+  "version": "52.0.0-preview.14",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -77,7 +77,7 @@
     "expo-font": "~13.0.0",
     "expo-keep-awake": "~14.0.1",
     "expo-modules-autolinking": "2.0.0-preview.2",
-    "expo-modules-core": "2.0.0-preview.8",
+    "expo-modules-core": "2.0.0-preview.9",
     "fbemitter": "^3.0.0",
     "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"
