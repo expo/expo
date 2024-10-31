@@ -1,7 +1,8 @@
 import { AssertionError } from 'assert';
 import chalk from 'chalk';
+import { spawnSync } from 'child_process';
 
-import { exit } from '../log';
+import { exit, exception, warn } from '../log';
 
 const ERROR_PREFIX = 'Error: ';
 
@@ -79,3 +80,39 @@ export class UnimplementedError extends Error {
     this.name = 'UnimplementedError';
   }
 }
+
+/**
+ * Add additional information when EMFILE errors are encountered.
+ * These errors originate from Metro's FSEventsWatcher due to `fsevents` going over MacOS system limit.
+ * Unfortunately, these limits in MacOS are relatively low compared to an average React Native project.
+ *
+ * @see https://github.com/expo/expo/issues/29083
+ * @see https://github.com/facebook/metro/issues/834
+ * @see https://github.com/fsevents/fsevents/issues/42#issuecomment-62632234
+ */
+function handleTooManyOpenFileErrors(error: any) {
+  // Only enable special logging when running on MacOS and are running into the `EMFILE` error
+  if ('code' in error && error.code === 'EMFILE' && process.platform === 'darwin') {
+    try {
+      // Try to recover watchman, if it's not installed this will throw
+      spawnSync('watchman', ['shutdown-server']);
+      // NOTE(cedric): this both starts the watchman server and resets all watchers
+      spawnSync('watchman', ['watch-del-all']);
+
+      warn(
+        'Watchman is installed but was likely not enabled when starting Metro, try starting your project again.\nIf this problem persists, follow the troubleshooting guide of Watchman: https://facebook.github.io/watchman/docs/troubleshooting'
+      );
+    } catch {
+      warn(
+        `Your MacOS system limit does not allow enough watchers for Metro, install Watchman instead. Learn more: https://facebook.github.io/watchman/docs/install`
+      );
+    }
+
+    exception(error);
+    process.exit(1);
+  }
+
+  throw error;
+}
+
+process.on('uncaughtException', handleTooManyOpenFileErrors);
