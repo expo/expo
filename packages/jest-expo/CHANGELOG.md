@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update SplashScreen api to add `hide` method.
+
 ## 52.0.0-preview.2 — 2024-10-29
 
 ### 🐛 Bug fixes
