@@ -198,7 +198,7 @@ dependencies {
 
 if (shouldTurnWarningsIntoErrors) {
   tasks.withType(JavaCompile) configureEach {
-    options.compilerArgs << "-Werror" << "-Xlint:all"
+    options.compilerArgs << "-Werror" << "-Xlint:all" << '-Xlint:-serial' << '-Xlint:-rawtypes'
   }
   tasks.withType(KotlinCompile) configureEach {
     compilerOptions.allWarningsAsErrors = true
