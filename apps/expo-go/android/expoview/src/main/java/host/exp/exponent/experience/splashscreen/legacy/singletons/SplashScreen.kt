@@ -3,7 +3,6 @@ package host.exp.exponent.experience.splashscreen.legacy.singletons
 import android.app.Activity
 import android.util.Log
 import android.view.ViewGroup
-import expo.modules.splashscreen.*
 import expo.modules.core.interfaces.SingletonModule
 import host.exp.exponent.experience.splashscreen.legacy.NativeResourcesBasedSplashScreenViewProvider
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode
