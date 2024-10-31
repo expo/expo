@@ -164,6 +164,7 @@
     "nullthrows": "^1.1.1",
     "playwright": "^1.40.1",
     "taskr": "^1.1.0",
+    "tempy": "^0.7.1",
     "tree-kill": "^1.2.2",
     "tsd": "^0.28.1"
   }
