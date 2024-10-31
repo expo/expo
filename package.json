@@ -24,7 +24,7 @@
     "@react-navigation/bottom-tabs": "7.0.0-rc.36",
     "@react-navigation/core": "7.0.0-rc.15",
     "@react-navigation/drawer": "7.0.0-rc.33",
-    "@react-navigation/elements": "2.0.0-rc.25",
+    "@react-navigation/elements": "2.0.0-rc.26",
     "@react-navigation/native": "7.0.0-rc.21",
     "@react-navigation/native-stack": "7.0.0-rc.30",
     "@react-navigation/routers": "7.0.0-rc.8",
