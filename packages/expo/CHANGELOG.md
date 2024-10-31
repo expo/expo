@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Reexport `requireNativeView` and `registerWebModule` from `expo-modules-core`. ([#32472](https://github.com/expo/expo/pull/32472) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 52.0.0-preview.13 — 2024-10-31
+
+### 🎉 New features
+
+- Reexport `requireNativeView` and `registerWebModule` from `expo-modules-core`. ([#32472](https://github.com/expo/expo/pull/32472) by [@aleqsio](https://github.com/aleqsio))
 
 ## 52.0.0-preview.12 — 2024-10-30
 

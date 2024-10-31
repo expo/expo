@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [

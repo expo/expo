@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 52.0.0-preview.3 — 2024-10-31
+
+### 💡 Others
+
 - Update SplashScreen api to add `hide` method. ([#32484](https://github.com/expo/expo/pull/32484) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 52.0.0-preview.2 — 2024-10-29

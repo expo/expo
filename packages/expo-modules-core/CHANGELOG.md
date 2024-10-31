@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove expo barcode scanner interface. ([#32198](https://github.com/expo/expo/pull/32198) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.0.0-preview.8 — 2024-10-31
+
+### 🛠 Breaking changes
+
+- Remove expo barcode scanner interface. ([#32198](https://github.com/expo/expo/pull/32198) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
