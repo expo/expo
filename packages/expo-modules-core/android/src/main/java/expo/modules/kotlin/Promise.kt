@@ -46,15 +46,15 @@ fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
     }
 
     override fun reject(code: String, message: String?) {
-      expoPromise.reject(code ?: unknownCode, message, null)
+      expoPromise.reject(code, message, null)
     }
 
     override fun reject(code: String, throwable: Throwable?) {
-      expoPromise.reject(code ?: unknownCode, null, throwable)
+      expoPromise.reject(code, null, throwable)
     }
 
     override fun reject(code: String, message: String?, throwable: Throwable?) {
-      expoPromise.reject(code ?: unknownCode, message, throwable)
+      expoPromise.reject(code, message, throwable)
     }
 
     override fun reject(throwable: Throwable) {
@@ -66,15 +66,15 @@ fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
     }
 
     override fun reject(code: String, userInfo: WritableMap) {
-      expoPromise.reject(code ?: unknownCode, null, null)
+      expoPromise.reject(code, null, null)
     }
 
     override fun reject(code: String, throwable: Throwable?, userInfo: WritableMap) {
-      expoPromise.reject(code ?: unknownCode, null, throwable)
+      expoPromise.reject(code, null, throwable)
     }
 
     override fun reject(code: String, message: String?, userInfo: WritableMap) {
-      expoPromise.reject(code ?: unknownCode, message, null)
+      expoPromise.reject(code, message, null)
     }
 
     override fun reject(code: String?, message: String?, throwable: Throwable?, userInfo: WritableMap?) {

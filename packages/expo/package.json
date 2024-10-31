@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "52.0.0-preview.5",
+  "version": "52.0.0-preview.13",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -66,29 +66,29 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.19.3",
-    "@expo/config": "10.0.1",
-    "@expo/config-plugins": "9.0.2",
+    "@expo/cli": "0.19.9",
+    "@expo/config": "10.0.2",
+    "@expo/config-plugins": "9.0.4",
     "@expo/metro-config": "0.19.0-preview.2",
     "@expo/vector-icons": "^14.0.0",
-    "babel-preset-expo": "~12.0.0-preview.1",
+    "babel-preset-expo": "~12.0.0-preview.4",
     "expo-asset": "~11.0.0",
     "expo-file-system": "~18.0.0",
     "expo-font": "~13.0.0",
     "expo-keep-awake": "~14.0.1",
-    "expo-modules-autolinking": "2.0.0-preview.1",
-    "expo-modules-core": "2.0.0-preview.4",
+    "expo-modules-autolinking": "2.0.0-preview.2",
+    "expo-modules-core": "2.0.0-preview.8",
     "fbemitter": "^3.0.0",
     "web-streams-polyfill": "^3.3.2",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
-    "@types/react": "~18.2.79",
-    "@types/react-test-renderer": "^18.0.0",
+    "@types/react": "~18.3.12",
+    "@types/react-test-renderer": "^18.3.0",
     "expo-module-scripts": "^4.0.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.0"
+    "react-native": "0.76.1"
   },
   "peerDependencies": {
     "@expo/dom-webview": "*",

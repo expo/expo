@@ -7,14 +7,14 @@ const FORBIDDEN_REACT_SERVER_IMPORTS = ['client-only'];
 /** Prevent importing certain known imports in given environments. This is for sanity to ensure a module never accidentally gets imported unexpectedly. */
 function environmentRestrictedImportsPlugin(api) {
     const { types: t } = api;
-    const isAnyServerEnvironment = api.caller(common_1.getIsReactServer) || api.caller(common_1.getIsServer);
-    const forbiddenPackages = isAnyServerEnvironment
+    const isReactServer = api.caller(common_1.getIsReactServer);
+    const forbiddenPackages = isReactServer
         ? FORBIDDEN_REACT_SERVER_IMPORTS
         : FORBIDDEN_CLIENT_IMPORTS;
     function checkSource(source, path) {
         forbiddenPackages.forEach((forbiddenImport) => {
             if (source === forbiddenImport) {
-                if (isAnyServerEnvironment) {
+                if (isReactServer) {
                     throw path.buildCodeFrameError(`Importing '${forbiddenImport}' module is not allowed in a React server bundle. Add the "use client" directive to this file or one of the parent modules to allow importing this module.`);
                 }
                 else {

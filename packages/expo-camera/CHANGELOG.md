@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix build issue with after switch to Swift concurrency. ([#32379](https://github.com/expo/expo/pull/32379) by [@Eingin](https://github.com/Eingin))
-
 ### 💡 Others
+
+## 16.0.3 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fix build issue with after switch to Swift concurrency. ([#32379](https://github.com/expo/expo/pull/32379) by [@Eingin](https://github.com/Eingin))
 
 ## 16.0.2 — 2024-10-25
 

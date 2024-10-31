@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "52.0.0-preview.1",
+  "version": "52.0.0-preview.3",
   "description": "A Jest preset to painlessly test your Expo / React Native apps.",
   "license": "MIT",
   "main": "src/index.js",

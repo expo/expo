@@ -2,7 +2,6 @@ package expo.modules.kotlin.views
 
 import android.view.View
 import android.view.ViewGroup
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
@@ -48,19 +47,8 @@ class GroupViewManagerWrapper(
   }
 
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    viewWrapperDelegate.getExportedCustomDirectEventTypeConstants()?.let {
-      val directEvents = super.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
-      val builder = MapBuilder.builder<String, Any>()
-      directEvents.forEach { event ->
-        builder.put(event.key, event.value)
-      }
-      it.forEach { event ->
-        builder.put(event.key, event.value)
-      }
-      return builder.build()
-    }
-
-    return super.getExportedCustomDirectEventTypeConstants()
+    val expoEvent = viewWrapperDelegate.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
+    return super.getExportedCustomDirectEventTypeConstants()?.plus(expoEvent) ?: expoEvent
   }
 
   override fun addView(parent: ViewGroup, child: View, index: Int) {

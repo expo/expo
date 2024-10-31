@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 6.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.4 — 2024-10-29
+
+### 💡 Others
+
+- Add module mocks. ([#32412](https://github.com/expo/expo/pull/32412) by [@aleqsio](https://github.com/aleqsio))
+
 ## 6.0.3 — 2024-10-25
 
 ### 🐛 Bug fixes

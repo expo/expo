@@ -1,10 +1,11 @@
 import { SharedRef } from 'expo';
 import { ImageResult, SaveOptions } from '../ImageManipulator.types';
 export default class ImageManipulatorImageRef extends SharedRef<'image'> {
-    private canvas;
+    readonly nativeRefType: string;
+    readonly uri: string;
     readonly width: number;
     readonly height: number;
-    constructor(canvas: HTMLCanvasElement);
+    constructor(uri: string, width: number, height: number);
     saveAsync(options?: SaveOptions): Promise<ImageResult>;
 }
 //# sourceMappingURL=ImageManipulatorImageRef.web.d.ts.map

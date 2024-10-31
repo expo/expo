@@ -1,7 +1,8 @@
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 
-import { betaVersion } from '~/package.json';
-const BETA_MAJOR_VERSION = betaVersion.split('.')[0];
+import packageJson from '~/package.json';
+
+const BETA_MAJOR_VERSION = packageJson.betaVersion.split('.')[0];
 
 export type VersionSelectorProps = {
   version?: string | undefined;

@@ -1,7 +1,7 @@
 /**
  * This file is unchanged, except for removing eslint comments
  */
-import type { NavigationContainerRef, ParamListBase } from '@react-navigation/core';
+import type { NavigationContainerRef, ParamListBase } from '@react-navigation/native';
 import * as React from 'react';
 import { BackHandler } from 'react-native';
 

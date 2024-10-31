@@ -68,8 +68,6 @@ rules:
     mentions: ['lukmccall', 'kudo']
   - patterns: ['packages/expo-background-fetch/**']
     mentions: ['tsapeta', 'kudo']
-  - patterns: ['packages/expo-barcode-scanner/**']
-    mentions: ['lukmccall']
   - patterns: ['packages/expo-battery/**']
     mentions: ['behenate']
   - patterns: ['packages/expo-blur/**']

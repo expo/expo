@@ -1,6 +1,7 @@
+import { TypeDefinitionData } from './APIDataTypes';
+import { resolveTypeName } from './APISectionUtils';
+
 import { CodeBlock } from '~/components/base/code';
-import { TypeDefinitionData } from '~/components/plugins/api/APIDataTypes';
-import { resolveTypeName } from '~/components/plugins/api/APISectionUtils';
 import { CODE } from '~/ui/components/Text';
 
 const typeDefinitionContainsObject = (typDef: TypeDefinitionData) =>

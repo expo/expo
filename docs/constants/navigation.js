@@ -175,6 +175,7 @@ const general = [
       [
         makePage('workflow/web.mdx'),
         makePage('distribution/publishing-websites.mdx'),
+        makePage('guides/dom-components.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
       ],
       { expanded: false }
@@ -690,6 +691,8 @@ function makePage(file) {
     name: data.title,
     // TODO(cedric): refactor href into url
     href: url,
+    isNew: data.isNew ?? undefined,
+    isDeprecated: data.isDeprecated ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {

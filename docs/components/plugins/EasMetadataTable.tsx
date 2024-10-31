@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
 import assert from 'assert';
 import { ComponentType, Fragment, ReactNode, useId } from 'react';
@@ -15,7 +16,7 @@ type MetadataHeader = 'Description' | 'Language Code' | 'Language' | 'Name' | 'P
 interface MetadataProperty {
   name: string;
   nested?: number;
-  type?: string | ReactNode;
+  type?: ReactNode;
   description?: string | ReactNode[];
   rules?: string[];
 }
@@ -56,14 +57,18 @@ const metadataProperties: Record<MetadataHeader, ComponentType<MetadataPropertyP
 
 function MetadataNameCell({ property }: MetadataPropertyProps) {
   const style = {
-    display: property.nested ? 'list-item' : 'block',
     marginLeft: property.nested ? spacing[6] * property.nested : 0,
-    listStyleType: (property.nested ?? 0) % 2 ? 'default' : 'circle',
   };
 
   return (
     <TableCell fitContent>
-      <P css={style}>
+      <P
+        className={mergeClasses(
+          'block',
+          property.nested && 'list-item',
+          (property.nested ?? 0) % 2 ? 'list-disc' : 'list-[circle]'
+        )}
+        style={style}>
         <CODE>{property.name}</CODE>
       </P>
     </TableCell>
@@ -85,13 +90,13 @@ function MetadataPropertyTypeRules({ property }: MetadataPropertyProps) {
   const id = useId();
 
   return (
-    <P css={{ marginTop: spacing[1] }}>
+    <P className="mt-1">
       {property.rules?.map(rule => (
         <FOOTNOTE
           key={`${id}-${property.name}-${rule}`}
           tag="span"
           theme="secondary"
-          css={{ display: 'block', whiteSpace: 'nowrap' }}>
+          className="block whitespace-nowrap">
           {rule}
         </FOOTNOTE>
       ))}

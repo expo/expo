@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
-import { shadows, theme, typography, mergeClasses } from '@expo/styleguide';
-import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
+import { mergeClasses } from '@expo/styleguide';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 import { slug } from 'github-slugger';
 import type { ComponentType, PropsWithChildren } from 'react';
@@ -9,10 +7,6 @@ import remarkGfm from 'remark-gfm';
 import remarkSupsub from 'remark-supersub';
 
 import { APIDataType } from './APIDataType';
-import { ELEMENT_SPACING, STYLES_OPTIONAL } from './styles';
-
-import { HeadingType } from '~/common/headingManager';
-import { Code as PrismCodeBlock } from '~/components/base/code';
 import {
   CommentContentData,
   CommentData,
@@ -25,8 +19,12 @@ import {
   TypeParameterData,
   TypePropertyDataFlags,
   TypeSignaturesData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+} from './APIDataTypes';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
+import { ELEMENT_SPACING, STYLES_OPTIONAL } from './styles';
+
+import { HeadingType } from '~/common/headingManager';
+import { Code as PrismCodeBlock } from '~/components/base/code';
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { Tag } from '~/ui/components/Tag';
@@ -78,7 +76,7 @@ const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
 export const mdComponents: MDComponents = {
-  blockquote: ({ children }) => <Callout>{children}</Callout>,
+  blockquote: ({ children }) => <Callout size="sm">{children}</Callout>,
   code: ({ className, children, node }: CodeComponentProps) => {
     return className ? (
       <PrismCodeBlock className={className} title={node?.data?.meta}>
@@ -145,6 +143,7 @@ const nonLinkableTypes = [
   'ModuleType',
   'NativeSyntheticEvent',
   'NavigationContainerRefWithCurrent',
+  'NotificationTimeoutError',
   'Options',
   'P',
   'Parameters',
@@ -154,6 +153,7 @@ const nonLinkableTypes = [
   'PermissionHookBehavior',
   'PropsWithChildren',
   'PropsWithoutRef',
+  'ProxyNativeModule',
   'React.FC',
   'RequestPermissionMethod',
   'RouteParamInput',
@@ -634,8 +634,13 @@ export const BoxSectionHeader = ({
 }) => {
   const TextWrapper = exposeInSidebar ? createInheritPermalink(baseNestingLevel) : SPAN;
   return (
-    <CALLOUT css={STYLES_NESTED_SECTION_HEADER} className={className}>
-      <TextWrapper weight="medium" className="text-secondary flex flex-row gap-2 items-center">
+    <CALLOUT
+      className={mergeClasses(
+        'flex border-y border-secondary -mx-5 my-4 px-5 py-2 bg-subtle',
+        'max-lg-gutters:-mx-4',
+        className
+      )}>
+      <TextWrapper className="text-tertiary flex flex-row gap-2 items-center font-medium">
         {Icon && <Icon className="icon-sm text-icon-secondary" />}
         {text}
       </TextWrapper>
@@ -857,7 +862,7 @@ export const CommentTextBlock = ({
   const exampleText = examples?.map((example, index) => (
     <div key={'example-' + index} className={mergeClasses(ELEMENT_SPACING, 'last:[&>*]:mb-0')}>
       {inlineHeaders ? (
-        <DEMI theme="secondary" className="flex flex-row gap-1.5 items-center mb-1.5">
+        <DEMI className="flex flex-row gap-1.5 items-center mb-1.5 text-secondary">
           <CodeSquare01Icon className="icon-sm" />
           Example
         </DEMI>
@@ -942,88 +947,3 @@ export function extractDefaultPropValue(
     (defaultProp: PropData) => defaultProp.name === name
   )[0]?.defaultValue;
 }
-
-export const STYLES_APIBOX = css({
-  borderRadius: borderRadius.lg,
-  borderWidth: 1,
-  borderStyle: 'solid',
-  borderColor: theme.border.secondary,
-  padding: spacing[5],
-  boxShadow: shadows.xs,
-  marginBottom: spacing[6],
-
-  h3: {
-    marginBottom: spacing[2.5],
-  },
-
-  'h2, h3, h4': {
-    marginTop: 0,
-  },
-
-  th: {
-    color: theme.text.tertiary,
-    padding: `${spacing[2.5]}px ${spacing[4]}px`,
-  },
-
-  li: {
-    marginBottom: 0,
-  },
-
-  [`.table-wrapper`]: {
-    boxShadow: 'none',
-    marginBottom: 0,
-  },
-
-  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
-    paddingInline: spacing[4],
-  },
-});
-
-export const STYLES_APIBOX_NESTED = css({
-  boxShadow: 'none',
-  marginBottom: spacing[5],
-  padding: `${spacing[4]}px ${spacing[5]}px 0`,
-
-  h4: {
-    marginTop: 0,
-  },
-});
-
-export const STYLES_APIBOX_WRAPPER = css({
-  marginBottom: spacing[3.5],
-  padding: `${spacing[4]}px ${spacing[5]}px 0`,
-
-  [`.table-wrapper:last-child`]: {
-    marginBottom: spacing[4],
-  },
-});
-
-export const STYLES_NESTED_SECTION_HEADER = css({
-  display: 'flex',
-  borderTop: `1px solid ${theme.border.secondary}`,
-  borderBottom: `1px solid ${theme.border.secondary}`,
-  margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
-  padding: `${spacing[2.5]}px ${spacing[5]}px`,
-  backgroundColor: theme.background.subtle,
-
-  h4: {
-    ...typography.fontSizes[16],
-    fontWeight: 600,
-    marginBottom: 0,
-    marginTop: 0,
-    color: theme.text.secondary,
-  },
-
-  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
-    marginInline: -spacing[4],
-  },
-});
-
-export const STYLES_NOT_EXPOSED_HEADER = css({
-  marginBottom: spacing[1],
-  display: 'inline-block',
-
-  code: {
-    marginBottom: 0,
-  },
-});

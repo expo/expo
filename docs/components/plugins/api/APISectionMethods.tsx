@@ -1,27 +1,21 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
-import { APIDataType } from '~/components/plugins/api/APIDataType';
-import {
-  AccessorDefinitionData,
-  MethodDefinitionData,
-  PropData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { APIDataType } from './APIDataType';
+import { AccessorDefinitionData, MethodDefinitionData, PropData } from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   CommentTextBlock,
   getMethodName,
   renderParams,
   resolveTypeName,
-  STYLES_APIBOX,
-  STYLES_APIBOX_NESTED,
-  STYLES_NOT_EXPOSED_HEADER,
   getH3CodeWithBaseNestingLevel,
   getTagData,
   getAllTagData,
-} from '~/components/plugins/api/APISectionUtils';
-import { ELEMENT_SPACING } from '~/components/plugins/api/styles';
+} from './APISectionUtils';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
+
 import { CALLOUT, H2, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
@@ -68,19 +62,22 @@ export const renderMethod = (
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
   const HeaderComponent = getH3CodeWithBaseNestingLevel(baseNestingLevel);
+
   return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
     const returnComment = getTagData('returns', comment);
     return (
       <div
-        key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
-        css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
+        key={`method-signature-${method.name || name}-${parameters?.length ?? 0}`}
+        className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <HeaderComponent>
           <MONOSPACE
             weight="medium"
-            css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
-            className="wrap-anywhere">
+            className={mergeClasses(
+              'wrap-anywhere',
+              !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
+            )}>
             {getMethodName(
               method as MethodDefinitionData,
               apiName,

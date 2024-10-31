@@ -242,7 +242,7 @@ export const UL = createTextComponent(
 );
 export const OL = createTextComponent(
   TextElement.OL,
-  'list-disc ml-6 [&_ol]:mt-2 [&_ol]:mb-4 [&_ul]:mt-2 [&_ul]:mb-4'
+  'list-decimal ml-6 [&_ol]:mt-2 [&_ol]:mb-4 [&_ul]:mt-2 [&_ul]:mb-4'
 );
 export const KBD = createTextComponent(
   TextElement.KBD,

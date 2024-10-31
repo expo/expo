@@ -637,6 +637,7 @@ module.exports = {
         ],
         ExpoSplashScreen: [
           { name: 'hideAsync', argumentsCount: 0, key: 0 },
+          { name: 'hide', argumentsCount: 0, key: 0 },
           { name: 'preventAutoHideAsync', argumentsCount: 0, key: 1 },
         ],
         ExpoSQLite: [

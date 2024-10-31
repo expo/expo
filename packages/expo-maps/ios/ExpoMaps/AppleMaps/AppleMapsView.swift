@@ -165,18 +165,10 @@ public final class AppleMapsView: UIView, ExpoMapView, UIGestureRecognizerDelega
   }
 
   func setEnabledPOIFilter(categories: [POICategoryType]) {
-    guard #available(iOS 13.0, *) else {
-      print("Enabling filter for points of interests is not avaliable for < iOS 13.0")
-      return
-    }
     pointsOfInterest.setEnabledPOIFilter(categories: categories)
   }
 
   func setEnabledPOIs(enabled: Bool) {
-    guard #available(iOS 13.0, *) else {
-      print("Manipulating points of interests visibility is not avaliable for < iOS 13.0")
-      return
-    }
     pointsOfInterest.setEnabledPOIs(enabled: enabled)
   }
 

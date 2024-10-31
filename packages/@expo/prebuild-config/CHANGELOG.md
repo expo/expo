@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 8.0.6 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
 ## 8.0.3 — 2024-10-25
 
 _This version does not introduce any user-facing changes._
