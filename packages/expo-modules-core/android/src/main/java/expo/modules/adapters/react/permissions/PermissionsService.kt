@@ -58,7 +58,12 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     mAskedPermissionsCache = context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
   }
 
-  override fun getPermissionsWithPromise(promise: @Suppress("DEPRECATION") expo.modules.core.Promise, vararg permissions: String) {
+  override fun getPermissionsWithPromise(
+    promise:
+    @Suppress("DEPRECATION")
+    expo.modules.core.Promise,
+    vararg permissions: String
+  ) {
     getPermissions(
       PermissionsResponseListener { permissionsMap: MutableMap<String, PermissionsResponse> ->
         val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
@@ -85,7 +90,12 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     )
   }
 
-  override fun askForPermissionsWithPromise(promise: @Suppress("DEPRECATION") expo.modules.core.Promise, vararg permissions: String) {
+  override fun askForPermissionsWithPromise(
+    promise:
+    @Suppress("DEPRECATION")
+    expo.modules.core.Promise,
+    vararg permissions: String
+  ) {
     askForPermissions(
       PermissionsResponseListener {
         getPermissionsWithPromise(promise, *permissions)
