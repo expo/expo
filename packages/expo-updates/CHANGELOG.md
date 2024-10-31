@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Improve web native module interface completeness ([#32512](https://github.com/expo/expo/pull/32512) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.26.3 — 2024-10-31
