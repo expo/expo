@@ -43,14 +43,16 @@ function useRouter() {
 exports.useRouter = useRouter;
 /**
  * @private
- * @returns The current global pathname with query params attached. This may change in the future to include the hostname from a predefined universal link. For example, `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`.
+ * @returns The current global pathname with query params attached. This may change in the future to include the hostname
+ * from a predefined universal link. For example, `/foobar?hey=world` becomes `https://acme.dev/foobar?hey=world`.
  */
 function useUnstableGlobalHref() {
     return (0, router_store_1.useStoreRouteInfo)().unstable_globalHref;
 }
 exports.useUnstableGlobalHref = useUnstableGlobalHref;
 /**
- * Get a list of selected file segments for the currently selected route. Segments are not normalized, so they will be the same as the file path. For example: `/[id]?id=normal -> ["[id]"]`.
+ * Returns a list of selected file segments for the currently selected route. Segments are not normalized,
+ * so they will be the same as the file path. For example, `/[id]?id=normal` becomes `["[id]"]`.
  *
  * @example
  * ```tsx app/profile/[user].tsx
@@ -66,20 +68,20 @@ exports.useUnstableGlobalHref = useUnstableGlobalHref;
  * ```
  *
  *
- * `useSegments` can be typed using an abstract. Consider the following file structure, and strictly typed `useSegments` function:
+ * `useSegments` can be typed using an abstract. Consider the following file structure:
  *
  * ```md
  * - app
  *   - [user]
- *     - index.js
- *     - followers.js
- *   - settings.js
+ *     - index.tsx
+ *     - followers.tsx
+ *   - settings.tsx
  * ```
  *
  *
- * This can be strictly typed using the following abstract:
+ * This can be strictly typed using the following abstract with `useSegments` hook:
  *
- * ```ts
+ * ```tsx
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
@@ -88,7 +90,8 @@ function useSegments() {
 }
 exports.useSegments = useSegments;
 /**
- * Global selected route location without search parameters. For example, `/acme?foo=bar` -> `/acme`. Segments will be normalized: `/[id]?id=normal` -> `/normal`.
+ * Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` returns `/acme`.
+ * Segments will be normalized. For example, `/[id]?id=normal` becomes `/normal`.
  *
  * @example
  * ```tsx app/profile/[user].tsx
@@ -96,7 +99,7 @@ exports.useSegments = useSegments;
  * import { useSegments } from 'expo-router';
  *
  * export default function Route() {
- *   // segments = ["profile", "[user]"]</b>
+ *   // segments = ["profile", "[user]"]
  *   const segments = useSegments();
  *
  *   return <Text>Hello</Text>;

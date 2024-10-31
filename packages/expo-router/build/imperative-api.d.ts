@@ -9,7 +9,13 @@ export type Router = {
     push: <T extends string | object>(href: Href<T>, options?: NavigationOptions) => void;
     /** Navigate to the provided href. */
     navigate: <T extends string | object>(href: Href<T>, options?: NavigationOptions) => void;
-    /** Navigate to route without appending to the history. */
+    /**
+     * Navigate to route without appending to the history. Can be used with
+     * [`useFocusEffect`](#usefocuseffecteffect-do_not_pass_a_second_prop)
+     * to redirect imperatively to a new screen.
+     *
+     * @see [Using `useRouter()` hook](/router/reference/redirects/) to redirect.
+     * */
     replace: <T extends string | object>(href: Href<T>, options?: NavigationOptions) => void;
     /** Navigate to a screen with a stack lower than the current screen. Using the provided count if possible, otherwise 1. */
     dismiss: (count?: number) => void;

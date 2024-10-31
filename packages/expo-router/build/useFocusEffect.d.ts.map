@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 {"version":3,"file":"useFocusEffect.d.ts","sourceRoot":"","sources":["../src/useFocusEffect.ts"],"names":[],"mappings":"AAOA;;GAEG;AACH,MAAM,MAAM,cAAc,GAAG,MAAM,SAAS,GAAG,IAAI,GAAG,CAAC,MAAM,IAAI,CAAC,CAAC;AAEnE;;;;;;;;;;;;;;;;;;;;;;;;GAwBG;AACH,wBAAgB,cAAc,CAAC,MAAM,EAAE,cAAc,EAAE,yBAAyB,CAAC,EAAE,KAAK,QAsGvF"}
+||||||| parent of a278645891 (Add hooks info and NativeIntent)
+{"version":3,"file":"useFocusEffect.d.ts","sourceRoot":"","sources":["../src/useFocusEffect.ts"],"names":[],"mappings":"AAMA;;GAEG;AACH,MAAM,MAAM,cAAc,GAAG,MAAM,SAAS,GAAG,IAAI,GAAG,CAAC,MAAM,IAAI,CAAC,CAAC;AAEnE;;;;;;;;;;;;;;;;;;;;;;;;GAwBG;AACH,wBAAgB,cAAc,CAAC,MAAM,EAAE,cAAc,EAAE,yBAAyB,CAAC,EAAE,KAAK,QAsGvF"}
+=======
+{"version":3,"file":"useFocusEffect.d.ts","sourceRoot":"","sources":["../src/useFocusEffect.ts"],"names":[],"mappings":"AAMA;;GAEG;AACH,MAAM,MAAM,cAAc,GAAG,MAAM,SAAS,GAAG,IAAI,GAAG,CAAC,MAAM,IAAI,CAAC,CAAC;AAEnE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GA+BG;AACH,wBAAgB,cAAc,CAAC,MAAM,EAAE,cAAc,EAAE,yBAAyB,CAAC,EAAE,KAAK,QAsGvF"}
+>>>>>>> a278645891 (Add hooks info and NativeIntent)
