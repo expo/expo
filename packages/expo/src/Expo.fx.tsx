@@ -5,6 +5,7 @@ import 'expo-asset';
 import * as Font from 'expo-font';
 import { AppRegistry, StyleSheet } from 'react-native';
 
+import { setupDomProcessEnv } from './dom/setup-dom-base-url';
 import { isRunningInExpoGo } from './environment/ExpoGo';
 import { AppEntryNotFound } from './errors/AppEntryNotFound';
 import { createErrorHandler } from './errors/ExpoErrorManager';
@@ -24,3 +25,5 @@ if (process.env.NODE_ENV !== 'production') {
   // Register a default component and expect `registerRootComponent` to be called later and update it.
   AppRegistry.registerComponent('main', () => AppEntryNotFound);
 }
+
+setupDomProcessEnv();

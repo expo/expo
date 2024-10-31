@@ -110,21 +110,13 @@ export function expoUseDomDirectivePlugin(
         if (isProduction) {
           // MUST MATCH THE EXPORT COMMAND!
           const hash = crypto.createHash('sha1').update(outputKey).digest('hex');
-          const outputName = `www.bundle/${hash}.html`;
-
-          if (platform === 'ios') {
-            proxyModule.push(`const source = { uri: "${outputName}" };`);
-          } else if (platform === 'android') {
-            proxyModule.push(`const source = { uri: "file:///android_asset/${outputName}" };`);
-          } else {
-            throw new Error(
-              'production "use dom" directive is not supported yet for platform: ' + platform
-            );
-          }
+          proxyModule.push(
+            `const source = { uri: process.env.EXPO_DOM_BASE_URL + "/${hash}.html" };`
+          );
         } else {
           proxyModule.push(
             // Add the basename to improve the Safari debug preview option.
-            `const source = { uri: new URL("/_expo/@dom/${fileBasename}?file=" + ${JSON.stringify(outputKey)}, require("react-native/Libraries/Core/Devtools/getDevServer")().url).toString() };`
+            `const source = { uri: process.env.EXPO_DOM_BASE_URL + "/${fileBasename}?file=" + ${JSON.stringify(outputKey)} };`
           );
         }
 

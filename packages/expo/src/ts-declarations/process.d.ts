@@ -11,6 +11,9 @@ declare const process: {
     /** Maps to the `experiments.baseUrl` property in the project Expo config. This is injected by `babel-preset-expo` and supports automatic cache invalidation. */
     EXPO_BASE_URL?: string;
 
+    /** Local root for DOM components  */
+    EXPO_DOM_BASE_URL?: string;
+
     /** Build-time representation of the `Platform.OS` value that the current JavaScript was bundled for. Does not support platform shaking wrapped require statements. */
     EXPO_OS?: string;
   };
