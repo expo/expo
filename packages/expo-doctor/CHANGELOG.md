@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash when using config plugins with an entry point other than app.plugin.js ([#32130](https://github.com/expo/expo/pull/32443) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 💡 Others
 
 ## 1.12.0 — 2024-10-25
