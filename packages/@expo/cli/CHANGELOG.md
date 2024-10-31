@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added DOM Components support to the `export` command. ([#32504](https://github.com/expo/expo/pull/32504) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Add fallback method for determining internal IP address. ([#32273](https://github.com/expo/expo/pull/32273) by [@kitten](https://github.com/kitten))
