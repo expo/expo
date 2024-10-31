@@ -30,7 +30,15 @@ public final class ImageView: ExpoView {
     .transformAnimatedImage
   ]
 
+  /**
+   An array of sources from which the view will asynchronously load one of them that fits best into the view bounds.
+   */
   var sources: [ImageSource]?
+
+  /**
+   An image that has been loaded from one of the `sources` or set by the shared ref to an image.
+   */
+  var sourceImage: UIImage?
 
   var pendingOperation: SDWebImageCombinedOperation?
 
@@ -224,7 +232,7 @@ public final class ImageView: ExpoView {
 
       let image = processImage(image, idealSize: idealSize, scale: scale)
       applyContentPosition(contentSize: idealSize, containerSize: frame.size)
-      renderImage(image)
+      renderSourceImage(image)
     } else {
       displayPlaceholderIfNecessary()
     }
@@ -242,7 +250,7 @@ public final class ImageView: ExpoView {
     }()
 
     if let path, let local = UIImage(named: path) {
-      renderImage(local)
+      renderSourceImage(local)
       return true
     }
 
@@ -280,6 +288,13 @@ public final class ImageView: ExpoView {
   }
 
   /**
+   A bool value whether the placeholder can be displayed, i.e. nothing has been displayed yet or the sources are unset.
+   */
+  var canDisplayPlaceholder: Bool {
+    return isViewEmpty || (!hasAnySource && sourceImage == nil)
+  }
+
+  /**
    Loads a placeholder from the best source provided in `placeholder` prop.
    A placeholder should be a local asset to have more time to show before the proper image is loaded,
    but remote assets are also supported – for the bundler and to cache them on the disk to load faster next time.
@@ -288,7 +303,7 @@ public final class ImageView: ExpoView {
   func loadPlaceholderIfNecessary() {
     // Exit early if placeholder is not set or there is already an image attached to the view.
     // The placeholder is only used until the first image is loaded.
-    guard let placeholder = bestPlaceholder, isViewEmpty || !hasAnySource else {
+    guard canDisplayPlaceholder, let placeholder = bestPlaceholder else {
       return
     }
 
@@ -301,7 +316,7 @@ public final class ImageView: ExpoView {
     let isPlaceholderHash = placeholder.isBlurhash || placeholder.isThumbhash
 
     imageManager.loadImage(with: placeholder.uri, context: context, progress: nil) { [weak self] placeholder, _, _, _, finished, _ in
-      guard let self = self, let placeholder = placeholder, finished else {
+      guard let self, let placeholder, finished else {
         return
       }
       self.placeholderImage = placeholder
@@ -314,7 +329,7 @@ public final class ImageView: ExpoView {
    Displays a placeholder if necessary – the placeholder can only be displayed when no image has been displayed yet or the sources are unset.
    */
   private func displayPlaceholderIfNecessary() {
-    guard isViewEmpty || !hasAnySource, let placeholder = placeholderImage else {
+    guard canDisplayPlaceholder, let placeholder = placeholderImage else {
       return
     }
     setImage(placeholder, contentFit: placeholderContentFit, isPlaceholder: true)
@@ -350,13 +365,16 @@ public final class ImageView: ExpoView {
     sdImageView.layer.frame.origin = offset
   }
 
-  internal func renderImage(_ image: UIImage?) {
+  internal func renderSourceImage(_ image: UIImage?) {
+    // Update the source image before it gets rendered or transitioned to.
+    sourceImage = image
+
     if let transition = transition, transition.duration > 0 {
       let options = transition.toAnimationOptions()
       let seconds = transition.duration / 1000
 
       UIView.transition(with: sdImageView, duration: seconds, options: options) { [weak self] in
-        if let self = self {
+        if let self {
           self.setImage(image, contentFit: self.contentFit, isPlaceholder: false)
         }
       }

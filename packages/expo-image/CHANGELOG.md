@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed displaying a placeholder when `useImage` hook is used. ([#32430](https://github.com/expo/expo/pull/32430) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 2.0.0-preview.0 — 2024-10-22
