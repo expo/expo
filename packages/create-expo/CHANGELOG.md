@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add log hint for `--template` and `--example` arguments.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
