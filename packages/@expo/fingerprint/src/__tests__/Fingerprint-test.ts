@@ -372,3 +372,27 @@ describe(diffFingerprints, () => {
     ]);
   });
 });
+
+describe('function api stability', () => {
+  const Fingerprint = require('../index');
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('maintains consistent hash and function signature expected by eas-cli', async () => {
+    vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
+    const fingerprintWithDebug = await Fingerprint.createFingerprintAsync('/app', {
+      platforms: ['android', 'ios'],
+      ignorePaths: ['android/**/*', 'ios/**/*'],
+      debug: true,
+    });
+    expect(fingerprintWithDebug.hash).toBe('1b77e8d7db6834f69b18e9f1cd04c03964a59312');
+
+    const fingerprintWithoutDebug = await Fingerprint.createFingerprintAsync('/app', {
+      platforms: ['android', 'ios'],
+      ignorePaths: ['android/**/*', 'ios/**/*'],
+      debug: false,
+    });
+    expect(fingerprintWithoutDebug.hash).toBe(fingerprintWithDebug.hash);
+  });
+});
