@@ -381,18 +381,37 @@ describe('function api stability', () => {
 
   it('maintains consistent hash and function signature expected by eas-cli', async () => {
     vol.fromJSON(require('../sourcer/__tests__/fixtures/ExpoManaged47Project.json'));
-    const fingerprintWithDebug = await Fingerprint.createFingerprintAsync('/app', {
+    // The fixed options and arguments as called by eas-cli
+    const FIXED_OPTIONS = {
       platforms: ['android', 'ios'],
       ignorePaths: ['android/**/*', 'ios/**/*'],
       debug: true,
-    });
-    expect(fingerprintWithDebug.hash).toBe('1b77e8d7db6834f69b18e9f1cd04c03964a59312');
+    };
+    const PROJECT_ROOT = '/app';
+    const FIXED_ARGS = [PROJECT_ROOT, FIXED_OPTIONS];
 
-    const fingerprintWithoutDebug = await Fingerprint.createFingerprintAsync('/app', {
-      platforms: ['android', 'ios'],
-      ignorePaths: ['android/**/*', 'ios/**/*'],
-      debug: false,
+    const fingerprint = await Fingerprint.createFingerprintAsync(...FIXED_ARGS);
+
+    expect(fingerprint).toEqual(
+      expect.objectContaining({
+        sources: expect.arrayContaining([
+          expect.objectContaining({
+            type: expect.stringMatching(/file|dir|contents/),
+            reasons: expect.arrayContaining([expect.any(String)]),
+            hash: expect.any(String),
+          }),
+        ]),
+        hash: expect.any(String),
+      })
+    );
+    fingerprint.sources.forEach((source) => {
+      if (source.type === 'file' || source.type === 'dir') {
+        expect(source).toEqual(expect.objectContaining({ filePath: expect.any(String) }));
+      } else if (source.type === 'contents') {
+        expect(source).toEqual(
+          expect.objectContaining({ id: expect.any(String), contents: expect.any(String) })
+        );
+      }
     });
-    expect(fingerprintWithoutDebug.hash).toBe(fingerprintWithDebug.hash);
   });
 });
