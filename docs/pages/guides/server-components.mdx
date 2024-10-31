@@ -392,20 +392,6 @@ export default function Index() {
 
 You can use this instead of the `Head` component from `expo-router/head`, but it only works on web for now.
 
-## Known limitations
-
-> This is a very early technical preview that we're actively developing.
-
-- Expo Snack does not support bundling Server Components.
-- EAS Update does not work with Server Components yet.
-- DOM components cannot use Server Actions yet.
-- Production deployment is very limited and not recommended yet.
-- Server Rendering RSC payloads to HTML is not supported yet. This means static and server output doesn't fully work yet.
-- [`generateStaticParams`](/router/reference/static-rendering/#generatestaticparams) is not yet supported.
-- HTML `form` integration with Server Actions is not supported yet (this partially works automatically, but data is not encrypted).
-- `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
-- Server Actions that invoke other server actions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.
-
 ## Full React Server Components mode
 
 > This mode is even more experimental!
@@ -519,3 +505,17 @@ You can host the website locally with the [express server adapter](/router/refer
 ### Native
 
 Production exports for React Server Components on native are not yet supported. This is planned for Expo SDK 53.
+
+## Known limitations
+
+> This is a very early technical preview that we're actively developing.
+
+- Expo Snack does not support bundling Server Components.
+- EAS Update does not work with Server Components yet.
+- DOM components cannot use Server Actions yet.
+- Production deployment is very limited and not recommended yet.
+- Server Rendering RSC payloads to HTML is not supported yet. This means static and server output doesn't fully work yet.
+- [`generateStaticParams`](/router/reference/static-rendering/#generatestaticparams) is not yet supported.
+- HTML `form` integration with Server Actions is not supported yet (this partially works automatically, but data is not encrypted).
+- `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
+- Server Actions that invoke other server actions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.
