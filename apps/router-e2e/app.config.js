@@ -18,6 +18,7 @@ module.exports = {
   },
   // For testing the output bundle
   jsEngine: process.env.E2E_ROUTER_JS_ENGINE ?? (process.env.E2E_ROUTER_SRC ? 'jsc' : 'hermes'),
+  newArchEnabled: true,
   splash: {
     image: './assets/splash.png',
     resizeMode: 'contain',
@@ -41,11 +42,7 @@ module.exports = {
       'expo-build-properties',
       {
         ios: {
-          newArchEnabled: true,
           ccacheEnabled: true,
-        },
-        android: {
-          newArchEnabled: true,
         },
       },
     ],
