@@ -32,9 +32,11 @@
     }
   },
   "dependencies": {
+    "@dotlottie/react-player": "^1.6.19",
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo/react-native-action-sheet": "^3.8.0",
     "@expo/styleguide-base": "^1.0.1",
+    "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.2.0",
     "@react-native-community/netinfo": "11.4.1",
@@ -86,10 +88,10 @@
     "expo-keep-awake": "~14.0.0",
     "expo-linear-gradient": "~14.0.0",
     "expo-linking": "~7.0.0",
+    "expo-live-photo": "~0.0.1",
     "expo-local-authentication": "~15.0.0",
     "expo-localization": "~16.0.0",
     "expo-location": "~18.0.0",
-    "expo-live-photo": "~0.0.1",
     "expo-mail-composer": "~14.0.0",
     "expo-maps": "0.6.1",
     "expo-media-library": "~17.0.0",
