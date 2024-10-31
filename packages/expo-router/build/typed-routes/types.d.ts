@@ -41,7 +41,8 @@ export type Routes = DynamicRouteTemplate | AllUngroupedRoutes<StaticRoutes>;
  * typed parameters. It can either be:
  * - **string**: A full path like `/profile/settings` or a relative path like `../settings`.
  * - **object**: An object with a `pathname` and optional `params`. The `pathname` can be
- * a full path like `/profile/settings` or a relative path like `../settings`. The params can be an object of key-value pairs.
+ * a full path like `/profile/settings` or a relative path like `../settings`.
+ * The params can be an object of key-value pairs.
  *
  * It can also accept an optional `<T>` parameter to correctly type dynamic routes string.
  *

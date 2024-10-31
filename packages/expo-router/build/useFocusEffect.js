@@ -30,10 +30,12 @@ exports.useFocusEffect = void 0;
 const React = __importStar(require("react"));
 const useLoadedNavigation_1 = require("./link/useLoadedNavigation");
 /**
- * Hook to run an effect whenever a route is **focused**. Similar to [`React.useEffect`](https://react.dev/reference/react/useEffect).
+ * Hook to run an effect whenever a route is **focused**. Similar to
+ * [`React.useEffect`](https://react.dev/reference/react/useEffect).
  *
  * This can be used to perform side-effects such as fetching data or subscribing to events.
- * The passed callback should be wrapped in [`React.useCallback`](https://react.dev/reference/react/useCallback) to avoid running the effect too often.
+ * The passed callback should be wrapped in [`React.useCallback`](https://react.dev/reference/react/useCallback)
+ * to avoid running the effect too often.
  *
  * @example
  * ```tsx

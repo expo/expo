@@ -10,8 +10,9 @@ const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const matchers_1 = require("./matchers");
 /**
- * Returns the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop) to imperatively access
- * layout-specific functionality like `navigation.openDrawer()` in a [Drawer](/router/advanced/drawer/) layout.
+ * Returns the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop)
+ * to imperatively access layout-specific functionality like `navigation.openDrawer()` in a
+ * [Drawer](/router/advanced/drawer/) layout.
  *
  * @example
  * ```tsx app/index.tsx

@@ -1,12 +1,51 @@
 import { Router } from './imperative-api';
 import { RouteParams, RouteSegments, Routes, UnknownOutputParams } from './types';
 type SearchParams = Record<string, string | string[]>;
+/**
+ * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
+ * of the navigator which contains the current screen.
+ *
+ * @example
+ * ```tsx
+ * import { useRootNavigationState } from 'expo-router';
+ *
+ * export default function Route() {
+ *  const { routes } = useRootNavigationState();
+ *
+ *  return <Text>{routes[0].name}</Text>;
+ * }
+ * ```
+ */
 export declare function useRootNavigationState(): any;
 export declare function useRouteInfo(): import("./LocationProvider").UrlObject;
-/** @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead, which returns a React `ref`. */
+/**
+ * @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead,
+ * which returns a React `ref`.
+ */
 export declare function useRootNavigation(): import("@react-navigation/core").NavigationContainerRef<ReactNavigation.RootParamList> | null;
-/** @return The root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
+/**
+ * @return The root `<NavigationContainer />` ref for the app. The `ref.current` may be `null`
+ * if the `<NavigationContainer />` hasn't mounted yet.
+ */
 export declare function useNavigationContainerRef(): import("@react-navigation/core").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
+/**
+ *
+ * Returns the [Router](#router) object for imperative navigation.
+ *
+ * @example
+ *```tsx
+ * import { useRouter } from 'expo-router';
+ * import { Text } from 'react-native';
+ *
+ * export default function Route() {
+ *  const router = useRouter();
+ *
+ *  return (
+ *   <Text onPress={() => router.push('/home')}>Go Home</Text>
+ *  );
+ *}
+ * ```
+ */
 export declare function useRouter(): Router;
 /**
  * @private
@@ -74,8 +113,8 @@ export declare function usePathname(): string;
 export declare function useGlobalSearchParams<TParams extends SearchParams = UnknownOutputParams>(): RouteParams<TParams>;
 /**
  * Returns URL parameters for globally selected route, including dynamic path segments.
- * This function updates even when the route is not focused. Useful for analytics or other background
- * operations that don't draw to the screen.
+ * This function updates even when the route is not focused. Useful for analytics or
+ * other background operations that don't draw to the screen.
  *
  * Route URL example: `acme://profile/baconbrix?extra=info`.
  *
@@ -109,7 +148,7 @@ export declare function useLocalSearchParams<TParams extends SearchParams = Unkn
  *
  * Route URL example: `acme://profile/baconbrix?extra=info`.
  *
- * To observe updates even when the invoking route is not focused, use [`useGlobalSearchParams()`](#useglobalsearchparams).
+ * To observe updates even when the invoking route is not focused, use [`useGlobalSearchParams`](#useglobalsearchparams).
  *
  * > **Note:** For usage information, see
  * [Local versus global search parameters](/router/reference/url-parameters/#local-versus-global-url-parameters).

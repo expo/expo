@@ -8,6 +8,21 @@ exports.useSearchParams = exports.useLocalSearchParams = exports.useGlobalSearch
 const react_1 = __importDefault(require("react"));
 const Route_1 = require("./Route");
 const router_store_1 = require("./global-state/router-store");
+/**
+ * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
+ * of the navigator which contains the current screen.
+ *
+ * @example
+ * ```tsx
+ * import { useRootNavigationState } from 'expo-router';
+ *
+ * export default function Route() {
+ *  const { routes } = useRootNavigationState();
+ *
+ *  return <Text>{routes[0].name}</Text>;
+ * }
+ * ```
+ */
 function useRootNavigationState() {
     return (0, router_store_1.useStoreRootState)();
 }
@@ -16,16 +31,40 @@ function useRouteInfo() {
     return (0, router_store_1.useStoreRouteInfo)();
 }
 exports.useRouteInfo = useRouteInfo;
-/** @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead, which returns a React `ref`. */
+/**
+ * @deprecated Use [`useNavigationContainerRef`](#usenavigationcontainerref) instead,
+ * which returns a React `ref`.
+ */
 function useRootNavigation() {
     return router_store_1.store.navigationRef.current;
 }
 exports.useRootNavigation = useRootNavigation;
-/** @return The root `<NavigationContainer />` ref for the app. The `ref.current` may be `null` if the `<NavigationContainer />` hasn't mounted yet. */
+/**
+ * @return The root `<NavigationContainer />` ref for the app. The `ref.current` may be `null`
+ * if the `<NavigationContainer />` hasn't mounted yet.
+ */
 function useNavigationContainerRef() {
     return router_store_1.store.navigationRef;
 }
 exports.useNavigationContainerRef = useNavigationContainerRef;
+/**
+ *
+ * Returns the [Router](#router) object for imperative navigation.
+ *
+ * @example
+ *```tsx
+ * import { useRouter } from 'expo-router';
+ * import { Text } from 'react-native';
+ *
+ * export default function Route() {
+ *  const router = useRouter();
+ *
+ *  return (
+ *   <Text onPress={() => router.push('/home')}>Go Home</Text>
+ *  );
+ *}
+ * ```
+ */
 function useRouter() {
     return react_1.default.useMemo(() => ({
         push: router_store_1.store.push,
