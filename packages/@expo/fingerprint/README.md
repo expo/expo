@@ -214,10 +214,10 @@ const config = {
 module.exports = config;
 ```
 
-If you are using `@expo/fingerprint` through `expo-updates` (where `@expo/fingerprint` is installed as a transitive dependency), you can import fingerprint from `expo-updates/fingerprint`:
+If you are using `@expo/fingerprint` through `expo` (where `@expo/fingerprint` is installed as a transitive dependency), you can import fingerprint from `expo/fingerprint`:
 
 ```js
-/** @type {import('expo-updates/fingerprint').Config} */
+/** @type {import('expo/fingerprint').Config} */
 const config = {
   sourceSkips: [
     'ExpoConfigRuntimeVersionIfString',
