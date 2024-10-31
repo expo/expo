@@ -86,8 +86,8 @@ it("doesn't throw when the spawn fails with an exception", async () => {
   const client = new RudderDetachedClient();
   await client.record([createRecord({ event: 'Start Project' })]);
 
-  expect(spawn).toThrow();
   await expect(client.flush()).resolves.not.toThrow();
+  expect(spawn).toThrow();
 });
 
 it('skips flushing when no events are recorded', async () => {
