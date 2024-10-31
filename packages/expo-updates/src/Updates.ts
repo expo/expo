@@ -1,6 +1,7 @@
 import { CodedError } from 'expo-modules-core';
 
 import ExpoUpdates from './ExpoUpdates';
+import { UpdatesCheckAutomaticallyNativeValue } from './ExpoUpdatesModule.types';
 import {
   LocalAssets,
   Manifest,
@@ -45,11 +46,14 @@ export const channel: string | null = ExpoUpdates.channel ?? null;
  */
 export const runtimeVersion: string | null = ExpoUpdates.runtimeVersion ?? null;
 
-const _checkAutomaticallyMapNativeToJS = {
-  ALWAYS: 'ON_LOAD',
-  ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
-  NEVER: 'NEVER',
-  WIFI_ONLY: 'WIFI_ONLY',
+const _checkAutomaticallyMapNativeToJS: Record<
+  UpdatesCheckAutomaticallyNativeValue,
+  UpdatesCheckAutomaticallyValue
+> = {
+  ALWAYS: UpdatesCheckAutomaticallyValue.ON_LOAD,
+  ERROR_RECOVERY_ONLY: UpdatesCheckAutomaticallyValue.ON_ERROR_RECOVERY,
+  NEVER: UpdatesCheckAutomaticallyValue.NEVER,
+  WIFI_ONLY: UpdatesCheckAutomaticallyValue.WIFI_ONLY,
 };
 
 /**

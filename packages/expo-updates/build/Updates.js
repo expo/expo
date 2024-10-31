@@ -1,5 +1,6 @@
 import { CodedError } from 'expo-modules-core';
 import ExpoUpdates from './ExpoUpdates';
+import { UpdatesCheckAutomaticallyValue, } from './Updates.types';
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:
  * - enabled set to false in configuration
@@ -31,10 +32,10 @@ export const channel = ExpoUpdates.channel ?? null;
  */
 export const runtimeVersion = ExpoUpdates.runtimeVersion ?? null;
 const _checkAutomaticallyMapNativeToJS = {
-    ALWAYS: 'ON_LOAD',
-    ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
-    NEVER: 'NEVER',
-    WIFI_ONLY: 'WIFI_ONLY',
+    ALWAYS: UpdatesCheckAutomaticallyValue.ON_LOAD,
+    ERROR_RECOVERY_ONLY: UpdatesCheckAutomaticallyValue.ON_ERROR_RECOVERY,
+    NEVER: UpdatesCheckAutomaticallyValue.NEVER,
+    WIFI_ONLY: UpdatesCheckAutomaticallyValue.WIFI_ONLY,
 };
 /**
  * Determines if and when `expo-updates` checks for and downloads updates automatically on startup.
