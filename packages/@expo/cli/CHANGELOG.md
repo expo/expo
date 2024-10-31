@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent changes to telemetry from crashing `expo` package upgrade ([#32490](https://github.com/expo/expo/pull/32490) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 💡 Others
 
 ## 0.19.9 — 2024-10-31
