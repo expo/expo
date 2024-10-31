@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import <EXSplashScreen/EXSplashScreenViewProvider.h>
+#import "EXSplashScreenViewProvider.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
