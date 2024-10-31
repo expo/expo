@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Fix `ClassCastException` in headless app loader under the old architecture. ([#32390](https://github.com/expo/expo/pull/32390) by [@robertying](https://github.com/robertying))
+
 ## 2.0.0-preview.8 — 2024-10-31
 
 ### 🛠 Breaking changes
