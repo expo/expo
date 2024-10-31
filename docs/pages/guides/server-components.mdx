@@ -100,7 +100,7 @@ export async function Pokemon() {
 }
 ```
 
-In order to render this as a server component, you'll need to return it from a server action.
+To render this as a server component, you'll need to return it from a server action.
 
 ### Key points
 
@@ -362,11 +362,11 @@ SECRET=123
 
 To detect which platform your code is bundled for, use the `process.env.EXPO_OS` environment variable. For example, `process.env.EXPO_OS === 'ios'`. Prefer this to `Platform.OS` as `react-native` is not fully optimized for React Server Components yet and won't work as expected.
 
-You can detect if code is running in the server by performing a `typeof window === 'undefined'` check. This will always return `true` on client devices and `false` on the server.
+You can detect if code is running on the server by performing a `typeof window === 'undefined'` check. This will always return `true` on client devices and `false` on the server.
 
 ## Testing with jest
 
-Library authors can test their modules support Server Components by using `jest-expo`. Learn more in the [testing react server components guide](/guides/testing-rsc).
+Library authors can test their modules support Server Components by using `jest-expo`. Learn more in the [Testing React Server Components](/guides/testing-rsc) guide.
 
 ## Metadata
 
@@ -401,7 +401,7 @@ You can use this instead of the `Head` component from `expo-router/head`, but it
 - DOM components cannot use Server Actions yet.
 - Production deployment is very limited and not recommended yet.
 - Server Rendering RSC payloads to HTML is not supported yet. This means static and server output doesn't fully work yet.
-- `generateStaticParams` is not yet supported.
+- [`generateStaticParams`](/router/reference/static-rendering/#generatestaticparams) is not yet supported.
 - HTML `form` integration with Server Actions is not supported yet (this partially works automatically, but data is not encrypted).
 - `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
 - Server Actions that invoke other server actions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.
@@ -410,7 +410,7 @@ You can use this instead of the `Head` component from `expo-router/head`, but it
 
 > This mode is even more experimental!
 
-You can leverage even more features by enabling full React Server Components support, where the default rendering mode for routes is as server components instead of client components. This mode is still in development as the router and React Navigation need to be rewritten to support concurrency.
+Enabling full React Server Components support allows you to leverage even more features. In this mode, the default rendering mode for routes is server components instead of client components. It is still in development, as the Router and React Navigation need to be rewritten to support concurrency.
 
 To enable full Server Components mode, you need to enable the `reactServerComponents` flag in the app config:
 
@@ -428,7 +428,7 @@ To enable full Server Components mode, you need to enable the `reactServerCompon
 With this enabled, all routes will render as Server Components by default. In the future this will reduce server/client waterfalls and enable build-time rendering to provide better offline support.
 
 - There is currently no stack routing. The custom layouts, `Stack`, `Tabs`, and `Drawer`, do not support Server Components yet.
-- Most `<Link />` props are not supported yet.
+- Most `Link` component props are not supported yet.
 
 ### Reloading server components
 
