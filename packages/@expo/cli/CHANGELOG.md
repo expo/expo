@@ -13,7 +13,7 @@
 ### 💡 Others
 
 - Update `@urql/core` and related dependencies and remove `graphql` dependency. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
-- Catch `EMFILE` errors on MacOS and clarify the next step.
+- Catch `EMFILE` errors on MacOS and clarify the next step. ([#32513](https://github.com/expo/expo/pull/32513) by [@byCedric](https://github.com/byCedric))
 
 ## 0.19.13 — 2024-10-31
 
