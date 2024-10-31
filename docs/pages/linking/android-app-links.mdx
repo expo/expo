@@ -25,9 +25,7 @@ The following example shows a basic configuration that enables your app to appea
       "intentFilters": [
         {
           "action": "VIEW",
-          /* @info Add the <CODE>autoVerify</CODE> property to the intent filter in app config to enable app links.*/
           "autoVerify": true,
-          /* @end */
           "data": [
             {
               "scheme": "https",
@@ -37,141 +35,7 @@ The following example shows a basic configuration that enables your app to appea
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }
-      ]
+      
     }
   }
 }
-```
-
-## Set up two-way association
-
-To setup **two-way association** between the website and Android app, you will need the following:
-
-- **Website verification:** This requires creating a **assetlinks.json** file inside the **/.well-known** directory and hosting it on the target website. This file is used to verify that the app opened from a given link is the correct app.
-- **Native app verification:** This requires some form of code signing that references the target website domain (URL).
-
-### Create assetlinks.json file
-
-<Step label="1">
-
-Create an **assetlinks.json** file for the website verification (also known as [digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) file) at **/.well-known/assetlinks.json**. This file is used to verify that the app opened for a given link.
-
-If you're using Expo Router to build your website (or any other modern React framework such as Remix, Next.js, and so on), create **assetlinks.json** at **public/.well-known/assetlinks.json**. For legacy Expo webpack projects, create the file at **web/.well-known/assetlinks.json**.
-
-</Step>
-
-<Step label="2">
-
-Get the value of `package_name` from your app config, under `android.package`.
-
-</Step>
-
-<Step label="3">
-
-Get the value of `sha256_cert_fingerprints` from your app's signing certificate. If you're using [EAS Build](/build/setup/) to build your Android app, after creating a build:
-
-- Run `eas credentials -p android` command, and select the build profile to get its fingerprint value.
-- Copy the fingerprint value listed under `SHA256 Fingerprint`.
-
-<Collapsible summary="Alternate method to obtain the SHA256 certificate fingerprint from Google Play Console">
-
-If you're not using EAS to manage code signing, you can find the **sha256_cert_fingerprints** by building and submitting your app manually to the [Google Play Console](https://play.google.com/console/):
-
-- Inside the Google Play Console's dashboard, go to **Release > Setup > App Signing**.
-- Find the correct **Digital Asset Links JSON** snippet for your app.
-- Copy the value looks like `14:6D:E9:83...` and paste it into your **public/.well-known/assetlinks.json** file under `sha256_cert_fingerprints`.
-
-</Collapsible>
-
-</Step>
-
-<Step label="4">
-
-Add `package_name` and `sha256_cert_fingerprints` to the **assetlinks.json** file:
-
-```json public/.well-known/assetlinks.json
-[
-  {
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target": {
-      "namespace": "android_app",
-      /* @info Replace <CODE>com.example</CODE> with your app's package name. */
-      "package_name": "com.example",
-      /* @end */
-      "sha256_cert_fingerprints": [
-        // Supports multiple fingerprints for different apps and keys
-        /* @info Replace <CODE>14:6D:E9:83...</CODE> with your app's SHA256 certificate fingerprint. */
-        "14:6D:E9:83:51:7F:66:01:84:93:4F:2F:5E:E0:8F:3A:D6:F4:CA:41:1A:CF:45:BF:8D:10:76:76:CD"
-        /* @end */
-      ]
-    }
-  }
-]
-```
-
-> **info** You can add multiple fingerprints to the `sha256_cert_fingerprints` array to support different variants of your app. For more information, see [Android's documentation on how to declare website associations](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc).
-
-</Step>
-
-### Host assetlinks.json file
-
-Host the **assetlinks.json** file using a web server with your domain. This file must be served with the content-type `application/json` and accessible over an HTTPS connection. Verify that your browser can access this file by typing the complete URL in the address bar.
-
-### Native app verification
-
-Install the app on an Android device to trigger the [Android app verification](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) process.
-
-Once you have your app opened, see [Handle links into your app](/linking/into-your-app/#handle-urls) for more information on how to handle inbound links and show the user the content they requested.
-
-## Debugging
-
-The Expo CLI enables you to test Android App Links without deploying a website. Utilizing the [`--tunnel`](/more/expo-cli/#tunneling) functionality, you can forward your dev server to a publicly available HTTPS URL.
-
-<Step label="1">
-
-Set the environment variable `EXPO_TUNNEL_SUBDOMAIN=my-custom-domain` where `my-custom-domain` is a unique string that you use during development. This ensures that your tunnel URL is consistent across dev server restarts.
-
-</Step>
-
-<Step label="2">
-
-Add `intentFilters` to your app config as [described above](#add-intentfilters-to-the-app-config). Replace the `host` value with a Ngrok URL: `my-custom-domain.ngrok.io`.
-
-</Step>
-
-<Step label="3">
-
-Start your dev server with the `--tunnel` flag:
-
-<Terminal cmd={['$ npx expo start --tunnel']} />
-
-</Step>
-
-<Step label="4">
-
-Compile the development build on your device:
-
-<Terminal cmd={['$ npx expo run:android']} />
-
-</Step>
-
-<Step label="5">
-
-Use the following `adb` command to start the intent activity and open the link on your app or type the custom domain link in your device's web browser.
-
-<Terminal
-  cmd={[
-    '$ adb shell am start -a android.intent.action.VIEW  -c android.intent.category.BROWSABLE -d "https://my-custom-domain.ngrok.io/" <your-package-name>',
-  ]}
-/>
-
-</Step>
-
-## Troubleshooting
-
-Here are some common tips to help you troubleshoot when implementing Android App Links:
-
-- Ensure your website is served over HTTPS and with the content-type `application/json`
-- [Verify Android app links](https://developer.android.com/training/app-links/verify-android-applinks)
-- Android verification may take 20 seconds or longer to take effect, so be sure to wait until it is completed.
-- If you update your web files, rebuild the native app to trigger a server update on the vendor side (Google)
