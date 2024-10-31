@@ -49,7 +49,7 @@ PODS:
     - ExpoModulesCore
   - Expo (52.0.0-preview.14):
     - ExpoModulesCore
-  - expo-dev-client (5.0.0-preview.5):
+  - expo-dev-client (5.0.0-preview.6):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -525,7 +525,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (13.0.0):
     - ExpoModulesCore
-  - ExpoSplashScreen (0.29.0):
+  - ExpoSplashScreen (0.29.1):
     - ExpoModulesCore
   - ExpoSQLite (15.0.1):
     - ExpoModulesCore
@@ -3238,7 +3238,7 @@ SPEC CHECKSUMS:
   EXManifests: d2859eb09b260b4e819299782fb5e43da36e248b
   EXNotifications: 3aa75b51d57b5331001befad0a0e073eaaef0203
   Expo: 51450b6be1cf72fcd2bb48f283e1f0e847dacf50
-  expo-dev-client: 06f372189b2c2a61e86337ce3f68574557178418
+  expo-dev-client: c3644298f06b250f55e0beefbe3a53f7122b2180
   expo-dev-launcher: e003de1740d15b8092211465ef05b56ed9d221b5
   expo-dev-menu: a1da7da53a16a3d0aae6673984db5e9e1948bd20
   expo-dev-menu-interface: 6f83f3119a91557e1d04cf43d6320ef545082fd4
@@ -3287,7 +3287,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 39a198e64bf522948fe60e270e49a0c7757912c1
   ExpoSMS: 884d6627c0848795ff9492fbfc7ba6087111e344
   ExpoSpeech: 27bb25844919711ebf0e201ce0bef2897d3693c7
-  ExpoSplashScreen: 126e28d50322976ecfb6c374fe230de5f67550fc
+  ExpoSplashScreen: c5386c0a932f5f2e95818006bb3104b3d80c80f1
   ExpoSQLite: 341dd1f1103fd7c59d93360bb6062aef21a64fb3
   ExpoStoreReview: f3439c43f13fa497cfe07d16b095f39101ed5548
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
