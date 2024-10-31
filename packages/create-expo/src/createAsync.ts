@@ -96,16 +96,15 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     resolvedTemplate = await promptTemplateAsync();
   } else {
     resolvedTemplate = props.template ?? null;
-  }
-
-  console.log(
-    chalk`Creating an Expo project using the {cyan ${resolvedTemplate ?? 'default'}} template.\n`
-  );
-  if (!resolvedTemplate) {
-    console.log(chalk`{gray To choose from all available templates pass in the --template arg:}`);
-    console.log(chalk`  {gray $} npx ${CLI_NAME} {cyan --template}\n`);
-    console.log(chalk`{gray To choose from all available examples pass in the --example arg:}`);
-    console.log(chalk`  {gray $} npx ${CLI_NAME} {cyan --example}\n`);
+    console.log(
+      chalk`Creating an Expo project using the {cyan ${resolvedTemplate ?? 'default'}} template.\n`
+    );
+    if (!resolvedTemplate) {
+      console.log(chalk`{gray To choose from all available templates pass in the --template arg:}`);
+      console.log(chalk`  {gray $} npx ${CLI_NAME} {cyan --template}\n`);
+      console.log(chalk`{gray To choose from all available examples pass in the --example arg:}`);
+      console.log(chalk`  {gray $} npx ${CLI_NAME} {cyan --example}\n`);
+    }
   }
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
@@ -153,11 +152,10 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     resolvedExample = await promptExamplesAsync();
   } else if (props.example) {
     resolvedExample = props.example;
+    console.log(chalk`Creating an Expo project using the {cyan ${resolvedExample}} example.\n`);
   }
 
   await ensureExampleExists(resolvedExample);
-
-  console.log(chalk`Creating an Expo project using the {cyan ${resolvedExample}} example.\n`);
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
   await fs.promises.mkdir(projectRoot, { recursive: true });
