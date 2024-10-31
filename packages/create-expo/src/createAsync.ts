@@ -9,6 +9,7 @@ import {
   promptExamplesAsync,
 } from './Examples';
 import * as Template from './Template';
+import { CLI_NAME } from './cmd';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
 import {
@@ -97,6 +98,16 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     resolvedTemplate = props.template ?? null;
   }
 
+  console.log(
+    chalk`Creating an Expo project using the {cyan ${resolvedTemplate ?? 'default'}} template.\n`
+  );
+  if (!resolvedTemplate) {
+    console.log(chalk`{gray To choose from all available templates pass in the --template arg:}`);
+    console.log(chalk`  {gray $} npx ${CLI_NAME} {cyan --template}\n`);
+    console.log(chalk`{gray To choose from all available examples pass in the --example arg:}`);
+    console.log(chalk`  {gray $} npx ${CLI_NAME} {cyan --example}\n`);
+  }
+
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
   await fs.promises.mkdir(projectRoot, { recursive: true });
 
@@ -145,6 +156,8 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
   }
 
   await ensureExampleExists(resolvedExample);
+
+  console.log(chalk`Creating an Expo project using the {cyan ${resolvedExample}} example.\n`);
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
   await fs.promises.mkdir(projectRoot, { recursive: true });
