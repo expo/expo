@@ -75,7 +75,7 @@ it('flushes in detached process', async () => {
   );
 });
 
-it('exception when flushing in detached process is swallowed', async () => {
+it("doesn't throw when the spawn fails with an exception", async () => {
   // Mock the `spawn` method
   jest.mocked(spawn).mockImplementation(() => {
     throw new Error('Failed to spawn');
