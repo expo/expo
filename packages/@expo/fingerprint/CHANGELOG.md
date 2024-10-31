@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Convert cli to typescript ([#32487](https://github.com/expo/expo/pull/32487) by [@wschurman](https://github.com/wschurman))
+
 ## 0.11.1 — 2024-10-22
 
 ### 💡 Others
