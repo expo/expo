@@ -39,7 +39,7 @@ object VersionedUtils {
     }
   }
 
-  private fun reloadExpoApp() {
+  private fun reloadExpoApp() = synchronized(this) {
     val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
       FLog.e(
         ReactConstants.TAG,
