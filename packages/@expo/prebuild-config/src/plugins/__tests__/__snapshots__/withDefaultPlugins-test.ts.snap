@@ -118,19 +118,6 @@ exports[`built-in plugins compiles mods 1`] = `
                                     },
                                   },
                                 ],
-                                "color": [
-                                  {
-                                    "$": {
-                                      "alpha": "1",
-                                      "blue": "0.12549019607843137",
-                                      "colorSpace": "custom",
-                                      "customColorSpace": "sRGB",
-                                      "green": "0.0",
-                                      "key": "backgroundColor",
-                                      "red": "0.0",
-                                    },
-                                  },
-                                ],
                                 "constraints": [
                                   {
                                     "constraint": [
@@ -1339,19 +1326,6 @@ exports[`built-in plugins introspects mods 1`] = `
                                     },
                                   },
                                 ],
-                                "color": [
-                                  {
-                                    "$": {
-                                      "alpha": "1",
-                                      "blue": "0.12549019607843137",
-                                      "colorSpace": "custom",
-                                      "customColorSpace": "sRGB",
-                                      "green": "0.0",
-                                      "key": "backgroundColor",
-                                      "red": "0.0",
-                                    },
-                                  },
-                                ],
                                 "constraints": [
                                   {
                                     "constraint": [
@@ -2289,19 +2263,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                                       "flexibleMaxX": "YES",
                                       "flexibleMaxY": "YES",
                                       "key": "autoresizingMask",
-                                    },
-                                  },
-                                ],
-                                "color": [
-                                  {
-                                    "$": {
-                                      "alpha": "1",
-                                      "blue": "0.12549019607843137",
-                                      "colorSpace": "custom",
-                                      "customColorSpace": "sRGB",
-                                      "green": "0.0",
-                                      "key": "backgroundColor",
-                                      "red": "0.0",
                                     },
                                   },
                                 ],
