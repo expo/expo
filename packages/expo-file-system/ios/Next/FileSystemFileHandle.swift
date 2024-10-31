@@ -12,17 +12,12 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   }
 
   func read(_ length: Int) throws -> Data {
-    var data: Data?
     do {
-      data = try handle.read(upToCount: length)
+      let data = try handle.read(upToCount: length)
+      return data ?? Data()
     } catch {
       throw UnableToReadHandleException(error.localizedDescription)
     }
-    // happens when there is no data at the end of the file
-    guard let data = data else {
-      return Data()
-    }
-    return data
   }
 
   func write(_ bytes: Data) throws {

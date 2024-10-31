@@ -180,8 +180,7 @@ export declare class FileHandle {
    */
   offset: number | null;
   /*
-   * A size of the file in bytes.
-   * Null if the file handle is closed.
+   * A size of the file in bytes or `null` if the file handle is closed.
    */
   size: number | null;
 }
