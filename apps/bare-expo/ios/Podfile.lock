@@ -49,7 +49,7 @@ PODS:
     - ExpoModulesCore
   - Expo (52.0.0-preview.13):
     - ExpoModulesCore
-  - expo-dev-client (5.0.0-preview.4):
+  - expo-dev-client (5.0.0-preview.5):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -3238,7 +3238,7 @@ SPEC CHECKSUMS:
   EXManifests: d2859eb09b260b4e819299782fb5e43da36e248b
   EXNotifications: 3aa75b51d57b5331001befad0a0e073eaaef0203
   Expo: e8a4e1297fda4f2a4179a8620278b387f373f58e
-  expo-dev-client: cadf052885e7a9abe16afad48f8f78d623560859
+  expo-dev-client: 06f372189b2c2a61e86337ce3f68574557178418
   expo-dev-launcher: 4efce5e45d2092c682c11af405b12d647fd85f3c
   expo-dev-menu: a1da7da53a16a3d0aae6673984db5e9e1948bd20
   expo-dev-menu-interface: 6f83f3119a91557e1d04cf43d6320ef545082fd4
@@ -3298,7 +3298,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: ea83cc6f03bec1938c3b8fb4dcb9df71960fba36
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: f4a07ca36169a95b36b9abbedbdb8e69b6247357
-  EXUpdates: 95b3c9486e3471d131131b72a8e768075fde6356
+  EXUpdates: 74f693bf274d2f1e1fdc17b5c72b94fb9199ad2b
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   FBLazyVector: 7075bb12898bc3998fd60f4b7ca422496cc2cdf7
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120

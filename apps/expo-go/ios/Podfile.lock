@@ -79,7 +79,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (14.0.0):
     - ExpoModulesCore
-  - ExpoHead (4.0.0-preview.8):
+  - ExpoHead (4.0.0-preview.9):
     - ExpoModulesCore
   - ExpoImage (2.0.0-preview.0):
     - ExpoModulesCore
@@ -2994,7 +2994,7 @@ SPEC CHECKSUMS:
   ExpoFont: 2fb6d98e0a5352bebcaa568d6bfbba0e0f2e0097
   ExpoGL: 25f19d2db3ad0e48ee43b16e0272c0e526968c1d
   ExpoHaptics: e636188d1d5f7ccb79f3c1bfab47aaf5a1768c73
-  ExpoHead: ce51ebf7b783ce441aeb3d3c82abc7702358b67b
+  ExpoHead: b00e81ac02b4bd0cae42f1aad597fdb912d4ba95
   ExpoImage: bd04fd6e5f97d2a29284bd7113cc51d7c206d17d
   ExpoImageManipulator: 774eb1a17c5db07944d6f9000650d422ebb3ce47
   ExpoImagePicker: 6977a8aa31e7fc21d209e9a5f0772f360f5f5f50
@@ -3028,7 +3028,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: ea83cc6f03bec1938c3b8fb4dcb9df71960fba36
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: f4a07ca36169a95b36b9abbedbdb8e69b6247357
-  EXUpdates: 74ab51155cad9347c48331a589ba90a863ee877a
+  EXUpdates: 707dd709dfa278e334f3a4c238104e55b2289b93
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   FBLazyVector: aa59bef5c46e93168bffcf3dc37ee1e176de799a
   FirebaseCore: 8542de610f35f86196ba26cdb2544565a5157c8e
