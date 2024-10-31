@@ -105,6 +105,7 @@
     "structured-headers": "^0.4.1",
     "tar": "^6.2.1",
     "temp-dir": "^2.0.0",
+    "tempy": "^0.7.1",
     "terminal-link": "^2.1.1",
     "undici": "^6.18.2",
     "unique-string": "~2.0.0",
@@ -164,7 +165,6 @@
     "nullthrows": "^1.1.1",
     "playwright": "^1.40.1",
     "taskr": "^1.1.0",
-    "tempy": "^0.7.1",
     "tree-kill": "^1.2.2",
     "tsd": "^0.28.1"
   }
