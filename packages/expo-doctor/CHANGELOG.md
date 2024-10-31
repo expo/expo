@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove `updates` and `jsEngine` from unintentionally-not-CNG check, since they are used by non-native code as well ([#322006](https://github.com/expo/expo/pull/322006) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 💡 Others
 
 ## 1.12.1 — 2024-10-31
