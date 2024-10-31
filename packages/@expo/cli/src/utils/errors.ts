@@ -1,6 +1,6 @@
 import { AssertionError } from 'assert';
 import chalk from 'chalk';
-import { spawnSync } from 'child_process';
+import { execSync } from 'child_process';
 
 import { exit, exception, warn } from '../log';
 
@@ -95,9 +95,9 @@ function handleTooManyOpenFileErrors(error: any) {
   if ('code' in error && error.code === 'EMFILE' && process.platform === 'darwin') {
     try {
       // Try to recover watchman, if it's not installed this will throw
-      spawnSync('watchman', ['shutdown-server']);
+      execSync('watchman shutdown-server', { stdio: 'ignore' });
       // NOTE(cedric): this both starts the watchman server and resets all watchers
-      spawnSync('watchman', ['watch-del-all']);
+      execSync('watchman watch-del-all', { stdio: 'ignore' });
 
       warn(
         'Watchman is installed but was likely not enabled when starting Metro, try starting your project again.\nIf this problem persists, follow the troubleshooting guide of Watchman: https://facebook.github.io/watchman/docs/troubleshooting'
