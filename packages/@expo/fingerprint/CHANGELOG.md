@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add function signature stability test ([#32493](https://github.com/expo/expo/pull/32493) by [@quinlanj](https://github.com/quinlanj))
+
 ## 0.11.1 — 2024-10-22
 
 ### 💡 Others
@@ -73,7 +75,7 @@
 
 ### 🛠 Breaking changes
 
-- Include `runtimeVersion` back to fingerprint. Use `SourceSkips.ExpoConfigRuntimeVersionIfString` to keep original behavior.  ([#28712](https://github.com/expo/expo/pull/28712) by [@kudo](https://github.com/kudo))
+- Include `runtimeVersion` back to fingerprint. Use `SourceSkips.ExpoConfigRuntimeVersionIfString` to keep original behavior. ([#28712](https://github.com/expo/expo/pull/28712) by [@kudo](https://github.com/kudo))
 
 ## 0.8.0 — 2024-05-15
 
