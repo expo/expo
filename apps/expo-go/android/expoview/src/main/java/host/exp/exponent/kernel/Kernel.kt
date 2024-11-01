@@ -505,6 +505,8 @@ class Kernel : KernelInterface() {
       }
     }
 
+    val snackChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_SNACK_CHANNEL)
+
     // transfer the release-channel param to the built URL as this will cause Expo Go to treat
     // this as a different project
     var releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL)
@@ -524,7 +526,7 @@ class Kernel : KernelInterface() {
       )
     }
 
-    // transfer the expo-updates query params: runtime-version, channel-name
+    // transfer the expo-updates query params: runtime-version, channel-name )
     val expoUpdatesQueryParameters = listOf(
       ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_RUNTIME_VERSION,
       ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_CHANNEL_NAME
@@ -534,6 +536,10 @@ class Kernel : KernelInterface() {
       if (queryParameterValue != null) {
         builder.appendQueryParameter(queryParameter, queryParameterValue)
       }
+    }
+
+    snackChannel?.let {
+      builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_SNACK_CHANNEL, it)
     }
 
     // ignore fragments as well (e.g. those added by auth-session)
@@ -614,15 +620,12 @@ class Kernel : KernelInterface() {
         manifestUrl,
         object : AppLoaderCallback {
           override fun onOptimisticManifest(optimisticManifest: Manifest) {
-            kernelScope.launch {
-              sendOptimisticManifestToExperienceActivity(
-                optimisticManifest
-              )
-            }
+            Exponent.instance
+              .runOnUiThread { sendOptimisticManifestToExperienceActivity(optimisticManifest) }
           }
 
           override fun onManifestCompleted(manifest: Manifest) {
-            kernelScope.launch {
+            Exponent.instance.runOnUiThread {
               try {
                 openManifestUrlStep2(manifestUrl, manifest, finalExistingTask)
               } catch (e: JSONException) {
@@ -632,11 +635,7 @@ class Kernel : KernelInterface() {
           }
 
           override fun onBundleCompleted(localBundlePath: String) {
-            kernelScope.launch {
-              sendBundleToExperienceActivity(
-                localBundlePath
-              )
-            }
+            Exponent.instance.runOnUiThread { sendBundleToExperienceActivity(localBundlePath) }
           }
 
           override fun emitEvent(params: JSONObject) {
@@ -654,7 +653,7 @@ class Kernel : KernelInterface() {
           }
 
           override fun onError(e: Exception) {
-            kernelScope.launch { handleError(e) }
+            Exponent.instance.runOnUiThread { handleError(e) }
           }
         },
         forceCache
