@@ -34,14 +34,12 @@ __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, expor
   exports.default = undefined;
   var _react = _interopRequireDefault(require(_dependencyMap[1]));
   var _internal = require(_dependencyMap[2]);
-  var source = {
-    uri: process.env.EXPO_DOM_BASE_URL + "/${mockSha1()}.html"
-  };
+  var filePath = "${mockSha1()}.html";
   var _default = exports.default = _react.default.forwardRef((props, ref) => {
     return _react.default.createElement(_internal.WebView, {
       ref,
       ...props,
-      source
+      filePath,
     });
   });
 },896,[4,157,897]);

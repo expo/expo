@@ -160,11 +160,8 @@ export function updateDomComponentAssetsForMD5Naming({
     }
     const assetEntity = files.get(artifact.filename);
     assert(assetEntity);
-    const regexp = new RegExp(
-      `(\\buri:.*process\\.env\\.EXPO_DOM_BASE_URL.*"/)(${hash}\\.html)(")`,
-      'g'
-    );
-    assetEntity.contents = assetEntity.contents.toString().replace(regexp, `$1${htmlMd5}.html$3`);
+    const regexp = new RegExp(`(['"])${hash}\\.html(['"])`, 'g');
+    assetEntity.contents = assetEntity.contents.toString().replace(regexp, `$1${htmlMd5}.html$2`);
   }
   assetsMetadata.push({
     path: htmlOutputName,
