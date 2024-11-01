@@ -228,7 +228,9 @@ fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager
     packagerConnection = devSettings.public_getPackagerConnectionSettings()
   )
   val oldDevServerHelper: DevServerHelper = DevSupportManagerBase::class.java.getProtectedFieldValue(
-    devSupportManager, "mDevServerHelper")
+    devSupportManager,
+    "mDevServerHelper"
+  )
   DevSupportManagerBase::class.java.setProtectedDeclaredField(
     devSupportManager,
     "mDevServerHelper",
