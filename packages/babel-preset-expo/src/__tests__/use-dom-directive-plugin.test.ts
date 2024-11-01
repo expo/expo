@@ -90,19 +90,17 @@ export default function App() {
     expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
     expect(res.code).toMatch('react');
     expect(res.code).toMatch('expo/dom/internal');
-    expect(res.code).toMatch(/\/unknown\?/);
+    expect(res.code).toMatch(/unknown\?/);
 
     expect(res.code).toMatchInlineSnapshot(`
       "import React from 'react';
       import { WebView } from 'expo/dom/internal';
-      var source = {
-        uri: process.env.EXPO_DOM_BASE_URL + "/unknown?file=" + "file:///unknown"
-      };
+      var filePath = "unknown?file=" + "file:///unknown";
       export default React.forwardRef(function (props, ref) {
         return React.createElement(WebView, Object.assign({
           ref: ref
         }, props, {
-          source: source
+          filePath: filePath
         }));
       });"
     `);
@@ -120,19 +118,17 @@ it(`adds dom components proxy for ios in production`, () => {
   expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
   expect(res.code).toMatch('react');
   expect(res.code).toMatch('expo/dom/internal');
-  expect(res.code).toMatch(/\/[a-zA-Z0-9]+\.html/);
+  expect(res.code).toMatch(/[a-zA-Z0-9]+\.html/);
 
   expect(res.code).toMatchInlineSnapshot(`
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
-    var source = {
-      uri: process.env.EXPO_DOM_BASE_URL + "/98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html"
-    };
+    var filePath = "98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html";
     export default React.forwardRef(function (props, ref) {
       return React.createElement(WebView, Object.assign({
         ref: ref
       }, props, {
-        source: source
+        filePath: filePath
       }));
     });"
   `);
@@ -142,19 +138,17 @@ it(`adds dom components proxy for android in production`, () => {
   expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
   expect(res.code).toMatch('react');
   expect(res.code).toMatch('expo/dom/internal');
-  expect(res.code).toMatch(/\/[a-zA-Z0-9]+\.html/);
+  expect(res.code).toMatch(/[a-zA-Z0-9]+\.html/);
 
   expect(res.code).toMatchInlineSnapshot(`
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
-    var source = {
-      uri: process.env.EXPO_DOM_BASE_URL + "/98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html"
-    };
+    var filePath = "98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html";
     export default React.forwardRef(function (props, ref) {
       return React.createElement(WebView, Object.assign({
         ref: ref
       }, props, {
-        source: source
+        filePath: filePath
       }));
     });"
   `);

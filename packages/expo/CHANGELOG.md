@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- `process.env.EXPO_DOM_BASE_URL` can now be used inside DOM Components and native. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
+- Added EAS Updates support for DOM Components. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

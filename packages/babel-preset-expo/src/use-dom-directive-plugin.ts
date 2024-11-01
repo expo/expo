@@ -110,20 +110,18 @@ export function expoUseDomDirectivePlugin(
         if (isProduction) {
           // MUST MATCH THE EXPORT COMMAND!
           const hash = crypto.createHash('sha1').update(outputKey).digest('hex');
-          proxyModule.push(
-            `const source = { uri: process.env.EXPO_DOM_BASE_URL + "/${hash}.html" };`
-          );
+          proxyModule.push(`const filePath = "${hash}.html";`);
         } else {
           proxyModule.push(
             // Add the basename to improve the Safari debug preview option.
-            `const source = { uri: process.env.EXPO_DOM_BASE_URL + "/${fileBasename}?file=" + ${JSON.stringify(outputKey)} };`
+            `const filePath = "${fileBasename}?file=" + ${JSON.stringify(outputKey)};`
           );
         }
 
         proxyModule.push(
           `
 export default React.forwardRef((props, ref) => {
-  return React.createElement(WebView, { ref, ...props, source });
+  return React.createElement(WebView, { ref, ...props, filePath });
 });`
         );
 
