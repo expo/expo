@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -118,6 +119,10 @@ public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer imple
       Log.e("expo-notifications", "Could not parse notification from JSON string. " + e.getMessage());
     }
     return bundle;
+  }
+
+  public void executeTask(@NotNull Bundle bundle) {
+    mTask.execute(bundle, null);
   }
 
   //endregion

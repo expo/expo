@@ -1,7 +1,10 @@
 package expo.modules.notifications.service.delegates
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import com.google.firebase.messaging.RemoteMessage
+import expo.modules.interfaces.taskManager.TaskServiceProviderHelper
 import expo.modules.notifications.notifications.RemoteMessageSerializer
 import expo.modules.notifications.notifications.background.BackgroundRemoteNotificationTaskConsumer
 import expo.modules.notifications.notifications.debug.DebugLogging
@@ -94,9 +97,16 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     val notification = createNotification(remoteMessage)
     DebugLogging.logNotification("FirebaseMessagingDelegate.onMessageReceived: notification", notification)
     NotificationsService.receive(context, notification)
-    // background tasks are separate from the main notification handling flow; they are executed through task-manager
+    runTaskManagerTasks(remoteMessage)
+  }
+
+  private fun runTaskManagerTasks(remoteMessage: RemoteMessage) {
+    // getTaskServiceImpl() has a side effect:
+    // the TaskService constructor calls restoreTasks which then constructs a BackgroundRemoteNotificationTaskConsumer,
+    // and the getBackgroundTasks() call below doesn't return an empty collection.
+    TaskServiceProviderHelper.getTaskServiceImpl(context.applicationContext)
     getBackgroundTasks().forEach {
-      it.scheduleJob(RemoteMessageSerializer.toBundle(remoteMessage))
+      it.executeTask(RemoteMessageSerializer.toBundle(remoteMessage))
     }
   }
 
