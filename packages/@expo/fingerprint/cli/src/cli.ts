@@ -1,63 +1,87 @@
 #!/usr/bin/env node
-import fs from 'fs';
-import path from 'path';
+import arg from 'arg';
+import chalk from 'chalk';
+import Debug from 'debug';
+import { boolish } from 'getenv';
 
-import { Fingerprint } from '../../build/Fingerprint.types.js';
+import { runLegacyCLIAsync } from './runLegacyCLIAsync';
+import { logCmdError } from './utils/errors';
+import * as Log from './utils/log';
 
-function readFingerprintFile(path: string): Fingerprint {
-  try {
-    return JSON.parse(fs.readFileSync(path, 'utf-8'));
-  } catch (e: any) {
-    console.log(`Unable to read fingerprint file ${path}: ${e.message}`);
-    process.exit(1);
-  }
+// Setup before requiring `debug`.
+if (boolish('EXPO_DEBUG', false)) {
+  Debug.enable('@expo/fingeprint:*');
+} else if (Debug.enabled('@expo/fingeprint:')) {
+  process.env.EXPO_DEBUG = '1';
 }
 
-(async () => {
-  const Fingerprint = await import('../../build/index.js');
+export type Command = (argv?: string[]) => void;
 
-  if (process.argv.length !== 3 && process.argv.length !== 4 && process.argv.length !== 5) {
-    console.log(
-      `Usage: ${path.basename(process.argv[1])} projectRoot [fingerprintFile1ToDiff] [fingerprintFile2ToDiff]`
-    );
-    process.exit(1);
+const commands: { [command: string]: () => Promise<Command> } = {
+  // Add a new command here
+  'fingerprint:generate': () =>
+    import('./commands/generateFingerprint.js').then((i) => i.generateFingerprintAsync),
+  'fingerprint:diff': () =>
+    import('./commands/diffFingerprints.js').then((i) => i.diffFingerprintsAsync),
+};
+
+const args = arg(
+  {
+    // Types
+    '--version': Boolean,
+    '--help': Boolean,
+
+    // Aliases
+    '-h': '--help',
+  },
+  {
+    permissive: true,
   }
+);
 
-  const projectRoot = process.argv[2];
+if (args['--version']) {
+  // Version is added in the build script.
+  const packageJSON = require('../../package.json');
+  console.log(packageJSON.version);
+  process.exit(0);
+}
 
-  const fingerprintFile1ToDiff = process.argv[3];
-  const fingerprintFile2ToDiff = process.argv[4];
+const command = args._[0];
+const commandArgs = args._.slice(1);
 
-  const fingeprint1ToDiff = fingerprintFile1ToDiff
-    ? readFingerprintFile(fingerprintFile1ToDiff)
-    : undefined;
-  const fingeprint2ToDiff = fingerprintFile2ToDiff
-    ? readFingerprintFile(fingerprintFile2ToDiff)
-    : undefined;
+// Handle `--help` flag
+if ((args['--help'] && !command) || !command) {
+  Log.exit(
+    chalk`
+{bold Usage}
+  {dim $} npx @expo/fingeprint <command>
 
-  const options = {
-    debug: !!process.env.DEBUG,
-    useRNCoreAutolinkingFromExpo: process.env.USE_RNCORE_AUTOLINKING_FROM_EXPO
-      ? ['1', 'true'].includes(process.env.USE_RNCORE_AUTOLINKING_FROM_EXPO)
-      : undefined,
-  };
-  try {
-    if (fingeprint1ToDiff && fingeprint2ToDiff) {
-      const diff = Fingerprint.diffFingerprints(fingeprint1ToDiff, fingeprint2ToDiff);
-      console.log(JSON.stringify(diff, null, 2));
-    } else if (fingeprint1ToDiff) {
-      const diff = await Fingerprint.diffFingerprintChangesAsync(
-        fingeprint1ToDiff,
-        projectRoot,
-        options
-      );
-      console.log(JSON.stringify(diff, null, 2));
-    } else {
-      const fingerprint = await Fingerprint.createFingerprintAsync(projectRoot, options);
-      console.log(JSON.stringify(fingerprint, null, 2));
-    }
-  } catch (e) {
-    console.error('Uncaught Error', e);
-    process.exit(1);
-  }
-})();
+{bold Commands}
+  ${Object.keys(commands).sort().join(', ')}
+
+{bold Options}
+  --help, -h      Displays this message
+
+For more information run a command with the --help flag
+  {dim $} npx @expo/fingeprint fingerprint:generate --help
+  `,
+    0
+  );
+}
+
+// Push the help flag to the subcommand args.
+if (args['--help']) {
+  commandArgs.push('--help');
+}
+
+// Install exit hooks
+process.on('SIGINT', () => process.exit(0));
+process.on('SIGTERM', () => process.exit(0));
+
+if (!(command in commands)) {
+  runLegacyCLIAsync(args._).catch(logCmdError);
+} else {
+  commands[command]()
+    .then((exec) => exec(commandArgs))
+    .catch(logCmdError);
+}
