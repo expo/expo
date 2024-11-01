@@ -15,7 +15,8 @@
           "EAS_BUILD_PLATFORM": "android",
           "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
           "EXPO_ROOT_DIR": "/home/expo/workingdir/build",
-          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
+          "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1"
         }
       },
       "ios": {
@@ -29,7 +30,8 @@
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
-          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
+          "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1"
         }
       }
     },

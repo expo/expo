@@ -4,7 +4,7 @@ package host.exp.exponent;
 
 import java.lang.reflect.InvocationTargetException;
 
-import expo.modules.splashscreen.SplashScreenImageResizeMode;
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode;
 import host.exp.exponent.generated.ExponentBuildConstants;
 
 public class Constants {

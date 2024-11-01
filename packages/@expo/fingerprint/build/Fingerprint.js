@@ -50,26 +50,26 @@ function diffFingerprints(fingerprint1, fingerprint2) {
         const compareResult = (0, Sort_1.compareSource)(source1, source2);
         if (compareResult === 0) {
             if (source1.hash !== source2.hash) {
-                diff.push({ op: 'changed', source: source2 });
+                diff.push({ op: 'changed', beforeSource: source1, afterSource: source2 });
             }
             ++index1;
             ++index2;
         }
         else if (compareResult < 0) {
-            diff.push({ op: 'removed', source: source1 });
+            diff.push({ op: 'removed', removedSource: source1 });
             ++index1;
         }
         else {
-            diff.push({ op: 'added', source: source2 });
+            diff.push({ op: 'added', addedSource: source2 });
             ++index2;
         }
     }
     while (index1 < fingerprint1.sources.length) {
-        diff.push({ op: 'removed', source: fingerprint1.sources[index1] });
+        diff.push({ op: 'removed', removedSource: fingerprint1.sources[index1] });
         ++index1;
     }
     while (index2 < fingerprint2.sources.length) {
-        diff.push({ op: 'added', source: fingerprint2.sources[index2] });
+        diff.push({ op: 'added', addedSource: fingerprint2.sources[index2] });
         ++index2;
     }
     return diff;

@@ -8,7 +8,7 @@ import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
 SplashScreen.preventAutoHideAsync();
 
-function useSplashScreen(loadingFunction: () => void) {
+function useSplashScreen(loadingFunction: () => Promise<void>) {
   const [isLoadingCompleted, setLoadingComplete] = React.useState(false);
 
   // Load any resources or data that we need prior to rendering the app
@@ -21,7 +21,7 @@ function useSplashScreen(loadingFunction: () => void) {
         console.warn(e);
       } finally {
         setLoadingComplete(true);
-        await SplashScreen.hideAsync();
+        await SplashScreen.hide();
       }
     }
 

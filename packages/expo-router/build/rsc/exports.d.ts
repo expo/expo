@@ -13,7 +13,9 @@ export declare function Slot(): import("react").JSX.Element;
 export declare function Stack(): import("react").JSX.Element;
 export declare function Tabs(): import("react").JSX.Element;
 export declare function Navigator(): void;
-/** Redirects to the href as soon as the component is mounted. */
+/**
+ * Redirects to the `href` as soon as the component is mounted.
+ */
 export declare function Redirect({ href }: {
     href: Href;
 }): null;

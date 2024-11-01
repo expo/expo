@@ -58,8 +58,8 @@ export function setSplashScreenLegacyMainActivity(
   mainActivity = addImports(
     mainActivity,
     [
-      'expo.modules.splashscreen.singletons.SplashScreen',
-      'expo.modules.splashscreen.SplashScreenImageResizeMode',
+      'host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen',
+      'host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode',
       'com.facebook.react.ReactRootView',
       'android.os.Bundle',
     ],

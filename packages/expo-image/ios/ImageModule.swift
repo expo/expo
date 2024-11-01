@@ -27,10 +27,13 @@ public final class ImageModule: Module {
 
       Prop("source") { (view: ImageView, sources: Either<[ImageSource], SharedRef<UIImage>>?) in
         if let imageRef: SharedRef<UIImage> = sources?.get() {
+          // Unset an array of traditional sources and just render the image ref right away.
           view.sources = nil
-          view.renderImage(imageRef.ref)
+          view.renderSourceImage(imageRef.ref)
         } else {
+          // Update an array of sources. Image will start loading once the all props are updated.
           view.sources = sources?.get()
+          view.sourceImage = nil
         }
       }
 

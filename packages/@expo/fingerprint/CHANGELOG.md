@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
+- Show more information in fingerprint diff ([#32486](https://github.com/expo/expo/pull/32486) by [@wschurman](https://github.com/wschurman))
+- Add ability to diff two fingeprint files to CLI ([#32488](https://github.com/expo/expo/pull/32488) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
 - Add function signature stability test ([#32493](https://github.com/expo/expo/pull/32493) by [@quinlanj](https://github.com/quinlanj))
+- Convert cli to typescript ([#32487](https://github.com/expo/expo/pull/32487) by [@wschurman](https://github.com/wschurman))
 
 ## 0.11.1 — 2024-10-22
 

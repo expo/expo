@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 4.0.0-preview.11 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.10 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Support protocol hrefs on native. ([#31646](https://github.com/expo/expo/pull/31646) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.9 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.0-preview.8 — 2024-10-30
 
 _This version does not introduce any user-facing changes._

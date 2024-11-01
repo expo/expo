@@ -47,7 +47,8 @@ target 'Expo Go' do
       'expo-maps',
       'expo-network-addons',
       'expo-insights',
-      'expo-face-detector'
+      'expo-face-detector',
+      'expo-splash-screen',
     ],
     includeTests: true,
     flags: {
