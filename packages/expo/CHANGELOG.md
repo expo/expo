@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Re-exported `@expo/fingerprint` as `expo/fingerprint`. ([#32494](https://github.com/expo/expo/pull/32494) by [@quinlanj](https://github.com/quinlanj))
+
 ## 52.0.0-preview.12 — 2024-10-30
 
 _This version does not introduce any user-facing changes._
