@@ -91,6 +91,13 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'How to Handle App Center Retirement',
+    event: 'React Universe On Air #43',
+    description: 'Quinlan Jung',
+    videoId: 'X7EMrgI3A9g',
+    link: 'https://www.callstack.com/podcasts/how-to-handle-app-center-retirement',
+  },
+  {
     title: 'Using RSCs in Expo Router',
     event: 'PodRocket Season 4',
     description: 'Evan Bacon',
@@ -162,6 +169,16 @@ export const PODCASTS = [
 ] as Talk[];
 
 export const LIVE_STREAMS = [
+  {
+    title: 'How to migrate a React website to native with Expo DOM components',
+    event: 'Expo Live Stream',
+    videoId: 'lLlu4fPMXes',
+  },
+  {
+    title: 'New Architecture adoption strategies',
+    event: 'Expo Live Stream',
+    videoId: 'VqFwrEoni40',
+  },
   {
     title: 'Hidden gems of the Expo Modules API',
     event: 'Expo Live Stream',
