@@ -196,7 +196,7 @@ function RootLayout() {
   const ref = useNavigationContainerRef();
 
   useEffect(() => {
-    if (ref) {
+    if (ref?.current) {
       routingInstrumentation.registerNavigationContainer(ref);
     }
   }, [ref]);

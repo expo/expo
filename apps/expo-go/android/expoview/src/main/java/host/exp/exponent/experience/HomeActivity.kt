@@ -29,10 +29,10 @@ import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
-import expo.modules.splashscreen.SplashScreenImageResizeMode
-import expo.modules.splashscreen.SplashScreenModule
-import expo.modules.splashscreen.SplashScreenPackage
-import expo.modules.splashscreen.singletons.SplashScreen
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
+import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule

@@ -47,16 +47,18 @@ export namespace ExpoRouter {
 export type Routes = DynamicRouteTemplate | AllUngroupedRoutes<StaticRoutes>;
 
 /**
- * The main routing type for Expo Router. Includes all available routes with strongly typed parameters.
+ * The main routing type for Expo Router. It includes all available routes with strongly
+ * typed parameters. It can either be:
+ * - **string**: A full path like `/profile/settings` or a relative path like `../settings`.
+ * - **object**: An object with a `pathname` and optional `params`. The `pathname` can be
+ * a full path like `/profile/settings` or a relative path like `../settings`.
+ * The params can be an object of key-value pairs.
  *
- * A Href can either be a string or an object.
+ * It can also accept an optional `<T>` parameter to correctly type dynamic routes string.
  *
- * Href accepts an optional T parameter to correctly type dynamic routes string.
- *
- * For example: Without the generic the route `/folder/[slug]` will be typed as `/folder/${string}`,
- * which is incorrect as `/folder/apple/orange` would be valid. But by passing desired route as a generic `Href<'/folder/apple'>`,
- * it will validate against this edge case.
- *
+ * For example, without the generic the route `/folder/[slug]` will be typed as `/folder/${string}`,
+ * which is incorrect as `/folder/apple/orange` would be valid. However, by passing desired
+ * route as a generic `Href<'/folder/apple'>`, it will validate against this edge case.
  */
 export type Href<T extends string | object = { __branded__: any }> = GeneratedHref<T>;
 

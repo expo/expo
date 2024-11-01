@@ -92,7 +92,6 @@ export async function getTemplateAsync(): Promise<IBSplashScreenDocument> {
                               </imageView>
                           </subviews>
                           <viewLayoutGuide key="safeArea" id="Rmq-lb-GrQ"/>
-                          <color key="backgroundColor" red="0.0" green="0.0" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                           <constraints>
                               <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerY" secondItem="EXPO-ContainerView" secondAttribute="centerY" id="0VC-Wk-OaO"/>
                               <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerX" secondItem="EXPO-ContainerView" secondAttribute="centerX" id="zR4-NK-mVN"/>

@@ -32,12 +32,13 @@ export declare function useNavigatorContext(): NavigatorContextValue;
 /**
  * Renders the currently selected content.
  *
- * There are actually two different implementations of Slot:
- *  - Used inside a _layout as the Navigator
- *  - Used inside a Navigator as the content
+ * There are actually two different implementations of `<Slot/>`:
+ *  - Used inside a `_layout` as the `Navigator`
+ *  - Used inside a `Navigator` as the content
  *
- * As a custom <Navigator /> will set the NavigatorContext.contextKey to be the current _layout,
- * we can use this to determine if we are inside a custom navigator or not.
+ * Since a custom `Navigator` will set the `NavigatorContext.contextKey` to
+ * the current `_layout`, you can use this to determine if you are inside
+ * a custom navigator or not.
  */
 export declare function Slot(props: Omit<NavigatorProps<any>, 'children'>): React.JSX.Element;
 /**
