@@ -67,7 +67,10 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
     }, [children]);
 }
 exports.useFilterScreenChildren = useFilterScreenChildren;
-/** Return a navigator that automatically injects matched routes and renders nothing when there are no children. Return type with children prop optional */
+/**
+ * Returns a navigator that automatically injects matched routes and renders nothing when there are no children.
+ * Return type with `children` prop optional.
+ */
 function withLayoutContext(Nav, processor) {
     return Object.assign((0, react_1.forwardRef)(({ children: userDefinedChildren, ...props }, ref) => {
         const contextKey = (0, Route_1.useContextKey)();

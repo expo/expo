@@ -40,7 +40,9 @@ function Navigator() {
     throw new Error('Navigator is not implemented in React Server Components yet');
 }
 exports.Navigator = Navigator;
-/** Redirects to the href as soon as the component is mounted. */
+/**
+ * Redirects to the `href` as soon as the component is mounted.
+ */
 function Redirect({ href }) {
     const router = (0, client_1.useRouter_UNSTABLE)();
     router.replace(href);
