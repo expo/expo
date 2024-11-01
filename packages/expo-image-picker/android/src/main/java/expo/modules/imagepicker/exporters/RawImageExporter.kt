@@ -18,7 +18,7 @@ class RawImageExporter : ImageExporter {
     val imageRotation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)
     val isRotatedLandscape = (
       imageRotation == ExifInterface.ORIENTATION_ROTATE_90 ||
-      imageRotation == ExifInterface.ORIENTATION_ROTATE_270
+      imageRotation == ExifInterface.ORIENTATION_ROTATE_270 ||
       imageRotation == ExifInterface.ORIENTATION_TRANSPOSE ||
       imageRotation == ExifInterface.ORIENTATION_TRANSVERSE
     )
