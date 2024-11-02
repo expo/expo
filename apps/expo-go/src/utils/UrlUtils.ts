@@ -1,3 +1,4 @@
+import { createRuntimeUrl } from 'snack-content';
 import url from 'url';
 
 import Environment from './Environment';
@@ -5,20 +6,13 @@ import Config from '../api/Config';
 
 const HTTPS_HOSTS = [Config.api.host, 'exp.host', 'exponentjs.com', 'getexponent.com'];
 
-// This is mostly copied from https://github.com/expo/snack/blob/main/packages/snack-content/src/urls.ts
-export const SNACK_RUNTIME_URL_ENDPOINT = 'u.expo.dev/933fd9c0-1666-11e7-afca-d980795c5824';
-export const SNACK_RUNTIME_URL_PROTOCOL = 'exp';
-
-export function normalizeSnackUrl(fullName: string): string {
-  const parameters = new URLSearchParams();
-
-  // Pretty sure we need to pass in the SDK version that the Snack supports here, rather than just
-  // the SDK version that Expo Go supports.
-  parameters.set('runtime-version', `exposdk:${Environment.supportedSdksString}.0.0`);
-  parameters.set('channel-name', 'production');
-  parameters.set('snack', fullName);
-
-  return `${SNACK_RUNTIME_URL_PROTOCOL}://${SNACK_RUNTIME_URL_ENDPOINT}?${parameters}`;
+export function normalizeSnackUrl(fullName: string, channelName?: string): string {
+  return createRuntimeUrl({
+    // Only ever try to open Snack using the current SDK version
+    sdkVersion: `${Environment.supportedSdksString}.0.0`,
+    snack: fullName,
+    channel: channelName,
+  });
 }
 
 export function normalizeUrl(rawUrl: string): string {

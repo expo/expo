@@ -72,7 +72,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
         <SnacksListItem
           key={snack.id}
           id={snack.id}
-          url={snack.fullName}
+          fullName={snack.fullName}
           name={snack.name}
           sdkVersion={snack.sdkVersion}
           description={snack.description}

@@ -37,7 +37,7 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
               sdkVersion={snack.sdkVersion}
               description={snack.description}
               isDraft={snack.isDraft}
-              url={snack.fullName}
+              fullName={snack.fullName}
               first={i === 0}
               last={i === snacks.length - 1 && !showMore}
             />

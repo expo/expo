@@ -9,8 +9,8 @@ import * as UrlUtils from '../utils/UrlUtils';
 
 type Props = {
   id: string;
-  url: string;
   name: string;
+  fullName: string;
   description?: string;
   isDraft: boolean;
   first: boolean;
@@ -28,7 +28,7 @@ function normalizeDescription(description?: string): string | undefined {
  */
 
 export function SnacksListItem(snackData: Props) {
-  const { url, name, description, isDraft, first, last, sdkVersion } = snackData;
+  const { fullName, name, description, isDraft, first, last, sdkVersion } = snackData;
   const theme = useExpoTheme();
 
   const normalizedDescription = normalizeDescription(description);
@@ -36,7 +36,7 @@ export function SnacksListItem(snackData: Props) {
 
   const handlePressProject = () => {
     if (isSupported) {
-      Linking.openURL(UrlUtils.normalizeSnackUrl(url));
+      Linking.openURL(UrlUtils.normalizeSnackUrl(fullName));
     } else {
       const expoGoMajorVersion = Environment.supportedSdksString?.split('.')[0];
       const snackMajorVersion = sdkVersion?.split('.')[0];
@@ -56,15 +56,6 @@ export function SnacksListItem(snackData: Props) {
     }
   };
 
-  const handleLongPressProject = () => {
-    const message = UrlUtils.normalizeSnackUrl(url);
-    Share.share({
-      title: name,
-      message,
-      url: message,
-    });
-  };
-
   return (
     <View
       border="default"
@@ -77,7 +68,7 @@ export function SnacksListItem(snackData: Props) {
           borderTopWidth: first ? 1 : 0,
         },
       ]}>
-      <TouchableOpacity onPress={handlePressProject} onLongPress={handleLongPressProject}>
+      <TouchableOpacity onPress={handlePressProject}>
         <View
           padding="medium"
           bg="default"
