@@ -22,7 +22,7 @@ export type SplashScreenConfig = {
 };
 
 export type AndroidSplashConfig = {
-  logoWidth?: number;
+  imageWidth?: number;
 } & SplashScreenConfig;
 
 const defaultResizeMode = 'contain';
@@ -30,7 +30,7 @@ const defaultResizeMode = 'contain';
 export function getAndroidSplashConfig(
   config: Pick<ExpoConfig, 'splash' | 'android'>,
   props?: AndroidSplashConfig | null
-): SplashScreenConfig | null {
+): AndroidSplashConfig | null {
   // Respect the splash screen object, don't mix and match across different splash screen objects
   // in case the user wants the top level splash to apply to every platform except android.
   if (props) {
@@ -43,6 +43,7 @@ export function getAndroidSplashConfig(
       mdpi: splash.mdpi ?? splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
+      imageWidth: splash.imageWidth,
     };
   }
 
@@ -56,6 +57,7 @@ export function getAndroidSplashConfig(
       mdpi: splash.mdpi ?? splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
+      imageWidth: 200,
     };
   }
 
@@ -69,6 +71,7 @@ export function getAndroidSplashConfig(
       mdpi: splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
+      imageWidth: 200,
     };
   }
 
