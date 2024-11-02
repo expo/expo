@@ -1,5 +1,5 @@
 ---
-modificationDate: July 31st, 2024
+modificationDate: October 31st, 2024
 title: Build server infrastructure
 sidebar_title: Server infrastructure
 maxHeadingDepth: 4
@@ -19,11 +19,13 @@ Linux runners are hosted in Google Cloud Platform. macOS runners are hosted in o
 
 Images for each platform have one specific version of Node.js, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json). If there is no dedicated configuration option you are looking for, you can use [npm hooks](/build-reference/npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Consider that those customizations are applied during the build and will increase your build times.
 
-When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, `sdk-50` or `sdk-49`.
+When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, or for a particular SDK such as `sdk-52`.
 
 - The use of a specific name guarantees a consistent environment with only minor updates.
 - When using the `auto` alias, the build image will be selected based on the project configuration, Expo SDK version, and React Native version. You can check what image is used for a build in the **Spin up build environment** build logs section.
 - The `latest` alias will be assigned to the image with the most up-to-date versions of the software.
+- The `sdk-52` alias will be assigned to the image best suited for SDK 52 builds.
+- The `sdk-51` alias will be assigned to the image best suited for SDK 51 builds.
 - The `sdk-50` alias will be assigned to the image best suited for SDK 50 builds.
 - The `sdk-49` alias will be assigned to the image best suited for SDK 49 builds.
 - SDK aliases will be updated with every new SDK release.
