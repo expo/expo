@@ -35,7 +35,7 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
             backgroundImage: `url(https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg)`,
           }}
           className={mergeClasses(
-            'aspect-video bg-cover bg-center h-[112px]',
+            'aspect-video bg-cover bg-center w-full h-[112px]',
             'max-sm-gutters:h-[200px]'
           )}
         />
