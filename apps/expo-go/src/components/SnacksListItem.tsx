@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from '@expo/styleguide-native';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React from 'react';
-import { Alert, Linking, Share } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Environment from '../utils/Environment';

@@ -1,10 +1,5 @@
 import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
-import {
-  NavigationContainer,
-  useTheme,
-  RouteProp,
-  useNavigationContainerRef,
-} from '@react-navigation/native';
+import { NavigationContainer, useTheme, useNavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
