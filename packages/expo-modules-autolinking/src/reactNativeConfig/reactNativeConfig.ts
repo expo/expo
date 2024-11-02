@@ -97,7 +97,7 @@ export async function resolveDependencyConfigAsync(
   const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(packageRoot);
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
-    ...projectConfig?.dependencies[name],
+    ...projectConfig?.dependencies?.[name],
   };
 
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
