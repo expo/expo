@@ -106,7 +106,7 @@ export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (confi
         config,
         props,
         config.modRequest.projectRoot,
-        props.imageWidth ?? 100
+        props?.imageWidth ?? 100
       );
       return config;
     },
