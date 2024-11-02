@@ -65,7 +65,7 @@ async function resolveDependencyConfigAsync(platform, name, packageRoot, project
     const libraryConfig = await (0, config_1.loadConfigAsync)(packageRoot);
     const reactNativeConfig = {
         ...libraryConfig?.dependency,
-        ...projectConfig?.dependencies[name],
+        ...(projectConfig?.dependencies ? projectConfig?.dependencies[name] : {}),
     };
     if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
         // Package defines platforms would be a platform host package.
