@@ -23412,22 +23412,6 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
-          },
-          {
-            "name": "totals",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CumulativeMetricsTotals",
-                "ofType": null
-              }
-            },
-            "isDeprecated": true,
-            "deprecationReason": "Use metricsAtLastTimestamp instead"
           }
         ],
         "inputFields": null,
@@ -46946,35 +46930,6 @@
                 "name": "timespan",
                 "description": null,
                 "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "InsightsTimespan",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              }
-            ],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "CumulativeMetrics",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "cumulativeMetricsOverTime",
-            "description": null,
-            "args": [
-              {
-                "name": "timespan",
-                "description": null,
-                "type": {
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
@@ -46993,12 +46948,12 @@
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-                "name": "CumulativeMetricsOverTimeData",
+                "name": "CumulativeMetrics",
                 "ofType": null
               }
             },
-            "isDeprecated": true,
-            "deprecationReason": "Use cumulativeMetrics instead"
+            "isDeprecated": false,
+            "deprecationReason": null
           },
           {
             "name": "id",

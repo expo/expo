@@ -214,13 +214,14 @@ export default (props: { theme: ColorTheme }) => {
       <ModalStack.Navigator
         initialRouteName="RootStack"
         detachInactiveScreens={shouldDetachInactiveScreens}
-        screenOptions={({ route, navigation }) => ({
+        screenOptions={({ route: _route, navigation: _navigation }) => ({
           headerShown: false,
           gestureEnabled: true,
           cardOverlayEnabled: true,
           cardStyle: { backgroundColor: 'transparent' },
           presentation: 'modal',
-          headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
+          // NOTE(brentvatne): it is unclear what this was intended for, it doesn't appear to be needed?
+          // headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
           ...TransitionPresets.ModalPresentationIOS,
         })}>
         <ModalStack.Screen name="RootStack">
@@ -235,17 +236,18 @@ export default (props: { theme: ColorTheme }) => {
               <RootStack.Screen
                 name="Account"
                 component={AccountModal}
-                options={({ route, navigation }) => ({
+                options={({ route: _route, navigation: _navigation }) => ({
                   headerShown: false,
                   ...(Platform.OS === 'ios' && {
                     gestureEnabled: true,
                     cardOverlayEnabled: true,
-                    headerStatusBarHeight:
-                      navigation
-                        .getState()
-                        .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
-                        ? 0
-                        : undefined,
+                    // NOTE(brentvatne): it is unclear what this was intended for, it doesn't appear to be needed?
+                    // headerStatusBarHeight:
+                    //   navigation
+                    //     .getState()
+                    //     .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
+                    //     ? 0
+                    //     : undefined,
                     ...TransitionPresets.ModalPresentationIOS,
                   }),
                 })}

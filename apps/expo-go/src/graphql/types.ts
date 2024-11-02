@@ -3408,8 +3408,6 @@ export type CumulativeMetrics = {
   __typename?: 'CumulativeMetrics';
   data: UpdatesMetricsData;
   metricsAtLastTimestamp: CumulativeMetricsTotals;
-  /** @deprecated Use metricsAtLastTimestamp instead */
-  totals: CumulativeMetricsTotals;
 };
 
 export type CumulativeMetricsOverTimeData = {
@@ -6756,19 +6754,12 @@ export type UpdateInfoGroup = {
 export type UpdateInsights = {
   __typename?: 'UpdateInsights';
   cumulativeMetrics: CumulativeMetrics;
-  /** @deprecated Use cumulativeMetrics instead */
-  cumulativeMetricsOverTime: CumulativeMetricsOverTimeData;
   id: Scalars['ID'];
   totalUniqueUsers: Scalars['Int'];
 };
 
 
 export type UpdateInsightsCumulativeMetricsArgs = {
-  timespan?: InputMaybe<InsightsTimespan>;
-};
-
-
-export type UpdateInsightsCumulativeMetricsOverTimeArgs = {
   timespan: InsightsTimespan;
 };
 
@@ -8203,7 +8194,7 @@ export type DeleteApplePushKeyResult = {
 
 export type CommonAppDataFragment = { __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> };
 
-export type CommonSnackDataFragment = { __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean };
+export type CommonSnackDataFragment = { __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean, sdkVersion: string };
 
 type CurrentUserActorData_SsoUser_Fragment = { __typename: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> };
 
@@ -8221,7 +8212,7 @@ export type Home_AccountDataQueryVariables = Exact<{
 }>;
 
 
-export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean, sdkVersion: string }> } } };
 
 export type BranchDetailsQueryVariables = Exact<{
   name: Scalars['String'];
@@ -8272,7 +8263,7 @@ export type Home_AccountSnacksQueryVariables = Exact<{
 }>;
 
 
-export type Home_AccountSnacksQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+export type Home_AccountSnacksQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean, sdkVersion: string }> } } };
 
 export type Home_ViewerPrimaryAccountNameQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8285,7 +8276,7 @@ export type HomeScreenDataQueryVariables = Exact<{
 }>;
 
 
-export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, ownerUserActor?: { __typename: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | { __typename: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, ownerUserActor?: { __typename: 'SSOUser', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | { __typename: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, bestContactEmail?: string | null, accounts: Array<{ __typename?: 'Account', id: string, name: string, ownerUserActor?: { __typename?: 'SSOUser', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, name: string, fullName: string, ownerAccount: { __typename?: 'Account', name: string }, firstTwoBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null, createdAt: any, runtimeVersion: string, expoGoSDKVersion?: string | null, platform: string, manifestPermalink: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean, sdkVersion: string }> } } };
 
 export const UpdateDataFragmentDoc = gql`
     fragment UpdateData on Update {
@@ -8325,6 +8316,7 @@ export const CommonSnackDataFragmentDoc = gql`
   fullName
   slug
   isDraft
+  sdkVersion
 }
     `;
 export const CurrentUserActorDataFragmentDoc = gql`

@@ -74,6 +74,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
           id={snack.id}
           url={snack.fullName}
           name={snack.name}
+          sdkVersion={snack.sdkVersion}
           description={snack.description}
           isDraft={snack.isDraft}
           first={index === 0}

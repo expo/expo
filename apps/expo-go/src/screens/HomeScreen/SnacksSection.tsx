@@ -34,6 +34,7 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
             <SnacksListItem
               id={snack.id}
               name={snack.name}
+              sdkVersion={snack.sdkVersion}
               description={snack.description}
               isDraft={snack.isDraft}
               url={snack.fullName}
