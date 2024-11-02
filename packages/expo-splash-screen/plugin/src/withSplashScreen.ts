@@ -8,7 +8,7 @@ const pkg = require('expo-splash-screen/package.json');
 
 type PluginConfig = {
   backgroundColor: string;
-  logoWidth: number;
+  imageWidth?: number;
   image?: string | null;
   android: AndroidSplashConfig;
   ios: IOSSplashConfig;
