@@ -156,7 +156,7 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
     const image = config[imageKey];
     if (image) {
       const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
-      const size = imageWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
+      const size = imageWidth * multiplier; // "imageWidth" must be replaced by the logo width chosen by the user in its config file
       const canvasSize = 288 * multiplier;
       const background = await (0, _imageUtils().generateImageBackgroundAsync)({
         width: canvasSize,
