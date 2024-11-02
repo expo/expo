@@ -70,7 +70,7 @@ const withIosSplashAssets = (config, splash) => {
       darkImage: splash.dark?.image,
       tabletImage: splash.tabletImage,
       darkTabletImage: splash.dark?.tabletImage,
-      logoWidth: splash.logoWidth ?? 100
+      imageWidth: splash.imageWidth ?? 100
     });
     return config;
   }]);
@@ -87,7 +87,7 @@ async function configureImageAssets({
   darkImage,
   tabletImage,
   darkTabletImage,
-  logoWidth
+  imageWidth
 }) {
   const imageSetPath = _path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH);
 
@@ -110,7 +110,7 @@ async function configureImageAssets({
     darkImage,
     tabletImage,
     darkTabletImage,
-    logoWidth
+    imageWidth
   });
 }
 async function copyImageFiles({
@@ -120,7 +120,7 @@ async function copyImageFiles({
   darkImage,
   tabletImage,
   darkTabletImage,
-  logoWidth
+  imageWidth
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
@@ -137,7 +137,7 @@ async function copyImageFiles({
         ratio,
         suffix
       }) => {
-        const size = logoWidth * ratio;
+        const size = imageWidth * ratio;
         // Using this method will cache the images in `.expo` based on the properties used to generate them.
         // this method also supports remote URLs and using the global sharp instance.
         const {
