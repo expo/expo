@@ -18,7 +18,8 @@ function getAndroidSplashConfig(config, props) {
       hdpi: splash.hdpi ?? splash.image ?? null,
       mdpi: splash.mdpi ?? splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
-      resizeMode: splash.resizeMode ?? defaultResizeMode
+      resizeMode: splash.resizeMode ?? defaultResizeMode,
+      imageWidth: splash.imageWidth
     };
   }
   if (config.android?.splash) {
@@ -30,7 +31,8 @@ function getAndroidSplashConfig(config, props) {
       hdpi: splash.hdpi ?? splash.image ?? null,
       mdpi: splash.mdpi ?? splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
-      resizeMode: splash.resizeMode ?? defaultResizeMode
+      resizeMode: splash.resizeMode ?? defaultResizeMode,
+      imageWidth: 200
     };
   }
   if (config.splash) {
@@ -42,7 +44,8 @@ function getAndroidSplashConfig(config, props) {
       hdpi: splash.image ?? null,
       mdpi: splash.image ?? null,
       backgroundColor: splash.backgroundColor ?? null,
-      resizeMode: splash.resizeMode ?? defaultResizeMode
+      resizeMode: splash.resizeMode ?? defaultResizeMode,
+      imageWidth: 200
     };
   }
   return null;

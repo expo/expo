@@ -5,17 +5,20 @@ const withIosSplashScreen_1 = require("@expo/prebuild-config/build/plugins/unver
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-splash-screen/package.json');
 const withSplashScreen = (config, props) => {
+    const imageWidth = props ? props.imageWidth : 200;
     const android = {
         ...config.splash,
         ...config.android?.splash,
         ...props,
         ...props?.android,
+        imageWidth,
     };
     const ios = {
         ...config.splash,
         ...config.ios?.splash,
         ...props,
         ...props?.ios,
+        imageWidth,
     };
     config = (0, withAndroidSplashScreen_1.withAndroidSplashScreen)(config, android);
     config = (0, withIosSplashScreen_1.withIosSplashScreen)(config, ios);
