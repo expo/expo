@@ -598,7 +598,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async nativeExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,
-      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
     >,
     files: ExportAssetMap,
     extraOptions: {

@@ -304,35 +304,20 @@ async function exportDomComponentsAsync(
       const generatedEntryPath = filePath.startsWith('file://') ? filePath.slice(7) : filePath;
       const baseUrl = `/${DOM_COMPONENTS_BUNDLE_DIR}`;
       const relativeImport = './' + path.relative(path.dirname(virtualEntry), generatedEntryPath);
-      // Run metro bundler and create the JS bundles/source maps.
-      // const bundle = await devServer.legacySinglePageExportBundleAsync({
-      //   platform: 'web',
-      //   domRoot: encodeURI(relativeImport),
-      //   splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
-      //   mainModuleName: resolveRealEntryFilePath(projectRoot, virtualEntry),
-      //   mode: options.dev ? 'development' : 'production',
-      //   engine: isHermes ? 'hermes' : undefined,
-      //   serializerIncludeMaps: !!sourceMapUrl,
-      //   bytecode: false,
-      //   reactCompiler: !!exp.experiments?.reactCompiler,
-      //   baseUrl: './',
-      //   // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
-      //   minify: true,
-      // });
 
       // Run metro bundler and create the JS bundles/source maps.
       const bundle = await devServer.nativeExportBundleAsync(
         {
           platform: 'web',
           domRoot: encodeURI(relativeImport),
-          splitChunks: true, //!env.EXPO_NO_BUNDLE_SPLITTING,
+          splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
           mainModuleName: resolveRealEntryFilePath(projectRoot, virtualEntry),
           mode: options.dev ? 'development' : 'production',
           engine: isHermes ? 'hermes' : undefined,
           serializerIncludeMaps: !!sourceMapUrl,
           bytecode: false,
           reactCompiler: !!exp.experiments?.reactCompiler,
-          // baseUrl: './',
+          baseUrl: './',
           // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
           minify: true,
         },
