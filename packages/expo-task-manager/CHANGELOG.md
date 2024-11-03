@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Correct the return type of `TaskManagerTaskExecutor`.
+
 ## 12.0.1 — 2024-10-31
 
 ### 💡 Others
