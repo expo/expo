@@ -11,6 +11,7 @@
 //// <reference types="react/canary" />
 'use client';
 
+import { IS_DOM } from 'expo/dom';
 import {
   createContext,
   createElement,
@@ -29,14 +30,16 @@ import { MetroServerError, ReactServerError } from './errors';
 import { fetch } from './fetch';
 import { encodeInput, encodeActionId } from './utils';
 import { getDevServer } from '../../getDevServer';
-import { IS_DOM } from 'expo/dom';
 
 const { createFromFetch, encodeReply } = RSDWClient;
 
 // NOTE: Ensured to start with `/`.
 const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
 
-let BASE_PATH = `${process.env.EXPO_BASE_URL}${RSC_PATH}`;
+// Using base URL for remote hosts isn't currently supported in DOM components as we use it for offline assets.
+const BASE_URL = IS_DOM ? '' : process.env.EXPO_BASE_URL;
+
+let BASE_PATH = `${BASE_URL}${RSC_PATH}`;
 
 if (!BASE_PATH.startsWith('/')) {
   BASE_PATH = '/' + BASE_PATH;
@@ -279,7 +282,7 @@ function getBaseUrl() {
   }
 
   // Ensure no trailing slash
-  return productionBaseUrl?.replace(/\/$/, '');
+  return productionBaseUrl.replace(/\/$/, '');
 }
 
 function getAdjustedRemoteFilePath(path: string): string {

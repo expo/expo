@@ -1,16 +1,11 @@
-'use dom';
+import ServerActionTest from '../components/dom-two';
 
-import React from 'react';
-import { Text } from 'react-native';
-
-import { renderPageTwo } from '../components/second';
-
-export default function ServerActionTest() {
+export default function ServerActionNestedDomTest() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <React.Suspense fallback={<Text>Loading...</Text>}>
-        {renderPageTwo({ title: 'Hello!' })}
-      </React.Suspense>
-    </div>
+    <ServerActionTest
+      dom={{
+        pullToRefreshEnabled: true,
+      }}
+    />
   );
 }

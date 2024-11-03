@@ -15,17 +15,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerRoot = exports.Children = exports.Slot = exports.useRefetch = exports.Root = exports.prefetchRSC = exports.fetchRSC = exports.callServerRSC = void 0;
+const dom_1 = require("expo/dom");
 const react_1 = require("react");
 const client_1 = __importDefault(require("react-server-dom-webpack/client"));
 const errors_1 = require("./errors");
 const fetch_1 = require("./fetch");
 const utils_1 = require("./utils");
 const getDevServer_1 = require("../../getDevServer");
-const dom_1 = require("expo/dom");
 const { createFromFetch, encodeReply } = client_1.default;
 // NOTE: Ensured to start with `/`.
 const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
-let BASE_PATH = `${process.env.EXPO_BASE_URL}${RSC_PATH}`;
+// Using base URL for remote hosts isn't currently supported in DOM components as we use it for offline assets.
+const BASE_URL = dom_1.IS_DOM ? '' : process.env.EXPO_BASE_URL;
+let BASE_PATH = `${BASE_URL}${RSC_PATH}`;
 if (!BASE_PATH.startsWith('/')) {
     BASE_PATH = '/' + BASE_PATH;
 }
@@ -211,7 +213,7 @@ function getBaseUrl() {
         throw new Error('No production base URL found for DOM components');
     }
     // Ensure no trailing slash
-    return productionBaseUrl?.replace(/\/$/, '');
+    return productionBaseUrl.replace(/\/$/, '');
 }
 function getAdjustedRemoteFilePath(path) {
     if (dom_1.IS_DOM && process.env.NODE_ENV === 'production') {
