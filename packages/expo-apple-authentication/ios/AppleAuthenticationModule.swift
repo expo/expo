@@ -33,6 +33,23 @@ public final class AppleAuthenticationModule: Module {
       }
     }
 
+    Function("formatFullName") { (fullNameDict: [String: String], formatStyle: FullNameFormatStyle?) in
+      let formatStyle = formatStyle?.toFullNameFormatStyle() ?? .default
+      var nameComponents = PersonNameComponents()
+
+      nameComponents.namePrefix = fullNameDict["namePrefix"]
+      nameComponents.nameSuffix = fullNameDict["nameSuffix"]
+      nameComponents.givenName = fullNameDict["givenName"]
+      nameComponents.middleName = fullNameDict["middleName"]
+      nameComponents.familyName = fullNameDict["familyName"]
+      nameComponents.nickname = fullNameDict["nickname"]
+
+      let formatter = PersonNameComponentsFormatter()
+      formatter.style = formatStyle
+      
+      return formatter.string(from: nameComponents)
+    }
+
     View(AppleAuthenticationButton.self) {
       Events("onButtonPress")
 

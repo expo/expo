@@ -1,5 +1,21 @@
 // @needsAudit @docsMissing
 /**
+ * An enum whose values specify the style for formatting a full name when calling `AppleAuthentication.formatFullName()`.
+ *
+ * @see [Apple
+ * Documentation](https://developer.apple.com/documentation/foundation/personnamecomponentsformatter)
+ * for more details.
+ */
+export var AppleAuthenticationFullNameFormatStyle;
+(function (AppleAuthenticationFullNameFormatStyle) {
+    AppleAuthenticationFullNameFormatStyle[AppleAuthenticationFullNameFormatStyle["DEFAULT"] = 0] = "DEFAULT";
+    AppleAuthenticationFullNameFormatStyle[AppleAuthenticationFullNameFormatStyle["SHORT"] = 1] = "SHORT";
+    AppleAuthenticationFullNameFormatStyle[AppleAuthenticationFullNameFormatStyle["MEDIUM"] = 2] = "MEDIUM";
+    AppleAuthenticationFullNameFormatStyle[AppleAuthenticationFullNameFormatStyle["LONG"] = 3] = "LONG";
+    AppleAuthenticationFullNameFormatStyle[AppleAuthenticationFullNameFormatStyle["ABBREVIATED"] = 4] = "ABBREVIATED";
+})(AppleAuthenticationFullNameFormatStyle || (AppleAuthenticationFullNameFormatStyle = {}));
+// @needsAudit @docsMissing
+/**
  * An enum whose values specify scopes you can request when calling [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions).
  *
  * > Note that it is possible that you will not be granted all of the scopes which you request.
