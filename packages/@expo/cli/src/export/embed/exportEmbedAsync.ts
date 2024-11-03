@@ -68,7 +68,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // By disabling it, we can eagerly bundle code before the build and reuse the cached artifacts in subsequent builds.
   if (env.CI && options.resetCache) {
     debug('CI environment detected, disabling automatic cache reset');
-    // options.resetCache = false;
+    options.resetCache = false;
   }
 
   setNodeEnv(options.dev ? 'development' : 'production');
@@ -380,6 +380,7 @@ async function exportDomComponentsAsync(
     })
   );
 
+  // TODO: Replace this with a single pass bundle for DOM components
   // Overwrite the SSR manifest with the merged manifest.
   if (ssrManifests.length) {
     let mergedSsrManifest: Record<string, string[]> = {};
@@ -389,6 +390,7 @@ async function exportDomComponentsAsync(
     devServer.exportSsrManifest(files, mergedSsrManifest, 'web');
   }
 
+  // TODO: Replace this with a single pass bundle for DOM components
   if (actionsManifests.length) {
     let mergedSsrManifest: Record<string, string[]> = {};
     actionsManifests.forEach((manifest) => {
