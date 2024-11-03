@@ -21,6 +21,7 @@ const errors_1 = require("./errors");
 const fetch_1 = require("./fetch");
 const utils_1 = require("./utils");
 const getDevServer_1 = require("../../getDevServer");
+const dom_1 = require("expo/dom");
 const { createFromFetch, encodeReply } = client_1.default;
 // NOTE: Ensured to start with `/`.
 const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
@@ -173,8 +174,8 @@ const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
     // TODO: Load from on-disk on native when indicated.
-    // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
-    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
+    // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedRemoteFilePath(url);
+    const url = getAdjustedRemoteFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     const hasValidPrefetchedResponse = !!prefetched[url] &&
         // HACK .has() is for the initial hydration
         // It's limited and may result in a wrong result. FIXME
@@ -190,26 +191,42 @@ const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
     return data;
 };
 exports.fetchRSC = fetchRSC;
+const expo_constants_1 = __importDefault(require("expo-constants"));
+const manifest = expo_constants_1.default.expoConfig;
+function getOrigin() {
+    return (manifest?.extra?.router?.origin ??
+        // Written automatically during release builds.
+        manifest?.extra?.router?.generatedOrigin);
+}
+// TODO: This would be better if native and tied as close to the JS engine as possible, i.e. it should
+// reflect the exact location of the JS file that was executed.
+function getBaseUrl() {
+    if (process.env.NODE_ENV !== 'production') {
+        // e.g. http://localhost:19006
+        return (0, getDevServer_1.getDevServer)().url?.replace(/\/$/, '');
+    }
+    // TODO: Make it official by moving out of `extra`
+    const productionBaseUrl = getOrigin();
+    if (!productionBaseUrl) {
+        throw new Error('No production base URL found for DOM components');
+    }
+    // Ensure no trailing slash
+    return productionBaseUrl?.replace(/\/$/, '');
+}
 function getAdjustedRemoteFilePath(path) {
-    if (process.env.EXPO_OS === 'web') {
+    if (dom_1.IS_DOM && process.env.NODE_ENV === 'production') {
+        // DOM components in production need to use the same origin logic as native.
+        return new URL(path, getBaseUrl()).toString();
+    }
+    if (!dom_1.IS_DOM && process.env.EXPO_OS === 'web') {
         return path;
     }
     return new URL(path, window.location.href).toString();
 }
-function getAdjustedFilePath(path) {
-    if (process.env.EXPO_OS === 'web') {
-        return path;
-    }
-    // Server actions should be fetched from the server every time.
-    if (path.match(/[0-9a-z]{40}#/i)) {
-        return getAdjustedRemoteFilePath(path);
-    }
-    return getAdjustedRemoteFilePath(path);
-}
 const prefetchRSC = (input, params) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
-    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
+    const url = getAdjustedRemoteFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     if (!(url in prefetched)) {
         prefetched[url] = fetchRSCInternal(url, params);
         prefetchedParams.set(prefetched[url], params);

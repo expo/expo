@@ -20,6 +20,11 @@ export function buildUrlForBundle(bundlePath: string): string {
     // @ts-expect-error
     typeof window.ReactNativeWebView !== 'undefined'
   ) {
+    if (bundlePath.startsWith('/')) {
+      // Make the file an absolute local path.
+      // TODO: We may want these to just read from the server.
+      return process.env.EXPO_DOM_BASE_URL + bundlePath;
+    }
     // In a webview, you cannot read from an absolute path.
     return bundlePath;
   }

@@ -4,6 +4,8 @@ import { Text } from 'react-native';
 
 import { renderPage } from '../components/server-actions';
 
+export { ErrorBoundary } from 'expo-router';
+
 export default function ServerActionTest() {
   return (
     <React.Suspense fallback={<Text>Loading...</Text>}>

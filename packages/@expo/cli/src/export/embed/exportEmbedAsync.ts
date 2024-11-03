@@ -68,7 +68,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // By disabling it, we can eagerly bundle code before the build and reuse the cached artifacts in subsequent builds.
   if (env.CI && options.resetCache) {
     debug('CI environment detected, disabling automatic cache reset');
-    options.resetCache = false;
+    // options.resetCache = false;
   }
 
   setNodeEnv(options.dev ? 'development' : 'production');
@@ -291,6 +291,8 @@ async function exportDomComponentsAsync(
   }
 
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
+
+  const ssrManifests: Record<string, string[]>[] = [];
   await Promise.all(
     // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
     expoDomComponentReferences.map(async (filePath) => {
@@ -322,7 +324,7 @@ async function exportDomComponentsAsync(
         {
           platform: 'web',
           domRoot: encodeURI(relativeImport),
-          splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
+          splitChunks: true, //!env.EXPO_NO_BUNDLE_SPLITTING,
           mainModuleName: resolveRealEntryFilePath(projectRoot, virtualEntry),
           mode: options.dev ? 'development' : 'production',
           engine: isHermes ? 'hermes' : undefined,
@@ -340,6 +342,10 @@ async function exportDomComponentsAsync(
             (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
         }
       );
+
+      if (bundle.ssrManifest) {
+        ssrManifests.push(bundle.ssrManifest);
+      }
 
       const html = await serializeHtmlWithAssets({
         isExporting: true,
@@ -384,6 +390,15 @@ async function exportDomComponentsAsync(
       }
     })
   );
+
+  // Overwrite the SSR manifest with the merged manifest.
+  if (ssrManifests.length) {
+    let mergedSsrManifest: Record<string, string[]> = {};
+    ssrManifests.forEach((manifest) => {
+      mergedSsrManifest = { ...mergedSsrManifest, ...manifest };
+    });
+    devServer.exportSsrManifest(files, mergedSsrManifest, 'web');
+  }
 }
 
 // Exports for expo-updates
