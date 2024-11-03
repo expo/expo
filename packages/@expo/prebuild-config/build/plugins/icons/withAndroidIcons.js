@@ -122,7 +122,7 @@ function setRoundIconManifest(config, manifest) {
 }
 const withAndroidAdaptiveIconColors = (config, backgroundColor) => {
   return (0, _configPlugins().withAndroidColors)(config, config => {
-    config.modResults = setBackgroundColor(backgroundColor ?? '#FFFFFF', config.modResults);
+    config.modResults = setBackgroundColor(backgroundColor ?? '#ffffff', config.modResults);
     return config;
   });
 };
@@ -276,7 +276,7 @@ async function generateMultiLayerImageAsync(projectRoot, {
       scale,
       backgroundColor: backgroundColor ?? 'transparent',
       borderRadiusRatio,
-      isForeground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP
+      imageStlye: getImageStyle(outputImageFileName)
     });
     if (backgroundImage) {
       const backgroundLayer = await generateIconAsync(projectRoot, {
@@ -340,11 +340,12 @@ async function generateIconAsync(projectRoot, {
   scale,
   backgroundColor,
   borderRadiusRatio,
-  isForeground
+  imageStlye
 }) {
-  const baseline = isForeground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
-  const bgIconSizePx = baseline * scale;
-  const iconSizePx = bgIconSizePx * (isForeground ? 0.4 : 0.65);
+  const isForegound = imageStlye === 'foreground';
+  const baseline = isForegound ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
+  const bgIconSizePx = Math.round(baseline * scale);
+  const iconSizePx = Math.round(bgIconSizePx * getImageScale(imageStlye ?? 'background'));
   const {
     source: foreground
   } = await (0, _imageUtils().generateImageAsync)({
@@ -352,14 +353,14 @@ async function generateIconAsync(projectRoot, {
     cacheType
   }, {
     src,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: iconSizePx,
     height: iconSizePx
   });
   const background = await (0, _imageUtils().generateImageBackgroundAsync)({
     width: bgIconSizePx,
     height: bgIconSizePx,
-    backgroundColor: isForeground ? 'transparent' : backgroundColor,
+    backgroundColor: isForegound ? 'transparent' : backgroundColor,
     resizeMode: 'cover',
     borderRadius: borderRadiusRatio ? bgIconSizePx * borderRadiusRatio : undefined
   });
@@ -371,5 +372,32 @@ async function generateIconAsync(projectRoot, {
     x,
     y
   });
+}
+function getImageStyle(outputFileName) {
+  switch (outputFileName) {
+    case IC_LAUNCHER_WEBP:
+      return 'legacy';
+    case IC_LAUNCHER_BACKGROUND_WEBP:
+      return 'background';
+    case IC_LAUNCHER_FOREGROUND_WEBP:
+      return 'foreground';
+    case IC_LAUNCHER_ROUND_WEBP:
+      return 'rounded';
+    case IC_LAUNCHER_MONOCHROME_WEBP:
+      return 'monochrome';
+  }
+  return 'background';
+}
+function getImageScale(imageStyle) {
+  switch (imageStyle) {
+    case 'legacy':
+      return 0.9;
+    case 'foreground':
+    case 'background':
+      return 0.7;
+    case 'rounded':
+    case 'monochrome':
+      return 1;
+  }
 }
 //# sourceMappingURL=withAndroidIcons.js.map
