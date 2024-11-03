@@ -293,6 +293,7 @@ async function exportDomComponentsAsync(
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
 
   const ssrManifests: Record<string, string[]>[] = [];
+  const actionsManifests: Record<string, string[]>[] = [];
   await Promise.all(
     // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
     expoDomComponentReferences.map(async (filePath) => {
@@ -346,6 +347,9 @@ async function exportDomComponentsAsync(
       if (bundle.ssrManifest) {
         ssrManifests.push(bundle.ssrManifest);
       }
+      if (bundle.actionsManifest) {
+        actionsManifests.push(bundle.actionsManifest);
+      }
 
       const html = await serializeHtmlWithAssets({
         isExporting: true,
@@ -398,6 +402,14 @@ async function exportDomComponentsAsync(
       mergedSsrManifest = { ...mergedSsrManifest, ...manifest };
     });
     devServer.exportSsrManifest(files, mergedSsrManifest, 'web');
+  }
+
+  if (actionsManifests.length) {
+    let mergedSsrManifest: Record<string, string[]> = {};
+    actionsManifests.forEach((manifest) => {
+      mergedSsrManifest = { ...mergedSsrManifest, ...manifest };
+    });
+    devServer.exportServerActionManifest(files, mergedSsrManifest, 'web');
   }
 }
 

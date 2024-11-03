@@ -611,6 +611,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     assets: readonly BundleAssetWithFileHashes[];
     files?: ExportAssetMap;
     ssrManifest?: Record<string, string[]>;
+    actionsManifest?: Record<string, string[]>;
   }> {
     if (this.isReactServerComponentsEnabled) {
       return this.singlePageReactServerComponentExportAsync(options, files, extraOptions);
@@ -629,12 +630,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       sourceMapUrl?: string;
       unstable_transformProfile?: TransformProfile;
       ssrManifest?: Record<string, string[]>;
+      actionsManifest?: Record<string, string[]>;
     } = {}
   ): Promise<{
     artifacts: SerialAsset[];
     assets: readonly BundleAssetWithFileHashes[];
     files: ExportAssetMap;
     ssrManifest: Record<string, string[]>;
+    actionsManifest: Record<string, string[]>;
   }> {
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
     let {
@@ -644,6 +647,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
       {
         platform: options.platform,
+        domRoot: options.domRoot,
       },
       files
     );
@@ -681,10 +685,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     debug('React server action boundaries from client:', reactServerReferences);
 
     // When we export the server actions that were imported from the client, we may need to re-bundle the client with the new client boundaries.
-    const { clientBoundaries: nestedClientBoundaries } =
+    const { manifest: actionsManifest, clientBoundaries: nestedClientBoundaries } =
       await this.rscRenderer!.exportServerActionsAsync(
         {
           platform: options.platform,
+          domRoot: options.domRoot,
           entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
         },
         files
@@ -728,20 +733,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
 
     debug('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
-
-    if (options.mainModuleName.includes('expo/dom')) {
-      console.log('BUNDLE INFO:', bundle.artifacts);
-      console.log('BUNDLE INFO:', bundle.artifacts[0].metadata.modulePaths);
-
-      // console.log(
-      //   'MISSING:',
-      //   clientBoundaries.filter(
-      //     (boundary) => !bundle.artifacts[0].metadata.modulePaths?.includes(boundary)
-      //   )
-      // );
-
-      // process.exit(1);
-    }
 
     const ssrManifest = new Map<string, string>();
 
@@ -790,7 +781,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     this.exportSsrManifest(files, finalSsrManifest, options.platform);
 
-    return { ...bundle, files, ssrManifest: finalSsrManifest };
+    return { ...bundle, files, ssrManifest: finalSsrManifest, actionsManifest };
+  }
+
+  public exportServerActionManifest(
+    files: ExportAssetMap,
+    ssrManifest: Record<string, string[]>,
+    platform: string
+  ) {
+    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+    files.set(`_expo/rsc/${platform}/action-manifest.js`, {
+      targetDomain: 'server',
+      contents: 'module.exports = ' + JSON.stringify(ssrManifest),
+    });
   }
 
   public exportSsrManifest(

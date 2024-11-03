@@ -103,7 +103,11 @@ export function createServerComponentsMiddleware(
   }
 
   async function exportServerActionsAsync(
-    { platform, entryPoints }: { platform: string; entryPoints: string[] },
+    {
+      platform,
+      entryPoints,
+      domRoot,
+    }: { platform: string; entryPoints: string[]; domRoot?: string },
     files: ExportAssetMap
   ): Promise<{
     clientBoundaries: string[];
@@ -115,6 +119,7 @@ export function createServerComponentsMiddleware(
 
     const manifest: Record<string, [string, string]> = {};
     const nestedClientBoundaries: string[] = [];
+
     for (const entryPoint of uniqueEntryPoints) {
       const contents = await ssrLoadModuleArtifacts(entryPoint, {
         environment: 'react-server',
@@ -123,6 +128,8 @@ export function createServerComponentsMiddleware(
         modulesOnly: true,
         // Required
         runModule: true,
+        // Required to ensure assets load as client boundaries.
+        domRoot,
       });
 
       const reactClientReferences = contents.artifacts
@@ -164,7 +171,7 @@ export function createServerComponentsMiddleware(
   }
 
   async function getExpoRouterClientReferencesAsync(
-    { platform }: { platform: string },
+    { platform, domRoot }: { platform: string; domRoot?: string },
     files: ExportAssetMap
   ): Promise<{
     reactClientReferences: string[];
@@ -174,6 +181,7 @@ export function createServerComponentsMiddleware(
     const contents = await ssrLoadModuleArtifacts(routerModule, {
       environment: 'react-server',
       platform,
+      domRoot,
     });
 
     // Extract the global CSS modules that are imported from the router.
