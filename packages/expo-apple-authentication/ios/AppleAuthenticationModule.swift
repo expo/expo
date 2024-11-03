@@ -46,7 +46,7 @@ public final class AppleAuthenticationModule: Module {
 
       let formatter = PersonNameComponentsFormatter()
       formatter.style = formatStyle
-      
+
       return formatter.string(from: nameComponents)
     }
 
