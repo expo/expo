@@ -449,12 +449,11 @@ function getImageStyle(outputFileName: string): ImageStyle {
 function getImageScale(imageStyle: ImageStyle) {
   switch (imageStyle) {
     case 'legacy':
+    case 'rounded':
       return 0.9;
     case 'foreground':
     case 'background':
       return 0.7;
-    case 'rounded':
-      return 0.9;
     case 'monochrome':
       return 1;
   }
