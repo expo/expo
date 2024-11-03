@@ -87,7 +87,7 @@ describe(setSplashStylesForTheme, () => {
         parent: 'Theme.SplashScreen',
       })
     ).toStrictEqual({
-      'android:windowBackground': '@drawable/splashscreen',
+      'android:windowSplashScreenBackground': '@drawable/splashscreen_logo',
     });
   });
 });
