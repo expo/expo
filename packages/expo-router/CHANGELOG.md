@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Don't assume reanimated exists when testing expo-router ([#27548](https://github.com/expo/expo/pull/27548)) by [@henrymoulton](https://github.com/henrymoulton)
+
 ## 4.0.0-preview.11 — 2024-10-31
 
 _This version does not introduce any user-facing changes._
