@@ -1,8 +1,8 @@
 import { UrlObject } from '../LocationProvider';
-import { Href, RouteParamInput } from '../types';
+import { Href } from '../types';
 
 /** Resolve an href object into a fully qualified, relative href. */
-export const resolveHref = (href: Href<any>): string => {
+export const resolveHref = (href: Href): string => {
   if (typeof href === 'string') {
     return resolveHref({ pathname: href });
   }
@@ -58,7 +58,7 @@ export function resolveHrefStringWithSegments(
 function createQualifiedPathname(
   pathname: string,
   params: Record<string, any>
-): { pathname: string; params: RouteParamInput<string> } {
+): { pathname: string; params: any } {
   for (const [key, value = ''] of Object.entries(params)) {
     const dynamicKey = `[${key}]`;
     const deepDynamicKey = `[...${key}]`;

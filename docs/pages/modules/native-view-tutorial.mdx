@@ -4,7 +4,6 @@ sidebar_title: Create a native view
 description: A tutorial on creating a native view that renders a WebView with Expo Modules API.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -44,18 +43,6 @@ Clean up the default module to start with a clean slate by deleting the followin
 
 Locate the following files and replace them with the provided minimal boilerplate:
 
-```swift ios/ExpoWebViewModule.swift
-import ExpoModulesCore
-
-public class ExpoWebViewModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoWebView")
-
-    View(ExpoWebView.self) {}
-  }
-}
-```
-
 ```kotlin android/src/main/java/expo/modules/webview/ExpoWebViewModule.kt
 package expo.modules.webview
 
@@ -67,6 +54,18 @@ class ExpoWebViewModule : Module() {
     Name("ExpoWebView")
 
     View(ExpoWebView::class) {}
+  }
+}
+```
+
+```swift ios/ExpoWebViewModule.swift
+import ExpoModulesCore
+
+public class ExpoWebViewModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoWebView")
+
+    View(ExpoWebView.self) {}
   }
 }
 ```
@@ -114,14 +113,13 @@ To ensure everything is working, start the TypeScript compiler to watch for chan
 />
 
 <Terminal
-  cmdCopy="cd example && npx expo run:ios"
   cmd={[
     '# Navigate to the example directory',
     '$ cd example',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
     '# Run the example app on Android',
     '$ npx expo run:android',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
   ]}
 />
 
@@ -193,7 +191,6 @@ class ExpoWebView: ExpoView {
 No changes are required. Rebuild and run the app using the following commands:
 
 <Terminal
-  cmdCopy="npx expo prebuild --clean && npx expo run:ios"
   cmd={[
     '# Prebuild the example app with the --clean flag to ensure a clean build',
     '$ npx expo prebuild --clean',
@@ -294,13 +291,12 @@ export default function App() {
 Rebuild the example app:
 
 <Terminal
-  cmdCopy="npx expo prebuild --clean && npx expo run:ios"
   cmd={[
     '$ npx expo prebuild --clean',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
     '# Run the example app on Android',
     '$ npx expo run:android',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
   ]}
 />
 
@@ -481,7 +477,7 @@ Now that you have a WebView, build a web browser UI around it. Try rebuilding a 
 
 <Collapsible summary="example/App.tsx">
 
-```tsx
+```tsx App.tsx
 import { useState } from 'react';
 import { ActivityIndicator, Platform, Text, TextInput, View } from 'react-native';
 import { WebView } from 'expo-web-view';
@@ -567,7 +563,7 @@ Congratulations! You've created your first Expo module with a native view for An
 
 <BoxLink
   title="Expo Modules API Reference"
-  description="Create native modules using Swift and Kotlin."
+  description="Create native modules using Kotlin and Swift."
   href="/modules/module-api/"
   Icon={Grid01Icon}
 />
@@ -576,5 +572,5 @@ Congratulations! You've created your first Expo module with a native view for An
   title="Tutorial: Creating a native module"
   description="A tutorial on creating a native module that persists settings with Expo Modules API."
   href="/modules/native-module-tutorial/"
-  Icon={BookOpen02Icon}
+  Icon={Grid01Icon}
 />

@@ -1,9 +1,11 @@
 import { Slot } from '@radix-ui/react-slot';
+import { TabNavigationState } from '@react-navigation/native';
 import { ReactNode, useContext, ReactElement, ComponentProps, useCallback } from 'react';
 import { View, StyleSheet, Pressable, PressableProps } from 'react-native';
 
 import { TabTriggerMapContext } from './TabContext';
 import { ExpoTabsResetValue } from './TabRouter';
+import type { TriggerMap } from './common';
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { router } from '../imperative-api';
 import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
@@ -15,18 +17,20 @@ type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & 
   children?: ReactNode | undefined;
 };
 
-export type TabTriggerProps<T extends string | object> = PressablePropsWithoutFunctionChildren & {
+export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
+  /** Name of tab. When used within a `<TabList />` this sets the name of the tab. Otherwise, this references the name. */
   name: string;
-  href?: Href<T>;
+  /** Name of tab. Required when used within a `<TabList />` */
+  href?: Href;
   /** Forward props to child component. Useful for custom wrappers. */
   asChild?: boolean;
   /** Reset the route when switching to the tab */
   reset?: SwitchToOptions['reset'] | 'onLongPress';
 };
 
-export type TabTriggerOptions<T extends string | object> = {
+export type TabTriggerOptions = {
   name: string;
-  href: Href<T>;
+  href: Href;
 };
 
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren &
@@ -37,13 +41,22 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren &
 
 const TabTriggerSlot = Slot as React.ForwardRefExoticComponent<TabTriggerSlotProps>;
 
-export function TabTrigger<T extends string | object>({
-  asChild,
-  name,
-  href,
-  reset = 'onFocus',
-  ...props
-}: TabTriggerProps<T>) {
+/**
+ * Creates a trigger to navigate to a tab. `<TabTrigger />` functionality slightly changes when used as a child of `<TabList />`. In this instance, the `href` prop is required, and the trigger also defines what routes are present in the `<Tabs />`.
+ *
+ * When used outside of `<TabList />`, `<TabTrigger />` no longer requires a `href`.
+ *
+ * @example
+ * ```ts
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
+export function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }: TabTriggerProps) {
   const { trigger, triggerProps } = useTabTrigger({
     name,
     reset,
@@ -73,16 +86,48 @@ export function TabTrigger<T extends string | object>({
   }
 }
 
+/**
+ * @hidden
+ */
 export function isTabTrigger(
   child: ReactElement<any>
 ): child is ReactElement<ComponentProps<typeof TabTrigger>> {
   return child.type === TabTrigger;
 }
 
-export type SwitchToOptions = { reset?: ExpoTabsResetValue };
+/**
+ * Options for `switchTab` function.
+ */
+export type SwitchToOptions = {
+  /** Navigate and reset the history */
+  reset?: ExpoTabsResetValue;
+};
 
-export function useTabTrigger({ name, reset, onPress, onLongPress }: TabTriggerProps<any>) {
+export type Trigger = TriggerMap[string] & {
+  isFocused: boolean;
+  resolvedHref: string;
+  route: TabNavigationState<any>['routes'][number];
+};
+
+export type UseTabTriggerResult = {
+  switchTab: (name: string, options: SwitchToOptions) => void;
+  getTrigger: (name: string) => Trigger | undefined;
+  trigger?: Trigger;
+  triggerProps: TriggerProps;
+};
+
+export type TriggerProps = {
+  isFocused: boolean;
+  onPress: PressableProps['onPress'];
+  onLongPress: PressableProps['onLongPress'];
+};
+
+/**
+ * Utility hook creating custom `<TabTrigger />`
+ */
+export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
   const { state, navigation } = useNavigatorContext();
+  const { name, reset, onPress, onLongPress } = options;
   const triggerMap = useContext(TabTriggerMapContext);
 
   const getTrigger = useCallback(

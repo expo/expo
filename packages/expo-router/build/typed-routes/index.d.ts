@@ -1,6 +1,11 @@
 import { RequireContextPonyFill } from '../testing-library/require-context-ponyfill';
 export type { RequireContextPonyFill } from '../testing-library/require-context-ponyfill';
 /**
+ * This file is imported via `@expo/cli`. While users should be using the same SDK version of `expo-router` as `@expo/cli`,
+ * this export allows us to ensure that the version of the `expo-router` package is compatible with the version of `@expo/cli`.
+ */
+export declare const version = 52;
+/**
  * Generate a Metro watch handler that regenerates the typed routes declaration file
  */
 export declare function getWatchHandler(outputDir: string, { ctx, regenerateFn }?: {

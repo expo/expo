@@ -1,6 +1,12 @@
 import { expectType, expectError, expectAssignable, expectNotAssignable } from 'tsd-lite';
 
-import { useRouter, Href, useLocalSearchParams, useSegments } from './fixtures/basic';
+import {
+  useRouter,
+  Href,
+  useLocalSearchParams,
+  useSegments,
+  UnknownOutputParams,
+} from './fixtures/default';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
 const router = useRouter();
@@ -46,10 +52,12 @@ describe('Href', () => {
     expectAssignable<Href>('/animals/cat/dog?test=1');
 
     expectAssignable<Href>('/(group)/(a)/folder/slug1');
-    expectAssignable<Href>('/(group)/folder/slug1');
-    expectAssignable<Href>('/(a)/folder/slug1');
     expectAssignable<Href>('/(group)/(b)/folder/slug1/slug2');
     expectAssignable<Href>('/(group)/(a)/folder/slug1/slug2/slug2');
+
+    // Partial groups are not allowed by default
+    expectNotAssignable<Href>('/(a)/folder/slug1');
+    expectNotAssignable<Href>('/(group)/folder/slug1');
 
     expectAssignable<Href>({
       pathname: '/(group)/(a)/folder/[slug]',
@@ -71,9 +79,11 @@ describe('Href', () => {
 
   describe('Groups', () => {
     expectAssignable<Href>('/folder');
-    expectAssignable<Href>('/(group)/folder');
     expectAssignable<Href>('/(group)/(a)/folder');
     expectAssignable<Href>('/(group)/(b)/folder');
+
+    // Partial groups are not allowed by default
+    expectNotAssignable<Href>('/(group)/folder');
   });
 });
 
@@ -82,10 +92,6 @@ describe('props', () => {
   expectAssignable<Href>('/(c)/folder/single-part');
   // This works because without a generic TypeScript will type it as `/(c)/folder/${string}`
   expectAssignable<Href>('/(c)/folder/single-part/valid-only-on-Href-without-generic');
-  // This will error because the generic is not a valid route
-  expectNotAssignable<Href<'/(c)/folder/single-part/valid-only-on-Href-without-generic'>>(
-    '/(c)/folder/single-part/valid-only-on-Href-without-generic'
-  );
 });
 
 describe('router.push()', () => {
@@ -200,30 +206,25 @@ describe('router.push()', () => {
 });
 describe('useSearchParams', () => {
   expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
-  expectType<Record<'color', string> & Record<string, string | string[]>>(
-    useLocalSearchParams<'/colors/[color]'>()
-  );
+  expectType<UnknownOutputParams & { color: string }>(useLocalSearchParams<'/colors/[color]'>());
   expectError(useLocalSearchParams<'/invalid'>());
   expectError(useLocalSearchParams<Record<'custom', Function>>());
 });
 describe('useLocalSearchParams', () => {
   expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
-  expectType<Record<'color', string> & Record<string, string | string[]>>(
-    useLocalSearchParams<'/colors/[color]'>()
-  );
+  expectType<UnknownOutputParams & { color: string }>(useLocalSearchParams<'/colors/[color]'>());
   expectError(useLocalSearchParams<'/invalid'>());
   expectError(useLocalSearchParams<Record<'custom', Function>>());
 });
 describe('useGlobalSearchParams', () => {
   expectType<Record<'color', string>>(useLocalSearchParams<Record<'color', string>>());
-  expectType<Record<'color', string> & Record<string, string | string[]>>(
-    useLocalSearchParams<'/colors/[color]'>()
-  );
+  expectType<UnknownOutputParams & { color: string }>(useLocalSearchParams<'/colors/[color]'>());
   expectError(useLocalSearchParams<'/invalid'>());
   expectError(useLocalSearchParams<Record<'custom', Function>>());
 });
 describe('useSegments', () => {
   it('can accept an absolute url', () => {
+    expectType<['apple']>(useSegments<'/apple'>());
     expectType<['apple']>(useSegments<'/apple'>());
   });
   it('only accepts valid possible urls', () => {
@@ -251,6 +252,10 @@ describe('external routes', () => {
 describe('set params', () => {
   it('is strongly typed', () => {
     expectType<void>(router.setParams<'/folder/[slug]'>({ slug: 'test' }));
+    expectType<void>(router.setParams<'/folder/[...slug]'>({ slug: ['test'] }));
+
+    expectError(router.setParams<'/folder/[slug]'>({ slug: ['test'] }));
+    expectError(router.setParams<'/folder/[...slug]'>({ slug: 'test' }));
   });
   it('allows additional values', () => {
     expectType<void>(router.setParams<'/folder/[slug]'>({ hello: 'world' }));

@@ -8,11 +8,27 @@ export type TabListProps = ViewProps & {
   asChild?: boolean;
 };
 
+/**
+ * Wrapper component for `<TabTriggers />`. `<TabTriggers />` within the `<TabList />` define the tabs.o
+ *
+ * @example
+ * ```ts
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
 export function TabList({ asChild, style, ...props }: TabListProps) {
   const Comp = asChild ? ViewSlot : View;
   return <Comp style={[styles.tabList, style]} {...props} />;
 }
 
+/**
+ * @hidden
+ */
 export function isTabList(
   child: ReactElement<any>
 ): child is ReactElement<ComponentProps<typeof TabList>> {

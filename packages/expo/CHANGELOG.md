@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 52.0.0-preview.19 — 2024-11-04
+
+### 🎉 New features
+
+- Added EAS Updates support for DOM Components. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
 - Re-exported `@expo/fingerprint` as `expo/fingerprint`. ([#32494](https://github.com/expo/expo/pull/32494) by [@quinlanj](https://github.com/quinlanj))
 
 ## 52.0.0-preview.18 — 2024-10-31
