@@ -31,7 +31,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    *
    * @default 'auto'
    * @platform android
-   * @platform iOS
+   * @platform ios
    */
   audioMixingMode: AudioMixingMode;
 

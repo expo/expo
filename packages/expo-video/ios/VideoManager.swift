@@ -109,7 +109,7 @@ class VideoManager {
     })
     var audioMixingMode: AudioMixingMode = .mixWithOthers
 
-    for videoPlayer in playingPlayers where (audioMixingMode.priority()) > videoPlayer.audioMixingMode.priority() {
+    for videoPlayer in playingPlayers where (audioMixingMode.priority()) < videoPlayer.audioMixingMode.priority() {
       audioMixingMode = videoPlayer.audioMixingMode
     }
     return audioMixingMode

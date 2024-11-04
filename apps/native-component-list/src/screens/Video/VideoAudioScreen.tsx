@@ -1,6 +1,6 @@
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { useVideoPlayer, VideoView, AudioMode } from 'expo-video';
+import { useVideoPlayer, VideoView, AudioMixingMode } from 'expo-video';
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 
@@ -9,7 +9,7 @@ import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
 
-const mixingModes: AudioMode[] = ['mixWithOthers', 'duckOthers', 'auto', 'doNotMix'];
+const mixingModes: AudioMixingMode[] = ['mixWithOthers', 'duckOthers', 'auto', 'doNotMix'];
 export default function VideoNowPlayingScreen() {
   const view1Ref = useRef<VideoView>(null);
   const [volume, setVolume] = useState(1);
@@ -97,7 +97,7 @@ export default function VideoNowPlayingScreen() {
           values={mixingModes}
           selectedIndex={player1MixingModeIndex}
           onValueChange={(value) => {
-            const audioMode = value as AudioMode;
+            const audioMode = value as AudioMixingMode;
             player.audioMixingMode = audioMode;
             setPlayer1MixingModeIndex(mixingModes.indexOf(audioMode));
           }}
@@ -109,7 +109,7 @@ export default function VideoNowPlayingScreen() {
           values={mixingModes}
           selectedIndex={player2MixingModeIndex}
           onValueChange={(value) => {
-            const audioMode = value as AudioMode;
+            const audioMode = value as AudioMixingMode;
             player2.audioMixingMode = audioMode;
             setPlayer2MixingModeIndex(mixingModes.indexOf(audioMode));
           }}

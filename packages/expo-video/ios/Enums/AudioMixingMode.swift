@@ -12,13 +12,13 @@ internal enum AudioMixingMode: String, Enumerable {
   func priority() -> Int {
     switch self {
     case .doNotMix:
-      return 0
-    case .auto:
-      return 1
-    case .duckOthers:
-      return 2
-    case .mixWithOthers:
       return 3
+    case .auto:
+      return 2
+    case .duckOthers:
+      return 1
+    case .mixWithOthers:
+      return 0
     }
   }
 

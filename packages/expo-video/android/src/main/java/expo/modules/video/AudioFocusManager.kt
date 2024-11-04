@@ -226,17 +226,15 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   }
 
   private fun findAudioMixingMode(): AudioMixingMode {
-    val playingPlayers = players.mapNotNull { player ->
-      player.get()?.takeIf { it.playing }
+    val mixingModes = players.mapNotNull { player ->
+      player.get()?.takeIf { it.playing }?.audioMixingMode
     }
-    var audioMixingMode: AudioMixingMode = AudioMixingMode.MIX_WITH_OTHERS
+    if (mixingModes.isEmpty()) {
+      return AudioMixingMode.MIX_WITH_OTHERS
+    }
 
-    for (videoPlayer in playingPlayers) {
-      val playerAudioMixingMode = videoPlayer.audioMixingMode
-      if (audioMixingMode.priority > playerAudioMixingMode.priority) {
-        audioMixingMode = playerAudioMixingMode
-      }
+    return mixingModes.reduce { currentAudioMixingMode, next ->
+      next.takeIf { it.priority > currentAudioMixingMode.priority } ?: currentAudioMixingMode
     }
-    return audioMixingMode
   }
 }
