@@ -37,7 +37,6 @@ export const expoServe: Command = async (argv) => {
     { logCmdError },
   ] = await Promise.all([import('./serveAsync.js'), import('../utils/errors.js')]);
 
-  console.log('args._[0]', args._[0]);
   return serveAsync(getProjectRoot(args), {
     isDefaultDirectory: !args._[0],
     // Parsed options
