@@ -182,6 +182,7 @@ export function createServerComponentsMiddleware(
       environment: 'react-server',
       platform,
       domRoot,
+      modulesOnly: true,
     });
 
     // Extract the global CSS modules that are imported from the router.
