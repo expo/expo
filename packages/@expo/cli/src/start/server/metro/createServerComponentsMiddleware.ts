@@ -164,7 +164,7 @@ export function createServerComponentsMiddleware(
   }
 
   async function getExpoRouterClientReferencesAsync(
-    { platform }: { platform: string },
+    { platform, domRoot }: { platform: string; domRoot?: string },
     files: ExportAssetMap
   ): Promise<{
     reactClientReferences: string[];
@@ -174,6 +174,8 @@ export function createServerComponentsMiddleware(
     const contents = await ssrLoadModuleArtifacts(routerModule, {
       environment: 'react-server',
       platform,
+      modulesOnly: true,
+      domRoot,
     });
 
     // Extract the global CSS modules that are imported from the router.
