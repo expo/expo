@@ -91,7 +91,6 @@ export function ProjectStructure() {
           {selected === 'hooks' ? <Hooks /> : null}
           {selected === 'scripts' ? <Scripts /> : null}
           {selected === 'app.json' ? <AppJson /> : null}
-          {selected === 'babel.config.js' ? <BabelConfigJs /> : null}
           {selected === 'package.json' ? <PackageJson /> : null}
           {selected === 'tsconfig.json' ? <TsconfigJson /> : null}
         </div>
