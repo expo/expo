@@ -26,7 +26,7 @@ export function withAnchor(Component: FC<PropsWithChildren<TextComponentProps>>)
     const slug = useSlug(id, children);
     return (
       <Component className="relative" data-id={slug} {...rest}>
-        <span className="relative top-[-100px] invisible" id={slug} />
+        <span className="invisible relative top-[-100px]" id={slug} />
         <A href={`#${slug}`}>{children}</A>
       </Component>
     );

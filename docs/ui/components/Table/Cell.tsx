@@ -13,7 +13,7 @@ type CellProps = PropsWithChildren<{
 export const Cell = ({ children, colSpan, fitContent = false, align = 'left' }: CellProps) => (
   <td
     className={mergeClasses(
-      'p-4 border-r border-secondary',
+      'border-r border-secondary p-4',
       convertAlignToClass(align),
       fitContent && 'w-fit',
       'last:border-r-0',

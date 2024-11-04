@@ -2,7 +2,7 @@ import { theme } from '@expo/styleguide';
 
 export const WhyImage = () => (
   <svg
-    className="absolute right-5 bottom-5"
+    className="absolute bottom-5 right-5"
     width="144"
     height="82"
     viewBox="0 0 144 82"

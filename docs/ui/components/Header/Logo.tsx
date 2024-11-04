@@ -10,26 +10,26 @@ type Props = {
 export const Logo = ({ subgroup }: Props) => (
   <div className="flex items-center gap-4">
     <LinkBase
-      className="flex flex-row items-center decoration-0 select-none gap-2 outline-offset-1"
+      className="flex select-none flex-row items-center gap-2 decoration-0 outline-offset-1"
       href="https://expo.dev">
       <WordMarkLogo
-        className={mergeClasses('w-[72px] mt-px h-5 text-default my-1', 'max-md-gutters:hidden')}
+        className={mergeClasses('my-1 mt-px h-5 w-[72px] text-default', 'max-md-gutters:hidden')}
         title="Expo"
       />
       <LogoIcon
-        className={mergeClasses('icon-lg mr-1.5 text-default hidden', 'max-md-gutters:flex')}
+        className={mergeClasses('icon-lg mr-1.5 hidden text-default', 'max-md-gutters:flex')}
         title="Expo"
       />
     </LinkBase>
     <LinkBase
-      className="flex flex-row items-center decoration-0 select-none gap-2 outline-offset-1"
+      className="flex select-none flex-row items-center gap-2 decoration-0 outline-offset-1"
       href="/">
-      <div className="flex items-center justify-center bg-palette-blue4 rounded-sm size-6">
+      <div className="flex size-6 items-center justify-center rounded-sm bg-palette-blue4">
         <DocumentationIcon className="icon-sm" />
       </div>
       <span
         className={mergeClasses(
-          'text-default font-medium text-lg select-none',
+          'select-none text-lg font-medium text-default',
           subgroup && 'max-md-gutters:hidden'
         )}>
         Docs
@@ -38,9 +38,9 @@ export const Logo = ({ subgroup }: Props) => (
     {subgroup && (
       <>
         <ChevronRightIcon
-          className={mergeClasses('text-icon-secondary -mx-2', 'max-md-gutters:hidden')}
+          className={mergeClasses('-mx-2 text-icon-secondary', 'max-md-gutters:hidden')}
         />
-        <span className="text-default font-medium text-lg select-none">{subgroup}</span>
+        <span className="select-none text-lg font-medium text-default">{subgroup}</span>
       </>
     )}
   </div>

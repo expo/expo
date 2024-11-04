@@ -50,7 +50,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
             href={'#' + slug}
             onClick={onClick}
             className={mergeClasses(
-              'flex mb-1.5 truncate items-center justify-between !text-pretty',
+              'mb-1.5 flex items-center justify-between truncate !text-pretty',
               convertToIndentClass(paddingLeft),
               'focus-visible:relative focus-visible:z-10'
             )}>
@@ -59,7 +59,7 @@ const DocumentationSidebarRightLink = forwardRef<HTMLAnchorElement, SidebarLinkP
                 'w-full !text-secondary hocus:!text-link',
                 isCodeOrFilePath && 'truncate !text-2xs',
                 isActive && '!text-link',
-                isDeprecated && 'opacity-80 line-through'
+                isDeprecated && 'line-through opacity-80'
               )}>
               {displayTitle}
             </TitleElement>

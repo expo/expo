@@ -37,7 +37,7 @@ const Permalink: ComponentType<Props> = withHeadingManager((props: Props & Headi
     <PermalinkBase component={component} className="group">
       <LinkBase
         className={mergeClasses(
-          'inline-flex gap-1.5 items-center relative text-[inherit] decoration-0',
+          'relative inline-flex items-center gap-1.5 text-[inherit] decoration-0',
           props.additionalProps?.sidebarType === 'text' ? 'scroll-m-6' : 'scroll-m-12',
           props.additionalProps?.className
         )}
@@ -47,7 +47,7 @@ const Permalink: ComponentType<Props> = withHeadingManager((props: Props & Headi
         <span className="inline">{children}</span>
         <PermalinkIcon
           className={mergeClasses(
-            'icon-md inline-flex invisible group-hover:visible group-focus-visible:visible',
+            'icon-md invisible inline-flex group-hover:visible group-focus-visible:visible',
             props.nestingLevel >= 4 && 'icon-sm'
           )}
         />

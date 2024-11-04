@@ -82,17 +82,17 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     );
 
     return (
-      <nav className="pt-14 pb-12 px-6 w-[280px]" data-sidebar>
+      <nav className="w-[280px] px-6 pb-12 pt-14" data-sidebar>
         <CALLOUT
           weight="medium"
-          className="absolute -mt-14 bg-default w-[248px] flex min-h-[32px] pt-4 pb-2 gap-2 mb-2 items-center select-none z-10">
+          className="absolute z-10 -mt-14 mb-2 flex min-h-[32px] w-[248px] select-none items-center gap-2 bg-default pb-2 pt-4">
           <LayoutAlt03Icon className="icon-sm" /> On this page
           <Button
             theme="quaternary"
             size="xs"
             className={mergeClasses(
               'ml-auto mr-2 px-2 transition-opacity duration-300',
-              !this.state.showScrollTop && 'opacity-0 pointer-events-none'
+              !this.state.showScrollTop && 'pointer-events-none opacity-0'
             )}
             onClick={e => this.handleTopClick(e)}>
             <ArrowCircleUpIcon className="icon-sm text-icon-secondary" />

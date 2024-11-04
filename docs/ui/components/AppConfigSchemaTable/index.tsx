@@ -67,10 +67,10 @@ function AppConfigProperty({
       <PropertyName name={name} nestingLevel={nestingLevel} />
       <CALLOUT theme="secondary" data-text="true" className="my-3">
         {Array.isArray(type) ? (
-          <span className="grid grid-cols-1 gap-2 mb-2">
+          <span className="mb-2 grid grid-cols-1 gap-2">
             One of types:{' '}
             {type.map((oneOfType, index) => (
-              <CodeBlock className="!text-secondary !text-balance" inline key={`${name}-${index}`}>
+              <CodeBlock className="!text-balance !text-secondary" inline key={`${name}-${index}`}>
                 {oneOfType}
               </CodeBlock>
             ))}
@@ -83,7 +83,7 @@ function AppConfigProperty({
         {nestingLevel > 0 && (
           <>
             &emsp;&bull;&emsp;Path:{' '}
-            <code className="text-secondary px-1 break-words">
+            <code className="break-words px-1 text-secondary">
               {parent}.{name}
             </code>
           </>
@@ -101,7 +101,7 @@ function AppConfigProperty({
         </Collapsible>
       )}
       {example && (
-        <span className="grid grid-cols-1 gap-2 mb-6">
+        <span className="mb-6 grid grid-cols-1 gap-2">
           <CALLOUT theme="secondary" className="font-bold">
             Example
           </CALLOUT>

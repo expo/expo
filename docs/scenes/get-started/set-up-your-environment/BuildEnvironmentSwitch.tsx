@@ -50,7 +50,7 @@ export function BuildEnvironmentSwitch() {
   }
 
   return (
-    <div className="flex gap-3 items-start px-4 py-3 bg-subtle border border-default rounded-lg">
+    <div className="flex items-start gap-3 rounded-lg border border-default bg-subtle px-4 py-3">
       <div className="mt-1">
         <Switch onChange={onSwitchChange} value={!buildEnv} />{' '}
       </div>

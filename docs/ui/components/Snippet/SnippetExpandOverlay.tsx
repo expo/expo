@@ -6,7 +6,7 @@ type Props = {
 
 export function SnippetExpandOverlay({ onClick }: Props) {
   return (
-    <div className="flex absolute bottom-0 left-0 p-6 w-full bg-gradient-to-b from-transparent to-default">
+    <div className="absolute bottom-0 left-0 flex w-full bg-gradient-to-b from-transparent to-default p-6">
       <Button theme="secondary" onClick={onClick} className="mx-auto">
         Show more
       </Button>
