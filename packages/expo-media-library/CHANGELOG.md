@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 17.0.1 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
 ## 17.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

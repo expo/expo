@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Added EAS Updates support for DOM Components. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 52.0.0-preview.19 — 2024-11-04
+
+### 🎉 New features
+
+- Added EAS Updates support for DOM Components. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
