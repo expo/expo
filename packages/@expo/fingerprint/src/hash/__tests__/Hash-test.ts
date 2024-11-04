@@ -173,23 +173,6 @@ describe(createFileHashResultsAsync, () => {
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
     expect(result).toBe(null);
   });
-
-  it(`should hash with <React/RCTBridge.h> than "RCTBridge.h"`, async () => {
-    const filePath = 'ios/HelloWorld/AppDelegate.m';
-    const contents = '#import "RCTBridge.h"';
-    const limiter = pLimit(1);
-    const options = await normalizeOptionsAsync('/app', { debug: true });
-    vol.mkdirSync('/app/ios/HelloWorld', { recursive: true });
-    vol.writeFileSync(path.join('/app', filePath), contents);
-
-    const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
-
-    const expectHex = createHash(options.hashAlgorithm)
-      .update('#import <React/RCTBridge.h>')
-      .digest('hex');
-    expect(result?.id).toEqual(filePath);
-    expect(result?.hex).toEqual(expectHex);
-  });
 });
 
 describe(createDirHashResultsAsync, () => {

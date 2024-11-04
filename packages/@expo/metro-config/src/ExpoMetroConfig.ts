@@ -369,7 +369,7 @@ export function getDefaultConfig(
       ),
       assetRegistryPath: '@react-native/assets-registry/registry',
       assetPlugins: getAssetPlugins(projectRoot),
-      hermesParser: true,
+      // hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
           experimentalImportSupport: false,

@@ -17,8 +17,6 @@ module.exports = {
       rules: {
         '@next/next/no-img-element': 'off',
         'react/jsx-curly-brace-presence': [1, { propElementValues: 'ignore' }],
-        // https://github.com/emotion-js/emotion/issues/2878
-        'react/no-unknown-property': ['error', { ignore: ['css'] }],
         'tailwindcss/classnames-order': 'off',
         'tailwindcss/enforces-negative-arbitrary-values': 'warn',
         'tailwindcss/enforces-shorthand': 'warn',

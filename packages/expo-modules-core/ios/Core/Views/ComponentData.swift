@@ -59,7 +59,7 @@ public final class ComponentData: RCTComponentDataSwiftAdapter {
 
     // Props are set differently in SwiftUI hosting views – delegate the work to `ExpoSwiftUI.HostingView`.
     if let hostingView = view as? ExpoSwiftUI.AnyHostingView {
-      hostingView.updateRawProps(props, appContext: appContext)
+      hostingView.updateProps(props)
 
       // Pass props to React too, to apply layout and styles for the hosting view.
       super.setProps(props, forView: view)

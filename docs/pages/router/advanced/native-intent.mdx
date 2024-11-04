@@ -84,7 +84,7 @@ Choose the pattern that aligns with your deployment strategy and technical requi
 While your app is open, you can react to URL changes within your `_layout` files using the `usePathname()` hook. The location of the `_layout` dictates the scope of the subscription.
 
 - **global**: Add the logic to your root `_layout` file
-- **localized**: Add a `_layout` file to an existing directory (or create a new (group directory)[/router/layouts/#groups])
+- **localized**: Add a `_layout` file to an existing directory (or create a new [group directory](/router/layouts/#groups))
 
 ```tsx app/_layout.tsx
 import { Slot, Redirect } from 'expo-router';
@@ -150,3 +150,11 @@ This approach is effective for directing users to external websites or Universal
 ```ts
 <Link href="https://my-website.com/router/introduction" />
 ```
+
+## `legacy_subscribe`
+
+> `legacy_subscribe` is experimentally available in SDK 52.
+
+If you're using a third-party provider that doesn't support Expo Router but does support React Navigation via the `Linking.subscribe` function for existing projects, you can use `legacy_subscribe` as an alternative API.
+
+Using this API is not recommended for new projects or integrations. Its usage is incompatible with Server Side Routing and [Static Rendering](/router/reference/static-rendering/), and can be challenging to manage while offline or in a low network connectivity environment.

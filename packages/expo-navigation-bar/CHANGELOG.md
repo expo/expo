@@ -8,6 +8,20 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 4.0.2 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2024-10-22
+
+### 🐛 Bug fixes
+
 - Add missing `react`/`react-native` peer dependencies. ([#30573](https://github.com/expo/expo/pull/30573) by [@byCedric](https://github.com/byCedric))
 - Replaced the config-plugins deprecated `getAppThemeLightNoActionBarGroup` method with the new `getAppThemeGroup`. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
 

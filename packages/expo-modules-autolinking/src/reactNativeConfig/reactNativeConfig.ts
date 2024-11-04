@@ -97,7 +97,7 @@ export async function resolveDependencyConfigAsync(
   const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(packageRoot);
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
-    ...projectConfig?.dependencies[name],
+    ...projectConfig?.dependencies?.[name],
   };
 
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
@@ -146,10 +146,7 @@ export async function resolveAppProjectConfigAsync(
     if (gradle == null || manifest == null) {
       return {};
     }
-    const packageName = await parsePackageNameAsync(
-      path.join(androidDir, manifest),
-      path.join(androidDir, gradle)
-    );
+    const packageName = await parsePackageNameAsync(androidDir, manifest, gradle);
 
     return {
       android: {

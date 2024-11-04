@@ -113,9 +113,6 @@ export async function logMetroErrorWithStack(
   }
 
   if (stack?.length) {
-    Log.log();
-    Log.log(chalk.bold`Call Stack`);
-
     const stackProps = stack.map((frame) => {
       return {
         title: frame.methodName,
@@ -123,6 +120,8 @@ export async function logMetroErrorWithStack(
         collapse: frame.collapse,
       };
     });
+
+    const stackLines: string[] = [];
 
     stackProps.forEach((frame) => {
       const position = terminalLink.isSupported
@@ -132,8 +131,19 @@ export async function logMetroErrorWithStack(
       if (frame.collapse) {
         lineItem = chalk.dim(lineItem);
       }
-      Log.log(lineItem);
+      // Never show the internal module system.
+      if (!frame.subtitle.match(/\/metro-require\/require\.js/)) {
+        stackLines.push(lineItem);
+      }
     });
+
+    Log.log();
+    Log.log(chalk.bold`Call Stack`);
+    if (!stackLines.length) {
+      Log.log(chalk.gray('  No stack trace available.'));
+    } else {
+      Log.log(stackLines.join('\n'));
+    }
   } else {
     Log.log(chalk.gray(`  ${error.stack}`));
   }
@@ -177,7 +187,7 @@ function isTransformError(
 function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }) {
   // Remap direct Metro Node.js errors to a format that will appear more client-friendly in the logbox UI.
   let stack: MetroStackFrame[] | undefined;
-  if (isTransformError(error)) {
+  if (isTransformError(error) && error.filename) {
     // Syntax errors in static rendering.
     stack = [
       {

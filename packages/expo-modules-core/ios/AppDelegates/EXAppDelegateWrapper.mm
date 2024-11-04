@@ -6,7 +6,6 @@
 #import <ExpoModulesCore/Swift.h>
 #import <ExpoModulesCore/RCTAppDelegateUmbrella.h>
 
-#import <ReactCommon/ReactCommon-umbrella.h>
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 #import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
 
@@ -29,9 +28,6 @@
 @implementation EXAppDelegateWrapper {
   EXExpoAppDelegate *_expoAppDelegate;
 }
-
-// Synthesize window, so the AppDelegate can synthesize it too.
-@synthesize window = _window;
 
 - (instancetype)init
 {
@@ -84,9 +80,9 @@
 
   RCTRootViewFactoryConfiguration *configuration =
       [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
-                                                       newArchEnabled:self.fabricEnabled
-                                                   turboModuleEnabled:self.turboModuleEnabled
-                                                    bridgelessEnabled:self.bridgelessEnabled];
+                                                       newArchEnabled:self.newArchEnabled
+                                                   turboModuleEnabled:self.newArchEnabled
+                                                    bridgelessEnabled:self.newArchEnabled];
 
   configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
   {

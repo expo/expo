@@ -216,9 +216,10 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
-    const apiRoutesEnabled = exp.web?.output === 'server';
+    const apiRoutesEnabled =
+      devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
 
-    if (devServer.isReactServerComponentsEnabled || apiRoutesEnabled) {
+    if (apiRoutesEnabled) {
       await exportStandaloneServerAsync(projectRoot, devServer, {
         exp,
         pkg,
@@ -406,7 +407,9 @@ export async function createMetroServerAndBundleRequestAsync(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
-  const bundleRequest = {
+  // TODO(cedric): check if we can use the proper `bundleType=bundle` and `entryPoint=mainModuleName` properties
+  // @ts-expect-error: see above
+  const bundleRequest: BundleOptions = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
     ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
       splitChunks: false,

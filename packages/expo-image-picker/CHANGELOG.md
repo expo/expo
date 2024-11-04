@@ -4,6 +4,18 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fix incorrect width/height reported with EXIF tags 5 and 7 ([#32534](https://github.com/expo/expo/pull/32534) by [@gaearon](https://github.com/gaearon))
+
+### 💡 Others
+
+## 16.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Remove `READ_MEDIA_IMAGES` and `READ_MEDIA_VIDEO` permissions. ([#31902](https://github.com/expo/expo/pull/31902) by [@aleqsio](https://github.com/aleqsio))
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 - The default value for `quality` option has been changed from `0.2` to `1.0` for better performance and to match the most common expectation. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))

@@ -196,6 +196,34 @@ it('allows type exports', () => {
   expect(res.code).toMatch('expo/dom/internal');
 });
 
+it('asserts that Layout Routes cannot be DOM components', () => {
+  const sourceCode = `
+    'use dom';
+
+    export default function App() {
+      return <div />;
+    }
+`;
+
+  expect(() => transformClient({ sourceCode, filename: '_layout.tsx' })).toThrow(
+    /Layout routes cannot be marked as DOM components/
+  );
+});
+
+it('asserts that API Routes cannot be DOM components', () => {
+  const sourceCode = `
+    'use dom';
+
+    export default function App() {
+      return <div />;
+    }
+`;
+
+  expect(() => transformClient({ sourceCode, filename: 'foo+api.js' })).toThrow(
+    /API routes cannot be marked as DOM components/
+  );
+});
+
 describe('errors', () => {
   it(`throws when there are non-default exports`, () => {
     const sourceCode = `

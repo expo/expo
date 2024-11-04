@@ -27,15 +27,55 @@ jestPreset.transform['\\.[jt]sx?$'] = [
   { caller: { name: 'metro', bundler: 'metro', platform: 'ios' } },
 ];
 
-const defaultAssetNamePattern = '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
-if (!jestPreset.transform[defaultAssetNamePattern]) {
-  console.warn(`Expected react-native/jest-preset to define transform[${defaultAssetNamePattern}]`);
-} else {
-  delete jestPreset.transform[defaultAssetNamePattern];
-}
+/* Update this when metro changes their default extensions */
+const defaultMetroAssetExts = [
+  // Image formats
+  'bmp',
+  'gif',
+  'jpg',
+  'jpeg',
+  'png',
+  'psd',
+  'svg',
+  'webp',
+  'xml',
+  // Video formats
+  'm4v',
+  'mov',
+  'mp4',
+  'mpeg',
+  'mpg',
+  'webm',
+  // Audio formats
+  'aac',
+  'aiff',
+  'caf',
+  'm4a',
+  'mp3',
+  'wav',
+  // Document formats
+  'html',
+  'pdf',
+  'yaml',
+  'yml',
+  // Font formats
+  'otf',
+  'ttf',
+  // Archives (virtual files)
+  'zip',
+];
 
-const assetNamePattern =
-  '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp|ttf|otf|m4v|mov|mp4|mpeg|mpg|webm|aac|aiff|caf|m4a|mp3|wav|html|pdf|obj)$';
+/** Update this when we change @expo/metro-config */
+const defaultExpoMetroAssetExts = [
+  ...defaultMetroAssetExts,
+  // Add default support for `expo-image` file types.
+  'heic',
+  'avif',
+  // Add default support for `expo-sqlite` file types.
+  'db',
+];
+
+const assetNamePattern = `^.+\\.(${defaultExpoMetroAssetExts.join('|')})$`;
 jestPreset.transform[assetNamePattern] = require.resolve(
   'jest-expo/src/preset/assetFileTransformer.js'
 );

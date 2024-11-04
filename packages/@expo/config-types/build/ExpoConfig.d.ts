@@ -235,6 +235,10 @@ export interface ExpoConfig {
      * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
+    /**
+     * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
+     */
+    newArchEnabled?: boolean;
     ios?: IOS;
     android?: Android;
     web?: Web;
@@ -274,6 +278,10 @@ export interface ExpoConfig {
          * Experimentally enable React Server Components support in Expo CLI and Expo Router.
          */
         reactServerComponents?: boolean;
+        /**
+         * Experimentally enable React Server Actions support in Expo CLI and Expo Router.
+         */
+        reactServerActions?: boolean;
     };
     /**
      * Internal properties for developer tools
@@ -510,6 +518,10 @@ export interface IOS {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
+     * A Boolean value that indicates whether the iOS app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
+    /**
      * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
      */
     runtimeVersion?: string | {
@@ -521,7 +533,7 @@ export interface IOS {
  */
 export interface IOSIcons {
     /**
-     * The icon that will appear for the app regardless of the user's current system appearance.
+     * The icon that will appear when neither dark nor tinted icons are used, or if they are not provided.
      */
     any?: string;
     /**
@@ -753,6 +765,10 @@ export interface Android {
      * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
+    /**
+     * A Boolean value that indicates whether the Android app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
     /**
      * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
      */

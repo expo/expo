@@ -19,8 +19,20 @@ import { KitchenSinkScreen } from './screens/KitchenSinkScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
 
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+type TabNavigatorParamList = {
+  Home: undefined;
+  ExtensionsStack: undefined;
+  Settings: undefined;
+  'Kitchen Sink': undefined;
+};
+const Tab = createBottomTabNavigator<TabNavigatorParamList, 'tab'>();
+
+type StackNavigatorParamList = {
+  Main: undefined;
+  'User Profile': undefined;
+  'Crash Report': undefined;
+};
+const Stack = createStackNavigator<StackNavigatorParamList, 'main'>();
 
 type LauncherAppProps = object;
 
@@ -30,6 +42,7 @@ export function App(props: LauncherAppProps) {
       <LoadInitialData loader={<Splash />}>
         <AppProviders>
           <Stack.Navigator
+            id="main"
             initialRouteName="Main"
             screenOptions={{ presentation: 'modal', gestureEnabled: false }}
             detachInactiveScreens={false}>
@@ -51,7 +64,7 @@ export function App(props: LauncherAppProps) {
 
 const Main = () => {
   return (
-    <Tab.Navigator detachInactiveScreens={false}>
+    <Tab.Navigator detachInactiveScreens={false} id="tab">
       <Tab.Screen
         name="Home"
         component={HomeScreen}

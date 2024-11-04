@@ -1,16 +1,17 @@
 {
   "name": "@expo/fingerprint",
-  "version": "0.9.0",
+  "version": "0.11.1",
   "description": "A library to generate a fingerprint from a React Native project",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && expo-module tsc",
-    "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
     "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch"
@@ -20,7 +21,8 @@
   },
   "files": [
     "bin",
-    "build"
+    "build",
+    "cli/build"
   ],
   "keywords": [
     "expo",
@@ -52,7 +54,7 @@
   },
   "devDependencies": {
     "@types/find-up": "^4.0.0",
-    "expo-module-scripts": "^3.3.0",
+    "expo-module-scripts": "^4.0.0",
     "glob": "^10.4.2",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"

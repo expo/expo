@@ -1,15 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { ELEMENT_SPACING, STYLES_SECONDARY } from './styles';
-
 import {
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
   TypeDefinitionData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   BoxSectionHeader,
   CommentTextBlock,
@@ -19,11 +17,10 @@ import {
   getTagNamesList,
   renderTypeOrSignatureType,
   resolveTypeName,
-  STYLES_APIBOX,
-  STYLES_APIBOX_NESTED,
-  STYLES_NOT_EXPOSED_HEADER,
   TypeDocKind,
-} from '~/components/plugins/api/APISectionUtils';
+} from './APISectionUtils';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
+
 import { CODE, H2, H3, H4, LI, MONOSPACE, P, UL } from '~/ui/components/Text';
 
 export type APISectionPropsProps = {
@@ -117,15 +114,16 @@ export const renderProp = (
   return (
     <div
       key={`prop-entry-${name}`}
-      css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}
-      className="!pb-4 [&>*:last-child]:!mb-0">
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, '!pb-4 [&>*:last-child]:!mb-0')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
       <APISectionPlatformTags comment={comment} />
       <HeaderComponent tags={getTagNamesList(comment)}>
         <MONOSPACE
           weight="medium"
-          css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}
-          className="wrap-anywhere">
+          className={mergeClasses(
+            'wrap-anywhere',
+            !exposeInSidebar && 'mb-1 inline-block prose-code:mb-0'
+          )}>
           {name}
         </MONOSPACE>
       </HeaderComponent>

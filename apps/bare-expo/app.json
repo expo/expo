@@ -33,9 +33,7 @@
       "supportsTablet": true,
       "requireFullScreen": false,
       "entitlements": {
-        "com.apple.security.application-groups": [
-          "group.dev.expo.Payments"
-        ]
+        "com.apple.security.application-groups": ["group.dev.expo.Payments"]
       }
     },
     "web": {
@@ -68,7 +66,8 @@
       [
         "expo-location",
         {
-          "isAndroidBackgroundLocationEnabled": true
+          "isAndroidBackgroundLocationEnabled": true,
+          "isIosBackgroundLocationEnabled": true
         }
       ],
       [

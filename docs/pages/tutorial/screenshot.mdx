@@ -73,7 +73,7 @@ We'll use `react-native-view-shot` to allow the user to take a screenshot within
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 import { useState, useRef } from 'react';
-import { captureRef } from "react-native-view-shot";
+/* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
   /* @tutinfo Create an imageRef variable. */ const imageRef = useRef();/* @end */
@@ -116,6 +116,7 @@ import { useState, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as MediaLibrary from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
+import { type ImageSource } from "expo-image";
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
@@ -131,7 +132,7 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [pickedEmoji, setPickedEmoji] = useState<string | undefined>(undefined);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
   const [status, requestPermission] = MediaLibrary.usePermissions();
   const imageRef = useRef<View>(null);
 

@@ -2,13 +2,11 @@
 
 import ExpoModulesCore
 
-public protocol UpdatesEventManager: AnyObject {
-  /**
-   The AppContext from expo-modules-core.
-   This is optional, but required for expo-updates module events to work.
-   */
-  var appContext: AppContext? { get set }
-  var shouldEmitJsEvents: Bool { get set }
+public protocol UpdatesEventManagerObserver: AnyObject {
+  func onStateMachineContextEvent(context: UpdatesStateContext)
+}
 
-  func sendUpdateStateChangeEventToAppContext(_ eventType: UpdatesStateEventType, context: UpdatesStateContext)
+public protocol UpdatesEventManager: AnyObject {
+  var observer: UpdatesEventManagerObserver? { get set }
+  func sendStateMachineContextEvent(context: UpdatesStateContext)
 }

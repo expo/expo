@@ -168,6 +168,48 @@ async function ensureImageOptionsAsync(imageOptions: ImageOptions): Promise<Imag
   return icon;
 }
 
+export async function generateImageBackgroundAsync(
+  imageOptions: Omit<ImageOptions, 'src'>
+): Promise<Buffer> {
+  const { width, height, backgroundColor, borderRadius } = imageOptions;
+  const sharp: any = await getSharpAsync();
+  if (!sharp) {
+    const jimp = await Jimp.createSquareAsync({
+      size: width,
+      color: backgroundColor,
+    });
+
+    if (borderRadius) {
+      const image = await Jimp.getJimpImageAsync(jimp);
+      // TODO: support setting border radius with Jimp. Currently only support making the image a circle
+      return await Jimp.circleAsync(image);
+    }
+    return jimp;
+  }
+  const sharpBuffer = sharp({
+    create: {
+      width,
+      height,
+      channels: 4,
+      background: backgroundColor,
+    },
+  });
+
+  if (imageOptions.borderRadius) {
+    const mask = Buffer.from(
+      `<svg><rect x="0" y="0" width="${width}" height="${height}"
+      rx="${borderRadius}" ry="${borderRadius}"
+      fill="${
+        backgroundColor && backgroundColor !== 'transparent' ? backgroundColor : 'none'
+      }" /></svg>`
+    );
+
+    sharpBuffer.composite([{ input: mask, blend: 'dest-in' }]);
+  }
+
+  return await sharpBuffer.png().toBuffer();
+}
+
 export async function generateImageAsync(
   options: { projectRoot: string; cacheType?: string },
   imageOptions: ImageOptions

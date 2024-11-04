@@ -1,10 +1,19 @@
 import { StackActions, type NavigationState, PartialRoute } from '@react-navigation/native';
+import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
 import { nanoid } from 'nanoid/non-secure';
+import { Platform } from 'react-native';
 
 import { type RouterStore } from './router-store';
 import { ResultState } from '../fork/getStateFromPath';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import {
+  emitDomDismiss,
+  emitDomDismissAll,
+  emitDomGoBack,
+  emitDomLinkEvent,
+  emitDomSetParams,
+} from '../link/useDomComponentNavigation';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 import { shouldLinkExternally } from '../utils/url';
@@ -23,11 +32,19 @@ export function navigate(this: RouterStore, url: Href, options?: NavigationOptio
   return this.linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
 }
 
+export function reload(this: RouterStore) {
+  // TODO(EvanBacon): add `reload` support.
+  throw new Error('The reload method is not implemented in the client-side router yet.');
+}
+
 export function push(this: RouterStore, url: Href, options?: NavigationOptions) {
   return this.linkTo(resolveHref(url), { ...options, event: 'PUSH' });
 }
 
 export function dismiss(this: RouterStore, count?: number) {
+  if (emitDomDismiss(count)) {
+    return;
+  }
   this.navigationRef?.dispatch(StackActions.pop(count));
 }
 
@@ -36,15 +53,26 @@ export function replace(this: RouterStore, url: Href, options?: NavigationOption
 }
 
 export function dismissAll(this: RouterStore) {
+  if (emitDomDismissAll()) {
+    return;
+  }
   this.navigationRef?.dispatch(StackActions.popToTop());
 }
 
 export function goBack(this: RouterStore) {
+  if (emitDomGoBack()) {
+    return;
+  }
   assertIsReady(this);
   this.navigationRef?.current?.goBack();
 }
 
 export function canGoBack(this: RouterStore): boolean {
+  if (IS_DOM) {
+    throw new Error(
+      'canGoBack imperative method is not supported. Pass the property to the DOM component instead.'
+    );
+  }
   // Return a default value here if the navigation hasn't mounted yet.
   // This can happen if the user calls `canGoBack` from the Root Layout route
   // before mounting a navigator. This behavior exists due to React Navigation being dynamically
@@ -57,6 +85,11 @@ export function canGoBack(this: RouterStore): boolean {
 }
 
 export function canDismiss(this: RouterStore): boolean {
+  if (IS_DOM) {
+    throw new Error(
+      'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
+    );
+  }
   let state = this.rootState;
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
@@ -76,6 +109,9 @@ export function setParams(
   this: RouterStore,
   params: Record<string, string | number | (string | number)[]> = {}
 ) {
+  if (emitDomSetParams(params)) {
+    return;
+  }
   assertIsReady(this);
   return (this.navigationRef?.current?.setParams as any)(params);
 }
@@ -88,14 +124,27 @@ export type LinkToOptions = {
    * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
    */
   relativeToDirectory?: boolean;
+
+  /**
+   *
+   */
+  withAnchor?: boolean;
 };
 
 export function linkTo(
   this: RouterStore,
   href: string,
-  { event, relativeToDirectory }: LinkToOptions = {}
+  { event, relativeToDirectory, withAnchor }: LinkToOptions = {}
 ) {
+  if (emitDomLinkEvent(href, { event, relativeToDirectory, withAnchor })) {
+    return;
+  }
+
   if (shouldLinkExternally(href)) {
+    if (href.startsWith('//') && Platform.OS !== 'web') {
+      href = `https:${href}`;
+    }
+
     Linking.openURL(href);
     return;
   }
@@ -129,13 +178,14 @@ export function linkTo(
     return;
   }
 
-  return navigationRef.dispatch(getNavigateAction(state, rootState, event));
+  return navigationRef.dispatch(getNavigateAction(state, rootState, event, withAnchor));
 }
 
 function getNavigateAction(
   actionState: ResultState,
   navigationState: NavigationState,
-  type = 'NAVIGATE'
+  type = 'NAVIGATE',
+  withAnchor?: boolean
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -224,7 +274,7 @@ function getNavigateAction(
      *
      */
     if (navigationState.type === 'stack') {
-      rootPayload.key = `${rootPayload.name}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
+      rootPayload.params.__EXPO_ROUTER_key = `${rootPayload.name}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
     }
   }
 
@@ -236,11 +286,29 @@ function getNavigateAction(
     type = 'JUMP_TO';
   }
 
+  if (withAnchor !== undefined) {
+    if (rootPayload.params.initial) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
+      }
+    }
+    /*
+     * The logic for initial can seen backwards depending on your perspective
+     *   True: The initialRouteName is not loaded. The incoming screen is the initial screen (default)
+     *   False: The initialRouteName is loaded. THe incoming screen is placed after the initialRouteName
+     *
+     * withAnchor flips the perspective.
+     *   True: You want the initialRouteName to load.
+     *   False: You do not want the initialRouteName to load.
+     */
+    rootPayload.params.initial = !withAnchor;
+  }
+
   return {
     type,
     target: navigationState.key,
     payload: {
-      key: rootPayload.key,
+      // key: rootPayload.key,
       name: rootPayload.screen,
       params: rootPayload.params,
     },

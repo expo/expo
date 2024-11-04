@@ -1,10 +1,7 @@
 import {
-  BottomTabNavigationOptions,
-  BottomTabNavigationConfig,
-} from '@react-navigation/bottom-tabs/lib/typescript/src/types';
-import {
   DefaultNavigatorOptions,
   NavigationAction,
+  NavigationProp,
   ParamListBase,
   TabActionHelpers,
   TabNavigationState,
@@ -15,19 +12,41 @@ import { createContext } from 'react';
 
 import { TriggerMap } from './common';
 
-export type ExpoTabsProps = DefaultNavigatorOptions<
+export type ExpoTabsProps = ExpoTabsNavigatorOptions;
+
+export type ExpoTabsNavigatorScreenOptions = {
+  detachInactiveScreens?: boolean;
+  unmountOnBlur?: boolean;
+  freezeOnBlur?: boolean;
+  lazy?: boolean;
+};
+
+export type ExpoTabsNavigatorOptions = DefaultNavigatorOptions<
   ParamListBase,
+  string | undefined,
+  TabNavigationState<ParamListBase>,
+  ExpoTabsScreenOptions,
+  TabNavigationEventMap,
+  ExpoTabsNavigationProp<ParamListBase>
+> &
+  // Should be set through `unstable_settings`
+  Omit<TabRouterOptions, 'initialRouteName'> &
+  ExpoTabsNavigatorScreenOptions;
+
+export type ExpoTabsNavigationProp<
+  ParamList extends ParamListBase,
+  RouteName extends keyof ParamList = keyof ParamList,
+  NavigatorID extends string | undefined = undefined,
+> = NavigationProp<
+  ParamList,
+  RouteName,
+  NavigatorID,
   TabNavigationState<ParamListBase>,
   ExpoTabsScreenOptions,
   TabNavigationEventMap
-> &
-  Omit<TabRouterOptions, 'initialRouteName'> & // Should be set through `unstable_settings`
-  BottomTabNavigationConfig;
+>;
 
-export type ExpoTabsScreenOptions = Pick<
-  BottomTabNavigationOptions,
-  'title' | 'lazy' | 'unmountOnBlur' | 'freezeOnBlur'
-> & {
+export type ExpoTabsScreenOptions = ExpoTabsNavigatorScreenOptions & {
   params?: object;
   title: string;
   action: NavigationAction;
@@ -49,7 +68,7 @@ export type TabsContextValue = ReturnType<
     TabNavigationState<any>,
     TabRouterOptions,
     TabActionHelpers<ParamListBase>,
-    BottomTabNavigationOptions,
+    ExpoTabsNavigatorScreenOptions,
     TabNavigationEventMap
   >
 >;
@@ -58,17 +77,6 @@ export type TabContextValue = TabsDescriptor['options'];
 
 export const TabContext = createContext<TabContextValue>({});
 export const TabTriggerMapContext = createContext<TriggerMap>({});
-export const TabsDescriptorsContext = createContext<TabsContextValue['descriptors']>({});
-export const TabsNavigatorContext = createContext<TabsContextValue['navigation'] | null>(null);
-export const TabsStateContext = createContext<TabsContextValue['state']>({
-  type: 'tab',
-  history: [],
-  index: -1,
-  key: '',
-  stale: false,
-  routeNames: [],
-  routes: [],
-});
 
 export type Route = TabNavigationState<ParamListBase>['routes'][number];
 export type TabsDescriptor = TabsContextValue['descriptors'][number];

@@ -20,6 +20,7 @@ import type MetroHmrServer from 'metro/src/HmrServer';
 import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
 import { GraphRevision } from 'metro/src/IncrementalBundler';
 import bundleToString from 'metro/src/lib/bundleToString';
+import getGraphId from 'metro/src/lib/getGraphId';
 import { TransformProfile } from 'metro-babel-transformer';
 import type { CustomResolverOptions } from 'metro-resolver/src/types';
 import path from 'path';
@@ -90,17 +91,6 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
 ) => Promise<T>;
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
-
-const getGraphId = require('metro/src/lib/getGraphId') as (
-  entryFile: string,
-  options: any,
-  etc: {
-    shallow: boolean;
-    lazy: boolean;
-    unstable_allowRequireContext: boolean;
-    resolverOptions: unknown;
-  }
-) => string;
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 8081;
@@ -432,9 +422,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
       baseUrl,
-
-      // TODO: Support hydration in development. This is only disabled due to a bug discovered during the refactor.
-      hydrate: false,
+      hydrate: env.EXPO_WEB_DEV_HYDRATE,
     });
     return {
       content,
@@ -551,6 +539,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         'default',
       customTransformOptions: expoBundleOptions.customTransformOptions ?? Object.create(null),
       platform: expoBundleOptions.platform ?? 'web',
+      // @ts-expect-error: `runtimeBytecodeVersion` does not exist in `expoBundleOptions` or `TransformInputOptions`
       runtimeBytecodeVersion: expoBundleOptions.runtimeBytecodeVersion,
     };
 
@@ -691,7 +680,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files: ExportAssetMap;
   }> {
     // NOTE(EvanBacon): This will not support any code elimination since it's a static pass.
-    const {
+    let {
       reactClientReferences: clientBoundaries,
       reactServerReferences: serverActionReferencesInServer,
       cssModules,
@@ -707,7 +696,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     debug('Evaluated client boundaries:', clientBoundaries);
 
     // Run metro bundler and create the JS bundles/source maps.
-    const bundle = await this.legacySinglePageExportBundleAsync(
+    let bundle = await this.legacySinglePageExportBundleAsync(
       {
         ...options,
         clientBoundaries,
@@ -734,13 +723,33 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     debug('React server action boundaries from client:', reactServerReferences);
 
-    await this.rscRenderer!.exportServerActionsAsync(
-      {
-        platform: options.platform,
-        entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
-      },
-      files
+    // When we export the server actions that were imported from the client, we may need to re-bundle the client with the new client boundaries.
+    const { clientBoundaries: nestedClientBoundaries } =
+      await this.rscRenderer!.exportServerActionsAsync(
+        {
+          platform: options.platform,
+          entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
+        },
+        files
+      );
+
+    const hasUniqueClientBoundaries = nestedClientBoundaries.some(
+      (boundary) => !clientBoundaries.includes(boundary)
     );
+
+    if (hasUniqueClientBoundaries) {
+      debug('Re-bundling client with nested client boundaries:', nestedClientBoundaries);
+      clientBoundaries = [...new Set(clientBoundaries.concat(nestedClientBoundaries))];
+      // Re-bundle the client with the new client boundaries that only exist in server actions that were imported from the client.
+      // Run metro bundler and create the JS bundles/source maps.
+      bundle = await this.legacySinglePageExportBundleAsync(
+        {
+          ...options,
+          clientBoundaries: [...clientBoundaries, ...nestedClientBoundaries],
+        },
+        extraOptions
+      );
+    }
 
     // Inject the global CSS that was imported during the server render.
     bundle.artifacts.push(...cssModules);
@@ -893,15 +902,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
     const { exp } = config;
     // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
-    const isReactServerComponentsEnabled = !!exp.experiments?.reactServerComponents;
+    const isReactServerComponentsEnabled =
+      !!exp.experiments?.reactServerComponents || !!exp.experiments?.reactServerActions;
+    const isReactServerActionsOnlyEnabled =
+      !exp.experiments?.reactServerComponents && !!exp.experiments?.reactServerActions;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
+
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+    const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
     const reactCompiler = !!exp.experiments?.reactCompiler;
     const appDir = path.join(this.projectRoot, routerRoot);
     const mode = options.mode ?? 'development';
+
+    if (isReactServerComponentsEnabled && useServerRendering) {
+      throw new CommandError(
+        `Experimental server component support does not support 'web.output: ${exp.web!.output}' yet. Use 'web.output: "single"' during the experimental phase.`
+      );
+    }
 
     const instanceMetroOptions = {
       isExporting: !!options.isExporting,
@@ -995,6 +1015,38 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         middleware.use(new FaviconMiddleware(this.projectRoot).getHandler());
       }
 
+      if (useServerRendering || isReactServerComponentsEnabled) {
+        observeAnyFileChanges(
+          {
+            metro,
+            server,
+          },
+          (events) => {
+            if (hasApiRoutes) {
+              // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
+              // aggressively to ensure we always have the latest. The only caching we really get here is for
+              // cases where the user is making subsequent requests to the same API route without changing anything.
+              // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
+              // up for a lot of the overhead.
+              this.invalidateApiRouteCache();
+            } else if (!hasWarnedAboutApiRoutes()) {
+              for (const event of events) {
+                if (
+                  // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
+                  // API Routes are not enabled in the project.
+                  event.metadata?.type !== 'd' &&
+                  // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
+                  event.filePath.startsWith(appDir) &&
+                  isApiRouteConvention(event.filePath)
+                ) {
+                  warnInvalidWebOutput();
+                }
+              }
+            }
+          }
+        );
+      }
+
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
         this.bindRSCDevModuleInjectionHandler();
@@ -1009,6 +1061,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           getStaticScriptUrl: () => {
             return this.getStaticBundleUrlForDev();
           },
+          useClientRouter: isReactServerActionsOnlyEnabled,
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -1032,7 +1085,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {
-        if (useServerRendering) {
+        if (!useServerRendering || isReactServerComponentsEnabled) {
+          // This MUST run last since it's the fallback.
+          middleware.use(
+            new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+          );
+        } else {
           // middleware.use(
           //   createRouteHandlerMiddleware(this.projectRoot, {
           //     appDir,
@@ -1046,41 +1104,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           //     },
           //   })
           // );
-
-          observeAnyFileChanges(
-            {
-              metro,
-              server,
-            },
-            (events) => {
-              if (exp.web?.output === 'server') {
-                // NOTE(EvanBacon): We aren't sure what files the API routes are using so we'll just invalidate
-                // aggressively to ensure we always have the latest. The only caching we really get here is for
-                // cases where the user is making subsequent requests to the same API route without changing anything.
-                // This is useful for testing but pretty suboptimal. Luckily our caching is pretty aggressive so it makes
-                // up for a lot of the overhead.
-                this.invalidateApiRouteCache();
-              } else if (!hasWarnedAboutApiRoutes()) {
-                for (const event of events) {
-                  if (
-                    // If the user did not delete a file that matches the Expo Router API Route convention, then we should warn that
-                    // API Routes are not enabled in the project.
-                    event.metadata?.type !== 'd' &&
-                    // Ensure the file is in the project's routes directory to prevent false positives in monorepos.
-                    event.filePath.startsWith(appDir) &&
-                    isApiRouteConvention(event.filePath)
-                  ) {
-                    warnInvalidWebOutput();
-                  }
-                }
-              }
-            }
-          );
-        } else {
-          // This MUST run last since it's the fallback.
-          middleware.use(
-            new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
-          );
         }
       }
     } else {
@@ -1098,6 +1121,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           getStaticScriptUrl() {
             return '';
           },
+          useClientRouter: isReactServerActionsOnlyEnabled,
         });
         this.rscRenderer = rscMiddleware;
       }
@@ -1476,16 +1500,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         entryFile: resolvedEntryFilePath,
         minify: transformOptions.minify,
         platform: transformOptions.platform,
-        // @ts-expect-error: typed incorrectly upstream
         customResolverOptions: resolverOptions.customResolverOptions,
-        customTransformOptions: transformOptions.customTransformOptions,
+        customTransformOptions: transformOptions.customTransformOptions ?? {},
       },
       isPrefetch: false,
       type: 'bundle_build_started',
     });
 
     try {
-      let delta: DeltaResult<void>;
+      let delta: DeltaResult;
       let revision: GraphRevision;
 
       // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
@@ -1501,7 +1524,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           {
             onProgress,
             shallow: graphOptions.shallow,
-            // @ts-expect-error: typed incorrectly
             lazy: graphOptions.lazy,
           }
         );
@@ -1520,7 +1542,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               {
                 onProgress,
                 shallow: graphOptions.shallow,
-                // @ts-expect-error: typed incorrectly
                 lazy: graphOptions.lazy,
               }
             ));

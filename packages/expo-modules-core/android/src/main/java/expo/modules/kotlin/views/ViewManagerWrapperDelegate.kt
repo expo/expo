@@ -3,7 +3,6 @@ package expo.modules.kotlin.views
 import android.content.Context
 import android.view.View
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.common.MapBuilder
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
@@ -108,16 +107,16 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>) {
   }
 
   fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    val builder = MapBuilder.builder<String, Any>()
-    definition
-      .callbacksDefinition
-      ?.names
-      ?.forEach {
-        builder.put(
-          normalizeEventName(it),
-          MapBuilder.of<String, Any>("registrationName", it)
-        )
-      }
-    return builder.build()
+    return buildMap<String, Any> {
+      definition
+        .callbacksDefinition
+        ?.names
+        ?.forEach {
+          put(
+            normalizeEventName(it),
+            mapOf("registrationName" to it)
+          )
+        }
+    }
   }
 }

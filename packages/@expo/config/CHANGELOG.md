@@ -4,6 +4,28 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 10.0.2 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- Properly handle app manifest plugin modifications. ([#32405](https://github.com/expo/expo/pull/32405) by [@byCedric](https://github.com/byCedric))
+
+## 10.0.1 — 2024-10-25
+
+### 💡 Others
+
+- Bump `sucrase@3.34.0` to `sucrase@3.35.0` to to remove transitive dependency on `glob@7` ([#32274](https://github.com/expo/expo/pull/32274) by [@kitten](https://github.com/kitten))
+
+## 10.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Change the `config` return type from `AppJSONConfig` to `ExpoConfig` in `modifyConfigAsync`. ([#30783](https://github.com/expo/expo/pull/30783) by [@byCedric](https://github.com/byCedric))
 
 ### 🎉 New features
@@ -17,6 +39,7 @@
 ### 🐛 Bug fixes
 
 - Move entry point path modifications to Node script instead of Gradle plugin. ([#30654](https://github.com/expo/expo/pull/30654) by [@byCedric](https://github.com/byCedric))
+- Enable web as a default platform when `react-dom` is installed. ([#32149](https://github.com/expo/expo/pull/32149) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

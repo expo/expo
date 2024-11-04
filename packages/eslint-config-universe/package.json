@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-universe",
-  "version": "13.0.0",
+  "version": "14.0.0",
   "description": "Shared ESLint configs for internal Expo projects.",
   "main": "default.js",
   "scripts": {
@@ -40,8 +40,8 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/eslint-config-universe",
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.6.0",
-    "@typescript-eslint/parser": "^8.6.0",
+    "@typescript-eslint/eslint-plugin": "^8.9.0",
+    "@typescript-eslint/parser": "^8.9.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-node": "^11.1.0",

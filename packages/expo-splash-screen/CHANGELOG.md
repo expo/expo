@@ -4,13 +4,49 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.29.1 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.0 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.5 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.3 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed `preventAutoHideAsync()` broken on iOS bridgeless mode. ([#28234](https://github.com/expo/expo/pull/28234) by [@kudo](https://github.com/kudo))
 
 ## 0.27.6 - 2024-09-23
 

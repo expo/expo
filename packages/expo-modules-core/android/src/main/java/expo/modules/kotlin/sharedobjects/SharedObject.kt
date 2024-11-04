@@ -63,6 +63,7 @@ open class SharedObject(runtimeContext: RuntimeContext? = null) {
   /**
    * Called when the shared object was released.
    */
+  @Suppress("DEPRECATION")
   open fun sharedObjectDidRelease() = deallocate()
 
   /**

@@ -70,4 +70,20 @@ class Exceptions {
    * An exception to throw when the root view is missing.
    */
   class MissingRootView : CodedException(message = "The root view is missing")
+
+  /**
+   * An exception to throw to indicate that a method has been passed an illegal or inappropriate argument.
+   */
+  class IllegalArgument(
+    message: String,
+    cause: Throwable? = null
+  ) : CodedException(message, cause)
+
+  /**
+   * An exception to signal that a method has been invoked at an illegal or inappropriate time.
+   */
+  class IllegalStateException(
+    message: String,
+    cause: Throwable? = null
+  ) : CodedException(message, cause)
 }

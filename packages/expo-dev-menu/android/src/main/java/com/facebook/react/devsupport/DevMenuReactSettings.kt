@@ -5,6 +5,7 @@ package com.facebook.react.devsupport
 import android.content.Context
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.PackagerConnectionSettings
+import expo.modules.devmenu.react.DevMenuPackagerConnectionSettings
 
 /**
  * Class representing react's internal [DevInternalSettings] class, which we want to replace to change [packagerConnectionSettings] and others settings.
@@ -16,14 +17,10 @@ internal class DevMenuReactSettings(
   context: Context,
   serverIp: String
 ) : DevMenuSettingsBase(context) {
-  override val packagerConnectionSettings = PackagerConnectionSettings(context)
+  override val packagerConnectionSettings = DevMenuPackagerConnectionSettings(serverIp, context)
 
   // Implemented here so `this` is not leaked
   init {
-    // We can't extend PackagerConnectionSettings anymore, because now it's final class
-    // So we need to update the debugServerHost on init
-    packagerConnectionSettings.debugServerHost = serverIp
-
     mPreferences.registerOnSharedPreferenceChangeListener(this)
   }
 }

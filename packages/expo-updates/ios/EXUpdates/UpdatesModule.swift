@@ -1,7 +1,5 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
-// swiftlint:disable closure_body_length
-
 import ExpoModulesCore
 
 /**
@@ -13,7 +11,7 @@ import ExpoModulesCore
  * Expo Go and legacy standalone apps) via EXUpdatesService, an internal module which is overridden
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
-public final class UpdatesModule: Module {
+public final class UpdatesModule: Module, UpdatesEventManagerObserver {
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
@@ -25,16 +23,16 @@ public final class UpdatesModule: Module {
       AppController.sharedInstance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnCreate {
-      AppController.bindAppContext(self.appContext)
+    OnStartObserving(EXUpdatesStateChangeEventName) {
+      AppController.setUpdatesEventManagerObserver(self)
     }
 
-    OnStartObserving {
-      AppController.shouldEmitJsEvents = true
+    OnStopObserving(EXUpdatesStateChangeEventName) {
+      AppController.removeUpdatesEventManagerObserver()
     }
 
-    OnStopObserving {
-      AppController.shouldEmitJsEvents = false
+    OnDestroy {
+      AppController.removeUpdatesEventManagerObserver()
     }
 
     AsyncFunction("reload") { (promise: Promise) in
@@ -143,6 +141,10 @@ public final class UpdatesModule: Module {
       }
     }
   }
-}
 
-// swiftlint:enable closure_body_length
+  public func onStateMachineContextEvent(context: UpdatesStateContext) {
+    sendEvent(EXUpdatesStateChangeEventName, [
+      "context": context.json
+    ])
+  }
+}

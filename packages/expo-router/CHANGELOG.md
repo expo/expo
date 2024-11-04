@@ -4,10 +4,84 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.0.0-preview.11 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.10 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Support protocol hrefs on native. ([#31646](https://github.com/expo/expo/pull/31646) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.9 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.8 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.7 — 2024-10-30
 
 ### 🎉 New features
 
+- Add server action-only mode. ([#32432](https://github.com/expo/expo/pull/32432) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.0-preview.6 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Update `@react-navigation/core` imports to `@react-navigation/native` ([#32391](https://github.com/expo/expo/pull/32391) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.5 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix deep links to apps that use unusual characters in their schemes. ([#32424](https://github.com/expo/expo/pull/32424) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.3 — 2024-10-26
+
+### 🎉 New features
+
+- Add support for DOM components. ([#32338](https://github.com/expo/expo/pull/32338) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Include `expo-router/ui` in public export. ([#32362](https://github.com/expo/expo/pull/32362) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.0-preview.2 — 2024-10-25
+
+### 🎉 New features
+
+- Document `router.reload()` for RSC mode. ([#32246](https://github.com/expo/expo/pull/32246) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.0-preview.1 — 2024-10-24
+
+### 💡 Others
+
+- Remove unused console log. ([#32249](https://github.com/expo/expo/pull/32249) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- Update to React Navigation v7 ([#28109](https://github.com/expo/expo/pull/28109) by [@marklawlor](https://github.com/marklawlor))
+
+### 🎉 New features
+
+- Add aliases for bridge modules in RSC. ([#32095](https://github.com/expo/expo/pull/32095) by [@EvanBacon](https://github.com/EvanBacon))
 - Add experimental support for React Server Actions in Expo Router. ([#31959](https://github.com/expo/expo/pull/31959) by [@EvanBacon](https://github.com/EvanBacon))
 - server routing and static exports ([#31500](https://github.com/expo/expo/pull/31500) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `expo-router/link` export. ([#31174](https://github.com/expo/expo/pull/31174) by [@EvanBacon](https://github.com/EvanBacon))
@@ -20,7 +94,9 @@
 - Fix parsing URLs hash on the web after location update ([#31375](https://github.com/expo/expo/pull/31375) by [@marklawlor](https://github.com/marklawlor))
 - Add `routerOptions` prop and improved types of `<Navigator />`. ([#31289](https://github.com/expo/expo/pull/31289) by [@marklawlor](https://github.com/marklawlor))
 - Render the default StatusBar before screens are rendered. ([#31624](https://github.com/expo/expo/pull/31624) by [@marklawlor](https://github.com/marklawlor))
-- Add `expo-router/headless` with new `Tabs` component ([#30767](https://github.com/expo/expo/pull/30767) by [@marklawlor](https://github.com/marklawlor))
+- Add `expo-router/ui` with new `Tabs` component ([#30767](https://github.com/expo/expo/pull/30767) by [@marklawlor](https://github.com/marklawlor))
+- Add `withAnchor` to navigation options and `<Link />`. ([#31763](https://github.com/expo/expo/pull/31763) by [@marklawlor](https://github.com/marklawlor))
+- Add `sitemap` option to `expo-router` config plugin to disable sitemap. ([#31701](https://github.com/expo/expo/pull/31701) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
@@ -41,9 +117,13 @@
 - Fix incorrect initialRouteName for nested groups. ([#31025](https://github.com/expo/expo/pull/31025) by [@marklawlor](https://github.com/marklawlor))
 - Ensure `router.replace()` falls back correctly on `<Drawer />` navigators. ([#26381](https://github.com/expo/expo/pull/26381) by [@jleem99](https://github.com/jleem99))
 - Fix passing style array to `<Link />` when using `asChild`. ([#31373](https://github.com/expo/expo/pull/31373) by [@marklawlor](https://github.com/marklawlor))
+- Add `legacy_subscribe` to `+native-intent`. ([#31765](https://github.com/expo/expo/pull/31765) by [@marklawlor](https://github.com/marklawlor))
+- Fix `<Slot />` inside headless `<Tabs />` causing invalid navigation state. ([#32114](https://github.com/expo/expo/pull/32114) by [@marklawlor](https://github.com/marklawlor))
+- Ensure generated screens do not appear in default `<Tabs />`. ([#32180](https://github.com/expo/expo/pull/32180) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
+- Enable location polyfill by default with RSC enabled. ([#32188](https://github.com/expo/expo/pull/32188) by [@EvanBacon](https://github.com/EvanBacon))
 - Add comments. ([#31543](https://github.com/expo/expo/pull/31543) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop `expo-status-bar`. ([#31097](https://github.com/expo/expo/pull/31097) by [@EvanBacon](https://github.com/EvanBacon))
 - Support RSC only being hosted at platform subpaths. ([#30875](https://github.com/expo/expo/pull/30875) by [@EvanBacon](https://github.com/EvanBacon))

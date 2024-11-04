@@ -2,11 +2,46 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 5.0.0-preview.6 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.5 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.4 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.3 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.2 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.0 — 2024-10-22
+
 - Add `addGeneratedScheme` config plugin option to disable automatic adding of dev client app scheme. ([#31147](https://github.com/expo/expo/pull/31147) by [@keith-kurak](https://github.com/keith-kurak))
 
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- Changed the exports shape, instead of using namespaces, all entities now are exported directly on package top-level. ([#31969](https://github.com/expo/expo/pull/31969) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 

@@ -4,11 +4,96 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Add fallback method for determining internal IP address. ([#32273](https://github.com/expo/expo/pull/32273) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Update `@urql/core` and related dependencies and remove `graphql` dependency. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
+
+## 0.19.13 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.12 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.11 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Prevent changes to telemetry from crashing `expo` package upgrade ([#32490](https://github.com/expo/expo/pull/32490) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 0.19.10 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.9 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Don't assert `client-only` in SSR bundles. ([#32479](https://github.com/expo/expo/pull/32479) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix invalid project randomness when using Ngrok ([#32359](https://github.com/expo/expo/pull/32359) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.19.8 — 2024-10-30
+
+### 🎉 New features
+
+- Add server action-only mode. ([#32432](https://github.com/expo/expo/pull/32432) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.7 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix unresponsive terminal after opening React Native DevTools. ([#32451](https://github.com/expo/expo/pull/32451) by [@byCedric](https://github.com/byCedric))
+
+## 0.19.6 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.5 — 2024-10-29
+
+### 💡 Others
+
+- Simplify automatically adding config plugins to app manifest through `expo install`. ([#32426](https://github.com/expo/expo/pull/32426) by [@byCedric](https://github.com/byCedric))
+
+## 0.19.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.3 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- fix async routes in web ssr ([#32331](https://github.com/expo/expo/pull/32331) by [@EvanBacon](https://github.com/EvanBacon))
+- Avoid broadcasting binary data over messages websocket. ([#32400](https://github.com/expo/expo/pull/32400) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Skipped internal bundles from debugging targets. ([#32322](https://github.com/expo/expo/pull/32322) by [@kudo](https://github.com/kudo))
+
+## 0.19.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Remove `debug.html` from `npx expo export --source-maps`. ([#31477](https://github.com/expo/expo/pull/31477) by [@EvanBacon](https://github.com/EvanBacon))
 - Ignore /dist folder in the default eslint config ([#31532](https://github.com/expo/expo/pull/31532) by [@kadikraman](https://github.com/kadikraman))
 
 ### 🎉 New features
 
+- Add aliases for bridge modules in RSC. ([#32095](https://github.com/expo/expo/pull/32095) by [@EvanBacon](https://github.com/EvanBacon))
 - Add experimental support for React Server Actions in Expo Router. ([#31959](https://github.com/expo/expo/pull/31959) by [@EvanBacon](https://github.com/EvanBacon))
 - Throw clear error when importing `react-native/Libraries/Utilities/codegenNativeCommands` on web. ([#31791](https://github.com/expo/expo/pull/31791) by [@EvanBacon](https://github.com/EvanBacon))
 - automatically deploy server from eager exports. ([#31707](https://github.com/expo/expo/pull/31707) by [@EvanBacon](https://github.com/EvanBacon))
@@ -42,9 +127,13 @@
 - Add an optional New Architecture compatibility check for dependencies added via `install` command. ([#31222](https://github.com/expo/expo/pull/31222) by [@Simek](https://github.com/Simek))
 - Add support in `expo run android` for product flavors with custom app ids. ([#31756](https://github.com/expo/expo/pull/31756) by [@byCedric](https://github.com/byCedric))
 - Support Fusebox and React Native DevTools in Expo. ([#32029](https://github.com/expo/expo/pull/32029) by [@byCedric](https://github.com/byCedric))
+- Enable `hydration` on Expo Web in development when `EXPO_WEB_DEV_HYDRATE` is set. ([#32047](https://github.com/expo/expo/pull/32047) by [@marklawlor](https://github.com/marklawlor)) & ([#32109](https://github.com/expo/expo/pull/32109) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
+- Fix handling of prerelease versions in dependency version checks. ([#32160](https://github.com/expo/expo/pull/32160) by [@betomoedano](https://github.com/betomoedano))
+- Improve server error stacks. ([#32098](https://github.com/expo/expo/pull/32098) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix experimental web exports for RSC. ([#32042](https://github.com/expo/expo/pull/32042) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix RSC after RN upgrade. ([#32028](https://github.com/expo/expo/pull/32028) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix search params in RSC. ([#31641](https://github.com/expo/expo/pull/31641) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix cache sharing across Expo Go and dev client. ([#31566](https://github.com/expo/expo/pull/31566) by [@EvanBacon](https://github.com/EvanBacon))
@@ -66,9 +155,13 @@
 - Detect network issues and enable offline mode with Undici errors. ([#31517](https://github.com/expo/expo/pull/31517) by [@byCedric](https://github.com/byCedric))
 - Resolve dom components entry relative to workspace root instead of project root. ([#31433](https://github.com/expo/expo/pull/31433) by [@byCedric](https://github.com/byCedric))
 - Use proper telemetry strategies for every command. ([#31281](https://github.com/expo/expo/pull/31281) by [@byCedric](https://github.com/byCedric))
+- Only test project web support through `react-dom`. ([#32148](https://github.com/expo/expo/pull/32148) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
+- Assert that only SPA rendering is enabled with RSC. ([#32188](https://github.com/expo/expo/pull/32188) by [@EvanBacon](https://github.com/EvanBacon))
+- Use virtual module for consistent asset registry. ([#31980](https://github.com/expo/expo/pull/31980) by [@EvanBacon](https://github.com/EvanBacon))
+- Bump `react-native-web` patch ([#32105](https://github.com/expo/expo/pull/32105) by [@EvanBacon](https://github.com/EvanBacon))
 - Stop pinging dev session with updates. ([#31717](https://github.com/expo/expo/pull/31717) by [@EvanBacon](https://github.com/EvanBacon))
 - improve export log format ([#31476](https://github.com/expo/expo/pull/31476) by [@EvanBacon](https://github.com/EvanBacon))
 - Reduce scope of custom transform options in Metro cache. ([#31262](https://github.com/expo/expo/pull/31262) by [@EvanBacon](https://github.com/EvanBacon))
@@ -95,12 +188,14 @@
 - Drop usage of `@react-native-community/cli-server-api` in favor of our own Metro dev middleware. ([#31570](https://github.com/expo/expo/pull/31570) by [@byCedric](https://github.com/byCedric))
 - Move location of assetPatternsToBeBundled config key ([#31584](https://github.com/expo/expo/pull/31584) by [@wschurman](https://github.com/wschurman))
 - Throwing an error for DOM components if no webview installed. ([#31974](https://github.com/expo/expo/pull/31974) by [@kudo](https://github.com/kudo))
+- Update Metro type definitions to `metro@0.80.12`. ([#32007](https://github.com/expo/expo/pull/32007) by [@byCedric](https://github.com/byCedric))
+- Remove `json-schema-deref-sync` dependency. ([#32048](https://github.com/expo/expo/pull/32048) by [@kitten](https://github.com/kitten))
+- Drop the legacy Chrome debugger in favor of React Native DevTools. ([#32266](https://github.com/expo/expo/pull/32266) by [@byCedric](https://github.com/byCedric))
+- Add temporary `/inspector/network` websocket endpoint, working around Fusebox limitations. ([#32292](https://github.com/expo/expo/pull/32292) by [@byCedric](https://github.com/byCedric))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 📚 3rd party library updates
 
 ## 0.18.29 - 2024-08-14
 

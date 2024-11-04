@@ -18,6 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
+private const val PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate"
+private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
+
 @UnstableApi
 class AudioPlayer(
   context: Context,
@@ -135,7 +138,7 @@ class AudioPlayer(
     withContext(Dispatchers.Main) {
       val data = currentStatus()
       val body = map?.let { data + it } ?: data
-      emit("onPlaybackStatusUpdate", body)
+      emit(PLAYBACK_STATUS_UPDATE, body)
     }
 
   private fun sendAudioSampleUpdate(sample: List<Float>) {
@@ -145,7 +148,7 @@ class AudioPlayer(
       ),
       "timestamp" to player.currentPosition
     )
-    emit("onAudioSampleUpdate", body)
+    emit(AUDIO_SAMPLE_UPDATE, body)
   }
 
   private fun playbackStateToString(state: Int): String {

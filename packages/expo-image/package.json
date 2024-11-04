@@ -1,7 +1,7 @@
 {
   "name": "expo-image",
   "title": "Expo Image",
-  "version": "1.12.9",
+  "version": "2.0.0-preview.1",
   "description": "A cross-platform, performant image component for React Native and Expo with Web support",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -28,7 +28,7 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "peerDependencies": {
     "expo": "*",

@@ -7,9 +7,9 @@ A lot of applications need to allow users to type in text. For example, if you w
 
 However, sometimes you need to be more flexible. Think of long social media posts, note apps, or document editors. Ideally, you need to allow different text styles, lists, headings, embedded images, and more. This is called a rich text editor, and it's a difficult problem to solve everywhere, including in React Native.
 
-There's currently no default solution for that in the React Native ecosystem. In this guide, we explore some options and promising approaches, each with its own tradeoffs.
+There is currently no default solution for that in the React Native ecosystem. However, this guide explores some options and promising approaches, each with its own tradeoffs.
 
-# Render rich text
+## Render rich text
 
 There are a lot of good options to display rich text:
 
@@ -29,15 +29,15 @@ There are a lot of good options to display rich text:
 
 - You can also use [Expo Modules](/modules/overview/) to write a custom renderer component with native platform primitives using third-party libraries such as [Markwon](https://github.com/noties/Markwon) on Android and `AttributedString` on iOS.
 
-# Edit rich text
+## Approaches to edit rich text
 
 There are a few approaches to get rich text rendering to work. However, all have different limitations.
 
-## Webview-based editors
+### Webview-based editors
 
 While most React Native UI components wrap native platform primitives and are fast, performant, and **native feeling** as a result, the webview-based rich text editors use a different approach.
 
-They wrap an existing rich text editor built for web with JavaScript inside a [`react-native-webview`](https://docs.expo.dev/versions/latest/sdk/webview/). It works on all platforms (Android, iOS, Web) and can take advantage of popular rich text editors available for the Web platform, but it has a performance and UX penalty.
+They wrap an existing rich text editor built for web with JavaScript inside a [`react-native-webview`](/versions/latest/sdk/webview/). It works on all platforms (Android, iOS, Web) and can take advantage of popular rich text editors available for the Web platform, but it has a performance and UX penalty.
 
 You will not be able to use native UI components inside the editor. Any implementation of features like mentions or image embedding will duplicate features and require significant effort to implement.
 
@@ -84,7 +84,7 @@ There is an additional `onSelectionChange` prop that can be used to get that inf
 
 There are some attempts to build such an editor, such as [`markdown-editor`](https://github.com/shakogegia/markdown-editor) (not actively maintained) and [`rn-text-editor`](https://github.com/amjadbouhouch/rn-text-editor) (in beta), but no widely used packages exist.
 
-## Markdown editors with always visible styling markers
+## Markdown editors with visible styling markers
 
 If using a markdown to style text fulfills your requirement, you can render the markdown in a separate, non-editable view while editing. It is not complex to build on your own using any markdown renderer. You can also use a third-party library such as [`react-native-markdown-editor`](https://github.com/kunall17/react-native-markdown-editor).
 
@@ -108,4 +108,4 @@ There is also an effort to port the lexical editor to Android and iOS and provid
 
 While there are many great options for showing rich text, there is no one-size-fits-all solution for rich text editing in React Native. There's no popular solution that is sufficient in most use cases. Further contribution from the community is needed to improve existing solutions or add new ones.
 
-For now, you need to carefully choose between a more complex, native editor that offers more features but may be harder to maintain or an editor built on top of react-native primitives. This depends on how core the feature is to your app, how many features you need in your editor, and how much effort you are willing to spend on building it out.
+For now, you need to carefully choose between a more complex, native editor that offers more features but may be harder to maintain, or an editor built on top of react-native primitives. This depends on how core the feature is to your app, how many features you need in your editor, and how much effort you are willing to spend on building it out.

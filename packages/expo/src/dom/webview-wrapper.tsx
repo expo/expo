@@ -3,6 +3,7 @@ import React from 'react';
 import { AppState } from 'react-native';
 
 import type { BridgeMessage, DOMProps, WebViewProps, WebViewRef } from './dom.types';
+import { _emitGlobalEvent } from './global-events';
 import {
   getInjectBodySizeObserverScript,
   getInjectEventScript,
@@ -10,7 +11,10 @@ import {
   MATCH_CONTENTS_EVENT,
   NATIVE_ACTION,
   NATIVE_ACTION_RESULT,
+  REGISTER_DOM_IMPERATIVE_HANDLE_PROPS,
 } from './injection';
+import ExpoDomWebView from './webview/ExpoDOMWebView';
+import RNWebView from './webview/RNWebView';
 
 interface Props {
   dom: DOMProps;
@@ -20,27 +24,34 @@ interface Props {
 }
 
 const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalProps }, ref) => {
-  if (ref != null && typeof ref == 'object' && ref.current == null) {
+  if (ref != null && typeof ref === 'object' && ref.current == null) {
     ref.current = new Proxy(
       {},
       {
-        get(target, prop) {
+        get(_, prop) {
           const propName = String(prop);
-          return function (...args) {
-            const serializedArgs = args.map((arg) => JSON.stringify(arg)).join(',');
-            webviewRef.current?.injectJavaScript(
-              `window._domRefProxy.${propName}(${serializedArgs})`
-            );
-          };
+          if (domImperativeHandlePropsRef.current?.includes(propName)) {
+            return function (...args) {
+              const serializedArgs = args.map((arg) => JSON.stringify(arg)).join(',');
+              webviewRef.current?.injectJavaScript(
+                `window._domRefProxy.${propName}(${serializedArgs})`
+              );
+            };
+          }
+          if (typeof webviewRef.current?.[propName] === 'function') {
+            return function (...args) {
+              return webviewRef.current?.[propName](...args);
+            };
+          }
+          return undefined;
         },
       }
     );
   }
 
-  const webView = dom.useExpoDOMWebView
-    ? require('@expo/dom-webview').WebView
-    : require('react-native-webview').WebView;
+  const webView = resolveWebView(dom?.useExpoDOMWebView ?? false);
   const webviewRef = React.useRef<WebViewRef>(null);
+  const domImperativeHandlePropsRef = React.useRef<string[]>([]);
   const [containerStyle, setContainerStyle] = React.useState<WebViewProps['containerStyle']>(null);
 
   const emit = React.useCallback(
@@ -76,7 +87,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
   return React.createElement(webView, {
     webviewDebuggingEnabled: __DEV__,
     // Make iOS scrolling feel native.
-    decelerationRate: 'normal',
+    decelerationRate: process.env.EXPO_OS === 'ios' ? 'normal' : undefined,
     originWhitelist: ['*'],
     allowFileAccess: true,
     allowFileAccessFromFileURLs: true,
@@ -124,6 +135,11 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
             height: data.height,
           });
         }
+        return;
+      }
+
+      if (type === REGISTER_DOM_IMPERATIVE_HANDLE_PROPS) {
+        domImperativeHandlePropsRef.current = data;
         return;
       }
 
@@ -177,6 +193,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
       } else {
         dom?.onMessage?.(event);
       }
+      _emitGlobalEvent({ type, data });
     },
   });
 });
@@ -190,6 +207,17 @@ function serializeError(error: any) {
     };
   }
   return error;
+}
+
+export function resolveWebView(useExpoDOMWebView: boolean) {
+  const webView = useExpoDOMWebView ? ExpoDomWebView : RNWebView;
+  if (webView == null) {
+    const moduleName = useExpoDOMWebView ? '@expo/dom-webview' : 'react-native-webview';
+    throw new Error(
+      `Unable to resolve the '${moduleName}' module. Make sure to install it with 'npx expo install ${moduleName}'.`
+    );
+  }
+  return webView;
 }
 
 export default RawWebView;

@@ -6,8 +6,47 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 8.0.7 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.6 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.3 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.1 — 2024-10-22
+
+### 💡 Others
+
+- Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
+
+## 8.0.0 — 2024-10-22
+
+### 🎉 New features
+
 - Added `ios.developmentTeam` to change the Apple development team id. ([#30761](https://github.com/expo/expo/pull/30761) by [@byCedric](https://github.com/byCedric))
 - Added support for specifying iOS 18+ icon variants. ([#30247](https://github.com/expo/expo/pull/30247) by [@fobos531](https://github.com/fobos531))
+- Added `newArchitecture` prop to app config schema. ([#31963](https://github.com/expo/expo/pull/31963) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
@@ -18,8 +57,6 @@
 ### ⚠️ Notices
 
 - Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 💡 Others
 
 ## 7.0.8 - 2024-07-11
 

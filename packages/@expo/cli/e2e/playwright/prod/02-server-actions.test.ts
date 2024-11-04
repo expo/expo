@@ -48,11 +48,7 @@ test.beforeAll('bundle and serve', async () => {
   });
 
   console.time('npx serve');
-  await serveCmd.startAsync([
-    path.join('__e2e__', '01-rsc', 'server.js'),
-    '--port=' + randomPort(),
-    '--dist=' + inputDir,
-  ]);
+  await serveCmd.startAsync(['serve.js', '--port=' + randomPort(), '--dist=' + inputDir]);
   console.timeEnd('npx serve');
   console.log('Server running:', serveCmd.url);
 });
@@ -181,8 +177,7 @@ test.describe(inputDir, () => {
 
     const rscPayload = new TextDecoder().decode(await response.body());
 
-    expect(rscPayload)
-      .toBe(`1:I["apps/router-e2e/__e2e__/02-server-actions/lib/react-native.tsx",[],"Text"]
+    expect(rscPayload).toBe(`1:I["node_modules/react-native-web/dist/exports/Text/index.js",[],""]
 0:{"_value":[["$","$L1",null,{"style":{"color":"darkcyan"},"testID":"server-action-props","children":"c=0"}],["$","$L1",null,{"testID":"server-action-platform","children":"web"}]]}
 `);
 

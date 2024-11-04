@@ -29,6 +29,7 @@ function getExpoDependencyChunks({
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
+    ['@expo/image-utils'],
     [
       'babel-preset-expo',
       'expo-application',
@@ -54,6 +55,7 @@ function getExpoDependencyChunks({
             'expo-blur',
             'expo-image',
             'expo-linear-gradient',
+            'expo-linking',
             'expo-localization',
             'expo-crypto',
             'expo-network',
@@ -362,8 +364,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.75.2-0',
-        '@react-native-tvos/config-tv': '^0.0.10',
+        'react-native': 'npm:react-native-tvos@~0.76.0-0rc4',
+        '@react-native-tvos/config-tv': '^0.0.11',
       },
       expo: {
         install: {
@@ -474,6 +476,7 @@ function transformAppJsonForE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
+      newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
@@ -555,6 +558,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
+      newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       extra: {

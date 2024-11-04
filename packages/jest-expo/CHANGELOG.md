@@ -6,6 +6,30 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 52.0.0-preview.3 — 2024-10-31
+
+### 💡 Others
+
+- Update SplashScreen api to add `hide` method. ([#32484](https://github.com/expo/expo/pull/32484) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 52.0.0-preview.2 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix mocking for requireOptionalNativeModule. ([#32412](https://github.com/expo/expo/pull/32412) by [@aleqsio](https://github.com/aleqsio))
+
+## 52.0.0-preview.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.0 — 2024-10-22
+
+### 🎉 New features
+
 - Add experimental `jest-expo/rsc` preset for testing React Server Components. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))
 - Load view mocks included in packages. ([#28157](https://github.com/expo/expo/pull/28157) by [@aleqsio](https://github.com/aleqsio))
 

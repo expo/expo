@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-expo",
-  "version": "7.1.2",
+  "version": "8.0.1",
   "description": "ESLint config for Expo apps",
   "main": "default.js",
   "scripts": {
@@ -28,10 +28,10 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/eslint-config-expo",
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.6.0",
-    "@typescript-eslint/parser": "^8.6.0",
+    "@typescript-eslint/eslint-plugin": "^8.9.0",
+    "@typescript-eslint/parser": "^8.9.0",
     "eslint-import-resolver-typescript": "^3.6.3",
-    "eslint-plugin-expo": "^0.0.1",
+    "eslint-plugin-expo": "^0.1.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-react": "^7.36.1",
     "eslint-plugin-react-hooks": "^4.6.2"

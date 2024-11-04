@@ -2,8 +2,7 @@ package expo.modules.updates
 
 import android.content.Context
 import com.facebook.react.ReactApplication
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.events.EventEmitter
+import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
@@ -152,23 +151,13 @@ class UpdatesController {
       }
     }
 
-    /**
-     * For [UpdatesModule] to set the [shouldEmitJsEvents] property.
-     */
-    internal var shouldEmitJsEvents: Boolean
-      get() = singletonInstance?.eventManager?.shouldEmitJsEvents ?: false
-      set(value) {
-        singletonInstance?.eventManager?.shouldEmitJsEvents = value
-      }
+    internal fun setUpdatesEventManagerObserver(observer: WeakReference<IUpdatesEventManagerObserver>) {
+      singletonInstance?.eventManager?.observer = observer
+      singletonInstance?.onEventListenerStartObserving()
+    }
 
-    /**
-     * Binds the [AppContext] and [EventEmitter] instance from [UpdatesModule].
-     */
-    internal fun bindAppContext(appContext: WeakReference<AppContext>, eventEmitter: EventEmitter?) {
-      singletonInstance?.let {
-        it.appContext = appContext
-        it.eventManager.eventEmitter = eventEmitter
-      }
+    internal fun removeUpdatesEventManagerObserver() {
+      singletonInstance?.eventManager?.observer = null
     }
   }
 }

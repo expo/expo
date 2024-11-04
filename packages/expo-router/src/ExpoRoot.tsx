@@ -5,10 +5,11 @@ import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } 
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import UpstreamNavigationContainer from './fork/NavigationContainer';
+import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import { ExpoLinkingOptions } from './getLinkingConfig';
 import { useInitializeExpoRouter } from './global-state/router-store';
-import ServerContext, { ServerContextType } from './global-state/serverContext';
+import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
+import { useDomComponentNavigation } from './link/useDomComponentNavigation';
 import { RequireContext } from './types';
 import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
 import { SplashScreen } from './views/Splash';
@@ -117,6 +118,8 @@ function ContextNavigator({
     ...linking,
     serverUrl,
   });
+
+  useDomComponentNavigation(store);
 
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
