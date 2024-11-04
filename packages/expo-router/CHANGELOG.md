@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add RSC support for `Stack.Screen`, `Tabs.Screen`, and `Drawer.Screen` components.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
