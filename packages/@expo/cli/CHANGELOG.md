@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Update `@urql/core` and related dependencies and remove `graphql` dependency. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
+- Increase visibility in stuck `export:embed` processes. ([#32580](https://github.com/expo/expo/pull/32580) by [@byCedric](https://github.com/byCedric))
 
 ## 0.19.13 — 2024-10-31
 
