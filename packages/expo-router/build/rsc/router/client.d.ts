@@ -14,7 +14,7 @@ import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Li
 import type { Href } from '../../types.js';
 export declare function useRouter_UNSTABLE(): ClassicExpoRouterType & RouteProps & {
     forward: () => void;
-    prefetch: <T extends string | object>(href: Href<T>) => void;
+    prefetch: (href: Href) => void;
 };
 type ShouldSkip = (readonly [
     string,
@@ -58,7 +58,7 @@ export declare function ServerRouter({ children, route }: {
 }): import("react").FunctionComponentElement<{
     children?: ReactNode;
 }>;
-export type LinkProps<T extends string | object> = ClassicLinkProps<T> & {
+export type LinkProps = ClassicLinkProps & {
     href: string;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
 export declare const Link: LinkComponent;

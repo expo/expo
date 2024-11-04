@@ -156,7 +156,6 @@ export function getTestModules() {
   }
   if (Constants.isDevice) {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
-    modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
   return modules
     .filter(Boolean)

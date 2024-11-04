@@ -4,13 +4,39 @@
 
 ### 🛠 Breaking changes
 
-### 🎉 New features
+- Remove generic from `Href` type, navigation hooks and functions ([#31764](https://github.com/expo/expo/pull/31764) by [@marklawlor](https://github.com/marklawlor))
 
-- Add server action-only mode. ([#32432](https://github.com/expo/expo/pull/32432) by [@EvanBacon](https://github.com/EvanBacon))
+### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Don't assume reanimated exists when testing expo-router ([#27548](https://github.com/expo/expo/pull/27548)) by [@henrymoulton](https://github.com/henrymoulton)
+
+## 4.0.0-preview.11 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.10 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Support protocol hrefs on native. ([#31646](https://github.com/expo/expo/pull/31646) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.9 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.8 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.7 — 2024-10-30
+
+### 🎉 New features
+
+- Add server action-only mode. ([#32432](https://github.com/expo/expo/pull/32432) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.0.0-preview.6 — 2024-10-29
 

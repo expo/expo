@@ -1,5 +1,12 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { NativeModule, requireNativeModule } from 'expo';
 
-// It loads the native module object from the JSI or falls back to
-// the bridge module (from NativeModulesProxy) if the remote debugger is on.
-export default requireNativeModule('<%- project.name %>');
+import { <%- project.moduleName %>Events } from './<%- project.moduleName %>.types';
+
+declare class <%- project.moduleName %> extends NativeModule<<%- project.moduleName %>Events> {
+  PI: number;
+  hello(): string;
+  setValueAsync(value: string): Promise<void>;
+}
+
+// This call loads the native module object from the JSI.
+export default requireNativeModule<<%- project.moduleName %>>('<%- project.name %>');

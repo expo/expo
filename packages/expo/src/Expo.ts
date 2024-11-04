@@ -15,6 +15,8 @@ export {
   // Methods
   requireNativeModule,
   requireOptionalNativeModule,
+  requireNativeViewManager as requireNativeView,
+  registerWebModule,
   reloadAppAsync,
 } from 'expo-modules-core';
 

@@ -40,6 +40,7 @@ public class ModuleRegistry {
     return (T) mInternalModulesMap.get(interfaceClass);
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T getSingletonModule(String singletonName, Class<T> singletonClass) {
     return (T) mSingletonModulesMap.get(singletonName);
   }

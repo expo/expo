@@ -6,11 +6,44 @@
 
 ### 🎉 New features
 
-- Add server action-only mode. ([#32432](https://github.com/expo/expo/pull/32432) by [@EvanBacon](https://github.com/EvanBacon))
+### 🐛 Bug fixes
+
+- Add fallback method for determining internal IP address. ([#32273](https://github.com/expo/expo/pull/32273) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Update `@urql/core` and related dependencies and remove `graphql` dependency. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
+
+## 0.19.13 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.12 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.11 — 2024-10-31
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Prevent changes to telemetry from crashing `expo` package upgrade ([#32490](https://github.com/expo/expo/pull/32490) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 0.19.10 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.9 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Don't assert `client-only` in SSR bundles. ([#32479](https://github.com/expo/expo/pull/32479) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix invalid project randomness when using Ngrok ([#32359](https://github.com/expo/expo/pull/32359) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.19.8 — 2024-10-30
+
+### 🎉 New features
+
+- Add server action-only mode. ([#32432](https://github.com/expo/expo/pull/32432) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.19.7 — 2024-10-29
 

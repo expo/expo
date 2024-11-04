@@ -2,6 +2,7 @@
 import React from 'react';
 import { AppState } from 'react-native';
 
+import { getBaseURL } from './base';
 import type { BridgeMessage, DOMProps, WebViewProps, WebViewRef } from './dom.types';
 import { _emitGlobalEvent } from './global-events';
 import {
@@ -20,12 +21,10 @@ import { useDomComponentContextReceiver } from 'expo-router/build/link/useDomCom
 
 interface Props {
   dom: DOMProps;
-  source: {
-    uri: string;
-  };
+  filePath: string;
 }
 
-const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalProps }, ref) => {
+const RawWebView = React.forwardRef<object, Props>(({ dom, filePath, ...marshalProps }, ref) => {
   if (ref != null && typeof ref === 'object' && ref.current == null) {
     ref.current = new Proxy(
       {},
@@ -54,6 +53,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
   const webView = resolveWebView(dom?.useExpoDOMWebView ?? false);
   const webviewRef = React.useRef<WebViewRef>(null);
   const domImperativeHandlePropsRef = React.useRef<string[]>([]);
+  const source = { uri: `${getBaseURL()}/${filePath}` };
   const [containerStyle, setContainerStyle] = React.useState<WebViewProps['containerStyle']>(null);
 
   const emit = React.useCallback(

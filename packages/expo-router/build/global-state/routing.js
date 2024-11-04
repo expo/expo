@@ -28,6 +28,7 @@ const native_1 = require("@react-navigation/native");
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
 const non_secure_1 = require("nanoid/non-secure");
+const react_native_1 = require("react-native");
 const href_1 = require("../link/href");
 const useDomComponentNavigation_1 = require("../link/useDomComponentNavigation");
 const matchers_1 = require("../matchers");
@@ -121,6 +122,9 @@ function linkTo(href, { event, relativeToDirectory, withAnchor } = {}) {
         return;
     }
     if ((0, url_1.shouldLinkExternally)(href)) {
+        if (href.startsWith('//') && react_native_1.Platform.OS !== 'web') {
+            href = `https:${href}`;
+        }
         Linking.openURL(href);
         return;
     }
