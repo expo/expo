@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
   
-  [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success, NSError *error) {
+  [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success) {
     dispatch_async(dispatch_get_main_queue(), ^{
       if (success) {
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];

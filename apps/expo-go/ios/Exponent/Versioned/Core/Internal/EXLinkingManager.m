@@ -83,10 +83,10 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
   } else {
     /**
      [RCTSharedApplication() openURL: options:completionHandler:) will request local network access before attempting to open the link but
-      it won't present the alert over the app. Instead the app becomes unresponsive and the user needs to background it to see the alert. To workaround this
+      it won't present the alert in expo go. Instead the app becomes unresponsive and the user needs to background it to see the alert. To workaround this
       we wrap the call in our own check so the alert is presented in expo go.
      */
-    [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success, NSError *error) {
+    [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success) {
       if (success) {
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
         [userDefaults setBool:YES forKey:@"EXisLocalNetworkAccessGranted"];

@@ -5,13 +5,13 @@ private let type = "_preflight_check._tcp"
 
 @objc(EXLocalNetworkAccessManager)
 class LocalNetworkAccessManager: NSObject {
-  @objc static func requestAccess(completion: @escaping (Bool, NSError?) -> Void) {
+  @objc static func requestAccess(completion: @escaping (Bool) -> Void) {
     Task {
       do {
         let result = try await requestLocalNetworkAuthorization()
-        completion(result, nil)
+        completion(result)
       } catch {
-        completion(false, nil)
+        completion(false)
       }
     }
   }
