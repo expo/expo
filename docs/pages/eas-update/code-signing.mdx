@@ -17,7 +17,7 @@ The following steps will guide you through the process of generating a private k
 <Step label="1">
 ## Generate a private key and corresponding certificate
 
-In this step, we will generate a key pair and corresponding code signing certificate for your app:
+In this step, we will generate a key pair and corresponding code signing certificate for your app. Specify a directory outside of your source control for the `--key-output-directory` flag to ensure the generated private key isn't accidentally added to source control.
 
 <Terminal
   cmd={[
@@ -36,7 +36,7 @@ This command generated a key pair along with a code signing certificate to be in
 - `../keys/public-key.pem`: the public key of the key pair.
 - `certs/certificate.pem`: the code signing certificate configured to be valid for 10 years. This file should be added to source control (if applicable).
 
-- The generated private key must be kept private and secure. The command above suggests generating and storing these keys in a directory outside of your project (for example, **../keys**) to ensure they are not accidentally checked into source control. We recommend storing the private key in the same way you would store other sensitive information (KMS, password manager, and so on), and how you store it will vary the steps needed to publish an update in step (3).
+- The generated private key must be kept private and secure. The command above suggests generating and storing these keys in a directory outside of your source control to ensure they are not accidentally checked into source control. We recommend storing the private key in the same way you would store other sensitive information (KMS, password manager, and so on), and how you store it will vary the steps needed to publish an update in step (3).
 - The public key may be stored alongside the private key, but isn't sensitive.
 - The certificate should be included in the project (checked into source control). It contains the public key and a method for verifying code signatures. When a signed update is downloaded, the update's signature is verified using this certificate.
 - The certificate validity duration is a setting that may vary based on the security needs of your app.

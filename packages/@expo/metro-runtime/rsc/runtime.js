@@ -18,10 +18,8 @@ globalThis.__webpack_require__ = (id) => {
   // This logic can be tested by running a production iOS build without virtual client boundaries. This will result in all split chunks being missing and
   // errors being thrown on RSC load.
 
-  // @ts-expect-error: Not on type
   const original = ErrorUtils.reportFatalError;
   if (disableReactNativeMissingModuleHandling) {
-    // @ts-expect-error: Not on type
     ErrorUtils.reportFatalError = (err) => {
       // Throw the error so the __r function exits as expected. The error will then be caught by the nearest error boundary.
       throw err;
@@ -32,7 +30,6 @@ globalThis.__webpack_require__ = (id) => {
   } finally {
     // Restore the original error handling.
     if (disableReactNativeMissingModuleHandling) {
-      // @ts-expect-error: Not on type
       ErrorUtils.reportFatalError = original;
     }
   }

@@ -30,8 +30,14 @@ import { MetroServerError, ReactServerError } from './errors';
 import { fetch } from './fetch';
 import { encodeInput, encodeActionId } from './utils';
 import { getDevServer } from '../../getDevServer';
+import { getOriginFromConstants } from '../../head/url';
 
 const { createFromFetch, encodeReply } = RSDWClient;
+
+// TODO: Maybe this could be a bundler global instead.
+const IS_DOM =
+  // @ts-expect-error: Added via react-native-webview
+  typeof ReactNativeWebView !== 'undefined';
 
 // NOTE: Ensured to start with `/`.
 const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
@@ -287,8 +293,14 @@ function getBaseUrl() {
 
 function getAdjustedRemoteFilePath(path: string): string {
   if (IS_DOM && process.env.NODE_ENV === 'production') {
+    const origin = getOriginFromConstants();
+    if (!origin) {
+      throw new Error(
+        'Expo RSC: Origin not found in Constants. This is required for production DOM components using server actions.'
+      );
+    }
     // DOM components in production need to use the same origin logic as native.
-    return new URL(path, getBaseUrl()).toString();
+    return new URL(path, origin).toString();
   }
 
   if (!IS_DOM && process.env.EXPO_OS === 'web') {
