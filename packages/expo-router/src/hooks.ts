@@ -5,9 +5,7 @@ import React from 'react';
 import { LocalRouteParamsContext } from './Route';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, UnknownOutputParams, InternalRoute, Route } from './types';
-
-type SearchParams = Record<string, string | string[]>;
+import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
 
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
@@ -128,10 +126,8 @@ export function useUnstableGlobalHref(): string {
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export function useSegments<
-  TSegments extends InternalRoute = InternalRoute,
->(): RouteSegments<TSegments>;
-export function useSegments<TSegments extends RouteSegments<InternalRoute>>(): TSegments;
+export function useSegments<TSegments extends Route = Route>(): RouteSegments<TSegments>;
+export function useSegments<TSegments extends RouteSegments<Route>>(): TSegments;
 export function useSegments() {
   return useStoreRouteInfo().segments;
 }
@@ -186,7 +182,11 @@ export function usePathname(): string {
 export function useGlobalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): TParams;
-export function useGlobalSearchParams<TRoute extends InternalRoute>(): RouteParams<TRoute>;
+export function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+export function useGlobalSearchParams<
+  TRoute extends Route,
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): RouteParams<TRoute> & TParams;
 export function useGlobalSearchParams() {
   return useStoreRouteInfo().params;
 }
@@ -217,7 +217,11 @@ export function useGlobalSearchParams() {
 export function useLocalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): TParams;
-export function useLocalSearchParams<TRoute extends InternalRoute>(): RouteParams<TRoute>;
+export function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+export function useLocalSearchParams<
+  TRoute extends Route,
+  TParams extends UnknownOutputParams = UnknownOutputParams,
+>(): RouteParams<TRoute> & TParams;
 export function useLocalSearchParams() {
   const params = React.useContext(LocalRouteParamsContext) ?? {};
   return Object.fromEntries(

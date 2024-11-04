@@ -6,6 +6,8 @@ import {
   useLocalSearchParams,
   useSegments,
   UnknownOutputParams,
+  Route,
+  RouteSegments,
 } from './fixtures/default';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
