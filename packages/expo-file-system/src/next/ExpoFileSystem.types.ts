@@ -133,6 +133,10 @@ export declare class File {
    */
   move(destination: Directory | File);
 
+  /**
+   * Returns a FileHandle object that can be used to read and write data to the file.
+   * @throws Error if the file does not exist or cannot be opened.
+   */
   open(): FileHandle;
 
   /**

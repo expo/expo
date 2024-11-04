@@ -489,6 +489,15 @@ export async function test({ describe, expect, it, ...t }) {
       expect(() => handle.readBytes(1)).toThrow();
     });
 
+    it('Can open multiple handles to the same file', () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+      const handle = src.open();
+      const handle2 = src.open();
+      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      expect(handle2.readBytes(1)).toEqual(new Uint8Array([97])); // a
+    });
+
     it('Returns null offset on closed handle', () => {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
