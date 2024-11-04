@@ -331,7 +331,7 @@ Use the [`usePathname()`](/router/reference/hooks/#usepathname), [`useSegments()
 In React Navigation, [`onReady`](https://reactnavigation.org/docs/navigation-container/#onready) is most often used to determine when the splash screen should hide or when to track screens using analytics. Expo Router has special handling for both of these use cases. Assume the navigation is always ready for navigation events in the Expo Router.
 
 - See the [Screen Tracking guide](/router/reference/screen-tracking/) for info on migrating analytics from React Navigation.
-- See the [Splash Screen feature](/router/appearance/#splash-screen) for info on handling the splash screen.
+- See the [Splash Screen API reference](/versions/latest/sdk/splash-screen/) for info on handling the splash screen.
 
 #### `onUnhandledAction`
 
@@ -343,7 +343,7 @@ The [`linking`](https://reactnavigation.org/docs/navigation-container/#linking) 
 
 #### `fallback`
 
-The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router. Learn more in the [Splash Screen](/router/appearance/#splash-screen) guide.
+The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback) prop is automatically handled by Expo Router.
 
 #### `theme`
 
@@ -441,10 +441,6 @@ function Header() {;
   );
 }
 ```
-
-### Use Expo Router's Splash Screen wrapper
-
-Expo Router wraps `expo-splash-screen` and adds special handling to ensure it's hidden after the navigation mounts, and whenever an unexpected error is caught. Simply migrate from importing `expo-splash-screen` to importing `SplashScreen` from `expo-router`.
 
 ### Navigation state observation
 
