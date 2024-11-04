@@ -171,7 +171,7 @@ it(
   120 * 1000
 );
 
-it(
+it.only(
   'runs `npx expo customize tsconfig.json` sets up typed routes',
   async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync(

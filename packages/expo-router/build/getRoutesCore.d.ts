@@ -7,6 +7,7 @@ export type Options = {
     ignoreEntryPoints?: boolean;
     internal_stripLoadRoute?: boolean;
     skipGenerated?: boolean;
+    notFound?: boolean;
     importMode?: string;
     platformRoutes?: boolean;
     sitemap?: boolean;

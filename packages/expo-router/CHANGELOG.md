@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove generic from `Href` type, navigation hooks and functions ([#31764](https://github.com/expo/expo/pull/31764) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

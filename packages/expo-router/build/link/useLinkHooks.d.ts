@@ -65,10 +65,7 @@ export type WebAnchorProps = {
      */
     download?: string;
 };
-/**
- *
- */
-export interface LinkProps<T extends string | object> extends Omit<TextProps, 'href'>, WebAnchorProps {
+export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
     /**
      * The path of the route to navigate to. It can either be:
      * - **string**: A full path like `/profile/settings` or a relative path like `../settings`.
@@ -97,7 +94,7 @@ export interface LinkProps<T extends string | object> extends Omit<TextProps, 'h
      *}
      * ```
      */
-    href: Href<T>;
+    href: Href;
     /**
      * Used to customize the `Link` component. It will forward all props to the
      * first child of the `Link`. Note that the child component must accept
@@ -186,7 +183,7 @@ export declare function useInteropClassName(props: {
     $$css: boolean;
     __routerLinkClassName: string;
 })[] | null | undefined;
-export declare const useHrefAttrs: (props: Partial<LinkProps<any>>) => {
+export declare const useHrefAttrs: (props: Partial<LinkProps>) => {
     hrefAttrs?: any;
-} & Partial<LinkProps<any>>;
+} & Partial<LinkProps>;
 //# sourceMappingURL=useLinkHooks.d.ts.map

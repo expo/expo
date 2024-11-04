@@ -7,19 +7,19 @@ import type { Href } from '../types';
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
     children?: ReactNode | undefined;
 };
-export type TabTriggerProps<T extends string | object> = PressablePropsWithoutFunctionChildren & {
+export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
     /** Name of tab. When used within a `<TabList />` this sets the name of the tab. Otherwise, this references the name. */
     name: string;
     /** Name of tab. Required when used within a `<TabList />` */
-    href?: Href<T>;
+    href?: Href;
     /** Forward props to child component. Useful for custom wrappers. */
     asChild?: boolean;
     /** Reset the route when switching to the tab */
     reset?: SwitchToOptions['reset'] | 'onLongPress';
 };
-export type TabTriggerOptions<T extends string | object> = {
+export type TabTriggerOptions = {
     name: string;
-    href: Href<T>;
+    href: Href;
 };
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.RefAttributes<View> & {
     isFocused?: boolean;
@@ -40,7 +40,7 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.
  * </Tabs>
  * ```
  */
-export declare function TabTrigger<T extends string | object>({ asChild, name, href, reset, ...props }: TabTriggerProps<T>): import("react").JSX.Element;
+export declare function TabTrigger({ asChild, name, href, reset, ...props }: TabTriggerProps): import("react").JSX.Element;
 /**
  * @hidden
  */
@@ -71,6 +71,6 @@ export type TriggerProps = {
 /**
  * Utility hook creating custom `<TabTrigger />`
  */
-export declare function useTabTrigger(options: TabTriggerProps<any>): UseTabTriggerResult;
+export declare function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult;
 export {};
 //# sourceMappingURL=TabTrigger.d.ts.map

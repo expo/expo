@@ -17,20 +17,20 @@ type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & 
   children?: ReactNode | undefined;
 };
 
-export type TabTriggerProps<T extends string | object> = PressablePropsWithoutFunctionChildren & {
+export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
   /** Name of tab. When used within a `<TabList />` this sets the name of the tab. Otherwise, this references the name. */
   name: string;
   /** Name of tab. Required when used within a `<TabList />` */
-  href?: Href<T>;
+  href?: Href;
   /** Forward props to child component. Useful for custom wrappers. */
   asChild?: boolean;
   /** Reset the route when switching to the tab */
   reset?: SwitchToOptions['reset'] | 'onLongPress';
 };
 
-export type TabTriggerOptions<T extends string | object> = {
+export type TabTriggerOptions = {
   name: string;
-  href: Href<T>;
+  href: Href;
 };
 
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren &
@@ -56,13 +56,7 @@ const TabTriggerSlot = Slot as React.ForwardRefExoticComponent<TabTriggerSlotPro
  * </Tabs>
  * ```
  */
-export function TabTrigger<T extends string | object>({
-  asChild,
-  name,
-  href,
-  reset = 'onFocus',
-  ...props
-}: TabTriggerProps<T>) {
+export function TabTrigger({ asChild, name, href, reset = 'onFocus', ...props }: TabTriggerProps) {
   const { trigger, triggerProps } = useTabTrigger({
     name,
     reset,
@@ -131,7 +125,7 @@ export type TriggerProps = {
 /**
  * Utility hook creating custom `<TabTrigger />`
  */
-export function useTabTrigger(options: TabTriggerProps<any>): UseTabTriggerResult {
+export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
   const { state, navigation } = useNavigatorContext();
   const { name, reset, onPress, onLongPress } = options;
   const triggerMap = useContext(TabTriggerMapContext);

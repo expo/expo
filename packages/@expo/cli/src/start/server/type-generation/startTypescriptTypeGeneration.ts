@@ -60,6 +60,7 @@ export async function startTypescriptTypeGenerationAsync({
           projectRoot,
           getRouterDirectoryModuleIdWithManifest(projectRoot, exp)
         ),
+        plugin: exp?.extra?.router,
       }),
     ]);
   }
