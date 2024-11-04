@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.0.0-preview.5 — 2024-11-04
+
+### 💡 Others
+
 - Added EAS Updates support for DOM Components. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
 
 ## 12.0.0-preview.4 — 2024-10-31
