@@ -359,6 +359,7 @@ exports[`built-in plugins compiles mods 1`] = `
       "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
+      "LSMinimumSystemVersion": "12.0",
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": false,
@@ -1182,6 +1183,7 @@ exports[`built-in plugins introspects mods 1`] = `
           "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
           "GMSApiKey": "TEST_googleMapsApiKey",
           "ITSAppUsesNonExemptEncryption": true,
+          "LSMinimumSystemVersion": "12.0",
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": {
             "NSAllowsArbitraryLoads": false,
@@ -1567,6 +1569,7 @@ exports[`built-in plugins introspects mods 1`] = `
       "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
+      "LSMinimumSystemVersion": "12.0",
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": false,
