@@ -141,6 +141,8 @@ function applyImageToSplashScreenXML(xml, {
       name: 'SplashScreenBackground'
     }
   });
+
+  // Add background named color reference
   xml.document.resources[0].namedColor = xml.document.resources[0].namedColor ?? [];
   const namedColorSection = xml.document.resources[0].namedColor;
   const color = parseColor(backgroundColor);
