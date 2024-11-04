@@ -418,4 +418,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // After adding "Linking" (/linking/**) section
   '/guides/linking/': '/linking/overview/',
   '/guides/deep-linking/': '/linking/into-your-app/',
+
+  // After adding /sdk/router/ API reference
+  '/router/reference/hooks/': '/versions/latest/sdk/router/#hooks',
 };
