@@ -64,11 +64,11 @@ export class File extends ExpoFileSystem.FileSystemFile {
   }
 
   readableStream() {
-    return new ReadableStream(new FileSystemReadableStreamSource(super.open()));
+    return new ReadableStream<Uint8Array>(new FileSystemReadableStreamSource(super.open()));
   }
 
   writableStream() {
-    return new WritableStream(new FileSystemWritableSink(super.open()));
+    return new WritableStream<Uint8Array>(new FileSystemWritableSink(super.open()));
   }
 }
 

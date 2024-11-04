@@ -115,6 +115,10 @@ export declare class File {
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
     move(destination: Directory | File): any;
+    /**
+     * Returns a FileHandle object that can be used to read and write data to the file.
+     * @throws Error if the file does not exist or cannot be opened.
+     */
     open(): FileHandle;
     /**
      * A static method that downloads a file from the network.

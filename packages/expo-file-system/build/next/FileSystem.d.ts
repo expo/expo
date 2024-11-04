@@ -1,5 +1,6 @@
 import ExpoFileSystem from './ExpoFileSystem';
 import { PathUtilities } from './pathUtilities';
+import { ReadableStream, WritableStream } from 'web-streams-polyfill';
 export declare class Paths extends PathUtilities {
     /**
      * A property containing the cache directory – a place to store files that can be deleted by the system when the device runs low on storage.
