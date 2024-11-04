@@ -289,6 +289,7 @@ export function createServerComponentsMiddleware(
         };
       }
 
+      const environment = isServer ? 'react-server' : 'client';
       const searchParams = createBundleUrlSearchParams({
         mainModuleName: '',
         platform: context.platform,
@@ -305,7 +306,7 @@ export function createServerComponentsMiddleware(
         bytecode: false,
         clientBoundaries: [],
         inlineSourceMap: false,
-        environment: isServer ? 'react-server' : 'client',
+        environment,
         modulesOnly: true,
         runModule: false,
       });
@@ -334,7 +335,7 @@ export function createServerComponentsMiddleware(
       const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
       return {
-        id: createModuleId(filePath, { platform: context.platform, environment: 'client' }),
+        id: createModuleId(filePath, { platform: context.platform, environment }),
         chunks: [chunkName],
       };
     };
