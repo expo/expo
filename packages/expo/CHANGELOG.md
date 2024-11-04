@@ -10,6 +10,68 @@
 
 ### 💡 Others
 
+## 52.0.0-preview.19 — 2024-11-04
+
+### 🎉 New features
+
+- Added EAS Updates support for DOM Components. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Re-exported `@expo/fingerprint` as `expo/fingerprint`. ([#32494](https://github.com/expo/expo/pull/32494) by [@quinlanj](https://github.com/quinlanj))
+
+## 52.0.0-preview.18 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.17 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.16 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.15 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.14 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.13 — 2024-10-31
+
+### 🎉 New features
+
+- Reexport `requireNativeView` and `registerWebModule` from `expo-modules-core`. ([#32472](https://github.com/expo/expo/pull/32472) by [@aleqsio](https://github.com/aleqsio))
+
+## 52.0.0-preview.12 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.11 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.10 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.9 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.8 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix react-native-webview Android `decelerationRate` prop issue. ([#32420](https://github.com/expo/expo/pull/32420) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Allowing DOM component `ref` to call WebView functions. ([#32419](https://github.com/expo/expo/pull/32419) by [@kudo](https://github.com/kudo))
+
 ## 52.0.0-preview.7 — 2024-10-28
 
 _This version does not introduce any user-facing changes._

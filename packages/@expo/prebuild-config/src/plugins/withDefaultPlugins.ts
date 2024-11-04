@@ -168,7 +168,6 @@ const legacyExpoPlugins = [
   'expo-app-auth',
   'expo-av',
   'expo-background-fetch',
-  'expo-barcode-scanner',
   'expo-brightness',
   'expo-calendar',
   'expo-camera',

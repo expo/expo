@@ -1,11 +1,8 @@
-import { matchers } from '@emotion/jest';
 import { CheckCircleSolidIcon } from '@expo/styleguide-icons/solid/CheckCircleSolidIcon';
 import { render, screen } from '@testing-library/react';
 import ReactMarkdown from 'react-markdown';
 
 import { Callout } from '.';
-
-expect.extend(matchers);
 
 describe(Callout, () => {
   it('renders callout with icon emoji', () => {

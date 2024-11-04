@@ -282,6 +282,10 @@ export interface ExpoConfig {
      * Experimentally enable React Server Components support in Expo CLI and Expo Router.
      */
     reactServerComponents?: boolean;
+    /**
+     * Experimentally enable React Server Actions support in Expo CLI and Expo Router.
+     */
+    reactServerActions?: boolean;
   };
   /**
    * Internal properties for developer tools

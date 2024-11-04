@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 apply plugin: 'com.android.library'
 
 group = 'host.exp.exponent'
-version = '2.0.0-preview.5'
+version = '2.0.0-preview.9'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -67,7 +67,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "2.0.0-preview.5"
+    versionName "2.0.0-preview.9"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -198,7 +198,7 @@ dependencies {
 
 if (shouldTurnWarningsIntoErrors) {
   tasks.withType(JavaCompile) configureEach {
-    options.compilerArgs << "-Werror" << "-Xlint:all"
+    options.compilerArgs << "-Werror" << "-Xlint:all" << '-Xlint:-serial' << '-Xlint:-rawtypes'
   }
   tasks.withType(KotlinCompile) configureEach {
     compilerOptions.allWarningsAsErrors = true

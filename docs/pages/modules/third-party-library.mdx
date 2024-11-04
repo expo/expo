@@ -3,6 +3,9 @@ title: Wrap third-party native libraries
 description: Learn how to create a simple wrapper around two separate native libraries using Expo Modules API.
 ---
 
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
@@ -38,7 +41,7 @@ To create an empty Expo module that can be published on npm and utilized in any 
 
 <Terminal cmd={['$ npx create-expo-module expo-radial-chart']} />
 
-> **Tip**: If you aren't going to ship this library, press <kbd>return</kbd> for all of the prompts to accept the default values in the terminal window.
+> **info** **Tip**: If you aren't going to ship this library, press <kbd>return</kbd> for all the prompts to accept the default values in the terminal window.
 
 Now, open the newly created `expo-radial-chart` directory to start editing the native code.
 
@@ -392,7 +395,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-> **Tip**: If you created the module inside an existing application, make sure to import it directly from your **modules** directory by using a relative import: `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
+> **info** **Tip**: If you created the module inside an existing application, make sure to import it directly from your **modules** directory by using a relative import: `import { ExpoRadialChartView } from '../modules/expo-radial-chart';`
 
 </Step>
 
@@ -408,6 +411,13 @@ To make sure your app builds successfully on both platforms, rerun the build com
 
 </Step>
 
+Congratulations! You have created your first simple wrapper around two separate third-party native libraries using Expo Modules.
+
 ## Next step
 
-Congratulations! You have created your first simple wrapper around two separate third-party native libraries using Expo Modules. Learn more about the API in the [Expo Module API reference](/modules/module-api/).
+<BoxLink
+  title="Expo Modules API Reference"
+  description="A reference to create native modules using Swift and Kotlin."
+  href="/modules/module-api/"
+  Icon={Grid01Icon}
+/>

@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
-import { theme, typography, LinkBase } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
+import { LinkBase, mergeClasses } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useRef, type PropsWithChildren } from 'react';
@@ -46,63 +44,39 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
   const isExternal = info.href.startsWith('http');
 
   return (
-    <div css={STYLES_CONTAINER}>
+    <div className="flex min-h-8 items-center p-1 pr-0">
       <LinkBase
         href={info.href as string}
         ref={ref}
-        css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}
+        className={mergeClasses(
+          'group text-xs flex decoration-0 text-secondary items-center scroll-m-[60px] w-full -ml-2.5',
+          'hocus:text-link hocus:[&_svg]:text-icon-tertiary',
+          isSelected && 'text-link',
+          info.isDeprecated && 'line-through'
+        )}
         {...customDataAttributes}>
-        <div css={[STYLES_BULLET, isSelected && STYLES_ACTIVE_BULLET]} />
+        <div
+          className={mergeClasses(
+            'size-1.5 shrink-0 rounded-full my-2 mx-1.5 self-start',
+            isSelected && 'bg-palette-blue11'
+          )}
+        />
         {children}
-        {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
+        {info.isNew && (
+          <div
+            className={mergeClasses(
+              'inline-flex ml-2 -mt-px border border-palette-blue10 text-palette-white text-[11px] font-semibold rounded-full px-[5px] leading-none items-center h-[17px]',
+              isSelected
+                ? 'bg-palette-blue10 text-palette-white dark:text-palette-black'
+                : 'bg-none border-palette-blue10 text-palette-blue10 dark:border-palette-blue9 dark:text-palette-blue9'
+            )}>
+            NEW
+          </div>
+        )}
+        {isExternal && (
+          <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto group-hover:text-icon-info" />
+        )}
       </LinkBase>
     </div>
   );
 };
-
-const STYLES_LINK = css`
-  ${typography.fontSizes[14]}
-  display: flex;
-  flex-direction: row;
-  text-decoration: none;
-  color: ${theme.text.secondary};
-  transition: 50ms ease color;
-  align-items: center;
-  scroll-margin: 60px;
-  width: 100%;
-  margin-left: -${spacing[2] + spacing[0.5]}px;
-
-  &:hover {
-    color: ${theme.text.link};
-  }
-
-  &:hover svg {
-    color: ${theme.button.tertiary.icon};
-  }
-`;
-
-const STYLES_LINK_ACTIVE = css`
-  color: ${theme.text.link};
-`;
-
-const STYLES_CONTAINER = css`
-  display: flex;
-  min-height: 32px;
-  align-items: center;
-  padding: ${spacing[1]}px;
-  padding-right: ${spacing[2]}px;
-`;
-
-const STYLES_BULLET = css`
-  height: 6px;
-  width: 6px;
-  min-height: 6px;
-  min-width: 6px;
-  border-radius: 100%;
-  margin: ${spacing[2]}px ${spacing[1.5]}px;
-  align-self: self-start;
-`;
-
-const STYLES_ACTIVE_BULLET = css`
-  background-color: ${theme.text.link};
-`;

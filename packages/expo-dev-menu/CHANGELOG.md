@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 6.0.6 — 2024-11-04
+
+### 💡 Others
+
+- Remove unused `graphql` dependencies. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
+
+## 6.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.4 — 2024-10-29
+
+### 💡 Others
+
+- Add module mocks. ([#32412](https://github.com/expo/expo/pull/32412) by [@aleqsio](https://github.com/aleqsio))
+
 ## 6.0.3 — 2024-10-25
 
 ### 🐛 Bug fixes
@@ -52,6 +68,8 @@ _This version does not introduce any user-facing changes._
 - Removed deprecated code for SDK 49. ([#31740](https://github.com/expo/expo/pull/31740) by [@kudo](https://github.com/kudo))
 - Remove unused `semver` dependency. ([#32063](https://github.com/expo/expo/pull/32063) by [@kitten](https://github.com/kitten))
 - Fixed broken unit tests since React Native 0.76 bump. ([#32210](https://github.com/expo/expo/pull/32210) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
 
 ## 5.0.21 - 2024-08-23
 

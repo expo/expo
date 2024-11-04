@@ -15,12 +15,13 @@
           "EAS_BUILD_PLATFORM": "android",
           "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
           "EXPO_ROOT_DIR": "/home/expo/workingdir/build",
-          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
+          "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1"
         }
       },
       "ios": {
         "cache": {
-          "key": "sdk52-0.76",
+          "key": "sdk52-0.76.1",
           "customPaths": ["../expo-go/ios/Pods"]
         },
         "image": "macos-sonoma-14.6-xcode-16.0",
@@ -29,7 +30,8 @@
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
-          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1"
+          "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
+          "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1"
         }
       }
     },

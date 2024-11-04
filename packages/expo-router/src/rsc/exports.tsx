@@ -38,7 +38,9 @@ export function Navigator() {
   throw new Error('Navigator is not implemented in React Server Components yet');
 }
 
-/** Redirects to the href as soon as the component is mounted. */
+/**
+ * Redirects to the `href` as soon as the component is mounted.
+ */
 export function Redirect({ href }: { href: Href }) {
   const router = useRouter_UNSTABLE();
   router.replace(href);

@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 5.0.9 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.8 — 2024-10-31
+
+### 💡 Others
+
+- Truncate runtime version in settings screen ([#32489](https://github.com/expo/expo/pull/32489) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.7 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.6 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.4 — 2024-10-25
 
 ### 🐛 Bug fixes

@@ -3,10 +3,8 @@ import GithubSlugger from 'github-slugger';
 import DocumentationSidebarRight from './DocumentationSidebarRight';
 
 import { HeadingManager, HeadingType } from '~/common/headingManager';
-import { attachEmotionSerializer, renderWithHeadings } from '~/common/test-utilities';
+import { renderWithHeadings } from '~/common/test-utilities';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
-
-attachEmotionSerializer(expect);
 
 const prepareHeadingManager = () => {
   const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });

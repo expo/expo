@@ -1,5 +1,6 @@
+import { useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Actions from '../components/02-actions';
 import LocalAsset from '../components/03-local-asset';
@@ -9,7 +10,6 @@ import NestedComponents from '../components/06-nested';
 import ForwardRef, { type ForwardedImperativeRef } from '../components/07-forward-ref';
 import NativeModuleProxy from '../components/08-native-module-proxy';
 import RouterDemo from '../components/09-router';
-import { useLocalSearchParams } from 'expo-router';
 
 export default function Page() {
   const [index, setIndex] = useState(0);
@@ -72,6 +72,22 @@ export default function Page() {
             forwardedRef.current?.updateText(Date.now().toString());
           }}
         />
+        <Button
+          title="Update color using webView ref"
+          onPress={() => {
+            if (process.env.EXPO_OS === 'web') {
+              alert('WebView ref is not supported on Web.');
+              return;
+            }
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = 100;
+            const lightness = 85;
+            forwardedRef.current?.injectJavaScript(`
+              (function() {
+                document.getElementById('rect').style.backgroundColor = 'hsl(${hue}, ${saturation}%, ${lightness}%)';
+              })();`);
+          }}
+        />
       </TestCase>
 
       <TestCase name="NativeModuleProxy">
@@ -93,6 +109,14 @@ function TestCase({ name, children }) {
       <Text style={styles.testcaseLabel}>{name}</Text>
       {children}
     </View>
+  );
+}
+
+function Button({ title, onPress }) {
+  return (
+    <Pressable style={styles.button} onPress={onPress}>
+      <Text style={styles.buttonText}>{title}</Text>
+    </Pressable>
   );
 }
 
@@ -118,5 +142,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 12,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: '#007AFF',
+  },
+  buttonText: {
+    fontSize: 14,
+    color: 'white',
   },
 });

@@ -53,12 +53,11 @@ export const Callout = ({
     <blockquote
       className={mergeClasses(
         'bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4',
-        '[table_&]:last-of-type:mb-0',
+        '[table_&]:last:mb-0',
         '[&_code]:bg-element',
         getCalloutColor(finalType),
         // TODO(simek): remove after migration to new components is completed
         '[&_p]:!mb-0',
-        size === 'sm' && '!text-xs',
         className
       )}
       data-testid="callout-container">
@@ -70,7 +69,12 @@ export const Callout = ({
           <Icon className={mergeClasses('icon-sm', getCalloutIconColor(finalType))} />
         )}
       </div>
-      <div className={mergeClasses('text-default w-full leading-normal', 'last:mb-0')}>
+      <div
+        className={mergeClasses(
+          'text-default w-full leading-normal',
+          'last:mb-0',
+          size === 'sm' && 'text-xs [&_p]:text-xs [&_code]:text-[90%]'
+        )}>
         {type === finalType ? children : contentChildren.filter((_, i) => i !== 0)}
       </div>
     </blockquote>

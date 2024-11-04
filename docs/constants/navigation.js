@@ -175,6 +175,7 @@ const general = [
       [
         makePage('workflow/web.mdx'),
         makePage('distribution/publishing-websites.mdx'),
+        makePage('guides/dom-components.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
       ],
       { expanded: false }
@@ -232,6 +233,7 @@ const general = [
       makePage('router/advanced/modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
     ]),
+    makeGroup('UI', [makePage('router/ui/tabs.mdx')], { expanded: false }),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/native-intent.mdx'),
@@ -690,6 +692,8 @@ function makePage(file) {
     name: data.title,
     // TODO(cedric): refactor href into url
     href: url,
+    isNew: data.isNew ?? undefined,
+    isDeprecated: data.isDeprecated ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {

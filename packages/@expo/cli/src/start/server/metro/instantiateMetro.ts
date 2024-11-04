@@ -67,8 +67,15 @@ export async function loadMetroConfigAsync(
 ) {
   let reportEvent: ((event: any) => void) | undefined;
 
+  const serverActionsEnabled =
+    exp.experiments?.reactServerActions ?? env.EXPO_UNSTABLE_SERVER_ACTIONS;
+
+  if (serverActionsEnabled) {
+    process.env.EXPO_UNSTABLE_SERVER_ACTIONS = '1';
+  }
+
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
-  if (exp.experiments?.reactServerComponents) {
+  if (exp.experiments?.reactServerComponents || serverActionsEnabled) {
     process.env.EXPO_USE_METRO_REQUIRE = '1';
     process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
@@ -126,6 +133,17 @@ export async function loadMetroConfigAsync(
     Log.warn(`Experimental tree shaking is enabled.`);
   }
 
+  if (serverActionsEnabled) {
+    Log.warn(
+      `Experimental React Server Actions are enabled. Production exports are not supported yet.`
+    );
+    if (!exp.experiments?.reactServerComponents) {
+      Log.warn(
+        `- React Server Components are NOT enabled. Routes will render in client-only mode.`
+      );
+    }
+  }
+
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
     exp,
@@ -134,7 +152,10 @@ export async function loadMetroConfigAsync(
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled:
-      (exp.experiments?.reactServerComponents || exp.experiments?.reactCanary) ?? false,
+      (exp.experiments?.reactServerComponents ||
+        serverActionsEnabled ||
+        exp.experiments?.reactCanary) ??
+      false,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponents,
     getMetroBundler,
@@ -303,8 +324,8 @@ function pruneCustomTransformOptions(
 
   if (
     transformOptions.customTransformOptions?.clientBoundaries &&
-    // The client boundaries are only used in `expo-router/virtual-client-boundaries.js` for production RSC exports.
-    !filePath.match(/\/expo-router\/virtual-client-boundaries\.js$/)
+    // The client boundaries are only used in `@expo/metro-runtime/src/virtual.js` for production RSC exports.
+    !filePath.match(/\/@expo\/metro-runtime\/rsc\/virtual\.js$/)
   ) {
     delete transformOptions.customTransformOptions.clientBoundaries;
   }

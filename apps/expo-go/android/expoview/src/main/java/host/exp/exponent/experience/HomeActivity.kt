@@ -10,8 +10,6 @@ import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
-import expo.modules.barcodescanner.BarCodeScannerModule
-import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.blur.BlurModule
 import expo.modules.camera.CameraViewModule
 import expo.modules.clipboard.ClipboardModule
@@ -31,10 +29,10 @@ import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
-import expo.modules.splashscreen.SplashScreenImageResizeMode
-import expo.modules.splashscreen.SplashScreenModule
-import expo.modules.splashscreen.SplashScreenPackage
-import expo.modules.splashscreen.singletons.SplashScreen
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
+import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule
@@ -121,7 +119,6 @@ open class HomeActivity : BaseExperienceActivity() {
       return listOf(
         ConstantsPackage(),
         FileSystemPackage(),
-        BarCodeScannerPackage(),
         KeepAwakePackage(),
         FaceDetectorPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
@@ -133,7 +130,6 @@ open class HomeActivity : BaseExperienceActivity() {
     override fun getModulesList(): List<Class<out Module>> {
       return listOf(
         AssetModule::class.java,
-        BarCodeScannerModule::class.java,
         BlurModule::class.java,
         CameraViewModule::class.java,
         ClipboardModule::class.java,

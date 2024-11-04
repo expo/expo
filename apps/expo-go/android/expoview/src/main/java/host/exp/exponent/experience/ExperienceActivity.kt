@@ -28,7 +28,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
 import expo.modules.manifests.core.Manifest
-import expo.modules.splashscreen.singletons.SplashScreen
+import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import host.exp.exponent.Constants
 import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback

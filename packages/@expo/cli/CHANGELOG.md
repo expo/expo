@@ -10,6 +10,65 @@
 
 ### 💡 Others
 
+## 0.19.14 — 2024-11-04
+
+### 🐛 Bug fixes
+
+- Add fallback method for determining internal IP address. ([#32273](https://github.com/expo/expo/pull/32273) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Move server action env to `@expo/metro-runtime`. ([#32597](https://github.com/expo/expo/pull/32597) by [@EvanBacon](https://github.com/EvanBacon))
+- Update `@urql/core` and related dependencies and remove `graphql` dependency. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
+- Increase visibility in stuck `export:embed` processes. ([#32580](https://github.com/expo/expo/pull/32580) by [@byCedric](https://github.com/byCedric))
+
+## 0.19.13 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.12 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.11 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Prevent changes to telemetry from crashing `expo` package upgrade ([#32490](https://github.com/expo/expo/pull/32490) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 0.19.10 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.9 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Don't assert `client-only` in SSR bundles. ([#32479](https://github.com/expo/expo/pull/32479) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix invalid project randomness when using Ngrok ([#32359](https://github.com/expo/expo/pull/32359) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.19.8 — 2024-10-30
+
+### 🎉 New features
+
+- Add server action-only mode. ([#32432](https://github.com/expo/expo/pull/32432) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.7 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix unresponsive terminal after opening React Native DevTools. ([#32451](https://github.com/expo/expo/pull/32451) by [@byCedric](https://github.com/byCedric))
+
+## 0.19.6 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.5 — 2024-10-29
+
+### 💡 Others
+
+- Simplify automatically adding config plugins to app manifest through `expo install`. ([#32426](https://github.com/expo/expo/pull/32426) by [@byCedric](https://github.com/byCedric))
+
 ## 0.19.4 — 2024-10-28
 
 _This version does not introduce any user-facing changes._
@@ -80,6 +139,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Fix handling of prerelease versions in dependency version checks. ([#32160](https://github.com/expo/expo/pull/32160) by [@betomoedano](https://github.com/betomoedano))
 - Improve server error stacks. ([#32098](https://github.com/expo/expo/pull/32098) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix experimental web exports for RSC. ([#32042](https://github.com/expo/expo/pull/32042) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix RSC after RN upgrade. ([#32028](https://github.com/expo/expo/pull/32028) by [@EvanBacon](https://github.com/EvanBacon))

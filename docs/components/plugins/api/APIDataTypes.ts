@@ -1,4 +1,4 @@
-import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
+import { TypeDocKind } from './APISectionUtils';
 
 // Generic data type
 

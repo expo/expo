@@ -24,7 +24,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLinking = void 0;
-const core_1 = require("@react-navigation/core");
+const native_1 = require("@react-navigation/native");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("./extractPathFromURL");
@@ -51,8 +51,8 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
             removeEventListener?.('url', callback);
         }
     };
-}, getStateFromPath = core_1.getStateFromPath, getActionFromState = core_1.getActionFromState, }, onUnhandledLinking) {
-    const independent = (0, core_1.useNavigationIndependentTree)();
+}, getStateFromPath = native_1.getStateFromPath, getActionFromState = native_1.getActionFromState, }, onUnhandledLinking) {
+    const independent = (0, native_1.useNavigationIndependentTree)();
     React.useEffect(() => {
         if (process.env.NODE_ENV === 'production') {
             return undefined;

@@ -45,7 +45,6 @@ export default {
   },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: {
-    emotion: true,
     reactRemoveProperties: true,
     removeConsole,
   },

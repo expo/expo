@@ -4,7 +4,7 @@ import {
   type NavigationContainerRef,
   type ParamListBase,
   useNavigationIndependentTree,
-} from '@react-navigation/core';
+} from '@react-navigation/native';
 import { LinkingOptions } from '@react-navigation/native';
 import * as React from 'react';
 import { Linking, Platform } from 'react-native';
