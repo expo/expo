@@ -621,7 +621,9 @@ class Kernel : KernelInterface() {
         object : AppLoaderCallback {
           override fun onOptimisticManifest(optimisticManifest: Manifest) {
             kernelScope.launch {
-              sendOptimisticManifestToExperienceActivity(optimisticManifest)
+              sendOptimisticManifestToExperienceActivity(
+                optimisticManifest
+              )
             }
           }
 
