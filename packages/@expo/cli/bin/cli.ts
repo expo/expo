@@ -28,6 +28,8 @@ const commands: { [command: string]: () => Promise<Command> } = {
   'export:web': () => import('../src/export/web/index.js').then((i) => i.expoExportWeb),
   'export:embed': () => import('../src/export/embed/index.js').then((i) => i.expoExportEmbed),
 
+  serve: () => import('../src/serve/index.js').then((i) => i.expoServe),
+
   // Auxiliary commands
   install: () => import('../src/install/index.js').then((i) => i.expoInstall),
   add: () => import('../src/install/index.js').then((i) => i.expoInstall),
