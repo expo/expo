@@ -219,5 +219,5 @@ export function isAndroidUsingHermes(projectRoot: string) {
 
 export function isIosUsingHermes(projectRoot: string) {
   // If nullish, then assume Hermes is used.
-  return isHermesPossiblyEnabled(projectRoot) === false ? false : true;
+  return isHermesPossiblyEnabled(projectRoot) !== false;
 }
