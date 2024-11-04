@@ -85,7 +85,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
   }, [emit, smartActions]);
 
   return React.createElement(webView, {
-    webviewDebuggingEnabled: __DEV__,
+    webviewDebuggingEnabled: true, //__DEV__,
     // Make iOS scrolling feel native.
     decelerationRate: process.env.EXPO_OS === 'ios' ? 'normal' : undefined,
     originWhitelist: ['*'],
