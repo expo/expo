@@ -1,5 +1,5 @@
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, UnknownOutputParams, InternalRoute, RouteOutputParams } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, InternalRoute } from './types';
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.
@@ -108,7 +108,6 @@ export declare function useSegments<TSegments extends RouteSegments<InternalRout
  */
 export declare function usePathname(): string;
 /**
-/**
  * Returns URL parameters for globally selected route, including dynamic path segments.
  * This function updates even when the route is not focused. Useful for analytics or
  * other background operations that don't draw to the screen.
@@ -160,7 +159,7 @@ export declare function useGlobalSearchParams<TRoute extends InternalRoute>(): R
  * }
  */
 export declare function useLocalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
-export declare function useLocalSearchParams<TRoute extends InternalRoute>(): RouteOutputParams<TRoute>;
+export declare function useLocalSearchParams<TRoute extends InternalRoute>(): RouteParams<TRoute>;
 export declare function useSearchParams({ global }?: {
     global?: boolean | undefined;
 }): URLSearchParams;

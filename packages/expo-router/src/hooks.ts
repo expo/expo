@@ -5,13 +5,7 @@ import React from 'react';
 import { LocalRouteParamsContext } from './Route';
 import { store, useStoreRootState, useStoreRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import {
-  RouteParams,
-  RouteSegments,
-  UnknownOutputParams,
-  InternalRoute,
-  RouteOutputParams,
-} from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, InternalRoute, Route } from './types';
 
 type SearchParams = Record<string, string | string[]>;
 
@@ -164,7 +158,6 @@ export function usePathname(): string {
 }
 
 /**
-/**
  * Returns URL parameters for globally selected route, including dynamic path segments.
  * This function updates even when the route is not focused. Useful for analytics or
  * other background operations that don't draw to the screen.
@@ -224,7 +217,7 @@ export function useGlobalSearchParams() {
 export function useLocalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): TParams;
-export function useLocalSearchParams<TRoute extends InternalRoute>(): RouteOutputParams<TRoute>;
+export function useLocalSearchParams<TRoute extends InternalRoute>(): RouteParams<TRoute>;
 export function useLocalSearchParams() {
   const params = React.useContext(LocalRouteParamsContext) ?? {};
   return Object.fromEntries(

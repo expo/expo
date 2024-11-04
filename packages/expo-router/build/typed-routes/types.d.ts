@@ -11,9 +11,7 @@ export declare namespace ExpoRouter {
 export type RelativePathString = `./${string}` | `../${string}` | '..';
 export type SearchOrHash = `?${string}` | `#${string}`;
 export type ExternalPathString = `${string}:${string}` | `//${string}`;
-export type Route = Extract<Href, {
-    pathname: string;
-}>['pathname'];
+export type Route = Extract<Href, string>;
 export type InternalRoute = Exclude<Route, RelativePathString | ExternalPathString>;
 /**
  * The main routing type for Expo Router. It includes all available routes with strongly
@@ -53,7 +51,7 @@ export type RouteOutputParams<T extends Route> = Extract<HrefOutputParams, {
 }> extends never ? HrefOutputParams extends infer H ? H extends Record<'pathname' | 'params', any> ? T extends H['pathname'] ? H['params'] : never : never : never : Extract<HrefOutputParams, {
     pathname: T;
 }>['params'];
-export type RouteParams<T extends Route> = RouteOutputParams<T>;
+export type RouteParams<T extends Route | object> = T extends string ? RouteOutputParams<T> : T;
 /**
  * Routes can have known inputs (e.g query params).
  * Unlike outputs, inputs can be `undefined` or `null`.
