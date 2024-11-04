@@ -392,6 +392,30 @@ module.exports = createRequestHandler({
 Create a Vercel configuration file (**vercel.json**) at the root of your project to redirect all requests to the server function.
 
 <Tabs>
+<Tab label="vercel.json v3">
+
+```json vercel.json
+{
+  "buildCommand": "expo export -p web",
+  "outputDirectory": "dist/client",
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node@3.0.11",
+      "includeFiles": "dist/server/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.ts"
+    }
+  ]
+}
+```
+
+The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist/client** output directory automatically.
+
+</Tab>
 <Tab label="vercel.json v2">
 
 ```json vercel.json
@@ -427,30 +451,6 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
 ```
 
 The **legacy** version of the **vercel.json** needs a `@vercel/static-build` runtime to serve your assets from the **dist/client** output directory.
-
-</Tab>
-<Tab label="vercel.json v3">
-
-```json vercel.json
-{
-  "buildCommand": "expo export -p web",
-  "outputDirectory": "dist/client",
-  "functions": {
-    "api/index.ts": {
-      "runtime": "@vercel/node@3.0.11",
-      "includeFiles": "dist/server/**"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index.ts"
-    }
-  ]
-}
-```
-
-The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist/client** output directory automatically.
 
 </Tab>
 </Tabs>
