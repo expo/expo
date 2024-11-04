@@ -21,10 +21,17 @@ const errors_1 = require("./errors");
 const fetch_1 = require("./fetch");
 const utils_1 = require("./utils");
 const getDevServer_1 = require("../../getDevServer");
+const url_1 = require("../../head/url");
 const { createFromFetch, encodeReply } = client_1.default;
+// TODO: Maybe this could be a bundler global instead.
+const IS_DOM = 
+// @ts-expect-error: Added via react-native-webview
+typeof ReactNativeWebView !== 'undefined';
 // NOTE: Ensured to start with `/`.
 const RSC_PATH = '/_flight/' + process.env.EXPO_OS; // process.env.EXPO_RSC_PATH;
-let BASE_PATH = `${process.env.EXPO_BASE_URL}${RSC_PATH}`;
+// Using base URL for remote hosts isn't currently supported in DOM components as we use it for offline assets.
+const BASE_URL = IS_DOM ? '' : process.env.EXPO_BASE_URL;
+let BASE_PATH = `${BASE_URL}${RSC_PATH}`;
 if (!BASE_PATH.startsWith('/')) {
     BASE_PATH = '/' + BASE_PATH;
 }
@@ -173,8 +180,8 @@ const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
     // TODO: Load from on-disk on native when indicated.
-    // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedFilePath(url);
-    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
+    // const reqPath = fetchOptions?.remote ? getAdjustedRemoteFilePath(url) : getAdjustedRemoteFilePath(url);
+    const url = getAdjustedRemoteFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     const hasValidPrefetchedResponse = !!prefetched[url] &&
         // HACK .has() is for the initial hydration
         // It's limited and may result in a wrong result. FIXME
@@ -191,25 +198,23 @@ const fetchRSC = (input, params, fetchCache = defaultFetchCache) => {
 };
 exports.fetchRSC = fetchRSC;
 function getAdjustedRemoteFilePath(path) {
-    if (process.env.EXPO_OS === 'web') {
+    if (IS_DOM && process.env.NODE_ENV === 'production') {
+        const origin = (0, url_1.getOriginFromConstants)();
+        if (!origin) {
+            throw new Error('Expo RSC: Origin not found in Constants. This is required for production DOM components using server actions.');
+        }
+        // DOM components in production need to use the same origin logic as native.
+        return new URL(path, origin).toString();
+    }
+    if (!IS_DOM && process.env.EXPO_OS === 'web') {
         return path;
     }
     return new URL(path, window.location.href).toString();
 }
-function getAdjustedFilePath(path) {
-    if (process.env.EXPO_OS === 'web') {
-        return path;
-    }
-    // Server actions should be fetched from the server every time.
-    if (path.match(/[0-9a-z]{40}#/i)) {
-        return getAdjustedRemoteFilePath(path);
-    }
-    return getAdjustedRemoteFilePath(path);
-}
 const prefetchRSC = (input, params) => {
     // eslint-disable-next-line no-multi-assign
     const prefetched = (globalThis.__EXPO_PREFETCHED__ ||= {});
-    const url = getAdjustedFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
+    const url = getAdjustedRemoteFilePath(BASE_PATH + (0, utils_1.encodeInput)(input));
     if (!(url in prefetched)) {
         prefetched[url] = fetchRSCInternal(url, params);
         prefetchedParams.set(prefetched[url], params);
