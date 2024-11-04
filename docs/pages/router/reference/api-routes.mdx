@@ -210,6 +210,10 @@ Before deploying to these providers, it may be good to be familiar with the basi
 - `@expo/server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
 
+### Testing Locally
+
+You can test the local production server in Expo SDK 52 by running `npx expo serve`. This will start the production server locally and serve the static files and API routes. Visit the URL in a web browser or create a native build with the origin set to the local server URL.
+
 ### Express
 
 <Step label="1">
