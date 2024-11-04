@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Move server action env to `@expo/metro-runtime`.
+- Move server action env to `@expo/metro-runtime`. ([#32597](https://github.com/expo/expo/pull/32597) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.0.0-preview.0 — 2024-10-22
 
