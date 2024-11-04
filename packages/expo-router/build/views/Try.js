@@ -25,15 +25,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Try = void 0;
-const SplashScreen = __importStar(require("expo-splash-screen"));
 const react_1 = __importStar(require("react"));
 const errors_1 = require("../rsc/router/errors");
 // No way to access `getDerivedStateFromError` from a function component afaict.
 class Try extends react_1.Component {
     state = { error: undefined };
     static getDerivedStateFromError(error) {
-        // Force hide the splash screen if an error occurs.
-        SplashScreen.hideAsync();
         if (__DEV__ && error instanceof errors_1.MetroServerError) {
             // Throw up to the LogBox.
             return null;

@@ -1,28 +1,5 @@
 'use client';
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -30,7 +7,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRootState = exports.useExpoRouter = exports.store = exports.RouterStore = void 0;
 const native_1 = require("@react-navigation/native");
 const expo_constants_1 = __importDefault(require("expo-constants"));
-const SplashScreen = __importStar(require("expo-splash-screen"));
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -51,7 +27,6 @@ class RouterStore {
     routeNode;
     rootComponent;
     linking;
-    hasAttemptedToHideSplash = false;
     initialState;
     rootState;
     nextState;
@@ -135,14 +110,6 @@ class RouterStore {
         this.navigationRef = navigationRef;
         this.navigationRefSubscription = navigationRef.addListener('state', (data) => {
             const state = data.data.state;
-            if (!this.hasAttemptedToHideSplash) {
-                this.hasAttemptedToHideSplash = true;
-                // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-                this.splashScreenAnimationFrame = requestAnimationFrame(() => {
-                    // @ts-expect-error: This function is native-only and for internal-use only.
-                    SplashScreen._internal_maybeHideAsync?.();
-                });
-            }
             let shouldUpdateSubscribers = this.nextState === state;
             this.nextState = undefined;
             // This can sometimes be undefined when an error is thrown in the Root Layout Route.
@@ -204,11 +171,6 @@ class RouterStore {
     routeInfoSnapshot = () => {
         return this.routeInfo;
     };
-    cleanup() {
-        if (this.splashScreenAnimationFrame) {
-            cancelAnimationFrame(this.splashScreenAnimationFrame);
-        }
-    }
 }
 exports.RouterStore = RouterStore;
 exports.store = new RouterStore();

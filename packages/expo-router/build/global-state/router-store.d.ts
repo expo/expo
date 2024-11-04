@@ -14,7 +14,6 @@ export declare class RouterStore {
     routeNode: RouteNode | null;
     rootComponent: ComponentType;
     linking?: ExpoLinkingOptions;
-    private hasAttemptedToHideSplash;
     initialState?: ResultState;
     rootState?: ResultState;
     nextState?: ResultState;
@@ -46,7 +45,6 @@ export declare class RouterStore {
     snapshot: () => this;
     rootStateSnapshot: () => any;
     routeInfoSnapshot: () => UrlObject;
-    cleanup(): void;
 }
 export declare const store: RouterStore;
 export declare function useExpoRouter(): RouterStore;

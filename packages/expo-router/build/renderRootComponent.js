@@ -25,7 +25,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderRootComponent = void 0;
 const expo_1 = require("expo");
-const SplashScreen = __importStar(require("expo-splash-screen"));
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 function isBaseObject(obj) {
@@ -68,11 +67,6 @@ function convertError(error) {
  */
 function renderRootComponent(Component) {
     try {
-        // This must be delayed so the user has a chance to call it first.
-        setTimeout(() => {
-            // @ts-expect-error: This function is native-only and for internal-use only.
-            SplashScreen._internal_preventAutoHideAsync?.();
-        });
         React.startTransition(() => {
             if (process.env.NODE_ENV !== 'production') {
                 const { withErrorOverlay } = require('@expo/metro-runtime/error-overlay');
@@ -84,8 +78,6 @@ function renderRootComponent(Component) {
         });
     }
     catch (e) {
-        // Hide the splash screen if there was an error so the user can see it.
-        SplashScreen.hideAsync();
         const error = convertError(e);
         // Prevent the app from throwing confusing:
         //  ERROR  Invariant Violation: "main" has not been registered. This can happen if:

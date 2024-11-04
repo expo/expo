@@ -1,5 +1,4 @@
 import { registerRootComponent } from 'expo';
-import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { View } from 'react-native';
 
@@ -51,12 +50,6 @@ function convertError(error: any) {
  */
 export function renderRootComponent(Component: React.ComponentType<any>) {
   try {
-    // This must be delayed so the user has a chance to call it first.
-    setTimeout(() => {
-      // @ts-expect-error: This function is native-only and for internal-use only.
-      SplashScreen._internal_preventAutoHideAsync?.();
-    });
-
     React.startTransition(() => {
       if (process.env.NODE_ENV !== 'production') {
         const { withErrorOverlay } =
@@ -67,9 +60,6 @@ export function renderRootComponent(Component: React.ComponentType<any>) {
       }
     });
   } catch (e) {
-    // Hide the splash screen if there was an error so the user can see it.
-    SplashScreen.hideAsync();
-
     const error = convertError(e);
     // Prevent the app from throwing confusing:
     //  ERROR  Invariant Violation: "main" has not been registered. This can happen if:

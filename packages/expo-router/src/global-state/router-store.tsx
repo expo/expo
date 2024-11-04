@@ -5,7 +5,6 @@ import {
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import * as SplashScreen from 'expo-splash-screen';
 import equal from 'fast-deep-equal';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 import { Platform } from 'react-native';
@@ -44,7 +43,6 @@ export class RouterStore {
   routeNode!: RouteNode | null;
   rootComponent!: ComponentType;
   linking?: ExpoLinkingOptions;
-  private hasAttemptedToHideSplash: boolean = false;
 
   initialState?: ResultState;
   rootState?: ResultState;
@@ -143,15 +141,6 @@ export class RouterStore {
     this.navigationRefSubscription = navigationRef.addListener('state', (data) => {
       const state = data.data.state as ResultState;
 
-      if (!this.hasAttemptedToHideSplash) {
-        this.hasAttemptedToHideSplash = true;
-        // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-        this.splashScreenAnimationFrame = requestAnimationFrame(() => {
-          // @ts-expect-error: This function is native-only and for internal-use only.
-          SplashScreen._internal_maybeHideAsync?.();
-        });
-      }
-
       let shouldUpdateSubscribers = this.nextState === state;
       this.nextState = undefined;
 
@@ -225,12 +214,6 @@ export class RouterStore {
   routeInfoSnapshot = () => {
     return this.routeInfo!;
   };
-
-  cleanup() {
-    if (this.splashScreenAnimationFrame) {
-      cancelAnimationFrame(this.splashScreenAnimationFrame);
-    }
-  }
 }
 
 export const store = new RouterStore();

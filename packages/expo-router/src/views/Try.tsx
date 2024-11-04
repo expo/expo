@@ -1,6 +1,5 @@
 'use client';
 
-import * as SplashScreen from 'expo-splash-screen';
 import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
 
 import { MetroServerError } from '../rsc/router/errors';
@@ -23,9 +22,6 @@ export class Try extends Component<
   state = { error: undefined };
 
   static getDerivedStateFromError(error: Error) {
-    // Force hide the splash screen if an error occurs.
-    SplashScreen.hideAsync();
-
     if (__DEV__ && error instanceof MetroServerError) {
       // Throw up to the LogBox.
       return null;

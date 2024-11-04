@@ -15,10 +15,6 @@ import { router } from '../imperative-api';
 // re-export everything
 export * from '@testing-library/react-native';
 
-afterAll(() => {
-  store.cleanup();
-});
-
 export type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
   linking?: Partial<ExpoLinkingOptions>;
