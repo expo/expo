@@ -77,19 +77,42 @@ function attachMasterListener() {
  * @see https://nodejs.org/docs/latest-v18.x/api/process.html#processgetactiveresourcesinfo
  */
 export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtMs = Date.now()) {
-  // Check active resources, besides the TTYWrap (process.stdin, process.stdout, process.stderr)
+  // Create a list of the expected active resources before exiting.
+  // Note, the order is undeterministic
+  const expectedResources = [
+    process.stdout.isTTY ? 'TTYWrap' : 'PipeWrap',
+    process.stderr.isTTY ? 'TTYWrap' : 'PipeWrap',
+    process.stdin.isTTY ? 'TTYWrap' : 'PipeWrap',
+  ];
+  // Check active resources, besides the TTYWrap/PipeWrap (process.stdin, process.stdout, process.stderr)
   // @ts-expect-error Added in v17.3.0, v16.14.0 but unavailable in v18 typings
   const activeResources = process.getActiveResourcesInfo() as string[];
-  const canExitProcess = activeResources.filter((resource) => resource !== 'TTYWrap').length === 0;
+  // Filter the active resource list by subtracting the expected resources, in undeterministic order
+  const unexpectedActiveResources = activeResources.filter((activeResource) => {
+    const index = expectedResources.indexOf(activeResource);
+    if (index >= 0) {
+      expectedResources.splice(index, 1);
+      return false;
+    }
+
+    return true;
+  });
+
+  const canExitProcess = !unexpectedActiveResources.length;
   if (canExitProcess) {
     return debug('no active resources detected, process can safely exit');
+  } else {
+    debug(
+      `process is trying to exit, but is stuck on unexpected active resources:`,
+      unexpectedActiveResources
+    );
   }
 
   // Check if the process needs to be force-closed
   const elapsedTime = Date.now() - startedAtMs;
   if (elapsedTime > waitUntilExitMs) {
     debug('active handles detected past the exit delay, forcefully exiting:', activeResources);
-    warn('Something prevented the process from exiting, rerun with `EXPO_DEBUG=1` to see why');
+    warn('Something prevented the process from exiting, forcefully exiting.');
     return process.exit(0);
   }
 
