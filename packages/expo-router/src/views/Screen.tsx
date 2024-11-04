@@ -2,6 +2,8 @@
 import React from 'react';
 
 import { useNavigation } from '../useNavigation';
+import { IS_DOM } from 'expo/dom';
+import { emitDomSetOptions } from '../link/useDomComponentNavigation';
 
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
   /**
@@ -20,6 +22,21 @@ const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : 
 
 /** Component for setting the current screen's options dynamically. */
 export function Screen<TOptions extends object = object>({ name, options }: ScreenProps<TOptions>) {
+  if (IS_DOM) {
+    useLayoutEffect(() => {
+      if (
+        options &&
+        // React Navigation will infinitely loop in some cases if an empty object is passed to setOptions.
+        // https://github.com/expo/router/issues/452
+        Object.keys(options).length
+      ) {
+        emitDomSetOptions(options);
+      }
+    }, [options]);
+
+    return null;
+  }
+
   const navigation = useNavigation(name);
 
   useLayoutEffect(() => {

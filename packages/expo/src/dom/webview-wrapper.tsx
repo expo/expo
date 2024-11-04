@@ -16,6 +16,8 @@ import {
 import ExpoDomWebView from './webview/ExpoDOMWebView';
 import RNWebView from './webview/RNWebView';
 
+import { useDomComponentContextReceiver } from 'expo-router/build/link/useDomComponentNavigation';
+
 interface Props {
   dom: DOMProps;
   source: {
@@ -60,6 +62,8 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
     },
     [webviewRef]
   );
+
+  const navigationReceiver = useDomComponentContextReceiver();
 
   // serializable props, action names.
 
@@ -193,6 +197,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
       } else {
         dom?.onMessage?.(event);
       }
+      navigationReceiver({ type, data });
       _emitGlobalEvent({ type, data });
     },
   });
