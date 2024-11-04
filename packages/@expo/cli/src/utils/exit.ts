@@ -1,6 +1,7 @@
 import process from 'node:process';
 
 import { guardAsync } from './fn';
+import { warn } from '../log';
 
 const debug = require('debug')('expo:utils:exit') as typeof console.log;
 
@@ -88,6 +89,7 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
   const elapsedTime = Date.now() - startedAtMs;
   if (elapsedTime > waitUntilExitMs) {
     debug('active handles detected past the exit delay, forcefully exiting:', activeResources);
+    warn('Something prevented the process from exiting, rerun with `EXPO_DEBUG=1` to see why');
     return process.exit(0);
   }
 

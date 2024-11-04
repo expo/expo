@@ -44,6 +44,7 @@ import {
   persistMetroFilesAsync,
 } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
+import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -108,7 +109,10 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
     console.warn('warning: Eager bundle does not match new options, bundling again.');
   }
 
-  return exportEmbedInternalAsync(projectRoot, options);
+  await exportEmbedInternalAsync(projectRoot, options);
+
+  // Ensure the process closes after bundling
+  ensureProcessExitsAfterDelay();
 }
 
 export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {
