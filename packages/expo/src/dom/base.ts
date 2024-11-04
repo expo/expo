@@ -9,6 +9,11 @@ export function getBaseURL(): string {
   }
 
   // Serving from updates
+  const updatesBaseUrl = getUpdatesBaseURL();
+  if (updatesBaseUrl != null) {
+    cachedBaseUrl = updatesBaseUrl;
+    return cachedBaseUrl;
+  }
 
   if (process.env.EXPO_OS === 'web') {
     cachedBaseUrl = process.env.EXPO_BASE_URL ?? '';
