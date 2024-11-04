@@ -97,12 +97,27 @@ struct deref<jni::local_ref<T>> {
 };
 
 template<typename T>
+struct deref<jni::local_ref<T>&> {
+  typedef T type;
+};
+
+template<typename T>
 struct deref<jni::global_ref<T>> {
   typedef T type;
 };
 
 template<typename T>
+struct deref<jni::global_ref<T>&> {
+  typedef T type;
+};
+
+template<typename T>
 struct deref<jni::alias_ref<T>> {
+  typedef T type;
+};
+
+template<typename T>
+struct deref<jni::alias_ref<T>&> {
   typedef T type;
 };
 
@@ -395,6 +410,31 @@ public:
 };
 
 template<>
+class JNIToJSIConverter<jni::global_ref<jni::JCollection<jobject>>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const jni::global_ref<jni::JCollection<jobject>> &list
+  ) {
+    size_t size = list->size();
+    auto jsArray = jsi::Array(rt, size);
+    size_t index = 0;
+
+    for (const auto &item: *list) {
+      jsArray.setValueAtIndex(
+        rt,
+        index++,
+        ::expo::convert(env, rt, item)
+      );
+    }
+    return jsArray;
+  }
+};
+
+template<>
 class JNIToJSIConverter<jni::local_ref<jni::JCollection<jobject>>> {
 public:
   typedef SimpleConverter converterType;
@@ -416,6 +456,32 @@ public:
       );
     }
     return jsArray;
+  }
+};
+
+template<>
+class JNIToJSIConverter<jni::global_ref<jni::JMap<jstring, jobject>>> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const jni::global_ref<jni::JMap<jstring, jobject>> &map
+  ) {
+    jsi::Object jsObject(rt);
+
+    for (const auto &entry: *map) {
+      auto key = entry.first->toStdString();
+      auto value = entry.second;
+      jsObject.setProperty(
+        rt,
+        key.c_str(),
+        ::expo::convert(env, rt, value)
+      );
+    }
+
+    return jsObject;
   }
 };
 

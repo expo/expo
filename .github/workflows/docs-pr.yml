@@ -52,7 +52,12 @@ jobs:
           NODE_ENV: production
         run: yarn lint --max-warnings 0
       - name: 💬 Lint Docs website content
-        run: yarn lint-prose
+        uses: errata-ai/vale-action@reviewdog
+        with:
+          reporter: github-pr-check
+          files: 'docs/pages'
+          vale_flags: '--config=./docs/.vale.ini'
+          fail_on_error: true
       - name: 🏗️ Build Docs website
         run: yarn export-preview
         timeout-minutes: 20
@@ -61,15 +66,6 @@ jobs:
       - name: 🔗 Lint pages links
         working-directory: docs
         run: yarn lint-links --quiet
-      - name: ✅ Test links (legacy)
-        working-directory: docs
-        run: |
-          yarn export-server &
-          while ! nc -z localhost 8000; do
-            sleep 1
-          done
-          yarn test-links http://127.0.0.1:8000
-        timeout-minutes: 3
       - name: 🪣 Set up docs preview bucket
         if: contains(github.event.pull_request.labels.*.name, 'preview')
         env:

@@ -7,9 +7,29 @@
  *
  * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/client.ts#L1
  */
-import type { ReactNode } from 'react';
+import type { ReactNode, AnchorHTMLAttributes } from 'react';
 import type { RouteProps } from './common.js';
-export declare function Router(): import("react").FunctionComponentElement<Omit<{
+import type { Router as ClassicExpoRouterType } from '../../imperative-api';
+import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Link.js';
+import type { Href } from '../../types.js';
+export declare function useRouter_UNSTABLE(): ClassicExpoRouterType & RouteProps & {
+    forward: () => void;
+    prefetch: <T extends string | object>(href: Href<T>) => void;
+};
+type ShouldSkip = (readonly [
+    string,
+    readonly [
+        boolean,
+        string[]
+    ]
+])[];
+type RouterData = [
+    shouldSkip?: ShouldSkip,
+    locationListeners?: Set<(path: string, query: string) => void>
+];
+export declare function Router({ routerData }: {
+    routerData?: RouterData | undefined;
+}): import("react").FunctionComponentElement<Omit<{
     initialInput?: string | undefined;
     initialParams?: unknown;
     fetchCache?: {
@@ -38,4 +58,9 @@ export declare function ServerRouter({ children, route }: {
 }): import("react").FunctionComponentElement<{
     children?: ReactNode;
 }>;
+export type LinkProps<T extends string | object> = ClassicLinkProps<T> & {
+    href: string;
+} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>;
+export declare const Link: LinkComponent;
+export {};
 //# sourceMappingURL=client.d.ts.map

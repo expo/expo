@@ -1,13 +1,14 @@
 package expo.modules.updates.loader
 
 import android.content.Context
-import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -23,40 +24,40 @@ import java.io.File
 class RemoteLoader internal constructor(
   context: Context,
   configuration: UpdatesConfiguration,
+  logger: UpdatesLogger,
   database: UpdatesDatabase,
   private val mFileDownloader: FileDownloader,
   updatesDirectory: File,
   private val launchedUpdate: UpdateEntity?,
   private val loaderFiles: LoaderFiles
-) : Loader(context, configuration, database, updatesDirectory, loaderFiles) {
+) : Loader(context, configuration, logger, database, updatesDirectory, loaderFiles) {
   constructor(
     context: Context,
     configuration: UpdatesConfiguration,
+    logger: UpdatesLogger,
     database: UpdatesDatabase,
     fileDownloader: FileDownloader,
     updatesDirectory: File,
     launchedUpdate: UpdateEntity?
-  ) : this(context, configuration, database, fileDownloader, updatesDirectory, launchedUpdate, LoaderFiles())
+  ) : this(context, configuration, logger, database, fileDownloader, updatesDirectory, launchedUpdate, LoaderFiles())
 
   override fun loadRemoteUpdate(
-    context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
     callback: RemoteUpdateDownloadCallback
   ) {
     val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)?.updateEntity
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(database, configuration, launchedUpdate, embeddedUpdate)
-    mFileDownloader.downloadRemoteUpdate(extraHeaders, context, callback)
+    mFileDownloader.downloadRemoteUpdate(extraHeaders, callback)
   }
 
   override fun loadAsset(
-    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
     callback: AssetDownloadCallback
   ) {
-    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, context, callback)
+    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, callback)
   }
 
   companion object {
@@ -65,6 +66,7 @@ class RemoteLoader internal constructor(
     fun processSuccessLoaderResult(
       context: Context,
       configuration: UpdatesConfiguration,
+      logger: UpdatesLogger,
       database: UpdatesDatabase,
       selectionPolicy: SelectionPolicy,
       directory: File,
@@ -76,7 +78,7 @@ class RemoteLoader internal constructor(
       val updateDirective = loaderResult.updateDirective
 
       if (updateDirective != null && updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-        processRollBackToEmbeddedDirective(context, configuration, database, selectionPolicy, directory, launchedUpdate, updateDirective) { didRollBackToEmbedded ->
+        processRollBackToEmbeddedDirective(context, configuration, logger, database, selectionPolicy, directory, launchedUpdate, updateDirective) { didRollBackToEmbedded ->
           onComplete(null, didRollBackToEmbedded)
         }
       } else {
@@ -93,6 +95,7 @@ class RemoteLoader internal constructor(
     private fun processRollBackToEmbeddedDirective(
       context: Context,
       configuration: UpdatesConfiguration,
+      logger: UpdatesLogger,
       database: UpdatesDatabase,
       selectionPolicy: SelectionPolicy,
       directory: File,
@@ -116,12 +119,12 @@ class RemoteLoader internal constructor(
       embeddedUpdate.commitTime = updateDirective.commitTime
 
       // update the embedded update commit time in the database (requires loading and then updating)
-      EmbeddedLoader(context, configuration, database, directory).start(object : LoaderCallback {
+      EmbeddedLoader(context, configuration, logger, database, directory).start(object : LoaderCallback {
         /**
          * This should never happen since we check for the embedded update above
          */
         override fun onFailure(e: Exception) {
-          Log.e(TAG, "Embedded update erroneously null when applying roll back to embedded directive", e)
+          logger.error("Embedded update erroneously null when applying roll back to embedded directive", e, UpdatesErrorCode.UpdateFailedToLoad)
           onComplete(false)
         }
 

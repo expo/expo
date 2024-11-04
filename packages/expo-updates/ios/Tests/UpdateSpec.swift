@@ -87,7 +87,7 @@ class UpdateSpec : ExpoSpec {
           extensions: [:],
           config: config,
           database: database
-        )).to(throwError(UpdateError.invalidExpoProtocolVersion))
+        )).to(throwError(UpdateError.invalidExpoProtocolVersion(protocolVersion: 2)))
       }
       
       it("works for embedded bare manifest") {

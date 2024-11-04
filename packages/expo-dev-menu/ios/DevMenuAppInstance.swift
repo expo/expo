@@ -75,10 +75,12 @@ class DevMenuAppInstance: DevMenuRCTAppDelegate {
       return nil
     }
     // Return `nil` if the content is not a valid URL.
-    guard let content = try? String(contentsOfFile: packagerHostPath, encoding: String.Encoding.utf8).trimmingCharacters(in: CharacterSet.newlines),
-      let url = URL(string: "http://\(content)") else {
+    guard let content = try? String(contentsOfFile: packagerHostPath, encoding: .utf8).trimmingCharacters(in: .newlines) else {
       return nil
     }
-    return "\(url.host ?? ""):\(url.port ?? 8081)"
+    guard let url = URL(string: "http://\(content)"), let host = url.host else {
+      return nil
+    }
+    return "\(host):\(url.port ?? 8081)"
   }
 }

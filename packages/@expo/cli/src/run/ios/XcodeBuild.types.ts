@@ -40,4 +40,7 @@ export type BuildProps = {
   /** Should use derived data for builds. */
   buildCache: boolean;
   scheme: string;
+
+  /** Options that were used to create the eager bundle in release builds. */
+  eagerBundleOptions?: string;
 } & BundlerProps;

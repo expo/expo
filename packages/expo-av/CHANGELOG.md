@@ -4,9 +4,27 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.0.1 — 2024-10-24
+
+### 💡 Others
+
+- Added deprecation warning to the `Video` component. ([#32267](https://github.com/expo/expo/pull/32267) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
+
+- [android] Add support for react-native 0.76 ([#31504](https://github.com/expo/expo/pull/31504) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
@@ -15,6 +33,8 @@
 - Fix unhandled promise rejection when start recording fails [#29826](https://github.com/expo/expo/pull/29826) by [@anirudhsama](https://github.com/anirudhsama)
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30456](https://github.com/expo/expo/pull/30456) by [@byCedric](https://github.com/byCedric))
 - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+- [Android] Fixed `NullPointerException` in the `installJSIBindings` function. ([#31464](https://github.com/expo/expo/pull/31464) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed crash when reloading an expo update with a video component mounted ([#31540](https://github.com/expo/expo/pull/31540) by [@AbijahKaj](https://github.com/AbijahKaj))
 
 ### 💡 Others
 

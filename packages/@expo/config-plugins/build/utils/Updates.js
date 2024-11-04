@@ -19,6 +19,7 @@ exports.getUpdatesEnabled = getUpdatesEnabled;
 exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
 exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
+exports.getUpdatesUseEmbeddedUpdate = getUpdatesUseEmbeddedUpdate;
 exports.resolveRuntimeVersionPolicyAsync = resolveRuntimeVersionPolicyAsync;
 function _sdkRuntimeVersions() {
   const data = require("@expo/sdk-runtime-versions");
@@ -69,7 +70,7 @@ function _() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const FINGERPRINT_RUNTIME_VERSION_SENTINEL = exports.FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';
 function getExpoUpdatesPackageVersion(projectRoot) {
   const expoUpdatesPackageJsonPath = _resolveFrom().default.silent(projectRoot, 'expo-updates/package.json');
@@ -156,6 +157,12 @@ function getUpdatesEnabled(config) {
     return config.updates.enabled;
   }
   return getUpdateUrl(config) !== null;
+}
+function getUpdatesUseEmbeddedUpdate(config) {
+  if (config.updates?.useEmbeddedUpdate !== undefined) {
+    return config.updates.useEmbeddedUpdate;
+  }
+  return true;
 }
 function getUpdatesTimeout(config) {
   return config.updates?.fallbackToCacheTimeout ?? 0;

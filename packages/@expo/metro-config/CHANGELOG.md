@@ -6,6 +6,34 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.19.0-preview.2 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fix CSS `url()` support for DOM IDs, public files, and data URIs. ([#32332](https://github.com/expo/expo/pull/32332) by [@EvanBacon](https://github.com/EvanBacon))
+- Disable `hermesParser` and conditionally enable for files with `@flow` pragma. ([#32325](https://github.com/expo/expo/pull/32325) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.19.0-preview.1 — 2024-10-22
+
+### 💡 Others
+
+- Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
+
+## 0.19.0-preview.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Emit assets as strings instead of numeric lookups when bundling for web and server environments. ([#31955](https://github.com/expo/expo/pull/31955) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Add experimental support for React Server Actions in Expo Router. ([#31959](https://github.com/expo/expo/pull/31959) by [@EvanBacon](https://github.com/EvanBacon))
+- add support for magic import comments to opt dynamic imports out of the dependency graph. ([#31868](https://github.com/expo/expo/pull/31868) by [@EvanBacon](https://github.com/EvanBacon))
+- add support for css imports from other css files ([#31574](https://github.com/expo/expo/pull/31574) by [@EvanBacon](https://github.com/EvanBacon))
 - Add virtual entry generation for DOM components on web. ([#31259](https://github.com/expo/expo/pull/31259) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass `isDOM` to the Babel caller for changing behavior during DOM component bundling. ([#31182](https://github.com/expo/expo/pull/31182) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for CSS in server components. ([#31073](https://github.com/expo/expo/pull/31073) by [@EvanBacon](https://github.com/EvanBacon))
@@ -24,6 +52,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix cache sharing across Expo Go and dev client. ([#31566](https://github.com/expo/expo/pull/31566) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix bundle split HBC paths for server manifest. ([#31491](https://github.com/expo/expo/pull/31491) by [@EvanBacon](https://github.com/EvanBacon))
 - Support global CSS in tree shaking. ([#31304](https://github.com/expo/expo/pull/31304) by [@EvanBacon](https://github.com/EvanBacon))
 - Update source map URL when config mutates modules. ([#30980](https://github.com/expo/expo/pull/30980) by [@EvanBacon](https://github.com/EvanBacon))
 - Terminate module source maps with a null mapping [upstream](https://github.com/facebook/metro/commit/96c6b893eb77b5929b6050d7189905232ddf6d6d). ([#30701](https://github.com/expo/expo/pull/30701) by [@EvanBacon](https://github.com/EvanBacon))
@@ -37,14 +67,20 @@
 - Invalidate Metro cache for monorepos with identical Expo projects. ([#29733](https://github.com/expo/expo/pull/29733) by [@byCedric](https://github.com/byCedric))
 - Fix `TypeError: (0 , sourceMapString_1.default) is not a function` bug due to an incompatibiliy with `metro@0.80.10`'s `sourceMapString` module. ([#30905](https://github.com/expo/expo/pull/30905) by [@kitten](https://github.com/kitten))
 - Detect workspace root for monorepos using pnpm. ([#31124](https://github.com/expo/expo/pull/31124) by [@byCedric](https://github.com/byCedric))
+- Automatically configure `watchFolders` for monorepos using pnpm. ([#31973](https://github.com/expo/expo/pull/31973) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
+- Block all `node_modules` stacks in LogBox ([#31485](https://github.com/expo/expo/pull/31485) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix tree shaking error. ([#30585](https://github.com/expo/expo/pull/30585) by [@EvanBacon](https://github.com/EvanBacon))
 - Fork collectDependencies to support customizations for tree shaking and RSC. ([#30140](https://github.com/expo/expo/pull/30140) by [@EvanBacon](https://github.com/EvanBacon))
 - Rework mini-metro tests to support full transformation. ([#29980](https://github.com/expo/expo/pull/29980) by [@EvanBacon](https://github.com/EvanBacon))
 - Downgrade routerRoot warning to a debug log. ([#29812](https://github.com/expo/expo/pull/29812) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade `glob@7` to `glob@10`. ([#29929](https://github.com/expo/expo/pull/29929) by [@byCedric](https://github.com/byCedric))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.18.4 — 2024-05-16
 

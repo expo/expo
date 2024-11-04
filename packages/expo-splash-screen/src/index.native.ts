@@ -1,9 +1,8 @@
 import { requireOptionalNativeModule } from 'expo-modules-core';
 
-const SplashModule = requireOptionalNativeModule('ExpoSplashScreen') as {
-  preventAutoHideAsync: () => Promise<boolean>;
-  hideAsync: () => Promise<boolean>;
-} | null;
+import { SplashScreenNativeModule, SplashScreenOptions } from './SplashScreen.types';
+
+const SplashModule = requireOptionalNativeModule<SplashScreenNativeModule>('ExpoSplashScreen');
 
 let _userControlledAutoHideEnabled = false;
 let _preventAutoHideAsyncInvoked = false;
@@ -32,7 +31,7 @@ export async function _internal_preventAutoHideAsync(): Promise<boolean> {
   if (ErrorUtils?.getGlobalHandler) {
     const originalHandler = ErrorUtils.getGlobalHandler();
     ErrorUtils.setGlobalHandler((error, isFatal) => {
-      hideAsync();
+      hide();
       originalHandler(error, isFatal);
     });
   }
@@ -53,25 +52,27 @@ export const _internal_maybeHideAsync = () => {
   if (_userControlledAutoHideEnabled) {
     return;
   }
-  hideAsync();
+  hide();
 };
 
-export function hideAsync() {
+export function setOptions(options: SplashScreenOptions) {
   if (!SplashModule) {
-    return Promise.resolve(false);
+    return;
   }
 
-  return SplashModule.hideAsync().catch((error: any) => {
-    // Hide this very unfortunate error.
-    if (
-      // Only throw the error is something unexpected happened.
-      _preventAutoHideAsyncInvoked &&
-      error.message.includes('No native splash screen registered for ')
-    ) {
-      return;
-    }
-    throw error;
-  });
+  SplashModule.setOptions(options);
+}
+
+export function hide() {
+  if (!SplashModule) {
+    return;
+  }
+
+  SplashModule.hide();
+}
+
+export async function hideAsync(): Promise<void> {
+  hide();
 }
 
 export const preventAutoHideAsync = () => {

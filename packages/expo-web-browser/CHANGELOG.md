@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30864](https://github.com/expo/expo/pull/30864) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -15,6 +25,8 @@
 - Add missing `react-native` peer dependencies for isolated modules. ([#30490](https://github.com/expo/expo/pull/30490) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+- Removed old `Platform.Version` checks. ([#31557](https://github.com/expo/expo/pull/31557) by [@reichhartd](https://github.com/reichhartd))
 
 ## 13.0.3 — 2024-04-29
 

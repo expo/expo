@@ -96,7 +96,7 @@ Next, in an environment where you want to create releases and upload sourcemaps 
 
 <ConfigReactNative>
 
-If you do not use [Continuous Native Generation (CNG)](https://docs.expo.dev/workflow/continuous-native-generation/), then you should use the [`@sentry/wizard`](https://docs.sentry.io/platforms/react-native/#install).
+If you do not use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), then you should use the [`@sentry/wizard`](https://docs.sentry.io/platforms/react-native/#install).
 
 </ConfigReactNative>
 
@@ -196,7 +196,7 @@ function RootLayout() {
   const ref = useNavigationContainerRef();
 
   useEffect(() => {
-    if (ref) {
+    if (ref?.current) {
       routingInstrumentation.registerNavigationContainer(ref);
     }
   }, [ref]);

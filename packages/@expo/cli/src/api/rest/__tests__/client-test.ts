@@ -4,10 +4,15 @@ import { URLSearchParams } from 'url';
 import { CommandError } from '../../../utils/errors';
 import { fetch } from '../../../utils/fetch';
 import { getExpoApiBaseUrl } from '../../endpoint';
-import UserSettings from '../../user/UserSettings';
+import { disableNetwork } from '../../settings';
+import { getAccessToken, getSession } from '../../user/UserSettings';
 import { ApiV2Error, fetchAsync } from '../client';
 
-jest.mock('../../user/UserSettings');
+jest.mock('../../settings');
+jest.mock('../../user/UserSettings', () => ({
+  getAccessToken: jest.fn(),
+  getSession: jest.fn(),
+}));
 jest.mock('../../../utils/fetch', () => ({
   fetch: jest.fn(jest.requireActual('../../../utils/fetch').fetch),
 }));
@@ -126,7 +131,7 @@ it('makes a request using an absolute URL', async () => {
 });
 
 it('makes an authenticated request with access token', async () => {
-  jest.mocked(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
+  jest.mocked(getAccessToken).mockClear().mockReturnValue('my-access-token');
 
   nock(getExpoApiBaseUrl())
     .matchHeader('authorization', 'Bearer my-access-token')
@@ -137,13 +142,13 @@ it('makes an authenticated request with access token', async () => {
 });
 
 it('makes an authenticated request with session secret', async () => {
-  jest.mocked(UserSettings.getSession).mockClear().mockReturnValue({
+  jest.mocked(getSession).mockClear().mockReturnValue({
     sessionSecret: 'my-secret-token',
     userId: '',
     username: '',
     currentConnection: 'Username-Password-Authentication',
   });
-  jest.mocked(UserSettings.getAccessToken).mockReturnValue(null);
+  jest.mocked(getAccessToken).mockReturnValue(null);
 
   nock(getExpoApiBaseUrl())
     .matchHeader('expo-session', 'my-secret-token')
@@ -154,8 +159,8 @@ it('makes an authenticated request with session secret', async () => {
 });
 
 it('only uses access token when both authentication methods are available', async () => {
-  jest.mocked(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
-  jest.mocked(UserSettings.getSession).mockClear().mockReturnValue({
+  jest.mocked(getAccessToken).mockClear().mockReturnValue('my-access-token');
+  jest.mocked(getSession).mockClear().mockReturnValue({
     sessionSecret: 'my-secret-token',
     userId: '',
     username: '',
@@ -169,4 +174,34 @@ it('only uses access token when both authentication methods are available', asyn
     .reply(200, 'Hello World');
 
   expect(await fetchAsync('get-me', { method: 'GET' })).toMatchObject({ status: 200 });
+});
+
+it('switches to offline mode when node-fetch network errors are thrown', async () => {
+  const nodeFetchNetworkError = new Error('getaddrinfo ENOTFOUND api.expo.dev');
+
+  Object.defineProperty(nodeFetchNetworkError, 'code', { value: 'ENOTFOUND' });
+
+  jest.mocked(fetch).mockRejectedValueOnce(nodeFetchNetworkError);
+
+  await expect(fetchAsync('https://api.expo.dev')).rejects.toThrow(
+    'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests'
+  );
+
+  expect(disableNetwork).toHaveBeenCalled();
+});
+
+it('switches to offline mode when undici network errors are thrown', async () => {
+  const undiciNetworkError = new Error('fetch failed');
+  const undiciNetworkCause = new Error('getaddrinfo ENOTFOUND api.expo.dev');
+
+  Object.defineProperty(undiciNetworkError, 'cause', { value: undiciNetworkCause });
+  Object.defineProperty(undiciNetworkCause, 'code', { value: 'ENOTFOUND' });
+
+  jest.mocked(fetch).mockRejectedValueOnce(undiciNetworkError);
+
+  await expect(fetchAsync('https://api.expo.dev')).rejects.toThrow(
+    'Network connection is unreliable. Try again with the environment variable `EXPO_OFFLINE=1` to skip network requests'
+  );
+
+  expect(disableNetwork).toHaveBeenCalled();
 });

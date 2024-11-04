@@ -186,6 +186,22 @@ describe(resolveAppProjectConfigAsync, () => {
     `);
   });
 
+  it('should return empty project config for android if no gradle files or manifest files', async () => {
+    const mockFindGradleAndManifestAsync = findGradleAndManifestAsync as jest.MockedFunction<
+      typeof findGradleAndManifestAsync
+    >;
+    mockFindGradleAndManifestAsync.mockResolvedValueOnce({
+      gradle: null,
+      manifest: null,
+    });
+    const mockParsePackageNameAsync = parsePackageNameAsync as jest.MockedFunction<
+      typeof parsePackageNameAsync
+    >;
+    mockParsePackageNameAsync.mockResolvedValueOnce('com.test');
+    const config = await resolveAppProjectConfigAsync('/app', 'android');
+    expect(config).toEqual({});
+  });
+
   it('should return app project config for ios', async () => {
     const config = await resolveAppProjectConfigAsync('/app', 'ios');
     expect(config).toMatchInlineSnapshot(`

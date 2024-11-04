@@ -1,11 +1,20 @@
-import { Image, Text, View } from '../lib/react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Link } from 'expo-router';
+import { Image, Text, ScrollView } from 'react-native';
 
 import { Counter } from '../components/counter';
+import { Pokemon } from '../components/pokemon';
 
 export default function IndexRoute({ path, query }) {
   return (
-    <View style={{ flex: 1, padding: 12 }} testID="child-wrapper">
+    <ScrollView
+      style={{ flex: 1, padding: 12 }}
+      testID="child-wrapper"
+      contentContainerStyle={{
+        gap: 8,
+      }}>
       <Text testID="index-text">Hello World</Text>
+      <Link href="/second">Go to second</Link>
       <Text testID="index-path">{path}</Text>
       <Text testID="index-query">{query}</Text>
       <Text>Platform: {process.env.EXPO_OS}</Text>
@@ -18,7 +27,14 @@ export default function IndexRoute({ path, query }) {
         style={{ width: 100, height: 100 }}
       />
 
+      <Ionicons name="airplane" />
       <Counter />
-    </View>
+
+      <Pokemon id={45} />
+    </ScrollView>
   );
 }
+
+export const unstable_settings = {
+  render: 'static',
+};

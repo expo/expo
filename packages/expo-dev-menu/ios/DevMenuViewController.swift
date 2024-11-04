@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import UIKit
+import React
 
 class DevMenuViewController: UIViewController {
   static let JavaScriptDidLoadNotification = Notification.Name("RCTJavaScriptDidLoadNotification")
@@ -52,7 +53,6 @@ class DevMenuViewController: UIViewController {
     }
   }
 
-  @available(iOS 12.0, *)
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {
       return manager.userInterfaceStyle

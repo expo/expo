@@ -9,7 +9,20 @@ pluginManagement {
   }
 }
 plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+  def command = [
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+    'react-native-config',
+    '--json',
+    '--platform',
+    'android'
+  ].toList()
+  ex.autolinkLibrariesFromCommand(command)
+}
 
 include ':app'
 
@@ -35,10 +48,6 @@ project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new Fi
 include ':expo-modules-test-core'
 project(':expo-modules-test-core').projectDir = new File(rootDir, '../../../packages/expo-modules-test-core/android')
 
-// Include Expo modules that are not unimodules
-include(":expo-random")
-project(":expo-random").projectDir = new File("../../../packages/expo-random/android")
-
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
 ].forEach({ abiVariant ->
@@ -60,7 +69,6 @@ useExpoModules([
         'expo-dev-client',
         'expo-maps',
         'expo-network-addons',
+        'expo-splash-screen'
     ]
 ])
-
-useVendoredModulesForSettingsGradle('unversioned')

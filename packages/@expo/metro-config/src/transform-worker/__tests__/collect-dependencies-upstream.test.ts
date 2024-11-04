@@ -803,6 +803,35 @@ it('uses dependencyMapName parameter as-is if provided', () => {
   );
 });
 
+it('respects magic comments when collecting', () => {
+  const ast = astFromCode(`
+    import(/* @metro-ignore */ "some/async/module").then(foo => {});
+  `);
+  const { dependencies } = collectDependencies(ast, opts);
+  expect(dependencies).toEqual([
+    // Should be empty
+  ]);
+  expect(codeFromAst(ast)).toEqual(
+    comparableCode(`
+      import(/* @metro-ignore */"some/async/module").then(foo => {});
+    `)
+  );
+});
+
+it('respects magic comments after the import tokens', () => {
+  expect(
+    codeFromAst(
+      astFromCode(`
+    import("some/async/module" /* @metro-ignore */).then(foo => {});
+  `)
+    )
+  ).toEqual(
+    comparableCode(`
+      import("some/async/module" /* @metro-ignore */).then(foo => {});
+    `)
+  );
+});
+
 it('collects asynchronous dependencies', () => {
   const ast = astFromCode(`
     import("some/async/module").then(foo => {});

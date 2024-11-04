@@ -1,3 +1,4 @@
+'use client';
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -30,12 +31,14 @@ exports.useInitializeExpoRouter = exports.useStoreRouteInfo = exports.useStoreRo
 const native_1 = require("@react-navigation/native");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const SplashScreen = __importStar(require("expo-splash-screen"));
+const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const routing_1 = require("./routing");
 const sort_routes_1 = require("./sort-routes");
 const LocationProvider_1 = require("../LocationProvider");
 const getPathFromState_1 = require("../fork/getPathFromState");
+// import { ResultState } from '../fork/getStateFromPath';
 const getLinkingConfig_1 = require("../getLinkingConfig");
 const getRoutes_1 = require("../getRoutes");
 const useScreens_1 = require("../useScreens");
@@ -69,6 +72,7 @@ class RouterStore {
     canDismiss = routing_1.canDismiss.bind(this);
     setParams = routing_1.setParams.bind(this);
     navigate = routing_1.navigate.bind(this);
+    reload = routing_1.reload.bind(this);
     initialize(context, navigationRef, linkingConfigOptions = {}) {
         // Clean up any previous state
         this.initialState = undefined;
@@ -162,7 +166,7 @@ class RouterStore {
         exports.store.rootState = state;
         exports.store.nextState = nextState;
         const nextRouteInfo = exports.store.getRouteInfo(state);
-        if (!(0, getPathFromState_1.deepEqual)(this.routeInfo, nextRouteInfo)) {
+        if (!(0, fast_deep_equal_1.default)(this.routeInfo, nextRouteInfo)) {
             exports.store.routeInfo = nextRouteInfo;
         }
     }
@@ -173,6 +177,7 @@ class RouterStore {
                 ...this.linking?.config,
                 preserveDynamicRoutes: asPath,
                 preserveGroups: asPath,
+                shouldEncodeURISegment: false,
             });
         }, state);
     }

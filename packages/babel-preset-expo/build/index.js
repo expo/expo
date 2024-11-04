@@ -8,6 +8,7 @@ const expo_router_plugin_1 = require("./expo-router-plugin");
 const inline_env_vars_1 = require("./inline-env-vars");
 const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
+const server_actions_plugin_1 = require("./server-actions-plugin");
 const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
@@ -39,6 +40,8 @@ function babelPresetExpo(api, options = {}) {
     if (!platform && isWebpack) {
         platform = 'web';
     }
+    // Use the simpler babel preset for web and server environments (both web and native SSR).
+    const isModernEngine = platform === 'web' || isServerEnv;
     const platformOptions = getOptions(options, platform);
     if (platformOptions.useTransformReactJSXExperimental != null) {
         throw new Error(`babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`);
@@ -75,9 +78,8 @@ function babelPresetExpo(api, options = {}) {
         extraPlugins.push([
             require('babel-plugin-react-compiler'),
             {
-                runtimeModule: 'babel-preset-expo/react-compiler-runtime.js',
-                // enableUseMemoCachePolyfill: true,
-                // compilationMode: 'infer',
+                // TODO: Update when we bump React to 19.
+                target: '18',
                 environment: {
                     enableResetCacheOnSourceFileChanges: !isProduction,
                     ...(platformOptions['react-compiler']?.environment ?? {}),
@@ -97,13 +99,11 @@ function babelPresetExpo(api, options = {}) {
             { loose: true, useBuiltIns: true },
         ]);
     }
-    else {
-        if (platform !== 'web' && !isServerEnv) {
-            // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-            // JSX is used in a function body. This is technically not required in production, but we
-            // should retain the same behavior since it's hard to debug the differences.
-            extraPlugins.push(require('@babel/plugin-transform-parameters'));
-        }
+    else if (!isModernEngine) {
+        // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
+        // JSX is used in a function body. This is technically not required in production, but we
+        // should retain the same behavior since it's hard to debug the differences.
+        extraPlugins.push(require('@babel/plugin-transform-parameters'));
     }
     const inlines = {
         'process.env.EXPO_OS': platform,
@@ -148,18 +148,19 @@ function babelPresetExpo(api, options = {}) {
     }
     if (platform === 'web') {
         extraPlugins.push(require('babel-plugin-react-native-web'));
-        // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
-        if (bundler !== 'webpack') {
-            extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
-        }
+    }
+    // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
+    if (bundler !== 'webpack') {
+        extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
     }
     if ((0, common_1.hasModule)('expo-router')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
     }
+    extraPlugins.push(client_module_proxy_plugin_1.reactClientReferencesPlugin);
     // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
     // users who are bundling using the client-only system.
     if (isReactServer) {
-        extraPlugins.push(client_module_proxy_plugin_1.reactClientReferencesPlugin);
+        extraPlugins.push(server_actions_plugin_1.reactServerActionsPlugin);
         extraPlugins.push(restricted_react_api_plugin_1.environmentRestrictedReactAPIsPlugin);
     }
     else {
@@ -180,8 +181,6 @@ function babelPresetExpo(api, options = {}) {
     if (platformOptions.disableImportExportTransform) {
         extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
     }
-    // Use the simpler babel preset for web and server environments (both web and native SSR).
-    const isModernEngine = platform === 'web' || isServerEnv;
     return {
         presets: [
             [

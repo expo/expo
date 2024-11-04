@@ -6,7 +6,11 @@ import type {
   RNConfigDependencyAndroid,
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
-import { fileExistsAsync, globMatchFunctorAllAsync, globMatchFunctorFirstAsync } from './utils';
+import {
+  fileExistsAsync,
+  globMatchFunctorAllAsync,
+  globMatchFunctorFirstAsync,
+} from '../fileUtils';
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
@@ -23,10 +27,11 @@ export async function resolveDependencyConfigImplAndroidAsync(
   }
 
   const packageName =
-    reactNativeConfig?.packageName ||
-    (await parsePackageNameAsync(path.join(androidDir, manifest), path.join(androidDir, gradle)));
+    reactNativeConfig?.packageName || (await parsePackageNameAsync(androidDir, manifest, gradle));
+  if (!packageName) {
+    return null;
+  }
   const nativePackageClassName = await parseNativePackageClassNameAsync(packageRoot, androidDir);
-
   if (!nativePackageClassName) {
     return null;
   }
@@ -83,18 +88,19 @@ export async function resolveDependencyConfigImplAndroidAsync(
  * Parse the `RNConfigDependencyAndroid.packageName`
  */
 export async function parsePackageNameAsync(
+  androidDir: string,
   manifestPath: string | null,
   gradlePath: string | null
-) {
+): Promise<string | null> {
   if (gradlePath) {
-    const gradleContents = await fs.readFile(gradlePath, 'utf8');
+    const gradleContents = await fs.readFile(path.join(androidDir, gradlePath), 'utf8');
     const match = gradleContents.match(/namespace\s*[=]*\s*["'](.+?)["']/);
     if (match) {
       return match[1];
     }
   }
   if (manifestPath) {
-    const manifestContents = await fs.readFile(manifestPath, 'utf8');
+    const manifestContents = await fs.readFile(path.join(androidDir, manifestPath), 'utf8');
     const match = manifestContents.match(/package="(.+?)"/);
     if (match) {
       return match[1];
@@ -232,7 +238,7 @@ export async function findGradleAndManifestAsync({
 }: {
   androidDir: string;
   isLibrary: boolean;
-}): Promise<{ gradle: string; manifest: string }> {
+}): Promise<{ gradle: string | null; manifest: string | null }> {
   const globExcludes = [
     'node_modules/**',
     '**/build/**',
@@ -251,5 +257,5 @@ export async function findGradleAndManifestAsync({
   ]);
   const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
   const gradle = gradles[0];
-  return { gradle, manifest };
+  return { gradle: gradle || null, manifest: manifest || null };
 }

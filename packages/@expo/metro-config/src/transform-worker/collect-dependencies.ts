@@ -15,6 +15,10 @@ import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 
+const debug = require('debug')('expo:metro:collect-dependencies') as typeof console.log;
+
+const MAGIC_IMPORT_COMMENT = '@metro-ignore';
+
 // asserts non-null
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
@@ -56,6 +60,11 @@ type MutableDependencyData = {
   locs: readonly t.SourceLocation[];
   contextParams?: RequireContextParams;
   exportNames: string[];
+  css?: {
+    url: string;
+    supports: string | null;
+    media: string | null;
+  };
 };
 
 export type DependencyData = Readonly<MutableDependencyData>;
@@ -452,11 +461,36 @@ function collectImports(path: NodePath<any>, state: State): void {
   }
 }
 
+/**
+ * @returns `true` if the import contains the magic comment for opting-out of bundling.
+ */
+function hasMagicImportComment(path: NodePath<CallExpression>): boolean {
+  // Get first argument of import()
+  const [firstArg] = path.node.arguments;
+
+  // Check comments before the argument
+  return !!(
+    firstArg?.leadingComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)) ||
+    path.node.leadingComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT)) ||
+    // Get the inner comments between import and its argument
+    path.node.innerComments?.some((comment) => comment.value.includes(MAGIC_IMPORT_COMMENT))
+  );
+}
+
 function processImportCall(
   path: NodePath<CallExpression>,
   state: State,
   options: ImportDependencyOptions
 ): void {
+  // Check both leading and inner comments
+  if (hasMagicImportComment(path)) {
+    const line = path.node.loc && path.node.loc.start && path.node.loc.start.line;
+    debug(
+      `Magic comment at line ${line || '<unknown>'}: Ignoring import: ${generate(path.node).code}`
+    );
+    return;
+  }
+
   const name = getModuleNameFromCallArgs(path);
 
   if (name == null) {

@@ -1,7 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/RCTComponentData+Privates.h>
-#import <React/RCTComponentData.h>
+#import <React/React-Core-umbrella.h>
 
 @implementation RCTComponentDataSwiftAdapter
 

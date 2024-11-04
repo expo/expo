@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.6.1 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.0 — 2024-10-22
+
+### 🎉 New features
+
+- Properly support dark/tinted icon variant generation on Apple platforms. ([#30247](https://github.com/expo/expo/pull/30247) by [@fobos531](https://github.com/fobos531))
+
+### 💡 Others
+
 - Drop `node-fetch` in favor of Node built-in `fetch` for Node 22 support. ([#30554](https://github.com/expo/expo/pull/30554) by [@byCedric](https://github.com/byCedric))
 - Drop `tempy` in favor of equivalent code to avoid transitive, deprecated `rimraf` dependency. ([#30832](https://github.com/expo/expo/pull/30832) by [@kitten](https://github.com/kitten))
 

@@ -1,13 +1,12 @@
+import { gql } from '@urql/core';
 import { promises as fs } from 'fs';
-import gql from 'graphql-tag';
 
-import UserSettings from './UserSettings';
+import { getAccessToken, getSession, setSessionAsync } from './UserSettings';
 import { getSessionUsingBrowserAuthFlowAsync } from './expoSsoLauncher';
 import { CurrentUserQuery } from '../../graphql/generated';
 import * as Log from '../../log';
 import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
 import { env } from '../../utils/env';
-import { getTelemetry } from '../../utils/telemetry';
 import { getExpoWebsiteBaseUrl } from '../endpoint';
 import { graphqlClient } from '../graphql/client';
 import { UserQuery } from '../graphql/queries/UserQuery';
@@ -38,11 +37,10 @@ export function getActorDisplayName(user?: Actor): string {
 }
 
 export async function getUserAsync(): Promise<Actor | undefined> {
-  const hasCredentials = UserSettings.getAccessToken() || UserSettings.getSession()?.sessionSecret;
+  const hasCredentials = getAccessToken() || getSession()?.sessionSecret;
   if (!env.EXPO_OFFLINE && !currentUser && hasCredentials) {
     const user = await UserQuery.currentUserAsync();
     currentUser = user ?? undefined;
-    getTelemetry()?.identify(currentUser);
   }
   return currentUser;
 }
@@ -61,7 +59,7 @@ export async function loginAsync(credentials: {
 
   const userData = await fetchUserAsync({ sessionSecret });
 
-  await UserSettings.setSessionAsync({
+  await setSessionAsync({
     sessionSecret,
     userId: userData.id,
     username: userData.username,
@@ -75,7 +73,7 @@ export async function ssoLoginAsync(): Promise<void> {
   });
   const userData = await fetchUserAsync({ sessionSecret });
 
-  await UserSettings.setSessionAsync({
+  await setSessionAsync({
     sessionSecret,
     userId: userData.id,
     username: userData.username,
@@ -87,7 +85,7 @@ export async function logoutAsync(): Promise<void> {
   currentUser = undefined;
   await Promise.all([
     fs.rm(getDevelopmentCodeSigningDirectory(), { recursive: true, force: true }),
-    UserSettings.setSessionAsync(undefined),
+    setSessionAsync(undefined),
   ]);
   Log.log('Logged out');
 }

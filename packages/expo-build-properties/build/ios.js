@@ -6,7 +6,12 @@ const { createBuildPodfilePropsConfigPlugin } = config_plugins_1.IOSConfig.Build
 exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     {
         propName: 'newArchEnabled',
-        propValueGetter: (config) => config.ios?.newArchEnabled?.toString(),
+        propValueGetter: (config) => {
+            if (config.ios?.newArchEnabled !== undefined) {
+                config_plugins_1.WarningAggregator.addWarningIOS('withIosBuildProperties', 'ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead.', 'https://docs.expo.dev/versions/latest/config/app/#newarchenabled');
+            }
+            return config.ios?.newArchEnabled?.toString();
+        },
     },
     {
         propName: 'ios.useFrameworks',
@@ -53,8 +58,7 @@ function updateDeploymentTargetXcodeProject(project, deploymentTarget) {
         .filter(([_, target]) => Target.isTargetOfType(target, Target.TargetType.APPLICATION))
         .map(([_, target]) => target.buildConfigurationList);
     for (const buildConfigListId of targetBuildConfigListIds) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for (const [_, configurations] of config_plugins_1.IOSConfig.XcodeUtils.getBuildConfigurationsForListId(project, buildConfigListId)) {
+        for (const [, configurations] of config_plugins_1.IOSConfig.XcodeUtils.getBuildConfigurationsForListId(project, buildConfigListId)) {
             const { buildSettings } = configurations;
             if (buildSettings?.IPHONEOS_DEPLOYMENT_TARGET) {
                 buildSettings.IPHONEOS_DEPLOYMENT_TARGET = deploymentTarget;

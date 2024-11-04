@@ -8,23 +8,19 @@ const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const require_from_string_1 = __importDefault(require("require-from-string"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
-const utils_1 = require("./utils");
+const fileUtils_1 = require("../fileUtils");
 let tsMain = undefined;
+const mockedNativeModules = path_1.default.join(__dirname, '..', '..', 'node_modules_mock');
 /**
  * Load the `react-native.config.js` or `react-native.config.ts` from the package.
  */
 async function loadConfigAsync(packageRoot) {
     const configJsPath = path_1.default.join(packageRoot, 'react-native.config.js');
-    if (await (0, utils_1.fileExistsAsync)(configJsPath)) {
-        try {
-            return require(configJsPath);
-        }
-        catch {
-            return null;
-        }
+    if (await (0, fileUtils_1.fileExistsAsync)(configJsPath)) {
+        return requireConfig(await promises_1.default.readFile(configJsPath, 'utf8'));
     }
     const configTsPath = path_1.default.join(packageRoot, 'react-native.config.ts');
-    if (await (0, utils_1.fileExistsAsync)(configTsPath)) {
+    if (await (0, fileUtils_1.fileExistsAsync)(configTsPath)) {
         if (tsMain === undefined) {
             const tsPath = resolve_from_1.default.silent(packageRoot, 'typescript');
             if (tsPath) {
@@ -43,14 +39,27 @@ async function loadConfigAsync(packageRoot) {
             },
         });
         const outputText = transpiledContents?.outputText;
-        let config;
-        try {
-            config = outputText ? (0, require_from_string_1.default)(outputText) : null;
+        if (outputText) {
+            return requireConfig(outputText);
         }
-        catch { }
-        return config?.default ?? config ?? null;
     }
     return null;
 }
 exports.loadConfigAsync = loadConfigAsync;
+/**
+ * Temporarily, we need to mock the community CLI, because
+ * some packages are checking the version of the CLI in the `react-native.config.js` file.
+ * We can remove this once we remove this check from packages.
+ */
+function requireConfig(configContents) {
+    try {
+        const config = (0, require_from_string_1.default)(configContents, {
+            prependPaths: [mockedNativeModules],
+        });
+        return config.default ?? config ?? null;
+    }
+    catch {
+        return null;
+    }
+}
 //# sourceMappingURL=config.js.map

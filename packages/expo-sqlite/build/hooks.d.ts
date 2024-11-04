@@ -18,6 +18,11 @@ export interface SQLiteProviderProps {
      */
     databaseName: string;
     /**
+     * The directory where the database file is located.
+     * @default defaultDatabaseDirectory
+     */
+    directory?: string;
+    /**
      * Open options.
      */
     options?: SQLiteOpenOptions;
@@ -82,7 +87,7 @@ export declare function SQLiteProvider({ children, onError, useSuspense, ...prop
  *
  * export function Main() {
  *   const db = useSQLiteContext();
- *   console.log('sqlite version', db.getSync('SELECT sqlite_version()'));
+ *   console.log('sqlite version', db.getFirstSync('SELECT sqlite_version()'));
  *   return <View />
  * }
  * ```
@@ -94,5 +99,5 @@ export declare function useSQLiteContext(): SQLiteDatabase;
  * Exposed only for testing purposes.
  * @hidden
  */
-export declare function importDatabaseFromAssetAsync(databaseName: string, assetSource: SQLiteProviderAssetSource): Promise<void>;
+export declare function importDatabaseFromAssetAsync(databaseName: string, assetSource: SQLiteProviderAssetSource, directory?: string): Promise<void>;
 //# sourceMappingURL=hooks.d.ts.map

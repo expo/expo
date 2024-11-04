@@ -160,7 +160,8 @@ By default on iOS, the modal has a dark background which hides the status bar. T
 
 {/* prettier-ignore */}
 ```tsx app/modal.tsx|collapseHeight=250
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Platform } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
 export default function Modal() {
   return (
@@ -181,6 +182,105 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+## Web modals implementation
+
+<ContentSpotlight file="expo-router/web-modal.mp4" />
+
+The video above demonstrates a modal window that appears over the main content of the web page. The background dims to draw focus to the modal, which contains information for the user. This is typical behavior for web modals, where users can interact with the modal or close it to return to the main page.
+
+You can achieve the above web modal behavior by using the [`transparentModal`](https://reactnavigation.org/docs/stack-navigator/#presentation) presentation mode, styling the overlay and modal content, and utilizing [`react-native-reanimated`](/versions/latest/sdk/reanimated/#installation) to animate the modal's presentation.
+
+Modify your project's root layout (**app/\_layout.tsx**) to add an `options` object to the modal route:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+/* @info <CODE>unstable_settings</CODE> can be set in any stack's <CODE>_layout.tsx</CODE> file. It is used to define the initial route name for the stack, which ensures that users have a consistent starting point, especially when deep linking. */
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
+/* @end */
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          /* @info Set the <CODE>presentation</CODE> mode to <CODE>transparentModal</CODE> for the modal route.*/
+          presentation: 'transparentModal',
+          /* @end */
+          /* @info (Optional) Set the <CODE>animation</CODE> to <CODE>fade</CODE>.*/
+          animation: 'fade',
+          /* @end */
+          /* @info Prevents showing the header. Useful for the behavior of web modals.*/
+          headerShown: false,
+          /* @end */
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+> **info** `unstable_settings` currently works only with `Stack` navigators.
+
+The above example sets the `index` screen as the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) using [`unstable_settings`](/router/advanced/router-settings). This ensures that the transparent modal is always rendered on top of the current screen, even when users navigate to the modal screen via a direct link.
+
+Style the overlay and modal content in **modal.tsx** as shown below:
+
+{/* prettier-ignore */}
+```tsx app/modal.tsx|collapseHeight=250
+import { Link } from 'expo-router';
+import { Pressable, StyleSheet, Text } from 'react-native';
+import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
+
+export default function Modal() {
+  return (
+    <Animated.View
+      /* @info Fade in animation when the modal is presented.*/
+      entering={FadeIn}
+      /* @end */
+      /* @info This style ensures the view takes the entire screen space, sets the overlay to black with 40% opacity, and centers the content.*/
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000040',
+      }}
+      /* @end */
+    >
+      {/* Dismiss modal when pressing outside */}
+      <Link href={'/'} asChild>
+        <Pressable style={StyleSheet.absoluteFill} />
+      </Link>
+      <Animated.View
+        /* @info Slide in animation when the modal is presented.*/
+        entering={SlideInDown}
+        /* @end */
+        /* @info This view contains the modal content.*/
+        style={{
+          width: '90%',
+          height: '80%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'white',
+        }}
+        /* @end */
+      >
+        <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>Modal Screen</Text>
+        <Link href="/">
+          <Text>← Go back</Text>
+        </Link>
+      </Animated.View>
+    </Animated.View>
+  );
+}
+```
+
+Feel free to customize the modal animations and styles to your liking.
 
 ## Additional information
 

@@ -1,5 +1,5 @@
 ---
-title: 'Tutorial: Introduction'
+title: 'Expo Tutorial: Introduction'
 sidebar_title: Introduction
 description: An introduction to a tutorial on how to build a universal app that runs on Android, iOS and the web using Expo.
 ---
@@ -8,15 +8,15 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { SnackInline } from '~/ui/components/Snippet';
 
-We're about to embark on a journey of building universal apps. In this tutorial, we'll create a universal app that runs on Android, iOS, and the web; all with a single codebase. Let's get started!
+We're about to embark on a journey of building universal apps. In this tutorial, we'll create an Expo app that runs on Android, iOS, and web; all with a single codebase. Let's get started!
 
 ## About this tutorial
 
 The objective of this tutorial is to get started with Expo and become familiar with the Expo SDK. It'll cover the following topics:
 
-- Create an Expo App
+- Create an app using the default template with TypeScript enabled
+- Implement a two-screen bottom tabs layout with Expo Router
 - Break down the app layout and implement it with flexbox
 - Use each platform's system UI to select an image from the media library
 - Create a sticker modal using the `<Modal>` and `<FlatList>` components from React Native
@@ -25,32 +25,30 @@ The objective of this tutorial is to get started with Expo and become familiar w
 - Handle platform differences between Android, iOS, and web
 - Finally, go through the process of configuring a status bar, a splash screen, and an icon to complete the app
 
-These topics will provide a good foundation for learning the fundamentals of building a mobile app. The tutorial is self-paced and can take two to three hours to complete.
+These topics provide a foundation to learn the fundamentals of building an Expo app. The tutorial is self-paced and can take up to two hours to complete.
 
-To keep it beginner friendly, we divided the tutorial into eight chapters so that you can follow along or put it down and come back to it later. Each chapter also contains all the necessary code so that you can follow along by creating an app from scratch or using Snack examples to copy and paste the code if you get lost.
+To keep it beginner friendly, we divided the tutorial into nine chapters so that you can follow along or put it down and come back to it later. Each chapter contains the necessary code snippets to complete the steps, so you can follow along by creating an app from scratch or copy and paste it.
 
 Before we get started, take a look at what we'll build. It's an app named **StickerSmash** that runs on Android, iOS, and the web:
 
 <ContentSpotlight file="tutorial/final.mp4" />
 
-> **info** The complete source code for this tutorial is available on [Snack](https://snack.expo.dev/@expo-team-snacks/image-app).
+> **info** The complete source code for this tutorial is available on [GitHub](https://github.com/expo/examples/tree/master/stickersmash).
 
 ## How to use this tutorial
 
-We believe in [learning by doing](https://en.wikipedia.org/wiki/Learning-by-doing) so this tutorial emphasizes doing over explaining. You can follow along the journey of building the app by creating the app from scratch.
+We believe in [learning by doing](https://en.wikipedia.org/wiki/Learning-by-doing), so this tutorial emphasizes doing over explaining. You can follow along the journey of building an app by creating the app from scratch.
 
-Throughout the tutorial, any important code or code that has changed between examples will be <span className="code-annotation">highlighted in yellow</span>. You can hover over the highlights (on desktop) or tap them (on mobile) to see more context on the change. For example, the code highlighted in the snippet below explains what it does:
-
-<SnackInline label="Hello world">
+Throughout the tutorial, any important code or code that has changed between examples will be <span className="tutorial-code-annotation">highlighted in green</span>. You can hover over the highlights (on desktop) or tap them (on mobile) to learn more about the change. For example, the code highlighted in the snippet below explains what it does:
 
 {/* prettier-ignore */}
-```jsx collapseHeight=425
+```tsx Hello World|collapseHeight=300
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
+export default function Index() {
   return (
     <View style={styles.container}>
-      /* @info This used to say, "Open up App.js to start working on your app!". Now it's "Hello world!". */<Text>Hello world!</Text>/* @end */
+      /* @tutinfo This used to say: "Edit app/index.tsx to edit this screen.". Now it says: "Hello world!". */<Text>Hello world!</Text>/* @end */
     </View>
   );
 }
@@ -65,27 +63,13 @@ const styles = StyleSheet.create({
 });
 ```
 
-</SnackInline>
-
-> **Wait, what is this "Open in Snack" button?**
->
-> Snack is a web-based editor that works similarly to an Expo project. It's a great way to share code snippets and experiments without downloading any tools on your computer.
->
-> <br />
-> Go ahead and press the above button. You will see the above code running in a Snack. Try to switch
-> between Android, iOS or the web tabs. You can also open it on your device in the Expo Go app from
-> the **My device** tab.
->
-> <br />
-> Throughout this tutorial, use Snack to copy and paste the code into your project on your computer.
-> We will continue to provide Snacks for each module, but **we recommend you create the app on your
-> machine to go through the experience of building the app**.
-
 ## Next step
 
+We're ready to start building our app.
+
 <BoxLink
-  title="Create your first app with Expo"
+  title="Start"
   Icon={BookOpen02Icon}
-  description="If you're already familiar with Expo, feel free to jump ahead to specific chapters. However, if you'd like to start from scratch, continue to the next chapter in which we will learn how to create your first app with Expo."
+  description="Let's start by creating a new Expo app."
   href="/tutorial/create-your-first-app"
 />

@@ -15,6 +15,7 @@ import {
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/ui/components/ConfigSection';
+import { PlatformTags } from '~/ui/components/Tag';
 
 The [`Audio.Sound`](audio.mdx) objects and [`Video`](video-av.mdx) components share a unified imperative API for media playback.
 
@@ -167,7 +168,7 @@ playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 playbackObject.setIsLooping(true);
 ```
 
-## What is seek tolerance and why would I want to use it [iOS only]
+## What is seek tolerance and why would I want to use it&ensp;<PlatformTags platforms={['ios']} />
 
 When asked to seek an A/V item, native player in iOS sometimes may seek to a slightly different time. This technique, mentioned in [Apple documentation](https://developer.apple.com/documentation/avfoundation/avplayer/1387741-seek#discussion), is used to shorten the time of the `seekTo` call (the player may decide to play immediately from a different time than requested, instead of decoding the exact requested part and playing it with the decoding delay).
 

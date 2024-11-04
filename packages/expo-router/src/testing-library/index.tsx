@@ -7,7 +7,7 @@ import React from 'react';
 
 import { MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 import { ExpoRoot } from '../ExpoRoot';
-import getPathFromState from '../fork/getPathFromState';
+import { getPathFromState } from '../fork/getPathFromState';
 import { ExpoLinkingOptions } from '../getLinkingConfig';
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
@@ -19,7 +19,7 @@ afterAll(() => {
   store.cleanup();
 });
 
-type RenderRouterOptions = Parameters<typeof render>[1] & {
+export type RenderRouterOptions = Parameters<typeof render>[1] & {
   initialUrl?: any;
   linking?: Partial<ExpoLinkingOptions>;
 };

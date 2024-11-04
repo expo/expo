@@ -18,22 +18,27 @@ import java.io.IOException
 import java.util.UUID
 import kotlin.math.ln
 
+private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
+
 class AudioRecorder(
-  val context: Context,
+  private val context: Context,
   appContext: AppContext,
-  options: RecordingOptions
+  private val options: RecordingOptions
 ) : SharedObject(appContext),
   MediaRecorder.OnErrorListener,
   MediaRecorder.OnInfoListener {
   private var filePath: String? = null
   private var meteringEnabled = false
   private var durationAlreadyRecorded = 0L
+  private var isPrepared = false
+  private var shouldCreateRecorder = false
 
-  val recorder = createRecorder(options)
+  var recorder = createRecorder(options)
   val id = UUID.randomUUID().toString()
   var uri: String? = null
   var uptime = 0L
   var isRecording = false
+  var isPaused = false
 
   private fun getAudioRecorderLevels(): Int {
     if (!meteringEnabled) {
@@ -47,63 +52,108 @@ class AudioRecorder(
     }
   }
 
-  private fun createRecorder(options: RecordingOptions) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-    MediaRecorder(context)
-  } else {
-    MediaRecorder()
-  }.apply {
-    setAudioSource(MediaRecorder.AudioSource.DEFAULT)
-    if (options.outputFormat != null) {
-      setOutputFormat(options.outputFormat.toMediaOutputFormat())
+  fun prepareRecording(options: RecordingOptions?) {
+    if (options != null && !shouldCreateRecorder) {
+      // New options have been passed in so we rebuild the recorder
+      shouldCreateRecorder = this.options != options
+    }
+    if (shouldCreateRecorder) {
+      recorder = options?.let { createRecorder(it) } ?: createRecorder(this.options)
+    }
+    recorder.prepare()
+    isPrepared = true
+  }
+
+  fun record() {
+    if (isPaused) {
+      recorder.resume()
     } else {
-      setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
+      recorder.start()
     }
-    if (options.audioEncoder != null) {
-      setAudioEncoder(options.audioEncoder.toMediaEncoding())
+    isRecording = true
+    isPaused = false
+    uptime = SystemClock.uptimeMillis()
+  }
+
+  fun pauseRecording() {
+    recorder.pause()
+    durationAlreadyRecorded = getAudioRecorderDurationMillis()
+    isRecording = false
+    isPaused = true
+  }
+
+  fun stopRecording(): Bundle {
+    recorder.stop()
+    reset()
+    return getAudioRecorderStatus()
+  }
+
+  private fun reset() {
+    isRecording = false
+    isPaused = false
+    durationAlreadyRecorded = 0
+    shouldCreateRecorder = true
+    isPrepared = false
+  }
+
+  private fun createRecorder(options: RecordingOptions) =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      MediaRecorder(context)
     } else {
-      setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
-    }
-    options.sampleRate?.let {
-      setAudioSamplingRate(it.toInt())
-    }
-    options.numberOfChannels?.let {
-      setAudioChannels(it.toInt())
-    }
-    options.bitRate?.let {
-      setAudioEncodingBitRate(it.toInt())
-    }
-    options.maxFileSize?.let {
-      setMaxFileSize(it.toLong())
+      MediaRecorder()
+    }.apply {
+      setRecordingOptions(this, options)
     }
 
-    val filename = "recording-${UUID.randomUUID()}${options.extension}"
-    try {
-      val directory = File(context.cacheDir.toString() + File.separator + "Audio")
-      ensureDirExists(directory)
-      filePath = "$directory${File.separator}$filename"
-    } catch (e: IOException) {
-      // This only occurs in the case that the scoped path is not in this experience's scope,
-      // which is never true.
+  private fun setRecordingOptions(recorder: MediaRecorder, options: RecordingOptions) {
+    with(recorder) {
+      setAudioSource(MediaRecorder.AudioSource.DEFAULT)
+      if (options.outputFormat != null) {
+        setOutputFormat(options.outputFormat.toMediaOutputFormat())
+      } else {
+        setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
+      }
+      if (options.audioEncoder != null) {
+        setAudioEncoder(options.audioEncoder.toMediaEncoding())
+      } else {
+        setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
+      }
+      options.sampleRate?.let {
+        setAudioSamplingRate(it.toInt())
+      }
+      options.numberOfChannels?.let {
+        setAudioChannels(it.toInt())
+      }
+      options.bitRate?.let {
+        setAudioEncodingBitRate(it.toInt())
+      }
+      options.maxFileSize?.let {
+        setMaxFileSize(it.toLong())
+      }
+
+      val filename = "recording-${UUID.randomUUID()}${options.extension}"
+      try {
+        val directory = File(context.cacheDir.toString() + File.separator + "Audio")
+        ensureDirExists(directory)
+        filePath = "$directory${File.separator}$filename"
+      } catch (e: IOException) {
+        // This only occurs in the case that the scoped path is not in this experience's scope,
+        // which is never true.
+      }
+      setOnErrorListener(this@AudioRecorder)
+      setOnInfoListener(this@AudioRecorder)
+      setOutputFile(filePath)
+      uri = filePath
+      isPrepared = false
     }
-    setOnErrorListener(this@AudioRecorder)
-    setOnInfoListener(this@AudioRecorder)
-    setOutputFile(filePath)
-    uri = filePath
-    prepare()
   }
 
   override fun deallocate() {
     recorder.release()
   }
 
-  fun stopRecording(): Bundle {
-    recorder.stop()
-    isRecording = false
-    return getAudioRecorderStatus()
-  }
-
   fun getAudioRecorderStatus() = Bundle().apply {
-    putBoolean("canRecord", true)
+    putBoolean("canRecord", isPrepared)
     putBoolean("isRecording", isRecording)
     putLong("durationMillis", getAudioRecorderDurationMillis())
     if (meteringEnabled) {
@@ -127,7 +177,7 @@ class AudioRecorder(
       else -> "An unknown recording error occurred"
     }
     emit(
-      "onRecordingStatusUpdate",
+      RECORDING_STATUS_UPDATE,
       mapOf(
         "isFinished" to true,
         "hasError" to true,
@@ -195,14 +245,15 @@ class AudioRecorder(
     return getMapFromDeviceInfo(deviceInfo)
   }
 
-  fun getAvailableInputs(audioManager: AudioManager) = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->
-    val type = deviceInfo.type
-    if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
-      getMapFromDeviceInfo(deviceInfo)
-    } else {
-      null
+  fun getAvailableInputs(audioManager: AudioManager) =
+    audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->
+      val type = deviceInfo.type
+      if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+        getMapFromDeviceInfo(deviceInfo)
+      } else {
+        null
+      }
     }
-  }
 
   fun setInput(uid: String, audioManager: AudioManager) {
     val deviceInfo: AudioDeviceInfo? = getDeviceInfoFromUid(uid, audioManager)

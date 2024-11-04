@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import ExpoSMS from './ExpoSMS';

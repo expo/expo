@@ -98,7 +98,7 @@ class SharedObjectTest {
       .runtimeContextHolder
       .get()
       ?.sharedObjectRegistry
-      ?.toNativeObject(jsObject)
+      ?.toNativeObjectOrNull(jsObject)
 
     // Send an event from the native object to JS
     nativeObject?.emit("test event", 1, 2, 3)
@@ -156,7 +156,54 @@ class SharedObjectTest {
     Truth.assertThat(hasCorrectPrototype).isTrue()
   }
 
-  private class SharedObjectExampleClass : SharedObject()
+  @Test
+  fun should_call_start_observing_with_this() = withSingleModule({
+    Class<SharedObjectExampleClass> {
+      Constructor { SharedObjectExampleClass() }
+
+      Events("event")
+
+      Function("lastOnStartObserving") { self: SharedObjectExampleClass ->
+        self.lastOnStartObserving
+      }
+
+      Function("lastOnStopObserving") { self: SharedObjectExampleClass ->
+        self.lastOnStopObserving
+      }
+    }
+  }) {
+    val lastStartObserving = evaluateScript(
+      """
+      const sharedObject = new $moduleRef.SharedObjectExampleClass();
+      global.listener = sharedObject.addListener('event', () => {});
+      global.sharedObject = sharedObject;
+      sharedObject.lastOnStartObserving()
+      """.trimIndent()
+    ).getString()
+
+    val lastOnStopObserving = evaluateScript(
+      """
+      global.listener.remove();
+      global.sharedObject.lastOnStopObserving()
+      """.trimIndent()
+    ).getString()
+
+    Truth.assertThat(lastStartObserving).isEqualTo("event")
+    Truth.assertThat(lastOnStopObserving).isEqualTo("event")
+  }
+
+  private class SharedObjectExampleClass : SharedObject() {
+    var lastOnStartObserving = ""
+    var lastOnStopObserving = ""
+
+    override fun onStartListeningToEvent(eventName: String) {
+      lastOnStartObserving = eventName
+    }
+
+    override fun onStopListeningToEvent(eventName: String) {
+      lastOnStopObserving = eventName
+    }
+  }
 
   private fun withExampleSharedClass(
     block: SingleTestContext.() -> Unit

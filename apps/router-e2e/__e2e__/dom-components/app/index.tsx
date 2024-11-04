@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { useRef, useState } from 'react';
 import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Actions from '../components/02-actions';
@@ -6,15 +7,19 @@ import LocalAsset from '../components/03-local-asset';
 import Tailwind from '../components/04-tailwind';
 import PublicAsset from '../components/05-public-asset';
 import NestedComponents from '../components/06-nested';
+import ForwardRef, { type ForwardedImperativeRef } from '../components/07-forward-ref';
+import NativeModuleProxy from '../components/08-native-module-proxy';
+import RouterDemo from '../components/09-router';
 
 export default function Page() {
   const [index, setIndex] = useState(0);
-
+  const forwardedRef = useRef<ForwardedImperativeRef>(null);
+  const searchParams = useLocalSearchParams();
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, padding: 56 }}>
       <TestCase name="Actions">
         <Actions
-          dom={{ autoSize: true }}
+          dom={{ matchContents: true }}
           index={index}
           setIndexAsync={async (index) => setIndex(index)}
           showAlert={(time) => {
@@ -35,21 +40,60 @@ export default function Page() {
 
       <TestCase name="Local Asset">
         <Text style={styles.testcaseHint}>
-          Large height div with a centered local asset image. Please test scrolling for autoSize.
+          Large height div with a centered local asset image. Please test scrolling for
+          matchContents.
         </Text>
-        <LocalAsset dom={{ autoSize: true }} />
+        <LocalAsset dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Public Asset">
-        <PublicAsset dom={{ autoSize: true }} />
+        <PublicAsset dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Tailwind">
-        <Tailwind dom={{ autoSize: true }} />
+        <Tailwind dom={{ matchContents: true }} />
       </TestCase>
 
       <TestCase name="Nested">
-        <NestedComponents dom={{ autoSize: true }} />
+        <NestedComponents dom={{ matchContents: true }} />
+      </TestCase>
+
+      <TestCase name="forwardRef">
+        <ForwardRef dom={{ matchContents: true }} ref={forwardedRef} />
+        <Button
+          title="Toggle width"
+          onPress={() => {
+            forwardedRef.current?.toggleWidth();
+          }}
+        />
+        <Button
+          title="Update text"
+          onPress={() => {
+            forwardedRef.current?.updateText(Date.now().toString());
+          }}
+        />
+        <Button
+          title="Update color using webView ref"
+          onPress={() => {
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = 100;
+            const lightness = 85;
+            forwardedRef.current?.injectJavaScript(`
+              (function() {
+                document.getElementById('rect').style.backgroundColor = 'hsl(${hue}, ${saturation}%, ${lightness}%)';
+              })();`);
+          }}
+        />
+      </TestCase>
+
+      <TestCase name="NativeModuleProxy">
+        <NativeModuleProxy dom={{ matchContents: true, useExpoDOMWebView: true }} />
+      </TestCase>
+      <TestCase name="Router">
+        <RouterDemo
+          dom={{ matchContents: true, useExpoDOMWebView: true }}
+          searchParams={searchParams}
+        />
       </TestCase>
     </ScrollView>
   );

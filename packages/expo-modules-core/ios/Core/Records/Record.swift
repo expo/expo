@@ -1,5 +1,6 @@
 /**
  A protocol that allows initializing the object with a dictionary.
+ For supported field types, see https://docs.expo.dev/modules/module-api/#argument-types
  */
 public protocol Record: Convertible {
   /**
@@ -20,7 +21,7 @@ public protocol Record: Convertible {
   /**
    Converts the record back to the dictionary. Only members wrapped by `@Field` will be set in the dictionary.
    */
-  func toDictionary() -> Dict
+  func toDictionary(appContext: AppContext?) -> Dict
 }
 
 /**
@@ -30,6 +31,11 @@ public extension Record {
   static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     if let value = value as? Dict {
       return try Self(from: value, appContext: appContext)
+    }
+    // It's possible that the current implementation tries to convert a value that is already of the desired type.
+    // Handle that gracefully instead of throwing an exception.
+    if let record = value as? Self {
+      return record
     }
     throw Conversions.ConvertingException<Self>(value)
   }
@@ -53,9 +59,11 @@ public extension Record {
     }
   }
 
-  func toDictionary() -> Dict {
+  func toDictionary(appContext: AppContext? = nil) -> Dict {
     return fieldsOf(self).reduce(into: Dict()) { result, field in
-      result[field.key!] = Conversions.convertFunctionResult(field.get())
+      if let key = field.key {
+        result[key] = Conversions.convertFunctionResult(field.get(), appContext: appContext)
+      }
     }
   }
 }

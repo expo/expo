@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 15.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -15,6 +23,8 @@
 - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
+
+- Enabled support on web on iOS. ([#31479](https://github.com/expo/expo/pull/31479) by [@fobos531](https://github.com/fobos531))
 
 ### ⚠️ Notices
 

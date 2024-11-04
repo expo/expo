@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
-import { ButtonBase, theme, shadows } from '@expo/styleguide';
-import { spacing, borderRadius } from '@expo/styleguide-base';
+import { ButtonBase, mergeClasses } from '@expo/styleguide';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren } from 'react';
@@ -19,8 +17,7 @@ type Props = PropsWithChildren<{
   info: NavigationRoute;
 }>;
 
-export function SidebarCollapsible(props: Props) {
-  const { info, children } = props;
+export function SidebarCollapsible({ info, children }: Props) {
   const router = useRouter();
   const ref = useRef<HTMLButtonElement>(null);
 
@@ -41,7 +38,7 @@ export function SidebarCollapsible(props: Props) {
 
     const posts: NavigationRoute[] =
       sections
-        ?.map(section => (section.type === 'page' ? [section] : section?.children ?? []))
+        ?.map(section => (section.type === 'page' ? [section] : (section?.children ?? [])))
         .flat() ?? [];
 
     posts.forEach(isSectionActive);
@@ -77,61 +74,28 @@ export function SidebarCollapsible(props: Props) {
     <>
       <ButtonBase
         ref={ref}
-        css={titleStyle}
+        className={mergeClasses(
+          'flex items-center gap-2 relative select-none duration-150 px-3 py-1.5 w-full cursor-pointer rounded-md transition',
+          'hocus:bg-element'
+        )}
         aria-expanded={isOpen ? 'true' : 'false'}
         onClick={toggleIsOpen}
         {...customDataAttributes}>
-        <div css={chevronContainerStyle}>
+        <div className="bg-default border border-default rounded-sm flex items-center justify-center shadow-xs size-4">
           <ChevronDownIcon
-            className="icon-xs text-icon-secondary transition-transform"
-            css={!isOpen && chevronClosedStyle}
+            className={mergeClasses(
+              'icon-xs text-icon-secondary transition-transform duration-150',
+              !isOpen && '-rotate-90 translate-x-[0.5px]'
+            )}
           />
         </div>
         <CALLOUT crawlable={false}>{info.name}</CALLOUT>
       </ButtonBase>
       {isOpen && (
-        <div aria-hidden={!isOpen ? 'true' : 'false'} css={childrenContainerStyle}>
+        <div aria-hidden={!isOpen ? 'true' : 'false'} className="pl-2.5">
           {children}
         </div>
       )}
     </>
   );
 }
-
-const titleStyle = css({
-  display: 'flex',
-  alignItems: 'center',
-  gap: spacing[2],
-  position: 'relative',
-  userSelect: 'none',
-  transition: '100ms',
-  padding: `${spacing[1.5]}px ${spacing[3]}px`,
-  width: '100%',
-
-  ':hover': {
-    cursor: 'pointer',
-    backgroundColor: theme.background.element,
-    borderRadius: borderRadius.md,
-    transition: '100ms',
-  },
-});
-
-const chevronContainerStyle = css({
-  backgroundColor: theme.background.default,
-  border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.sm,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  boxShadow: shadows.xs,
-  height: 16,
-  width: 16,
-});
-
-const chevronClosedStyle = css({
-  transform: 'rotate(-90deg) translateY(0.5px)',
-});
-
-const childrenContainerStyle = css({
-  paddingLeft: spacing[2.5],
-});

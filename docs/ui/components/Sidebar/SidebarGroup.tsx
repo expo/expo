@@ -28,7 +28,8 @@ import { Chapter } from '~/ui/components/ProgressTracker/TutorialData';
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const title = route.sidebarTitle ?? route.name;
   const Icon = getIconElement(title);
-  const { chapters, setChapters } = useTutorialChapterCompletion();
+  const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
+    useTutorialChapterCompletion();
 
   const allChaptersCompleted = chapters.every((chapter: Chapter) => chapter.completed);
   const completedChaptersCount = chapters.filter((chapter: Chapter) => chapter.completed).length;
@@ -49,6 +50,32 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
     if (allChaptersCompleted) {
       const resetChapters = chapters.map((chapter: Chapter) => ({ ...chapter, completed: false }));
       setChapters(resetChapters);
+    }
+  };
+
+  const allGetStartedChaptersCompleted = getStartedChapters.every(
+    (chapter: Chapter) => chapter.completed
+  );
+  const completedGetStartedChaptersCount = getStartedChapters.filter(
+    (chapter: Chapter) => chapter.completed
+  ).length;
+  const isGetStartedChapterCompleted = (childSlug: string) => {
+    const isCompleted = getStartedChapters.some(
+      (chapter: Chapter) => chapter.slug === childSlug && chapter.completed
+    );
+    return isCompleted;
+  };
+  const totalGetStartedChapters = getStartedChapters.length;
+  const progressPercentageForGetStarted =
+    (completedGetStartedChaptersCount / totalGetStartedChapters) * 100;
+
+  const resetGetStartedTutorial = () => {
+    if (allGetStartedChaptersCompleted) {
+      const resetChapters = getStartedChapters.map((chapter: Chapter) => ({
+        ...chapter,
+        completed: false,
+      }));
+      setGetStartedChapters(resetChapters);
     }
   };
 
@@ -81,6 +108,45 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
         {allChaptersCompleted && (
           <Button
             onClick={resetTutorial}
+            theme="secondary"
+            className="w-full flex items-center justify-center"
+            href="/tutorial/eas/introduction/">
+            Reset tutorial
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  // @ts-ignore
+  if (route.children?.[0]?.section === 'Expo tutorial') {
+    return (
+      <div className="mb-5">
+        {!shouldSkipTitle(route, parentRoute) && title && (
+          <div className="flex flex-row justify-between items-center py-0">
+            <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
+            <div className="flex flex-row items-center pb-1">
+              <CircularProgressBar progress={progressPercentageForGetStarted} />{' '}
+              <p className="ml-2 text-secondary text-sm">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
+            </div>
+          </div>
+        )}
+        {(route.children || []).map(child => {
+          const childSlug = child.href;
+          const completed = isGetStartedChapterCompleted(childSlug);
+
+          return (
+            <div className="flex justify-between items-center" key={`${route.name}-${child.name}`}>
+              <div className="flex-1">
+                <SidebarLink info={child}>{child.sidebarTitle || child.name}</SidebarLink>
+              </div>
+              {completed && <CheckIcon className="size-4" />}
+            </div>
+          );
+        })}
+        {allGetStartedChaptersCompleted && (
+          <Button
+            onClick={resetGetStartedTutorial}
             theme="secondary"
             className="w-full flex items-center justify-center"
             href="/tutorial/eas/introduction/">
@@ -164,6 +230,8 @@ function getIconElement(iconName?: string) {
     case 'EAS':
       return PlanEnterpriseIcon;
     case 'Get started':
+      return HandWaveIcon;
+    case 'Expo tutorial':
       return HandWaveIcon;
     case 'EAS tutorial':
       return PlanEnterpriseIcon;

@@ -1,8 +1,7 @@
 import { Log } from '../../log';
-import { hasDirectDevClientDependency } from '../../utils/analytics/getDevClientProperties';
 import { resolvePortAsync } from '../../utils/port';
 import { getOptionalDevClientSchemeAsync } from '../../utils/scheme';
-import { canResolveDevClient } from '../detectDevClient';
+import { canResolveDevClient, hasDirectDevClientDependency } from '../detectDevClient';
 import {
   resolveSchemeAsync,
   resolveHostType,
@@ -24,14 +23,10 @@ jest.mock('../../utils/scheme', () => {
     })),
   };
 });
-jest.mock('../../utils/analytics/getDevClientProperties', () => {
-  return {
-    hasDirectDevClientDependency: jest.fn(() => false),
-  };
-});
 jest.mock('../detectDevClient', () => {
   return {
     canResolveDevClient: jest.fn(async () => false),
+    hasDirectDevClientDependency: jest.fn(() => false),
   };
 });
 

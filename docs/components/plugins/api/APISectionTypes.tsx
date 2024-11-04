@@ -1,15 +1,17 @@
-import { Fragment } from 'react';
+import { mergeClasses } from '@expo/styleguide';
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
+import { Fragment, ReactNode } from 'react';
 
-import { APIDataType } from '~/components/plugins/api/APIDataType';
+import { APIDataType } from './APIDataType';
 import {
   PropData,
   TypeDeclarationContentData,
   TypeDefinitionData,
   TypeGeneralData,
   TypeSignaturesData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
 import {
   resolveTypeName,
   renderFlags,
@@ -22,13 +24,16 @@ import {
   ParamsTableHeadRow,
   renderDefaultValue,
   renderIndexSignature,
-  STYLES_APIBOX,
   getTagNamesList,
   H3Code,
   getCommentContent,
-} from '~/components/plugins/api/APISectionUtils';
+  listParams,
+} from './APISectionUtils';
+import { STYLES_APIBOX } from './styles';
+
+import { APIBox } from '~/components/plugins/APIBox';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
+import { H2, BOLD, CODE, MONOSPACE, CALLOUT, SPAN, RawH4 } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -49,20 +54,51 @@ const renderTypeDeclarationTable = (
   { children, indexSignature, comment }: TypeDeclarationContentData,
   sdkVersion: string,
   index?: number
-): JSX.Element => (
+): ReactNode => (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     {index && index > 0 ? <br /> : undefined}
     <CommentTextBlock comment={comment} />
     <Table>
       <ParamsTableHeadRow />
       <tbody>
-        {children?.map(d => renderTypePropertyRow(d, sdkVersion))}
+        {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
         {indexSignature?.parameters &&
-          indexSignature.parameters.map(d => renderTypePropertyRow(d, sdkVersion))}
+          indexSignature.parameters.map(param => renderTypePropertyRow(param, sdkVersion))}
       </tbody>
     </Table>
   </Fragment>
 );
+
+const renderTypeMethodEntry = (
+  { children, signatures, comment }: TypeDeclarationContentData,
+  sdkVersion: string
+): ReactNode => {
+  const baseSignature = signatures?.[0];
+
+  if (baseSignature && baseSignature.type) {
+    return (
+      <APIBox
+        key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
+        className="!mb-0">
+        <RawH4 className="!mb-3">
+          <MONOSPACE>
+            {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
+            {` => `}
+            {renderTypeOrSignatureType({ type: baseSignature.type, sdkVersion })}
+          </MONOSPACE>
+        </RawH4>
+        <CommentTextBlock comment={comment} />
+        <Table>
+          <ParamsTableHeadRow mainCellLabel="Parameter" />
+          <tbody>
+            {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
+          </tbody>
+        </Table>
+      </APIBox>
+    );
+  }
+  return null;
+};
 
 const renderTypePropertyRow = (
   { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
@@ -100,11 +136,11 @@ const renderTypePropertyRow = (
 const renderType = (
   { name, comment, type, typeParameter }: TypeGeneralData,
   sdkVersion: string
-): JSX.Element | undefined => {
+): ReactNode => {
   if (type.declaration) {
     // Object Types
     return (
-      <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
@@ -123,6 +159,39 @@ const renderType = (
               </div>
             ))
           : null}
+        {type.declaration.signatures && type.declaration.signatures[0].type && (
+          <div className="flex flex-row gap-2 items-start mt-4">
+            <div className="flex flex-row gap-2 items-center">
+              <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary" />
+              <CALLOUT tag="span" theme="secondary" weight="medium">
+                Returns:
+              </CALLOUT>
+            </div>
+            <CALLOUT>
+              <APIDataType
+                typeDefinition={type.declaration.signatures[0].type}
+                sdkVersion={sdkVersion}
+              />
+            </CALLOUT>
+          </div>
+        )}
+      </div>
+    );
+  } else if (type.elements) {
+    return (
+      <div key={`type-tuple-${name}`} className={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} sticky />
+        <APISectionPlatformTags comment={comment} />
+        <H3Code tags={getTagNamesList(comment)} className="break-words wrap-anywhere">
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
+        </H3Code>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
+        <CALLOUT>
+          <SPAN theme="secondary" weight="medium">
+            Tuple:{' '}
+          </SPAN>
+          <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
+        </CALLOUT>
       </div>
     );
   } else if (type.types && ['union', 'intersection'].includes(type.type)) {
@@ -130,9 +199,14 @@ const renderType = (
       ['literal', 'intrinsic', 'reference', 'tuple'].includes(t.type)
     );
     const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
+    const propMethodDefinitions = propTypes.filter(
+      (t: TypeDefinitionData) => t.declaration?.signatures?.length
+    );
+    const propObjectDefinitions = propTypes.filter(type => !propMethodDefinitions.includes(type));
+
     if (propTypes.length) {
       return (
-        <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
+        <div key={`prop-type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
@@ -160,23 +234,32 @@ const renderType = (
                     </Fragment>
                   ))}
                 <SPAN theme="secondary">
-                  {type.type === 'union' ? 'object shaped as below' : 'extended by'}:
+                  {type.type === 'union'
+                    ? propMethodDefinitions.length > 2
+                      ? 'an anonymous method defined as described below'
+                      : 'object shaped as below'
+                    : 'extended by'}
+                  :
                 </SPAN>
               </CALLOUT>
               <br />
             </>
           ) : null}
-          {propTypes.map(
+          {propObjectDefinitions.map(
             (propType, index) =>
               propType.declaration &&
               renderTypeDeclarationTable(propType.declaration, sdkVersion, index)
+          )}
+          {propMethodDefinitions.map(
+            propType =>
+              propType.declaration && renderTypeMethodEntry(propType.declaration, sdkVersion)
           )}
         </div>
       );
     } else if (literalTypes.length) {
       const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
-        <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+        <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
           <APISectionPlatformTags comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
@@ -216,7 +299,9 @@ const renderType = (
     ['array', 'reference'].includes(type.type)
   ) {
     return (
-      <div key={`record-definition-${name}`} css={STYLES_APIBOX} className="[&>*:last-child]:!mb-0">
+      <div
+        key={`record-definition-${name}`}
+        className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:!mb-0')}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
@@ -235,7 +320,7 @@ const renderType = (
     );
   } else if (type.type === 'intrinsic') {
     return (
-      <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`generic-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
@@ -254,7 +339,7 @@ const renderType = (
     );
   } else if (type.type === 'conditional' && type.checkType) {
     return (
-      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
@@ -299,7 +384,7 @@ const renderType = (
     }
 
     return (
-      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+      <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APISectionPlatformTags comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>

@@ -2,18 +2,24 @@ require_relative './podfile_helpers.rb'
 require_relative '../../../react-native-lab/react-native/packages/react-native/scripts/react_native_pods'
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
 platform :ios, '15.1'
+install! 'cocoapods',
+  :deterministic_uuids => false
 inhibit_all_warnings!
 
 # Disable expo-updates auto create updates resources in podspec script_phase
 $expo_updates_create_updates_resources = false
 
+prepare_react_native_project!
+
 target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
-  pod 'GoogleMaps', '~> 7.4.0'
+  pod 'GoogleMaps', '~> 9.0'
   pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/googlemaps/google-maps-ios-utils.git'
   pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
@@ -41,7 +47,8 @@ target 'Expo Go' do
       'expo-maps',
       'expo-network-addons',
       'expo-insights',
-      'expo-face-detector'
+      'expo-face-detector',
+      'expo-splash-screen',
     ],
     includeTests: true,
     flags: {
@@ -52,19 +59,35 @@ target 'Expo Go' do
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
-  # React Native
-  use_native_modules!
+  config_command = [
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+    'react-native-config',
+    '--json',
+    '--platform',
+    'ios'
+  ]
+  config = use_native_modules!(config_command)
+
   use_react_native!(
     :path => '../../../react-native-lab/react-native/packages/react-native',
     :hermes_enabled => true,
-    :fabric_enabled => false,
   )
   setup_jsc!(
     :react_native_path => '../../../react-native-lab/react-native/packages/react-native',
-    :fabric_enabled => false,
   )
 
   post_install do |installer|
+    # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
+    if installer.pods_project
+      react_native_post_install(
+        installer,
+        config[:reactNativePath],
+        :mac_catalyst_enabled => false
+      )
+    end
 
     # Disabled as of CocoaPods 1.8.0.beta1 since pods_project seems to be nil
     # installer.pods_project.main_group.tab_width = '2';

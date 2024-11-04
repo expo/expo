@@ -1,4 +1,5 @@
 import { PermissionStatus } from 'expo-modules-core';
+import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { RecordingPresets } from './RecordingConstants';
 const nextId = (() => {
     let id = 0;
@@ -153,14 +154,14 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         getStatusFromMedia(this.media, this.id);
     }
     _createMediaElement() {
-        const newSource = typeof this.src === 'string' ? this.src : this.src?.uri ?? '';
+        const newSource = typeof this.src === 'string' ? this.src : (this.src?.uri ?? '');
         const media = new Audio(newSource);
         media.ontimeupdate = () => {
-            this.emit('onPlaybackStatusUpdate', getStatusFromMedia(media, this.id));
+            this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
         };
         media.onloadeddata = () => {
             this.loaded = true;
-            this.emit('onPlaybackStatusUpdate', {
+            this.emit(PLAYBACK_STATUS_UPDATE, {
                 ...getStatusFromMedia(media, this.id),
                 isLoaded: this.loaded,
             });
@@ -248,7 +249,7 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         const data = await dataPromise;
         const url = URL.createObjectURL(data);
         this.uri = url;
-        this.emit('onRecordingStatusUpdate', {
+        this.emit(RECORDING_STATUS_UPDATE, {
             id: this.id,
             isFinished: true,
             hasError: false,

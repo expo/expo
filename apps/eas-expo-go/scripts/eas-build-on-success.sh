@@ -26,9 +26,9 @@ upload_crashlytics_symbols() {
 }
 
 if [[ "$EAS_BUILD_PROFILE" == "release-client" ]]; then
-  if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    upload_crashlytics_symbols "Release"
-  fi
+  # if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+  #   upload_crashlytics_symbols "Release"
+  # fi
 
   SLUG="release-client"
   COMMIT_HASH="$(git rev-parse HEAD)"
@@ -49,9 +49,9 @@ if [[ "$EAS_BUILD_PROFILE" == "release-client" ]]; then
 fi
 
 if [[ "$EAS_BUILD_PROFILE" == "publish-client" ]]; then
-  if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    upload_crashlytics_symbols "Release"
-  fi
+  # if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+  #   upload_crashlytics_symbols "Release"
+  # fi
 
   SLUG="publish-client"
   COMMIT_HASH="$(git rev-parse HEAD)"

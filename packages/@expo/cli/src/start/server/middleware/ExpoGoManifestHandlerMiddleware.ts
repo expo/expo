@@ -8,7 +8,7 @@ import { serializeDictionary, Dictionary } from 'structured-headers';
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
-import UserSettings from '../../../api/user/UserSettings';
+import { getAnonymousIdAsync } from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
 import {
   CodeSigningInfo,
@@ -16,7 +16,6 @@ import {
   signManifestString,
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
-import { logEventAsync } from '../../../utils/telemetry';
 import { stripPort } from '../../../utils/url';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
@@ -248,12 +247,6 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     return form;
   }
 
-  protected trackManifest(version?: string) {
-    logEventAsync('Serve Expo Updates Manifest', {
-      runtimeVersion: version,
-    });
-  }
-
   private static async getScopeKeyAsync({
     slug,
     codeSigningInfo,
@@ -276,7 +269,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 }
 
 async function getAnonymousScopeKeyAsync(slug: string): Promise<string> {
-  const userAnonymousIdentifier = await UserSettings.getAnonymousIdentifierAsync();
+  const userAnonymousIdentifier = await getAnonymousIdAsync();
   return `@${ANONYMOUS_USERNAME}/${slug}-${userAnonymousIdentifier}`;
 }
 

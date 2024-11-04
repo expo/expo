@@ -2,11 +2,46 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 5.0.0-preview.6 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.5 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.4 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.3 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.2 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.0 — 2024-10-22
+
 - Add `addGeneratedScheme` config plugin option to disable automatic adding of dev client app scheme. ([#31147](https://github.com/expo/expo/pull/31147) by [@keith-kurak](https://github.com/keith-kurak))
 
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- Changed the exports shape, instead of using namespaces, all entities now are exported directly on package top-level. ([#31969](https://github.com/expo/expo/pull/31969) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
@@ -19,6 +54,31 @@
 ### 💡 Others
 
 - Fix homepage link in `package.json`. ([#30163](https://github.com/expo/expo/pull/30163) by [@amandeepmittal](https://github.com/amandeepmittal))
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+
+## 4.0.27 - 2024-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.26 - 2024-09-03
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.25 - 2024-08-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.24 - 2024-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.23 - 2024-08-14
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.22 - 2024-08-08
+
+_This version does not introduce any user-facing changes._
 
 ## 4.0.21 - 2024-07-29
 

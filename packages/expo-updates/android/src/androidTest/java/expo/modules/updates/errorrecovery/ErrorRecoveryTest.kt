@@ -15,12 +15,13 @@ import org.junit.runner.RunWith
 class ErrorRecoveryTest {
   private var mockDelegate: ErrorRecoveryDelegate = mockk()
   private val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-  private var errorRecovery: ErrorRecovery = ErrorRecovery(context)
+  private val updatesLogger = UpdatesLogger(context)
+  private var errorRecovery: ErrorRecovery = ErrorRecovery(updatesLogger)
 
   @Before
   fun setup() {
     mockDelegate = mockk(relaxed = true)
-    errorRecovery = ErrorRecovery(context)
+    errorRecovery = ErrorRecovery(updatesLogger)
     errorRecovery.initialize(mockDelegate)
     errorRecovery.handler = spyk(ErrorRecoveryHandler(errorRecovery.handlerThread.looper, mockDelegate, UpdatesLogger(context)))
     // make handler run synchronously

@@ -38,6 +38,16 @@ A comprehensive list of tools is available on the ["Local-first software" commun
 
 One way to think of local-first tools is to group them by the following categories: persistence, state management, and syncing. Some tools will fit into multiple categories if they handle multiple aspects of the problem. Syncing can be further subdivided into syncable data structures and transport layers.
 
+### Legend-State
+
+[Legend-State](https://legendapp.com/open-source/state/v3/) is a super fast all-in-one state and sync library that lets you write less code to make faster apps. It has the following primary goals:
+
+- Faster state management for React apps
+- Fine-grained reactivity for minimal renders
+- Powerful sync and persistence (with Supabase support built-in)
+
+It works with Expo and React Native (via [React Native Async Storage](https://github.com/react-native-async-storage/async-storage?tab=readme-ov-file#react-native-async-storage)). This makes it a perfect match for building local-first mobile and web apps. Get started by using the [Legend-State Supabase example](https://github.com/expo/examples/tree/master/with-legend-state-supabase): `npx create-expo-app --example with-legend-state-supabase`.
+
 ### TinyBase
 
 [TinyBase](https://tinybase.org/) calls itself "the reactive data store for local-first apps". It is a state management library that plugs in to many of the most popular syncing and persistence layers, such as [Yjs](#yjs) and [SQLite](#sqlite). It's a great choice for building local-first apps that need to persist and sync data. Get started by using the [TinyBase example](https://github.com/expo/examples/tree/master/with-tinybase): `npx create-expo-app --example with-tinybase`.

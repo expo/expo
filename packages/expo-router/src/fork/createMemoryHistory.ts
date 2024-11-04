@@ -1,9 +1,9 @@
 // Forked from React Navigation in order to use a custom `useLinking` function.
 // https://github.com/react-navigation/react-navigation/blob/6.x/packages/native/src/createMemoryHistory.tsx
 // Look for 'START OF FORK' comments
-// Forked behaviour:
+// Forked behavior:
 //   - Remove custom management of the URL hash
-import type { NavigationState } from '@react-navigation/core';
+import type { NavigationState } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
 
 type HistoryRecord = {
@@ -15,7 +15,7 @@ type HistoryRecord = {
   path: string;
 };
 
-export default function createMemoryHistory() {
+export function createMemoryHistory() {
   let index = 0;
   let items: HistoryRecord[] = [];
 

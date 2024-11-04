@@ -7,7 +7,8 @@ import android.media.AudioManager
 import android.os.Build
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
-import expo.modules.video.records.VolumeEvent
+import expo.modules.video.player.VideoPlayer
+import expo.modules.video.player.VideoPlayerListener
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
@@ -93,7 +94,11 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
     }
   }
 
-  override fun onVolumeChanged(player: VideoPlayer, newValue: VolumeEvent, oldVolume: VolumeEvent?) {
+  override fun onVolumeChanged(player: VideoPlayer, volume: Float, oldVolume: Float?) {
+    updateAudioFocus()
+  }
+
+  override fun onMutedChanged(player: VideoPlayer, muted: Boolean, oldMuted: Boolean?) {
     updateAudioFocus()
   }
 

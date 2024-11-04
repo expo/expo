@@ -27,36 +27,33 @@ class JSIContext;
  */
 class MethodMetadata : public std::enable_shared_from_this<MethodMetadata> {
 public:
-  /**
-   * Function name
-   */
-  std::string name;
-  /**
-   * Whether this function takes owner
-   */
-  bool takesOwner;
-  /**
-   * Whether this function is async
-   */
-  bool isAsync;
-  /**
-   * Representation of expected argument types.
-   */
-  std::vector<std::unique_ptr<AnyType>> argTypes;
+  struct Info {
+    /**
+     * Function name
+     */
+    const std::string name;
+    /**
+     * Whether this function takes owner
+     */
+    const bool takesOwner = false;
+    /**
+     * Whether this function is async
+     */
+    const bool isAsync = false;
+    /**
+    * Whether this function is enumerable
+    */
+    const bool enumerable = true;
+    /**
+     * Representation of expected argument types.
+     */
+    std::vector<std::unique_ptr<AnyType>> argTypes;
+  };
+
+  Info info;
 
   MethodMetadata(
-    std::string name,
-    bool takesOwner,
-    bool isAsync,
-    jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
-    jni::global_ref<jobject> &&jBodyReference
-  );
-
-  MethodMetadata(
-    std::string name,
-    bool takesOwner,
-    bool isAsync,
-    std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
+    Info info,
     jni::global_ref<jobject> &&jBodyReference
   );
 

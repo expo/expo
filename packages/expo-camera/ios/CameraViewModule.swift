@@ -155,11 +155,12 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           view.active = active
           return
         }
-        view.active = true
       }
 
       OnViewDidUpdateProps { view in
-        view.initCamera()
+        Task {
+          await view.initCamera()
+        }
       }
 
       AsyncFunction("resumePreview") { view in
@@ -180,17 +181,21 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         #if targetEnvironment(simulator) // simulator
         try takePictureForSimulator(self.appContext, view, options, promise)
         #else // not simulator
-        view.takePicture(options: options, promise: promise)
+        Task {
+          await view.takePicture(options: options, promise: promise)
+        }
         #endif
-      }.runOnQueue(.main)
+      }
 
       AsyncFunction("record") { (view, options: CameraRecordingOptions, promise: Promise) in
         #if targetEnvironment(simulator)
         throw Exceptions.SimulatorNotSupported()
         #else
-        view.record(options: options, promise: promise)
+        Task {
+          await view.record(options: options, promise: promise)
+        }
         #endif
-      }.runOnQueue(.main)
+      }
 
       AsyncFunction("stopRecording") { view in
         #if targetEnvironment(simulator)
@@ -198,7 +203,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         #else
         view.stopRecording()
         #endif
-      }.runOnQueue(.main)
+      }
     }
 
     AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in

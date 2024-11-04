@@ -12,7 +12,7 @@ export { SpawnResult, SpawnOptions };
  */
 export function spawnAsync(
   command: string,
-  args: Readonly<string[]> = [],
+  args: readonly string[] = [],
   options: SpawnOptions = {}
 ): SpawnPromise<SpawnResult> {
   return basicSpawnAsync(command, args, {
@@ -27,7 +27,7 @@ export function spawnAsync(
  */
 export async function spawnJSONCommandAsync<T = object>(
   command: string,
-  args: Readonly<string[]> = [],
+  args: readonly string[] = [],
   options: SpawnOptions = {}
 ): Promise<T> {
   const child = await spawnAsync(command, args, options);

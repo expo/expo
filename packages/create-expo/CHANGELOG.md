@@ -6,7 +6,13 @@
 
 ### 🎉 New features
 
+- Add log hint for `--template` and `--example` arguments. ([#32519](https://github.com/expo/expo/pull/32519) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.1 — 2024-10-22
 
 ### 💡 Others
 
@@ -23,6 +29,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
 - Update list of available templates ([#29955](https://github.com/expo/expo/pull/29955) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others

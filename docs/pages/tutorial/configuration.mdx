@@ -3,47 +3,63 @@ title: Configure status bar, splash screen and app icon
 description: In this tutorial, learn the basics of how to configure a status bar, splash screen and app icon.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { A } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-Before considering the app fully launchable, we have to configure the status bar, add a splash screen, and add an app icon. In this chapter, we will learn how to do all of that.
+In this chapter, we'll address some app details before deploying our app to an app store, such as theming the status bar, add a splash screen, and customizing the app icon.
+
+<VideoBoxLink
+  videoId="OgGCYdElcZo"
+  title="Watch: Adding the finishing touches to your universal Expo app"
+/>
+
+---
 
 <Step label="1">
 
 ## Configure the status bar
 
-The <A href="/versions/latest/sdk/status-bar/">`expo-status-bar`</A> library comes pre-installed in every project created using `create-expo-app`.
-This library provides a `<StatusBar>` component that allows configuring the app's status bar to change the text color, background color, make it translucent, and so on.
+[`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `setStatusBarStyle()` method to configure the app's status bar text color.
 
-The `<StatusBar>` component is already imported in the **App.js**:
+Inside **app/\_layout.tsx**:
 
-```jsx App.js
-import { StatusBar } from 'expo-status-bar';
+1. Import `setStatusBarStyle` from `expo-status-bar` and `useEffect` from React.
+2. Add the `useEffect` hook to set the status bar style to `light` when the app loads.
+
+{/* prettier-ignore */}
+```tsx app/_layout.tsx
+import { Stack } from "expo-router";
+/* @tutinfo */
+import { setStatusBarStyle } from "expo-status-bar";
+import { useEffect } from "react";
+/* @end */
+
+export default function RootLayout() {
+  /* @tutinfo Add the <CODE>useEffect</CODE> hook to set the status bar style to <CODE>light</CODE> when the app loads. */
+  useEffect(() => {
+    setTimeout(() => {
+      setStatusBarStyle("light");
+    }, 0);
+  }, []);
+  /* @end */
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
 ```
 
-It's also mounted in the `<App>` component.
-
-```jsx App.js
-<StatusBar style="auto" />
-```
-
-Currently, the `style` value is `auto`. It means that the status bar will automatically pick the text color based on the app's color scheme.
-However, we do not have different color schemes in the tutorial app. There is only one active color scheme, which has a dark background.
-To make the status bar light, change the `style` value to `light`.
-
-```jsx App.js
-<StatusBar style="light" />
-```
+Let's take a look at our app now on Android, and iOS:
 
 <ContentSpotlight
-  alt="Break down of initial layout."
-  src="/static/images/tutorial/statusbar-example.jpg"
+  alt="StatusBar with light style shown on both Android and iOS."
+  src="/static/images/tutorial/statusbar-example.png"
   className="max-w-[480px]"
 />
 
@@ -53,57 +69,48 @@ To make the status bar light, change the `style` value to `light`.
 
 ## Splash screen
 
-A splash screen is a screen that is visible before the contents of the app has had a chance to load. It hides once the app is ready for use and the content is ready to be displayed.
+A splash screen is visible before the app's content is loaded. It hides once the app's content is ready to be displayed.
 
-The splash screen is configured by defining a path to the `"splash.image"` property in the <A href="/workflow/configuration/">**app.json** file</A>.
-It has a current value of `"./assets/splash.png"` path. This is already done by default when a new Expo project is created.
+Setting the `"splash.image"` property with a valid file path in the [**app.json**](/workflow/configuration/) file configures a splash screen. By default, a new Expo project already sets this property to a placeholder splash image. We already have **splash.png** in the **assets/images** directory. It looks as shown below:
 
-We already have **splash.png** in the **assets** directory. It looks as shown below:
+<ContentSpotlight
+  src="/static/images/tutorial/splash.png"
+  alt="Custom splash screen used in example app."
+  className="max-w-[250px]"
+/>
 
-<ContentSpotlight src="/static/images/tutorial/splash.png" className="max-w-[250px]" />
+Let's take a look at our app now on Android and iOS:
 
-Let's take a look at our app now on Android, and iOS:
-
-<ContentSpotlight file="tutorial/splash-add.mp4" />
+<ContentSpotlight file="tutorial/splash-screen.mp4" />
 
 <Collapsible summary="Is the app loading too quickly for you to get a good look at the splash screen?">
 
-You can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready.
-
-Start by running the following command:
+You can display the splash screen for longer intervals. Run the following command to install `expo-splash-screen`, a library that provides a `preventAutoHideAsync()` method to delay hiding the splash screen:
 
 <Terminal cmd={['$ npx expo install expo-splash-screen']} />
 
-Next, add the following code in **App.js** to delay hiding the splash screen for five seconds.
+Add the following code in **app/\_layout.tsx** to delay hiding the splash screen for five seconds.
 
-```jsx App.js
+```tsx app/_layout.tsx
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();
 setTimeout(SplashScreen.hideAsync, 5000);
 ```
 
-Don't forget to remove this code when you are done testing your splash screen!
+Don't forget to remove this code when you are done testing your splash screen.
 
 </Collapsible>
 
-Notice that there is a white bar on the edges of the Android device in the above demo. Depending on the resolution of the device, it might not be visible. To resolve this, we need to set the `backgroundColor` for the splash screen. The background color is applied to any screen area that isn't covered by the splash image.
-
-</Step>
-
-<Step label="3">
-
-## Configure the splash screen background color
-
-We can configure the splash screen's background color in **app.json** file. Open it and make the following change in `"splash"`:
+Depending on the device's resolution, a white bar may be visible on the edges of an Android device's screen. To resolve this, set the `backgroundColor` for the splash screen in **app.json** to match the background in the splash image:
 
 {/* prettier-ignore */}
 ```json app.json
 {
   "splash": {
-    "image": "./assets/splash.png",
+    "image": "./assets/images/splash.png",
     "resizeMode": "contain",
-    /* @info Use #25292e (black) instead of the default #ffffff (white). */
+    /* @tutinfo Use #25292e (black) instead of the default #ffffff (white). */
     "backgroundColor": "#25292e" /* @end */
   }
 }
@@ -111,41 +118,37 @@ We can configure the splash screen's background color in **app.json** file. Open
 
 The `backgroundColor` value in the above snippet matches the background of the splash screen image.
 
-Let's take a look at our app now on Android and iOS:
-
-<ContentSpotlight file="tutorial/splash-fixed.mp4" />
-
 </Step>
 
-<Step label="4">
+<Step label="3">
 
 ## App icon
 
-Inside the project, there's an **icon.png** file inside **assets** directory. This is our app icon. It's a 1024px by 1024px image and looks as shown below:
+Inside the project, there's an **icon.png** file inside the **assets/images** directory. This is our app icon. It's a 1024px by 1024px image and looks as shown below:
 
 <ContentSpotlight src="/static/images/tutorial/icon.png" className="max-w-[150px]" />
 
-Similar to splash screen image, the icon is configured by defining a path to the `"icon"` property in the **app.json** file. It has a current value of `"./assets/icon.png"`, so we don't have to change anything.
+Like the splash screen image, the `"icon"` property in the **app.json** file configures the app icon's path. By default, a new Expo project defines the correct path to `"./assets/images/icon.png"`. We don't have to change anything.
 
-> Eventually, when you build the app for the app stores, Expo Application Services (EAS) will take this image and create optimized icon for every device.
+> Eventually, when you'll build your app for the app stores, [Expo Application Services (EAS)](/eas/) will take this image and create optimized icon for every device.
 
 You can see the icon in various places in Expo Go. Here is an example of the app icon displayed in the developer menu of Expo Go:
 
 <ContentSpotlight
   alt="Splash screen on Developer Menu in Expo Go app."
-  src="/static/images/tutorial/app-icon-visible.jpg"
+  src="/static/images/tutorial/app-icon-visible.png"
   className="max-w-[250px]"
 />
 
 </Step>
 
-## We have completed the app!
+## Summary
 
-Well done! We built an app that runs on Android, iOS, and the web from the same codebase.
-
-<BoxLink
-  title="Learn more"
-  Icon={BookOpen02Icon}
-  description="The next section of the tutorial will guide you toward resources to learn more about concepts we've covered here and others we have mentioned briefly."
-  href="/tutorial/follow-up"
+<ProgressTracker
+  currentChapterIndex={8}
+  name="GET_STARTED"
+  summary="Well done! We built an app that runs on Android, iOS, and the web from the same codebase."
+  nextChapterDescription="The next section of the tutorial will guide you toward resources to learn more about concepts we've covered here and others we have mentioned briefly."
+  nextChapterTitle="Learning resources"
+  nextChapterLink="/tutorial/follow-up"
 />

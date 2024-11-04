@@ -16,6 +16,8 @@ public protocol ModulesProviderProtocol {
    Returns an array of `ExpoReactDelegateHandlerTupleType` for `ReactDelegate` to hook React instance creation.
    */
   func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType]
+
+  func getAppCodeSignEntitlements() -> AppCodeSignEntitlements
 }
 
 /**
@@ -36,5 +38,9 @@ open class ModulesProvider: NSObject, ModulesProviderProtocol {
 
   open func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
     return []
+  }
+
+  open func getAppCodeSignEntitlements() -> AppCodeSignEntitlements {
+    return AppCodeSignEntitlements()
   }
 }

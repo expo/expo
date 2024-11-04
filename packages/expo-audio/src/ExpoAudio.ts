@@ -1,5 +1,5 @@
 import { useEvent } from 'expo';
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { PermissionResponse, useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useState, useMemo } from 'react';
 
 import {
@@ -11,40 +11,38 @@ import {
   RecordingStatus,
 } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder } from './AudioModule.types';
+import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
+
+export const PLAYBACK_STATUS_UPDATE = 'playbackStatusUpdate';
+export const AUDIO_SAMPLE_UPDATE = 'audioSampleUpdate';
+export const RECORDING_STATUS_UPDATE = 'recordingStatusUpdate';
 
 export function useAudioPlayer(
   source: AudioSource | string | number | null = null,
   updateInterval: number = 500
 ): AudioPlayer {
   const parsedSource = resolveSource(source);
-  const player = useReleasingSharedObject(
+  return useReleasingSharedObject(
     () => new AudioModule.AudioPlayer(parsedSource, updateInterval),
     [JSON.stringify(parsedSource)]
   );
-
-  return player;
 }
 
 export function useAudioPlayerStatus(player: AudioPlayer): AudioStatus {
   const currentStatus = useMemo(() => player.currentStatus, [player.id]);
-  return useEvent(player, 'onPlaybackStatusUpdate', currentStatus);
+  return useEvent(player, PLAYBACK_STATUS_UPDATE, currentStatus);
 }
 
-export function useAudioSampleListener(
-  player: AudioPlayer,
-  listener: (data: { channels: { frames: number[] }[]; timestamp: number }) => void
-) {
+export function useAudioSampleListener(player: AudioPlayer, listener: (data: AudioSample) => void) {
   player.setAudioSamplingEnabled(true);
   useEffect(() => {
     if (!player.isAudioSamplingSupported) {
       return;
     }
-    const subscription = player.addListener('onAudioSampleUpdate', listener);
+    const subscription = player.addListener(AUDIO_SAMPLE_UPDATE, listener);
     return () => {
-      player.setAudioSamplingEnabled(false);
       subscription.remove();
     };
   }, [player.id]);
@@ -60,7 +58,7 @@ export function useAudioRecorder(
   }, [JSON.stringify(platformOptions)]);
 
   useEffect(() => {
-    const subscription = recorder.addListener('onRecordingStatusUpdate', (status) => {
+    const subscription = recorder.addListener(RECORDING_STATUS_UPDATE, (status) => {
       statusListener?.(status);
     });
     return () => subscription.remove();
@@ -87,10 +85,16 @@ export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
   return await AudioModule.setIsAudioActiveAsync(active);
 }
 
-export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
+export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void> {
   return await AudioModule.setAudioModeAsync(mode);
 }
 
-export { AudioModule, AudioPlayer, AudioRecorder };
-export * from './Audio.types';
-export * from './RecordingConstants';
+export async function requestRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.requestRecordingPermissionsAsync();
+}
+
+export async function getRecordingPermissionsAsync(): Promise<PermissionResponse> {
+  return await AudioModule.getRecordingPermissionsAsync();
+}
+
+export { AudioModule };

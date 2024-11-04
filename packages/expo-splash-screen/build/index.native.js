@@ -24,7 +24,7 @@ export async function _internal_preventAutoHideAsync() {
     if (ErrorUtils?.getGlobalHandler) {
         const originalHandler = ErrorUtils.getGlobalHandler();
         ErrorUtils.setGlobalHandler((error, isFatal) => {
-            hideAsync();
+            hide();
             originalHandler(error, isFatal);
         });
     }
@@ -43,22 +43,22 @@ export const _internal_maybeHideAsync = () => {
     if (_userControlledAutoHideEnabled) {
         return;
     }
-    hideAsync();
+    hide();
 };
-export function hideAsync() {
+export function setOptions(options) {
     if (!SplashModule) {
-        return Promise.resolve(false);
+        return;
     }
-    return SplashModule.hideAsync().catch((error) => {
-        // Hide this very unfortunate error.
-        if (
-        // Only throw the error is something unexpected happened.
-        _preventAutoHideAsyncInvoked &&
-            error.message.includes('No native splash screen registered for ')) {
-            return;
-        }
-        throw error;
-    });
+    SplashModule.setOptions(options);
+}
+export function hide() {
+    if (!SplashModule) {
+        return;
+    }
+    SplashModule.hide();
+}
+export async function hideAsync() {
+    hide();
 }
 export const preventAutoHideAsync = () => {
     // Indicate that the user is controlling the auto hide behavior.

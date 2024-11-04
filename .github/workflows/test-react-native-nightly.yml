@@ -26,8 +26,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
-      - name: 🔨 Switch to Xcode 15.2
-        run: sudo xcode-select --switch /Applications/Xcode_15.2.app
+      - name: 🔨 Switch to Xcode 16.0
+        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true

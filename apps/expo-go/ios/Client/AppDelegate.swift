@@ -8,14 +8,14 @@ class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+    ExpoGoReactNativeFeatureFlags.setup()
+
     if application.applicationState != UIApplication.State.background {
       // App launched in foreground
       setUpUserInterfaceForApplication(application, withLaunchOptions: launchOptions)
     }
 
-    super.application(application, didFinishLaunchingWithOptions: launchOptions)
-
-    return true
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
   override func applicationWillEnterForeground(_ application: UIApplication) {
@@ -32,10 +32,21 @@ class AppDelegate: ExpoAppDelegate {
     ExpoKit.sharedInstance().prepare(launchOptions: launchOptions)
 
     window = UIWindow(frame: UIScreen.main.bounds)
-    window!.backgroundColor = UIColor.white
+    window?.backgroundColor = UIColor.white
     rootViewController = (ExpoKit.sharedInstance().rootViewController() as! EXRootViewController)
-    window!.rootViewController = rootViewController
+    window?.rootViewController = rootViewController
 
-    window!.makeKeyAndVisible()
+    window?.makeKeyAndVisible()
+  }
+
+  override func applicationDidBecomeActive(_ application: UIApplication) {
+    super.applicationDidBecomeActive(application)
+    Task {
+      do {
+        try await requestLocalNetworkAuthorization()
+      } catch {
+        log.error(error)
+      }
+    }
   }
 }

@@ -47,19 +47,32 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.header_dir     = 'ExpoModulesCore'
 
+  header_search_paths = []
+  if ENV['USE_FRAMEWORKS']
+    header_search_paths.concat([
+      # [begin] transitive dependencies of React-RCTAppDelegate that are not defined modules
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeApple/React_RuntimeApple.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeCore/React_RuntimeCore.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererconsistency/React_rendererconsistency.framework/Headers"',
+      # [end] transitive dependencies of React-RCTAppDelegate that are not defined modules
+    ])
+  end
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
-    'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''}"
+    'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''}",
+    'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => [
       '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
       '"$(PODS_ROOT)/Headers/Private/Yoga"', # Expo.h -> ExpoModulesCore-umbrella.h -> Fabric ViewProps.h -> Private Yoga headers
-
     ],
   }
 

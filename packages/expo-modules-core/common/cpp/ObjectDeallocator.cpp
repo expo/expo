@@ -11,7 +11,7 @@ void setDeallocator(
   ObjectDeallocator::Block deallocatorBlock
 ) {
   std::shared_ptr<ObjectDeallocator> objectDeallocator = std::make_shared<ObjectDeallocator>(
-    deallocatorBlock
+    std::move(deallocatorBlock)
   );
   jsThis->setNativeState(runtime, objectDeallocator);
 }

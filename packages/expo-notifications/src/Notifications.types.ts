@@ -1,10 +1,3 @@
-import type {
-  PermissionExpiration,
-  PermissionResponse,
-  PermissionStatus,
-  EventSubscription,
-} from 'expo-modules-core';
-
 /**
  * An object represents a notification delivered by a push notification system.
  *
@@ -165,6 +158,18 @@ export interface WeeklyNotificationTrigger {
 }
 
 /**
+ * A trigger related to a monthly notification.
+ * > The same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+ * @platform android
+ */
+export interface MonthlyNotificationTrigger {
+  type: 'monthly';
+  day: number;
+  hour: number;
+  minute: number;
+}
+
+/**
  * A trigger related to a yearly notification.
  * > The same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
  * @platform android
@@ -242,6 +247,7 @@ export type NotificationTrigger =
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
   | WeeklyNotificationTrigger
+  | MonthlyNotificationTrigger
   | YearlyNotificationTrigger
   | UnknownNotificationTrigger;
 
@@ -252,8 +258,33 @@ export type ChannelAwareTriggerInput = {
   channelId: string;
 };
 
-// @docsMissing
-export type CalendarTriggerInputValue = {
+/**
+ * Schedulable trigger inputs (that are not a plain date value or time value)
+ * must have the "type" property set to one of these values.
+ */
+export enum SchedulableTriggerInputTypes {
+  CALENDAR = 'calendar',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
+  DATE = 'date',
+  TIME_INTERVAL = 'timeInterval',
+}
+
+/**
+ * This trigger input will cause the notification to be delivered once or many times
+ * (controlled by the value of `repeats`)
+ * when the date components match the specified values.
+ * Corresponds to native
+ * [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
+ * @platform ios
+ */
+export type CalendarTriggerInput = {
+  type: SchedulableTriggerInputTypes.CALENDAR;
+  channelId?: string;
+  repeats?: boolean;
+  seconds?: number;
   timezone?: string;
   year?: number;
   month?: number;
@@ -268,77 +299,97 @@ export type CalendarTriggerInputValue = {
 };
 
 /**
- * A trigger that will cause the notification to be delivered once or many times when the date components match the specified values.
- * Corresponds to native [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
- * @platform ios
+ * This trigger input will cause the notification to be delivered once per day
+ * when the `hour` and `minute` date components match the specified values.
  */
-export type CalendarTriggerInput = CalendarTriggerInputValue & {
-  channelId?: string;
-  repeats?: boolean;
-};
-
-/**
- * A trigger that will cause the notification to be delivered once or many times (depends on the `repeats` field) after `seconds` time elapse.
- * > **On iOS**, when `repeats` is `true`, the time interval must be 60 seconds or greater. Otherwise, the notification won't be triggered.
- */
-export interface TimeIntervalTriggerInput {
-  channelId?: string;
-  repeats?: boolean;
-  seconds: number;
-}
-
-/**
- * A trigger that will cause the notification to be delivered once per day.
- */
-export interface DailyTriggerInput {
+export type DailyTriggerInput = {
+  type: SchedulableTriggerInputTypes.DAILY;
   channelId?: string;
   hour: number;
   minute: number;
-  repeats: true;
-}
+};
 
 /**
- * A trigger that will cause the notification to be delivered once every week.
+ * This trigger input will cause the notification to be delivered once every week
+ * when the `weekday`, `hour`, and `minute` date components match the specified values.
  * > **Note:** Weekdays are specified with a number from `1` through `7`, with `1` indicating Sunday.
  */
-export interface WeeklyTriggerInput {
+export type WeeklyTriggerInput = {
+  type: SchedulableTriggerInputTypes.WEEKLY;
   channelId?: string;
   weekday: number;
   hour: number;
   minute: number;
-  repeats: true;
-}
+};
 
 /**
- * A trigger that will cause the notification to be delivered once every year.
- * > **Note:** all properties are specified in JavaScript Date's ranges.
+ * This trigger input will cause the notification to be delivered once per month
+ * when the `day`, `hour`, and `minute` date components match the specified values.
+ * > **Note:** All properties are specified in JavaScript `Date` object's ranges.
  */
-export interface YearlyTriggerInput {
+export type MonthlyTriggerInput = {
+  type: SchedulableTriggerInputTypes.MONTHLY;
+  channelId?: string;
+  day: number;
+  hour: number;
+  minute: number;
+};
+
+/**
+ * This trigger input will cause the notification to be delivered once every year
+ * when the `day`, `month`, `hour`, and `minute` date components match the specified values.
+ * > **Note:** All properties are specified in JavaScript `Date` object's ranges.
+ */
+export type YearlyTriggerInput = {
+  type: SchedulableTriggerInputTypes.YEARLY;
   channelId?: string;
   day: number;
   month: number;
   hour: number;
   minute: number;
-  repeats: true;
-}
+};
 
 /**
- * A trigger that will cause the notification to be delivered once at the specified `Date`.
- * If you pass in a `number` it will be interpreted as a Unix timestamp.
+ * This trigger input will cause the notification to be delivered once
+ * on the specified value of the `date` property. The value of `repeats` will be ignored
+ * for this trigger type.
  */
-export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
+export type DateTriggerInput =
+  | Date
+  | number
+  | { type: SchedulableTriggerInputTypes.DATE; channelId?: string; date: Date | number };
 
 /**
- * A type represents time-based, schedulable triggers. For these triggers you can check the next trigger date
- * with [`getNextTriggerDateAsync`](#notificationsgetnexttriggerdateasynctrigger).
+ * This trigger input will cause the notification to be delivered once or many times
+ * (depends on the `repeats` field) after `seconds` time elapse.
+ * > **On iOS**, when `repeats` is `true`, the time interval must be 60 seconds or greater.
+ * Otherwise, the notification won't be triggered.
+ */
+export type TimeIntervalTriggerInput = {
+  type: SchedulableTriggerInputTypes.TIME_INTERVAL;
+  channelId?: string;
+  repeats?: boolean;
+  seconds: number;
+};
+
+/**
+ * Input for time-based, schedulable triggers.
+ * For these triggers you can check the next trigger date with [`getNextTriggerDateAsync`](#getnexttriggerdateasynctrigger).
+ * If you pass in a `number` (Unix timestamp) or `Date`, it will be processed as a
+ * trigger input of type [`SchedulableTriggerInputTypes.DATE`](#date). Otherwise, the input must be
+ * an object, with a `type` value set to one of the allowed values in [`SchedulableTriggerInputTypes`](#schedulabletriggerinputtypes).
+ * If the input is an object, date components passed in will be validated, and
+ * an error is thrown if they are outside their allowed range (for example, the `minute` and
+ * `second` components must be between 0 and 59 inclusive).
  */
 export type SchedulableNotificationTriggerInput =
-  | DateTriggerInput
+  | CalendarTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
   | WeeklyTriggerInput
+  | MonthlyTriggerInput
   | YearlyTriggerInput
-  | CalendarTriggerInput;
+  | DateTriggerInput;
 
 /**
  * A type represents possible triggers with which you can schedule notifications.
@@ -351,6 +402,7 @@ export type NotificationTriggerInput =
 
 /**
  * An enum corresponding to values appropriate for Android's [`Notification#priority`](https://developer.android.com/reference/android/app/Notification#priority) field.
+ * @platform android
  */
 export enum AndroidNotificationPriority {
   MIN = 'min',
@@ -422,9 +474,9 @@ export type NotificationContentIos = {
    * The value your app uses to determine which scene to display to handle the notification.
    */
   targetContentIdentifier?: string;
-  /*
+  /**
    * The notification’s importance and required delivery timing.
-   * Posible values:
+   * Possible values:
    * - 'passive' - the system adds the notification to the notification list without lighting up the screen or playing a sound
    * - 'active' - the system presents the notification immediately, lights up the screen, and can play a sound
    * - 'timeSensitive' - The system presents the notification immediately, lights up the screen, can play a sound, and breaks through system notification controls
@@ -716,9 +768,11 @@ export type NotificationCategoryOptions = {
   allowAnnouncement?: boolean;
 };
 
-export type {
-  EventSubscription as Subscription,
-  PermissionResponse,
-  PermissionStatus,
+export type MaybeNotificationResponse = NotificationResponse | null | undefined;
+
+export {
   PermissionExpiration,
-};
+  PermissionResponse,
+  EventSubscription,
+  PermissionStatus,
+} from 'expo-modules-core';

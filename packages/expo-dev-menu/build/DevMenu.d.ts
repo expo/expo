@@ -16,4 +16,5 @@ export declare function closeMenu(): void;
  * @param items
  */
 export declare function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void>;
+export { ExpoDevMenuItem } from './ExpoDevMenu.types';
 //# sourceMappingURL=DevMenu.d.ts.map

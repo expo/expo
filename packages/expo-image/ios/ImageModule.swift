@@ -21,15 +21,19 @@ public final class ImageModule: Module {
         "onLoadStart",
         "onProgress",
         "onError",
-        "onLoad"
+        "onLoad",
+        "onDisplay"
       )
 
       Prop("source") { (view: ImageView, sources: Either<[ImageSource], SharedRef<UIImage>>?) in
         if let imageRef: SharedRef<UIImage> = sources?.get() {
+          // Unset an array of traditional sources and just render the image ref right away.
           view.sources = nil
-          view.renderImage(imageRef.ref)
+          view.renderSourceImage(imageRef.ref)
         } else {
+          // Update an array of sources. Image will start loading once the all props are updated.
           view.sources = sources?.get()
+          view.sourceImage = nil
         }
       }
 
@@ -188,8 +192,8 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("loadAsync") { (source: ImageSource) -> Image? in
-      let image = try await ImageLoadTask(source).load()
+    AsyncFunction("loadAsync") { (source: ImageSource, options: ImageLoadOptions?) -> Image? in
+      let image = try await ImageLoadTask(source, maxSize: options?.getMaxSize()).load()
       return Image(image)
     }
 
@@ -197,7 +201,7 @@ public final class ImageModule: Module {
       Property("width", \.ref.size.width)
       Property("height", \.ref.size.height)
       Property("scale", \.ref.scale)
-      Property("isAnimated", \.ref.sd_isAnimated)
+      Property("isAnimated", \.isAnimated)
       Property("mediaType") { image in
         return imageFormatToMediaType(image.ref.sd_imageFormat)
       }

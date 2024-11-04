@@ -1,17 +1,48 @@
+'use client';
 // A fork of `useFocusEffect` that waits for the navigation state to load before
 // running the effect. This is especially useful for native redirects.
 import * as React from 'react';
 
 import { useOptionalNavigation } from './link/useLoadedNavigation';
 
-type EffectCallback = () => undefined | void | (() => void);
+/**
+ * Memoized callback containing the effect, should optionally return a cleanup function.
+ */
+export type EffectCallback = () => undefined | void | (() => void);
 
 /**
- * Hook to run an effect in a focused screen, similar to `React.useEffect`.
- * This can be used to perform side-effects such as fetching data or subscribing to events.
- * The passed callback should be wrapped in `React.useCallback` to avoid running the effect too often.
+ * Hook to run an effect whenever a route is **focused**. Similar to
+ * [`React.useEffect`](https://react.dev/reference/react/useEffect).
  *
- * @param callback Memoized callback containing the effect, should optionally return a cleanup function.
+ * This can be used to perform side-effects such as fetching data or subscribing to events.
+ * The passed callback should be wrapped in [`React.useCallback`](https://react.dev/reference/react/useCallback)
+ * to avoid running the effect too often.
+ *
+ * @example
+ * ```tsx
+ * import { useFocusEffect } from 'expo-router';
+ * import { useCallback } from 'react';
+ *
+ * export default function Route() {
+ *   useFocusEffect(
+ *     // Callback should be wrapped in `React.useCallback` to avoid running the effect too often.
+ *     useCallback(() => {
+ *       // Invoked whenever the route is focused.
+ *       console.log('Hello, I'm focused!');
+ *
+ *       // Return function is invoked whenever the route gets out of focus.
+ *       return () => {
+ *         console.log('This route is now unfocused.');
+ *       };
+ *     }, []);
+ *    );
+ *
+ *  return </>;
+ * }
+ *```
+ *
+ * @param effect Memoized callback containing the effect, should optionally return a cleanup function.
+ * @param do_not_pass_a_second_prop
  */
 export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop?: never) {
   const navigation = useOptionalNavigation();
@@ -76,7 +107,7 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
       }
     };
 
-    // We need to run the effect on intial render/dep changes if the screen is focused
+    // We need to run the effect on initial render/dep changes if the screen is focused
     if (navigation.isFocused()) {
       cleanup = callback();
       isFocused = true;
@@ -84,7 +115,7 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
 
     const unsubscribeFocus = navigation.addListener('focus', () => {
       // If callback was already called for focus, avoid calling it again
-      // The focus event may also fire on intial render, so we guard against runing the effect twice
+      // The focus event may also fire on initial render, so we guard against running the effect twice
       if (isFocused) {
         return;
       }

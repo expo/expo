@@ -177,15 +177,15 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
   {
     "filePath": "node_modules/expo",
     "reasons": [
-      "bareRncliAutolinking",
+      "rncoreAutolinking",
     ],
     "type": "dir",
   },
   {
     "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
-    "id": "rncliAutolinkingConfig",
+    "id": "rncoreAutolinkingConfig",
     "reasons": [
-      "bareRncliAutolinking",
+      "rncoreAutolinking",
     ],
     "type": "contents",
   },

@@ -7,8 +7,8 @@ namespace expo::SharedObject {
 
 #pragma mark - NativeState
 
-NativeState::NativeState(const ObjectId objectId, const ObjectReleaser releaser)
-: EventEmitter::NativeState(), objectId(objectId), releaser(releaser) {}
+NativeState::NativeState(ObjectId objectId, ObjectReleaser releaser)
+: EventEmitter::NativeState(), objectId(objectId), releaser(std::move(releaser)) {}
 
 NativeState::~NativeState() {
   releaser(objectId);
@@ -16,7 +16,7 @@ NativeState::~NativeState() {
 
 #pragma mark - Utils
 
-void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser releaser) {
+void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser& releaser) {
   jsi::Function baseClass = EventEmitter::getClass(runtime);
   jsi::Function klass = expo::common::createInheritingClass(runtime, "SharedObject", baseClass);
   jsi::Object prototype = klass.getPropertyAsObject(runtime, "prototype");
@@ -86,7 +86,7 @@ jsi::Function getBaseClass(jsi::Runtime &runtime) {
 
 jsi::Function createClass(jsi::Runtime &runtime, const char *className, common::ClassConstructor constructor) {
   jsi::Function baseSharedObjectClass = getBaseClass(runtime);
-  return common::createInheritingClass(runtime, className, baseSharedObjectClass, constructor);
+  return common::createInheritingClass(runtime, className, baseSharedObjectClass, std::move(constructor));
 }
 
 } // namespace expo::SharedObject

@@ -1,46 +1,65 @@
 ---
 title: Create your first app
-description: In this tutorial, learn how to create a new Expo project.
+
+description: In this chapter, learn how to create a new Expo project.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Download03Icon } from '@expo/styleguide-icons/outline/Download03Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { A } from '~/ui/components/Text';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, let's learn how to create a new Expo project and how to get it running.
 
+<VideoBoxLink videoId="m1-bc53EGh8" title="Watch: Creating your first universal Expo app" />
+
+---
+
 ## Prerequisites
 
-We'll need the following tools to get started:
+We'll need the following to get started:
 
-- Install [Expo Go](https://expo.dev/go) on a physical device.
-- Prepare for development by installing the required tools listed under [system requirements](/get-started/create-a-project/).
+- [Expo Go](https://expo.dev/go) installed on a physical device
+- [Node.js (LTS version)](https://nodejs.org/en) installed
+- [VS Code](https://code.visualstudio.com/) or any other preferred code editor or IDE installed
+- A macOS, Linux, or Windows (PowerShell and [WSL2](https://expo.fyi/wsl)) with a terminal window open
 
-This tutorial also assumes that you have a basic knowledge of JavaScript and React. If you have never written React code, go through [the official React tutorial](https://react.dev/learn).
+The tutorial assumes that you are familiar with TypeScript and React. If you are not familiar with them, check out the [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html) and [React's official tutorial](https://react.dev/learn).
 
 <Step label="1">
 
 ## Initialize a new Expo app
 
-We will use <A href="/more/create-expo/">`create-expo-app`</A> to initialize a new Expo app. It is a command line tool that allows us to create a new React Native project with the `expo` package installed. Run the following command in your terminal:
+We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. It is a command line tool to create a new React Native project. Run the following command in your terminal:
 
 <Terminal
   cmd={[
     '# Create a project named StickerSmash',
-    '$ npx create-expo-app StickerSmash --template blank',
+    '$ npx create-expo-app@latest StickerSmash',
     '',
     '# Navigate to the project directory',
     '$ cd StickerSmash',
   ]}
-  cmdCopy="npx create-expo-app StickerSmash --template blank && cd StickerSmash"
+  cmdCopy="npx create-expo-app@latest StickerSmash && cd StickerSmash"
 />
 
-This command will create a new directory for the project with the name **StickerSmash**. The `create-expo-app` has a `--template` option, which we can use to create and set up a new project with different pre-installed libraries. In this case, we're using the `blank` which installs the minimum required libraries. We'll continue to add more libraries throughout this tutorial when needed.
+This command will create a new project directory named StickerSmash, using the [default](/more/create-expo/#--template) template. This template has essential boilerplate code and libraries needed to build our app, including Expo Router. We'll continue to add more libraries throughout this tutorial as needed.
+
+<Collapsible summary="Benefits of using the default template">
+
+- Creates a new React Native project with `expo` package installed
+- Includes recommended tools such as Expo CLI
+- Includes a tab navigator from Expo Router to provide a basic navigation system
+- Automatically configured to run a project on multiple platforms: Android, iOS, and web
+- TypeScript configured by default
+
+</Collapsible>
 
 </Step>
 
@@ -55,19 +74,28 @@ This command will create a new directory for the project with the name **Sticker
   href="/static/images/tutorial/sticker-smash-assets.zip"
 />
 
-After downloading the archive, unzip it and replace the existing **assets** directory with it in the project directory. This will override the default assets created when the new project was initialized.
+After downloading the archive:
 
-Now, let's open the project directory in our favorite code editor or IDE. Throughout this tutorial, we will use VS Code for our examples.
+1. Unzip the archive and replace the default assets in the **your-project-name/assets/images** directory.
+2. Open the project directory in a code editor or IDE.
 
 </Step>
 
 <Step label="3">
 
-## Install dependencies
+## Run reset-project script
 
-To run the project on the web, we need to install the following dependencies that will help to run the project on the web:
+In this tutorial, we'll build our app from scratch and understand the fundamentals of adding a file-based navigation. Let's run the `reset-project` script to remove the boilerplate code:
 
-<Terminal cmd={['$ npx expo install react-dom react-native-web @expo/metro-runtime']} />
+<Terminal cmd={['$ npm run reset-project']} />
+
+After running the above command, there are two files (**index.tsx** and **\_layout.tsx**) left inside the **app** directory. The other directories (**components**, **constants**, and **hooks**) also contain boilerplate code. We can delete all files inside these directories because we'll create our own components.
+
+<Collapsible summary={<>What does the <CODE>reset-project</CODE> script do?</>}>
+
+`reset-project` script resets the **app** directory structure in a project and copies the previous files from **app** directory to another directory called **app-example**. We can delete it since it is not part of our main app's structure.
+
+</Collapsible>
 
 </Step>
 
@@ -75,33 +103,89 @@ To run the project on the web, we need to install the following dependencies tha
 
 ## Run the app on mobile and web
 
-In the project directory, run the following command to start a <A href="/more/glossary-of-terms/#development-server">development server</A> from the terminal:
+In the project directory, run the following command to start the [development server](/more/glossary-of-terms/#development-server) from the terminal:
 
 <Terminal cmd={['$ npx expo start']} />
 
-Once the development server is running, the easiest way to launch the app is on a physical device with Expo Go. For more information, see <A href="/get-started/start-developing/#open-the-app-on-your-device">Open app on a device</A>.
+After running the above command:
 
-To see the web app in action, press <kbd>w</kbd> in the terminal. It will open the web app in the default web browser.
+1. The development server will start, and you'll see a QR code inside the terminal window.
+2. Scan that QR code to open the app on the device. On Android, use the Expo Go > **Scan QR code** option. On iOS, use the default camera app.
+3. To run the web app, press <kbd>w</kbd> in the terminal. It will open the web app in the default web browser.
 
-Once it is running on all platforms, the project should look like this:
+Once it is running on all platforms, the app should look like this:
 
 <ContentSpotlight
   alt="App running on all platforms"
-  src="/static/images/tutorial/01-app-running-on-all-platforms.jpg"
+  src="/static/images/tutorial/01-app-running-on-all-platforms.png"
   className="max-w-[720px]"
 />
 
-The text displayed on the app's screen above can be found in the **App.js** file which is at the root of the project's directory. It is the entry point of the project and is executed when the development server starts.
+</Step>
+
+<Step label="5">
+
+## Edit the index screen
+
+The **app/index.tsx** file defines the text displayed on the app's screen. It is the entry point of our app and executes when the development server starts. It uses core React Native components such as `<View>` and `<Text>` to display background and text.
+
+Styles applied to these components use JavaScript objects rather than CSS, which is used on web. However, a lot of the properties will look familiar if you've previously used CSS on web. Most React Native components accept a `style` prop that accepts a JavaScript object as its value. For more details, see [Styling in React Native](https://reactnative.dev/docs/style).
+
+Let's modify **app/index.tsx** screen:
+
+1. Import `StyleSheet` from `react-native` and create a `styles` object to define our custom styles.
+2. Add a `styles.container.backgroundColor` property to `<View>` with the value of `#25292e`. This changes the background color.
+3. Replace the default value of `<Text>` with "Home screen".
+4. Add a `styles.text.color` property to `<Text>` with the value of `#fff` (white) to change the text color.
+
+{/* prettier-ignore */}
+```tsx app/index.tsx|collapseHeight=340
+import { Text, View, /* @tutinfo Import <CODE>StyleSheet</CODE> to define styles. */ StyleSheet/* @end */ } from 'react-native';
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      /* @tutinfo This used to say "Edit app/index.tsx to edit this screen". Now it says, "Home screen". */
+      <Text style={styles.text}>Home screen</Text>
+      /* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    /* @tutinfo Add the value of <CODE>backgroundColor</CODE> property with <CODE>'#25292e'</CODE>.*/
+    backgroundColor: '#25292e',
+    /* @end */
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: '#fff',
+  },
+});
+```
+
+> React Native uses the same color format as the web. It supports hex triplets (this is what `#fff` is), `rgba`, `hsl`, and named colors, such as `red`, `green`, `blue`, `peru`, and `papayawhip`. For more information, see [Colors in React Native](https://reactnative.dev/docs/colors).
+
+This change will reflect on all platforms automatically:
+
+<ContentSpotlight
+  alt="App with updated text and background color"
+  src="/static/images/tutorial/02-index-screen-changes.png"
+  className="max-w-[720px]"
+/>
 
 </Step>
 
-## Next step
+## Summary
 
-We have created a new Expo project and are ready to develop our StickerSmash app.
-
-<BoxLink
-  title="Build your app's first screen"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, we'll learn how to build the app's first screen."
-  href="/tutorial/build-a-screen"
+<ProgressTracker
+  currentChapterIndex={0}
+  name="GET_STARTED"
+  summary="We've successfully created a new Expo project, used React Native core components, and are ready to develop our StickerSmash app."
+  nextChapterDescription="In the next chapter, we will learn how to add a stack and a tab navigator to our app."
+  nextChapterTitle="Add navigation"
+  nextChapterLink="/tutorial/add-navigation/"
 />

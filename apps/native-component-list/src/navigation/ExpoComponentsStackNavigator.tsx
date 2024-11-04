@@ -10,6 +10,7 @@ import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
+import { VideoScreens } from '../screens/Video/VideoScreen';
 import { ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createStackNavigator();
@@ -20,12 +21,6 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/DrawerLayoutAndroidScreen'));
     },
     name: 'DrawerLayoutAndroid',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/BarCodeScannerScreen'));
-    },
-    name: 'BarCodeScanner',
   },
   {
     getComponent() {
@@ -51,12 +46,6 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/BlurView/BlurViewScreen'));
     },
     name: 'BlurView',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreenLegacy'));
-    },
-    name: 'Camera (legacy)',
   },
   {
     getComponent() {
@@ -141,13 +130,6 @@ export const Screens: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/ActivityIndicatorScreen'));
     },
     name: 'ActivityIndicator',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/QRCodeScreen'));
-    },
-    name: 'QRCode',
-    options: { title: 'QR Code' },
   },
   {
     getComponent() {
@@ -442,7 +424,14 @@ export const Screens: ScreenConfig[] = [
     },
     name: 'ClipboardPasteButton',
   },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/LivePhotoScreen'));
+    },
+    name: 'LivePhoto',
+  },
   ...ImageScreens,
+  ...VideoScreens,
 ];
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {

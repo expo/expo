@@ -32,6 +32,7 @@ void JSDecoratorsBridgingObject::registerNatives() {
 void JSDecoratorsBridgingObject::registerSyncFunction(
   jni::alias_ref<jstring> name,
   jboolean takesOwner,
+  jboolean enumerable,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
@@ -39,12 +40,13 @@ void JSDecoratorsBridgingObject::registerSyncFunction(
     functionDecorator = std::make_unique<JSFunctionsDecorator>();
   }
 
-  functionDecorator->registerSyncFunction(name, takesOwner, expectedArgTypes, body);
+  functionDecorator->registerSyncFunction(name, takesOwner, enumerable, expectedArgTypes, body);
 }
 
 void JSDecoratorsBridgingObject::registerAsyncFunction(
   jni::alias_ref<jstring> name,
   jboolean takesOwner,
+  jboolean enumerable,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
 ) {
@@ -52,7 +54,7 @@ void JSDecoratorsBridgingObject::registerAsyncFunction(
     functionDecorator = std::make_unique<JSFunctionsDecorator>();
   }
 
-  functionDecorator->registerAsyncFunction(name, takesOwner, expectedArgTypes, body);
+  functionDecorator->registerAsyncFunction(name, takesOwner, enumerable, expectedArgTypes, body);
 }
 
 void JSDecoratorsBridgingObject::registerProperty(
@@ -103,6 +105,7 @@ void JSDecoratorsBridgingObject::registerClass(
   jni::alias_ref<JSDecoratorsBridgingObject::javaobject> jsDecoratorsBridgingObject,
   jboolean takesOwner,
   jni::alias_ref<jclass> ownerClass,
+  jboolean isSharedRef,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
@@ -115,6 +118,7 @@ void JSDecoratorsBridgingObject::registerClass(
     jsDecoratorsBridgingObject,
     takesOwner,
     ownerClass,
+    isSharedRef,
     expectedArgTypes,
     body
   );

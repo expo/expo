@@ -38,6 +38,9 @@ export type ExpoMetroOptions = {
   usedExports?: boolean;
   /** Enable optimized bundling (required for tree shaking). */
   optimize?: boolean;
+
+  modulesOnly?: boolean;
+  runModule?: boolean;
 };
 
 export type SerializerOptions = {
@@ -72,6 +75,7 @@ function withDefaults({
   minify = mode === 'production',
   preserveEnvVars = mode !== 'development' && env.EXPO_NO_CLIENT_ENV_VARS,
   lazy,
+  environment,
   ...props
 }: ExpoMetroOptions): ExpoMetroOptions {
   if (props.bytecode) {
@@ -85,9 +89,7 @@ function withDefaults({
 
   const optimize =
     props.optimize ??
-    (props.environment !== 'node' &&
-      mode === 'production' &&
-      env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
+    (environment !== 'node' && mode === 'production' && env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
 
   return {
     mode,
@@ -96,6 +98,7 @@ function withDefaults({
     optimize,
     usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
+    environment: environment === 'client' ? undefined : environment,
     ...props,
   };
 }
@@ -159,6 +162,8 @@ export function getMetroDirectBundleOptions(
     optimize,
     domRoot,
     clientBoundaries,
+    runModule,
+    modulesOnly,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -194,7 +199,7 @@ export function getMetroDirectBundleOptions(
     environment,
     baseUrl: baseUrl || undefined,
     routerRoot,
-    bytecode: bytecode || undefined,
+    bytecode: bytecode ? '1' : undefined,
     reactCompiler: reactCompiler || undefined,
     dom: domRoot,
   };
@@ -215,6 +220,8 @@ export function getMetroDirectBundleOptions(
     lazy: (!isExporting && lazy) || undefined,
     unstable_transformProfile: isHermes ? 'hermes-stable' : 'default',
     customTransformOptions,
+    runModule,
+    modulesOnly,
     customResolverOptions: {
       __proto__: null,
       environment,
@@ -274,6 +281,8 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     usedExports,
     optimize,
     domRoot,
+    modulesOnly,
+    runModule,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -304,7 +313,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.append('transform.engine', engine);
   }
   if (bytecode) {
-    queryParams.append('transform.bytecode', String(bytecode));
+    queryParams.append('transform.bytecode', '1');
   }
   if (asyncRoutes) {
     queryParams.append('transform.asyncRoutes', String(asyncRoutes));
@@ -356,6 +365,13 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.append('unstable_transformProfile', 'hermes-stable');
   }
 
+  if (modulesOnly != null) {
+    queryParams.set('modulesOnly', String(modulesOnly));
+  }
+  if (runModule != null) {
+    queryParams.set('runModule', String(runModule));
+  }
+
   return queryParams;
 }
 
@@ -369,4 +385,64 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
  */
 export function convertPathToModuleSpecifier(pathLike: string) {
   return pathLike.replaceAll('\\', '/');
+}
+
+export function getMetroOptionsFromUrl(urlFragment: string) {
+  const url = new URL(urlFragment, 'http://localhost:0');
+  const getStringParam = (key: string) => {
+    const param = url.searchParams.get(key);
+    if (Array.isArray(param)) {
+      throw new Error(`Expected single value for ${key}`);
+    }
+    return param;
+  };
+
+  let pathname = url.pathname;
+  if (pathname.endsWith('.bundle')) {
+    pathname = pathname.slice(0, -'.bundle'.length);
+  }
+
+  const options: ExpoMetroOptions = {
+    mode: isTruthy(getStringParam('dev') ?? 'true') ? 'development' : 'production',
+    minify: isTruthy(getStringParam('minify') ?? 'false'),
+    lazy: isTruthy(getStringParam('lazy') ?? 'false'),
+    routerRoot: getStringParam('transform.routerRoot') ?? 'app',
+    isExporting: isTruthy(getStringParam('resolver.exporting') ?? 'false'),
+    environment: assertEnvironment(getStringParam('transform.environment') ?? 'node'),
+    platform: url.searchParams.get('platform') ?? 'web',
+    bytecode: isTruthy(getStringParam('transform.bytecode') ?? 'false'),
+    mainModuleName: convertPathToModuleSpecifier(pathname),
+    reactCompiler: isTruthy(getStringParam('transform.reactCompiler') ?? 'false'),
+    asyncRoutes: isTruthy(getStringParam('transform.asyncRoutes') ?? 'false'),
+    baseUrl: getStringParam('transform.baseUrl') ?? undefined,
+    // clientBoundaries: JSON.parse(getStringParam('transform.clientBoundaries') ?? '[]'),
+    engine: assertEngine(getStringParam('transform.engine')),
+    runModule: isTruthy(getStringParam('runModule') ?? 'true'),
+    modulesOnly: isTruthy(getStringParam('modulesOnly') ?? 'false'),
+  };
+
+  return options;
+}
+
+function isTruthy(value: string | null): boolean {
+  return value === 'true' || value === '1';
+}
+
+function assertEnvironment(environment: string | undefined): MetroEnvironment | undefined {
+  if (!environment) {
+    return undefined;
+  }
+  if (!['node', 'react-server', 'client'].includes(environment)) {
+    throw new Error(`Expected transform.environment to be one of: node, react-server, client`);
+  }
+  return environment as MetroEnvironment;
+}
+function assertEngine(engine: string | undefined | null): 'hermes' | undefined {
+  if (!engine) {
+    return undefined;
+  }
+  if (!['hermes'].includes(engine)) {
+    throw new Error(`Expected transform.engine to be one of: hermes`);
+  }
+  return engine as 'hermes';
 }

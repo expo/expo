@@ -61,7 +61,6 @@ object DebugLogging {
     Log.i("expo-notifications", logMessage)
   }
 
-  @RequiresApi(Build.VERSION_CODES.O)
   fun logNotification(caller: String, notification: Notification) {
     if (!BuildConfig.DEBUG) {
       // Do not log for release/production builds
@@ -71,14 +70,13 @@ object DebugLogging {
       """
       $caller:
         notification.notificationRequest.content.title: ${notification.notificationRequest.content.title}
-        notification.notificationRequest.content.subtitle: ${notification.notificationRequest.content.subtitle}
+        notification.notificationRequest.content.subText: ${notification.notificationRequest.content.subText}
         notification.notificationRequest.content.text: ${notification.notificationRequest.content.text}
-        notification.notificationRequest.content.sound: ${notification.notificationRequest.content.sound}
-        notification.notificationRequest.content.channelID: ${notification.notificationRequest.trigger.notificationChannel}
+        notification.notificationRequest.content.sound: ${notification.notificationRequest.content.soundName}
+        notification.notificationRequest.content.channelID: ${notification.notificationRequest.trigger.getNotificationChannel()}
         notification.notificationRequest.content.body: ${notification.notificationRequest.content.body}
         notification.notificationRequest.content.color: ${notification.notificationRequest.content.color}
-        notification.notificationRequest.content.vibrationPattern: ${notification.notificationRequest.content.vibrationPattern.contentToString()}
-        notification.notificationRequest.trigger.notificationChannel: ${notification.notificationRequest.trigger.notificationChannel}
+        notification.notificationRequest.content.vibrationPattern: ${notification.notificationRequest.content.vibrationPattern?.contentToString()}
         notification.notificationRequest.identifier: ${notification.notificationRequest.identifier}
       """.trimIndent()
 

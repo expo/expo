@@ -7,12 +7,15 @@ description: Learn how to set up and run E2E tests on EAS Build with Maestro.
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 > **info** This guide will evolve over time as support for E2E testing in EAS Build improves. If you are looking for an archived guide on how to run E2E tests on EAS Build using Detox, you can see it in the [archive section](/archive/e2e-tests/).
 
 In this guide, you will learn how to create and run E2E tests on EAS Build using [Maestro](https://maestro.mobile.dev/), which is one of the most popular tools for running E2E tests in mobile apps.
 
 The example demonstrates how to configure your EAS Build Maestro E2E tests workflow using the [default Expo template](/more/create-expo/#--template). For your own app, you will need to adjust the flows to match your app's UI.
+
+<VideoBoxLink videoId="-o-bfIRrg9U" title="Watch: How to run E2E tests on EAS Build" />
 
 <Step label="1">
 ## Initialize a new project
@@ -52,9 +55,9 @@ The following command creates a new project on Expo servers for your app and cre
 
 <Step label="3">
 
-## Disable Android Build Infrastructure
+## Disable New Android Builds Infrastructure
 
-Go to [**Project settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Build Infrastructure**.
+Go to [**Project settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Builds Infrastructure**.
 
 Unfortunately, the new build infrastructure is incompatible with E2E tests due to the lack of virtualization support required to start Android Emulator. We are working on better solutions for running various tests on EAS.
 
@@ -176,8 +179,8 @@ To learn more about Maestro flows and how to write them, see the [Maestro docume
 
 If you encounter the following error message when starting an Android Emulator for E2E tests on EAS Build:
 
-```
+```text
 Failed to configure emulator: emulator with required ID not found.
 ```
 
-This is likely because the New Build Infrastructure is enabled for your project. Go to [**Project Settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Build Infrastructure**.
+This is likely because the New Build Infrastructure is enabled for your project. Go to [**Project Settings**](https://expo.dev/accounts/[account]/projects/[project]/settings) and disable **New Android Builds Infrastructure**.

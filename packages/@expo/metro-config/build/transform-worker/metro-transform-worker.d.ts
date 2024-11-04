@@ -45,6 +45,11 @@ export declare function collectDependenciesForShaking(ast: babylon.ParseResult<t
                 mode: "sync" | "eager" | "lazy" | "lazy-once";
             }> | undefined;
             exportNames: string[];
+            css?: {
+                url: string;
+                supports: string | null;
+                media: string | null;
+            } | undefined;
         }>;
         name: string;
     }>[];

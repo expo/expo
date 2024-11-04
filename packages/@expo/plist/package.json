@@ -1,6 +1,6 @@
 {
   "name": "@expo/plist",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Mac OS X Plist parser/builder for Node.js and browsers",
   "main": "build/index.js",
   "scripts": {
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
-    "expo-module-scripts": "^3.3.0"
+    "expo-module-scripts": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"

@@ -248,8 +248,8 @@ export type ImagePickerAsset = {
    * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
    * > On Android, the ID is unavailable when the user selects a photo by directly browsing file system.
    *
-   * @platform ios
    * @platform android
+   * @platform ios
    */
   assetId?: string | null;
   /**
@@ -283,6 +283,9 @@ export type ImagePickerAsset = {
    * The `exif` field is included if the `exif` option is truthy, and is an object containing the
    * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
    * respective EXIF values for those tags.
+   *
+   * @platform android
+   * @platform ios
    */
   exif?: Record<string, any> | null;
   /**
@@ -311,6 +314,13 @@ export type ImagePickerAsset = {
    * @platform ios
    */
   pairedVideoAsset?: ImagePickerAsset | null;
+
+  /**
+   * The web `File` object containing the selected media. This property is web-only and can be used to upload to a server with `FormData`.
+   *
+   * @platform web
+   */
+  file?: File;
 };
 
 // @needsAudit
@@ -386,8 +396,8 @@ export type ImagePickerOptions = {
    * > - On iOS cropping a `.bmp` image will convert it to `.png`.
    *
    * @default false
-   * @platform ios
    * @platform android
+   * @platform ios
    */
   allowsEditing?: boolean;
   /**
@@ -405,8 +415,8 @@ export type ImagePickerOptions = {
    * > Note: On iOS, if a `.bmp` or `.png` image is selected from the library, this option is ignored.
    *
    * @default 1.0
-   * @platform ios
    * @platform android
+   * @platform ios
    */
   quality?: number;
   /**
@@ -417,6 +427,9 @@ export type ImagePickerOptions = {
   /**
    * Whether to also include the EXIF data for the image. On iOS the EXIF data does not include GPS
    * tags in the camera case.
+   *
+   * @platform android
+   * @platform ios
    */
   exif?: boolean;
   /**
@@ -444,8 +457,8 @@ export type ImagePickerOptions = {
    * > If this option is enabled, then `allowsEditing` is ignored.
    *
    * @default false
-   * @platform ios 14+
    * @platform android
+   * @platform ios 14+
    * @platform web
    */
   allowsMultipleSelection?: boolean;
@@ -453,8 +466,8 @@ export type ImagePickerOptions = {
    * The maximum number of items that user can select. Applicable when `allowsMultipleSelection` is enabled.
    * Setting the value to `0` sets the selection limit to the maximum that the system supports.
    *
-   * @platform ios 14+
    * @platform android
+   * @platform ios 14+
    * @default 0
    */
   selectionLimit?: number;
@@ -490,8 +503,8 @@ export type ImagePickerOptions = {
    * `front` for the front-facing camera and `back` for the back-facing camera.
    * - **On Android**, the behavior of this option may vary based on the camera app installed on the device.
    * @default CameraType.back
-   * @platform ios
    * @platform android
+   * @platform ios
    */
   cameraType?: CameraType;
   /**

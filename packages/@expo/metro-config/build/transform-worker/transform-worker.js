@@ -40,6 +40,7 @@ const css_modules_1 = require("./css-modules");
 const worker = __importStar(require("./metro-transform-worker"));
 const postcss_1 = require("./postcss");
 const sass_1 = require("./sass");
+const debug = require('debug')('expo:metro-config:transform-worker');
 function getStringArray(value) {
     if (!value)
         return undefined;
@@ -72,7 +73,7 @@ async function transform(config, projectRoot, filename, data, options) {
             const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
             // Inject client boundaries into the root client bundle for production bundling.
             if (clientBoundaries) {
-                console.log('Parsed client boundaries:', clientBoundaries);
+                debug('Parsed client boundaries:', clientBoundaries);
                 // Inject source
                 const src = 'module.exports = {\n' +
                     clientBoundaries
@@ -163,36 +164,54 @@ async function transform(config, projectRoot, filename, data, options) {
                         lineCount: (0, countLines_1.default)(cssCode),
                         map: [],
                         functionMap: null,
+                        // Disable caching for CSS files when postcss is enabled and has been run on the file.
+                        // This ensures that things like tailwind can update on every change.
+                        skipCache: postcssResults.hasPostcss,
+                        externalImports: results.externalImports,
                     },
                 },
             },
         ];
         return {
-            dependencies: jsModuleResults.dependencies,
+            dependencies: jsModuleResults.dependencies.concat(results.dependencies),
             output,
         };
     }
     // Global CSS:
     const { transform } = require('lightningcss');
-    // TODO: Add bundling to resolve imports
-    // https://lightningcss.dev/bundling.html#bundling-order
+    // Here we delegate bundling to lightningcss to resolve all CSS imports together.
+    // TODO: Add full CSS bundling support to Metro.
     const cssResults = transform({
         filename,
         code: Buffer.from(code),
+        errorRecovery: true,
         sourceMap: false,
         cssModules: false,
         projectRoot,
         minify: options.minify,
+        analyzeDependencies: true,
+        // @ts-expect-error: Added for testing against virtual file system.
+        resolver: options._test_resolveCss,
     });
-    // TODO: Warnings:
-    // cssResults.warnings.forEach((warning) => {
-    // });
+    (0, css_modules_1.printCssWarnings)(filename, code, cssResults.warnings);
+    const cssImports = (0, css_modules_1.collectCssImports)(filename, code, cssResults.code.toString(), cssResults);
+    const cssCode = cssImports.code;
+    // Append additional css metadata for static extraction.
+    const cssOutput = {
+        code: cssCode,
+        lineCount: (0, countLines_1.default)(cssCode),
+        map: [],
+        functionMap: null,
+        // Disable caching for CSS files when postcss is enabled and has been run on the file.
+        // This ensures that things like tailwind can update on every change.
+        skipCache: postcssResults.hasPostcss,
+        externalImports: cssImports.externalImports,
+    };
     // Create a mock JS module that exports an empty object,
     // this ensures Metro dependency graph is correct.
     const jsModuleResults = await worker.transform(config, projectRoot, filename, options.dev
-        ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: code, filename, reactServer }))
+        ? Buffer.from((0, css_1.wrapDevelopmentCSS)({ src: cssCode, filename, reactServer }))
         : Buffer.from(''), options);
-    const cssCode = cssResults.code.toString();
     // In production, we export the CSS as a string and use a special type to prevent
     // it from being included in the JS bundle. We'll extract the CSS like an asset later
     // and append it to the HTML bundle.
@@ -201,21 +220,12 @@ async function transform(config, projectRoot, filename, data, options) {
             type: 'js/module',
             data: {
                 ...jsModuleResults.output[0].data,
-                // Append additional css metadata for static extraction.
-                css: {
-                    code: cssCode,
-                    lineCount: (0, countLines_1.default)(cssCode),
-                    map: [],
-                    functionMap: null,
-                    // Disable caching for CSS files when postcss is enabled and has been run on the file.
-                    // This ensures that things like tailwind can update on every change.
-                    skipCache: postcssResults.hasPostcss,
-                },
+                css: cssOutput,
             },
         },
     ];
     return {
-        dependencies: jsModuleResults.dependencies,
+        dependencies: jsModuleResults.dependencies.concat(cssImports.dependencies),
         output,
     };
 }

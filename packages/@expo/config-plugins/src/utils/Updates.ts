@@ -137,6 +137,14 @@ export function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): b
   return getUpdateUrl(config) !== null;
 }
 
+export function getUpdatesUseEmbeddedUpdate(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
+  if (config.updates?.useEmbeddedUpdate !== undefined) {
+    return config.updates.useEmbeddedUpdate;
+  }
+
+  return true;
+}
+
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {
   return config.updates?.fallbackToCacheTimeout ?? 0;
 }

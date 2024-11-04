@@ -19,6 +19,8 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-media-library` provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
+> **warning** Android allows full access to the media library (which is the purpose of this package) only for applications needing broad access to photos. See [Details on Google Play's Photo and Video Permissions policy](https://support.google.com/googleplay/android-developer/answer/14115180).
+
 ## Installation
 
 <APIInstallSection />
@@ -178,9 +180,18 @@ import * as MediaLibrary from 'expo-media-library';
 
 ### Android
 
-The following permissions are added automatically through this library's `AndroidManifest.xml`.
+The following permissions are added automatically through this library's **AndroidManifest.xml**:
 
-<AndroidPermissions permissions={['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']} />
+<AndroidPermissions
+  permissions={[
+    'READ_EXTERNAL_STORAGE',
+    'WRITE_EXTERNAL_STORAGE',
+    'READ_MEDIA_IMAGES',
+    'READ_MEDIA_VIDEO',
+    'READ_MEDIA_AUDIO',
+    'READ_MEDIA_VISUAL_USER_SELECTED',
+  ]}
+/>
 
 ### iOS
 

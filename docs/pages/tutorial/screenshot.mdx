@@ -3,26 +3,26 @@ title: Take a screenshot
 description: In this tutorial, learn how to capture a screenshot using a third-party library and Expo Media Library.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { A } from '~/ui/components/Text';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we will learn how to take a screenshot using a third-party library and save it on the device's media library.
-We'll use the following libraries [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) that allows taking a screenshot,
-and <A href="/versions/latest/sdk/media-library/">`expo-media-library`</A> that allows accessing a device's media library to save an image.
+In this chapter, we'll learn how to take a screenshot using a third-party library and save it on the device's media library. We'll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) to take a screenshot and [`expo-media-library`](/versions/latest/sdk/media-library/) to save an image on device's media library.
 
-> So far, we have been using some third-party libraries such as `react-native-gesture-handler`, `react-native-reanimated`, and now `react-native-view-shot`.
-> We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/).
+> **info** So far, we have used third-party libraries, such as `react-native-gesture-handler`, `react-native-reanimated`. We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/) depending on a use case.
+
+<VideoBoxLink videoId="Jft3_Yfr-p4" title="Watch: Taking screenshots in your universal Expo app" />
+
+---
 
 <Step label="1">
 
 ## Install libraries
 
-To install both libraries, run the following commands:
+To install `react-native-view-shot` and `expo-media-library`, run the following commands:
 
 <Terminal cmd={['$ npx expo install react-native-view-shot expo-media-library']} />
 
@@ -32,75 +32,61 @@ To install both libraries, run the following commands:
 
 ## Prompt for permissions
 
-When creating an app that requires access to potentially sensitive information, such as access to the media library, we must first request the user's permission.
+An app that requires sensitive information, such as accessing a device's media library, has to prompt permission to allow or deny access. Using `usePermissions()` hook from `expo-media-library`, we can use the permission `status` and `requestPermission()` method to ask for access.
 
-`expo-media-library` provides a `usePermissions()` hook that gives the permission `status`, and a `requestPermission()` method to ask for access to the media library when permission is not granted.
+When the app loads for the first time and the permission status is neither granted nor denied, the value of the `status` is `null`. When asked for permission, a user can either grant the permission or deny it. We can add a condition to check if it is `null`, and if it is, trigger the `requestPermission()` method. After getting the access, the value of the `status` changes to `granted`.
 
-Initially, when the app loads for the first time and the permission status is neither granted nor denied, the value of the `status` is `null`. When asked for permission, a user can either grant the permission or deny it. We can add a condition to check if it is `null`, and if it is, trigger the `requestPermission()` method.
-
-Add the following code snippet inside the `<App>` component:
+Add the following code snippet inside the **app/(tabs)/index.tsx**:
 
 {/* prettier-ignore */}
-```jsx App.js
-/* @info Import expo-media-library. */import * as MediaLibrary from 'expo-media-library';/* @end */
+```tsx app/(tabs)/index.tsx
+/* @tutinfo Import <CODE>expo-media-library</CODE>. */import * as MediaLibrary from 'expo-media-library';/* @end */
 
 // ...rest of the code remains same
 
-export default function App() {
-  /* @info Add this statement to import the permissions status and requestPermission() method from the hook. */const [status, requestPermission] = MediaLibrary.usePermissions();/* @end */
+export default function Index() {
+  /* @tutinfo Add this statement to import the permissions status and <CODE>requestPermission()</CODE> method from the hook. */const [status, requestPermission] = MediaLibrary.usePermissions();/* @end */
   // ...rest of the code remains same
 
-  /* @info Add an if statement to check the status of permission. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
+  /* @tutinfo Add an if statement to check the status of permission. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
   if (status === null) {
-    requestPermission();/* @end */
+    requestPermission();
   }
+  /* @end */
 
   // ...rest of the code remains same
 }
 ```
 
-Once permission is given, the value of the `status` changes to `granted`.
-
 </Step>
 
 <Step label="3">
 
-## Picking a library to take screenshots
-
-To allow the user to take a screenshot within the app, we'll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot). It allows capturing a `<View>` as an image.
-
-Let's import it into **App.js** file:
-
-```jsx App.js
-import { captureRef } from 'react-native-view-shot';
-```
-
-</Step>
-
-<Step label="4">
-
 ## Create a ref to save the current view
 
-The `react-native-view-shot` library provides a method called `captureRef()` that captures a screenshot of a `<View>` in the app and returns the URI of the screenshot image file.
+We'll use `react-native-view-shot` to allow the user to take a screenshot within the app. This library captures the screenshot of a `<View>` as an image using the `captureRef()` method. It returns the URI of the captured screenshot image file.
 
-To capture a `<View>`, wrap the `<ImageViewer>` and `<EmojiSticker>` components inside a `<View>` and then pass a reference to it. Using the `useRef()` hook from React, let's create an `imageRef` variable inside `<App>`.
+1. Import `captureRef` from `react-native-view-shot` and `useRef` from React.
+2. Create an `imageRef` reference variable to store the reference of the screenshot image captured.
+3. Wrap the `<ImageViewer>` and `<EmojiSticker>` components inside a `<View>` and then pass the reference variable to it.
 
 {/* prettier-ignore */}
-```jsx App.js|collapseHeight=440
-import { useState, /* @info Import the useRef hook from React. */useRef/* @end */ } from 'react';
+```tsx app/(tabs)/index.tsx|collapseHeight=440
+import { useState, useRef } from 'react';
+/* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
 
-export default function App() {
-  /* @info Create an imageRef variable. */ const imageRef = useRef();/* @end */
+export default function Index() {
+  /* @tutinfo Create an imageRef variable. */ const imageRef = useRef();/* @end */
 
   // ...rest of the code remains same
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @info Add a View component to wrap the ImageViewer and EmojiSticker inside it. */<View ref={imageRef} collapsable={false}>/* @end */
-          <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
+        /* @tutinfo Add a View component to wrap the ImageViewer and EmojiSticker inside it. */<View ref={imageRef} collapsable={false}>/* @end */
+          <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
           {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
-        /* @info */</View>/* @end */
+        /* @tutinfo */</View>/* @end */
       </View>
       {/* ...rest of the code remains same */}
     </GestureHandlerRootView>
@@ -108,50 +94,80 @@ export default function App() {
 }
 ```
 
-The `collapsable` prop is set to `false` in the above snippet because this `<View>` component is used to take a screenshot of the background image and the emoji sticker.
-The rest of the contents of the app screen (such as buttons) are not part of the screenshot.
+In the above snippet, the `collapsable` prop is set to `false`. This allows the `<View>` component to screenshot only of the background image and emoji sticker.
 
 </Step>
 
-<Step label="5">
+<Step label="4">
 
 ## Capture a screenshot and save it
 
-Now we can capture a screenshot of the view by calling the `captureRef()` method from `react-native-view-shot` inside the `onSaveImageAsync()` function.
-`captureRef()` accepts an optional argument where we can pass the `width` and `height` of the area we'd like to capture a screenshot for.
-We can read more about available options in [the library's documentation](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api).
+We can capture a screenshot of the view by calling the `captureRef()` method from `react-native-view-shot` inside the `onSaveImageAsync()` function. It accepts an optional argument where we can pass the `width` and `height` of the screenshot capturing area. We can read more about available options in [the library's documentation](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api).
 
-The `captureRef()` method returns a promise that fulfills with the URI of the captured screenshot.
-We will pass this URI as a parameter to <A href="/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri">`MediaLibrary.saveToLibraryAsync()`</A>,
-which will save the screenshot to the device's media library.
+The `captureRef()` method also returns a promise that fulfills with the screenshot's URI. We will pass this URI as a parameter to [`MediaLibrary.saveToLibraryAsync()`](/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) and save the screenshot to the device's media library.
 
-Update the `onSaveImageAsync()` function with the following code:
-
-<SnackInline
-label="Take a screenshot"
-templateId="tutorial/07-screenshot/App"
-dependencies={['expo-image-picker', '@expo/vector-icons/FontAwesome', '@expo/vector-icons', 'expo-status-bar', '@expo/vector-icons/MaterialIcons', 'react-native-gesture-handler', 'react-native-reanimated', 'react-native-view-shot', 'expo-media-library']}
-files={{
-  'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910',
-  'assets/images/emoji1.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/be9751678c0b3f9c6bf55f60de815d30',
-  'assets/images/emoji2.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/7c0d14b79e134d528c5e0801699d6ccf',
-  'assets/images/emoji3.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/d713e2de164764c2ab3db0ab4e40c577',
-  'assets/images/emoji4.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ac2163b98a973cb50bfb716cc4438f9a',
-  'assets/images/emoji5.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/9cc0e2ff664bae3af766b9750331c3ad',
-  'assets/images/emoji6.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ce614cf0928157b3f7daa3cb8e7bd486',
-  'components/ImageViewer.js': 'tutorial/02-image-picker/ImageViewer.js',
-  'components/Button.js': 'tutorial/03-button-options/Button.js',
-  'components/CircleButton.js': 'tutorial/03-button-options/CircleButton.js',
-  'components/IconButton.js': 'tutorial/03-button-options/IconButton.js',
-  'components/EmojiPicker.js': 'tutorial/04-modal/EmojiPicker.js',
-  'components/EmojiList.js': 'tutorial/05-emoji-list/EmojiList.js',
-  'components/EmojiSticker.js': 'tutorial/06-gestures/CompleteEmojiSticker.js',
-}}>
+Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with the following code:
 
 {/* prettier-ignore */}
-```jsx collapseHeight=440
-export default function App() {
-  /* @info Replace the comment with the code to capture the screenshot and save the image. */
+```tsx app/(tabs)/index.tsx|collapseHeight=440
+import { View, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useState, useRef } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as MediaLibrary from 'expo-media-library';
+import { captureRef } from 'react-native-view-shot';
+import { type ImageSource } from "expo-image";
+
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+import IconButton from '@/components/IconButton';
+import CircleButton from '@/components/CircleButton';
+import EmojiPicker from '@/components/EmojiPicker';
+import EmojiList from '@/components/EmojiList';
+import EmojiSticker from '@/components/EmojiSticker';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
+  const [status, requestPermission] = MediaLibrary.usePermissions();
+  const imageRef = useRef<View>(null);
+
+  if (status === null) {
+    requestPermission();
+  }
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  const onReset = () => {
+    setShowAppOptions(false);
+  };
+
+  const onAddSticker = () => {
+    setIsModalVisible(true);
+  };
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  /* @tutinfo Replace the comment with the code to capture the screenshot and save the image. */
   const onSaveImageAsync = async () => {
     try {
       const localUri = await captureRef(imageRef, {
@@ -161,32 +177,88 @@ export default function App() {
 
       await MediaLibrary.saveToLibraryAsync(localUri);
       if (localUri) {
-        alert("Saved!");
+        alert('Saved!');
       }
     } catch (e) {
       console.log(e);
     }
   };
   /* @end */
-  // ...rest of the code remains same
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <View style={styles.imageContainer}>
+        <View ref={imageRef} collapsable={false}>
+          <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+          {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
+        </View>
+      </View>
+      {showAppOptions ? (
+        <View style={styles.optionsContainer}>
+          <View style={styles.optionsRow}>
+            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <CircleButton onPress={onAddSticker} />
+            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+          </View>
+        </View>
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+        </View>
+      )}
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
+        <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
+      </EmojiPicker>
+    </GestureHandlerRootView>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 80,
+  },
+  optionsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
 ```
 
-</SnackInline>
-
-Now, choose a photo and add a sticker. Then tap the "Save" button. We should see the following result:
+Now, choose a photo and add a sticker in the app. Then tap the "Save" button. We should see the following result on Android and iOS:
 
 <ContentSpotlight file="tutorial/saving-screenshot.mp4" />
 
 </Step>
 
-## Next step
+## Summary
 
-The `react-native-view-shot` and `expo-media-library` work only on Android and iOS, however, we'd like our app to work on the web as well.
+<ProgressTracker
+  currentChapterIndex={6}
+  name="GET_STARTED"
+  summary={
+    <>
 
-<BoxLink
-  title="Handle platform differences"
-  Icon={BookOpen02Icon}
-  description="In the next chapter, let's learn how to handle the differences between mobile and web platforms."
-  href="/tutorial/platform-differences"
+        We've successfully used <CODE>react-native-view-shot</CODE> and <CODE>expo-media-library</CODE> to capture a
+        screenshot and save it on the device's library.
+    </>
+
+}
+nextChapterDescription="In the next chapter, let's learn how to handle the differences between mobile and web
+platforms to implement the same functionality on web."
+nextChapterTitle="Handle platform differences"
+nextChapterLink="/tutorial/platform-differences"
 />

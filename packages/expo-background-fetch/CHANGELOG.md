@@ -4,13 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
 
 ## 12.0.1 — 2024-04-23
 

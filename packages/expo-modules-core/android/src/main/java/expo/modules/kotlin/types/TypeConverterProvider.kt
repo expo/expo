@@ -18,6 +18,8 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectTypeConverter
+import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.sharedobjects.SharedRefTypeConverter
 import expo.modules.kotlin.typedarray.BigInt64Array
 import expo.modules.kotlin.typedarray.BigUint64Array
 import expo.modules.kotlin.typedarray.Float32Array
@@ -44,6 +46,7 @@ import java.time.LocalDate
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
+import kotlin.time.Duration
 
 interface TypeConverterProvider {
   fun obtainTypeConverter(type: KType): TypeConverter<*>
@@ -129,6 +132,10 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
     if (View::class.java.isAssignableFrom(jClass)) {
       return ViewTypeConverter<View>(type)
+    }
+
+    if (SharedRef::class.java.isAssignableFrom(jClass)) {
+      return SharedRefTypeConverter<SharedRef<*>>(type)
     }
 
     if (SharedObject::class.java.isAssignableFrom(jClass)) {
@@ -274,6 +281,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       URI::class to JavaURITypeConverter(isOptional),
 
       File::class to FileTypeConverter(isOptional),
+
+      Duration::class to DurationTypeConverter(isOptional),
 
       Any::class to AnyTypeConverter(isOptional),
 

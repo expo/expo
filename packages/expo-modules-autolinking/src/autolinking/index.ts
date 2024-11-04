@@ -1,6 +1,9 @@
+import path from 'path';
+
 import { findModulesAsync } from './findModules';
 import {
   getProjectPackageJsonPathAsync,
+  getProjectPackageJsonPathSync,
   mergeLinkingOptionsAsync,
   resolveSearchPathsAsync,
 } from './mergeLinkingOptions';
@@ -15,7 +18,7 @@ export {
   resolveModulesAsync,
   resolveSearchPathsAsync,
 };
-export { generatePackageListAsync } from './generatePackageList';
+export { generateModulesProviderAsync, generatePackageListAsync } from './generatePackageList';
 export { verifySearchResults } from './verifySearchResults';
 export * from '../types';
 
@@ -30,4 +33,11 @@ export async function queryAutolinkingModulesFromProjectAsync(
   const linkOptions = await mergeLinkingOptionsAsync({ ...options, projectRoot, searchPaths });
   const searchResults = await findModulesAsync(linkOptions);
   return await resolveModulesAsync(searchResults, linkOptions);
+}
+
+/**
+ * Get the project root directory from the current working directory.
+ */
+export function findProjectRootSync(cwd: string = process.cwd()): string {
+  return path.dirname(getProjectPackageJsonPathSync(cwd));
 }

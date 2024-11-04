@@ -1,15 +1,12 @@
+import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 import ReactMarkdown from 'react-markdown';
 
-import {
-  ClassDefinitionData,
-  GeneratedData,
-  PropData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { renderMethod } from '~/components/plugins/api/APISectionMethods';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import { renderProp } from '~/components/plugins/api/APISectionProps';
+import { ClassDefinitionData, GeneratedData, PropData } from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { renderMethod } from './APISectionMethods';
+import { APISectionPlatformTags } from './APISectionPlatformTags';
+import { renderProp } from './APISectionProps';
 import {
   CommentTextBlock,
   H3Code,
@@ -17,14 +14,14 @@ import {
   getTagNamesList,
   mdComponents,
   resolveTypeName,
-  STYLES_APIBOX,
-  STYLES_APIBOX_NESTED,
   TypeDocKind,
   getCommentContent,
   BoxSectionHeader,
   DEFAULT_BASE_NESTING_LEVEL,
   extractDefaultPropValue,
-} from '~/components/plugins/api/APISectionUtils';
+} from './APISectionUtils';
+import { STYLES_APIBOX, STYLES_APIBOX_NESTED } from './styles';
+
 import { H2, CODE, MONOSPACE, CALLOUT, SPAN } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
@@ -48,14 +45,15 @@ const CLASSES_TO_IGNORE_INHERITED_PROPS = [
 ] as const;
 
 const isProp = (child: PropData) =>
-  child.kind === TypeDocKind.Property &&
+  child.kind &&
+  [TypeDocKind.Property, TypeDocKind.Accessor].includes(child.kind) &&
   !child.overwrites &&
   !child.name.startsWith('_') &&
   !child.implementationOf;
 
 const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   child.kind &&
-  [TypeDocKind.Method, TypeDocKind.Function, TypeDocKind.Accessor].includes(child.kind) &&
+  [TypeDocKind.Method, TypeDocKind.Function].includes(child.kind) &&
   (allowOverwrites || !child.overwrites) &&
   !child.name.startsWith('_') &&
   !child?.implementationOf;
@@ -95,7 +93,9 @@ const renderClass = (
   const linksNestingLevel = DEFAULT_BASE_NESTING_LEVEL + 2;
 
   return (
-    <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
+    <div
+      key={`class-definition-${name}`}
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED)}>
       <APISectionDeprecationNote comment={comment} sticky />
       <APISectionPlatformTags comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>

@@ -41,6 +41,7 @@ fun Bundle.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): Writ
   val result = containerProvider.createMap()
 
   for (key in keySet()) {
+    @Suppress("DEPRECATION")
     val value = get(key)
     val convertedValue = JSTypeConverter.legacyConvertToJSValue(value, containerProvider)
     result.putGeneric(key, convertedValue)
@@ -66,7 +67,7 @@ fun <K, V> Map<K, V>.toJSValue(containerProvider: JSTypeConverter.ContainerProvi
   return result
 }
 
-fun <T> Collection<T>.toJSValueExperimental(): List<Any?> {
+fun <T> Collection<T>.toJSValueExperimental(): Collection<Any?> {
   return this.map { JSTypeConverter.convertToJSValue(it, useExperimentalConverter = true) }
 }
 

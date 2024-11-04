@@ -7,6 +7,7 @@ exports.applyImageToSplashScreenXML = applyImageToSplashScreenXML;
 exports.createConstraint = createConstraint;
 exports.createConstraintId = createConstraintId;
 exports.ensureUniquePush = ensureUniquePush;
+exports.parseColor = void 0;
 exports.removeExisting = removeExisting;
 exports.removeImageFromSplashScreen = removeImageFromSplashScreen;
 exports.toObjectAsync = toObjectAsync;
@@ -25,7 +26,7 @@ function _xml2js() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = require('debug')('expo:prebuild-config:expo-splash-screen:ios:InterfaceBuilder');
 
 /** @example `<color key="textColor" systemColor="linkColor"/>` */
@@ -71,22 +72,25 @@ function removeImageFromSplashScreen(xml, {
   return xml;
 }
 function getAbsoluteConstraints(childId, parentId) {
-  return [createConstraint([childId, 'top'], [parentId, 'top']), createConstraint([childId, 'leading'], [parentId, 'leading']), createConstraint([childId, 'trailing'], [parentId, 'trailing']), createConstraint([childId, 'bottom'], [parentId, 'bottom'])];
+  return [createConstraint([childId, 'centerX'], [parentId, 'centerX']), createConstraint([childId, 'centerY'], [parentId, 'centerY'])];
 }
 function applyImageToSplashScreenXML(xml, {
   imageName,
-  contentMode
+  contentMode,
+  backgroundColor,
+  logoWidth = 100
 }) {
-  const width = 414;
-  const height = 736;
+  const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
+  const width = logoWidth;
+  const height = logoWidth;
+  const x = (mainView.rect[0].$.width - width) / 2;
+  const y = (mainView.rect[0].$.height - height) / 2;
   const imageView = {
     $: {
       id: IMAGE_ID,
       userLabel: imageName,
       image: imageName,
       contentMode,
-      horizontalHuggingPriority: 251,
-      verticalHuggingPriority: 251,
       clipsSubviews: true,
       userInteractionEnabled: false,
       translatesAutoresizingMaskIntoConstraints: false
@@ -94,17 +98,17 @@ function applyImageToSplashScreenXML(xml, {
     rect: [{
       $: {
         key: 'frame',
-        x: 0.0,
-        y: 0.0,
+        x,
+        y,
         width,
         height
       }
     }]
   };
-  const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
 
   // Add ImageView
   ensureUniquePush(mainView.subviews[0].imageView, imageView);
+  mainView.constraints[0].constraint = [];
 
   // Add Constraints
   getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach(constraint => {
@@ -121,11 +125,24 @@ function applyImageToSplashScreenXML(xml, {
     imageSection.splice(existingImageIndex, 1);
   }
   imageSection.push({
-    // <image name="SplashScreen" width="414" height="736"/>
     $: {
       name: imageName,
       width,
       height
+    }
+  });
+
+  // Add background color
+  mainView.color = mainView.color ?? [];
+  const colorSection = mainView.color;
+  const color = parseColor(backgroundColor);
+  colorSection.push({
+    $: {
+      key: 'backgroundColor',
+      ...color.rgb,
+      alpha: '1',
+      colorSpace: 'custom',
+      customColorSpace: 'sRGB'
     }
   });
   return xml;
@@ -172,4 +189,24 @@ function toString(xml) {
 function toObjectAsync(contents) {
   return new (_xml2js().Parser)().parseStringPromise(contents);
 }
+
+// Function taken from react-native-bootsplash
+const parseColor = value => {
+  const color = value.toUpperCase().replace(/[^0-9A-F]/g, '');
+  if (color.length !== 3 && color.length !== 6) {
+    console.error(`"${value}" value is not a valid hexadecimal color.`);
+    process.exit(1);
+  }
+  const hex = color.length === 3 ? '#' + color[0] + color[0] + color[1] + color[1] + color[2] + color[2] : '#' + color;
+  const rgb = {
+    red: (parseInt('' + hex[1] + hex[2], 16) / 255).toPrecision(15),
+    green: (parseInt('' + hex[3] + hex[4], 16) / 255).toPrecision(15),
+    blue: (parseInt('' + hex[5] + hex[6], 16) / 255).toPrecision(15)
+  };
+  return {
+    hex,
+    rgb
+  };
+};
+exports.parseColor = parseColor;
 //# sourceMappingURL=InterfaceBuilder.js.map

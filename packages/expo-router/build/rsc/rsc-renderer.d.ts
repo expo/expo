@@ -7,6 +7,7 @@
  *
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
+import './runtime';
 import { type EntriesDev } from './server';
 export interface RenderContext<T = unknown> {
     rerender: (input: string, searchParams?: URLSearchParams) => void;
@@ -16,7 +17,6 @@ type ResolvedConfig = any;
 export type RenderRscArgs = {
     config: ResolvedConfig;
     input: string;
-    searchParams: URLSearchParams;
     context: Record<string, unknown> | undefined;
     body?: ReadableStream | undefined;
     contentType?: string | undefined;
@@ -29,7 +29,7 @@ export type RenderRscArgs = {
     }) => void;
     onError?: (err: unknown) => void;
 };
-type ResolveClientEntry = (id: string) => {
+type ResolveClientEntry = (id: string, server: boolean) => {
     id: string;
     chunks: string[];
 };

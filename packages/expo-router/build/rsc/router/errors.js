@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReactServerError = exports.MetroServerError = void 0;
+exports.NetworkError = exports.ReactServerError = exports.MetroServerError = void 0;
 class MetroServerError extends Error {
     url;
     code = 'METRO_SERVER_ERROR';
@@ -32,4 +32,14 @@ class ReactServerError extends Error {
     }
 }
 exports.ReactServerError = ReactServerError;
+class NetworkError extends Error {
+    url;
+    code = 'NETWORK_ERROR';
+    constructor(message, url) {
+        super(message);
+        this.url = url;
+        this.name = 'NetworkError';
+    }
+}
+exports.NetworkError = NetworkError;
 //# sourceMappingURL=errors.js.map

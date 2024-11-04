@@ -8,11 +8,8 @@ import ExpoModulesCore
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
-public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppControllerInterface, StartupProcedureDelegate {
-  private static let ErrorDomain = "EXUpdatesAppController"
-
+public class EnabledAppController: InternalAppControllerInterface, StartupProcedureDelegate {
   public weak var delegate: AppControllerDelegate?
-  public weak var appContext: AppContext?
 
   internal let config: UpdatesConfig
   private let database: UpdatesDatabase
@@ -21,23 +18,25 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
   public let isActiveController = true
-  public private(set) var isStarted = false
+  private var isStarted = false
+  private var startupStartTime: DispatchTime?
+  private var startupEndTime: DispatchTime?
 
-  public var shouldEmitJsEvents = false {
-    didSet {
-      if shouldEmitJsEvents == true {
-        sendQueuedEventsToAppContext()
+  private var launchDuration: Double? {
+    return startupStartTime.let({ start in
+      startupEndTime.let { end in
+        Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
       }
-    }
+    })
   }
 
-  private var eventsToSendToJS: [[String: Any?]] = []
-
-  private let stateMachine = UpdatesStateMachine(validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+  private let stateMachine: UpdatesStateMachine
 
   private let selectionPolicy: SelectionPolicy
 
   private let logger = UpdatesLogger()
+
+  public let eventManager: UpdatesEventManager
 
   // swiftlint:disable implicitly_unwrapped_optional
   private var startupProcedure: StartupProcedure!
@@ -56,18 +55,19 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       withRuntimeVersion: self.config.runtimeVersion
     )
     self.logger.info(message: "AppController sharedInstance created")
-
-    self.stateMachine.changeEventDelegate = self
+    self.eventManager = QueueUpdatesEventManager(logger: logger)
+    self.stateMachine = UpdatesStateMachine(eventManager: self.eventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
   }
 
   public func start() {
     precondition(!isStarted, "AppController:start should only be called once per instance")
 
     isStarted = true
+    startupStartTime = DispatchTime.now()
 
     purgeUpdatesLogsOlderThanOneDay()
 
-    UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: database, config: config)
+    UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: database, config: config, logger: logger)
 
     startupProcedure = StartupProcedure(
       database: self.database,
@@ -106,7 +106,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       view = viewController?.view
       viewController?.view = nil
     } else {
-      NSLog("Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.")
+      logger.warn(message: "Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.")
       view = UIView()
       view?.backgroundColor = .white
     }
@@ -120,14 +120,19 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
     start()
   }
 
+  public func onEventListenerStartObserving() {
+    stateMachine.sendContextToJS()
+  }
+
   // MARK: - StartupProcedureDelegate
 
   func startupProcedureDidLaunch(_ startupProcedure: StartupProcedure) {
+    startupEndTime = DispatchTime.now()
+
     delegate.let { _ in
       DispatchQueue.main.async { [weak self] in
         if let strongSelf = self {
           strongSelf.delegate?.appController(strongSelf, didStartWithSuccess: strongSelf.startupProcedure.launchAssetUrl() != nil)
-          strongSelf.sendQueuedEventsToAppContext()
         }
       }
     }
@@ -189,49 +194,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   // MARK: - Internal
 
   private func purgeUpdatesLogsOlderThanOneDay() {
-    UpdatesUtils.purgeUpdatesLogsOlderThanOneDay()
-  }
-
-  // MARK: - Send events to JS
-
-  internal func sendUpdateStateChangeEventToAppContext(_ eventType: UpdatesStateEventType, body: [String: Any?]) {
-    logger.info(message: "sendUpdateStateChangeEventToAppContext(): type = \(eventType)")
-    sendEventToAppContext(EXUpdatesStateChangeEventName, "\(eventType)", body: body)
-  }
-
-  private func sendEventToAppContext(_ eventName: String, _ eventType: String, body: [String: Any?]) {
-    var mutableBody = body
-    mutableBody["type"] = eventType
-
-    guard let appContext = appContext,
-      let eventEmitter = appContext.eventEmitter,
-      shouldEmitJsEvents == true else {
-      eventsToSendToJS.append([
-        "eventName": eventName,
-        "mutableBody": mutableBody
-      ])
-      logger.warn(message: "EXUpdates: Could not emit event: name = \(eventName), type = \(eventType). Event will be emitted when the appContext is available", code: .jsRuntimeError)
-      return
-    }
-    logger.debug(message: "sendEventToAppContext: \(eventName), \(mutableBody)")
-    eventEmitter.sendEvent(withName: eventName, body: mutableBody)
-  }
-
-  internal func sendQueuedEventsToAppContext() {
-    guard let appContext = appContext,
-      let eventEmitter = appContext.eventEmitter,
-      shouldEmitJsEvents == true else {
-      return
-    }
-    eventsToSendToJS.forEach { event in
-      guard let eventName = event["eventName"] as? String,
-        let mutableBody = event["mutableBody"] as? [String: Any?] else {
-        return
-      }
-      logger.debug(message: "sendEventToAppContext: \(eventName), \(mutableBody)")
-      eventEmitter.sendEvent(withName: eventName, body: mutableBody)
-    }
-    eventsToSendToJS = []
+    UpdatesUtils.purgeUpdatesLogsOlderThanOneDay(logger: logger)
   }
 
   // MARK: - JS API
@@ -239,6 +202,7 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
   public func getConstantsForModule() -> UpdatesModuleConstants {
     return UpdatesModuleConstants(
       launchedUpdate: startupProcedure.launchedUpdate(),
+      launchDuration: launchDuration,
       embeddedUpdate: getEmbeddedUpdate(),
       emergencyLaunchException: startupProcedure.emergencyLaunchException,
       isEnabled: true,
@@ -247,7 +211,8 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       checkOnLaunch: self.config.checkOnLaunch,
       requestHeaders: self.config.requestHeaders,
       assetFilesMap: startupProcedure.assetFilesMap(),
-      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false
+      shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: false,
+      initialContext: stateMachine.context
     )
   }
 
@@ -289,13 +254,6 @@ public class EnabledAppController: UpdatesStateChangeDelegate, InternalAppContro
       errorBlockArg(error)
     }
     self.stateMachine.queueExecution(stateMachineProcedure: procedure)
-  }
-
-  public func getNativeStateMachineContext(
-    success successBlockArg: @escaping (_ stateMachineContext: UpdatesStateContext) -> Void,
-    error errorBlockArg: @escaping (_ error: Exception) -> Void
-  ) {
-    successBlockArg(self.stateMachine.context)
   }
 
   public func getExtraParams(

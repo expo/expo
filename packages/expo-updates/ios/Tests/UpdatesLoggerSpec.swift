@@ -15,7 +15,7 @@ class UpdatesLoggerSpec : ExpoSpec {
       let epoch = Date()
 
       // Write a log message
-      logger.error(message: "Test message", code: .noUpdatesAvailable)
+      logger.error(cause: UpdatesError.appLoaderFailedToLoadAllAssets, code: .noUpdatesAvailable)
 
       // Write another log message
       logger.warn(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")

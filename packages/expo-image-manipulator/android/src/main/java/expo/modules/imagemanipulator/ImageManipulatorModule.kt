@@ -1,7 +1,11 @@
+@file:OptIn(EitherType::class)
+
 package expo.modules.imagemanipulator
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Base64
 import expo.modules.imagemanipulator.transformers.CropTransformer
@@ -9,17 +13,20 @@ import expo.modules.imagemanipulator.transformers.FlipTransformer
 import expo.modules.imagemanipulator.transformers.ResizeTransformer
 import expo.modules.imagemanipulator.transformers.RotateTransformer
 import expo.modules.interfaces.imageloader.ImageLoaderInterface.ResultListener
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.EitherOfThree
+import expo.modules.kotlin.types.toKClass
 import kotlinx.coroutines.async
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -27,7 +34,7 @@ class ImageManipulatorModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  private fun createManipulatorContext(url: URL): ImageManipulatorContext {
+  private fun createManipulatorContext(url: Uri): ImageManipulatorContext {
     val loader = suspend {
       val imageLoader = appContext.imageLoader
         ?: throw ImageLoaderNotFoundException()
@@ -52,15 +59,30 @@ class ImageManipulatorModule : Module() {
     return ImageManipulatorContext(runtimeContext, task)
   }
 
+  private fun createManipulatorContext(bitmap: Bitmap): ImageManipulatorContext {
+    val task = ManipulatorTask(appContext.backgroundCoroutineScope) { bitmap }
+    return ImageManipulatorContext(runtimeContext, task)
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoImageManipulator")
 
-    Function("manipulate") { url: URL ->
-      createManipulatorContext(url)
+    Function("manipulate") { url: EitherOfThree<Uri, SharedRef<Bitmap>, SharedRef<Drawable>> ->
+      return@Function if (url.`is`(Uri::class)) {
+        createManipulatorContext(url.get(Uri::class))
+      } else if (url.`is`(toKClass<SharedRef<Bitmap>>())) {
+        val bitmap = url.get(toKClass<SharedRef<Bitmap>>()).ref
+        createManipulatorContext(bitmap)
+      } else {
+        val drawable = url.get(toKClass<SharedRef<Drawable>>()).ref
+        val bitmap = (drawable as? BitmapDrawable)?.bitmap
+          ?: throw Exceptions.IllegalArgument("The drawable cannot be converted to a bitmap")
+        createManipulatorContext(bitmap)
+      }
     }
 
     Class<ImageManipulatorContext>("Context") {
-      Constructor { url: URL ->
+      Constructor { url: Uri ->
         createManipulatorContext(url)
       }
 
@@ -94,7 +116,8 @@ class ImageManipulatorModule : Module() {
       Property("width") { image: ImageRef -> image.ref.width }
       Property("height") { image: ImageRef -> image.ref.height }
 
-      AsyncFunction("saveAsync") Coroutine { image: ImageRef, options: ManipulateOptions ->
+      AsyncFunction("saveAsync") Coroutine { image: ImageRef, options: ManipulateOptions? ->
+        val options = options ?: ManipulateOptions()
         val path = FileUtils.generateRandomOutputPath(context, options.format)
         val compression = (options.compress * 100).toInt()
         val resultBitmap = image.ref

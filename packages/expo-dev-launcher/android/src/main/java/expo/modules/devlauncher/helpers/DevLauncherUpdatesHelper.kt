@@ -19,7 +19,6 @@ suspend fun UpdatesInterface.loadUpdate(
   suspendCoroutine { cont ->
     this.fetchUpdateWithConfiguration(
       configuration,
-      context,
       object : UpdatesInterface.UpdateCallback {
         override fun onSuccess(update: UpdatesInterface.Update?) {
           // if the update is null, we previously aborted the fetch, so we've already resumed
@@ -62,8 +61,4 @@ fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, runtimeVersion:
     "requestHeaders" to requestHeaders,
     "runtimeVersion" to runtimeVersion
   )
-}
-
-fun getRuntimeVersion(context: Context): String {
-  return DevLauncherMetadataHelper.getMetadataValue(context, "expo.modules.updates.EXPO_RUNTIME_VERSION")
 }

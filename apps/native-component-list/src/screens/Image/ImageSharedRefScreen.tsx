@@ -1,6 +1,6 @@
-import { Image, ImageRef } from 'expo-image';
-import { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { Image, useImage } from 'expo-image';
+import { useCallback, useState } from 'react';
+import { View, StyleSheet, Dimensions } from 'react-native';
 
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
@@ -11,17 +11,19 @@ function getRandomImageUri(): string {
   return `https://picsum.photos/seed/${seed}/3000/2000`;
 }
 
+const SCREEN_PIXEL_WIDTH = Dimensions.get('screen').width * Dimensions.get('screen').scale;
+
 export default function ImageSharedRefScreen() {
-  const [imageRef, setImageRef] = useState<ImageRef | null>(null);
   const [sourceUri, setSourceUri] = useState<string>(getRandomImageUri());
+  const image = useImage(sourceUri, {
+    // The original image is of 3000x2000 size.
+    // Here we're downscaling it so it's never wider than the screen's width in pixels.
+    maxWidth: SCREEN_PIXEL_WIDTH,
 
-  useEffect(() => {
-    setImageRef(null);
-
-    Image.loadAsync({ uri: sourceUri }).then((image) => {
-      setImageRef(image);
-    });
-  }, [sourceUri]);
+    onError(error, retry) {
+      console.error(error);
+    },
+  });
 
   const loadNewImage = useCallback(() => {
     setSourceUri(getRandomImageUri());
@@ -29,14 +31,14 @@ export default function ImageSharedRefScreen() {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.image} source={imageRef} />
-
-      <HeadingText>Loaded image:</HeadingText>
-      <MonoText>{JSON.stringify(imageRef, null, 2)}</MonoText>
+      <Image style={styles.image} source={image} />
 
       <View style={styles.buttons}>
         <Button title="Load new image" onPress={loadNewImage} />
       </View>
+
+      <HeadingText>Loaded image:</HeadingText>
+      <MonoText>{JSON.stringify(image, null, 2)}</MonoText>
     </View>
   );
 }
@@ -47,7 +49,8 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   image: {
-    height: 300,
+    height: 240,
+    margin: 10,
     borderRadius: 10,
   },
   buttons: {

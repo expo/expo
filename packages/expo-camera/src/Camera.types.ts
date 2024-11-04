@@ -290,7 +290,7 @@ export type BarcodeScanningResult = {
    */
   cornerPoints: BarcodePoint[];
   /**
-   * The [BarcodeBounds](#barcodebounds) object.
+   * The [`BarcodeBounds`](#barcodebounds) object.
    * `bounds` in some case will be representing an empty rectangle.
    * Moreover, `bounds` doesn't have to bound the whole barcode.
    * For some types, they will represent the area used by the scanner.
@@ -301,7 +301,7 @@ export type BarcodeScanningResult = {
 export type ScanningResult = Omit<BarcodeScanningResult, 'bounds'>;
 
 // @needsAudit
-export type CameraProps = ViewProps & {
+export type CameraViewProps = ViewProps & {
   /**
    * Camera facing. Use one of `CameraType`. When `front`, use the front-facing camera.
    * When `back`, use the back-facing camera.
@@ -315,12 +315,12 @@ export type CameraProps = ViewProps & {
    */
   flash?: FlashMode;
   /**
-   * A value between `0` and `1` being a percentage of device's max zoom. `0` - not zoomed, `1` - maximum zoom.
+   * A value between `0` and `1` being a percentage of device's max zoom, where `0` means not zoomed and `1` means maximum zoom.
    * @default 0
    */
   zoom?: number;
   /**
-   * Used to select image or video output
+   * Used to select image or video output.
    * @default 'picture'
    */
   mode?: CameraMode;
@@ -365,7 +365,7 @@ export type CameraProps = ViewProps & {
    */
   pictureSize?: string;
   /**
-   * A boolean to enable or disable the torch
+   * A boolean to enable or disable the torch.
    * @default false
    */
   enableTorch?: boolean;
@@ -392,8 +392,8 @@ export type CameraProps = ViewProps & {
    */
   poster?: string;
   /**
-   * Whether to allow responsive orientation of the camera when the screen orientation is locked (i.e. when set to `true`
-   * landscape photos will be taken if the device is turned that way, even if the app or device orientation is locked to portrait)
+   * Whether to allow responsive orientation of the camera when the screen orientation is locked (that is, when set to `true`,
+   * landscape photos will be taken if the device is turned that way, even if the app or device orientation is locked to portrait).
    * @platform ios
    */
   responsiveOrientationWhenOrientationLocked?: boolean;
@@ -418,12 +418,11 @@ export type CameraProps = ViewProps & {
    * an object of the [`BarcodeScanningResult`](#barcodescanningresult) shape, where the `type`
    * refers to the barcode type that was scanned, and the `data` is the information encoded in the barcode
    * (in this case of QR codes, this is often a URL). See [`BarcodeType`](#barcodetype) for supported values.
-   * for supported values.
    * @param scanningResult
    */
   onBarcodeScanned?: (scanningResult: BarcodeScanningResult) => void;
   /**
-   * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`
+   * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`.
    * @param event result object that contains updated orientation of camera
    * @platform ios
    */

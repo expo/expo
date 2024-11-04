@@ -2,6 +2,7 @@ import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
+import fs from 'fs';
 import path from 'path';
 
 import { createMetadataJson } from './createMetadataJson';
@@ -18,7 +19,7 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from './saveAssets';
-import { createAssetMap, createSourceMapDebugHtml } from './writeContents';
+import { createAssetMap } from './writeContents';
 import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../start/server/DevServerManager';
@@ -29,6 +30,7 @@ import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddl
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
+import { CommandError } from '../utils/errors';
 import { setNodeEnv } from '../utils/nodeEnv';
 
 export async function exportAppAsync(
@@ -43,6 +45,7 @@ export async function exportAppAsync(
     minify,
     bytecode,
     maxWorkers,
+    skipSSG,
   }: Pick<
     Options,
     | 'dumpAssetmap'
@@ -54,6 +57,7 @@ export async function exportAppAsync(
     | 'minify'
     | 'bytecode'
     | 'maxWorkers'
+    | 'skipSSG'
   >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
@@ -70,6 +74,11 @@ export async function exportAppAsync(
   }
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
+
+  if (skipSSG && exp.web?.output !== 'server') {
+    throw new CommandError('--no-ssg can only be used with `web.output: server`');
+  }
+
   const baseUrl = getBaseUrlFromExpoConfig(exp);
 
   if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
@@ -137,7 +146,9 @@ export async function exportAppAsync(
           const bundle = await devServer.nativeExportBundleAsync(
             {
               platform,
-              splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING && platform === 'web',
+              splitChunks:
+                !env.EXPO_NO_BUNDLE_SPLITTING &&
+                ((devServer.isReactServerComponentsEnabled && !bytecode) || platform === 'web'),
               mainModuleName: getEntryWithServerRoot(projectRoot, {
                 platform,
                 pkg: projectConfig.pkg,
@@ -188,18 +199,19 @@ export async function exportAppAsync(
             // If web exists, then write the template HTML file.
             files.set('index.html', {
               contents: html,
-              targetDomain: 'client',
+              targetDomain: devServer.isReactServerComponentsEnabled ? 'server' : 'client',
             });
           }
         })
       );
 
       if (devServer.isReactServerComponentsEnabled) {
-        if (!(platforms.includes('web') && useServerRendering)) {
+        const isWeb = platforms.includes('web');
+        if (!(isWeb && useServerRendering)) {
           await exportApiRoutesStandaloneAsync(devServer, {
-            outputDir: outputPath,
             files,
             platform: 'web',
+            apiRoutesOnly: !isWeb,
           });
         }
       }
@@ -225,18 +237,6 @@ export async function exportAppAsync(
         ])
       );
 
-      // build source maps
-      if (sourceMaps) {
-        Log.log('Preparing additional debugging files');
-        // If we output source maps, then add a debug HTML file which the user can open in
-        // the web browser to inspect the output like web.
-        files.set('debug.html', {
-          contents: createSourceMapDebugHtml({
-            fileNames: Object.values(fileNames).flat(),
-          }),
-        });
-      }
-
       // Generate a `metadata.json` for EAS Update.
       const contents = createMetadataJson({
         bundles,
@@ -256,21 +256,40 @@ export async function exportAppAsync(
         await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));
       }
 
-      await exportFromServerAsync(projectRoot, devServer, {
-        mode,
-        files,
-        clear: !!clear,
-        outputDir: outputPath,
-        minify,
-        baseUrl,
-        includeSourceMaps: sourceMaps,
-        routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
-        reactCompiler: !!exp.experiments?.reactCompiler,
-        exportServer,
-        maxWorkers,
-        isExporting: true,
-        exp: projectConfig.exp,
-      });
+      if (skipSSG) {
+        Log.log('Skipping static site generation');
+        await exportApiRoutesStandaloneAsync(devServer, {
+          files,
+          platform: 'web',
+          apiRoutesOnly: true,
+        });
+
+        // Output a placeholder index.html if one doesn't exist in the public directory.
+        // This ensures native + API routes have some content at the root URL.
+        const placeholderIndex = path.resolve(outputPath, 'client/index.html');
+        if (!fs.existsSync(placeholderIndex)) {
+          files.set('index.html', {
+            contents: `<html><body></body></html>`,
+            targetDomain: 'client',
+          });
+        }
+      } else {
+        await exportFromServerAsync(projectRoot, devServer, {
+          mode,
+          files,
+          clear: !!clear,
+          outputDir: outputPath,
+          minify,
+          baseUrl,
+          includeSourceMaps: sourceMaps,
+          routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
+          reactCompiler: !!exp.experiments?.reactCompiler,
+          exportServer,
+          maxWorkers,
+          isExporting: true,
+          exp: projectConfig.exp,
+        });
+      }
     }
   } finally {
     await devServerManager.stopAsync();

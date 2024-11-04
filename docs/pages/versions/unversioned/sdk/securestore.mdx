@@ -4,7 +4,7 @@ description: A library that provides a way to encrypt and securely store key-val
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-secure-store'
 packageName: 'expo-secure-store'
 iconUrl: '/static/images/packages/expo-secure-store.png'
-platforms: ['android', 'ios']
+platforms: ['android', 'ios', 'tvos']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -92,6 +92,11 @@ On Android, values are stored in [`SharedPreferences`](https://developer.android
 > For iOS standalone apps, data stored with `expo-secure-store` can persist across app installs.
 
 On iOS, values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
+
+## Data persistence
+
+`expo-secure-store` is designed to provide a persistent data storage solution across app restarts and updates. However, it is important not to rely on it as a single source of truth for irreplaceable, critical data. Data saved using `expo-secure-store` will not be preserved upon app uninstallation.
+Additionally, any data protected with the `requireAuthentication` option set to `true` will become inaccessible if there are changes to the user's biometric settings, such as adding a new fingerprint.
 
 #### Exempting encryption prompt
 

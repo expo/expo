@@ -84,7 +84,6 @@ const baseConfig: JsTransformerConfig = {
   unstable_disableModuleWrapping: false,
   unstable_disableNormalizePseudoGlobals: false,
   unstable_allowRequireContext: false,
-  unstable_collectDependenciesPath: null,
 };
 
 const baseTransformOptions: JsTransformOptions = {
@@ -623,7 +622,7 @@ it('skips minification in Hermes stable transform profile', async () => {
       dev: false,
       minify: true,
       unstable_transformProfile: 'hermes-canary',
-      customTransformOptions: { __proto__: null, bytecode: true },
+      customTransformOptions: { __proto__: null, bytecode: '1' },
     }
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
@@ -644,7 +643,7 @@ it('skips minification in Hermes canary transform profile', async () => {
       dev: false,
       minify: true,
       unstable_transformProfile: 'hermes-canary',
-      customTransformOptions: { __proto__: null, bytecode: true },
+      customTransformOptions: { __proto__: null, bytecode: '1' },
     }
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
@@ -701,7 +700,7 @@ it('outputs comments when `minify: false`', async () => {
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-      /*#__PURE__*/arbitrary(code);
+      arbitrary(code);
     });"
   `);
 });
@@ -731,7 +730,7 @@ it('allows outputting comments when `minify: true`', async () => {
   );
   expect(result.output[0].data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, d) {
-      /*#__PURE__*/minified(code);
+      minified(code);
     });"
   `);
 });

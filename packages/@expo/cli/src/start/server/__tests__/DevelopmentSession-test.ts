@@ -22,8 +22,7 @@ describe(`startAsync`, () => {
   });
 
   it(`starts a dev session`, async () => {
-    const onDevSessionError = jest.fn();
-    const session = new DevelopmentSession('/', 'http://localhost:19001/', onDevSessionError);
+    const session = new DevelopmentSession('/', 'http://localhost:19001/');
 
     jest.mocked(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
       devices: [{ installationId: '123' }, { installationId: '456' }] as any[],
@@ -35,6 +34,7 @@ describe(`startAsync`, () => {
       description: 'my-foo-bar',
       primaryColor: '#4630eb',
     };
+
     const runtime = 'native';
     const startScope = nock(getExpoApiBaseUrl())
       .post('/v2/development-sessions/notify-alive?deviceId=123&deviceId=456')
@@ -53,40 +53,10 @@ describe(`startAsync`, () => {
     expect(ProjectDevices.getDevicesInfoAsync).toHaveBeenCalledTimes(2);
     expect(startScope.isDone()).toBe(true);
     expect(closeScope.isDone()).toBe(true);
-    expect(onDevSessionError).not.toBeCalled();
-  });
-
-  it(`surfaces exceptions that would otherwise be uncaught`, async () => {
-    const onDevSessionError = jest.fn();
-    const session = new DevelopmentSession('/', 'http://localhost:19001/', onDevSessionError);
-
-    jest
-      .mocked(ProjectDevices.getDevicesInfoAsync)
-      .mockRejectedValueOnce(new Error('predefined error'));
-
-    const exp = {
-      name: 'my-app',
-      slug: 'my-app',
-      description: 'my-foo-bar',
-      primaryColor: '#4630eb',
-    };
-    const runtime = 'native';
-
-    // Does not throw directly
-    await session.startAsync({
-      exp,
-      runtime,
-    });
-
-    expect(onDevSessionError).toHaveBeenCalled();
-
-    // Did not repeat the cycle
-    expect(session['timeout']).toBe(null);
   });
 
   it(`gracefully handles server outages`, async () => {
-    const onDevSessionError = jest.fn();
-    const session = new DevelopmentSession('/', 'http://localhost:19001/', onDevSessionError);
+    const session = new DevelopmentSession('/', 'http://localhost:19001/');
 
     jest.mocked(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
       devices: [{ installationId: '123' }, { installationId: '456' }] as any[],
@@ -106,22 +76,18 @@ describe(`startAsync`, () => {
       .reply(500, '');
 
     // Does not throw directly
-    await session.startAsync({
-      exp,
-      runtime,
-    });
-
-    expect(onDevSessionError).toHaveBeenCalled();
-
-    // Did not repeat the cycle
-    expect(session['timeout']).toBe(null);
+    await expect(
+      session.startAsync({
+        exp,
+        runtime,
+      })
+    ).resolves.toBeUndefined();
   });
 
   it('is skipped on CI', async () => {
     process.env.CI = '1';
 
-    const onDevSessionError = jest.fn();
-    const session = new DevelopmentSession('/', 'http://localhost:19001/', onDevSessionError);
+    const session = new DevelopmentSession('/', 'http://localhost:19001/');
 
     const runtime = 'native';
     const exp = {
@@ -136,8 +102,6 @@ describe(`startAsync`, () => {
 
     // Did not load the current device info
     expect(ProjectDevices.getDevicesInfoAsync).not.toHaveBeenCalled();
-    // Did not repeat the cycle
-    expect(session['timeout']).toBe(null);
   });
 });
 
@@ -151,46 +115,56 @@ describe(`closeAsync`, () => {
     process.env.CI = originalEnvCI;
   });
 
-  it(`surfaces exceptions that would otherwise be uncaught`, async () => {
-    const onDevSessionError = jest.fn();
-    const session = new DevelopmentSession('/', 'http://localhost:19001/', onDevSessionError);
-
-    jest
-      .mocked(ProjectDevices.getDevicesInfoAsync)
-      .mockRejectedValueOnce(new Error('predefined error'));
-
-    // Does not throw directly
-    await expect(session.closeAsync()).resolves.toBe(false);
-
-    // Calls the error handler
-    expect(onDevSessionError).toHaveBeenCalled();
-  });
-
   it(`gracefully handles server outages`, async () => {
-    const onDevSessionError = jest.fn();
-    const session = new DevelopmentSession('/', 'http://localhost:19001/', onDevSessionError);
+    const session = new DevelopmentSession('/', 'http://localhost:19001/');
 
     jest.mocked(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
       devices: [{ installationId: '123' }, { installationId: '456' }] as any[],
     });
 
     // Server is down
-    nock(getExpoApiBaseUrl())
+    const closeScope = nock(getExpoApiBaseUrl())
       .post('/v2/development-sessions/notify-close?deviceId=123&deviceId=456')
       .reply(500, '');
 
+    // Fake the session state
+    Object.assign(session, { hasActiveSession: true });
+
     // Does not throw directly
     await expect(session.closeAsync()).resolves.toBe(false);
+    // Ensure the endpoint is called
+    expect(closeScope.isDone()).toBe(true);
+  });
 
-    // Calls the error handler
-    expect(onDevSessionError).toHaveBeenCalled();
+  it('skips next close call when server is down', async () => {
+    const session = new DevelopmentSession('/', 'http://localhost:19001/');
+
+    jest.mocked(ProjectDevices.getDevicesInfoAsync).mockResolvedValue({
+      devices: [{ installationId: '123' }, { installationId: '456' }] as any[],
+    });
+
+    const server = jest.fn(() => '');
+
+    // Server is down
+    nock(getExpoApiBaseUrl())
+      .post('/v2/development-sessions/notify-close?deviceId=123&deviceId=456')
+      .reply(500, server);
+
+    // Fake the session state
+    Object.assign(session, { hasActiveSession: true });
+
+    // Does not throw directly
+    await expect(session.closeAsync()).resolves.toBe(false);
+    await expect(session.closeAsync()).resolves.toBe(false);
+    await expect(session.closeAsync()).resolves.toBe(false);
+
+    expect(server).toHaveBeenCalledTimes(1);
   });
 
   it('is skipped on CI', async () => {
     process.env.CI = '1';
 
-    const onDevSessionError = jest.fn();
-    const session = new DevelopmentSession('/', 'http://localhost:19001/', onDevSessionError);
+    const session = new DevelopmentSession('/', 'http://localhost:19001/');
 
     // Does not throw directly
     await expect(session.closeAsync()).resolves.toBe(false);

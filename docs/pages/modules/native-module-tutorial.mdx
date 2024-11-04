@@ -1,12 +1,21 @@
 ---
 title: 'Tutorial: Creating a native module'
 sidebar_title: Create a native module
-description: A tutorial on creating a native module with Expo modules API.
+description: A tutorial on creating a native module that persists settings with Expo Modules API.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this tutorial, we are going to build a module that stores the user's preferred app theme - either dark, light, or system. We'll use [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults) on iOS and [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences) on Android. It is possible to implement web support using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), but we'll leave that as an exercise for the reader.
+In this tutorial, we are going to build a module that stores the user's preferred app theme: either dark, light, or system. We'll use [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults) on iOS and [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences) on Android. It is possible to implement web support using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), but we'll leave that as an exercise for the reader.
+
+<VideoBoxLink
+  videoId="CdaQSlyGik8"
+  title="How to create a native module with the Expo modules API"
+  description="Learn how to create a native module with the Expo Modules API to extend your apps capabilities by accessing native Android and iOS APIs."
+/>
+
+---
 
 ## 1. Initialize a new module
 

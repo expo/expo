@@ -1,7 +1,5 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
-// swiftlint:disable closure_body_length
-
 import ExpoModulesCore
 
 /**
@@ -13,7 +11,7 @@ import ExpoModulesCore
  * Expo Go and legacy standalone apps) via EXUpdatesService, an internal module which is overridden
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
-public final class UpdatesModule: Module {
+public final class UpdatesModule: Module, UpdatesEventManagerObserver {
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
@@ -22,59 +20,19 @@ public final class UpdatesModule: Module {
     )
 
     Constants {
-      let constantsForModule = AppController.sharedInstance.getConstantsForModule()
-
-      let channel = constantsForModule.requestHeaders["expo-channel-name"] ?? ""
-      let runtimeVersion = constantsForModule.runtimeVersion ?? ""
-      let checkAutomatically = constantsForModule.checkOnLaunch.asString
-
-      guard AppController.sharedInstance.isStarted,
-        let launchedUpdate = constantsForModule.launchedUpdate else {
-        return [
-          "isEnabled": false,
-          "isEmbeddedLaunch": false,
-          "isEmergencyLaunch": constantsForModule.emergencyLaunchException != nil,
-          "emergencyLaunchReason": constantsForModule.emergencyLaunchException?.localizedDescription,
-          "runtimeVersion": runtimeVersion,
-          "checkAutomatically": checkAutomatically,
-          "channel": channel,
-          "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment":
-            constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled()
-        ]
-      }
-
-      let embeddedUpdate = constantsForModule.embeddedUpdate
-      let isEmbeddedLaunch = embeddedUpdate != nil && embeddedUpdate?.updateId == launchedUpdate.updateId
-
-      let commitTime = UInt64(floor(launchedUpdate.commitTime.timeIntervalSince1970 * 1000))
-      return [
-        "isEnabled": true,
-        "isEmbeddedLaunch": isEmbeddedLaunch,
-        "isUsingEmbeddedAssets": constantsForModule.isUsingEmbeddedAssets,
-        "updateId": launchedUpdate.updateId.uuidString,
-        "manifest": launchedUpdate.manifest.rawManifestJSON(),
-        "localAssets": constantsForModule.assetFilesMap,
-        "isEmergencyLaunch": constantsForModule.emergencyLaunchException != nil,
-        "emergencyLaunchReason": constantsForModule.emergencyLaunchException?.localizedDescription,
-        "runtimeVersion": runtimeVersion,
-        "checkAutomatically": checkAutomatically,
-        "channel": channel,
-        "commitTime": commitTime,
-        "shouldDeferToNativeForAPIMethodAvailabilityInDevelopment":
-          constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || UpdatesUtils.isNativeDebuggingEnabled()
-      ]
+      AppController.sharedInstance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnCreate {
-      AppController.bindAppContext(self.appContext)
+    OnStartObserving(EXUpdatesStateChangeEventName) {
+      AppController.setUpdatesEventManagerObserver(self)
     }
 
-    OnStartObserving {
-      AppController.shouldEmitJsEvents = true
+    OnStopObserving(EXUpdatesStateChangeEventName) {
+      AppController.removeUpdatesEventManagerObserver()
     }
 
-    OnStopObserving {
-      AppController.shouldEmitJsEvents = false
+    OnDestroy {
+      AppController.removeUpdatesEventManagerObserver()
     }
 
     AsyncFunction("reload") { (promise: Promise) in
@@ -182,17 +140,11 @@ public final class UpdatesModule: Module {
         promise.reject(error)
       }
     }
+  }
 
-    // Getter used internally by useUpdates()
-    // to initialize its state
-    AsyncFunction("getNativeStateMachineContextAsync") { (promise: Promise) in
-      AppController.sharedInstance.getNativeStateMachineContext { stateMachineContext in
-        promise.resolve(stateMachineContext.json)
-      } error: { error in
-        promise.reject(error)
-      }
-    }
+  public func onStateMachineContextEvent(context: UpdatesStateContext) {
+    sendEvent(EXUpdatesStateChangeEventName, [
+      "context": context.json
+    ])
   }
 }
-
-// swiftlint:enable closure_body_length

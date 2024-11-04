@@ -15,6 +15,7 @@ type RoutePropsForLayout = Omit<RouteProps, 'searchParams'> & {
 };
 type ShouldSkipValue = ShouldSkip[number][1];
 export declare function unstable_defineRouter(getPathConfig: () => Promise<Iterable<{
+    pattern: string;
     path: PathSpec;
     isStatic?: boolean;
     noSsr?: boolean;
@@ -24,6 +25,6 @@ options: {
     unstable_setShouldSkip: (val?: ShouldSkipValue) => void;
     unstable_buildConfig: BuildConfig | undefined;
 }) => Promise<FunctionComponent<RouteProps> | FunctionComponent<RoutePropsForLayout> | null>): ReturnType<typeof defineEntries>;
-export declare function unstable_redirect(pathname: string, query?: string, skip?: string[]): void;
+export declare function unstable_redirect(pathname: string, searchParams?: URLSearchParams, skip?: string[]): void;
 export {};
 //# sourceMappingURL=defineRouter.d.ts.map

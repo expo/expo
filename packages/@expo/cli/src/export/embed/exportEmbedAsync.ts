@@ -17,7 +17,7 @@ import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { Options } from './resolveOptions';
+import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
@@ -31,7 +31,7 @@ import {
 } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
-import { removeAsync } from '../../utils/dir';
+import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -43,6 +43,7 @@ import {
   getFilesFromSerialAssets,
   persistMetroFilesAsync,
 } from '../saveAssets';
+import { exportStandaloneServerAsync } from './exportServer';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -63,9 +64,54 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
 }
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
+  // The React Native build scripts always enable the cache reset but we shouldn't need this in CI environments.
+  // By disabling it, we can eagerly bundle code before the build and reuse the cached artifacts in subsequent builds.
+  if (env.CI && options.resetCache) {
+    debug('CI environment detected, disabling automatic cache reset');
+    options.resetCache = false;
+  }
+
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
+  // This is an optimized codepath that can occur during `npx expo run` and does not occur during builds from Xcode or Android Studio.
+  // Here we reconcile a bundle pass that was run before the native build process. This order can fail faster and is show better errors since the logs won't be obscured by Xcode and Android Studio.
+  // This path is also used for automatically deploying server bundles to a remote host.
+  const eagerBundleOptions = env.__EXPO_EAGER_BUNDLE_OPTIONS
+    ? deserializeEagerKey(env.__EXPO_EAGER_BUNDLE_OPTIONS)
+    : null;
+  if (eagerBundleOptions) {
+    // Get the cache key for the current process to compare against the eager key.
+    const inputKey = getExportEmbedOptionsKey(options);
+
+    // If the app was bundled previously in the same process, then we should reuse the Metro cache.
+    options.resetCache = false;
+
+    if (eagerBundleOptions.key === inputKey) {
+      // Copy the eager bundleOutput and assets to the new locations.
+      await removeAsync(options.bundleOutput);
+
+      copyAsync(eagerBundleOptions.options.bundleOutput, options.bundleOutput);
+
+      if (eagerBundleOptions.options.assetsDest && options.assetsDest) {
+        copyAsync(eagerBundleOptions.options.assetsDest, options.assetsDest);
+      }
+
+      console.log('info: Copied output to binary:', options.bundleOutput);
+      return;
+    }
+    // TODO: sourcemapOutput is set on Android but not during eager. This is tolerable since it doesn't invalidate the Metro cache.
+    console.log('  Eager key:', eagerBundleOptions.key);
+    console.log('Request key:', inputKey);
+
+    // TODO: We may want an analytic event here in the future to understand when this happens.
+    console.warn('warning: Eager bundle does not match new options, bundling again.');
+  }
+
+  return exportEmbedInternalAsync(projectRoot, options);
+}
+
+export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {
   // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
   await removeAsync(options.bundleOutput);
 
@@ -136,7 +182,7 @@ export async function exportEmbedBundleAndAssetsAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
+  const { exp, pkg } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const isHermes = isEnableHermesManaged(exp, options.platform);
 
   let sourceMapUrl = options.sourcemapOutput;
@@ -144,10 +190,13 @@ export async function exportEmbedBundleAndAssetsAsync(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
+  const files: ExportAssetMap = new Map();
+
   try {
-    const bundles = await devServer.legacySinglePageExportBundleAsync(
+    const bundles = await devServer.nativeExportBundleAsync(
       {
-        splitChunks: false,
+        // TODO: Re-enable when we get bytecode chunk splitting working again.
+        splitChunks: false, //devServer.isReactServerComponentsEnabled,
         mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
         platform: options.platform,
         minify: options.minify,
@@ -159,6 +208,7 @@ export async function exportEmbedBundleAndAssetsAsync(
         // source map inline
         reactCompiler: !!exp.experiments?.reactCompiler,
       },
+      files,
       {
         sourceMapUrl,
         unstable_transformProfile: (options.unstableTransformProfile ||
@@ -166,7 +216,17 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
-    const files: ExportAssetMap = new Map();
+    const apiRoutesEnabled =
+      devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
+
+    if (apiRoutesEnabled) {
+      await exportStandaloneServerAsync(projectRoot, devServer, {
+        exp,
+        pkg,
+        files,
+        options,
+      });
+    }
 
     // TODO: Remove duplicates...
     const expoDomComponentReferences = bundles.artifacts
@@ -226,6 +286,10 @@ async function exportDomComponentsAsync(
   exp: ExpoConfig,
   files: ExportAssetMap
 ) {
+  if (!expoDomComponentReferences.length) {
+    return;
+  }
+
   const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
   await Promise.all(
     // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
@@ -343,7 +407,9 @@ export async function createMetroServerAndBundleRequestAsync(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
-  const bundleRequest = {
+  // TODO(cedric): check if we can use the proper `bundleType=bundle` and `entryPoint=mainModuleName` properties
+  // @ts-expect-error: see above
+  const bundleRequest: BundleOptions = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
     ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
       splitChunks: false,

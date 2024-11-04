@@ -3,12 +3,13 @@ package expo.modules.updates
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.types.Enumerable
+import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
@@ -17,12 +18,16 @@ import expo.modules.updates.statemachine.UpdatesStateContext
 import java.lang.ref.WeakReference
 import java.util.Date
 
+enum class UpdatesJSEvent(val eventName: String) : Enumerable {
+  StateChange("Expo.nativeUpdatesStateChangeEvent")
+}
+
 /**
  * Exported module which provides to the JS runtime information about the currently running update
  * and updates state, along with methods to check for and download new updates, reload with the
  * newest downloaded update applied, and read/clear native log entries.
  */
-class UpdatesModule : Module() {
+class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   private val logger: UpdatesLogger
     get() = UpdatesLogger(context)
 
@@ -32,60 +37,23 @@ class UpdatesModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
 
-    Events(
-      UPDATES_STATE_CHANGE_EVENT_NAME
-    )
+    Events<UpdatesJSEvent>()
 
     Constants {
       UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
-      mutableMapOf<String, Any?>().apply {
-        val constantsForModule = UpdatesController.instance.getConstantsForModule()
-        val launchedUpdate = constantsForModule.launchedUpdate
-        val embeddedUpdate = constantsForModule.embeddedUpdate
-        val isEmbeddedLaunch = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
-
-        // keep these keys in sync with ExpoGoUpdatesModule
-        this["isEmergencyLaunch"] = constantsForModule.emergencyLaunchException != null
-        this["emergencyLaunchReason"] = constantsForModule.emergencyLaunchException?.message
-        this["isEmbeddedLaunch"] = isEmbeddedLaunch
-        this["isEnabled"] = constantsForModule.isEnabled
-        this["isUsingEmbeddedAssets"] = constantsForModule.isUsingEmbeddedAssets
-        this["runtimeVersion"] = constantsForModule.runtimeVersion ?: ""
-        this["checkAutomatically"] = constantsForModule.checkOnLaunch.toJSString()
-        this["channel"] = constantsForModule.requestHeaders["expo-channel-name"] ?: ""
-        this["shouldDeferToNativeForAPIMethodAvailabilityInDevelopment"] = constantsForModule.shouldDeferToNativeForAPIMethodAvailabilityInDevelopment || BuildConfig.EX_UPDATES_NATIVE_DEBUG
-
-        if (launchedUpdate != null) {
-          this["updateId"] = launchedUpdate.id.toString()
-          this["commitTime"] = launchedUpdate.commitTime.time
-          this["manifestString"] = launchedUpdate.manifest.toString()
-        }
-        val localAssetFiles = constantsForModule.localAssetFiles
-        if (localAssetFiles != null) {
-          val localAssets = mutableMapOf<String, String>()
-          for (asset in localAssetFiles.keys) {
-            if (asset.key != null) {
-              localAssets[asset.key!!] = localAssetFiles[asset]!!
-            }
-          }
-          this["localAssets"] = localAssets
-        }
-      }
+      UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
 
-    OnCreate {
-      UpdatesController.bindAppContext(
-        WeakReference(appContext),
-        appContext.eventEmitter(this@UpdatesModule)
-      )
+    OnStartObserving(UpdatesJSEvent.StateChange) {
+      UpdatesController.setUpdatesEventManagerObserver(WeakReference(this@UpdatesModule))
     }
 
-    OnStartObserving {
-      UpdatesController.shouldEmitJsEvents = true
+    OnStopObserving(UpdatesJSEvent.StateChange) {
+      UpdatesController.removeUpdatesEventManagerObserver()
     }
 
-    OnStopObserving {
-      UpdatesController.shouldEmitJsEvents = false
+    OnDestroy {
+      UpdatesController.removeUpdatesEventManagerObserver()
     }
 
     AsyncFunction("reload") { promise: Promise ->
@@ -102,27 +70,13 @@ class UpdatesModule : Module() {
       )
     }
 
-    // Used internally by useUpdates() to get its initial state
-    AsyncFunction("getNativeStateMachineContextAsync") { promise: Promise ->
-      UpdatesController.instance.getNativeStateMachineContext(object : IUpdatesController.ModuleCallback<UpdatesStateContext> {
-        override fun onSuccess(result: UpdatesStateContext) {
-          promise.resolve(result.bundle)
-        }
-
-        override fun onFailure(exception: CodedException) {
-          promise.reject(exception)
-        }
-      })
-    }
-
     AsyncFunction("checkForUpdateAsync") { promise: Promise ->
       UpdatesController.instance.checkForUpdate(
         object : IUpdatesController.ModuleCallback<IUpdatesController.CheckForUpdateResult> {
           override fun onSuccess(result: IUpdatesController.CheckForUpdateResult) {
             when (result) {
               is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
-                promise.reject("ERR_UPDATES_CHECK", result.message, result.error)
-                Log.e(TAG, result.message, result.error)
+                promise.reject("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
               }
               is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
                 promise.resolve(
@@ -287,12 +241,16 @@ class UpdatesModule : Module() {
         }
     }
 
-    internal fun clearLogEntries(context: Context, completionHandler: (_: Error?) -> Unit) {
+    internal fun clearLogEntries(context: Context, completionHandler: (_: Exception?) -> Unit) {
       val reader = UpdatesLogReader(context)
       reader.purgeLogEntries(
         olderThan = Date(),
         completionHandler
       )
     }
+  }
+
+  override fun onStateMachineContextEvent(context: UpdatesStateContext) {
+    sendEvent(UpdatesJSEvent.StateChange, Bundle().apply { putBundle("context", context.bundle) })
   }
 }

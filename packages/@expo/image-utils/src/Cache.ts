@@ -25,7 +25,13 @@ export async function createCacheKeyWithDirectoryAsync(
   type: string,
   icon: ImageOptions
 ): Promise<string> {
-  const cacheKey = `${type}-${createCacheKey(icon.src, [icon.resizeMode, icon.backgroundColor])}`;
+  const iconProperties: string[] = [icon.resizeMode];
+
+  if (icon.backgroundColor) {
+    iconProperties.push(icon.backgroundColor);
+  }
+
+  const cacheKey = `${type}-${createCacheKey(icon.src, iconProperties)}`;
   if (!(cacheKey in cacheKeys)) {
     cacheKeys[cacheKey] = await ensureCacheDirectory(projectRoot, type, cacheKey);
   }

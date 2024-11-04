@@ -1,0 +1,6 @@
+{
+  "platforms": ["apple"],
+  "ios": {
+    "modules": ["LivePhotoModule"]
+  }
+}

@@ -38,13 +38,19 @@ test.beforeAll('bundle and serve', async () => {
   });
   console.timeEnd('expo export');
 
+  // Duplicate the index.html file for an SPA-style export.
+  fs.copyFileSync(
+    path.join(projectRoot, inputDir, 'server/index.html'),
+    path.join(projectRoot, inputDir, 'client/second.html')
+  );
+
   serveCmd = new ServeLocalCommand(projectRoot, {
     NODE_ENV: 'production',
     TEST_SECRET_VALUE: 'test-secret-dynamic',
   });
 
   console.time('npx serve');
-  await serveCmd.startAsync(['__e2e__/01-rsc/server.js', '--port=' + 3034, '--dist=' + inputDir]);
+  await serveCmd.startAsync(['serve.js', '--port=' + 3034, '--dist=' + inputDir]);
   console.timeEnd('npx serve');
   console.log('Server running:', serveCmd.url);
 });
@@ -131,13 +137,11 @@ test.describe.serial(inputDir, () => {
   });
 
   test('dynamically renders RSC', async ({ page }) => {
-    await fs.promises.rm(STATIC_RSC_PATH, { recursive: true, force: true });
-
     // Navigate to the app
-    await page.goto(serveCmd.url);
+    await page.goto(new URL('/second', serveCmd.url).toString());
 
     // Wait for the app to load
-    await page.waitForSelector('[data-testid="index-text"]');
+    await page.waitForSelector('[data-testid="second-text"]');
 
     await expect(page.locator('[data-testid="secret-text"]')).toHaveText(
       // Value should match the env var that we pass to the server after the build was completed, this will only work with dynamic rendering.

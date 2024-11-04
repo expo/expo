@@ -6,6 +6,11 @@ import fs from 'fs/promises';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
+/*
+ * Change this to your own Expo account name
+ */
+export const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
+
 const dirName = __dirname; /* eslint-disable-line */
 
 // Package dependencies in chunks based on peer dependencies.
@@ -17,12 +22,14 @@ function getExpoDependencyChunks({
   includeTV: boolean;
 }) {
   return [
-    ['@expo/config-types', '@expo/env'],
+    ['@expo/config-types', '@expo/env', '@expo/json-file'],
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['expo-modules-core'],
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
-    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants', 'expo-manifests'],
+    ['expo-manifests'],
+    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
+    ['@expo/image-utils'],
     [
       'babel-preset-expo',
       'expo-application',
@@ -48,9 +55,11 @@ function getExpoDependencyChunks({
             'expo-blur',
             'expo-image',
             'expo-linear-gradient',
+            'expo-linking',
             'expo-localization',
             'expo-crypto',
             'expo-network',
+            'expo-secure-store',
             'expo-video',
           ],
         ]
@@ -355,8 +364,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@~0.74.3-0',
-        '@react-native-tvos/config-tv': '^0.0.10',
+        'react-native': 'npm:react-native-tvos@~0.76.0-0rc4',
+        '@react-native-tvos/config-tv': '^0.0.11',
       },
       expo: {
         install: {
@@ -467,16 +476,15 @@ function transformAppJsonForE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
+      newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
         ...appJson.expo.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
+        assetPatternsToBeBundled: ['includedAssets/*'],
       },
       extra: {
-        updates: {
-          assetPatternsToBeBundled: ['includedAssets/*'],
-        },
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
         },
@@ -550,6 +558,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
       owner: 'expo-ci',
       runtimeVersion,
       plugins,
+      newArchEnabled: false,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       extra: {
@@ -806,6 +815,8 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     { appJsFileName: 'App-apitest.tsx', repoRoot, isTV: false }
   );
 
+  const projectName = path.basename(projectRoot);
+
   // disable JS debugging on Android
   const mainApplicationPath = path.join(
     projectRoot,
@@ -815,8 +826,8 @@ export async function setupManualTestAppAsync(projectRoot: string, repoRoot: str
     'main',
     'java',
     'com',
-    'douglowderexpo',
-    'MyUpdateableApp',
+    EXPO_ACCOUNT_NAME,
+    projectName,
     'MainApplication.kt'
   );
   const mainApplicationText = await fs.readFile(mainApplicationPath, { encoding: 'utf-8' });

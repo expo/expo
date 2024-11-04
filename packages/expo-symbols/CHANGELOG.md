@@ -4,15 +4,23 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30865](https://github.com/expo/expo/pull/30865) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fix import error when using symbols on web. ([#30249](https://github.com/expo/expo/pull/30249) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 0.2.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30865](https://github.com/expo/expo/pull/30865) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.1.5 - 2024-08-24
+
+### 🐛 Bug fixes
+
+- Fix import error when using symbols on web. ([#30249](https://github.com/expo/expo/pull/30249) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.1.4 — 2024-04-29
 

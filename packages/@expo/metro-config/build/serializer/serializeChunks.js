@@ -35,8 +35,8 @@ const sourceMapString = typeof sourceMapString_1.default !== 'function'
 async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props) {
     const [entryFile, preModules, graph, options] = props;
     const cssDeps = (0, getCssDeps_1.getCssSerialAssets)(graph.dependencies, {
+        entryFile,
         projectRoot: options.projectRoot,
-        processModuleFilter: options.processModuleFilter,
     });
     // Create chunks for splitting.
     const chunks = new Set();
@@ -186,8 +186,8 @@ class Chunk {
         const jsSplitBundle = (0, baseJSBundle_1.baseJSBundleWithDependencies)(entryFile, preModules, dependencies, {
             ...this.options,
             runBeforeMainModule: serializerConfig?.getModulesRunBeforeMainModule?.(path_1.default.relative(this.options.projectRoot, entryFile)) ?? [],
-            runModule: !this.isVendor && !this.isAsync,
-            modulesOnly: this.preModules.size === 0,
+            runModule: this.options.runModule && !this.isVendor && !this.isAsync,
+            modulesOnly: this.options.modulesOnly || this.preModules.size === 0,
             platform: this.getPlatform(),
             baseUrl: (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options),
             splitChunks: !!this.options.serializerOptions?.splitChunks,
@@ -331,6 +331,19 @@ class Chunk {
                     })
                         .flat()),
                 ].filter((value) => typeof value === 'string'),
+                reactServerReferences: [
+                    ...new Set([...this.deps]
+                        .map((module) => {
+                        return module.output.map((output) => {
+                            if ('reactServerReference' in output.data &&
+                                typeof output.data.reactServerReference === 'string') {
+                                return output.data.reactServerReference;
+                            }
+                            return undefined;
+                        });
+                    })
+                        .flat()),
+                ].filter((value) => typeof value === 'string'),
             },
             source: jsCode.code,
         };
@@ -404,6 +417,16 @@ class Chunk {
                 // @ts-expect-error: TODO
                 jsAsset.source = hermesBundleOutput.hbc;
                 jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
+                // Replace mappings with hbc
+                if (jsAsset.metadata.paths) {
+                    jsAsset.metadata.paths = Object.fromEntries(Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
+                        key,
+                        Object.fromEntries(Object.entries(value).map(([key, value]) => [
+                            key,
+                            value ? value.replace(/\.js$/, '.hbc') : value,
+                        ])),
+                    ]));
+                }
             }
             if (assets[1] && hermesBundleOutput.sourcemap) {
                 assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);

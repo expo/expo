@@ -26,4 +26,8 @@ export type PathSpecItem = {
 export type PathSpec = readonly PathSpecItem[];
 export declare const parsePathWithSlug: (path: string) => PathSpec;
 export declare const getPathMapping: (pathSpec: PathSpec, pathname: string) => Record<string, string | string[]> | null;
+/**
+ * Transform a path spec to a regular expression.
+ */
+export declare const path2regexp: (path: PathSpec) => string;
 //# sourceMappingURL=path.d.ts.map

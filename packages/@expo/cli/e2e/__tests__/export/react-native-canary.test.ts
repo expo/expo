@@ -31,6 +31,7 @@ describe('exports with react native canary', () => {
             E2E_ROUTER_SRC: 'react-native-canary',
             E2E_ROUTER_ASYNC: 'development',
             EXPO_USE_FAST_RESOLVER: 'true',
+            EXPO_USE_METRO_REQUIRE: '1',
           },
         }
       );
@@ -59,7 +60,7 @@ describe('exports with react native canary', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/index-.*\.js/),
+          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.js/),
         },
       },
       version: 0,
@@ -82,6 +83,6 @@ describe('exports with react native canary', () => {
     // Minified mark
     expect(bundle).not.toMatch('__d((function(g,r,');
     // Canary comment. This needs to be updated with each canary.
-    expect(bundle).toMatch('SignedSource<<69d0cc554d77cddb1c779dfbdf569505>>');
+    expect(bundle).toMatch('canary-full/react/cjs/react.production.js');
   });
 });

@@ -1,14 +1,16 @@
+import '../global.css';
 import 'server-only';
 
-import { View } from '../lib/react-native';
+import { Link, Slot } from 'expo-router';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import '../global.css';
 import { unstable_styles } from '../home.module.css';
 
 const HomeLayout = (props) => {
   return (
-    <View style={{ flex: 1, padding: 12 }} testID="layout-child-wrapper">
-      {props.children}
+    <SafeAreaView style={{ flex: 1 }} testID="layout-child-wrapper">
+      <Slot />
       <View
         testID="layout-global-style"
         style={[
@@ -20,7 +22,22 @@ const HomeLayout = (props) => {
         testID="layout-module-style"
         style={[{ width: 100, height: 100 }, unstable_styles.container]}
       />
-    </View>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          padding: 12,
+
+          justifyContent: 'space-around',
+        }}>
+        <Link href="/" style={props.path === '/' ? { color: 'blue' } : {}}>
+          One
+        </Link>
+        <Link href="/second" style={props.path === '/second' ? { color: 'blue' } : {}}>
+          Two
+        </Link>
+      </View>
+    </SafeAreaView>
   );
 };
 

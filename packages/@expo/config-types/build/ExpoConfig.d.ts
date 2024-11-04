@@ -65,7 +65,7 @@ export interface ExpoConfig {
      */
     primaryColor?: string;
     /**
-     * Local path or remote URL to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo app.
+     * Local path or remote URL to an image to use for your app's icon. We recommend that you use a 1024x1024 png file. This icon will appear on the home screen and within the Expo Go app.
      */
     icon?: string;
     /**
@@ -175,6 +175,10 @@ export interface ExpoConfig {
          */
         checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD' | 'WIFI_ONLY' | 'NEVER';
         /**
+         * Whether to load the embedded update. Defaults to true. If set to false, an update will be fetched at launch. When set to false, ensure that `checkAutomatically` is set to `ON_LOAD` and `fallbackToCacheTimeout` is large enough for the initial remote update to download. This should not be used in production.
+         */
+        useEmbeddedUpdate?: boolean;
+        /**
          * How long (in ms) to wait for the app to check for and fetch a new update upon launch before falling back to the most recent update already present on the device. Defaults to 0. Must be between 0 and 300000 (5 minutes). If the startup update check takes longer than this value, any update downloaded during the check will be applied upon the next app launch.
          */
         fallbackToCacheTimeout?: number;
@@ -205,6 +209,10 @@ export interface ExpoConfig {
         requestHeaders?: {
             [k: string]: any;
         };
+        /**
+         * Array of glob patterns specifying which files should be included in updates. Glob patterns are relative to the project root. A value of `['**']` will match all asset files within the project root. When not supplied all asset files will be included. Example: Given a value of `['app/images/** /*.png', 'app/fonts/** /*.woff']` all `.png` files in all subdirectories of `app/images` and all `.woff` files in all subdirectories of `app/fonts` will be included in updates.
+         */
+        assetPatternsToBeBundled?: string[];
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -227,6 +235,10 @@ export interface ExpoConfig {
      * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
+    /**
+     * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
+     */
+    newArchEnabled?: boolean;
     ios?: IOS;
     android?: Android;
     web?: Web;
@@ -242,10 +254,6 @@ export interface ExpoConfig {
          * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
          */
         supportsTVOnly?: boolean;
-        /**
-         * If true, the window spans the entire display size by drawing behind transparent system bars.
-         */
-        edgeToEdge?: boolean;
         /**
          * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
          */
@@ -270,6 +278,10 @@ export interface ExpoConfig {
          * Experimentally enable React Server Components support in Expo CLI and Expo Router.
          */
         reactServerComponents?: boolean;
+        /**
+         * Experimentally enable React Server Actions support in Expo CLI and Expo Router.
+         */
+        reactServerActions?: boolean;
     };
     /**
      * Internal properties for developer tools
@@ -307,7 +319,7 @@ export interface Splash {
  */
 export interface IOS {
     /**
-     * The Apple development team ID to use for all build configurations.
+     * The Apple development team ID to use for all native targets. You can find your team ID in [the Apple Developer Portal](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/).
      */
     appleTeamId?: string;
     /**
@@ -331,11 +343,11 @@ export interface IOS {
      */
     backgroundColor?: string;
     /**
-     * Local path or remote URL to an image to use for your app's icon on iOS. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
+     * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., dark, tinted) can be provided. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
      *
-     *  Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
+     * Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo Go app.
      */
-    icon?: string;
+    icon?: string | IOSIcons;
     /**
      * URL to your app on the Apple App Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
      */
@@ -506,11 +518,32 @@ export interface IOS {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
+     * A Boolean value that indicates whether the iOS app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
+    /**
      * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
      */
     runtimeVersion?: string | {
         policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' | 'fingerprint';
     };
+}
+/**
+ * Configuration that is specific to the iOS platform icons.
+ */
+export interface IOSIcons {
+    /**
+     * The icon that will appear when neither dark nor tinted icons are used, or if they are not provided.
+     */
+    any?: string;
+    /**
+     * The icon that will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     */
+    dark?: string;
+    /**
+     * The icon that will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     */
+    tinted?: string;
 }
 /**
  * Configuration that is specific to the Android platform.
@@ -541,7 +574,7 @@ export interface Android {
      */
     userInterfaceStyle?: 'light' | 'dark' | 'automatic';
     /**
-     * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
+     * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo Go app.
      */
     icon?: string;
     /**
@@ -732,6 +765,10 @@ export interface Android {
      * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
+    /**
+     * A Boolean value that indicates whether the Android app should use the new architecture.
+     */
+    newArchEnabled?: boolean;
     /**
      * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
      */

@@ -25,7 +25,7 @@ import Foundation
  *   EXUpdatesRequestHeaders
  */
 internal final class UpdatesBuildData {
-  static func ensureBuildDataIsConsistentAsync(database: UpdatesDatabase, config: UpdatesConfig) {
+  static func ensureBuildDataIsConsistentAsync(database: UpdatesDatabase, config: UpdatesConfig, logger: UpdatesLogger) {
     database.databaseQueue.async {
       let scopeKey = config.scopeKey
 
@@ -33,7 +33,7 @@ internal final class UpdatesBuildData {
       do {
         staticBuildData = try database.staticBuildData(withScopeKey: scopeKey)
       } catch {
-        NSLog("Error getting static build data: %@", [error.localizedDescription])
+        logger.warn(message: "Error getting static build data: \(error.localizedDescription)")
         return
       }
 
@@ -42,13 +42,13 @@ internal final class UpdatesBuildData {
         // safest dictionary comparison conversion is still in objective-c
         // swiftlint:disable:next legacy_objc_type
         if !NSDictionary(dictionary: staticBuildData).isEqual(to: impliedStaticBuildData) {
-          clearAllUpdatesAndSetStaticBuildData(database: database, config: config, scopeKey: scopeKey)
+          clearAllUpdatesAndSetStaticBuildData(database: database, config: config, logger: logger, scopeKey: scopeKey)
         }
       } else {
         do {
           try database.setStaticBuildData(getBuildDataFromConfig(config), withScopeKey: scopeKey)
         } catch {
-          NSLog("Error setting static build data: %@", [error.localizedDescription])
+          logger.warn(message: "Error setting static build data: \(error.localizedDescription)")
           return
         }
       }
@@ -62,26 +62,26 @@ internal final class UpdatesBuildData {
     ]
   }
 
-  static func clearAllUpdatesAndSetStaticBuildData(database: UpdatesDatabase, config: UpdatesConfig, scopeKey: String) {
+  static func clearAllUpdatesAndSetStaticBuildData(database: UpdatesDatabase, config: UpdatesConfig, logger: UpdatesLogger, scopeKey: String) {
     let allUpdates: [Update]
     do {
       allUpdates = try database.allUpdates(withConfig: config)
     } catch {
-      NSLog("Error loading updates from database: %@", [error.localizedDescription])
+      logger.warn(message: "Error loading updates from database: \(error.localizedDescription)")
       return
     }
 
     do {
       try database.deleteUpdates(allUpdates)
     } catch {
-      NSLog("Error clearing all updates from database: %@", [error.localizedDescription])
+      logger.warn(message: "Error clearing all updates from database: \(error.localizedDescription)")
       return
     }
 
     do {
       try database.setStaticBuildData(getBuildDataFromConfig(config), withScopeKey: scopeKey)
     } catch {
-      NSLog("Error setting static build data: %@", [error.localizedDescription])
+      logger.warn(message: "Error setting static build data: \(error.localizedDescription)")
       return
     }
   }

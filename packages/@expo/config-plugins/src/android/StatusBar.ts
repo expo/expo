@@ -62,7 +62,7 @@ export function setStatusBarStyles(
   styles = assignStylesValue(styles, {
     parent: getAppThemeGroup(),
     name: STATUS_BAR_COLOR,
-    value: floatElement ? '@android:color/transparent' : hexString ?? '@color/colorPrimaryDark',
+    value: floatElement ? '@android:color/transparent' : (hexString ?? '@color/colorPrimaryDark'),
     // Remove the color if translucent is used
     add: floatElement || !!hexString,
   });

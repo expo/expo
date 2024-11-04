@@ -7,7 +7,7 @@ exports.findGradleAndManifestAsync = exports.parseComponentDescriptorsAsync = ex
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
-const utils_1 = require("./utils");
+const fileUtils_1 = require("../fileUtils");
 async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeConfig) {
     if (reactNativeConfig === null) {
         // Skip autolinking for this package.
@@ -18,8 +18,10 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
     if (!manifest && !gradle) {
         return null;
     }
-    const packageName = reactNativeConfig?.packageName ||
-        (await parsePackageNameAsync(path_1.default.join(androidDir, manifest), path_1.default.join(androidDir, gradle)));
+    const packageName = reactNativeConfig?.packageName || (await parsePackageNameAsync(androidDir, manifest, gradle));
+    if (!packageName) {
+        return null;
+    }
     const nativePackageClassName = await parseNativePackageClassNameAsync(packageRoot, androidDir);
     if (!nativePackageClassName) {
         return null;
@@ -71,16 +73,16 @@ exports.resolveDependencyConfigImplAndroidAsync = resolveDependencyConfigImplAnd
 /**
  * Parse the `RNConfigDependencyAndroid.packageName`
  */
-async function parsePackageNameAsync(manifestPath, gradlePath) {
+async function parsePackageNameAsync(androidDir, manifestPath, gradlePath) {
     if (gradlePath) {
-        const gradleContents = await promises_1.default.readFile(gradlePath, 'utf8');
+        const gradleContents = await promises_1.default.readFile(path_1.default.join(androidDir, gradlePath), 'utf8');
         const match = gradleContents.match(/namespace\s*[=]*\s*["'](.+?)["']/);
         if (match) {
             return match[1];
         }
     }
     if (manifestPath) {
-        const manifestContents = await promises_1.default.readFile(manifestPath, 'utf8');
+        const manifestContents = await promises_1.default.readFile(path_1.default.join(androidDir, manifestPath), 'utf8');
         const match = manifestContents.match(/package="(.+?)"/);
         if (match) {
             return match[1];
@@ -93,15 +95,15 @@ exports.parsePackageNameAsync = parsePackageNameAsync;
  * Parse the Java or Kotlin class name to for `ReactPackage` or `TurboReactPackage`.
  */
 async function parseNativePackageClassNameAsync(packageRoot, androidDir) {
-    const matched = await (0, utils_1.globMatchFunctorFirstAsync)('**/*Package.{java,kt}', matchNativePackageClassName, { cwd: androidDir });
+    const matched = await (0, fileUtils_1.globMatchFunctorFirstAsync)('**/*Package.{java,kt}', matchNativePackageClassName, { cwd: androidDir });
     if (matched) {
         return matched;
     }
     // Early return if the module is an Expo module
-    if (await (0, utils_1.fileExistsAsync)(path_1.default.join(packageRoot, 'expo-module.config.json'))) {
+    if (await (0, fileUtils_1.fileExistsAsync)(path_1.default.join(packageRoot, 'expo-module.config.json'))) {
         return null;
     }
-    return await (0, utils_1.globMatchFunctorFirstAsync)('**/*.{java,kt}', matchNativePackageClassName, {
+    return await (0, fileUtils_1.globMatchFunctorFirstAsync)('**/*.{java,kt}', matchNativePackageClassName, {
         cwd: androidDir,
     });
 }
@@ -138,7 +140,7 @@ async function parseLibraryNameAsync(androidDir, packageJson) {
     const libraryNameRegExp = /libraryName = ["'](.+)["']/;
     const gradlePath = path_1.default.join(androidDir, 'build.gradle');
     // [1] `libraryName` from build.gradle
-    if (await (0, utils_1.fileExistsAsync)(gradlePath)) {
+    if (await (0, fileUtils_1.fileExistsAsync)(gradlePath)) {
         const buildGradleContents = await promises_1.default.readFile(gradlePath, 'utf8');
         const match = buildGradleContents.match(libraryNameRegExp);
         if (match) {
@@ -147,7 +149,7 @@ async function parseLibraryNameAsync(androidDir, packageJson) {
     }
     // [2] `libraryName` from build.gradle.kts
     const gradleKtsPath = path_1.default.join(androidDir, 'build.gradle.kts');
-    if (await (0, utils_1.fileExistsAsync)(gradleKtsPath)) {
+    if (await (0, fileUtils_1.fileExistsAsync)(gradleKtsPath)) {
         const buildGradleContents = await promises_1.default.readFile(gradleKtsPath, 'utf8');
         const match = buildGradleContents.match(libraryNameRegExp);
         if (match) {
@@ -161,7 +163,7 @@ async function parseComponentDescriptorsAsync(packageRoot, pacakgeJson) {
     const jsRoot = pacakgeJson?.codegenConfig?.jsSrcsDir
         ? path_1.default.join(packageRoot, pacakgeJson.codegenConfig.jsSrcsDir)
         : packageRoot;
-    const results = await (0, utils_1.globMatchFunctorAllAsync)('**/*.{js,jsx,ts,tsx}', matchComponentDescriptors, {
+    const results = await (0, fileUtils_1.globMatchFunctorAllAsync)('**/*.{js,jsx,ts,tsx}', matchComponentDescriptors, {
         cwd: jsRoot,
         ignore: ['**/node_modules/**'],
     });
@@ -202,7 +204,7 @@ async function findGradleAndManifestAsync({ androidDir, isLibrary, }) {
     ]);
     const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
     const gradle = gradles[0];
-    return { gradle, manifest };
+    return { gradle: gradle || null, manifest: manifest || null };
 }
 exports.findGradleAndManifestAsync = findGradleAndManifestAsync;
 //# sourceMappingURL=androidResolver.js.map

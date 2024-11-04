@@ -6,10 +6,8 @@ declare const global: any;
 const originalFetch = global.fetch;
 
 beforeAll(() => {
-  // eslint-disable-next-line
   global.fetch = jest.fn(() =>
-    // eslint-disable-next-line
-    Promise.resolve({ body: "", text: jest.fn(() => "mock"), headers: {} })
+    Promise.resolve({ body: '', text: jest.fn(() => 'mock'), headers: {} })
   );
 });
 

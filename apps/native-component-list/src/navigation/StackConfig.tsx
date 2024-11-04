@@ -32,7 +32,6 @@ export default function getStackConfig(navigation: BottomTabNavigationProp<any>,
       headerRight: () => (
         <View
           style={{
-            flex: 1,
             flexDirection: 'row',
             alignItems: 'center',
             marginRight: 16,

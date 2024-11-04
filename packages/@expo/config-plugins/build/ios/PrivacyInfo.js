@@ -27,13 +27,6 @@ function _path() {
   };
   return data;
 }
-function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
-  _Xcodeproj = function () {
-    return data;
-  };
-  return data;
-}
 function _() {
   const data = require("..");
   _ = function () {
@@ -41,7 +34,14 @@ function _() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _Xcodeproj() {
+  const data = require("./utils/Xcodeproj");
+  _Xcodeproj = function () {
+    return data;
+  };
+  return data;
+}
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function withPrivacyInfo(config) {
   const privacyManifests = config.ios?.privacyManifests;
   if (!privacyManifests) {

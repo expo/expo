@@ -1,12 +1,11 @@
 import { useLayoutEffect, useState } from 'react';
 
-import { NotificationResponse } from './Notifications.types';
+import { MaybeNotificationResponse } from './Notifications.types';
 import {
   addNotificationResponseReceivedListener,
+  addNotificationResponseClearedListener,
   getLastNotificationResponseAsync,
 } from './NotificationsEmitter';
-
-type MaybeNotificationResponse = NotificationResponse | null | undefined;
 
 /**
  * A React hook always returns the notification response that was received most recently
@@ -80,8 +79,12 @@ export default function useLastNotificationResponse() {
     const subscription = addNotificationResponseReceivedListener((response) =>
       setLastNotificationResponse((prevResponse) => newResponseIfNeeded(prevResponse, response))
     );
+    const clearResponseSubscription = addNotificationResponseClearedListener(() => {
+      setLastNotificationResponse(undefined);
+    });
     return () => {
       subscription.remove();
+      clearResponseSubscription.remove();
     };
   }, []);
 

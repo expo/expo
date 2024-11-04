@@ -1,0 +1,45 @@
+---
+title: Router
+description: A file-based routing library for React Native and web applications.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-52/packages/expo-router'
+packageName: 'expo-router'
+platforms: ['android', 'ios', 'web']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample } from '~/ui/components/ConfigSection';
+
+`expo-router` is a routing library for React Native and web apps. It enables navigation management using a file-based routing system and provides native navigation components and is built on top of [React Navigation](https://reactnavigation.org/).
+
+## Installation
+
+<APIInstallSection packageName="expo-router" hideBareInstructions />
+
+## Configuration in app config
+
+If you are using the [default](/more/create-expo/#--template) template to create a new project, `expo-router` [config plugin](/config-plugins/introduction/) is automatically configured in the app config automatically.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-router"]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+## Usage
+
+Find more information and guides about using `expo-router` in [Expo Router](/router/introduction/) section.
+
+## API
+
+```js
+import { Stack, Tabs, Link } from 'expo-router';
+```
+
+<APISection packageName="expo-router" />

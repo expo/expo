@@ -10,6 +10,56 @@
 
 ### 💡 Others
 
+## 1.12.2 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Remove `updates` and `jsEngine` from unintentionally-not-CNG check, since they are used by non-native code as well ([#322006](https://github.com/expo/expo/pull/322006) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.12.1 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Fix crash when using config plugins with an entry point other than app.plugin.js ([#32130](https://github.com/expo/expo/pull/32443) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.12.0 — 2024-10-25
+
+### 🎉 New features
+
+- Add support to disable appConfigFieldsNotSyncedCheck via package.json. ([#32130](https://github.com/expo/expo/pull/32130) by [@betomoedano](https://github.com/betomoedano))
+
+### 💡 Others
+
+- Added a ternary check to validate if the project uses EAS; if so, it displays the relevant EAS documentation. ([#32126](https://github.com/expo/expo/pull/32126) by [@betomoedano](https://github.com/betomoedano))
+
+## 1.11.3 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 1.11.2 — 2024-10-17
+
+### 🐛 Bug fixes
+
+- Re-enable `--minify` flag for ncc and add try-catch for better error handling. ([#32218](https://github.com/expo/expo/pull/32218) by [@betomoedano](https://github.com/betomoedano))
+- Fix project setup check running on EAS Build and failing ([#32106](https://github.com/expo/expo/pull/32106) by [@brentvatne](https://github.com/brentvatne))
+
+## 1.11.1 — 2024-10-15
+
+### 🐛 Bug fixes
+
+- Remove `--minify` from ncc for now, in order to prevent log spam on errors.
+
+## 1.11.0 — 2024-10-15
+
+### 🎉 New features
+
+- Show more info on network errors, allow overriding of network errors ([#31926](https://github.com/expo/expo/pull/31926) by [@keith-kurak](https://github.com/keith-kurak))
+- Add support for `.easignore` files when performing project validations. ([#31334](https://github.com/expo/expo/pull/31334) by [@betomoedano](https://github.com/betomoedano))
+
+### 🐛 Bug fixes
+
+- fix conditional on iOS non-CNG check ([#31920](https://github.com/expo/expo/pull/31920) by [@keith-kurak](https://github.com/keith-kurak))
+
 ## 1.10.1 — 2024-08-28
 
 ### 🐛 Bug fixes

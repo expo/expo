@@ -107,8 +107,7 @@ class DevLauncherController private constructor() :
 
   private var appIsLoading = false
 
-  @Suppress("unused")
-  private val networkInterceptor = DevLauncherNetworkInterceptor(this)
+  private var networkInterceptor: DevLauncherNetworkInterceptor? = null
 
   private fun isEASUpdateURL(url: Uri): Boolean {
     return url.host.equals("u.expo.dev") || url.host.equals("staging-u.expo.dev")
@@ -191,6 +190,11 @@ class DevLauncherController private constructor() :
   override fun onAppLoaded(context: ReactContext) {
     synchronized(this) {
       appIsLoading = false
+    }
+    manifestURL?.let {
+      runBlockingOnMainThread {
+        networkInterceptor = DevLauncherNetworkInterceptor(it)
+      }
     }
   }
 
@@ -287,6 +291,8 @@ class DevLauncherController private constructor() :
   private fun ensureHostWasCleared(host: ReactHostWrapper, activityToBeInvalidated: ReactActivity? = null) {
     if (host.hasInstance) {
       runBlockingOnMainThread {
+        networkInterceptor?.close()
+        networkInterceptor = null
         clearHost(host, activityToBeInvalidated)
       }
     }

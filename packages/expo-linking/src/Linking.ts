@@ -14,7 +14,7 @@ import { validateURL } from './validateURL';
  * It is recommended to use the [`useURL()`](#useurl) hook instead.
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
- * [`EventType`](#eventype).
+ * [`EventType`](#eventtype).
  * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native documentation on Linking](https://reactnative.dev/docs/linking#addeventlistener).
  */

@@ -1,8 +1,16 @@
 package expo.modules.notifications.notifications.model;
 
+import static expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder.META_DATA_LARGE_ICON_KEY;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,15 +19,21 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import expo.modules.notifications.notifications.enums.NotificationPriority;
+import expo.modules.notifications.notifications.interfaces.INotificationContent;
+import kotlin.coroutines.Continuation;
 
 /**
- * A POJO representing a notification content: title, message, body, etc. Instances
+ * A POJO representing a local notification content: title, message, body, etc. Instances
  * should be created using {@link NotificationContent.Builder}.
+ *
+ * Note that it implements {@link Serializable} interfaces to store the object in the SharedPreferences.
+ * Refactoring this class may require a migration strategy for the data stored in SharedPreferences.
  */
-public class NotificationContent implements Parcelable, Serializable {
+public class NotificationContent implements Parcelable, Serializable, INotificationContent {
   private String mTitle;
   private String mText;
   private String mSubtitle;
@@ -61,7 +75,7 @@ public class NotificationContent implements Parcelable, Serializable {
   }
 
   @Nullable
-  public String getSubtitle() {
+  public String getSubText() {
     return mSubtitle;
   }
 
@@ -70,17 +84,39 @@ public class NotificationContent implements Parcelable, Serializable {
     return mBadgeCount;
   }
 
-  public boolean shouldPlayDefaultSound() {
+  @Override
+  public boolean getShouldPlayDefaultSound() {
     return mShouldPlayDefaultSound;
   }
 
-  @Nullable
-  public Uri getSound() {
-    return mSound;
+  @Override
+  public boolean getShouldUseDefaultVibrationPattern() {
+    return mShouldUseDefaultVibrationPattern;
   }
 
-  public boolean shouldUseDefaultVibrationPattern() {
-    return mShouldUseDefaultVibrationPattern;
+  @Nullable
+  public String getSoundName() {
+    return mSound != null ? mSound.getLastPathSegment() : null;
+  }
+
+  @Nullable
+  @Override
+  public Object getImage(@NonNull Context context, @NonNull Continuation<? super Bitmap> $completion) {
+    try {
+      ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+      if (ai.metaData.containsKey(META_DATA_LARGE_ICON_KEY)) {
+        int resourceId = ai.metaData.getInt(META_DATA_LARGE_ICON_KEY);
+        return BitmapFactory.decodeResource(context.getResources(), resourceId);
+      }
+    } catch (PackageManager.NameNotFoundException | ClassCastException e) {
+      Log.e("expo-notifications", "Could not have fetched large notification icon.", e);
+    }
+    return null;
+  }
+
+  @Override
+  public boolean containsImage() {
+    return true;
   }
 
   @Nullable
@@ -240,116 +276,89 @@ public class NotificationContent implements Parcelable, Serializable {
   }
 
   public static class Builder {
-    private String mTitle;
-    private String mText;
-    private String mSubtitle;
-    private Number mBadgeCount;
-    private boolean mShouldPlayDefaultSound;
-    private Uri mSound;
-    private boolean mShouldUseDefaultVibrationPattern;
-    private long[] mVibrationPattern;
-    private JSONObject mBody;
-    private NotificationPriority mPriority;
-    private Number mColor;
-    private boolean mAutoDismiss;
-    private String mCategoryId;
-    private boolean mSticky;
+    private final NotificationContent content;
 
     public Builder() {
+      content = new NotificationContent();
       useDefaultSound();
       useDefaultVibrationPattern();
     }
 
     public Builder setTitle(String title) {
-      mTitle = title;
+      content.mTitle = title;
       return this;
     }
 
     public Builder setSubtitle(String subtitle) {
-      mSubtitle = subtitle;
+      content.mSubtitle = subtitle;
       return this;
     }
 
     public Builder setText(String text) {
-      mText = text;
+      content.mText = text;
       return this;
     }
 
     public Builder setBody(JSONObject body) {
-      mBody = body;
+      content.mBody = body;
       return this;
     }
 
     public Builder setPriority(NotificationPriority priority) {
-      mPriority = priority;
+      content.mPriority = priority;
       return this;
     }
 
     public Builder setBadgeCount(Number badgeCount) {
-      mBadgeCount = badgeCount;
+      content.mBadgeCount = badgeCount;
       return this;
     }
 
     public Builder useDefaultVibrationPattern() {
-      mShouldUseDefaultVibrationPattern = true;
-      mVibrationPattern = null;
+      content.mShouldUseDefaultVibrationPattern = true;
+      content.mVibrationPattern = null;
       return this;
     }
 
     public Builder setVibrationPattern(long[] vibrationPattern) {
-      mShouldUseDefaultVibrationPattern = false;
-      mVibrationPattern = vibrationPattern;
+      content.mShouldUseDefaultVibrationPattern = false;
+      content.mVibrationPattern = vibrationPattern;
       return this;
     }
 
     public Builder useDefaultSound() {
-      mShouldPlayDefaultSound = true;
-      mSound = null;
+      content.mShouldPlayDefaultSound = true;
+      content.mSound = null;
       return this;
     }
 
     public Builder setSound(Uri sound) {
-      mShouldPlayDefaultSound = false;
-      mSound = sound;
+      content.mShouldPlayDefaultSound = false;
+      content.mSound = sound;
       return this;
     }
 
     public Builder setColor(Number color) {
-      mColor = color;
+      content.mColor = color;
       return this;
     }
 
     public Builder setAutoDismiss(boolean autoDismiss) {
-      mAutoDismiss = autoDismiss;
+      content.mAutoDismiss = autoDismiss;
       return this;
     }
 
     public Builder setCategoryId(String categoryId) {
-      mCategoryId = categoryId;
+      content.mCategoryId = categoryId;
       return this;
     }
     
     public Builder setSticky(boolean sticky) {
-      mSticky = sticky;
+      content.mSticky = sticky;
       return this;
     }
 
     public NotificationContent build() {
-      NotificationContent content = new NotificationContent();
-      content.mTitle = mTitle;
-      content.mSubtitle = mSubtitle;
-      content.mText = mText;
-      content.mBadgeCount = mBadgeCount;
-      content.mShouldUseDefaultVibrationPattern = mShouldUseDefaultVibrationPattern;
-      content.mVibrationPattern = mVibrationPattern;
-      content.mShouldPlayDefaultSound = mShouldPlayDefaultSound;
-      content.mSound = mSound;
-      content.mBody = mBody;
-      content.mPriority = mPriority;
-      content.mColor = mColor;
-      content.mAutoDismiss = mAutoDismiss;
-      content.mCategoryId = mCategoryId;
-      content.mSticky = mSticky;
       return content;
     }
   }

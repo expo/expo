@@ -26,7 +26,7 @@ function _errors() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
 /**
  * Plugin to intercept execution of a given `mod` with the given `action`.

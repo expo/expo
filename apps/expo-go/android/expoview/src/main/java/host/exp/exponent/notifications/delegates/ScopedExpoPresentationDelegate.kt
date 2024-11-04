@@ -16,9 +16,8 @@ import host.exp.exponent.notifications.model.ScopedNotificationRequest
 import java.util.*
 
 class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegate(context) {
-  override fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
-    ScopedCategoryAwareNotificationBuilder(context, SharedPreferencesNotificationCategoriesStore(context)).also {
-      it.setNotification(notification)
+  override suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
+    ScopedCategoryAwareNotificationBuilder(context, notification, SharedPreferencesNotificationCategoriesStore(context)).also {
       it.setAllowedBehavior(notificationBehavior)
     }.build()
 
@@ -54,7 +53,7 @@ class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegat
       return super.getNotifyId(request)
     }
     val experienceId = if (request.trigger is FirebaseNotificationTrigger) {
-      (request.trigger as FirebaseNotificationTrigger).getRemoteMessage().data["scopeKey"]
+      (request.trigger as FirebaseNotificationTrigger).remoteMessage.data["scopeKey"]
     } else if (request is ScopedNotificationRequest) {
       request.experienceScopeKeyString
     } else {

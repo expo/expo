@@ -1,3 +1,4 @@
+'use client';
 import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import {
   createNativeStackNavigator,
