@@ -11,10 +11,12 @@ import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.STATE_BUFFERING
 import androidx.media3.common.Timeline
+import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -44,6 +46,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setEnableDecoderFallback(true)
   private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
   val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl.Builder().build()
+  val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
+  val trackSelector = DefaultTrackSelector(context)
 
   val player = ExoPlayer
     .Builder(context, renderersFactory)
@@ -154,8 +158,29 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
 
     override fun onTracksChanged(tracks: Tracks) {
+      val oldSubtitleTracks = ArrayList(subtitles.availableSubtitleTracks)
+      val oldCurrentTrack = subtitles.currentSubtitleTrack
       sendEvent(PlayerEvent.TracksChanged(tracks))
+
+      val newSubtitleTracks = subtitles.availableSubtitleTracks
+      val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
+
+      if (!oldSubtitleTracks.toArray().contentEquals(newSubtitleTracks.toArray())) {
+        sendEvent(PlayerEvent.AvailableSubtitleTracksChanged(newSubtitleTracks, oldSubtitleTracks))
+      }
+      if (oldCurrentTrack != newCurrentSubtitleTrack) {
+        sendEvent(PlayerEvent.SubtitleTrackChanged(newCurrentSubtitleTrack, oldCurrentTrack))
+      }
       super.onTracksChanged(tracks)
+    }
+
+    override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
+      val oldTrack = subtitles.currentSubtitleTrack
+      sendEvent(PlayerEvent.TrackSelectionParametersChanged(parameters))
+
+      val newTrack = subtitles.currentSubtitleTrack
+      sendEvent(PlayerEvent.SubtitleTrackChanged(newTrack, oldTrack))
+      super.onTrackSelectionParametersChanged(parameters)
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
@@ -164,6 +189,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT) {
         sendEvent(PlayerEvent.PlayedToEnd())
       }
+      subtitles.setSubtitlesEnabled(false)
       super.onMediaItemTransition(mediaItem, reason)
     }
 
@@ -207,6 +233,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
     player.addListener(playerListener)
     VideoManager.registerVideoPlayer(this)
+
+    // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
+    appContext.mainQueue.launch {
+      subtitles.setSubtitlesEnabled(false)
+    }
   }
 
   override fun close() {
