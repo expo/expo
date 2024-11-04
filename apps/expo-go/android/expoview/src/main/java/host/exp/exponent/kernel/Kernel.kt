@@ -526,7 +526,7 @@ class Kernel : KernelInterface() {
       )
     }
 
-    // transfer the expo-updates query params: runtime-version, channel-name )
+    // transfer the expo-updates query params: runtime-version, channel-name
     val expoUpdatesQueryParameters = listOf(
       ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_RUNTIME_VERSION,
       ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_CHANNEL_NAME
@@ -620,12 +620,13 @@ class Kernel : KernelInterface() {
         manifestUrl,
         object : AppLoaderCallback {
           override fun onOptimisticManifest(optimisticManifest: Manifest) {
-            Exponent.instance
-              .runOnUiThread { sendOptimisticManifestToExperienceActivity(optimisticManifest) }
+            kernelScope.launch {
+              sendOptimisticManifestToExperienceActivity(optimisticManifest)
+            }
           }
 
           override fun onManifestCompleted(manifest: Manifest) {
-            Exponent.instance.runOnUiThread {
+            kernelScope.launch {
               try {
                 openManifestUrlStep2(manifestUrl, manifest, finalExistingTask)
               } catch (e: JSONException) {
@@ -635,7 +636,11 @@ class Kernel : KernelInterface() {
           }
 
           override fun onBundleCompleted(localBundlePath: String) {
-            Exponent.instance.runOnUiThread { sendBundleToExperienceActivity(localBundlePath) }
+            kernelScope.launch {
+              sendBundleToExperienceActivity(
+                localBundlePath
+              )
+            }
           }
 
           override fun emitEvent(params: JSONObject) {
@@ -653,7 +658,7 @@ class Kernel : KernelInterface() {
           }
 
           override fun onError(e: Exception) {
-            Exponent.instance.runOnUiThread { handleError(e) }
+            kernelScope.launch { handleError(e) }
           }
         },
         forceCache
