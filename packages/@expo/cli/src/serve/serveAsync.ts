@@ -123,6 +123,7 @@ async function startDynamicServerAsync(dist: string, options: Options) {
 
     const stream = send(req, pathname, {
       root: staticDirectory,
+      extensions: ['html'],
     });
 
     // add file listener for fallthrough

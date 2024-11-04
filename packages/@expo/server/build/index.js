@@ -44,6 +44,7 @@ exports.getRoutesManifest = getRoutesManifest;
 function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
     // Serve a static file by exact route name
     const filePath = node_path_1.default.join(distFolder, route.page + '.html');
+    console.log('filePath', filePath)
     if (node_fs_1.default.existsSync(filePath)) {
         return node_fs_1.default.readFileSync(filePath, 'utf-8');
     }
@@ -118,6 +119,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 if (!route.namedRegex.test(sanitizedPathname)) {
                     continue;
                 }
+                console.log('match', sanitizedPathname)
                 // // Mutate to add the expoUrl object.
                 updateRequestWithConfig(request, route);
                 // serve a static file
