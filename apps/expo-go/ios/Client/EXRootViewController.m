@@ -16,11 +16,13 @@
 #import "EXDevMenuManager.h"
 #import "EXEmbeddedHomeLoader.h"
 #import "EXBuildConstants.h"
+#import "Expo_Go-Swift.h"
 
 @import ExpoScreenOrientation;
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
+NSString * const kEXisLocalNetworkAccessGrantedKey = @"EXisLocalNetworkAccessGranted";
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, weak) UIViewController *transitioningToViewController;
+@property (nonatomic, readonly) BOOL isLocalNetworkAccessGranted;
 
 @end
 
@@ -47,6 +50,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldAutorotate
 {
   return YES;
+}
+
+- (BOOL)isLocalNetworkAccessGranted {
+  if ([[NSUserDefaults standardUserDefaults] objectForKey:kEXisLocalNetworkAccessGrantedKey] != nil) {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kEXisLocalNetworkAccessGrantedKey];
+  } else {
+    return NO;
+  }
 }
 
 /**
@@ -94,13 +105,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
-  [self _foregroundAppRecord:appRecord];
+  BOOL isHomeApp = appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
+  if (isHomeApp || [self isLocalNetworkAccessGranted]) {
+    [self foregroundApp:appRecord];
+    return;
+  }
+  
+  [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success, NSError *error) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (success) {
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults setBool:YES forKey:kEXisLocalNetworkAccessGrantedKey];
+        [self foregroundApp:appRecord];
+      } else {
+        [self createLocalNetworkDeniedAlert];
+      }
+    });
+  }];
+}
 
+- (void)foregroundApp:(EXKernelAppRecord *)appRecord
+{
+  [self _foregroundAppRecord:appRecord];
   // When foregrounding the app record we want to add it to the history to handle the edge case
   // where a user opened a project, then went to home and cleared history, then went back to a
   // the already open project.
   [self addHistoryItemWithUrl:appRecord.appLoader.manifestUrl manifest:appRecord.appLoader.manifest];
+}
 
+- (void)createLocalNetworkDeniedAlert
+{
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Local Network Access required"
+                                                                 message:@"Local network access has been denied. This permission is required to run projects in expo go. Please go to your device settings and grant this permission."
+                                                          preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+  [alert addAction:okAction];
+  [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)showQRReader

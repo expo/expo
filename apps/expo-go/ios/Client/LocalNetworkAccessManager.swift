@@ -3,6 +3,20 @@ import Network
 
 private let type = "_preflight_check._tcp"
 
+@objc(EXLocalNetworkAccessManager)
+class LocalNetworkAccessManager: NSObject {
+  @objc static func requestAccess(completion: @escaping (Bool, NSError?) -> Void) {
+    Task {
+      do {
+        let result = try await requestLocalNetworkAuthorization()
+        completion(result, nil)
+      } catch {
+        completion(false, nil)
+      }
+    }
+  }
+}
+
 /// Code taken from https://gist.github.com/mac-cain13/fa684f54a7ae1bba8669e78d28611784
 @discardableResult
 func requestLocalNetworkAuthorization() async throws -> Bool {
