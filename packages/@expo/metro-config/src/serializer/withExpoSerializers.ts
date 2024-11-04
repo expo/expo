@@ -106,6 +106,19 @@ export function createDefaultExportCustomSerializer(
     // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
     const enableDebugId = options.inlineSourceMap !== true && !isPossiblyDev;
 
+    const originalCreateModuleId = options.createModuleId;
+    const context = {
+      platform: graph.transformOptions.platform,
+      environment: graph.transformOptions.customTransformOptions?.environment ?? 'client',
+    };
+
+    options.createModuleId = (moduleId, ...props) => {
+      if (props.length > 0) {
+        return originalCreateModuleId(moduleId, ...props);
+      }
+      return originalCreateModuleId(moduleId, context);
+    };
+
     let debugId: string | undefined;
     const loadDebugId = () => {
       if (!enableDebugId || debugId) {
@@ -233,7 +246,21 @@ function getDefaultSerializer(
   return async (
     ...props: SerializerParameters
   ): Promise<string | { code: string; map: string }> => {
-    const [, , , options] = props;
+    const [, , graph, options] = props;
+
+    const context = {
+      platform: graph.transformOptions.platform,
+      environment: graph.transformOptions.customTransformOptions?.environment ?? 'client',
+      dom: graph.transformOptions.customTransformOptions?.dom != null,
+    };
+
+    const originalCreateModuleId = options.createModuleId;
+    options.createModuleId = (moduleId, ...props) => {
+      if (props.length > 0) {
+        return originalCreateModuleId(moduleId, ...props);
+      }
+      return originalCreateModuleId(moduleId, context);
+    };
 
     const customSerializerOptions = options.serializerOptions;
 

@@ -45,12 +45,17 @@ export function createServerComponentsMiddleware(
     ssrLoadModule,
     ssrLoadModuleArtifacts,
     useClientRouter,
+    createModuleId,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
     useClientRouter: boolean;
+    createModuleId: (
+      filePath: string,
+      context: { platform: string; environment: string; dom?: boolean }
+    ) => string;
   }
 ) {
   const routerModule = useClientRouter
@@ -147,7 +152,12 @@ export function createServerComponentsMiddleware(
             entryPoint
         );
       }
-      const relativeName = path.relative(serverRoot, entryPoint);
+
+      const relativeName = createModuleId(entryPoint, {
+        platform,
+        environment: 'react-server',
+        dom: domRoot != null,
+      });
       const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;
@@ -274,7 +284,7 @@ export function createServerComponentsMiddleware(
         const chunk = context.ssrManifest.get(relativeFilePath);
 
         return {
-          id: relativeFilePath,
+          id: createModuleId(file, { platform: context.platform, environment: 'client' }),
           chunks: chunk != null ? [chunk] : [],
         };
       }
@@ -310,6 +320,7 @@ export function createServerComponentsMiddleware(
       clientReferenceUrl.search = searchParams.toString();
 
       const filePath = file.startsWith('file://') ? fileURLToFilePath(file) : file;
+
       const relativeFilePath = path.relative(serverRoot, filePath);
 
       clientReferenceUrl.pathname = relativeFilePath;
@@ -320,9 +331,12 @@ export function createServerComponentsMiddleware(
       }
 
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
-      const id = clientReferenceUrl.pathname + clientReferenceUrl.search;
+      const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
-      return { id: relativeFilePath, chunks: [id] };
+      return {
+        id: createModuleId(filePath, { platform: context.platform, environment: 'client' }),
+        chunks: [chunkName],
+      };
     };
   }
 

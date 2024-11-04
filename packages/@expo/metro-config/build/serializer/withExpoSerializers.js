@@ -54,6 +54,17 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         const isPossiblyDev = graph.transformOptions.hot;
         // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
         const enableDebugId = options.inlineSourceMap !== true && !isPossiblyDev;
+        const originalCreateModuleId = options.createModuleId;
+        const context = {
+            platform: graph.transformOptions.platform,
+            environment: graph.transformOptions.customTransformOptions?.environment ?? 'client',
+        };
+        options.createModuleId = (moduleId, ...props) => {
+            if (props.length > 0) {
+                return originalCreateModuleId(moduleId, ...props);
+            }
+            return originalCreateModuleId(moduleId, context);
+        };
         let debugId;
         const loadDebugId = () => {
             if (!enableDebugId || debugId) {
@@ -152,7 +163,19 @@ exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerialize
 function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
     const defaultSerializer = fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
     return async (...props) => {
-        const [, , , options] = props;
+        const [, , graph, options] = props;
+        const context = {
+            platform: graph.transformOptions.platform,
+            environment: graph.transformOptions.customTransformOptions?.environment ?? 'client',
+            dom: graph.transformOptions.customTransformOptions?.dom != null,
+        };
+        const originalCreateModuleId = options.createModuleId;
+        options.createModuleId = (moduleId, ...props) => {
+            if (props.length > 0) {
+                return originalCreateModuleId(moduleId, ...props);
+            }
+            return originalCreateModuleId(moduleId, context);
+        };
         const customSerializerOptions = options.serializerOptions;
         // Custom options can only be passed outside of the dev server, meaning
         // we don't need to stringify the results at the end, i.e. this is `npx expo export` or `npx expo export:embed`.

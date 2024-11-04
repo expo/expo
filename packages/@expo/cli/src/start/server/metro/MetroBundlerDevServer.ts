@@ -721,9 +721,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const serverRoot = getMetroServerRoot(this.projectRoot);
 
+    const moduleIdContext = {
+      platform: options.platform,
+      environment: 'client',
+      dom: options.domRoot != null,
+    };
     // HACK: Maybe this should be done in the serializer.
-    const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
-      path.relative(serverRoot, boundary)
+    const clientBoundariesAsOpaqueIds = clientBoundaries.map(
+      (boundary) => this.metro?._createModuleId(boundary, moduleIdContext) as string
     );
     const moduleIdToSplitBundle = (
       bundle.artifacts
@@ -739,7 +744,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (Object.keys(moduleIdToSplitBundle).length) {
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
         if (boundary in moduleIdToSplitBundle) {
-          // Account for nullish values (bundle is in main chunk).
           ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
         } else {
           throw new Error(
@@ -767,16 +771,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
     const finalSsrManifest = Object.fromEntries(
-      Array.from(ssrManifest.entries()).map(([key, chunk]) => [
-        // lookup ID in the server component
-        path.join(serverRoot, key),
-        [
-          // opaque Metro module Id
-          key,
-          // split chunk containing the module
-          chunk,
-        ],
-      ])
+      Array.from(ssrManifest.entries()).map(([key, chunk]) => {
+        const boundary = path.join(serverRoot, key);
+        // Remove `?platform=...` from the opaque server ID.
+        const lastIndex = boundary.lastIndexOf('?platform=');
+        const opaqueServerId = lastIndex === -1 ? boundary : boundary.slice(0, lastIndex);
+
+        return [
+          // lookup ID in the server component
+          opaqueServerId,
+          [
+            // opaque Metro module Id
+            key,
+            // split chunk containing the module
+            chunk,
+          ],
+        ];
+      })
     );
 
     this.exportSsrManifest(files, finalSsrManifest, options.platform);
@@ -1044,6 +1055,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
+          createModuleId: metro._createModuleId.bind(metro),
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -1083,6 +1095,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
+          createModuleId: metro._createModuleId.bind(metro),
         });
         this.rscRenderer = rscMiddleware;
       }
@@ -1146,15 +1159,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               deleted,
             }: {
               isInitialUpdate?: boolean;
-              added: unknown[];
-              modified: unknown[];
-              deleted: unknown[];
+              added: {
+                module: [number | string, string];
+                sourceURL: string;
+                sourceMappingURL: string;
+              }[];
+              modified: {
+                module: [number | string, string];
+                sourceURL: string;
+                sourceMappingURL: string;
+              }[];
+              deleted: (number | string)[];
             } = update;
 
             const hasUpdate = added.length || modified.length || deleted.length;
 
             // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
             if (!isInitialUpdate && hasUpdate) {
+              // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
+              if (typeof globalThis.__c === 'function') globalThis.__c();
+
               onReload();
             }
           }

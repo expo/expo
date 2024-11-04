@@ -286,8 +286,12 @@ export function withExtendedResolver(
   }
 
   // TODO: This is a hack to get resolveWeak working.
-  const idFactory =
-    config.serializer?.createModuleIdFactory?.() ?? ((id: number | string): number | string => id);
+  const idFactory = (config.serializer?.createModuleIdFactory?.() ??
+    ((id: number | string, context: { platform: string; environment?: string }): number | string =>
+      id)) as (
+    id: number | string,
+    context: { platform: string; environment?: string }
+  ) => number | string;
 
   const getAssetRegistryModule = () => {
     const virtualModuleId = `\0polyfill:assets-registry`;
@@ -459,6 +463,7 @@ export function withExtendedResolver(
       if (moduleName.endsWith('/package.json')) {
         return null;
       }
+      const environment = context.customResolverOptions?.environment;
 
       const strictResolve = getStrictResolver(context, platform);
 
@@ -473,7 +478,11 @@ export function withExtendedResolver(
             // TODO: Make this use require.resolveWeak again. Previously this was just resolving to the same path.
             const realModule = strictResolve(moduleName);
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
-            const opaqueId = idFactory(realPath);
+            const opaqueId = idFactory(realPath, {
+              platform,
+              environment,
+              dom: context.customResolverOptions?.dom != null,
+            });
 
             const contents =
               typeof opaqueId === 'number'
