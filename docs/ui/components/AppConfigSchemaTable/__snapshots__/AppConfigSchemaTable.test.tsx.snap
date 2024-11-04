@@ -98,7 +98,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Bare Workflow
@@ -241,7 +241,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             ExpoKit
@@ -317,7 +317,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Bare Workflow
@@ -468,7 +468,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </div>
             <span
-              class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+              class="leading-[1.6154] text-default font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
               data-text="true"
             >
               ExpoKit
@@ -778,7 +778,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="text-default leading-[1.6154] font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="leading-[1.6154] text-default font-medium inline gap-1.5 items-center scroll-m-5 mr-2 relative group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Bare Workflow

@@ -91,7 +91,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       href="#code-heading-depth-1"
     >
       <code
-        class="text-default leading-[1.6154] w-full !text-secondary hocus:!text-link truncate !text-2xs"
+        class="leading-[1.6154] text-default w-full !text-secondary hocus:!text-link truncate !text-2xs"
         data-text="true"
       >
         Code heading depth 1
