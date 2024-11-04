@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- rename `getTaskServiceImpl` ([#32576](https://github.com/expo/expo/pull/32576) by [@vonovak](https://github.com/vonovak))
+
 ## 0.29.4 — 2024-10-29
 
 _This version does not introduce any user-facing changes._

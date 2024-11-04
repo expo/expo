@@ -2,6 +2,8 @@ package expo.modules.taskManager;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import expo.modules.core.BasePackage;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.SingletonModule;
@@ -24,7 +26,8 @@ public class TaskManagerPackage extends BasePackage implements TaskServiceProvid
    * @param context Current application context
    * @return A task service implementation that can be provided without having setup the whole app
    */
-  public TaskServiceInterface getTaskServiceImpl(Context context) {
+  @NonNull
+  public TaskServiceInterface ensureTaskServiceLoaded(Context context) {
     if (mTaskService == null) {
       mTaskService = new TaskService(context);
     }
@@ -38,6 +41,6 @@ public class TaskManagerPackage extends BasePackage implements TaskServiceProvid
 
   @Override
   public List<SingletonModule> createSingletonModules(Context context) {
-    return Collections.singletonList(getTaskServiceImpl(context));
+    return Collections.singletonList(ensureTaskServiceLoaded(context));
   }
 }
