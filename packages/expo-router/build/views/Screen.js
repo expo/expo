@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Screen = void 0;
-const react_1 = __importDefault(require("react"));
-const useNavigation_1 = require("../useNavigation");
 const dom_1 = require("expo/dom");
+const react_1 = __importDefault(require("react"));
 const useDomComponentNavigation_1 = require("../link/useDomComponentNavigation");
+const useNavigation_1 = require("../useNavigation");
 const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayoutEffect : function () { };
 /** Component for setting the current screen's options dynamically. */
 function Screen({ name, options }) {

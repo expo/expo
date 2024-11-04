@@ -11,7 +11,6 @@
 //// <reference types="react/canary" />
 'use client';
 
-import { IS_DOM } from 'expo/dom';
 import {
   createContext,
   createElement,
@@ -259,37 +258,6 @@ export const fetchRSC = (
   fetchCache[ENTRY] = [input, params, data];
   return data;
 };
-
-import Constants from 'expo-constants';
-
-const manifest = Constants.expoConfig as Record<string, any> | null;
-
-function getOrigin() {
-  return (
-    manifest?.extra?.router?.origin ??
-    // Written automatically during release builds.
-    manifest?.extra?.router?.generatedOrigin
-  );
-}
-
-// TODO: This would be better if native and tied as close to the JS engine as possible, i.e. it should
-// reflect the exact location of the JS file that was executed.
-function getBaseUrl() {
-  if (process.env.NODE_ENV !== 'production') {
-    // e.g. http://localhost:19006
-    return getDevServer().url?.replace(/\/$/, '');
-  }
-
-  // TODO: Make it official by moving out of `extra`
-  const productionBaseUrl = getOrigin();
-
-  if (!productionBaseUrl) {
-    throw new Error('No production base URL found for DOM components');
-  }
-
-  // Ensure no trailing slash
-  return productionBaseUrl.replace(/\/$/, '');
-}
 
 function getAdjustedRemoteFilePath(path: string): string {
   if (IS_DOM && process.env.NODE_ENV === 'production') {

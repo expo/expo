@@ -1,9 +1,9 @@
 'use client';
+import { IS_DOM } from 'expo/dom';
 import React from 'react';
 
-import { useNavigation } from '../useNavigation';
-import { IS_DOM } from 'expo/dom';
 import { emitDomSetOptions } from '../link/useDomComponentNavigation';
+import { useNavigation } from '../useNavigation';
 
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
   /**
