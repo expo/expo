@@ -12,6 +12,7 @@
   "files": [
     "build",
     "src",
+    "rsc",
     "symbolicate",
     "async-require.js",
     "async-require.d.ts",
