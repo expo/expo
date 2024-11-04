@@ -32,6 +32,13 @@ function _withIosSplashAssets() {
   };
   return data;
 }
+function _withIosSplashColors() {
+  const data = require("./withIosSplashColors");
+  _withIosSplashColors = function () {
+    return data;
+  };
+  return data;
+}
 function _withIosSplashInfoPlist() {
   const data = require("./withIosSplashInfoPlist");
   _withIosSplashInfoPlist = function () {
@@ -73,7 +80,7 @@ const withIosSplashScreen = (config, splash) => {
     };
   }
   debug(`config:`, splash);
-  return (0, _configPlugins().withPlugins)(config, [[_withIosSplashInfoPlist().withIosSplashInfoPlist, splash], [_withIosSplashAssets().withIosSplashAssets, splash],
+  return (0, _configPlugins().withPlugins)(config, [[_withIosSplashInfoPlist().withIosSplashInfoPlist, splash], [_withIosSplashAssets().withIosSplashAssets, splash], [_withIosSplashColors().withIosSplashColors, splash],
   // Add the image settings to the storyboard.
   [_withIosSplashScreenStoryboardImage().withIosSplashScreenImage, splash],
   // Link storyboard to xcode project.
