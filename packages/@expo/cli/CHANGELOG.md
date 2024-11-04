@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Improve export eager cache key.
 - Add fallback method for determining internal IP address. ([#32273](https://github.com/expo/expo/pull/32273) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
