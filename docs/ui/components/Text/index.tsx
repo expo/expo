@@ -72,7 +72,7 @@ export function createTextComponent(Element: TextElement, textClassName?: string
     return (
       <TextElementTag
         className={mergeClasses(
-          'text-inherit text-default leading-[1.6154]',
+          'text-inherit leading-[1.6154] text-default',
           textClassName,
           getTextWeightClassName(textWeight),
           getTextColorClassName(textTheme),
@@ -102,7 +102,7 @@ export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferre
         !isStyled &&
           'font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline',
         !isStyled &&
-          '[&_span]:text-link [&_code]:text-link [&_strong]:text-link [&_em]:text-link [&_b]:text-link [&_i]:text-link',
+          '[&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link',
         className
       )}
       {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
