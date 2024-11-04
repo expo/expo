@@ -31,6 +31,8 @@ export async function startBundlerAsync(
     },
   };
 
+  // TODO: Launch the production server automatically when `--configuration Release` and `output: 'server'`
+
   const devServerManager = await DevServerManager.startMetroAsync(projectRoot, options);
 
   // Present the Terminal UI.
