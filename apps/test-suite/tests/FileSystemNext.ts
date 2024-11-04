@@ -459,7 +459,7 @@ export async function test({ describe, expect, it, ...t }) {
 
   describe('Exposes file handles', () => {
     it('Allows opening files', () => {
-      const src = new File(testDirectory + 'file.txt');
+      const src = new File(testDirectory, 'file.txt');
       src.write('Hello world');
       const handle = src.open();
       expect(handle.readBytes(4)).toEqual(new Uint8Array([72, 101, 108, 108])); // Hell
@@ -470,7 +470,7 @@ export async function test({ describe, expect, it, ...t }) {
       handle.close();
     });
     it('Resets position on close', () => {
-      const src = new File(testDirectory + 'file.txt');
+      const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
       let handle = src.open();
       expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
@@ -481,7 +481,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     it('Throws on reading from closed handle', () => {
-      const src = new File(testDirectory + 'file.txt');
+      const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
       const handle = src.open();
       expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
@@ -490,7 +490,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     it('Returns null offset on closed handle', () => {
-      const src = new File(testDirectory + 'file.txt');
+      const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
       const handle = src.open();
       handle.close();
@@ -498,7 +498,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     it('Returns null size on closed handle', () => {
-      const src = new File(testDirectory + 'file.txt');
+      const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
       const handle = src.open();
       handle.close();
@@ -506,7 +506,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     it('Returns smaller than expected array when reading end of file', () => {
-      const src = new File(testDirectory + 'file.txt');
+      const src = new File(testDirectory, 'file.txt');
       src.create();
       const handle = src.open();
       expect(handle.readBytes(2)).toEqual(new Uint8Array([])); // a
@@ -518,7 +518,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     it('Reads a file in chunks', () => {
-      const src = new File(testDirectory + 'abcs.txt');
+      const src = new File(testDirectory, 'abcs.txt');
       const alphabet = 'abcdefghijklmnopqrstuvwxyz';
       src.write(alphabet.repeat(1000) + 'ending');
       const handle = src.open();
@@ -534,7 +534,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     it('Writes to a file handle', () => {
-      const src = new File(testDirectory + 'abcs.txt');
+      const src = new File(testDirectory, 'abcs.txt');
       const alphabet = 'abcdefghijklmnopqrstuvwxyz';
       src.create();
       const handle = src.open();
@@ -556,18 +556,17 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     it('Provides a ReadableStream', async () => {
-      const src = new File(testDirectory + 'abcs.txt');
+      const src = new File(testDirectory, 'abcs.txt');
       const alphabet = 'abcdefghijklmnopqrstuvwxyz';
       src.write(alphabet);
       const stream = src.readableStream();
-
       for await (const chunk of stream) {
         expect(chunk[0]).toBe(alphabet.charCodeAt(0));
       }
     });
 
     it('Provides a ReadableStream with byob support', async () => {
-      const src = new File(testDirectory + 'abcs.txt');
+      const src = new File(testDirectory, 'abcs.txt');
       const alphabet = 'abcdefghij'.repeat(1000);
       src.write(alphabet);
       const stream = src.readableStream();
@@ -586,7 +585,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     it('Provides a WriteableStream', async () => {
-      const src = new File(testDirectory + 'abcs.txt');
+      const src = new File(testDirectory, 'abcs.txt');
       src.create();
       const writable = src.writableStream();
       const alphabet = 'abcdefghij'.repeat(10);
