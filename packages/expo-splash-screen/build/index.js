@@ -29,8 +29,4 @@ export function setOptions(options) { }
  */
 export function hide() { }
 export async function hideAsync() { }
-// @private
-export async function _internal_preventAutoHideAsync() { }
-// @private
-export async function _internal_maybeHideAsync() { }
 //# sourceMappingURL=index.js.map
