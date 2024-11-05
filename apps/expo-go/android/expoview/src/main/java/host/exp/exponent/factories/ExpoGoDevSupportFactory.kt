@@ -5,6 +5,7 @@ import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.BridgeDevSupportManager
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.ReactInstanceDevHelper
+import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -59,6 +60,10 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
     useDevSupport: Boolean
   ): DevSupportManager {
+    if (!useDevSupport) {
+      return ReleaseDevSupportManager()
+    }
+
     return BridgelessDevSupportManager(
       host,
       applicationContext,
