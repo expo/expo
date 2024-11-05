@@ -12,7 +12,7 @@ export type { ScreenProps } from './useScreens';
 /**
  * @hidden
  */
-export { SplashScreen } from './views/Splash';
+export * as SplashScreen from './views/Splash';
 export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
 export type { ResultState } from './fork/getStateFromPath';
