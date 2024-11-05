@@ -3,9 +3,9 @@ import { Link } from 'expo-router';
 import { Image, Text, ScrollView } from 'react-native';
 
 import { Counter } from '../components/counter';
-// import { Pokemon } from '../components/pokemon';
+import { Pokemon } from '../components/pokemon';
 
-export default async function IndexRoute({ path, query }) {
+export default function IndexRoute({ path, query }) {
   return (
     <ScrollView
       style={{ flex: 1, padding: 12 }}
@@ -30,7 +30,7 @@ export default async function IndexRoute({ path, query }) {
       <Ionicons name="airplane" />
       <Counter />
 
-      {/* <Pokemon id={45} /> */}
+      <Pokemon id={45} />
     </ScrollView>
   );
 }
