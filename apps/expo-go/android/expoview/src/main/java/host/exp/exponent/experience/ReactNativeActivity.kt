@@ -376,10 +376,16 @@ abstract class ReactNativeActivity :
       )
     )
 
+    val mainModuleName = if (delegate.isDebugModeEnabled) {
+      manifest?.getMainModuleName()
+    } else {
+      null
+    }
+
     val nativeHost = ExpoGoReactNativeHost(
       application,
       instanceManagerBuilderProperties,
-      manifest!!.getMainModuleName()
+      mainModuleName
     )
 
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
@@ -389,8 +395,7 @@ abstract class ReactNativeActivity :
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
-      val mainModuleName = manifest!!.getMainModuleName()
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName)
+      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName!!)
       DefaultDevLoadingViewImplementation.setDevLoadingEnabled(true)
     } else {
       waitForReactAndFinishLoading()
