@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove expo-splash-screen dependency without changing behavior ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+
 ## 4.0.0-preview.12 — 2024-11-04
 
 ### 🛠 Breaking changes

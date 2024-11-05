@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add mocks for internal native methods in splash screen ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+
 ## 52.0.0-preview.3 — 2024-10-31
 
 ### 💡 Others
