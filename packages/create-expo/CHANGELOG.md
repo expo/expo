@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add log hint for `--template` and `--example` arguments. ([#32519](https://github.com/expo/expo/pull/32519) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.1.0 — 2024-11-04
+
+### 🎉 New features
+
+- Add log hint for `--template` and `--example` arguments. ([#32519](https://github.com/expo/expo/pull/32519) by [@kitten](https://github.com/kitten))
 
 ## 3.0.1 — 2024-10-22
 

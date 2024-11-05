@@ -6,11 +6,17 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.11.2 — 2024-11-04
+
+### 🎉 New features
+
 - Show more information in fingerprint diff ([#32486](https://github.com/expo/expo/pull/32486) by [@wschurman](https://github.com/wschurman))
 - Add ability to diff two fingeprint files to CLI ([#32488](https://github.com/expo/expo/pull/32488) by [@wschurman](https://github.com/wschurman))
 - Create more formalized CLI ([#32541](https://github.com/expo/expo/pull/32541) by [@wschurman](https://github.com/wschurman))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 
