@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support hoisting for inlined server actions.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
