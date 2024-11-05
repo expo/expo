@@ -2,6 +2,8 @@ import { requireOptionalNativeModule } from 'expo';
 
 const SplashModule = requireOptionalNativeModule('ExpoSplashScreen');
 
+let _initializedErrorHandler = false;
+
 export function hide() {
   if (!SplashModule) {
     return;
@@ -27,7 +29,21 @@ export async function _internal_preventAutoHideAsync(): Promise<boolean> {
     return false;
   }
 
-  return SplashModule._internal_preventAutoHideAsync();
+  if (!_initializedErrorHandler) {
+    // Append error handling to ensure any uncaught exceptions result in the splash screen being hidden.
+    // This prevents the splash screen from floating over error screens.
+    if (ErrorUtils?.getGlobalHandler) {
+      const originalHandler = ErrorUtils.getGlobalHandler();
+      ErrorUtils.setGlobalHandler((error, isFatal) => {
+        hide();
+        originalHandler(error, isFatal);
+      });
+    }
+
+    _initializedErrorHandler = true;
+  }
+
+  return SplashModule.internalPreventAutoHideAsync();
 }
 
 export async function _internal_maybeHideAsync() {
@@ -35,5 +51,5 @@ export async function _internal_maybeHideAsync() {
     return false;
   }
 
-  return SplashModule._internal_maybeHideAsync();
+  return SplashModule.internalMaybeHideAsync();
 }

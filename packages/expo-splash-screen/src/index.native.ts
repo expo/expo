@@ -31,29 +31,3 @@ export async function preventAutoHideAsync() {
 
   return SplashModule.preventAutoHideAsync();
 }
-
-/**
- * For use by libraries that want to control the splash screen without
- * interfering with user control of it.
- * @private
- */
-export async function _internal_preventAutoHideAsync(): Promise<boolean> {
-  if (!SplashModule) {
-    return false;
-  }
-
-  return SplashModule._internal_preventAutoHideAsync();
-}
-
-/**
- * For use by libraries that want to control the splash screen without
- * interfering with user control of it.
- * @private
- */
-export async function _internal_maybeHideAsync() {
-  if (!SplashModule) {
-    return false;
-  }
-
-  return SplashModule._internal_maybeHideAsync();
-}

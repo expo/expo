@@ -1,7 +1,7 @@
 import ExpoModulesCore
 
 public class SplashScreenModule: Module {
-  var _userControlledAutoHideEnabled = false
+  var userControlledAutoHideEnabled = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoSplashScreen")
@@ -18,8 +18,8 @@ public class SplashScreenModule: Module {
       SplashScreenManager.shared.hide()
     }
 
-    AsyncFunction("_internal_maybeHideAsync") {
-      if !_userControlledAutoHideEnabled {
+    AsyncFunction("internalMaybeHideAsync") {
+      if !userControlledAutoHideEnabled {
         SplashScreenManager.shared.hide()
       }
     }
@@ -32,7 +32,7 @@ public class SplashScreenModule: Module {
       SplashScreenManager.shared.preventAutoHideCalled = true
     }
 
-    AsyncFunction("_internal_preventAutoHideAsync") {
+    AsyncFunction("internalPreventAutoHideAsync") {
       SplashScreenManager.shared.preventAutoHideCalled = true
     }
 

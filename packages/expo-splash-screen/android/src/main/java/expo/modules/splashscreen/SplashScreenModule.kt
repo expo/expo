@@ -15,7 +15,7 @@ class SplashScreenOptions : Record {
 }
 
 class SplashScreenModule : Module() {
-  private var _userControlledAutoHideEnabled: Boolean = false
+  private var userControlledAutoHideEnabled: Boolean = false
 
   override fun definition() = ModuleDefinition {
     Name("ExpoSplashScreen")
@@ -24,11 +24,11 @@ class SplashScreenModule : Module() {
       // The user has manually invoked prevent autohide, this is used to allow libraries
       // such as expo-router to know whether it's safe to hide or if they should wait for
       // the user to do it.
-      _userControlledAutoHideEnabled = true
+      userControlledAutoHideEnabled = true
       SplashScreenManager.preventAutoHideCalled = true
     }
 
-    AsyncFunction<Unit>("_internal_preventAutoHideAsync") {
+    AsyncFunction<Unit>("internalPreventAutoHideAsync") {
       SplashScreenManager.preventAutoHideCalled = true
     }
 
@@ -48,7 +48,7 @@ class SplashScreenModule : Module() {
       SplashScreenManager.hide()
     }
 
-    AsyncFunction("_internal_maybeHideAsync") {
+    AsyncFunction("internalMaybeHideAsync") {
       if (!_userControlledAutoHideEnabled) {
         SplashScreenManager.hide()
       }
