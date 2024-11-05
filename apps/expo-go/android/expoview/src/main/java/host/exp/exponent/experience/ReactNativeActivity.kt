@@ -297,6 +297,7 @@ abstract class ReactNativeActivity :
 
   override fun onDestroy() {
     super.onDestroy()
+    destroyReactHost()
     handler.removeCallbacksAndMessages(null)
     EventBus.getDefault().unregister(this)
   }
@@ -317,9 +318,9 @@ abstract class ReactNativeActivity :
   open val isDebugModeEnabled: Boolean
     get() = manifest?.isDevelopmentMode() ?: false
 
-  open fun destroyReactHost() {
+  open fun destroyReactHost(reason: String = "Destroy Activity") {
     if (!isCrashed) {
-      reactHost?.onHostDestroy()
+      reactHost?.destroy(reason, null)
     }
   }
 
@@ -375,10 +376,16 @@ abstract class ReactNativeActivity :
       )
     )
 
+    val mainModuleName = if (delegate.isDebugModeEnabled) {
+      manifest?.getMainModuleName()
+    } else {
+      null
+    }
+
     val nativeHost = ExpoGoReactNativeHost(
       application,
       instanceManagerBuilderProperties,
-      manifest!!.getMainModuleName()
+      mainModuleName
     )
 
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
@@ -388,8 +395,7 @@ abstract class ReactNativeActivity :
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
-      val mainModuleName = manifest!!.getMainModuleName()
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName)
+      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName!!)
       DefaultDevLoadingViewImplementation.setDevLoadingEnabled(true)
     } else {
       waitForReactAndFinishLoading()

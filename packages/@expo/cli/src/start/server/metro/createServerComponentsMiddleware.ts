@@ -14,6 +14,7 @@ import { logMetroError } from './metroErrorInterface';
 import { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { memoize } from '../../../utils/fn';
+import { getIpAddress } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
 import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import {
@@ -64,10 +65,22 @@ export function createServerComponentsMiddleware(
     rscPath,
     onError: console.error,
     renderRsc: async (args) => {
+      // In development we should add simulated versions of common production headers.
+      if (args.headers['x-real-ip'] == null) {
+        args.headers['x-real-ip'] = getIpAddress();
+      }
+      if (args.headers['x-forwarded-for'] == null) {
+        args.headers['x-forwarded-for'] = args.headers['x-real-ip'];
+      }
+      if (args.headers['x-forwarded-proto'] == null) {
+        args.headers['x-forwarded-proto'] = 'http';
+      }
+
       // Dev server-only implementation.
       try {
         return await renderRscToReadableStream({
           ...args,
+          headers: new Headers(args.headers),
           body: args.body!,
         });
       } catch (error: any) {
@@ -357,7 +370,7 @@ export function createServerComponentsMiddleware(
   async function renderRscToReadableStream(
     {
       input,
-      searchParams,
+      headers,
       method,
       platform,
       body,
@@ -367,7 +380,7 @@ export function createServerComponentsMiddleware(
       decodedBody,
     }: {
       input: string;
-      searchParams: URLSearchParams;
+      headers: Headers;
       method: 'POST' | 'GET';
       platform: string;
       body?: ReadableStream<Uint8Array>;
@@ -387,13 +400,17 @@ export function createServerComponentsMiddleware(
       assert(body, 'Server request must be provided when method is POST (server actions)');
     }
 
+    const context = getRscRenderContext(platform);
+
+    context['__expo_requestHeaders'] = headers;
+
     const { renderRsc } = await getRscRendererAsync(platform);
 
     return renderRsc(
       {
         body,
         decodedBody,
-        context: getRscRenderContext(platform),
+        context,
         config: {},
         input,
         contentType,
@@ -453,7 +470,7 @@ export function createServerComponentsMiddleware(
                 input,
                 method: 'GET',
                 platform,
-                searchParams: new URLSearchParams(),
+                headers: new Headers(),
                 ssrManifest,
               },
               true

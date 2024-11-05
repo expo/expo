@@ -180,6 +180,7 @@ export type IBViewController = IBItem<
         >[];
         color: IBItem<{
           key: string | 'backgroundColor';
+          name?: string;
           systemColor?: string | 'systemBackgroundColor';
           red?: string;
           green?: string;
@@ -231,6 +232,17 @@ export type IBResourceImage = IBItem<{
   height: number;
 }>;
 
+export type IBResourceNamedColor = IBItem<{
+  name?: string;
+  systemColor?: string | 'systemBackgroundColor';
+  red?: string;
+  green?: string;
+  blue?: string;
+  alpha?: string;
+  colorSpace?: string;
+  customColorSpace?: string;
+}>;
+
 export type IBDevice = IBItem<{
   id: string;
   orientation: string | 'portrait';
@@ -260,6 +272,7 @@ export type IBSplashScreenDocument = {
       }[];
       resources: {
         image: IBResourceImage[];
+        namedColor?: IBItem<{ name: string }, { color: IBResourceNamedColor[] }>[];
       }[];
     }
   >;
@@ -398,16 +411,35 @@ export function applyImageToSplashScreenXML(
   // Add background color
   mainView.color = mainView.color ?? [];
   const colorSection = mainView.color;
-  const color = parseColor(backgroundColor);
 
   colorSection.push({
     $: {
       key: 'backgroundColor',
-      ...color.rgb,
-      alpha: '1',
-      colorSpace: 'custom',
-      customColorSpace: 'sRGB',
+      name: 'SplashScreenBackground',
     },
+  });
+
+  // Add background named color reference
+  xml.document.resources[0].namedColor = xml.document.resources[0].namedColor ?? [];
+  const namedColorSection = xml.document.resources[0].namedColor;
+  const color = parseColor(backgroundColor);
+
+  namedColorSection.push({
+    $: {
+      name: 'SplashScreenBackground',
+    },
+    color: [
+      {
+        $: {
+          alpha: '1.000',
+          blue: color.rgb.blue,
+          green: color.rgb.green,
+          red: color.rgb.red,
+          customColorSpace: 'sRGB',
+          colorSpace: 'custom',
+        },
+      },
+    ],
   });
 
   return xml;

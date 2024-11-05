@@ -216,6 +216,9 @@ class ExponentManifest @Inject constructor(
     const val QUERY_PARAM_KEY_EXPO_UPDATES_RUNTIME_VERSION = "runtime-version"
     const val QUERY_PARAM_KEY_EXPO_UPDATES_CHANNEL_NAME = "channel-name"
 
+    // snack
+    const val QUERY_PARAM_KEY_SNACK_CHANNEL = "snack-channel"
+
     private const val MAX_BITMAP_SIZE = 192
     private const val REDIRECT_SNIPPET = "exp.host/--/to-exp/"
     private const val ANONYMOUS_SCOPE_KEY_PREFIX = "@anonymous/"

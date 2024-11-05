@@ -67,7 +67,7 @@ export interface RegisteredTask extends TaskManagerTask {
 /**
  * Type of task executor – a function that handles the task.
  */
-export type TaskManagerTaskExecutor<T = unknown> = (body: TaskManagerTaskBody<T>) => void;
+export type TaskManagerTaskExecutor<T = any> = (body: TaskManagerTaskBody<T>) => Promise<any>;
 /**
  * Defines task function. It must be called in the global scope of your JavaScript bundle.
  * In particular, it cannot be called in any of React lifecycle methods like `componentDidMount`.

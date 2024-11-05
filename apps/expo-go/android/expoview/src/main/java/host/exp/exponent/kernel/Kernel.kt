@@ -505,6 +505,8 @@ class Kernel : KernelInterface() {
       }
     }
 
+    val snackChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_SNACK_CHANNEL)
+
     // transfer the release-channel param to the built URL as this will cause Expo Go to treat
     // this as a different project
     var releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL)
@@ -534,6 +536,10 @@ class Kernel : KernelInterface() {
       if (queryParameterValue != null) {
         builder.appendQueryParameter(queryParameter, queryParameterValue)
       }
+    }
+
+    snackChannel?.let {
+      builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_SNACK_CHANNEL, it)
     }
 
     // ignore fragments as well (e.g. those added by auth-session)
