@@ -78,6 +78,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
   'expo-router': ['exports.ts'],
+  'expo-router-ui': ['ui/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
