@@ -24,18 +24,25 @@ There are four components offered by `expo-router/ui` to create custom tab layou
 
 A bare minimum structure of a custom tab layout would look like this:
 
-```tsx
-<Tabs>
-  <TabSlot />
-  <TabList>
-    <TabTrigger name="home" href="/">
-      <Text>Home</Text>
-    </TabTrigger>
-    <TabTrigger name="article" href="/article">
-      <Text>Article</Text>
-    </TabTrigger>
-  </TabList>
-</Tabs>
+```tsx app/(tabs)/_layout.tsx
+import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
+
+// Defining the layout of the custom tab navigator
+export function Layout() {
+  return (
+    <Tabs>
+      <TabSlot />
+      <TabList>
+        <TabTrigger name="home" href="/">
+          <Text>Home</Text>
+        </TabTrigger>
+        <TabTrigger name="article" href="/article">
+          <Text>Article</Text>
+        </TabTrigger>
+      </TabList>
+    </Tabs>
+  );
+}
 ```
 
 ## Creating routes
