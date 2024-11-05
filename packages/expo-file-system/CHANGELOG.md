@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [expo-file-system][next] Fix download function throwing an unexpected error if destination already exists.
+- [expo-file-system][next] Fix download function throwing an unexpected error if destination already exists. ([#32626](https://github.com/expo/expo/pull/32626) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
