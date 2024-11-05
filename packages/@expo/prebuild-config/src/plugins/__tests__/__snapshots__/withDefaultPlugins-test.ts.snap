@@ -392,6 +392,7 @@ exports[`built-in plugins compiles mods 1`] = `
     "userInterfaceStyle": "automatic",
     "usesAppleSignIn": true,
     "usesIcloudStorage": true,
+    "usesBroadcastPushNotifications": true,
   },
   "locales": {
     "en": "./locales/en-US.json",
@@ -1602,6 +1603,7 @@ exports[`built-in plugins introspects mods 1`] = `
     "userInterfaceStyle": "automatic",
     "usesAppleSignIn": true,
     "usesIcloudStorage": true,
+    "usesBroadcastPushNotifications": true,
   },
   "locales": {
     "en": "./locales/en-US.json",
@@ -2548,6 +2550,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     "userInterfaceStyle": "automatic",
     "usesAppleSignIn": true,
     "usesIcloudStorage": true,
+    "usesBroadcastPushNotifications": true,
   },
   "locales": {
     "en": "./locales/en-US.json",
