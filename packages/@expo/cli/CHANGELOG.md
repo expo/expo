@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix issue where renderer overwrote existing SSR modules. ([#32601](https://github.com/expo/expo/pull/32601) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.19.14 — 2024-11-04
