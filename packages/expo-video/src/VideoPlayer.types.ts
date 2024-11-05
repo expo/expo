@@ -190,26 +190,6 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * @platform ios
    */
   generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
-
-  // We re-declare some of the functions from the event emitter to explicitly hide them in the docs without adding
-  // expo-video specific exceptions in the docs code.
-  /**
-   * @hidden
-   */
-  emit<EventName extends keyof VideoPlayerEvents>(
-    eventName: EventName,
-    ...args: Parameters<VideoPlayerEvents[EventName]>
-  ): void;
-
-  /**
-   * @hidden
-   */
-  startObserving?<EventName extends keyof VideoPlayerEvents>(eventName: EventName): void;
-
-  /**
-   * @hidden
-   */
-  stopObserving?<EventName extends keyof VideoPlayerEvents>(eventName: EventName): void;
 }
 
 /**

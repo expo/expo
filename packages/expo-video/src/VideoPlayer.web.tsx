@@ -39,6 +39,12 @@ export function getSourceUri(source: VideoSource): string | null {
   return source?.uri ?? null;
 }
 
+export function createVideoPlayer(source: VideoSource): VideoPlayer {
+  const parsedSource = typeof source === 'string' ? { uri: source } : source;
+
+  return new VideoPlayerWeb(parsedSource);
+}
+
 export default class VideoPlayerWeb
   extends globalThis.expo.SharedObject<VideoPlayerEvents>
   implements VideoPlayer

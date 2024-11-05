@@ -4,8 +4,10 @@ export { useVideoPlayer } from './VideoPlayer';
 export { VideoContentFit, VideoViewProps } from './VideoView.types';
 export { VideoThumbnail } from './VideoThumbnail';
 
-export { default as VideoPlayer } from './VideoPlayer';
+export { createVideoPlayer } from './VideoPlayer';
+
 export {
+  VideoPlayer,
   VideoPlayerStatus,
   VideoSource,
   PlayerError,

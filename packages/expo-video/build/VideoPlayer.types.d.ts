@@ -162,18 +162,6 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      * @platform ios
      */
     generateThumbnailsAsync(times: number | number[]): Promise<VideoThumbnail[]>;
-    /**
-     * @hidden
-     */
-    emit<EventName extends keyof VideoPlayerEvents>(eventName: EventName, ...args: Parameters<VideoPlayerEvents[EventName]>): void;
-    /**
-     * @hidden
-     */
-    startObserving?<EventName extends keyof VideoPlayerEvents>(eventName: EventName): void;
-    /**
-     * @hidden
-     */
-    stopObserving?<EventName extends keyof VideoPlayerEvents>(eventName: EventName): void;
 }
 /**
  * Describes the current status of the player.

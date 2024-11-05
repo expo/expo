@@ -1,7 +1,7 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
 
 import NativeVideoModule from './NativeVideoModule';
-import { VideoSource } from './VideoPlayer.types';
+import { VideoSource, VideoPlayer } from './VideoPlayer.types';
 import resolveAssetSource from './resolveAssetSource';
 
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
@@ -10,10 +10,14 @@ NativeVideoModule.VideoPlayer.prototype.replace = function (source: VideoSource)
   return replace.call(this, parseSource(source));
 };
 
-export default class VideoPlayer extends NativeVideoModule.VideoPlayer {
-  constructor(source: VideoSource) {
-    super(parseSource(source));
-  }
+/**
+ * Creates a direct instance of `VideoPlayer` that doesn't release automatically.
+ *
+ * > **info** For most use cases you should use the [`useVideoPlayer`](#usevideoplayer) hook instead. See the [Using the VideoPlayer Directly](#using-the-videoplayer-directly) section for more details
+ * @param source
+ */
+export function createVideoPlayer(source: VideoSource): VideoPlayer {
+  return new NativeVideoModule.VideoPlayer(parseSource(source));
 }
 
 /**

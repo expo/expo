@@ -1,8 +1,11 @@
-import NativeVideoModule from './NativeVideoModule';
-import { VideoSource } from './VideoPlayer.types';
-export default class VideoPlayer extends NativeVideoModule.VideoPlayer {
-    constructor(source: VideoSource);
-}
+import { VideoSource, VideoPlayer } from './VideoPlayer.types';
+/**
+ * Creates a direct instance of `VideoPlayer` that doesn't release automatically.
+ *
+ * > **info** For most use cases you should use the [`useVideoPlayer`](#usevideoplayer) hook instead. See the [Using the VideoPlayer Directly](#using-the-videoplayer-directly) section for more details
+ * @param source
+ */
+export declare function createVideoPlayer(source: VideoSource): VideoPlayer;
 /**
  * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
  * @param source - A video source that is used to initialize the player.
