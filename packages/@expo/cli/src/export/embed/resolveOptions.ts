@@ -5,10 +5,10 @@ import canonicalize from 'metro-core/src/canonicalize';
 import os from 'os';
 import path from 'path';
 
-import { isAndroidUsingHermes, isIosUsingHermes } from './guessHermes';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
+import { isAndroidUsingHermes, isIosUsingHermes } from '../exportHermes';
 
 export interface Options {
   assetsDest?: string;
@@ -159,6 +159,7 @@ export function getExportEmbedOptionsKey({
   bundleOutput,
   verbose,
   maxWorkers,
+  eager,
   ...options
 }: Options) {
   // Create a sorted key for the options, removing values that won't change the Metro results.
