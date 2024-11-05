@@ -639,8 +639,8 @@ module.exports = {
           { name: 'hideAsync', argumentsCount: 0, key: 0 },
           { name: 'hide', argumentsCount: 0, key: 0 },
           { name: 'preventAutoHideAsync', argumentsCount: 0, key: 1 },
-          { name: '_internal_preventAutoHideAsync', argumentsCount: 0, key: 1 },
-          { name: '_internal_maybeHideAsync', argumentsCount: 0, key: 1 },
+          { name: 'internalPreventAutoHideAsync', argumentsCount: 0, key: 1 },
+          { name: 'internalMaybeHideAsync', argumentsCount: 0, key: 1 },
         ],
         ExpoSQLite: [
           { name: 'close', argumentsCount: 1, key: 'close' },

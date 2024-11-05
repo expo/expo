@@ -49,7 +49,7 @@ class SplashScreenModule : Module() {
     }
 
     AsyncFunction("internalMaybeHideAsync") {
-      if (!_userControlledAutoHideEnabled) {
+      if (!userControlledAutoHideEnabled) {
         SplashScreenManager.hide()
       }
     }
