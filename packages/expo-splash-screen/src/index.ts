@@ -35,8 +35,3 @@ export function setOptions(options: SplashScreenOptions): void {}
 export function hide(): void {}
 
 export async function hideAsync(): Promise<void> {}
-
-// @private
-export async function _internal_preventAutoHideAsync(): Promise<void> {}
-// @private
-export async function _internal_maybeHideAsync(): Promise<void> {}
