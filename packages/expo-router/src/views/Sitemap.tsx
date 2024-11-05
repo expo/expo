@@ -33,7 +33,6 @@ export function getNavOptions(): NativeStackNavigationOptions {
       // @ts-expect-error: mistyped
       borderBottomColor: '#323232',
     },
-    animation: 'default',
     header: () => {
       const WrapperElement = Platform.OS === 'android' ? SafeAreaView : View;
       return (

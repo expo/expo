@@ -33,7 +33,6 @@ function getNavOptions() {
             // @ts-expect-error: mistyped
             borderBottomColor: '#323232',
         },
-        animation: 'default',
         header: () => {
             const WrapperElement = react_native_1.Platform.OS === 'android' ? react_native_safe_area_context_1.SafeAreaView : react_native_1.View;
             return (<WrapperElement style={styles.header}>
