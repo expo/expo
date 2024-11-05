@@ -3,6 +3,7 @@ import Debug from 'debug';
 
 import { getIosSplashConfig, IOSSplashConfig } from './getIosSplashConfig';
 import { withIosSplashAssets } from './withIosSplashAssets';
+import { withIosSplashColors } from './withIosSplashColors';
 import { withIosSplashInfoPlist } from './withIosSplashInfoPlist';
 import { withIosSplashScreenStoryboardBaseMod } from './withIosSplashScreenStoryboard';
 import { withIosSplashScreenImage } from './withIosSplashScreenStoryboardImage';
@@ -26,6 +27,7 @@ export const withIosSplashScreen: ConfigPlugin<IOSSplashConfig | undefined | nul
   return withPlugins(config, [
     [withIosSplashInfoPlist, splash],
     [withIosSplashAssets, splash],
+    [withIosSplashColors, splash],
     // Add the image settings to the storyboard.
     [withIosSplashScreenImage, splash],
     // Link storyboard to xcode project.
