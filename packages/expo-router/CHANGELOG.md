@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add RSC support for `Stack.Screen`, `Tabs.Screen`, and `Drawer.Screen` components.
+- Add RSC support for `Stack.Screen`, `Tabs.Screen`, and `Drawer.Screen` components. ([#32607](https://github.com/expo/expo/pull/32607) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
