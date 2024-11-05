@@ -7,35 +7,50 @@ import { TabListProps } from './TabList';
 import { useNavigatorContext } from '../views/Navigator';
 
 export type UseTabSlotOptions = ComponentProps<typeof ScreenContainer> & {
-  /** Remove inactive screens */
+  /**
+   * Remove inactive screens.
+   */
   detachInactiveScreens?: boolean;
-  /** Override how the <Screen /> is rendered */
+  /**
+   * Override how the `Screen` component is rendered.
+   */
   renderFn?: typeof defaultTabsSlotRender;
 };
 
 /**
- * Options provided to the UseTabSlotOptions.renderFn
+ * Options provided to the `UseTabSlotOptions`.
  */
 export type TabsSlotRenderOptions = {
-  /** Index of screen */
+  /**
+   * Index of screen.
+   */
   index: number;
-  /** Whether the screen is focused */
+  /**
+   * Whether the screen is focused.
+   */
   isFocused: boolean;
-  /** Whether the screen has been loaded */
+  /**
+   * Whether the screen has been loaded.
+   */
   loaded: boolean;
-  /** Should the screen be unloaded when inactive */
+  /**
+   * Should the screen be unloaded when inactive.
+   */
   detachInactiveScreens: boolean;
 };
 
 /**
+ * @hidden
+ *
  * Returns a ReactElement of the current tab.
  *
  * @see `useTabSlot`
  *
  * @example
- * ```ts
+ * ```tsx
  * function MyTabSlot() {
  *   const slot = useTabSlot()
+ *
  *   return slot
  * }
  * ```
@@ -85,10 +100,10 @@ export type TabSlotProps = UseTabSlotOptions;
 /**
  * Renders the current tab.
  *
- * @see `useTabSlot`
+ * @see [`useTabSlot`](#usetabslot) for a hook version of this component.
  *
  * @example
- * ```ts
+ * ```tsx
  * <Tabs>
  *  <TabSlot />
  *  <TabList>
