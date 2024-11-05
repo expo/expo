@@ -12,7 +12,7 @@ Let's start with an example where a heading is unaligned to its document's conte
 
 Based on the search term above, the correct page appears as the last item. The search term contains all keywords that are common with the way we talk about running an EAS Build on a local computer.
 
-Using the context of a keyword (commonly used term), it improves the search ranking of the document when the same search term is used:
+Using keywords in the heading improves the search ranking of the document when the same search term is used:
 
 [<img src="./assets/writing-guides/02-improved-search-doc-example.png" width="540" />](./assets/writing-guides/02-improved-search-doc-example.png)
 
@@ -24,14 +24,14 @@ When writing a document title or a section heading, do the following:
 
 - Be concise.
 - Describe the main purpose of the document or the section
-- For procedural documents (guides and tutorials), use a verb-based title/heading to describe the action that you expect the developer to perform. Using an action verb also informs the developer about the type of content they can expect to find once they land on the page and start scanning it.
+- For procedural documents (guides and tutorials), use a verb-based title/heading (e.g., "Run EAS Build") to describe the action that you expect the developer to perform. Using an action verb also informs the developer about the type of content they can expect to find once they land on the page and start scanning it.
 - Front-load keywords in headings to keep the important information or subject at the beginning.
 - Focus on what matters most to customers and choose words they would use themselves.
-- Use sentence case for a section or sub-section headings. For more details, see [formatting guidelines for headings](./Expo%20Documentation%20Writing%20Style%20Guide.md#headings)
+- Use sentence case (i.e., capitalize the first word and proper nouns only) for section or sub-section headings. For more details, see [formatting guidelines for headings](./Expo%20Documentation%20Writing%20Style%20Guide.md#headings)
 
 ### Document titles
 
-When using multiple content types in the same document, such as a section or two to describe a procedure that is followed by a section that explains the concept, use a task-based title (action-based verbs) for that document.
+When using multiple content types in the same document, such as a section or two describing a procedure followed by a section explaining the concept, use a verb-based title for that document.
 
 ### Heading types
 
