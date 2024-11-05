@@ -6,24 +6,13 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import com.facebook.common.logging.FLog
-import com.facebook.hermes.reactexecutor.HermesExecutorFactory
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactInstanceManagerBuilder
-import com.facebook.react.bridge.JavaScriptExecutorFactory
-import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.facebook.react.jscexecutor.JSCExecutorFactory
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
-import com.facebook.react.shell.MainReactPackage
-import com.swmansion.reanimated.ReanimatedPackage
 import expo.modules.jsonutils.getNullable
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.expoview.Exponent
-import host.exp.expoview.Exponent.InstanceManagerBuilderProperties
 import org.json.JSONObject
 
 object VersionedUtils {
