@@ -56,4 +56,4 @@ export async function _internal_maybeHideAsync() {
   }
 
   return SplashModule._internal_maybeHideAsync();
-};
+}
