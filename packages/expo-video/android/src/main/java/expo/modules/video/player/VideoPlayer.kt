@@ -22,6 +22,7 @@ import expo.modules.video.IntervalUpdateClock
 import expo.modules.video.IntervalUpdateEmitter
 import expo.modules.video.VideoManager
 import expo.modules.video.delegates.IgnoreSameSet
+import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.enums.PlayerStatus.*
 import expo.modules.video.playbackService.ExpoVideoPlaybackService
@@ -140,6 +141,13 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       return player.bufferedPosition / 1000.0
     }
 
+  var audioMixingMode: AudioMixingMode = AudioMixingMode.AUTO
+    set(value) {
+      val old = field
+      field = value
+      sendEvent(PlayerEvent.AudioMixingModeChanged(value, old))
+    }
+
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
@@ -226,11 +234,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   fun prepare() {
-    uncommittedSource?.let { videoSource ->
-      val mediaSource = videoSource.toMediaSource(context)
-      player.setMediaSource(mediaSource)
+    val newSource = uncommittedSource
+    val mediaSource = newSource?.toMediaSource(context)
+    mediaSource?.let {
+      player.setMediaSource(it)
       player.prepare()
-      lastLoadedSource = videoSource
+      lastLoadedSource = newSource
       uncommittedSource = null
     } ?: run {
       player.clearMediaItems()

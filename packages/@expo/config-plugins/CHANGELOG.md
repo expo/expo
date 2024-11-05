@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 9.0.6 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- Avoid using path mutations in glob patterns for Windows. ([#32617](https://github.com/expo/expo/pull/32617) by [@byCedric](https://github.com/byCedric))
+
 ## 9.0.5 — 2024-11-04
 
 _This version does not introduce any user-facing changes._

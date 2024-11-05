@@ -69,8 +69,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
     artworkDataTask = nil
 
     self.mostRecentInteractionPlayer = player
-    self.setupNowPlayingControls()
-    self.updateNowPlayingInfo()
+    refreshNowPlaying()
 
     timeObserver = player?.addPeriodicTimeObserver(
       forInterval: CMTimeMake(value: 1, timescale: 4),
@@ -220,8 +219,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   }
 
   func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
-    setupNowPlayingControls()
-    updateNowPlayingInfo()
+    refreshNowPlaying()
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
@@ -237,9 +235,13 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status) {
     // The player can be registered before it's item has loaded. We have to re-update the notification when item data is loaded
     if player == mostRecentInteractionPlayer && newStatus == .readyToPlay {
-      setupNowPlayingControls()
-      updateNowPlayingInfo()
+      refreshNowPlaying()
     }
+  }
+
+  func refreshNowPlaying() {
+    setupNowPlayingControls()
+    updateNowPlayingInfo()
   }
 }
 

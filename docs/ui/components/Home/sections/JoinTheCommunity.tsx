@@ -1,9 +1,11 @@
 import { mergeClasses } from '@expo/styleguide';
+import { BlueskyIcon } from '@expo/styleguide-icons/custom/BlueskyIcon';
 import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { RedditIcon } from '@expo/styleguide-icons/custom/RedditIcon';
 import { XLogoIcon } from '@expo/styleguide-icons/custom/XLogoIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { Lightbulb02Icon } from '@expo/styleguide-icons/outline/Lightbulb02Icon';
 import { type ReactNode } from 'react';
 
 import { HeaderDescription } from '~/ui/components/Home';
@@ -24,19 +26,19 @@ export function JoinTheCommunity() {
           'max-md-gutters:grid-cols-1'
         )}>
         <CommunityGridCell
-          title="GitHub"
-          description="View our SDK, submit a PR, or report an issue."
-          link="https://github.com/expo/expo"
-          iconClassName="bg-palette-gray10"
-          icon={<GithubIcon className="icon-lg text-palette-white" />}
-        />
-        <CommunityGridCell
           title="Discord and Forums"
           description="Join our Discord to chat or ask questions."
           link="https://chat.expo.dev"
           icon={<DiscordIcon className="icon-lg text-palette-white" />}
           iconClassName="bg-[#3131E8]"
           shouldLeakReferrer
+        />
+        <CommunityGridCell
+          title="GitHub"
+          description="View our SDK, submit a PR, or report an issue."
+          link="https://github.com/expo/expo"
+          iconClassName="bg-palette-gray10"
+          icon={<GithubIcon className="icon-lg text-palette-white" />}
         />
         <CommunityGridCell
           title="X"
@@ -46,11 +48,26 @@ export function JoinTheCommunity() {
           iconClassName="bg-[#000000]"
         />
         <CommunityGridCell
+          title="Bluesky"
+          description="Follow Expo on Bluesky for news and updates."
+          link="https://bsky.app/profile/expo.dev"
+          icon={<BlueskyIcon className="icon-lg text-palette-white" />}
+          iconClassName="bg-[#1083fe]"
+          shouldLeakReferrer
+        />
+        <CommunityGridCell
           title="Reddit"
           description="Get the latest on r/expo."
           link="https://www.reddit.com/r/expo"
           icon={<RedditIcon className="icon-lg text-palette-white" />}
           iconClassName="bg-[#FC471E]"
+        />
+        <CommunityGridCell
+          title="Canny"
+          description="Give us a feedback or request a feature."
+          link="https://expo.canny.io/"
+          icon={<Lightbulb02Icon className="icon-lg text-palette-white" />}
+          iconClassName="bg-[#525df9]"
         />
       </div>
     </>

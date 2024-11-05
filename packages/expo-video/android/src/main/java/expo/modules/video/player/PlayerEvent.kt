@@ -3,6 +3,7 @@ package expo.modules.video.player
 import androidx.annotation.OptIn
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
+import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.records.IsPlayingEventPayload
 import expo.modules.video.records.MutedChangedEventPayload
@@ -61,6 +62,11 @@ sealed class PlayerEvent {
     override val jsEventPayload = timeUpdate
   }
 
+  data class AudioMixingModeChanged(val audioMixingMode: AudioMixingMode, val oldAudioMixingMode: AudioMixingMode?) : PlayerEvent() {
+    override val name = "audioMixingModeChange"
+    override val emitToJS = false
+  }
+
   class PlayedToEnd : PlayerEvent() {
     override val name = "playToEnd"
   }
@@ -76,6 +82,7 @@ sealed class PlayerEvent {
       is TimeUpdated -> listeners.forEach { it.onTimeUpdate(player, timeUpdate) }
       is PlayedToEnd -> listeners.forEach { it.onPlayedToEnd(player) }
       is MutedChanged -> listeners.forEach { it.onMutedChanged(player, muted, oldMuted) }
+      is AudioMixingModeChanged -> listeners.forEach { it.onAudioMixingModeChanged(player, audioMixingMode, oldAudioMixingMode) }
     }
   }
 }

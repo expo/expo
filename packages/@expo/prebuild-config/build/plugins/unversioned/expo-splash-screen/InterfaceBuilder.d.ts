@@ -130,6 +130,7 @@ export type IBViewController = IBItem<{
         }>[];
         color: IBItem<{
             key: string | 'backgroundColor';
+            name?: string;
             systemColor?: string | 'systemBackgroundColor';
             red?: string;
             green?: string;
@@ -171,6 +172,16 @@ export type IBResourceImage = IBItem<{
     width: number;
     height: number;
 }>;
+export type IBResourceNamedColor = IBItem<{
+    name?: string;
+    systemColor?: string | 'systemBackgroundColor';
+    red?: string;
+    green?: string;
+    blue?: string;
+    alpha?: string;
+    colorSpace?: string;
+    customColorSpace?: string;
+}>;
 export type IBDevice = IBItem<{
     id: string;
     orientation: string | 'portrait';
@@ -197,6 +208,11 @@ export type IBSplashScreenDocument = {
         }[];
         resources: {
             image: IBResourceImage[];
+            namedColor?: IBItem<{
+                name: string;
+            }, {
+                color: IBResourceNamedColor[];
+            }>[];
         }[];
     }>;
 };

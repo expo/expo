@@ -17,5 +17,7 @@ export interface SplashScreenNativeModule extends NativeModule {
     preventAutoHideAsync: () => Promise<boolean>;
     hide: () => void;
     hideAsync: () => Promise<void>;
+    _internal_maybeHideAsync: () => Promise<void>;
+    _internal_preventAutoHideAsync: () => Promise<boolean>;
 }
 //# sourceMappingURL=SplashScreen.types.d.ts.map

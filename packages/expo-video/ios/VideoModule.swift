@@ -235,6 +235,13 @@ public final class VideoModule: Module {
         player.bufferOptions = bufferOptions
       }
 
+      Property("audioMixingMode") { player -> AudioMixingMode in
+        return player.audioMixingMode
+      }
+      .set { player, audioMixingMode in
+        player.audioMixingMode = audioMixingMode
+      }
+
       Function("play") { player in
         player.pointer.play()
       }

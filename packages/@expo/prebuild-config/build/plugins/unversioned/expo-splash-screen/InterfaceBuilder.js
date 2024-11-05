@@ -135,15 +135,31 @@ function applyImageToSplashScreenXML(xml, {
   // Add background color
   mainView.color = mainView.color ?? [];
   const colorSection = mainView.color;
-  const color = parseColor(backgroundColor);
   colorSection.push({
     $: {
       key: 'backgroundColor',
-      ...color.rgb,
-      alpha: '1',
-      colorSpace: 'custom',
-      customColorSpace: 'sRGB'
+      name: 'SplashScreenBackground'
     }
+  });
+
+  // Add background named color reference
+  xml.document.resources[0].namedColor = xml.document.resources[0].namedColor ?? [];
+  const namedColorSection = xml.document.resources[0].namedColor;
+  const color = parseColor(backgroundColor);
+  namedColorSection.push({
+    $: {
+      name: 'SplashScreenBackground'
+    },
+    color: [{
+      $: {
+        alpha: '1.000',
+        blue: color.rgb.blue,
+        green: color.rgb.green,
+        red: color.rgb.red,
+        customColorSpace: 'sRGB',
+        colorSpace: 'custom'
+      }
+    }]
   });
   return xml;
 }

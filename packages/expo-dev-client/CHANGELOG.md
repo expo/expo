@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.0.0-preview.7 — 2024-11-05
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.0-preview.6 — 2024-10-31
 
 _This version does not introduce any user-facing changes._

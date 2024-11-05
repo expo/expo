@@ -392,6 +392,27 @@ export default function Index() {
 
 You can use this instead of the `Head` component from `expo-router/head`, but it only works on web for now.
 
+## Request headers
+
+You can access the request headers used to make the request to the Server Component using the `expo-router/rsc/headers` module.
+
+```tsx actions/renderHome.tsx
+import { unstable_headers } from 'expo-router/rsc/headers';
+
+export async function renderHome() {
+  const authorization = (await unstable_headers()).get('authorization');
+
+  return <Text>{authorization}</Text>;
+}
+```
+
+The `unstable_headers` function returns a promise that resolves to a read-only `Headers` object.
+
+### Key points
+
+- This API cannot be used with build-time rendering (`render: 'static'`) because the headers dynamically change based on the request. In the future, this API will assert if the output mode is `static`.
+- `unstable_headers` is server-only and cannot be used on the client.
+
 ## Full React Server Components mode
 
 > This mode is even more experimental!

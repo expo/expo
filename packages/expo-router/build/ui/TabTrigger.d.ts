@@ -8,13 +8,22 @@ type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & 
     children?: ReactNode | undefined;
 };
 export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
-    /** Name of tab. When used within a `<TabList />` this sets the name of the tab. Otherwise, this references the name. */
+    /**
+     *  Name of tab. When used within a `TabList` this sets the name of the tab.
+     * Otherwise, this references the name.
+     */
     name: string;
-    /** Name of tab. Required when used within a `<TabList />` */
+    /**
+     * Name of tab. Required when used within a `TabList`.
+     */
     href?: Href;
-    /** Forward props to child component. Useful for custom wrappers. */
+    /**
+     * Forward props to child component. Useful for custom wrappers.
+     */
     asChild?: boolean;
-    /** Reset the route when switching to the tab */
+    /**
+     * Resets the route when switching to a tab.
+     */
     reset?: SwitchToOptions['reset'] | 'onLongPress';
 };
 export type TabTriggerOptions = {
@@ -26,12 +35,14 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.
     href?: string;
 };
 /**
- * Creates a trigger to navigate to a tab. `<TabTrigger />` functionality slightly changes when used as a child of `<TabList />`. In this instance, the `href` prop is required, and the trigger also defines what routes are present in the `<Tabs />`.
+ * Creates a trigger to navigate to a tab. When used as child of `TabList`, its
+ * functionality slightly changes since the `href` prop is required,
+ * and the trigger also defines what routes are present in the `Tabs`.
  *
- * When used outside of `<TabList />`, `<TabTrigger />` no longer requires a `href`.
+ * When used outside of `TabList`, this component no longer requires an `href`.
  *
  * @example
- * ```ts
+ * ```tsx
  * <Tabs>
  *  <TabSlot />
  *  <TabList>
@@ -49,7 +60,9 @@ export declare function isTabTrigger(child: ReactElement<any>): child is ReactEl
  * Options for `switchTab` function.
  */
 export type SwitchToOptions = {
-    /** Navigate and reset the history */
+    /**
+     * Navigate and reset the history.
+     */
     reset?: ExpoTabsResetValue;
 };
 export type Trigger = TriggerMap[string] & {
@@ -69,7 +82,7 @@ export type TriggerProps = {
     onLongPress: PressableProps['onLongPress'];
 };
 /**
- * Utility hook creating custom `<TabTrigger />`
+ * Utility hook creating custom `TabTrigger`.
  */
 export declare function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult;
 export {};
