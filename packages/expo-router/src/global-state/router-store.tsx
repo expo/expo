@@ -147,7 +147,6 @@ export class RouterStore {
         this.hasAttemptedToHideSplash = true;
         // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
         this.splashScreenAnimationFrame = requestAnimationFrame(() => {
-          // @ts-expect-error: This function is native-only and for internal-use only.
           SplashScreen._internal_maybeHideAsync?.();
         });
       }
