@@ -466,10 +466,6 @@ export interface IOS {
      */
     usesAppleSignIn?: boolean;
     /**
-     * A boolean indicating if the app uses Push Notifications Broadcast option for Push Notifications capability should be enabled by EAS CLI during capability syncing.
-     */
-    usesBroadcastPushNotifications?: boolean;
-    /**
      * A Boolean value that indicates whether the app may access the notes stored in contacts. You must [receive permission from Apple](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) before you can submit your app for review with this capability.
      */
     accessesContactNotes?: boolean;
@@ -537,15 +533,15 @@ export interface IOS {
  */
 export interface IOSIcons {
     /**
-     * The icon that will appear when neither dark nor tinted icons are used, or if they are not provided.
+     * The light icon. It will appear when neither dark nor tinted icons are used, or if they are not provided.
      */
-    any?: string;
+    light?: string;
     /**
-     * The icon that will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     * The dark icon. It will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
      */
     dark?: string;
     /**
-     * The icon that will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
+     * The tinted icon. It will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.
      */
     tinted?: string;
 }
