@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig, getConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
-import crypto from 'crypto';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import Server from 'metro/src/Server';
@@ -15,7 +14,6 @@ import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
 import output from 'metro/src/shared/output/bundle';
 import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
@@ -24,27 +22,20 @@ import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
-import { serializeHtmlWithAssets } from '../../start/server/metro/serializeHtml';
-import {
-  getDomComponentHtml,
-  DOM_COMPONENTS_BUNDLE_DIR,
-} from '../../start/server/middleware/DomComponentsMiddleware';
+import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync } from '../publicFolder';
-import {
-  BundleAssetWithFileHashes,
-  ExportAssetMap,
-  getFilesFromSerialAssets,
-  persistMetroFilesAsync,
-} from '../saveAssets';
+import { BundleAssetWithFileHashes, ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
+import { resolveRealEntryFilePath } from '../../utils/filePath';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -240,17 +231,40 @@ export async function exportEmbedBundleAndAssetsAsync(
           : []
       )
       .flat();
+    if (expoDomComponentReferences.length > 0) {
+      await Promise.all(
+        // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
+        expoDomComponentReferences.map(async (filePath) => {
+          const { bundle } = await exportDomComponentAsync({
+            filePath,
+            projectRoot,
+            dev: options.dev,
+            devServer,
+            isHermes,
+            includeSourceMaps: !!sourceMapUrl,
+            exp,
+            files,
+          });
 
-    await exportDomComponentsAsync(
-      projectRoot,
-      expoDomComponentReferences,
-      options,
-      devServer,
-      isHermes,
-      sourceMapUrl,
-      exp,
-      files
-    );
+          if (options.assetsDest) {
+            // Save assets like a typical bundler, preserving the file paths on web.
+            // This is saving web-style inside of a native app's binary.
+            await persistMetroAssetsAsync(
+              projectRoot,
+              bundle.assets.map((asset) => ({
+                ...asset,
+                httpServerLocation: path.join(DOM_COMPONENTS_BUNDLE_DIR, asset.httpServerLocation),
+              })),
+              {
+                files,
+                platform: 'web',
+                outputDirectory: options.assetsDest,
+              }
+            );
+          }
+        })
+      );
+    }
 
     return {
       files,
@@ -277,93 +291,6 @@ export async function exportEmbedBundleAndAssetsAsync(
   } finally {
     devServerManager.stopAsync();
   }
-}
-
-// TODO(EvanBacon): Move this to expo export in the future when we determine how to support DOM Components with hosting.
-async function exportDomComponentsAsync(
-  projectRoot: string,
-  expoDomComponentReferences: string[],
-  options: Options,
-  devServer: MetroBundlerDevServer,
-  isHermes: boolean,
-  sourceMapUrl: string | undefined,
-  exp: ExpoConfig,
-  files: ExportAssetMap
-) {
-  if (!expoDomComponentReferences.length) {
-    return;
-  }
-
-  const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
-  await Promise.all(
-    // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
-    expoDomComponentReferences.map(async (filePath) => {
-      debug('Bundle DOM Component:', filePath);
-      // MUST MATCH THE BABEL PLUGIN!
-      const hash = crypto.createHash('sha1').update(filePath).digest('hex');
-      const outputName = `${DOM_COMPONENTS_BUNDLE_DIR}/${hash}.html`;
-      const generatedEntryPath = filePath.startsWith('file://') ? filePath.slice(7) : filePath;
-      const baseUrl = `/${DOM_COMPONENTS_BUNDLE_DIR}`;
-      const relativeImport = './' + path.relative(path.dirname(virtualEntry), generatedEntryPath);
-      // Run metro bundler and create the JS bundles/source maps.
-      const bundle = await devServer.legacySinglePageExportBundleAsync({
-        platform: 'web',
-        domRoot: encodeURI(relativeImport),
-        splitChunks: !env.EXPO_NO_BUNDLE_SPLITTING,
-        mainModuleName: resolveRealEntryFilePath(projectRoot, virtualEntry),
-        mode: options.dev ? 'development' : 'production',
-        engine: isHermes ? 'hermes' : undefined,
-        serializerIncludeMaps: !!sourceMapUrl,
-        bytecode: false,
-        reactCompiler: !!exp.experiments?.reactCompiler,
-        baseUrl: './',
-        // Minify may be false because it's skipped on native when Hermes is enabled, default to true.
-        minify: true,
-      });
-
-      const html = await serializeHtmlWithAssets({
-        isExporting: true,
-        resources: bundle.artifacts,
-        template: getDomComponentHtml(),
-        baseUrl: './',
-      });
-
-      getFilesFromSerialAssets(
-        bundle.artifacts.map((a) => {
-          return {
-            ...a,
-            filename: path.join(baseUrl, a.filename),
-          };
-        }),
-        {
-          includeSourceMaps: !!sourceMapUrl,
-          files,
-          platform: 'web',
-        }
-      );
-
-      files.set(outputName, {
-        contents: html,
-      });
-
-      if (options.assetsDest) {
-        // Save assets like a typical bundler, preserving the file paths on web.
-        // This is saving web-style inside of a native app's binary.
-        await persistMetroAssetsAsync(
-          projectRoot,
-          bundle.assets.map((asset) => ({
-            ...asset,
-            httpServerLocation: path.join(DOM_COMPONENTS_BUNDLE_DIR, asset.httpServerLocation),
-          })),
-          {
-            files,
-            platform: 'web',
-            outputDirectory: options.assetsDest,
-          }
-        );
-      }
-    })
-  );
 }
 
 // Exports for expo-updates
@@ -488,18 +415,4 @@ export async function exportEmbedAssetsAsync(
 
 function isError(error: any): error is Error {
   return error instanceof Error;
-}
-
-/**
- * This is a workaround for Metro not resolving entry file paths to their real location.
- * When running exports through `eas build --local` on macOS, the `/var/folders` path is used instead of `/private/var/folders`.
- *
- * See: https://github.com/expo/expo/issues/28890
- */
-function resolveRealEntryFilePath(projectRoot: string, entryFile: string): string {
-  if (projectRoot.startsWith('/private/var') && entryFile.startsWith('/var')) {
-    return fs.realpathSync(entryFile);
-  }
-
-  return entryFile;
 }

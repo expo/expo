@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added DOM Components support to the `export` command. ([#32504](https://github.com/expo/expo/pull/32504) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Fix issue where renderer overwrote existing SSR modules. ([#32601](https://github.com/expo/expo/pull/32601) by [@EvanBacon](https://github.com/EvanBacon))
