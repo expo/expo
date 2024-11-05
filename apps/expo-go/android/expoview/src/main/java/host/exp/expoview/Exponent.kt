@@ -15,7 +15,6 @@ import com.facebook.common.internal.ByteStreams
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory
 import com.facebook.imagepipeline.producers.HttpUrlConnectionNetworkFetcher
-import com.facebook.react.ReactInstanceManagerBuilder
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
@@ -367,7 +366,7 @@ class Exponent private constructor(val context: Context, val application: Applic
 
     @JvmStatic fun enableDeveloperSupport(
       debuggerHost: String,
-      mainModuleName: String,
+      mainModuleName: String
     ) {
       if (debuggerHost.isEmpty() || mainModuleName.isEmpty()) {
         return
