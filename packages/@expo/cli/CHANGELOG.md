@@ -12,6 +12,7 @@
 
 - Improve export eager cache key. ([#32600](https://github.com/expo/expo/pull/32600) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix issue where renderer overwrote existing SSR modules. ([#32601](https://github.com/expo/expo/pull/32601) by [@EvanBacon](https://github.com/EvanBacon))
+- Avoid using path mutations in glob patterns for Windows. ([#32617](https://github.com/expo/expo/pull/32617) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
