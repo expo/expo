@@ -39,6 +39,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     _error = null;
     _timeUpdateLoop = null;
     _timeUpdateEventInterval = 0;
+    audioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
     allowsExternalPlayback = false; // Not supported on web. Dummy to match the interface.
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     showNowPlayingNotification = false; // Not supported on web. Dummy to match the interface.

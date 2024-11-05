@@ -13,6 +13,7 @@ export {
   DRMType,
   DRMOptions,
   BufferOptions,
+  AudioMixingMode,
 } from './VideoPlayer.types';
 
 export {

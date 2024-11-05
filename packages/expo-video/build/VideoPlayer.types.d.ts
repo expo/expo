@@ -22,6 +22,14 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     allowsExternalPlayback: boolean;
     /**
+     * Determines how the player will interact with other audio playing in the system.
+     *
+     * @default 'auto'
+     * @platform android
+     * @platform ios
+     */
+    audioMixingMode: AudioMixingMode;
+    /**
      * Boolean value whether the player is currently muted.
      * Setting this property to `true`/`false` will mute/unmute the player.
      * @default false
@@ -318,4 +326,16 @@ export type BufferOptions = {
      */
     readonly prioritizeTimeOverSizeThreshold?: boolean;
 };
+/**
+ * Specifies the audio mode that the player should use. Audio mode is set on per-app basis, if there are multiple players playing and
+ * have different a `AudioMode` specified, the highest priority mode will be used. Priority order: 'doNotMix' > 'auto' > 'duckOthers' > 'mixWithOthers'.
+ *
+ * - `mixWithOthers`: The player will mix its audio output with other apps.
+ * - `duckOthers`: The player will lower the volume of other apps if any of the active players is outputting audio.
+ * - `auto`: The player will allow other apps to keep playing audio only when it is muted. On iOS it will always interrupt other apps when `showNowPlayingNotification` is `true` due to system requirements.
+ * - `doNotMix`: The player will pause playback in other apps, even when it's muted.
+ *
+ * > On iOS, the Now Playing notification is dependent on the audio mode. If the audio mode is different from `doNotMix` or `auto` this feature will not work.
+ */
+export type AudioMixingMode = 'mixWithOthers' | 'duckOthers' | 'auto' | 'doNotMix';
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

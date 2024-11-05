@@ -22,6 +22,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool)
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status)
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate)
+  func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode)
 }
 
 // Default implementations for the delegate
@@ -35,6 +36,7 @@ extension VideoPlayerObserverDelegate {
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool) {}
   func onPlayerItemStatusChanged(player: AVPlayer, oldStatus: AVPlayerItem.Status?, newStatus: AVPlayerItem.Status) {}
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {}
+  func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode) {}
 }
 
 // Wrapper used to store WeakReferences to the observer delegate
@@ -97,6 +99,7 @@ class VideoPlayerObserver {
   private var playerVolumeObserver: NSKeyValueObservation?
   private var playerCurrentItemObserver: NSKeyValueObservation?
   private var playerIsMutedObserver: NSKeyValueObservation?
+  private var playerAudioMixingModeObserver: NSKeyValueObservation?
 
   // Current player item observers
   private var playbackBufferEmptyObserver: NSKeyValueObservation?

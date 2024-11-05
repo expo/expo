@@ -9,6 +9,13 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var observer: VideoPlayerObserver?
 
   var loop = false
+  var audioMixingMode: AudioMixingMode = .doNotMix {
+    didSet {
+      if oldValue != audioMixingMode {
+        VideoManager.shared.setAppropriateAudioSessionOrWarn()
+      }
+    }
+  }
   private(set) var isPlaying = false
   private(set) var status: PlayerStatus = .idle
   var playbackRate: Float = 1.0 {
