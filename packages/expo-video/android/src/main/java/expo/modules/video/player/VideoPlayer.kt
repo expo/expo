@@ -234,11 +234,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   fun prepare() {
-    uncommittedSource?.let { videoSource ->
-      val mediaSource = videoSource.toMediaSource(context)
-      player.setMediaSource(mediaSource)
+    val newSource = uncommittedSource
+    val mediaSource = newSource?.toMediaSource(context)
+    mediaSource?.let {
+      player.setMediaSource(it)
       player.prepare()
-      lastLoadedSource = videoSource
+      lastLoadedSource = newSource
       uncommittedSource = null
     } ?: run {
       player.clearMediaItems()

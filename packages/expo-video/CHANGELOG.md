@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix errors when passing a source with an `undefined` `uri` field. ([#32585](https://github.com/expo/expo/pull/32585) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 2.0.0-preview.0 — 2024-10-22
