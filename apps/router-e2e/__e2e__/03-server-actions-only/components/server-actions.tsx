@@ -2,11 +2,12 @@
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image, Text } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 
 export async function renderPage(params: { title: string }) {
   return (
     <>
+      <Stack.Screen options={{ title: 'Server Actions' }} />
       <Text testID="index-text">Platform: {process.env.EXPO_OS}</Text>
       <Text testID="secret-text">Secret: {process.env.TEST_SECRET_VALUE}</Text>
       <Text>Render: {Date.now()}</Text>

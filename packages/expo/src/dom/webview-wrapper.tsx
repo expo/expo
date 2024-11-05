@@ -92,6 +92,10 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, filePath, ...marshalP
     webviewDebuggingEnabled: true, //__DEV__,
     // Make iOS scrolling feel native.
     decelerationRate: process.env.EXPO_OS === 'ios' ? 'normal' : undefined,
+    // This is a better default for integrating with native navigation.
+    contentInsetAdjustmentBehavior: 'automatic',
+    // This is the default in ScrollView and upstream native.
+    automaticallyAdjustsScrollIndicatorInsets: true,
     originWhitelist: ['*'],
     allowFileAccess: true,
     allowFileAccessFromFileURLs: true,

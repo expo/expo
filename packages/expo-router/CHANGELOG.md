@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
-- Remove generic from `Href` type, navigation hooks and functions ([#31764](https://github.com/expo/expo/pull/31764) by [@marklawlor](https://github.com/marklawlor))
-
 ### 🎉 New features
 
+- Add RSC support for `Stack.Screen`, `Tabs.Screen`, and `Drawer.Screen` components. ([#32607](https://github.com/expo/expo/pull/32607) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.0.0-preview.12 — 2024-11-04
+
+### 🛠 Breaking changes
+
+- Remove generic from `Href` type, navigation hooks and functions ([#31764](https://github.com/expo/expo/pull/31764) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.6 — 2024-11-04
+
+### 💡 Others
+
 - Remove unused `graphql` dependencies. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
 
 ## 6.0.5 — 2024-10-29

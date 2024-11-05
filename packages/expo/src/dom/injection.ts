@@ -17,14 +17,14 @@ export const getInjectEventScript = <T extends BridgeMessage<any>>(detail: T) =>
 
 export function getInjectEnvsScript() {
   return `;(function injectEnvs() {
-  let domBaseUrl = '';
+  let baseUrl = '';
   if (window.location.protocol === 'file:') {
-    domBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+    baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
   }
   window.process = window.process || {};
   window.process.env = {
     ...(window.process.env || {}),
-    EXPO_DOM_BASE_URL: domBaseUrl,
+    EXPO_BASE_URL: baseUrl,
   };
   })();
   true;`;
