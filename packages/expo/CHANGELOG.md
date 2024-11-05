@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Change DOM components defaults for `contentInsetAdjustmentBehavior` and `automaticallyAdjustsScrollIndicatorInsets` to be automatic on iOS.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
