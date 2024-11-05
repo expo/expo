@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixes asset types not returned correctly.
+
 ### 💡 Others
 
 ## 17.0.0 — 2024-10-22
