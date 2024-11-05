@@ -96,6 +96,7 @@ it(
       'assets/__packages/expo-router/assets/error.png',
       'assets/__packages/expo-router/assets/file.png',
       'assets/__packages/expo-router/assets/forward.png',
+      'assets/__packages/expo-router/assets/logotype.png',
       'assets/__packages/expo-router/assets/pkg.png',
       'assets/assets/icon.png',
       'output.js',
