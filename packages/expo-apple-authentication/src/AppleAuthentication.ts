@@ -150,7 +150,7 @@ export async function getCredentialStateAsync(
  */
 export function formatFullName(
   fullName: AppleAuthenticationFullName,
-  formatStyle: AppleAuthenticationFullNameFormatStyle
+  formatStyle?: AppleAuthenticationFullNameFormatStyle
 ): string {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.formatFullName) {
     throw new UnavailabilityError('expo-apple-authentication', 'formatFullName');

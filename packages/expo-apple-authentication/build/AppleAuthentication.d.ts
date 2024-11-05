@@ -66,7 +66,7 @@ export declare function getCredentialStateAsync(user: string): Promise<AppleAuth
  * @param formatStyle The style in which the name should be formatted
  * @returns A locale-aware string representation of a person's name
  */
-export declare function formatFullName(fullName: AppleAuthenticationFullName, formatStyle: AppleAuthenticationFullNameFormatStyle): string;
+export declare function formatFullName(fullName: AppleAuthenticationFullName, formatStyle?: AppleAuthenticationFullNameFormatStyle): string;
 export declare function addRevokeListener(listener: () => void): EventSubscription;
 export { EventSubscription as Subscription };
 //# sourceMappingURL=AppleAuthentication.d.ts.map
