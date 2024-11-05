@@ -89,7 +89,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
     [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success) {
       if (success) {
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        [userDefaults setBool:YES forKey:@"EXisLocalNetworkAccessGranted"];
+        [userDefaults setBool:YES forKey:@"EXIsLocalNetworkAccessGranted"];
         [EXUtil performSynchronouslyOnMainThread:^{
           [RCTSharedApplication() openURL:URL options:@{} completionHandler:^(BOOL success) {
             if (success) {

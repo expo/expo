@@ -22,7 +22,7 @@
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
-NSString * const kEXisLocalNetworkAccessGrantedKey = @"EXisLocalNetworkAccessGranted";
+NSString * const kEXIsLocalNetworkAccessGrantedKey = @"EXIsLocalNetworkAccessGranted";
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -53,8 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)isLocalNetworkAccessGranted {
-  if ([[NSUserDefaults standardUserDefaults] objectForKey:kEXisLocalNetworkAccessGrantedKey] != nil) {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kEXisLocalNetworkAccessGrantedKey];
+  if ([[NSUserDefaults standardUserDefaults] objectForKey:kEXIsLocalNetworkAccessGrantedKey] != nil) {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kEXIsLocalNetworkAccessGrantedKey];
   } else {
     return NO;
   }
@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
       if (success) {
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        [userDefaults setBool:YES forKey:kEXisLocalNetworkAccessGrantedKey];
+        [userDefaults setBool:YES forKey:kEXIsLocalNetworkAccessGrantedKey];
         [self foregroundApp:appRecord];
       } else {
         [self createLocalNetworkDeniedAlert];
@@ -135,8 +135,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createLocalNetworkDeniedAlert
 {
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Local Network Access required"
-                                                                 message:@"Local network access has been denied. This permission is required to run projects in expo go. Please go to your device settings and grant this permission."
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Local network access required"
+                                                                 message:@"Local network access has been denied. This permission is required to run projects in Expo Go. Enable \"Local Network\" for Expo Go from the Settings app."
                                                           preferredStyle:UIAlertControllerStyleAlert];
   UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
   [alert addAction:okAction];
