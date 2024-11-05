@@ -236,3 +236,14 @@ xdescribe('within Expo Go', () => {
     });
   });
 });
+
+describe('in bare app', () => {
+  afterEach(() => {
+    clearMemory();
+  });
+
+  it('can call getLoadedFonts()', () => {
+    expect(Font.getLoadedFonts()).toHaveLength(0);
+    expect(ExpoFontLoader.getLoadedFonts).toHaveBeenCalledTimes(1);
+  });
+});
