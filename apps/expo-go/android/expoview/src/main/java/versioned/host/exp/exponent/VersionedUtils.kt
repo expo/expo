@@ -6,24 +6,13 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import com.facebook.common.logging.FLog
-import com.facebook.hermes.reactexecutor.HermesExecutorFactory
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactInstanceManagerBuilder
-import com.facebook.react.bridge.JavaScriptExecutorFactory
-import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.facebook.react.jscexecutor.JSCExecutorFactory
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
-import com.facebook.react.shell.MainReactPackage
-import com.swmansion.reanimated.ReanimatedPackage
 import expo.modules.jsonutils.getNullable
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.expoview.Exponent
-import host.exp.expoview.Exponent.InstanceManagerBuilderProperties
 import org.json.JSONObject
 
 object VersionedUtils {
@@ -192,68 +181,5 @@ object VersionedUtils {
     }
 
     return packagerCommandHandlers
-  }
-
-  @JvmStatic fun getReactInstanceManagerBuilder(instanceManagerBuilderProperties: InstanceManagerBuilderProperties): ReactInstanceManagerBuilder {
-    // Build the instance manager
-    var builder = ReactInstanceManager.builder()
-      .setApplication(instanceManagerBuilderProperties.application)
-      .addPackage(MainReactPackage())
-      .addPackage(ReanimatedPackage())
-      .addPackage(
-        ExponentPackage(
-          instanceManagerBuilderProperties.experienceProperties,
-          instanceManagerBuilderProperties.manifest,
-          // DO NOT EDIT THIS COMMENT - used by versioning scripts
-          // When distributing change the following two arguments to nulls
-          instanceManagerBuilderProperties.expoPackages,
-          instanceManagerBuilderProperties.exponentPackageDelegate,
-          instanceManagerBuilderProperties.singletonModules
-        )
-      )
-      .addPackage(
-        ExpoTurboPackage(
-          instanceManagerBuilderProperties.experienceProperties,
-          instanceManagerBuilderProperties.manifest
-        )
-      )
-      .setMinNumShakes(100) // disable the RN dev menu
-      .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
-      .setCustomPackagerCommandHandlers(createPackagerCommandHelpers())
-      .setJavaScriptExecutorFactory(createJSExecutorFactory(instanceManagerBuilderProperties))
-    if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath!!.isNotEmpty()) {
-      builder = builder.setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath)
-    }
-    return builder
-  }
-
-  private fun getDevSupportManager(): DevSupportManager? {
-    val currentActivity = Exponent.instance.currentActivity
-    return if (currentActivity != null) {
-      if (currentActivity is ReactNativeActivity) {
-        currentActivity.devSupportManager
-      } else {
-        null
-      }
-    } else {
-      null
-    }
-  }
-
-  private fun createJSExecutorFactory(
-    instanceManagerBuilderProperties: InstanceManagerBuilderProperties
-  ): JavaScriptExecutorFactory? {
-    val appName = instanceManagerBuilderProperties.manifest.getName() ?: ""
-    val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
-
-    val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.jsEngine
-    return if (jsEngineFromManifest == "hermes") {
-      HermesExecutorFactory()
-    } else {
-      JSCExecutorFactory(
-        appName,
-        deviceName
-      )
-    }
   }
 }

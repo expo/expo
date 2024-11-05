@@ -91,7 +91,7 @@ open class HomeActivity : BaseExperienceActivity() {
    * and overridden here as we want to prevent destroying react instance manager when HomeActivity gets destroyed.
    * It needs to continue to live since it is needed for DevMenu to work as expected (it relies on ExponentKernelModule from that react context).
    */
-  override fun destroyReactHost() {}
+  override fun destroyReactHost(reason: String) {}
 
   fun onEventMainThread(event: KernelStartedRunningEvent?) {
     reactHost = kernel.reactHost

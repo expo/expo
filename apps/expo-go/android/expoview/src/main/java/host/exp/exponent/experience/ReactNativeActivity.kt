@@ -297,6 +297,7 @@ abstract class ReactNativeActivity :
 
   override fun onDestroy() {
     super.onDestroy()
+    destroyReactHost()
     handler.removeCallbacksAndMessages(null)
     EventBus.getDefault().unregister(this)
   }
@@ -317,9 +318,9 @@ abstract class ReactNativeActivity :
   open val isDebugModeEnabled: Boolean
     get() = manifest?.isDevelopmentMode() ?: false
 
-  open fun destroyReactHost() {
+  open fun destroyReactHost(reason: String = "Destroy Activity") {
     if (!isCrashed) {
-      reactHost?.onHostDestroy()
+      reactHost?.destroy(reason, null)
     }
   }
 
