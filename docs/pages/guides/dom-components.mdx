@@ -245,13 +245,13 @@ const IS_DOM = typeof ReactNativeWebView !== 'undefined';
 
 ## Public assets
 
+> **warning** **Warning:** This is experimental and may change in the future. Public assets are not supported in EAS Update. Use `require()` to load local assets instead.
+
 The contents of the root **public** directory are copied to the native app's binary to support the use of public assets in DOM components. Since these public assets will be served from the local filesystem, use the `process.env.EXPO_BASE_URL` prefix to reference the correct path. For example:
 
 ```tsx
-<img src={`${process.env.EXPO_BASE_URL}/img.png`} />
+<img src={`${process.env.EXPO_BASE_URL}img.png`} />
 ```
-
-{/* TODO: This is likely to change. */}
 
 ## Debugging
 
