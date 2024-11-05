@@ -1,6 +1,6 @@
 ---
 title: Custom Tab layouts
-description: Learn how to use headless Tabs, TabList, TabTrigger, and TabSlot components to create custom tab layouts in Expo Router.
+description: Learn how to use headless tab components to create custom tab layouts in Expo Router.
 sidebar_title: Custom tabs
 ---
 
@@ -9,20 +9,20 @@ import { FileTree } from '~/ui/components/FileTree';
 
 > **warning** Experimentally available in SDK 52 and above. For the React Navigation styled tabs layout that are commonly used in native apps, see [Tabs](/router/advanced/tabs/).
 
-`Expo Router` offers a set of components to create custom tab layouts via the submodule [`expo-router/ui`](/versions/unversioned/sdk/router-ui). Unlike the React Navigation styled `Tabs`, these components are unstyled and flexible. They are designed to allow you build complex UI patterns from scratch in your project.
+Expo Router offers a set of components to create custom tab layouts via the submodule [`expo-router/ui`](/versions/unversioned/sdk/router-ui). Unlike the React Navigation styled `Tabs`, these components are unstyled and flexible. They are designed to allow you build complex UI patterns from scratch in your project.
 
-## Anatomy of headless Tabs components
+## Anatomy of custom Tabs components
 
 There are four components offered by `expo-router/ui` to create custom tab layouts:
 
-| Component    | Definition                                            |
-| ------------ | ----------------------------------------------------- |
-| `Tabs`       | The containeing `<View>` for the tabs.                |
-| `TabList`    | The containing `<View>` for the list of tab triggers. |
-| `TabTrigger` | A trigger to switch to the specified tab.             |
-| `TabSlot`    | A slot to render the current tab.                     |
+| Component    | Description                                                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `Tabs`       | Wrapper component which contains the `<View>` for the tabs.                                                                     |
+| `TabList`    | The containing `<View>` for the list of `TabTrigger` components.                                                                |
+| `TabTrigger` | A trigger component to switch to the specified tab. It is used to define the route using `href` prop and a `name` for each tab. |
+| `TabSlot`    | A slot to render the currently selected tab.                                                                                    |
 
-Example:
+A bare minimum structure of a custom tab layout would look like this:
 
 ```tsx
 <Tabs>
@@ -32,7 +32,7 @@ Example:
       <Text>Home</Text>
     </TabTrigger>
     <TabTrigger name="article" href="/article">
-      <Text>article</Text>
+      <Text>Article</Text>
     </TabTrigger>
   </TabList>
 </Tabs>
@@ -44,7 +44,7 @@ The `TabList` component is the "holding" component for routes. `TabTrigger`'s de
 
 `TabList` is both the configuration and default appearance of the `Tabs`. Triggers present within the `TabList` dictate what routes are possible within the `Tabs`.
 
-> **Note:** `name` can be any `string`. This is a user-defined name for the Tab.
+> **Note:** A `name` can be any `string`. This is a user-defined name for the Tab.
 
 ### Dynamic routes
 
@@ -84,7 +84,7 @@ The `TabSlot` component renders the current route. `TabSlot` be can be nested in
       <Text>Home</Text>
     </TabTrigger>
   </TabList>
-  {/* customize how `<TabSlot />` is rendered */}
+  {/* Customize how `<TabSlot />` is rendered. */}
   /* @info TabSlot be nested inside custom components */
   <View>
     <View>
