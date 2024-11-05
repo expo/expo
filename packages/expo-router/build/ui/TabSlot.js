@@ -7,18 +7,17 @@ const react_native_screens_1 = require("react-native-screens");
 const TabContext_1 = require("./TabContext");
 const Navigator_1 = require("../views/Navigator");
 /**
- * @hidden
  *
- * Returns a ReactElement of the current tab.
+ * Returns a `ReactElement` of the current tab.
  *
- * @see `useTabSlot`
+ * @see [`useTabSlot`](#usetabslotoptions).
  *
  * @example
  * ```tsx
  * function MyTabSlot() {
- *   const slot = useTabSlot()
+ *   const slot = useTabSlot();
  *
- *   return slot
+ *   return slot;
  * }
  * ```
  */

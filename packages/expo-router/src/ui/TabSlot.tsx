@@ -40,18 +40,17 @@ export type TabsSlotRenderOptions = {
 };
 
 /**
- * @hidden
  *
- * Returns a ReactElement of the current tab.
+ * Returns a `ReactElement` of the current tab.
  *
- * @see `useTabSlot`
+ * @see [`useTabSlot`](#usetabslotoptions).
  *
  * @example
  * ```tsx
  * function MyTabSlot() {
- *   const slot = useTabSlot()
+ *   const slot = useTabSlot();
  *
- *   return slot
+ *   return slot;
  * }
  * ```
  */
