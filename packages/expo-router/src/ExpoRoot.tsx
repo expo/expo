@@ -12,7 +12,7 @@ import { ServerContext, ServerContextType } from './global-state/serverLocationC
 import { useDomComponentNavigation } from './link/useDomComponentNavigation';
 import { RequireContext } from './types';
 import { hasViewControllerBasedStatusBarAppearance } from './utils/statusbar';
-import { SplashScreen } from './views/Splash';
+import * as SplashScreen from './views/Splash';
 
 export type ExpoRootProps = {
   context: RequireContext;
