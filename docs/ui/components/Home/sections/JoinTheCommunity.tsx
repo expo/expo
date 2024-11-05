@@ -50,7 +50,7 @@ export function JoinTheCommunity() {
         <CommunityGridCell
           title="Bluesky"
           description="Follow Expo on Bluesky for news and updates."
-          link="https://chat.expo.dev"
+          link="https://bsky.app/profile/expo.dev"
           icon={<BlueskyIcon className="icon-lg text-palette-white" />}
           iconClassName="bg-[#1083fe]"
           shouldLeakReferrer
