@@ -470,7 +470,7 @@ export interface IOS {
    */
   usesAppleSignIn?: boolean;
   /**
-   * A boolean indicating if the app uses Push Notifications Broadcast option for Push Notifications capability.
+   * A boolean indicating if the app uses Push Notifications Broadcast option for Push Notifications capability should be enabled by EAS CLI during capability syncing.
    */
   usesBroadcastPushNotifications?: boolean;
   /**
