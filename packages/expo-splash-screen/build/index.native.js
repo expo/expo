@@ -30,7 +30,7 @@ export async function _internal_preventAutoHideAsync() {
     if (!SplashModule) {
         return false;
     }
-    return SplashModule.preventAutoHideAsync();
+    return SplashModule._internal_preventAutoHideAsync();
 }
 /**
  * For use by libraries that want to control the splash screen without

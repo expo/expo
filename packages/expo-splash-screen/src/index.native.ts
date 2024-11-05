@@ -42,7 +42,7 @@ export async function _internal_preventAutoHideAsync(): Promise<boolean> {
     return false;
   }
 
-  return SplashModule.preventAutoHideAsync();
+  return SplashModule._internal_preventAutoHideAsync();
 }
 
 /**

@@ -25,7 +25,7 @@ async function _internal_preventAutoHideAsync() {
     if (!SplashModule) {
         return false;
     }
-    return SplashModule.preventAutoHideAsync();
+    return SplashModule._internal_preventAutoHideAsync();
 }
 exports._internal_preventAutoHideAsync = _internal_preventAutoHideAsync;
 async function _internal_maybeHideAsync() {
