@@ -15,7 +15,7 @@ class SplashScreenOptions : Record {
 }
 
 class SplashScreenModule : Module() {
-  private val _userControlledAutoHideEnabled: Boolean = false
+  private var _userControlledAutoHideEnabled: Boolean = false
 
   override fun definition() = ModuleDefinition {
     Name("ExpoSplashScreen")
