@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [expo-file-system][next] Fix download function throwing an unexpected error if destination already exists.
+
 ### 💡 Others
 
 ## 18.0.0 — 2024-10-22

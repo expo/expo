@@ -52,6 +52,10 @@ class FileSystemNextModule : Module() {
         to.file
       }
 
+      if(destination.exists()) {
+        throw DestinationAlreadyExistsException()
+      }
+
       val body = response.body ?: throw UnableToDownloadException("response body is null")
       body.byteStream().use { input ->
         FileOutputStream(destination).use { output ->

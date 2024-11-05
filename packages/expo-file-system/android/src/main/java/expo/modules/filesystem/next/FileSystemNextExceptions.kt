@@ -28,3 +28,8 @@ internal class InvalidPermissionException(permission: Permission) :
   CodedException(
     "Missing '${permission.name}' permission for accessing the file."
   )
+
+internal class DestinationAlreadyExistsException :
+  CodedException(
+    "Destination already exists"
+  )
