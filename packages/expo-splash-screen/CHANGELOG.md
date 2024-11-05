@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.29.2 — 2024-11-05
+
+### 💡 Others
+
 - Migrate internal logic used by router from JS to native ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.29.1 — 2024-10-31
