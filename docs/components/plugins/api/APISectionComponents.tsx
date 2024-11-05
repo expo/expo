@@ -1,22 +1,23 @@
-import { ELEMENT_SPACING } from './styles';
+import { mergeClasses } from '@expo/styleguide';
 
 import {
   CommentData,
   GeneratedData,
   MethodSignatureData,
   PropsDefinitionData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import APISectionProps from '~/components/plugins/api/APISectionProps';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import APISectionProps from './APISectionProps';
 import {
   CommentTextBlock,
   resolveTypeName,
   getComponentName,
-  STYLES_APIBOX,
   getTagNamesList,
   H3Code,
   getPossibleComponentPropsNames,
-} from '~/components/plugins/api/APISectionUtils';
+} from './APISectionUtils';
+import { ELEMENT_SPACING, STYLES_APIBOX } from './styles';
+
 import { H2, DEMI, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionComponentsProps = {
@@ -58,7 +59,9 @@ const renderComponent = (
   const resolvedName = getComponentName(name, children);
   const extractedComment = getComponentComment(comment, signatures);
   return (
-    <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX} className="!shadow-none">
+    <div
+      key={`component-definition-${resolvedName}`}
+      className={mergeClasses(STYLES_APIBOX, '!shadow-none')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
       <H3Code tags={getTagNamesList(comment)}>
         <MONOSPACE weight="medium" className="wrap-anywhere">

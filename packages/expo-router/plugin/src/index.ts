@@ -35,6 +35,8 @@ const withRouter: ConfigPlugin<
     asyncRoutes?: string | { android?: string; ios?: string; web?: string; default?: string };
     /** Should the sitemap be generated. Defaults to `true` */
     sitemap?: boolean;
+    /** Generate partial typed routes */
+    partialTypedGroups?: boolean;
   } | void
 > = (config, _props) => {
   const props = _props || {};
@@ -48,7 +50,10 @@ const withRouter: ConfigPlugin<
       ...config.extra,
       router: {
         // RSC enables location origin by default because it's required for requests.
-        origin: config.experiments?.reactServerComponents ? undefined : false,
+        origin:
+          config.experiments?.reactServerComponents || config.experiments?.reactServerActions
+            ? undefined
+            : false,
         ...config.extra?.router,
         ...props,
       },

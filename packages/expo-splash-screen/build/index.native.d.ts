@@ -1,3 +1,4 @@
+import { SplashScreenOptions } from './SplashScreen.types';
 /**
  * Expo Router uses this internal method to ensure that we can detect if the user
  * has explicitly opted into preventing the splash screen from hiding. This means
@@ -15,6 +16,8 @@ export declare function _internal_preventAutoHideAsync(): Promise<boolean>;
  * @private
  */
 export declare const _internal_maybeHideAsync: () => void;
-export declare function hideAsync(): Promise<boolean | void>;
+export declare function setOptions(options: SplashScreenOptions): void;
+export declare function hide(): void;
+export declare function hideAsync(): Promise<void>;
 export declare const preventAutoHideAsync: () => Promise<boolean>;
 //# sourceMappingURL=index.native.d.ts.map

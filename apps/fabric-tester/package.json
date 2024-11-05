@@ -17,12 +17,12 @@
     "expo-dev-client": "~5.0.0-preview.0",
     "expo-image": "^2.0.0-preview.0",
     "expo-linear-gradient": "~14.0.0",
-    "expo-splash-screen": "~0.28.0",
+    "expo-splash-screen": "~0.29.0",
     "expo-status-bar": "~2.0.0",
     "expo-updates": "~0.26.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.0-rc.6",
+    "react-native": "0.76.1",
     "react-native-web": "~0.19.13"
   },
   "devDependencies": {
@@ -31,11 +31,7 @@
   "private": true,
   "expo": {
     "autolinking": {
-      "exclude": [
-        "expo-dev-client",
-        "expo-dev-launcher",
-        "expo-dev-menu"
-      ]
+      "exclude": []
     }
   }
 }

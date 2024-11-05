@@ -6,9 +6,100 @@
 
 ### 🎉 New features
 
+- Change DOM components defaults for `contentInsetAdjustmentBehavior` and `automaticallyAdjustsScrollIndicatorInsets` to be automatic on iOS. ([#32609](https://github.com/expo/expo/pull/32609) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 52.0.0-preview.19 — 2024-11-04
+
+### 🎉 New features
+
+- Added EAS Updates support for DOM Components. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Re-exported `@expo/fingerprint` as `expo/fingerprint`. ([#32494](https://github.com/expo/expo/pull/32494) by [@quinlanj](https://github.com/quinlanj))
+- Deprecated `process.env.EXPO_DOM_BASE_URL` and replaced with `process.env.EXPO_BASE_URL`. ([#32596](https://github.com/expo/expo/pull/32596) by [@kudo](https://github.com/kudo))
+
+## 52.0.0-preview.18 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.17 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.16 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.15 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.14 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.13 — 2024-10-31
+
+### 🎉 New features
+
+- Reexport `requireNativeView` and `registerWebModule` from `expo-modules-core`. ([#32472](https://github.com/expo/expo/pull/32472) by [@aleqsio](https://github.com/aleqsio))
+
+## 52.0.0-preview.12 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.11 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.10 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.9 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.8 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix react-native-webview Android `decelerationRate` prop issue. ([#32420](https://github.com/expo/expo/pull/32420) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Allowing DOM component `ref` to call WebView functions. ([#32419](https://github.com/expo/expo/pull/32419) by [@kudo](https://github.com/kudo))
+
+## 52.0.0-preview.7 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.6 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.5 — 2024-10-26
+
+### 🎉 New features
+
+- Add router support to DOM components. ([#32338](https://github.com/expo/expo/pull/32338) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 52.0.0-preview.4 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.3 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
 
 ## 52.0.0-preview.1 — 2024-10-22
 
@@ -71,7 +162,7 @@ _This version does not introduce any user-facing changes._
 ### ⚠️ Notices
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034), [#30828](https://github.com/expo/expo/pull/30828), [#31015](https://github.com/expo/expo/pull/31015) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552), [#32285](https://github.com/expo/expo/pull/32285) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 51.0.34 - 2024-09-24
 

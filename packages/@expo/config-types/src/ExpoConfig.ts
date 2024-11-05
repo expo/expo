@@ -282,6 +282,10 @@ export interface ExpoConfig {
      * Experimentally enable React Server Components support in Expo CLI and Expo Router.
      */
     reactServerComponents?: boolean;
+    /**
+     * Experimentally enable React Server Actions support in Expo CLI and Expo Router.
+     */
+    reactServerActions?: boolean;
   };
   /**
    * Internal properties for developer tools
@@ -533,7 +537,7 @@ export interface IOS {
  */
 export interface IOSIcons {
   /**
-   * The icon that will appear for the app regardless of the user's current system appearance.
+   * The icon that will appear when neither dark nor tinted icons are used, or if they are not provided.
    */
   any?: string;
   /**

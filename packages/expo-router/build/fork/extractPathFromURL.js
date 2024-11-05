@@ -64,7 +64,16 @@ function fromDeepLink(url) {
         res = new URL(url);
     }
     catch {
-        return url;
+        /**
+         * We failed to parse the URL. This can occur for a variety of reasons, including:
+         * - Its a partial URL (e.g. `/route?query=param`).
+         * - It has a valid App scheme, but the scheme isn't a valid URL scheme (e.g. `my_app://`)
+         */
+        /**
+         * App schemes are not valid URL schemes, so they will fail to parse.
+         * We need to strip the scheme from these URLs
+         */
+        return url.replace(/^[^:]+:\/\//, '');
     }
     if (isExpoDevelopmentClient(res)) {
         if (!res.searchParams.get('url')) {

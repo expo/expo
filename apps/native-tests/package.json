@@ -15,11 +15,11 @@
     "expo-face-detector": "~13.0.0",
     "expo-image": "~2.0.0-preview.0",
     "expo-notifications": "~0.29.0",
-    "expo-splash-screen": "~0.28.0",
+    "expo-splash-screen": "~0.29.0",
     "native-component-list": "*",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.0-rc.6"
+    "react-native": "0.76.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

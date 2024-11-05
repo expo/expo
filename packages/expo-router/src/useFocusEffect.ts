@@ -1,3 +1,4 @@
+'use client';
 // A fork of `useFocusEffect` that waits for the navigation state to load before
 // running the effect. This is especially useful for native redirects.
 import * as React from 'react';
@@ -10,9 +11,12 @@ import { useOptionalNavigation } from './link/useLoadedNavigation';
 export type EffectCallback = () => undefined | void | (() => void);
 
 /**
- * Hook to run an effect whenever a route is "focused" Similar to `React.useEffect`.
+ * Hook to run an effect whenever a route is **focused**. Similar to
+ * [`React.useEffect`](https://react.dev/reference/react/useEffect).
+ *
  * This can be used to perform side-effects such as fetching data or subscribing to events.
- * The passed callback should be wrapped in `React.useCallback` to avoid running the effect too often.
+ * The passed callback should be wrapped in [`React.useCallback`](https://react.dev/reference/react/useCallback)
+ * to avoid running the effect too often.
  *
  * @example
  * ```tsx
@@ -24,10 +28,16 @@ export type EffectCallback = () => undefined | void | (() => void);
  *     // Callback should be wrapped in `React.useCallback` to avoid running the effect too often.
  *     useCallback(() => {
  *       // Invoked whenever the route is focused.
- *       console.log('Hello')
- *       }, []);
- *     );
- *   return </>;
+ *       console.log('Hello, I'm focused!');
+ *
+ *       // Return function is invoked whenever the route gets out of focus.
+ *       return () => {
+ *         console.log('This route is now unfocused.');
+ *       };
+ *     }, []);
+ *    );
+ *
+ *  return </>;
  * }
  *```
  *

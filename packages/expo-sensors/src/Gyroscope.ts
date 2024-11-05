@@ -3,19 +3,19 @@ import type { Listener, Subscription } from './DeviceSensor';
 import ExponentGyroscope from './ExponentGyroscope';
 
 /**
- * Each of these keys represents the rotation along that particular axis measured in degrees per second (°/s).
+ * Each of these keys represents the rotation along that particular axis measured in radians per second (rad/s).
  */
 export type GyroscopeMeasurement = {
   /**
-   * Value of rotation in degrees per second device reported in X axis.
+   * Value of rotation in radians per second device reported in X axis.
    */
   x: number;
   /**
-   * Value of rotation in degrees per second device reported in Y axis.
+   * Value of rotation in radians per second device reported in Y axis.
    */
   y: number;
   /**
-   * Value of rotation in degrees per second device reported in Z axis.
+   * Value of rotation in radians per second device reported in Z axis.
    */
   z: number;
   /**

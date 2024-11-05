@@ -15,7 +15,7 @@ export const HeaderCell = ({ children, align = 'left', size = 'md' }: HeaderCell
       'px-4 py-3.5 font-medium text-secondary border-r border-secondary',
       convertAlignToClass(align),
       size === 'sm' ? 'text-3xs' : 'text-2xs',
-      '[&_code]:text-3xs',
+      '[&_code]:text-3xs [&_code]:text-secondary',
       'last:border-r-0'
     )}>
     {children}

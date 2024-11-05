@@ -11,7 +11,7 @@
     "expo": "~52.0.0-preview.0",
     "expo-router": "^4.0.0-preview.0",
     "react": "18.3.1",
-    "react-native": "0.76.0-rc.6"
+    "react-native": "0.76.1"
   },
   "devDependencies": {
     "babel-preset-expo": "~12.0.0-preview.0"

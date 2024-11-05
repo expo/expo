@@ -35,6 +35,7 @@ export declare class RouterStore {
     canDismiss: any;
     setParams: any;
     navigate: any;
+    reload: any;
     initialize(context: RequireContext, navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>, linkingConfigOptions?: LinkingConfigOptions): void;
     updateState(state: ResultState, nextState?: any): void;
     getRouteInfo(state: ResultState): UrlObject;

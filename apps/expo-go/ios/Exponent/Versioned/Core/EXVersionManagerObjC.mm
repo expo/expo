@@ -5,7 +5,6 @@
 #import "EXDisabledDevLoadingView.h"
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
-#import "EXVersionedNetworkInterceptor.h"
 #import "EXVersionManagerObjC.h"
 #import "EXScopedBridgeModule.h"
 #import "EXStatusBarManager.h"
@@ -64,7 +63,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, strong) NSDictionary *params;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
-@property (nonatomic, strong) EXVersionedNetworkInterceptor *networkInterceptor;
+@property (nonatomic, strong, nullable) EXVersionedNetworkInterceptor *networkInterceptor;
 
 // Legacy
 @property (nonatomic, strong) EXModuleRegistry *legacyModuleRegistry;
@@ -117,11 +116,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
 
-//    NSDictionary<NSString *, id> *buildProps = [self.manifest getPluginPropertiesWithPackageName:@"expo-build-properties"];
-//    NSNumber *enableNetworkInterceptor = [[buildProps objectForKey:@"ios"] objectForKey:@"unstable_networkInspector"];
-//    if (enableNetworkInterceptor == nil || [enableNetworkInterceptor boolValue] != NO) {
-//      self.networkInterceptor = [[EXVersionedNetworkInterceptor alloc] initWithRCTInspectorPackagerConnection:inspectorPackagerConnection];
-//    }
+    NSDictionary<NSString *, id> *buildProps = [self.manifest getPluginPropertiesWithPackageName:@"expo-build-properties"];
+    NSNumber *enableNetworkInterceptor = [[buildProps objectForKey:@"ios"] objectForKey:@"unstable_networkInspector"];
+    if (enableNetworkInterceptor == nil || [enableNetworkInterceptor boolValue] != NO) {
+      self.networkInterceptor = [[EXVersionedNetworkInterceptor alloc] initWithBundleUrl:bundleURL];
+    }
   }
 }
 

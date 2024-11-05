@@ -3,8 +3,8 @@ import AVFoundation
 
 let BARCODE_TYPES_KEY = "barcodeTypes"
 
-class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
-  var onBarcodeScanned: (([String: Any]?) -> Void)?
+actor BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
+  private var onBarcodeScanned: (([String: Any]?) -> Void)?
   var isScanningBarcodes = false
 
   // MARK: - Properties
@@ -21,8 +21,8 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     AVMetadataObject.ObjectType.code39: ZXCode39Reader()
   ]
   private var previewLayer: AVCaptureVideoPreviewLayer?
-  private var zxingFPSProcessed = 6.0
   private var zxingEnabled = true
+  private var delegate: MetatDataDelegate?
 
   init(session: AVCaptureSession, sessionQueue: DispatchQueue) {
     self.session = session
@@ -42,7 +42,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
         let zxingCoveredTypes = Set(zxingBarcodeReaders.keys)
         zxingEnabled = !zxingCoveredTypes.isDisjoint(with: newTypes)
         Task {
-          await self.maybeStartBarcodeScanning()
+          await maybeStartBarcodeScanning()
         }
       }
     }
@@ -52,23 +52,21 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     self.previewLayer = layer
   }
 
-  func setIsEnabled(_ enabled: Bool) {
+  func setIsEnabled(_ enabled: Bool) async {
     guard isScanningBarcodes != enabled else {
       return
     }
 
     isScanningBarcodes = enabled
-    Task {
-      if isScanningBarcodes {
-        if metadataOutput != nil {
-          setConnection(enabled: true)
-        } else {
-          await maybeStartBarcodeScanning()
-        }
+    if isScanningBarcodes {
+      if metadataOutput != nil {
+        setConnection(enabled: true)
       } else {
-        setConnection(enabled: false)
-        await stopBarcodeScanning()
+        await maybeStartBarcodeScanning()
       }
+    } else {
+      setConnection(enabled: false)
+      await stopBarcodeScanning()
     }
   }
 
@@ -76,6 +74,10 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     metadataOutput?.connections.forEach {
       $0.isEnabled = enabled
     }
+  }
+
+  func setOnBarcodeScanned(_ onBarcodeScanned: @escaping ([String: Any]?) -> Void) {
+    self.onBarcodeScanned = onBarcodeScanned
   }
 
   func maybeStartBarcodeScanning() async {
@@ -105,43 +107,20 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     }
   }
 
-  func scanBarcodes(from image: CGImage, completion: @escaping (ZXResult) -> Void) {
-    let source = ZXCGImageLuminanceSource(cgImage: image)
-    let binarizer = ZXHybridBinarizer(source: source)
-    let bitmap = ZXBinaryBitmap(binarizer: binarizer)
-
-    var result: ZXResult?
-
-    for reader in zxingBarcodeReaders.values {
-      result = try? reader.decode(bitmap, hints: nil)
-      if result != nil {
-        break
-      }
-    }
-
-    if result == nil && bitmap?.rotateSupported == true {
-      if let rotatedBitmap = bitmap?.rotateCounterClockwise() {
-        for reader in zxingBarcodeReaders.values {
-          result = try? reader.decode(rotatedBitmap, hints: nil)
-          if result != nil {
-            break
-          }
-        }
-      }
-    }
-
-    if let result {
-      completion(result)
-    }
-  }
-
   private func addOutputs() async {
     session.beginConfiguration()
     defer { session.commitConfiguration() }
 
+    delegate = MetatDataDelegate(
+      settings: settings,
+      previewLayer: previewLayer,
+      zxingBarcodeReaders: zxingBarcodeReaders,
+      zxingEnabled: zxingEnabled,
+      metadataResultHandler: self)
+
     if metadataOutput == nil {
       let output = AVCaptureMetadataOutput()
-      output.setMetadataObjectsDelegate(self, queue: sessionQueue)
+      output.setMetadataObjectsDelegate(delegate, queue: sessionQueue)
       if session.canAddOutput(output) {
         session.addOutput(output)
         metadataOutput = output
@@ -152,7 +131,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
       let output = AVCaptureVideoDataOutput()
       output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
       output.alwaysDiscardsLateVideoFrames = true
-      output.setSampleBufferDelegate(self, queue: zxingCaptureQueue)
+      output.setSampleBufferDelegate(delegate, queue: zxingCaptureQueue)
       if session.canAddOutput(output) {
         session.addOutput(output)
         videoDataOutput = output
@@ -179,55 +158,7 @@ class BarcodeScanner: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptur
     }
   }
 
-  func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-    guard let settings = settings[BARCODE_TYPES_KEY], let metadataOutput else {
-      return
-    }
-
-    for metadata in metadataObjects {
-      var codeMetadata = metadata as? AVMetadataMachineReadableCodeObject
-      if let previewLayer {
-        codeMetadata = previewLayer.transformedMetadataObject(for: metadata) as? AVMetadataMachineReadableCodeObject
-      }
-
-      for barcodeType in settings {
-        if zxingBarcodeReaders[barcodeType] != nil {
-          continue
-        }
-
-        if let codeMetadata {
-          if codeMetadata.stringValue != nil && codeMetadata.type == barcodeType {
-            onBarcodeScanned?(BarcodeScannerUtils.avMetadataCodeObjectToDictionary(codeMetadata))
-          }
-        }
-      }
-    }
-  }
-
-  func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-    guard let barcodeTypes = settings[BARCODE_TYPES_KEY],
-      let metadataOutput,
-      zxingEnabled else {
-      return
-    }
-
-    let kMinMargin = 1.0 / zxingFPSProcessed
-    let presentTimeStamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-
-    var curFrameTimeStamp = 0.0
-    var lastFrameTimeStamp = 0.0
-
-    curFrameTimeStamp = Double(presentTimeStamp.value) / Double(presentTimeStamp.timescale)
-
-    if curFrameTimeStamp - lastFrameTimeStamp > Double(kMinMargin) {
-      lastFrameTimeStamp = curFrameTimeStamp
-
-      if let videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer),
-      let videoFrameImage = ZXCGImageLuminanceSource.createImage(from: videoFrame) {
-        self.scanBarcodes(from: videoFrameImage) { barcodeScannerResult in
-          self.onBarcodeScanned?(BarcodeScannerUtils.zxResultToDictionary(barcodeScannerResult))
-        }
-      }
-    }
+  func onScanningResult(_ result: [String: Any]) {
+    self.onBarcodeScanned?(result)
   }
 }

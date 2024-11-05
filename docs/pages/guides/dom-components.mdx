@@ -4,15 +4,36 @@ sidebar_title: DOM components
 description: Learn about rendering React DOM elements in Expo native apps.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-> Experimentally available in **SDK 52 and above**. To try out the latest DOM components features, you can install the [canary release](/versions/unversioned/#canary-releases).
-
-> **warning** **Warning:** DOM components are an experimental feature. The public API (`expo/dom`, `dom` prop), prop transport system, asset handling, and export embedding system are subject to breaking changes. Use `WebViews` directly for a production-ready approach.
+> Available in **SDK 52 and above**.
 
 Expo offers a novel approach to work with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app by moving on a per-component basis.
 
 While the Expo native runtime generally does not support elements like `<div>` or `<img>`, there may be instances where you need to quickly incorporate web components. In such cases, DOM components provide a useful solution.
+
+## Prerequisites
+
+<Collapsible summary="Your project must use Expo CLI and extend the Expo Metro Config">
+
+If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`), then you're all set, and you can skip this step.
+
+If you don't have the `expo` package in your project yet, then install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
+
+<Terminal cmd={['$ npx install-expo-modules@latest']} />
+
+If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
+
+</Collapsible>
+
+<Collapsible summary="Expo Metro Runtime, React DOM, and React Native Web">
+
+If you are using Expo Router and Expo Web, you can skip this step. Otherwise, install the following packages:
+
+<Terminal cmd={['$ npx expo install @expo/metro-runtime react-dom react-native-web']} />
+
+</Collapsible>
 
 ## Usage
 
@@ -158,6 +179,8 @@ Think of these functions like React Server Actions, but instead of residing on t
 
 ## Passing refs
 
+> **warning** **Warning:** This is experimental and may change in the future.
+
 You can use the `useDOMImperativeHandle` hook inside a DOM component to accept ref calls from the native side. This hook is similar to React's [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle) hook, but it does not need a ref object to be passed to it.
 
 ```tsx App.tsx (native)
@@ -210,6 +233,8 @@ export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
 });
 ```
 
+React is meant to have a unilateral data flow, so the concept of using callbacks to go back up the tree is not idiomatic. Expect the behavior to be flakey and possibly phased out in the future with newer versions of React. The preferred way to send data back up the tree is to use native actions, which update the state and then pass it back to the DOM component.
+
 ## Feature detection
 
 Since DOM components are used to run websites, you might need extra qualifiers to better support certain libraries. You can detect if a component is running in a DOM component with the following code:
@@ -220,10 +245,10 @@ const IS_DOM = typeof ReactNativeWebView !== 'undefined';
 
 ## Public assets
 
-The contents of the root **public** directory are copied to the native app's binary to support the use of public assets in DOM components. Since these public assets will be served from the local filesystem, use the `process.env.EXPO_DOM_BASE_URL` prefix to reference the correct path. For example:
+The contents of the root **public** directory are copied to the native app's binary to support the use of public assets in DOM components. Since these public assets will be served from the local filesystem, use the `process.env.EXPO_BASE_URL` prefix to reference the correct path. For example:
 
 ```tsx
-<img src={`${process.env.EXPO_DOM_BASE_URL}/img.png`} />
+<img src={`${process.env.EXPO_BASE_URL}/img.png`} />
 ```
 
 {/* TODO: This is likely to change. */}
@@ -245,6 +270,42 @@ export default function App() {
   return <WebView source={{ html: '<h1>Hello, world!</h1>' }} />;
 }
 ```
+
+## Routing
+
+Expo Router APIs such as `<Link />`, and `useRouter` can be used in DOM components to navigate between routes.
+
+```tsx my-component.tsx (web)
+'use dom';
+import Link from 'expo-router/link';
+
+export default function DOMComponent() {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+      <Link href="/about">About</Link>
+    </div>
+  );
+}
+```
+
+APIs that synchronously return routing info such as `useLocalSearchParams()`, `useGlobalSearchParams()`, `usePathname()`, `useSegments()`, `useRootNavigation()`, and `useRootNavigationState()` are not automatically supported. Instead, read these values outside of DOM components and supply them as props.
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+import { usePathname } from 'expo-router';
+
+export default function App() {
+  const pathname = usePathname();
+  return <DOMComponent pathname={pathname} />;
+}
+```
+
+The `router.canGoBack()` and `router.canDismiss()` functions are also unsupported and require manual marshalling, this ensures no extraneous render cycles are triggered.
+
+Avoid using standard web `<a />` anchor elements for navigation as these will change the DOM component origin in a way that users may not be able to navigate back from. Prefer launching `WebBrowser`s if you want to present external websites.
+
+Since DOM components cannot render native children, layout routes (`_layout`) can never be DOM components. You can render DOM components from layout routes to create headers, backgrounds, and more, but the layout route itself should always be native.
 
 ## Measuring DOM components
 

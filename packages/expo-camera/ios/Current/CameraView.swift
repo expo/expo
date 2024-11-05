@@ -49,7 +49,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   var isScanningBarcodes = false {
     didSet {
-      barcodeScanner.setIsEnabled(isScanningBarcodes)
+      Task {
+        await barcodeScanner.setIsEnabled(isScanningBarcodes)
+      }
     }
   }
 
@@ -145,7 +147,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(orientationChanged(notification:)),
+      selector: #selector(orientationChanged),
       name: UIDevice.orientationDidChangeNotification,
       object: nil)
     lifecycleManager?.register(self)
@@ -303,7 +305,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   }
 
   func setBarcodeScannerSettings(settings: BarcodeSettings) {
-    barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+    Task {
+      await barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+    }
   }
 
   func updateResponsiveOrientation() {
@@ -592,12 +596,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     }
   }
 
-  public override func didMoveToWindow() {
-    if window == nil {
-      cleanupCamera()
-    }
-  }
-
   func updateSessionAudioIsMuted() async {
     session.beginConfiguration()
     defer { session.commitConfiguration() }
@@ -655,12 +653,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     self.layer.insertSublayer(previewLayer, at: 0)
   }
 
-  private func cleanupCamera() {
-    cameraShouldInit = true
-    lifecycleManager?.unregisterAppLifecycleListener(self)
+  public override func removeFromSuperview() {
+    super.removeFromSuperview()
     Task {
       await stopSession()
     }
+    lifecycleManager?.unregisterAppLifecycleListener(self)
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
   }
@@ -751,8 +749,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     #if targetEnvironment(simulator)
     return
     #endif
-//    self.previewLayer.layer.removeFromSuperlayer()
-
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
@@ -778,8 +774,10 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     previewLayer.connection?.isEnabled = false
   }
 
-  @objc func orientationChanged(notification: Notification) async {
-    await changePreviewOrientation()
+  @objc func orientationChanged() {
+    Task {
+      await changePreviewOrientation()
+    }
   }
 
   @MainActor
@@ -794,13 +792,16 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   private func createBarcodeScanner() -> BarcodeScanner {
     let scanner = BarcodeScanner(session: session, sessionQueue: sessionQueue)
-    scanner.setPreviewLayer(layer: previewLayer)
-    scanner.onBarcodeScanned = { [weak self] body in
-      guard let self else {
-        return
-      }
-      if let body {
-        self.onBarcodeScanned(body)
+
+    Task {
+      await scanner.setPreviewLayer(layer: previewLayer)
+      await scanner.setOnBarcodeScanned { [weak self] body in
+        guard let self else {
+          return
+        }
+        if let body {
+          self.onBarcodeScanned(body)
+        }
       }
     }
 

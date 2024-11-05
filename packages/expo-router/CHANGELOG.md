@@ -6,7 +6,80 @@
 
 ### 🎉 New features
 
+- Add RSC support for `Stack.Screen`, `Tabs.Screen`, and `Drawer.Screen` components. ([#32607](https://github.com/expo/expo/pull/32607) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.0.0-preview.12 — 2024-11-04
+
+### 🛠 Breaking changes
+
+- Remove generic from `Href` type, navigation hooks and functions ([#31764](https://github.com/expo/expo/pull/31764) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- Move server action env to `@expo/metro-runtime`. ([#32597](https://github.com/expo/expo/pull/32597) by [@EvanBacon](https://github.com/EvanBacon))
+- Don't assume reanimated exists when testing expo-router ([#27548](https://github.com/expo/expo/pull/27548)) by [@henrymoulton](https://github.com/henrymoulton)
+
+## 4.0.0-preview.11 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.10 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Support protocol hrefs on native. ([#31646](https://github.com/expo/expo/pull/31646) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.9 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.8 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.7 — 2024-10-30
+
+### 🎉 New features
+
+- Add server action-only mode. ([#32432](https://github.com/expo/expo/pull/32432) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.0-preview.6 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Update `@react-navigation/core` imports to `@react-navigation/native` ([#32391](https://github.com/expo/expo/pull/32391) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.5 — 2024-10-29
+
+### 🐛 Bug fixes
+
+- Fix deep links to apps that use unusual characters in their schemes. ([#32424](https://github.com/expo/expo/pull/32424) by [@marklawlor](https://github.com/marklawlor))
+
+## 4.0.0-preview.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0-preview.3 — 2024-10-26
+
+### 🎉 New features
+
+- Add support for DOM components. ([#32338](https://github.com/expo/expo/pull/32338) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Include `expo-router/ui` in public export. ([#32362](https://github.com/expo/expo/pull/32362) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.0-preview.2 — 2024-10-25
+
+### 🎉 New features
+
+- Document `router.reload()` for RSC mode. ([#32246](https://github.com/expo/expo/pull/32246) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.0-preview.1 — 2024-10-24
 
 ### 💡 Others
 

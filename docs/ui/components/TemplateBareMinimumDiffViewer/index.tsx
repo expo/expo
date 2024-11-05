@@ -1,10 +1,10 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide-base';
+import { mergeClasses } from '@expo/styleguide';
 import { useRouter } from 'next/compat/router';
 import { useEffect } from 'react';
 
 import { VersionSelector } from './VersionSelector';
 
+import packageJson from '~/package.json';
 import versions from '~/public/static/constants/versions.json';
 import diffInfo from '~/public/static/diffs/template-bare-minimum/diffInfo.json';
 import { DiffBlock } from '~/ui/components/Snippet';
@@ -13,6 +13,7 @@ import { RawH3, RawH4 } from '~/ui/components/Text';
 
 // versions used by SDK selector. This has "unversioned" removed on production versions. The diff selectors will match that.
 const { VERSIONS } = versions;
+const BETA_MAJOR_VERSION = packageJson.betaVersion.split('.')[0];
 
 export const TemplateBareMinimumDiffViewer = () => {
   const router = useRouter();
@@ -21,7 +22,7 @@ export const TemplateBareMinimumDiffViewer = () => {
 
   // default to from: last SDK, to: current SDK
   const lastTwoProductionVersions = bareDiffVersions
-    .filter((d: string) => d !== 'unversioned')
+    .filter((d: string) => d !== 'unversioned' && d !== BETA_MAJOR_VERSION)
     .slice(-2);
 
   const fromVersion = router?.query.fromSdk || lastTwoProductionVersions[0];
@@ -48,16 +49,14 @@ export const TemplateBareMinimumDiffViewer = () => {
   const diff = diffInfo.diffs[diffName as keyof typeof diffInfo.diffs];
 
   return (
-    <div>
+    <>
       <div
-        css={css({
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          gap: spacing[4],
-        })}>
-        <div css={selectorOuterStyle}>
-          <RawH4>From SDK version:</RawH4>
+        className={mergeClasses(
+          'grid grid-cols-2 gap-4',
+          'max-sm-gutters:grid-cols-1 max-sm-gutters:gap-0'
+        )}>
+        <div>
+          <RawH4 className="max-sm-gutters:!my-0">From SDK version:</RawH4>
           <VersionSelector
             version={fromVersion as string}
             setVersion={newFromVersion =>
@@ -66,8 +65,8 @@ export const TemplateBareMinimumDiffViewer = () => {
             availableVersions={bareDiffVersions.filter((version: string) => version !== maxVersion)}
           />
         </div>
-        <div css={selectorOuterStyle}>
-          <RawH4>To SDK version:</RawH4>
+        <div>
+          <RawH4 className="max-sm-gutters:!my-0">To SDK version:</RawH4>
           <VersionSelector
             version={toVersion as string}
             setVersion={newToVersion =>
@@ -95,10 +94,6 @@ export const TemplateBareMinimumDiffViewer = () => {
           />
         </>
       ) : null}
-    </div>
+    </>
   );
 };
-
-const selectorOuterStyle = css({
-  flex: 1,
-});

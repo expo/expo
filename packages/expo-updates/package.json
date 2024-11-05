@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.26.1",
+  "version": "0.26.4",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -40,7 +40,6 @@
     "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~10.0.0",
     "@expo/config-plugins": "~9.0.0",
-    "@expo/fingerprint": "^0.11.0",
     "@expo/spawn-async": "^1.7.2",
     "arg": "4.1.0",
     "chalk": "^4.1.2",

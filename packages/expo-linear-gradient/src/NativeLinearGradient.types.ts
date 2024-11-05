@@ -19,4 +19,4 @@ export type getLinearGradientBackgroundImage = (
   endPoint?: NativeLinearGradientPoint | null
 ) => string;
 
-export type NativeLinearGradientPoint = [number, number];
+export type NativeLinearGradientPoint = [x: number, y: number];

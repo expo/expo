@@ -10,6 +10,50 @@
 
 ### 💡 Others
 
+## 5.0.9 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.8 — 2024-10-31
+
+### 💡 Others
+
+- Truncate runtime version in settings screen ([#32489](https://github.com/expo/expo/pull/32489) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.7 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.6 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.5 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.4 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fixed `java.nio.channels.ClosedChannelException` crash from network inspector. ([#32352](https://github.com/expo/expo/pull/32352) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Skipped internal bundles from debugging targets. ([#32322](https://github.com/expo/expo/pull/32322) by [@kudo](https://github.com/kudo))
+
+## 5.0.3 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- Fixed network inspector support for react-native 0.76. ([#32290](https://github.com/expo/expo/pull/32290) by [@kudo](https://github.com/kudo))
+
+## 5.0.2 — 2024-10-24
+
+### 🎉 New features
+
+- Add support for react-native 0.76 ([#32285](https://github.com/expo/expo/pull/32285) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 5.0.1 — 2024-10-22
 
 _This version does not introduce any user-facing changes._

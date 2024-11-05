@@ -6,8 +6,8 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AlphaAnimation
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import expo.modules.splashscreen.SplashScreenView
-import expo.modules.splashscreen.SplashScreenViewProvider
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenView
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenViewProvider
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
 

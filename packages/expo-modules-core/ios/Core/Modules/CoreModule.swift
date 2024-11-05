@@ -26,8 +26,8 @@ internal final class CoreModule: Module {
       guard let viewDefinition = moduleHolder?.definition.view else {
         return nil
       }
-      for prop in viewDefinition.props {
-        validAttributes[prop.name] = true
+      for propName in viewDefinition.getSupportedPropNames() {
+        validAttributes[propName] = true
       }
       for eventName in viewDefinition.eventNames {
         guard let normalizedEventName = RCTNormalizeInputEventName(eventName) else {

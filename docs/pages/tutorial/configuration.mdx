@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we'll address some app details before deploying our app to an app store, such as theming the statusbar, add a splash screen, and customizing the app icon.
+In this chapter, we'll address some app details before deploying our app to an app store, such as theming the status bar, add a splash screen, and customizing the app icon.
 
 <VideoBoxLink
   videoId="OgGCYdElcZo"
@@ -51,24 +51,6 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
-  );
-}
-
-// ...rest of the import statements remain same
-import { StatusBar } from 'expo-status-bar';
-
-export default function Index() {
-  // ...rest of the code remains same
-
-  return (
-    <>
-      <GestureHandlerRootView style={styles.container}>
-        {/* ...rest of the code remains same */}
-      </GestureHandlerRootView>
-      /* @tutinfo Mount the <CODE>StatusBar</CODE> component and set the <CODE>style</CODE> prop to <CODE>light</CODE>. */
-      <StatusBar style="light" />
-      /* @end */
-    </>
   );
 }
 ```

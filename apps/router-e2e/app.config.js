@@ -18,6 +18,7 @@ module.exports = {
   },
   // For testing the output bundle
   jsEngine: process.env.E2E_ROUTER_JS_ENGINE ?? (process.env.E2E_ROUTER_SRC ? 'jsc' : 'hermes'),
+  newArchEnabled: true,
   splash: {
     image: './assets/splash.png',
     resizeMode: 'contain',
@@ -30,6 +31,7 @@ module.exports = {
     reactCanary: process.env.E2E_CANARY_ENABLED,
     reactCompiler: process.env.E2E_ROUTER_COMPILER,
     reactServerComponents: process.env.E2E_RSC_ENABLED,
+    reactServerActions: process.env.EXPO_UNSTABLE_SERVER_ACTIONS,
   },
   web: {
     output: process.env.EXPO_USE_STATIC ?? 'static',
@@ -40,11 +42,7 @@ module.exports = {
       'expo-build-properties',
       {
         ios: {
-          newArchEnabled: true,
           ccacheEnabled: true,
-        },
-        android: {
-          newArchEnabled: true,
         },
       },
     ],

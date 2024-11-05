@@ -41,6 +41,7 @@ fun Bundle.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): Writ
   val result = containerProvider.createMap()
 
   for (key in keySet()) {
+    @Suppress("DEPRECATION")
     val value = get(key)
     val convertedValue = JSTypeConverter.legacyConvertToJSValue(value, containerProvider)
     result.putGeneric(key, convertedValue)

@@ -10,6 +10,61 @@
 
 ### 💡 Others
 
+## 2.0.0-preview.9 — 2024-10-31
+
+### 💡 Others
+
+- [Android] Fix `ClassCastException` in headless app loader under the old architecture. ([#32390](https://github.com/expo/expo/pull/32390) by [@robertying](https://github.com/robertying))
+
+## 2.0.0-preview.8 — 2024-10-31
+
+### 🛠 Breaking changes
+
+- Remove expo barcode scanner interface. ([#32198](https://github.com/expo/expo/pull/32198) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- [android] Added helper for looking up TaskService instance used by expo-task-manager ([#32300](https://github.com/expo/expo/pull/32300) by [@chrfalch](https://github.com/chrfalch))
+- Made TypeScript declaration for `process` an interface. ([#32464](https://github.com/expo/expo/pull/32464) by [@tsapeta](https://github.com/tsapeta))
+
+## 2.0.0-preview.7 — 2024-10-29
+
+### 💡 Others
+
+- [Android] Added `shouldUseAndroidLayout` flag to `ExpoView`. ([#32446](https://github.com/expo/expo/pull/32446) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.0.0-preview.6 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0-preview.5 — 2024-10-28
+
+### 🐛 Bug fixes
+
+- Fixed updating props on SwiftUI views on the New Architecture. ([#32381](https://github.com/expo/expo/pull/32381) by [@tsapeta](https://github.com/tsapeta))
+- Fixed build error when `use_frameworks!`. ([#32358](https://github.com/expo/expo/pull/32358) by [@kudo](https://github.com/kudo))
+
+## 2.0.0-preview.4 — 2024-10-25
+
+### 💡 Others
+
+- Added a new dynamic type dedicated for Either types. ([#32328](https://github.com/expo/expo/pull/32328) by [@tsapeta](https://github.com/tsapeta))
+
+## 2.0.0-preview.3 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0-preview.2 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- [iOS] Fix optionals conversion. ([#32239](https://github.com/expo/expo/pull/32239) by [@aleqsio](https://github.com/aleqsio))
+- Fixed retain cycle for `ExpoRequestCdpInterceptor`. ([#32289](https://github.com/expo/expo/pull/32289) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [android] Add enum event support to OnStartObserving and OnStopObserving. ([#32251](https://github.com/expo/expo/pull/32251), [#32287](https://github.com/expo/expo/pull/32287) by [@wschurman](https://github.com/wschurman))
+
 ## 2.0.0-preview.1 — 2024-10-22
 
 ### 🐛 Bug fixes
@@ -56,6 +111,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `RNHeadlessAppLoader` class for New Architecture support. ([#32146](https://github.com/expo/expo/pull/32146) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix using enums as optional arguments. ([#32147](https://github.com/expo/expo/pull/32147) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Change JS return type for kotlin `null` to be `null` instead of `undefined`. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Swift `Enumerable`s did not correctly convert to JS values. ([#30191](https://github.com/expo/expo/pull/30191) by [@vonovak](https://github.com/vonovak))

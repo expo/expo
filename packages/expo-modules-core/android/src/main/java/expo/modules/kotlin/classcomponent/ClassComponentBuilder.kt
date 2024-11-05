@@ -32,10 +32,10 @@ class ClassComponentBuilder<SharedObjectType : Any>(
 
     if (eventsDefinition != null && isSharedObject) {
       listOf("__expo_onStartListeningToEvent" to SharedObject::onStartListeningToEvent, "__expo_onStopListeningToEvent" to SharedObject::onStopListeningToEvent)
-        .forEach { (name, function) ->
+        .forEach { (name, listener) ->
           SyncFunctionComponent(name, arrayOf(ownerType, toAnyType<String>()), toReturnType<Unit>()) { (self, eventName) ->
             enforceType<SharedObject, String>(self, eventName)
-            function.invoke(self, eventName)
+            listener.invoke(self, eventName)
           }.also { function ->
             function.enumerable(false)
             syncFunctions[name] = function

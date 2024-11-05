@@ -351,16 +351,112 @@ export function reactServerActionsPlugin(
           return;
         }
 
-        // TODO: support variable functions
-        throw path.buildCodeFrameError(
-          `Not implemented: 'export default' declarations in "use server" files. Try using 'export { name as default }' instead.`
-        );
+        // Convert `export default function foo() {}` to `function foo() {}; export { foo as default }`
+        if (path.node.declaration) {
+          if (t.isFunctionDeclaration(path.node.declaration)) {
+            let { id } = path.node.declaration;
+            if (id == null) {
+              const moduleScope = path.scope.getProgramParent();
+              const extractedIdentifier = moduleScope.generateUidIdentifier('$$INLINE_ACTION');
+              id = extractedIdentifier;
+              // Transform `async function () {}` to `async function $$INLINE_ACTION() {}`
+              path.node.declaration.id = extractedIdentifier;
+            }
+            const exportedSpecifier = t.exportSpecifier(id, t.identifier('default'));
+            path.replaceWith(path.node.declaration);
+            path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
+          } else {
+            // Convert anonymous function expressions to named function expressions and export them as default.
+            // export default foo = async () => {}
+            // vvv
+            // const foo = async () => {}
+            // (() => _registerServerReference(foo, "file:///unknown", "default"))();
+            // export { foo as default };
+
+            if (
+              t.isAssignmentExpression(path.node.declaration) &&
+              t.isArrowFunctionExpression(path.node.declaration.right)
+            ) {
+              if (!t.isIdentifier(path.node.declaration.left)) {
+                throw path.buildCodeFrameError(
+                  `Expected an assignment to an identifier but found ${path.node.declaration.left.type}.`
+                );
+              }
+              const { left, right } = path.node.declaration;
+              const id = left;
+              const exportedSpecifier = t.exportSpecifier(id, t.identifier('default'));
+              // Replace `export default foo = async () => {}` with `const foo = async () => {}`
+              path.replaceWith(t.variableDeclaration('const', [t.variableDeclarator(id, right)]));
+              // Insert `(() => _registerServerReference(foo, "file:///unknown", "default"))();`
+              path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
+            } else if (
+              t.isArrowFunctionExpression(path.node.declaration) &&
+              path.node.declaration
+            ) {
+              // export default async () => {}
+              // Give the function a name
+              // const $$INLINE_ACTION = async () => {}
+              const moduleScope = path.scope.getProgramParent();
+              const extractedIdentifier = moduleScope.generateUidIdentifier('$$INLINE_ACTION');
+
+              // @ts-expect-error: Transform `export default async () => {}` to `const $$INLINE_ACTION = async () => {}`
+              path.node.declaration = t.variableDeclaration('const', [
+                t.variableDeclarator(extractedIdentifier, path.node.declaration),
+              ]);
+              // Strip the `export default`
+              path.replaceWith(path.node.declaration);
+
+              // export { $$INLINE_ACTION as default }
+              const exportedSpecifier = t.exportSpecifier(
+                extractedIdentifier,
+                t.identifier('default')
+              );
+              path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
+            } else if (
+              // Match `export default foo;`
+              t.isIdentifier(path.node.declaration)
+            ) {
+              // Ensure the `path.node.declaration` is a function or a variable for a function.
+              const binding = path.scope.getBinding(path.node.declaration.name);
+
+              const isServerActionType =
+                t.isFunctionDeclaration(binding?.path.node ?? path.node.declaration) ||
+                t.isArrowFunctionExpression(binding?.path.node ?? path.node.declaration) ||
+                // `const foo = async () => {}`
+                (t.isVariableDeclarator(binding?.path.node) &&
+                  t.isArrowFunctionExpression(binding?.path.node.init));
+              if (isServerActionType) {
+                // Convert `export default foo;` to `export { foo as default };`
+                const exportedSpecifier = t.exportSpecifier(
+                  path.node.declaration,
+                  t.identifier('default')
+                );
+                path.replaceWith(t.exportNamedDeclaration(null, [exportedSpecifier]));
+              }
+            } else {
+              // Unclear when this happens.
+              throw path.buildCodeFrameError(
+                `Cannot create server action. Expected a assignment expression but found ${path.node.declaration.type}.`
+              );
+            }
+          }
+        } else {
+          // TODO: Unclear when this happens.
+          throw path.buildCodeFrameError(
+            `Not implemented: 'export default' declarations in "use server" files. Try using 'export { name as default }' instead.`
+          );
+        }
       },
 
-      ExportNamedDeclaration(path, state) {
+      ExportNamedDeclaration(path: NodePath<t.ExportNamedDeclaration>, state: PluginPass) {
         assertExpoMetadata(state.file.metadata);
 
         if (!state.file.metadata.isModuleMarkedWithUseServerDirective) {
+          return;
+        }
+
+        // This can happen with `export {};` and TypeScript types.
+        if (!path.node.declaration && !path.node.specifiers.length) {
           return;
         }
 
@@ -386,11 +482,14 @@ export function reactServerActionsPlugin(
           for (const specifier of path.node.specifiers) {
             // `export * as ns from './foo';`
             if (t.isExportNamespaceSpecifier(specifier)) {
-              throw path.buildCodeFrameError('Not implemented: Namespace exports');
+              throw path.buildCodeFrameError(
+                'Namespace exports for server actions are not supported. Re-export named actions instead: export { foo } from "./bar".'
+              );
             } else if (t.isExportDefaultSpecifier(specifier)) {
+              // NOTE: This is handled by ExportDefaultDeclaration
               // `export default foo;`
               throw path.buildCodeFrameError(
-                'Not implemented (ExportDefaultSpecifier in ExportNamedDeclaration)'
+                'Internal error while extracting server actions. Expected `export default variable;` to be extracted. (ExportDefaultSpecifier in ExportNamedDeclaration)'
               );
             } else if (t.isExportSpecifier(specifier)) {
               // `export { foo };`
@@ -413,8 +512,6 @@ export function reactServerActionsPlugin(
               }
 
               state.file.metadata.extractedActions.push({ localName, exportedName });
-            } else {
-              throw path.buildCodeFrameError('Not implemented: whatever this is');
             }
           }
           return;
@@ -445,6 +542,14 @@ export function reactServerActionsPlugin(
               );
             }
             return [innerPath.get('id').node!];
+          } else if (
+            // TypeScript type exports
+            innerPath.isTypeAlias() ||
+            innerPath.isTSDeclareFunction() ||
+            innerPath.isTSInterfaceDeclaration() ||
+            innerPath.isTSTypeAliasDeclaration()
+          ) {
+            return [];
           } else {
             throw innerPath.buildCodeFrameError(`Unimplemented server action export`);
           }

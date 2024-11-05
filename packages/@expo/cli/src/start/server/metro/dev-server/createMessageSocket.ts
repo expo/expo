@@ -85,7 +85,7 @@ function createClientMessageHandler(
 
     // Handle broadcast messages
     if (messageIsBroadcast(message)) {
-      return broadcast(null, data);
+      return broadcast(null, data.toString());
     }
 
     // Handle incoming requests from clients

@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 0.19.0-preview.3 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.0-preview.2 — 2024-10-25
+
+### 🐛 Bug fixes
+
+- Fix CSS `url()` support for DOM IDs, public files, and data URIs. ([#32332](https://github.com/expo/expo/pull/32332) by [@EvanBacon](https://github.com/EvanBacon))
+- Disable `hermesParser` and conditionally enable for files with `@flow` pragma. ([#32325](https://github.com/expo/expo/pull/32325) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.19.0-preview.1 — 2024-10-22
 
 ### 💡 Others

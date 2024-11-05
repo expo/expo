@@ -43,7 +43,14 @@ export default class ImageManipulatorContext extends SharedObject {
 
   async renderAsync(): Promise<ImageManipulatorImageRef> {
     const canvas = await this.currentTask;
-    return new ImageManipulatorImageRef(canvas);
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        const url = blob ? URL.createObjectURL(blob) : canvas.toDataURL();
+
+        resolve(new ImageManipulatorImageRef(url, canvas.width, canvas.height));
+      });
+    });
   }
 
   private addTask(

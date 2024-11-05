@@ -31,6 +31,7 @@ const react_native_safe_area_context_1 = require("react-native-safe-area-context
 const NavigationContainer_1 = require("./fork/NavigationContainer");
 const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
+const useDomComponentNavigation_1 = require("./link/useDomComponentNavigation");
 const statusbar_1 = require("./utils/statusbar");
 const Splash_1 = require("./views/Splash");
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -106,6 +107,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         ...linking,
         serverUrl,
     });
+    (0, useDomComponentNavigation_1.useDomComponentNavigation)(store);
     if (store.shouldShowTutorial()) {
         Splash_1.SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {

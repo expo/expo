@@ -155,7 +155,6 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           view.active = active
           return
         }
-        view.active = true
       }
 
       OnViewDidUpdateProps { view in

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 7.0.2 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.1 — 2024-10-24
+
+### 🐛 Bug fixes
+
+- [iOS] Add tvOS to podspec. ([#32255](https://github.com/expo/expo/pull/32255) by [@douglowder](https://github.com/douglowder))
+
 ## 7.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

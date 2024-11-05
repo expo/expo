@@ -1,8 +1,11 @@
 /*
  * This file is unchanged, except for fixing imports and removing eslint comments
  */
-import type { NavigationContainerRef, ParamListBase } from '@react-navigation/core';
-import type { DocumentTitleOptions } from '@react-navigation/native';
+import type {
+  DocumentTitleOptions,
+  NavigationContainerRef,
+  ParamListBase,
+} from '@react-navigation/native';
 import * as React from 'react';
 
 // import type { DocumentTitleOptions } from './types';

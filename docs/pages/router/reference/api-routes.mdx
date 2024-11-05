@@ -210,6 +210,10 @@ Before deploying to these providers, it may be good to be familiar with the basi
 - `@expo/server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
 
+### Testing Locally
+
+You can test the local production server in Expo SDK 52 by running `npx expo serve`. This will start the production server locally and serve the static files and API routes. Visit the URL in a web browser or create a native build with the origin set to the local server URL.
+
 ### Express
 
 <Step label="1">
@@ -392,6 +396,30 @@ module.exports = createRequestHandler({
 Create a Vercel configuration file (**vercel.json**) at the root of your project to redirect all requests to the server function.
 
 <Tabs>
+<Tab label="vercel.json v3">
+
+```json vercel.json
+{
+  "buildCommand": "expo export -p web",
+  "outputDirectory": "dist/client",
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node@3.0.11",
+      "includeFiles": "dist/server/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.ts"
+    }
+  ]
+}
+```
+
+The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist/client** output directory automatically.
+
+</Tab>
 <Tab label="vercel.json v2">
 
 ```json vercel.json
@@ -427,30 +455,6 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
 ```
 
 The **legacy** version of the **vercel.json** needs a `@vercel/static-build` runtime to serve your assets from the **dist/client** output directory.
-
-</Tab>
-<Tab label="vercel.json v3">
-
-```json vercel.json
-{
-  "buildCommand": "expo export -p web",
-  "outputDirectory": "dist/client",
-  "functions": {
-    "api/index.ts": {
-      "runtime": "@vercel/node@3.0.11",
-      "includeFiles": "dist/server/**"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index.ts"
-    }
-  ]
-}
-```
-
-The newer version of the **vercel.json** does not use `routes` and `builds` configuration options anymore, and serves your public assets from the **dist/client** output directory automatically.
 
 </Tab>
 </Tabs>

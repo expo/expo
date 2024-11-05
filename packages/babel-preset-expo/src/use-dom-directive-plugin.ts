@@ -6,7 +6,7 @@ import crypto from 'crypto';
 import { basename } from 'path';
 import url from 'url';
 
-import { getIsProd } from './common';
+import { getIsProd, getPossibleProjectRoot } from './common';
 
 export function expoUseDomDirectivePlugin(
   api: ConfigAPI & { types: typeof types }
@@ -16,6 +16,7 @@ export function expoUseDomDirectivePlugin(
   // TODO: Is exporting
   const isProduction = api.caller(getIsProd);
   const platform = api.caller((caller) => (caller as any)?.platform);
+  const projectRoot = api.caller(getPossibleProjectRoot);
 
   return {
     name: 'expo-use-dom-directive',
@@ -76,6 +77,29 @@ export function expoUseDomDirectivePlugin(
           );
         }
 
+        // Assert that _layout routes cannot be used in DOM components.
+        const fileBasename = basename(filePath);
+
+        if (
+          projectRoot &&
+          // Detecting if the file is in the router root would be extensive as it would cause a more complex
+          // cache key for each file. Instead, let's just check if the file is in the project root and is not a node_module,
+          // then we can assert that users should not use `_layout` or `+api` with "use dom".
+          filePath.includes(projectRoot) &&
+          !filePath.match(/node_modules/)
+        ) {
+          if (fileBasename.match(/^_layout\.[jt]sx?$/)) {
+            throw path.buildCodeFrameError(
+              'Layout routes cannot be marked as DOM components because they cannot render native views.'
+            );
+          } else if (
+            // No API routes
+            fileBasename.match(/\+api\.[jt]sx?$/)
+          ) {
+            throw path.buildCodeFrameError('API routes cannot be marked as DOM components.');
+          }
+        }
+
         const outputKey = url.pathToFileURL(filePath).href;
 
         const proxyModule: string[] = [
@@ -86,28 +110,18 @@ export function expoUseDomDirectivePlugin(
         if (isProduction) {
           // MUST MATCH THE EXPORT COMMAND!
           const hash = crypto.createHash('sha1').update(outputKey).digest('hex');
-          const outputName = `www.bundle/${hash}.html`;
-
-          if (platform === 'ios') {
-            proxyModule.push(`const source = { uri: "${outputName}" };`);
-          } else if (platform === 'android') {
-            proxyModule.push(`const source = { uri: "file:///android_asset/${outputName}" };`);
-          } else {
-            throw new Error(
-              'production "use dom" directive is not supported yet for platform: ' + platform
-            );
-          }
+          proxyModule.push(`const filePath = "${hash}.html";`);
         } else {
           proxyModule.push(
             // Add the basename to improve the Safari debug preview option.
-            `const source = { uri: new URL("/_expo/@dom/${basename(filePath)}?file=" + ${JSON.stringify(outputKey)}, require("react-native/Libraries/Core/Devtools/getDevServer")().url).toString() };`
+            `const filePath = "${fileBasename}?file=" + ${JSON.stringify(outputKey)};`
           );
         }
 
         proxyModule.push(
           `
 export default React.forwardRef((props, ref) => {
-  return React.createElement(WebView, { ref, ...props, source });
+  return React.createElement(WebView, { ref, ...props, filePath });
 });`
         );
 
