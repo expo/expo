@@ -37,6 +37,7 @@ exports.DEFAULT_IGNORE_PATHS = [
     '**/ios/Pods/**/*',
     '**/ios/build/**/*',
     '**/ios/.xcode.env.local',
+    '**/ios/.xcode.env.updates',
     '**/ios/**/project.xcworkspace',
     '**/ios/*.xcworkspace/xcuserdata/**/*',
     // System files that differ from machine to machine

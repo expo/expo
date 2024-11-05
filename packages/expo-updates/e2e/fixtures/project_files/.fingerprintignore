@@ -1,1 +1,5 @@
 **/ios/Gymfile
+**/ios/Podfile.lock
+**/ios/.xcode.env.updates
+**/ios/**/PrivacyInfo.xcprivacy
+node_modules/ansi-styles/index.js

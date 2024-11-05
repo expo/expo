@@ -46,7 +46,7 @@ runs:
 
         while [ $RETRIES -lt $MAX_RETRIES ]; do
           set +e
-          BUILD_ID=$(eas build -p $PLATFORM --profile $EAS_BUILD_PROFILE --message "$MESSAGE" --non-interactive --json --no-wait | jq -r ".[0].id")
+          BUILD_ID=$(eas build -p $PLATFORM --profile $EAS_BUILD_PROFILE --message "$MESSAGE" --build-logger-level debug --non-interactive --json --no-wait | jq -r ".[0].id")
           BUILD_STATUS=$?
           set -e
           if [ $BUILD_STATUS -eq 0 ] && [ -n "$BUILD_ID" ]; then
@@ -74,6 +74,9 @@ runs:
         EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID: host.exp.exponent
         MAX_RETRIES: ${{ inputs.retries }}
         RETRY_DELAY: 30
+        EXPO_DEBUG: 1
+        # EXPO_DEBUG: ${{ runner.debug }}
+
 
     - name: Wait for build to finish
       shell: bash
