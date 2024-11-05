@@ -19,10 +19,10 @@ export const SafeAreaViewSlot = Slot as React.ForwardRefExoticComponent<
   ViewProps & React.RefAttributes<SafeAreaView>
 >;
 
-export type ScreenTrigger<T extends string | object> =
+export type ScreenTrigger =
   | {
       type: 'internal';
-      href: Href<T>;
+      href: Href;
       name: string;
     }
   | {
@@ -45,7 +45,7 @@ type TriggerConfig =
 export type TriggerMap = Record<string, TriggerConfig & { index: number }>;
 
 export function triggersToScreens(
-  triggers: ScreenTrigger<any>[],
+  triggers: ScreenTrigger[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
   initialRouteName: undefined | string,

@@ -215,7 +215,9 @@ function getDirectoryTree(contextModule, options) {
         if (hasRoutes && options.sitemap !== false) {
             appendSitemapRoute(rootDirectory, options);
         }
-        appendNotFoundRoute(rootDirectory, options);
+        if (options.notFound !== false) {
+            appendNotFoundRoute(rootDirectory, options);
+        }
     }
     return rootDirectory;
 }

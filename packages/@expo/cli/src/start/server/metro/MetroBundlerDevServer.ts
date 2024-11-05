@@ -687,6 +687,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
       {
         platform: options.platform,
+        domRoot: options.domRoot,
       },
       files
     );

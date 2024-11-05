@@ -11,7 +11,7 @@
 // This file must remain platform agnostic for production exports.
 
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
-import './runtime';
+import '@expo/metro-runtime/rsc/runtime';
 
 import type { ReactNode } from 'react';
 import { renderToReadableStream, decodeReply } from 'react-server-dom-webpack/server';

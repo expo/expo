@@ -74,12 +74,7 @@ export type WebAnchorProps = {
 };
 
 // @docsMissing
-/**
- *
- */
-export interface LinkProps<T extends string | object>
-  extends Omit<TextProps, 'href'>,
-    WebAnchorProps {
+export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
   /**
    * The path of the route to navigate to. It can either be:
    * - **string**: A full path like `/profile/settings` or a relative path like `../settings`.
@@ -108,7 +103,7 @@ export interface LinkProps<T extends string | object>
    *}
    * ```
    */
-  href: Href<T>;
+  href: Href;
 
   // TODO(EvanBacon): This may need to be extracted for React Native style support.
   /**
@@ -222,9 +217,9 @@ export function useInteropClassName(props: { style?: TextProps['style']; classNa
 }
 
 export const useHrefAttrs = Platform.select<
-  (props: Partial<LinkProps<any>>) => { hrefAttrs?: any } & Partial<LinkProps<any>>
+  (props: Partial<LinkProps>) => { hrefAttrs?: any } & Partial<LinkProps>
 >({
-  web: function useHrefAttrs({ asChild, rel, target, download }: Partial<LinkProps<any>>) {
+  web: function useHrefAttrs({ asChild, rel, target, download }: Partial<LinkProps>) {
     return useMemo(() => {
       const hrefAttrs = {
         rel,
