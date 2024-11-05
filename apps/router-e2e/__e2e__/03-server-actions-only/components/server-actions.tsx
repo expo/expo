@@ -1,9 +1,9 @@
 'use server';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Image, Text } from 'react-native';
 import { Link, Stack } from 'expo-router';
 import { unstable_headers } from 'expo-router/rsc/headers';
+import { Image, Text } from 'react-native';
 
 export async function renderPage(params: { title: string }) {
   const platformHeader = (await unstable_headers()).get('expo-platform');
