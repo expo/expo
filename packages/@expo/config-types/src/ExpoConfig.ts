@@ -470,6 +470,10 @@ export interface IOS {
    */
   usesAppleSignIn?: boolean;
   /**
+   * A boolean indicating if the app uses Push Notifications Broadcast option for Push Notifications capability.
+   */
+  usesBroadcastPushNotifications?: boolean;
+  /**
    * A Boolean value that indicates whether the app may access the notes stored in contacts. You must [receive permission from Apple](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) before you can submit your app for review with this capability.
    */
   accessesContactNotes?: boolean;
