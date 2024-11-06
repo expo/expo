@@ -2,7 +2,7 @@ import { VideoSource, VideoPlayer } from './VideoPlayer.types';
 /**
  * Creates a direct instance of `VideoPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useVideoPlayer`](#usevideoplayer) hook instead. See the [Using the VideoPlayer Directly](#using-the-videoplayer-directly) section for more details
+ * > **info** For most use cases you should use the [`useVideoPlayer`](#usevideoplayer) hook instead. See the [Using the VideoPlayer Directly](#using-the-videoplayer-directly) section for more details.
  * @param source
  */
 export declare function createVideoPlayer(source: VideoSource): VideoPlayer;

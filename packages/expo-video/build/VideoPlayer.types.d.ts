@@ -5,7 +5,6 @@ import { VideoThumbnail } from './VideoThumbnail';
  * A class that represents an instance of the video player.
  */
 export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
-    constructor(source: VideoSource);
     /**
      * Boolean value whether the player is currently playing.
      * > Use `play` and `pause` methods to control the playback.
