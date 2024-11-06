@@ -21,10 +21,6 @@ public class PushTokenAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   }
 
   private func dataToString(_ data: Data) -> String {
-    var result = ""
-    data.forEach { byte in
-      result += String(format: "%02.2hhx", byte)
-    }
-    return result
+    return data.map { String(format: "%02hhx", $0) }.joined()
   }
 }
