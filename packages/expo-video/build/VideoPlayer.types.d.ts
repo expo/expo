@@ -131,6 +131,23 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     bufferOptions: BufferOptions;
     /**
+     * Specifies the subtitle track which is currently displayed by the player. `null` when no subtitles are displayed.
+     *
+     * > To ensure a valid subtitle track, always assign one of the subtitle tracks from the [`availableSubtitleTracks`](#availablesubtitletracks) array.
+     *
+     * @default null
+     * @platform android
+     * @platform ios
+     */
+    subtitleTrack: SubtitleTrack | null;
+    /**
+     * An array of subtitle tracks available for the current video.
+     *
+     * @platform android
+     * @platform ios
+     */
+    readonly availableSubtitleTracks: SubtitleTrack[];
+    /**
      * Initializes a new video player instance with the given source.
      * @hidden
      */
@@ -338,4 +355,20 @@ export type BufferOptions = {
  * > On iOS, the Now Playing notification is dependent on the audio mode. If the audio mode is different from `doNotMix` or `auto` this feature will not work.
  */
 export type AudioMixingMode = 'mixWithOthers' | 'duckOthers' | 'auto' | 'doNotMix';
+export type SubtitleTrack = {
+    /**
+     * A string used by `expo-video` to identify the subtitle track.
+     *
+     * @platform android
+     */
+    id: string;
+    /**
+     * Language of the subtitle track. For example, `en`, `pl`, `de`.
+     */
+    language: string;
+    /**
+     * Label of the subtitle track in the language of the device.
+     */
+    label: string;
+};
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

@@ -20,6 +20,7 @@ import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.ifYogaDefinedUse
 import expo.modules.video.utils.makeYogaUndefinedIfNegative
@@ -205,6 +206,21 @@ class VideoModule : Module() {
         .get { ref: VideoPlayer ->
           runBlocking(appContext.mainQueue.coroutineContext) {
             ref.currentLiveTimestamp
+          }
+        }
+
+      Property("availableSubtitleTracks")
+        .get { ref: VideoPlayer ->
+          ref.subtitles.availableSubtitleTracks
+        }
+
+      Property("subtitleTrack")
+        .get { ref: VideoPlayer ->
+          ref.subtitles.currentSubtitleTrack
+        }
+        .set { ref: VideoPlayer, subtitleTrack: SubtitleTrack? ->
+          appContext.mainQueue.launch {
+            ref.subtitles.currentSubtitleTrack = subtitleTrack
           }
         }
 

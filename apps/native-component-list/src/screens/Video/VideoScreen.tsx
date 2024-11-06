@@ -61,6 +61,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Subtitles',
+    route: 'video/subtitles',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoSubtitlesScreen'));
+    },
+  },
+  {
     // Note: Renamed "Events" to "Video Events" to avoid conflict with expo-image screens
     name: 'Video Events',
     route: 'video/events',

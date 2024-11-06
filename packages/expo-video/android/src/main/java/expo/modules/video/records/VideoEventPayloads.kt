@@ -44,3 +44,13 @@ class TimeUpdate(
   @Field var currentLiveTimestamp: Long?,
   @Field var bufferedPosition: Double = .0
 ) : VideoEventPayload
+
+class SubtitleTrackChangedEventPayload(
+  @Field val subtitleTrack: SubtitleTrack?,
+  @Field val oldSubtitleTrack: SubtitleTrack?
+) : VideoEventPayload
+
+class AvailableSubtitleTracksChangedEventPayload(
+  @Field val availableSubtitleTracks: List<SubtitleTrack>,
+  @Field val oldAvailableSubtitleTracks: List<SubtitleTrack>
+) : VideoEventPayload

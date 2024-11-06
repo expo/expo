@@ -6,6 +6,7 @@ import type {
   VideoPlayerStatus,
   VideoSource,
   VideoPlayer,
+  SubtitleTrack,
   AudioMixingMode,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
@@ -76,6 +77,8 @@ export default class VideoPlayerWeb
   currentOffsetFromLive: number | null = null; // Not supported on web. Dummy to match the interface.
   targetOffsetFromLive: number = 0; // Not supported on web. Dummy to match the interface.
   bufferOptions: BufferOptions = {} as BufferOptions; // Not supported on web. Dummy to match the interface.
+  subtitleTrack: SubtitleTrack | null = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
+  availableSubtitleTracks: SubtitleTrack[] = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
