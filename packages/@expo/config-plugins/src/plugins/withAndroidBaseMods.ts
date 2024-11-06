@@ -13,7 +13,7 @@ const { readFile, writeFile } = promises;
 type AndroidModName = keyof Required<ModConfig>['android'];
 
 function getAndroidManifestTemplate(config: ExportedConfig) {
-  // Keep in sync with https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
+  // Keep in sync with https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
   // TODO: Read from remote template when possible
   return parseXMLAsync(`
   <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${
@@ -23,6 +23,7 @@ function getAndroidManifestTemplate(config: ExportedConfig) {
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- These require runtime permissions on M -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -37,31 +38,14 @@ function getAndroidManifestTemplate(config: ExportedConfig) {
       </intent>
     </queries>
 
-    <application
-      android:name=".MainApplication"
-      android:label="@string/app_name"
-      android:icon="@mipmap/ic_launcher"
-      android:roundIcon="@mipmap/ic_launcher_round"
-      android:allowBackup="false"
-      android:theme="@style/AppTheme"
-      android:usesCleartextTraffic="true"
-    >
-      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
-      <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="YOUR-APP-RUNTIME-VERSION-HERE"/>
-      <activity
-        android:name=".MainActivity"
-        android:label="@string/app_name"
-        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-        android:launchMode="singleTask"
-        android:windowSoftInputMode="adjustResize"
-        android:theme="@style/Theme.App.SplashScreen"
-      >
+    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme">
+      <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
         <intent-filter>
           <action android:name="android.intent.action.MAIN"/>
           <category android:name="android.intent.category.LAUNCHER"/>
         </intent-filter>
       </activity>
-      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
+      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
     </application>
   </manifest>
   `) as Promise<AndroidManifest>;
