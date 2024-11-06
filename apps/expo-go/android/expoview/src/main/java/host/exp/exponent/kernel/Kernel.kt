@@ -852,6 +852,17 @@ class Kernel : KernelInterface() {
     } else {
       manager.appTasks.find { it.taskInfo.id == activity.taskId }
     }?.also { task -> task.finishAndRemoveTask() }
+
+    // We're sure that it will be an `ExperienceActivity`. However we still need to do a cast and
+    // adding additional checks doesn't hurt
+    if (activity is ExperienceActivity) {
+      // Invalidate the experience that is not longer needed.
+      activity.reactHost?.invalidate()
+      activity.reactNativeHost?.clear()
+
+      activity.reactHost = null
+      activity.reactNativeHost = null
+    }
   }
 
   override fun reloadVisibleExperience(manifestUrl: String, forceCache: Boolean): Boolean {
