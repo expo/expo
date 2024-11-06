@@ -52,7 +52,7 @@ class FileSystemNextModule : Module() {
         to.file
       }
 
-      if(destination.exists()) {
+      if (destination.exists()) {
         throw DestinationAlreadyExistsException()
       }
 
