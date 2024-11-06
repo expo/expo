@@ -31,7 +31,7 @@ export type { ScreenProps } from './useScreens';
 /**
  * @hidden
  */
-export { SplashScreen } from './views/Splash';
+export * as SplashScreen from './views/Splash';
 
 // React Navigation
 export { useNavigation } from './useNavigation';

@@ -2,17 +2,11 @@
 import './winter';
 import 'expo-asset';
 
-import * as Font from 'expo-font';
-import { AppRegistry, StyleSheet } from 'react-native';
+import { AppRegistry } from 'react-native';
 
 import { isRunningInExpoGo } from './environment/ExpoGo';
 import { AppEntryNotFound } from './errors/AppEntryNotFound';
 import { createErrorHandler } from './errors/ExpoErrorManager';
-
-// If expo-font is installed and the style preprocessor is available, use it to parse fonts.
-if (StyleSheet.setStyleAttributePreprocessor) {
-  StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
-}
 
 if (isRunningInExpoGo()) {
   // set up some improvements to commonly logged error messages stemming from react-native

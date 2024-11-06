@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 8.0.9 — 2024-11-06
+
+### 💡 Others
+
+- Rename ios.icon.any to ios.icon.light for consistency with Apple docs ([#32636](https://github.com/expo/expo/pull/32636) by [@brentvatne](https://github.com/brentvatne))
+
+## 8.0.8 — 2024-11-05
+
+_This version does not introduce any user-facing changes._
+
 ## 8.0.7 — 2024-10-31
 
 _This version does not introduce any user-facing changes._

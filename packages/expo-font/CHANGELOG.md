@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 13.0.1 — 2024-11-05
+
+### 💡 Others
+
+- Remove deprecated Font.processFontFamily() ([#32631](https://github.com/expo/expo/pull/32631) by [@brentvatne](https://github.com/brentvatne))
+
 ## 13.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

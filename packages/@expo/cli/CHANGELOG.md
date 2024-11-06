@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.20.1 — 2024-11-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.0 — 2024-11-05
+
+### 🎉 New features
+
 - Added DOM Components support to the `export` command. ([#32504](https://github.com/expo/expo/pull/32504) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes

@@ -391,6 +391,7 @@ exports[`built-in plugins compiles mods 1`] = `
     "supportsTablet": true,
     "userInterfaceStyle": "automatic",
     "usesAppleSignIn": true,
+    "usesBroadcastPushNotifications": true,
     "usesIcloudStorage": true,
   },
   "locales": {
@@ -1601,6 +1602,7 @@ exports[`built-in plugins introspects mods 1`] = `
     "supportsTablet": true,
     "userInterfaceStyle": "automatic",
     "usesAppleSignIn": true,
+    "usesBroadcastPushNotifications": true,
     "usesIcloudStorage": true,
   },
   "locales": {
@@ -2547,6 +2549,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     "supportsTablet": true,
     "userInterfaceStyle": "automatic",
     "usesAppleSignIn": true,
+    "usesBroadcastPushNotifications": true,
     "usesIcloudStorage": true,
   },
   "locales": {
