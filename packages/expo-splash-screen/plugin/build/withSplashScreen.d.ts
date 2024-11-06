@@ -3,7 +3,7 @@ import { IOSSplashConfig } from '@expo/prebuild-config/build/plugins/unversioned
 import { ConfigPlugin } from 'expo/config-plugins';
 type PluginConfig = {
     backgroundColor: string;
-    logoWidth: number;
+    imageWidth?: number;
     image?: string | null;
     android: AndroidSplashConfig;
     ios: IOSSplashConfig;
