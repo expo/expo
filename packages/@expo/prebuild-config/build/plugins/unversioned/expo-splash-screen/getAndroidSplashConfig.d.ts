@@ -20,7 +20,7 @@ export type SplashScreenConfig = {
     };
 };
 export type AndroidSplashConfig = {
-    imageWidth?: number;
+    logoWidth?: number;
 } & SplashScreenConfig;
-export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>, props?: AndroidSplashConfig | null): AndroidSplashConfig | null;
+export declare function getAndroidSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>, props?: AndroidSplashConfig | null): SplashScreenConfig | null;
 export declare function getAndroidDarkSplashConfig(config: Pick<ExpoConfig, 'splash' | 'android'>, props: AndroidSplashConfig | null): SplashScreenConfig | null;

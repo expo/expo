@@ -27,7 +27,7 @@ export function applySplashScreenStoryboard(obj: IBSplashScreenDocument, splash:
       contentMode,
       imageName,
       backgroundColor: splash.backgroundColor,
-      imageWidth: splash.imageWidth,
+      logoWidth: splash.logoWidth,
     });
   }
 

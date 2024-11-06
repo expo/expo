@@ -343,17 +343,17 @@ export function applyImageToSplashScreenXML(
     imageName,
     contentMode,
     backgroundColor,
-    imageWidth = 100,
+    logoWidth = 100,
   }: {
     imageName: string;
     contentMode: ImageContentMode;
     backgroundColor: string;
-    imageWidth?: number;
+    logoWidth?: number;
   }
 ): IBSplashScreenDocument {
   const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
-  const width = imageWidth;
-  const height = imageWidth;
+  const width = logoWidth;
+  const height = logoWidth;
   const x = (mainView.rect[0].$.width - width) / 2;
   const y = (mainView.rect[0].$.height - height) / 2;
 

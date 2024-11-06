@@ -115,8 +115,8 @@ export function setSplashStylesForTheme(styles: AndroidConfig.Resources.Resource
   // Add splash screen image
   return AndroidConfig.Styles.assignStylesValue(styles, {
     add: true,
-    value: '@drawable/splashscreen_logo',
-    name: 'android:windowSplashScreenBackground',
+    value: '@drawable/splashscreen',
+    name: 'android:windowBackground',
     parent: styleResourceGroup,
   });
 }

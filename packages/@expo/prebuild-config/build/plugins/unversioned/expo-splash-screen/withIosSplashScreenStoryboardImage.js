@@ -37,7 +37,7 @@ function applySplashScreenStoryboard(obj, splash) {
       contentMode,
       imageName,
       backgroundColor: splash.backgroundColor,
-      imageWidth: splash.imageWidth
+      logoWidth: splash.logoWidth
     });
   }
   return (0, _InterfaceBuilder().removeImageFromSplashScreen)(obj, {
