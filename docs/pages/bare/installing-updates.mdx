@@ -43,7 +43,7 @@ Modify the `expo` section of **app.json**. If you created your project using `np
 
 > The example `updates` URL and `projectId` shown below are used with EAS Update. The EAS CLI sets this URL correctly for the EAS Update service when running `eas update:configure`.
 
-<DiffBlock source="/static/diffs/expo-update-app-json.diff" />
+<DiffBlock source="/static/diffs/expo-updates-app-json.diff" />
 
 If you want to set up a [custom `expo-updates` server](https://github.com/expo/custom-expo-updates-server) instead, add your URL to `updates.url` in **app.json**.
 
@@ -66,11 +66,11 @@ If you want to set up a [custom `expo-updates` server](https://github.com/expo/c
 
 Modify **android/app/build.gradle** to check for the JS engine configuration (JSC or Hermes) in Expo files:
 
-<DiffBlock source="/static/diffs/expo-update-android-build-gradle.diff" />
+<DiffBlock source="/static/diffs/expo-updates-android-build-gradle.diff" />
 
 Modify **android/app/src/main/AndroidManifest.xml** to add the `expo-updates` configuration XML so that it matches the contents of **app.json**:
 
-<DiffBlock source="/static/diffs/expo-update-android-manifest.diff" />
+<DiffBlock source="/static/diffs/expo-updates-android-manifest.diff" />
 
 If using the updates server URL (a custom non-HTTPS update server running on the same machine), you will need to modify **android/app/src/main/AndroidManifest.xml** to add the update server URL and enable `usesCleartextTraffic`:
 
@@ -92,7 +92,7 @@ If using the updates server URL (a custom non-HTTPS update server running on the
 
 Add the Expo runtime version string key to **android/app/src/main/res/values/strings.xml**:
 
-<DiffBlock source="/static/diffs/expo-update-strings-xml.diff" />
+<DiffBlock source="/static/diffs/expo-updates-strings-xml.diff" />
 
 ### iOS
 
@@ -106,7 +106,7 @@ Add the file **Podfile.properties.json** to the **ios** directory:
 
 Modify **ios/Podfile** to check for the JS engine configuration (JSC or Hermes) in Expo files:
 
-<DiffBlock source="/static/diffs/expo-update-ios-podfile.diff" />
+<DiffBlock source="/static/diffs/expo-updates-ios-podfile.diff" />
 
 Add **Expo.plist** file to **ios/your-project/Supporting** directory using Xcode with the following content to match the contents of **app.json**:
 
