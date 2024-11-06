@@ -38,7 +38,7 @@ To use React Server Components in your Expo app, you need to:
 
 3. Create an initial route **app/index.tsx**:
 
-```tsx app/index.tsx (Client component)
+```tsx app/index.tsx (Client Component)
 /// <reference types="react/canary" />
 
 import React from 'react';
@@ -111,7 +111,7 @@ To render this as a server component, you'll need to return it from a server act
 
 ## Client Components
 
-Since Server Components cannot access native APIs or React Context, you can create a Client Component to use these features. Client Components are created by marking files with the `"use client"` directive at the top.
+Since Server Components cannot access native APIs or React Context, you can create a Client Component to use these features. They are created by marking files with the `"use client"` directive at the top.
 
 ```tsx components/button.tsx
 'use client';
@@ -130,7 +130,7 @@ You cannot pass functions as props to Server Components. You can only pass seria
 
 ## Server Actions
 
-Server Actions are functions that run on the server and can be called from client components. Think of them like fully-typed API routes that are easier to write.
+Server Actions are functions that run on the server and can be called from Client Components. Think of them like fully-typed API routes that are easier to write.
 
 They must always be an async function and are marked with `"use server"` at the top of the function.
 
@@ -161,7 +161,7 @@ export default function Button({ title, onPress }) {
 }
 ```
 
-Server Actions can also be defined in a standalone file (with `"use server"` at the top) and imported from client components:
+Server Actions can also be defined in a standalone file (with `"use server"` at the top) and imported from Client Components:
 
 ```tsx components/server-actions.tsx
 'use server';
@@ -287,7 +287,7 @@ You can stream back partial UI from the server while waiting for data to load by
 
 In the following example, a `Loading...` text is returned instantly on the client, and when the `<MediumTask>` finishes rendering one second later, it will replace the text with `Medium task done!`. The `<ExpensiveTask>` will take three seconds to load, and when it finishes, it will replace the text with `Expensive task done!`.
 
-```tsx app/index.tsx (Client component)
+```tsx app/index.tsx (Client Component)
 import { Suspense } from 'react';
 import { renderMediumTask, renderExpensiveTask } from '@/actions/tasks';
 
@@ -437,11 +437,11 @@ With this enabled, all routes will render as Server Components by default. In th
 - There is currently no stack routing. The custom layouts, `Stack`, `Tabs`, and `Drawer`, do not support Server Components yet.
 - Most `Link` component props are not supported yet.
 
-### Reloading server components
+### Reloading Server Components
 
 > This is limited to full React Server Components mode.
 
-Server Components are reloaded on every request in development. This means that you can make changes to your server components and see them reflected immediately in the client runtime. You may want to manually trigger a reload event programatically to refetch data or re-render the component. This can be done using the `router.reload()` function from the `useRouter` hook.
+Server Components are reloaded on every request in development. This means that you can make changes to your server components and see them reflected immediately in the client runtime. You may want to manually trigger a reload event programmatically to refetch data or re-render the component. This can be done using the `router.reload()` function from the `useRouter` hook.
 
 ```tsx components/button.tsx
 'use client';
@@ -492,7 +492,7 @@ export default function Index() {
 
 If you want client-side rendering, move your data fetching to a Client Component and control the rendering locally.
 
-Routes marked with `static` output will be rendered at build-time and embeded in the native binary. This enables rendering routes without making a server request (because the server request was made when the app was downloaded).
+Routes marked with `static` output will be rendered at build-time and embedded in the native binary. This enables rendering routes without making a server request (because the server request was made when the app was downloaded).
 
 The current default is `dynamic` rendering. In the future, we'll change the caching and optimizations to be smarter and more automatic.
 
@@ -515,13 +515,11 @@ The CSS will be hoisted into the client bundle from the server.
 
 ## Deployment
 
-> Avoid using universal server components in production as they are not stable yet. We'll streamline all of this to a single command in the future.
+> Avoid using universal Server Components in production as they are not stable yet. We'll streamline all of this to a single command in the future.
 
 ### Web
 
-To deploy your website to production, run: `npx expo export -p web`.
-
-You can host the website locally with the [express server adapter](/router/reference/api-routes/#express).
+To deploy your website to production, run: `npx expo export -p web`. You can host the website locally with the [Express server adapter](/router/reference/api-routes/#express).
 
 ### Native
 
