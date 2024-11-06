@@ -1731,14 +1731,14 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   "android:label": "@string/app_name",
                   "android:name": ".MainApplication",
                   "android:roundIcon": "@mipmap/ic_launcher_round",
+                  "android:supportsRtl": "true",
                   "android:theme": "@style/AppTheme",
-                  "android:usesCleartextTraffic": "true",
                 },
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|uiMode",
-                      "android:label": "@string/app_name",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
+                      "android:exported": "true",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
                       "android:screenOrientation": "unspecified",
@@ -1832,17 +1832,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
+                      "android:exported": "false",
                       "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
                     },
                   },
                 ],
                 "meta-data": [
-                  {
-                    "$": {
-                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
-                      "android:value": "@string/expo_runtime_version",
-                    },
-                  },
                   {
                     "$": {
                       "android:name": "expo.modules.updates.ENABLED",
@@ -1859,6 +1854,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
                       "android:value": "650",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
                     },
                   },
                   {
@@ -1940,6 +1941,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "android:name": "android.permission.SYSTEM_ALERT_WINDOW",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.VIBRATE",
                 },
               },
               {
