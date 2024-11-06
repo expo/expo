@@ -23,7 +23,7 @@ function Tutorial() {
                 location.replace('/');
             }
             if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
-                window.document.title = 'npx expo start';
+                window.document.title = 'Welcome to Expo';
             }
         }
     }, []);
@@ -34,36 +34,35 @@ function Tutorial() {
           <react_native_1.Image style={styles.logotype} source={require('expo-router/assets/logotype.png')}/>
         </react_native_1.View>
         <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
-          Welcome to{' '}
-          <exports_1.Link href="https://docs.expo.dev/router/introduction/" {...react_native_1.Platform.select({ web: { target: '_blank' }, native: { asChild: true } })}>
-            <Pressable_1.Pressable>
-              {({ hovered, pressed }) => (<react_native_1.Text style={[
-                styles.title,
-                react_native_1.Platform.select({
-                    web: {
-                        transitionDuration: '200ms',
-                        textDecorationColor: '#fff7',
-                        textDecorationLine: 'underline',
-                    },
-                }),
-                hovered && {
-                    textDecorationColor: '#fff',
-                },
-                pressed &&
-                    react_native_1.Platform.select({
-                        native: {
-                            color: '#fffb',
-                        },
-                    }),
-            ]}>
-                  Expo Router
-                </react_native_1.Text>)}
-            </Pressable_1.Pressable>
-          </exports_1.Link>
+          Welcome to Expo
         </react_native_1.Text>
         <react_native_1.Text role="heading" aria-level={2} style={[styles.subtitle, styles.textSecondary]}>
           Start by creating a file{react_native_1.Platform.OS !== 'web' ? '\n' : ' '}in the{' '}
           <react_native_1.Text style={{ fontWeight: '600' }}>{getRootDir()}</react_native_1.Text> directory.
+        </react_native_1.Text>
+        <react_native_1.Text>
+          <exports_1.Link href="https://docs.expo.dev/router/introduction/" {...react_native_1.Platform.select({ web: { target: '_blank' }, native: { asChild: true } })}>
+            <Pressable_1.Pressable>
+              {({ hovered, pressed }) => (<react_native_1.Text style={[
+                styles.link,
+                react_native_1.Platform.select({
+                    web: {
+                        transitionDuration: '200ms',
+                        marginBottom: 12,
+                    },
+                }),
+                hovered && {
+                    opacity: 0.8,
+                    textDecorationLine: 'underline',
+                },
+                pressed && {
+                    opacity: 0.8,
+                },
+            ]}>
+                  Learn more about Expo Router in the documentation.
+                </react_native_1.Text>)}
+            </Pressable_1.Pressable>
+          </exports_1.Link>
         </react_native_1.Text>
         {canAutoTouchFile && <Button />}
       </react_native_1.View>
@@ -126,10 +125,13 @@ const styles = react_native_1.StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginHorizontal: 'auto',
-        gap: 24,
+        gap: 16,
         ...react_native_1.Platform.select({
             web: {
                 maxWidth: 960,
+            },
+            native: {
+                width: '100%',
             },
         }),
     },
@@ -143,6 +145,7 @@ const styles = react_native_1.StyleSheet.create({
         borderColor: '#313538',
         width: 78,
         height: 78,
+        marginBottom: 8,
     },
     logotype: {
         width: 48,
@@ -152,9 +155,11 @@ const styles = react_native_1.StyleSheet.create({
         ...react_native_1.Platform.select({
             web: {
                 fontSize: 64,
+                lineHeight: 68,
             },
             default: {
-                fontSize: 52,
+                fontSize: 56,
+                lineHeight: 60,
             },
         }),
         color: '#fff',
@@ -182,8 +187,8 @@ const styles = react_native_1.StyleSheet.create({
             native: {
                 position: 'absolute',
                 bottom: 24,
-                left: 24,
-                right: 24,
+                left: 32,
+                right: 32,
                 overflow: 'hidden',
             },
         }),
@@ -208,9 +213,21 @@ const styles = react_native_1.StyleSheet.create({
         fontWeight: 'bold',
     },
     subtitle: {
-        fontSize: 36,
+        fontSize: 34,
         fontWeight: '200',
         textAlign: 'center',
+    },
+    link: {
+        fontSize: 20,
+        lineHeight: 26,
+        textAlign: 'center',
+        color: '#52a9ff',
+        marginTop: 12,
+        ...react_native_1.Platform.select({
+            web: {
+                marginBottom: 24,
+            },
+        }),
     },
     textSecondary: {
         color: '#9ba1a6',

@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Tweaks and fixes for the internal Sitemap page. ([#29756](https://github.com/expo/expo/pull/29756) by [@Simek](https://github.com/Simek))
+- Appearance tweaks for the Onboard welcome page. ([#32620](https://github.com/expo/expo/pull/32620)) by [@Simek](https://github.com/Simek)
 
 ## 4.0.0-preview.13 — 2024-11-05
 
@@ -20,7 +21,7 @@
 
 ### 💡 Others
 
-- Remove expo-splash-screen dependency without changing behavior ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+- Remove `expo-splash-screen` dependency without changing behavior ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
 
 ## 4.0.0-preview.12 — 2024-11-04
 
