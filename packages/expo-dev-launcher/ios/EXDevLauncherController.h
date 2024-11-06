@@ -18,6 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RCTAppDelegate;
 @class EXAppContext;
 @class EXDevLauncherInstallationIDHelper;
 @class EXDevLauncherPendingDeepLinkRegistry;
@@ -26,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class EXDevLauncherErrorManager;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
+
+@property (nonatomic, weak) RCTAppDelegate *rctAppDelegate;
 
 - (void)devLauncherController:(EXDevLauncherController *)developmentClientController
                 didStartWithSuccess:(BOOL)success;

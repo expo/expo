@@ -208,7 +208,7 @@
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
-  NSMutableDictionary *launchOptions = [self.launchOptions mutableCopy];
+  NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
   NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
 
   if (deepLink) {
@@ -327,6 +327,8 @@
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
 
   [self _removeInitModuleObserver];
+  // Reset app react host
+  [[self.delegate rctAppDelegate].rootViewFactory setReactHost:nil];
 
   _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
 
@@ -605,6 +607,11 @@
 
 - (BOOL)isAppRunning
 {
+  if([_appBridge isProxy]){
+    RCTHost *reactHost =  [self.delegate rctAppDelegate].rootViewFactory.reactHost;
+    return reactHost != nil;
+  }
+
   return [_appBridge isValid];
 }
 

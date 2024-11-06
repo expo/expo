@@ -5,6 +5,7 @@ import EXUpdatesInterface
 
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
+  public weak var rctAppDelegate: RCTAppDelegate?
   private weak var reactDelegate: ExpoReactDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
@@ -42,6 +43,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     guard let rctAppDelegate = (UIApplication.shared.delegate as? RCTAppDelegate) else {
       fatalError("The `UIApplication.shared.delegate` is not a `RCTAppDelegate` instance.")
     }
+    self.rctAppDelegate = rctAppDelegate
 
     // Reset rctAppDelegate so we can relaunch the app
     if rctAppDelegate.bridgelessEnabled() {
@@ -54,7 +56,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,
-      launchOptions: self.launchOptions
+      launchOptions: developmentClientController.getLaunchOptions()
     )
     developmentClientController.appBridge = RCTBridge.current()
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
