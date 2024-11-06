@@ -364,7 +364,7 @@ async function generateIconAsync(projectRoot, {
     resizeMode: 'cover',
     borderRadius: borderRadiusRatio ? bgIconSizePx * borderRadiusRatio : undefined
   });
-  const x = (bgIconSizePx - iconSizePx) / 2;
+  const x = Math.round((bgIconSizePx - iconSizePx) / 2);
   const y = x;
   return (0, _imageUtils().compositeImagesAsync)({
     background,
