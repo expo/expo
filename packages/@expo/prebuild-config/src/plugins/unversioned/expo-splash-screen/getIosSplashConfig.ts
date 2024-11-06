@@ -7,18 +7,19 @@ const defaultBackgroundColor = '#ffffff';
 
 export interface IOSSplashConfig {
   imageWidth?: number;
-  image?: string | null;
+  image?: string;
   // tabletImage: string | null;
   backgroundColor: string;
+  enableFullScreenImage_legacy?: boolean;
   resizeMode: NonNullable<ExpoConfigIosSplash['resizeMode']>;
-  tabletImage: string | null;
+  tabletImage?: string;
   // TODO: These are here just to test the functionality, the API should be more robust and account for tablet images.
-  tabletBackgroundColor: string | null;
+  tabletBackgroundColor?: string;
   dark?: {
-    image?: string | null;
-    backgroundColor?: string | null;
-    tabletImage?: string | null;
-    tabletBackgroundColor?: string | null;
+    image?: string;
+    backgroundColor?: string;
+    tabletImage?: string;
+    tabletBackgroundColor?: string;
   };
 }
 
@@ -34,15 +35,16 @@ export function getIosSplashConfig(
   if (props) {
     const splash = props;
     return {
-      image: splash.image ?? null,
+      image: splash.image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
-      tabletImage: splash.tabletImage ?? null,
+      tabletImage: splash.tabletImage,
       tabletBackgroundColor: splash.tabletBackgroundColor,
+      enableFullScreenImage_legacy: splash.enableFullScreenImage_legacy,
       dark: {
-        image: splash.dark?.image ?? null,
+        image: splash.dark?.image,
         backgroundColor: splash.dark?.backgroundColor,
-        tabletImage: splash.dark?.tabletImage ?? null,
+        tabletImage: splash.dark?.tabletImage,
         tabletBackgroundColor: splash.dark?.tabletBackgroundColor,
       },
       imageWidth: splash.imageWidth,
@@ -51,17 +53,18 @@ export function getIosSplashConfig(
 
   if (config.ios?.splash) {
     const splash = config.ios?.splash;
-    const image = splash.image ?? null;
+    const image = splash.image;
     return {
       image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
-      tabletImage: splash.tabletImage ?? null,
+      tabletImage: splash.tabletImage,
       tabletBackgroundColor: splash.tabletBackgroundColor,
+      enableFullScreenImage_legacy: true,
       dark: {
-        image: splash.dark?.image ?? null,
+        image: splash.dark?.image,
         backgroundColor: splash.dark?.backgroundColor,
-        tabletImage: splash.dark?.tabletImage ?? null,
+        tabletImage: splash.dark?.tabletImage,
         tabletBackgroundColor: splash.dark?.tabletBackgroundColor,
       },
       imageWidth: 200,
@@ -70,19 +73,12 @@ export function getIosSplashConfig(
 
   if (config.splash) {
     const splash = config.splash;
-    const image = splash.image ?? null;
+    const image = splash.image;
     return {
       image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
-      tabletImage: null,
-      tabletBackgroundColor: null,
-      dark: {
-        image: null,
-        backgroundColor: null,
-        tabletImage: null,
-        tabletBackgroundColor: null,
-      },
+      enableFullScreenImage_legacy: true,
       imageWidth: 200,
     };
   }
@@ -90,8 +86,7 @@ export function getIosSplashConfig(
   return {
     backgroundColor: '#ffffff',
     resizeMode: 'contain',
-    tabletImage: null,
-    tabletBackgroundColor: null,
+    enableFullScreenImage_legacy: true,
     imageWidth: 200,
   };
 }

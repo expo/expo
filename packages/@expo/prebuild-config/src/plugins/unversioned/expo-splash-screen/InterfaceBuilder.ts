@@ -330,7 +330,15 @@ export function removeImageFromSplashScreen(
   return xml;
 }
 
-function getAbsoluteConstraints(childId: string, parentId: string) {
+function getAbsoluteConstraints(childId: string, parentId: string, legacy: boolean = false) {
+  if (legacy) {
+    return [
+      createConstraint([childId, 'top'], [parentId, 'top']),
+      createConstraint([childId, 'leading'], [parentId, 'leading']),
+      createConstraint([childId, 'trailing'], [parentId, 'trailing']),
+      createConstraint([childId, 'bottom'], [parentId, 'bottom']),
+    ];
+  }
   return [
     createConstraint([childId, 'centerX'], [parentId, 'centerX']),
     createConstraint([childId, 'centerY'], [parentId, 'centerY']),
@@ -343,19 +351,21 @@ export function applyImageToSplashScreenXML(
     imageName,
     contentMode,
     backgroundColor,
+    enableFullScreenImage,
     imageWidth = 100,
   }: {
     imageName: string;
     contentMode: ImageContentMode;
     backgroundColor: string;
+    enableFullScreenImage: boolean;
     imageWidth?: number;
   }
 ): IBSplashScreenDocument {
   const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
-  const width = imageWidth;
-  const height = imageWidth;
-  const x = (mainView.rect[0].$.width - width) / 2;
-  const y = (mainView.rect[0].$.height - height) / 2;
+  const width = enableFullScreenImage ? 414 : imageWidth;
+  const height = enableFullScreenImage ? 736 : imageWidth;
+  const x = enableFullScreenImage ? 0 : (mainView.rect[0].$.width - width) / 2;
+  const y = enableFullScreenImage ? 0 : (mainView.rect[0].$.height - height) / 2;
 
   const imageView: IBImageView = {
     $: {
@@ -386,11 +396,12 @@ export function applyImageToSplashScreenXML(
   mainView.constraints[0].constraint = [];
 
   // Add Constraints
-  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach((constraint) => {
-    // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
-    const constrainsArray = mainView.constraints[0].constraint;
-    ensureUniquePush(constrainsArray, constraint);
-  });
+  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID, enableFullScreenImage).forEach(
+    (constraint: IBConstraint) => {
+      const constrainsArray = mainView.constraints[0].constraint;
+      ensureUniquePush(constrainsArray, constraint);
+    }
+  );
 
   // Add resource
   const imageSection = xml.document.resources[0].image;

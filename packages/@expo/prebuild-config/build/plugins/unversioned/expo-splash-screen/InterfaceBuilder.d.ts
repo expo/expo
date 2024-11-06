@@ -221,10 +221,11 @@ export declare function createConstraintId(...attributes: string[]): string;
 export declare function removeImageFromSplashScreen(xml: IBSplashScreenDocument, { imageName }: {
     imageName: string;
 }): IBSplashScreenDocument;
-export declare function applyImageToSplashScreenXML(xml: IBSplashScreenDocument, { imageName, contentMode, backgroundColor, imageWidth, }: {
+export declare function applyImageToSplashScreenXML(xml: IBSplashScreenDocument, { imageName, contentMode, backgroundColor, enableFullScreenImage, imageWidth, }: {
     imageName: string;
     contentMode: ImageContentMode;
     backgroundColor: string;
+    enableFullScreenImage: boolean;
     imageWidth?: number;
 }): IBSplashScreenDocument;
 /**

@@ -2225,6 +2225,25 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             "resources": [
               {
                 "image": [],
+                "namedColor": [
+                  {
+                    "$": {
+                      "name": "SplashScreenBackground",
+                    },
+                    "color": [
+                      {
+                        "$": {
+                          "alpha": "1.000",
+                          "blue": "1.00000000000000",
+                          "colorSpace": "custom",
+                          "customColorSpace": "sRGB",
+                          "green": "1.00000000000000",
+                          "red": "1.00000000000000",
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
             ],
             "scenes": [
@@ -2269,6 +2288,14 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                                       "flexibleMaxX": "YES",
                                       "flexibleMaxY": "YES",
                                       "key": "autoresizingMask",
+                                    },
+                                  },
+                                ],
+                                "color": [
+                                  {
+                                    "$": {
+                                      "key": "backgroundColor",
+                                      "name": "SplashScreenBackground",
                                     },
                                   },
                                 ],

@@ -15,15 +15,16 @@ function getIosSplashConfig(config, props) {
   if (props) {
     const splash = props;
     return {
-      image: splash.image ?? null,
+      image: splash.image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
-      tabletImage: splash.tabletImage ?? null,
+      tabletImage: splash.tabletImage,
       tabletBackgroundColor: splash.tabletBackgroundColor,
+      enableFullScreenImage_legacy: splash.enableFullScreenImage_legacy,
       dark: {
-        image: splash.dark?.image ?? null,
+        image: splash.dark?.image,
         backgroundColor: splash.dark?.backgroundColor,
-        tabletImage: splash.dark?.tabletImage ?? null,
+        tabletImage: splash.dark?.tabletImage,
         tabletBackgroundColor: splash.dark?.tabletBackgroundColor
       },
       imageWidth: splash.imageWidth
@@ -31,17 +32,18 @@ function getIosSplashConfig(config, props) {
   }
   if (config.ios?.splash) {
     const splash = config.ios?.splash;
-    const image = splash.image ?? null;
+    const image = splash.image;
     return {
       image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
-      tabletImage: splash.tabletImage ?? null,
+      tabletImage: splash.tabletImage,
       tabletBackgroundColor: splash.tabletBackgroundColor,
+      enableFullScreenImage_legacy: true,
       dark: {
-        image: splash.dark?.image ?? null,
+        image: splash.dark?.image,
         backgroundColor: splash.dark?.backgroundColor,
-        tabletImage: splash.dark?.tabletImage ?? null,
+        tabletImage: splash.dark?.tabletImage,
         tabletBackgroundColor: splash.dark?.tabletBackgroundColor
       },
       imageWidth: 200
@@ -49,27 +51,19 @@ function getIosSplashConfig(config, props) {
   }
   if (config.splash) {
     const splash = config.splash;
-    const image = splash.image ?? null;
+    const image = splash.image;
     return {
       image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
-      tabletImage: null,
-      tabletBackgroundColor: null,
-      dark: {
-        image: null,
-        backgroundColor: null,
-        tabletImage: null,
-        tabletBackgroundColor: null
-      },
+      enableFullScreenImage_legacy: true,
       imageWidth: 200
     };
   }
   return {
     backgroundColor: '#ffffff',
     resizeMode: 'contain',
-    tabletImage: null,
-    tabletBackgroundColor: null,
+    enableFullScreenImage_legacy: true,
     imageWidth: 200
   };
 }
