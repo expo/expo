@@ -9,25 +9,39 @@ const pkg = require('expo-splash-screen/package.json');
 type PluginConfig = {
   backgroundColor: string;
   imageWidth?: number;
-  image?: string | null;
-  android: AndroidSplashConfig;
-  ios: IOSSplashConfig;
+  enableFullScreenImage_legacy?: boolean;
+  image?: string;
+  dark?: {
+    image?: string;
+    backgroundColor?: string;
+  };
+  android?: AndroidSplashConfig;
+  ios?: IOSSplashConfig;
 };
 
 const withSplashScreen: ConfigPlugin<PluginConfig> = (config, props) => {
   const imageWidth = props ? props.imageWidth : 200;
+  const { dark, ...rest } = props;
+
   const android: AndroidSplashConfig = {
-    ...config.splash,
-    ...config.android?.splash,
-    ...props,
-    ...props?.android,
+    ...rest,
+    ...rest?.android,
+    resizeMode: 'contain',
+    dark: {
+      ...rest?.android?.dark,
+      ...dark,
+      resizeMode: 'contain',
+    },
     imageWidth,
   };
-  const ios = {
-    ...config.splash,
-    ...config.ios?.splash,
-    ...props,
-    ...props?.ios,
+  const ios: IOSSplashConfig = {
+    ...rest,
+    ...rest?.ios,
+    resizeMode: 'contain',
+    dark: {
+      ...rest?.ios?.dark,
+      ...dark,
+    },
     imageWidth,
   };
 

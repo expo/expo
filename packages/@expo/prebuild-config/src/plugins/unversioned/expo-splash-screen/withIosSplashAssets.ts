@@ -62,7 +62,7 @@ async function configureImageAssets({
   iosNamedProjectRoot: string;
   image?: string | null;
   darkImage?: string | null;
-  tabletImage: string | null;
+  tabletImage?: string;
   darkTabletImage?: string | null;
   imageWidth: number;
 }) {
