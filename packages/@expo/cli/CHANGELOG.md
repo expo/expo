@@ -30,6 +30,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Catch all exceptions from telemetry flush to prevent upgrade errors. ([#32544](https://github.com/expo/expo/pull/32544) by [@keith-kurak](https://github.com/keith-kurak))
+- Added `process.env.EXPO_BASE_URL` support for DOM components in development mode. ([#32629](https://github.com/expo/expo/pull/32629) by [@kudo](https://github.com/kudo))
 
 ## 0.19.14 — 2024-11-04
 

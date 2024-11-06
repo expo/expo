@@ -15,21 +15,6 @@ export const getInjectEventScript = <T extends BridgeMessage<any>>(detail: T) =>
   true;`;
 };
 
-export function getInjectEnvsScript() {
-  return `;(function injectEnvs() {
-  let baseUrl = '';
-  if (window.location.protocol === 'file:') {
-    baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-  }
-  window.process = window.process || {};
-  window.process.env = {
-    ...(window.process.env || {}),
-    EXPO_BASE_URL: baseUrl,
-  };
-  })();
-  true;`;
-}
-
 export function getInjectBodySizeObserverScript() {
   return `;(function observeDocumentBodySize() {
   window.addEventListener('DOMContentLoaded', () => {

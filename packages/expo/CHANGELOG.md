@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed unused `process.env.EXPO_BASE_URL` injection code for DOM Components webview-wrapper. ([#32629](https://github.com/expo/expo/pull/32629) by [@kudo](https://github.com/kudo))
+
 ## 52.0.0-preview.21 — 2024-11-06
 
 _This version does not introduce any user-facing changes._
