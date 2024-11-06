@@ -19,7 +19,7 @@ class VideoPlayerSubtitles(owner: VideoPlayer) : VideoPlayerListener {
     get() {
       return owner.get()
     }
-  private var formatsToGroups: MutableMap<Format, Pair<TrackGroup, Int>> = mutableMapOf()
+  private val formatsToGroups = mutableMapOf<Format, Pair<TrackGroup, Int>>()
   private var currentSubtitleFormat: Format? = null
   private var currentOverride: TrackSelectionOverride? = null
 
@@ -30,7 +30,7 @@ class VideoPlayerSubtitles(owner: VideoPlayer) : VideoPlayerListener {
     set(value) {
       applySubtitleTrack(value)
     }
-  var availableSubtitleTracks: ArrayList<SubtitleTrack> = arrayListOf()
+  val availableSubtitleTracks = arrayListOf<SubtitleTrack>()
 
   init {
     owner.addListener(this)
@@ -71,28 +71,25 @@ class VideoPlayerSubtitles(owner: VideoPlayer) : VideoPlayerListener {
 
   // Private methods
   private fun applySubtitleTrack(subtitleTrack: SubtitleTrack?) {
-    var newParameters: TrackSelectionParameters = videoPlayer?.player?.trackSelectionParameters ?: return
-
+    val player = videoPlayer?.player ?: return
+    var newParameters: TrackSelectionParameters = player.trackSelectionParameters
     currentOverride?.let { override ->
       newParameters = newParameters.buildUpon().clearOverridesOfType(C.TRACK_TYPE_TEXT).build()
     }
-
     if (subtitleTrack == null) {
-      videoPlayer?.player?.trackSelectionParameters = newParameters
+      player.trackSelectionParameters = newParameters
       setSubtitlesEnabled(false)
       currentOverride = null
       return
     }
-
     val format = formatsToGroups.keys.firstOrNull {
       it.id == subtitleTrack.id
     }
-
     format?.let {
       formatsToGroups[it]?.let { subtitlePair ->
         val override = TrackSelectionOverride(subtitlePair.first, subtitlePair.second)
         newParameters = newParameters.buildUpon().addOverride(override).build()
-        videoPlayer?.player?.trackSelectionParameters = newParameters
+        player.trackSelectionParameters = newParameters
         setSubtitlesEnabled(true)
         currentOverride = override
       }
@@ -100,8 +97,9 @@ class VideoPlayerSubtitles(owner: VideoPlayer) : VideoPlayerListener {
   }
 
   private fun findSelectedSubtitleFormat(): Format? {
-    val preferredTextLanguages = videoPlayer?.player?.trackSelectionParameters?.preferredTextLanguages
-    val overriddenFormat: Format? = videoPlayer?.player?.trackSelectionParameters?.overrides?.let {
+    val trackSelectionParameters = videoPlayer?.player?.trackSelectionParameters
+    val preferredTextLanguages = trackSelectionParameters?.preferredTextLanguages
+    val overriddenFormat: Format? = trackSelectionParameters?.overrides?.let {
       for ((group, override) in it) {
         if (group.type == C.TRACK_TYPE_TEXT) {
           // For subtitles only one index will be replaced

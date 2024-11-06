@@ -1,4 +1,4 @@
-import type { BufferOptions, PlayerError, VideoPlayerStatus, VideoSource, VideoPlayer, AudioMixingMode } from './VideoPlayer.types';
+import type { BufferOptions, PlayerError, VideoPlayerStatus, VideoSource, VideoPlayer, SubtitleTrack, AudioMixingMode } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
@@ -28,6 +28,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     currentOffsetFromLive: number | null;
     targetOffsetFromLive: number;
     bufferOptions: BufferOptions;
+    subtitleTrack: SubtitleTrack | null;
+    availableSubtitleTracks: SubtitleTrack[];
     set muted(value: boolean);
     get muted(): boolean;
     set playbackRate(value: number);

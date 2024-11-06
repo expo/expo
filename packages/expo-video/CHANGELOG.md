@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
--[Android][iOS] Add support for listing and selecting closed captions. ([#32582](https://github.com/expo/expo/pull/32582) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add support for listing and selecting closed captions. ([#32582](https://github.com/expo/expo/pull/32582) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
