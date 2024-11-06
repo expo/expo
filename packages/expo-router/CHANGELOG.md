@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Don't assume reanimated exists when testing expo-router ([#27548](https://github.com/expo/expo/pull/27548)) by [@henrymoulton](https://github.com/henrymoulton)
+- Appearance tweaks for the Onboard welcome page. ([#32620](https://github.com/expo/expo/pull/32620)) by [@Simek](https://github.com/Simek)
 
 ## 4.0.0-preview.11 — 2024-10-31
 

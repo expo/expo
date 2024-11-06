@@ -20,7 +20,7 @@ export function Tutorial() {
         location.replace('/');
       }
       if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
-        window.document.title = 'npx expo start';
+        window.document.title = 'Welcome to Expo';
       }
     }
   }, []);
@@ -33,7 +33,13 @@ export function Tutorial() {
           <Image style={styles.logotype} source={require('expo-router/assets/logotype.png')} />
         </View>
         <Text role="heading" aria-level={1} style={styles.title}>
-          Welcome to{' '}
+          Welcome to Expo
+        </Text>
+        <Text role="heading" aria-level={2} style={[styles.subtitle, styles.textSecondary]}>
+          Start by creating a file{Platform.OS !== 'web' ? '\n' : ' '}in the{' '}
+          <Text style={{ fontWeight: '600' }}>{getRootDir()}</Text> directory.
+        </Text>
+        <Text>
           <Link
             href="https://docs.expo.dev/router/introduction/"
             {...Platform.select({ web: { target: '_blank' }, native: { asChild: true } })}>
@@ -41,33 +47,26 @@ export function Tutorial() {
               {({ hovered, pressed }) => (
                 <Text
                   style={[
-                    styles.title,
+                    styles.link,
                     Platform.select({
                       web: {
                         transitionDuration: '200ms',
-                        textDecorationColor: '#fff7',
-                        textDecorationLine: 'underline',
+                        marginBottom: 12,
                       },
                     }),
                     hovered && {
-                      textDecorationColor: '#fff',
+                      opacity: 0.8,
+                      textDecorationLine: 'underline',
                     },
-                    pressed &&
-                      Platform.select({
-                        native: {
-                          color: '#fffb',
-                        },
-                      }),
+                    pressed && {
+                      opacity: 0.8,
+                    },
                   ]}>
-                  Expo Router
+                  Learn more about Expo Router in the documentation.
                 </Text>
               )}
             </Pressable>
           </Link>
-        </Text>
-        <Text role="heading" aria-level={2} style={[styles.subtitle, styles.textSecondary]}>
-          Start by creating a file{Platform.OS !== 'web' ? '\n' : ' '}in the{' '}
-          <Text style={{ fontWeight: '600' }}>{getRootDir()}</Text> directory.
         </Text>
         {canAutoTouchFile && <Button />}
       </View>
@@ -140,10 +139,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 'auto',
-    gap: 24,
+    gap: 16,
     ...Platform.select({
       web: {
         maxWidth: 960,
+      },
+      native: {
+        width: '100%',
       },
     }),
   },
@@ -157,6 +159,7 @@ const styles = StyleSheet.create({
     borderColor: '#313538',
     width: 78,
     height: 78,
+    marginBottom: 8,
   },
   logotype: {
     width: 48,
@@ -166,9 +169,11 @@ const styles = StyleSheet.create({
     ...Platform.select({
       web: {
         fontSize: 64,
+        lineHeight: 68,
       },
       default: {
-        fontSize: 52,
+        fontSize: 56,
+        lineHeight: 60,
       },
     }),
     color: '#fff',
@@ -196,8 +201,8 @@ const styles = StyleSheet.create({
       native: {
         position: 'absolute',
         bottom: 24,
-        left: 24,
-        right: 24,
+        left: 32,
+        right: 32,
         overflow: 'hidden',
       },
     }),
@@ -222,9 +227,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   subtitle: {
-    fontSize: 36,
+    fontSize: 34,
     fontWeight: '200',
     textAlign: 'center',
+  },
+  link: {
+    fontSize: 20,
+    lineHeight: 26,
+    textAlign: 'center',
+    color: '#52a9ff',
+    marginTop: 12,
+    ...Platform.select({
+      web: {
+        marginBottom: 24,
+      },
+    }),
   },
   textSecondary: {
     color: '#9ba1a6',
