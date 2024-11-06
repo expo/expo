@@ -435,13 +435,7 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
   <span
     class="text-quaternary"
   >
-    )
-  </span>
-   
-  <span
-    class="text-quaternary"
-  >
-    =&gt;
+    ) =&gt;
   </span>
    
   <span>
@@ -490,13 +484,7 @@ exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 
   <span
     class="text-quaternary"
   >
-    )
-  </span>
-   
-  <span
-    class="text-quaternary"
-  >
-    =&gt;
+    ) =&gt;
   </span>
    
   void
@@ -786,7 +774,11 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
   >
     )
   </span>
-  []
+  <span
+    class="text-quaternary"
+  >
+    []
+  </span>
 </div>
 `;
 
