@@ -13,6 +13,8 @@ import { PlatformTag } from '~/ui/components/Tag';
 
 `expo-task-manager` provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background. Some features of this library are used by other libraries under the hood. Here is a list of Expo SDK libraries that use `TaskManager`:
 
+## Libraries using Expo TaskManager
+
 - [Location](location.mdx)
 - [BackgroundFetch](background-fetch.mdx)
 - [Notifications](notifications.mdx)
@@ -27,11 +29,7 @@ import { PlatformTag } from '~/ui/components/Tag';
 
 Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file.
 
-Read more about how to configure this in each of the libraries that use `TaskManager`:
-
-- [Location](location.mdx#background-location-configuration)
-- [BackgroundFetch](background-fetch.mdx#configuration)
-- [Notifications](notifications.mdx#background-notification-configuration)
+Read more about how to configure this in the documentation pages for each of the [libraries](#libraries-using-expo-taskmanager) that use `TaskManager`.
 
 ## Example
 
