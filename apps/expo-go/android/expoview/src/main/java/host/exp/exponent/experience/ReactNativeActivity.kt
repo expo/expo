@@ -203,10 +203,6 @@ abstract class ReactNativeActivity :
 
   // Loop until a view is added to the ReactRootView and once it happens run callback
   private fun waitForReactRootViewToHaveChildrenAndRunCallback(callback: Runnable) {
-    if (reactSurface == null) {
-      return
-    }
-
     if ((reactSurface?.view?.childCount ?: 0) > 0) {
       callback.run()
     } else {
