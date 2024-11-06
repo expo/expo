@@ -525,7 +525,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (13.0.0):
     - ExpoModulesCore
-  - ExpoSplashScreen (0.29.2):
+  - ExpoSplashScreen (0.29.3):
     - ExpoModulesCore
   - ExpoSQLite (15.0.1):
     - ExpoModulesCore
@@ -3306,7 +3306,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 39a198e64bf522948fe60e270e49a0c7757912c1
   ExpoSMS: 884d6627c0848795ff9492fbfc7ba6087111e344
   ExpoSpeech: 27bb25844919711ebf0e201ce0bef2897d3693c7
-  ExpoSplashScreen: 76d5e212e0db499672980ffe34f96020fe7c7d98
+  ExpoSplashScreen: 8a9fb2acb65a8cb0ef1c3d694af770cb3a19fbbf
   ExpoSQLite: 341dd1f1103fd7c59d93360bb6062aef21a64fb3
   ExpoStoreReview: f3439c43f13fa497cfe07d16b095f39101ed5548
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
