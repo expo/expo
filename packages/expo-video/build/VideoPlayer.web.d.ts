@@ -3,6 +3,7 @@ import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
 export declare function getSourceUri(source: VideoSource): string | null;
+export declare function createVideoPlayer(source: VideoSource): VideoPlayer;
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPlayerEvents> implements VideoPlayer {
     constructor(source: VideoSource);
     src: VideoSource;

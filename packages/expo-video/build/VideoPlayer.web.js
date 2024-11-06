@@ -20,6 +20,10 @@ export function getSourceUri(source) {
     }
     return source?.uri ?? null;
 }
+export function createVideoPlayer(source) {
+    const parsedSource = typeof source === 'string' ? { uri: source } : source;
+    return new VideoPlayerWeb(parsedSource);
+}
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     constructor(source) {
         super();

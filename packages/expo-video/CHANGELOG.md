@@ -15,6 +15,7 @@
 ### 🎉 New features
 
 - [Android][iOS] Add `audioMixingMode` property to control how the player interacts with other audio in the system. ([#32428](https://github.com/expo/expo/pull/32428) by [@behenate](https://github.com/behenate))
+- Add support for creating a direct instance of `VideoPlayer`. ([#32228](https://github.com/expo/expo/pull/32228) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
