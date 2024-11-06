@@ -17,7 +17,7 @@ android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "4.0.28"
+    versionName "4.0.29"
   }
 
   buildTypes {
