@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Remove circular import references to index files ([#32671](https://github.com/expo/expo/pull/32671) by [@wschurman](https://github.com/wschurman))
+- Sync base android manifest with template. ([#32639](https://github.com/expo/expo/pull/32639) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
