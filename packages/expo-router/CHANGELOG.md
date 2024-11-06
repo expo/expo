@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Tweaks and fixes for the internal Sitemap page. ([#29756](https://github.com/expo/expo/pull/29756) by [@Simek](https://github.com/Simek))
+
 ## 4.0.0-preview.13 — 2024-11-05
 
 ### 🎉 New features

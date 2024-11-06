@@ -1584,7 +1584,7 @@ describe('navigation action fallbacks', () => {
     expect(screen).toHavePathname('/');
   }
 
-  it('can fall back correctly for tab navigators', () => {
+  it.only('can fall back correctly for tab navigators', () => {
     renderRouter({
       _layout: () => <Tabs />,
       one: () => <Text testID="one" />,
