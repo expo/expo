@@ -25,10 +25,6 @@ export enum AndroidImportance {
   MIN = 3,
   LOW = 4,
   DEFAULT = 5,
-  /**
-   * @deprecated Use `DEFAULT` instead.
-   */
-  DEEFAULT = 5,
   HIGH = 6,
   MAX = 7,
 }
