@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `<Link>` using a hash href causing a full page reload on web.
+- Fix `<Link>` using a hash href causing a full page reload on web. ([#32645](https://github.com/expo/expo/pull/32645) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
