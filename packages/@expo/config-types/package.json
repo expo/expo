@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-types",
-  "version": "52.0.0-preview.3",
+  "version": "52.0.0-preview.4",
   "description": "Types for the Expo config object app.config.ts",
   "types": "build/ExpoConfig.d.ts",
   "main": "build/ExpoConfig.js",
