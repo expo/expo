@@ -4,8 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import type { XcodeProject } from 'xcode';
 
-import { ExportedConfigWithProps, withXcodeProject } from '..';
+import { ExportedConfigWithProps } from '../Plugin.types';
 import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
+import { withXcodeProject } from '../plugins/ios-plugins';
 
 export type PrivacyInfo = {
   NSPrivacyAccessedAPITypes: {

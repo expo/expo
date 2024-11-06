@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- remove two deprecated exports ([#32660](https://github.com/expo/expo/pull/32660) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- fix `NotificationTrigger` type ([#32659](https://github.com/expo/expo/pull/32659) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+- [docs] minor improvements to TS docs ([#32658](https://github.com/expo/expo/pull/32658) by [@vonovak](https://github.com/vonovak))
 
 ## 0.29.4 — 2024-10-29
 

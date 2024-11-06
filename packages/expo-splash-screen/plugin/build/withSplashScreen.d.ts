@@ -4,9 +4,14 @@ import { ConfigPlugin } from 'expo/config-plugins';
 type PluginConfig = {
     backgroundColor: string;
     imageWidth?: number;
-    image?: string | null;
-    android: AndroidSplashConfig;
-    ios: IOSSplashConfig;
+    enableFullScreenImage_legacy?: boolean;
+    image?: string;
+    dark?: {
+        image?: string;
+        backgroundColor?: string;
+    };
+    android?: AndroidSplashConfig;
+    ios?: IOSSplashConfig;
 };
 declare const _default: ConfigPlugin<PluginConfig>;
 export default _default;

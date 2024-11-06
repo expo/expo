@@ -3,7 +3,7 @@ import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModu
 /**
  * When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification.
  * Under the hood, this function is run using `expo-task-manager`. You **must** define the task first, with [`TaskManager.defineTask`](./task-manager#taskmanagerdefinetasktaskname-taskexecutor).
- * Make sure you define it in the global scope.
+ * Make sure you define it in the global scope. It is recommended to define only one task because running a task can have a high cost.
  *
  * The callback function you define with `TaskManager.defineTask` will receive an object with the following fields:
  * - `data`: The remote payload delivered by either FCM (Android) or APNs (iOS). See [`PushNotificationTrigger`](#pushnotificationtrigger) for details.

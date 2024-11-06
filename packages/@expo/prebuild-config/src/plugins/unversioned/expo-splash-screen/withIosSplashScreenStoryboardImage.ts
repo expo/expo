@@ -27,6 +27,7 @@ export function applySplashScreenStoryboard(obj: IBSplashScreenDocument, splash:
       contentMode,
       imageName,
       backgroundColor: splash.backgroundColor,
+      enableFullScreenImage: splash.enableFullScreenImage_legacy ?? false,
       imageWidth: splash.imageWidth,
     });
   }

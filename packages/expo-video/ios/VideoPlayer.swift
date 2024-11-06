@@ -7,6 +7,7 @@ import ExpoModulesCore
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObserverDelegate {
   lazy var contentKeyManager = ContentKeyManager()
   var observer: VideoPlayerObserver?
+  lazy var subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(owner: self)
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .doNotMix {
@@ -123,6 +124,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     observer = VideoPlayerObserver(owner: self)
     observer?.registerDelegate(delegate: self)
     VideoManager.shared.register(videoPlayer: self)
+
+    // Disable automatic subtitle selection
+    let selectionCriteria = AVPlayerMediaSelectionCriteria(preferredLanguages: [], preferredMediaCharacteristics: [.legible])
+    pointer.setMediaSelectionCriteria(selectionCriteria, forMediaCharacteristic: .legible)
   }
 
   deinit {
@@ -254,6 +259,24 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {
     safeEmit(event: "timeUpdate", payload: timeUpdate)
+  }
+
+  func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {
+    // This event means that a new player item has been loaded so the subtitle tracks should change
+    let oldTracks = subtitles.availableSubtitleTracks
+    self.subtitles.onNewPlayerItemLoaded(playerItem: playerItem)
+    let payload = SubtitleTracksChangedEventPayload(
+      availableSubtitleTracks: subtitles.availableSubtitleTracks,
+      oldAvailableSubtitleTracks: oldTracks
+    )
+    safeEmit(event: "availableSubtitleTracksChange", payload: payload)
+  }
+
+  func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?) {
+    let oldTrack = subtitles.currentSubtitleTrack
+    subtitles.onNewSubtitleTrackSelected(subtitleTrack: subtitleTrack)
+    let payload = SubtitleTrackChangedEventPayload(subtitleTrack: subtitles.currentSubtitleTrack, oldSubtitleTrack: oldTrack)
+    safeEmit(event: "subtitleTrackChange", payload: payload)
   }
 
   func safeEmit(event: String, payload: Record? = nil) {
