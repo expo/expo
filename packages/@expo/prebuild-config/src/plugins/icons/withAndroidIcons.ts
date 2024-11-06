@@ -423,7 +423,7 @@ async function generateIconAsync(
     borderRadius: borderRadiusRatio ? bgIconSizePx * borderRadiusRatio : undefined,
   });
 
-  const x = (bgIconSizePx - iconSizePx) / 2;
+  const x = Math.round((bgIconSizePx - iconSizePx) / 2);
   const y = x;
 
   return compositeImagesAsync({ background, foreground, x, y });
