@@ -221,11 +221,11 @@ export declare function createConstraintId(...attributes: string[]): string;
 export declare function removeImageFromSplashScreen(xml: IBSplashScreenDocument, { imageName }: {
     imageName: string;
 }): IBSplashScreenDocument;
-export declare function applyImageToSplashScreenXML(xml: IBSplashScreenDocument, { imageName, contentMode, backgroundColor, logoWidth, }: {
+export declare function applyImageToSplashScreenXML(xml: IBSplashScreenDocument, { imageName, contentMode, backgroundColor, imageWidth, }: {
     imageName: string;
     contentMode: ImageContentMode;
     backgroundColor: string;
-    logoWidth?: number;
+    imageWidth?: number;
 }): IBSplashScreenDocument;
 /**
  * IB does not allow two items to have the same ID.
