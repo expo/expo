@@ -31,6 +31,7 @@ function getAndroidSplashConfig(config, props) {
       hdpi: splash.hdpi ?? splash.image,
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
+      image: splash.image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: 200
     };
