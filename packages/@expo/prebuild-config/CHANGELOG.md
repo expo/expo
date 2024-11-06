@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix prebuild error due to float icon coordinates. ([#32649](https://github.com/expo/expo/pull/32649) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 8.0.7 — 2024-10-31
