@@ -26,13 +26,13 @@ import { PlatformTags } from '~/ui/components/Tag';
 - Schedule a one-off notification for a specific date or some time from now
 - Schedule a notification repeating in some time interval (or a calendar date match on iOS)
 - Get and set the application badge icon number
-- Fetch a native device push token, so you can send push notifications with FCM and APNs
-- Fetch an Expo push token, so you can send push notifications with Expo
+- Fetch a native device push token, so you can send push notifications with FCM (for Android) and APNs (for iOS)
+- Fetch an Expo push token, so you can send push notifications with [Expo Push API](/push-notifications/sending-notifications/)
 - Listen to incoming notifications in the foreground and background
 - Listen to interactions with notifications
 - Handle notifications when the app is in the foreground
 - Imperatively dismiss notifications from Notification Center/tray
-- Create, update, and delete Android notification channels
+- Create, update, and delete [Android notification channels](https://developer.android.com/develop/ui/views/notifications/channels)
 - Set custom icon and color for notifications on Android
 
 ## Installation
@@ -342,7 +342,7 @@ See more details on [React Navigation documentation](https://reactnavigation.org
 
 #### Android
 
-Firebase Cloud Messaging credentials are required for all Android apps to receive push notifications in your app (except when testing in Expo Go). For more information, see how to get [FCM credentials](/push-notifications/push-notifications-setup/#android) for your app.
+Firebase Cloud Messaging credentials are required for all Android apps to receive push notifications. For more information, see how to get [FCM credentials](/push-notifications/push-notifications-setup/#android) for your app.
 
 #### iOS
 
@@ -419,7 +419,7 @@ Learn how to configure the native projects in the [installation instructions in 
 - On Android, this module requires permission to subscribe to the device boot. It's used to setup scheduled notifications when the device (re)starts.
   The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
 
-- Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add
+- Starting from Android 12 (API level 31), to schedule the notification that triggers at an exact time, you need to add
   `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.
   You can read more about the [exact alarm permission](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
 
@@ -441,14 +441,14 @@ or interacting with it via [notification categories](#manage-notification-catego
 
 A few different listeners are exposed, so we've provided a chart below which will hopefully help you understand when you can expect each one to be triggered:
 
-| User interacted with notification? | App state                | Listener(s) triggered                                                   |
-| ---------------------------------- | ------------------------ | ----------------------------------------------------------------------- |
-| false                              | Foreground               | `NotificationReceivedListener`                                          |
-| false                              | Foreground or Background | `BackgroundNotificationTask`                                            |
-| false                              | Killed                   | none                                                                    |
-| true                               | Foreground               | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
-| true                               | Background               | `NotificationResponseReceivedListener`                                  |
-| true                               | Killed                   | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
+| User interacted with notification? | App state  | Listener(s) triggered                                                   |
+| ---------------------------------- | ---------- | ----------------------------------------------------------------------- |
+| false                              | Foreground | `NotificationReceivedListener` & `BackgroundNotificationTask`           |
+| false                              | Background | `BackgroundNotificationTask`                                            |
+| false                              | Killed     | none                                                                    |
+| true                               | Foreground | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
+| true                               | Background | `NotificationResponseReceivedListener`                                  |
+| true                               | Killed     | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
 
@@ -477,8 +477,6 @@ For iOS:
 ## Additional information
 
 ### Set custom notification sounds
-
-Custom notification sounds are only supported when using [EAS Build](/build/introduction).
 
 To add custom push notification sounds to your app, add the `expo-notifications` plugin to your **app.json** file and then under the `sounds` key, provide an array of local paths to sound files that can be used as custom notification sounds. These local paths are local to your project.
 
@@ -578,20 +576,9 @@ await Notifications.scheduleNotificationAsync({
 
 </Collapsible>
 
-### Android push notification payload specification
+### Push notification payload specification
 
-When sending a push notification, put an object conforming to the following type as `data` of the notification:
-
-```ts
-export interface FirebaseData {
-  title?: string;
-  message?: string;
-  subtitle?: string;
-  sound?: boolean | string;
-  vibrate?: boolean | number[];
-  badge?: number;
-}
-```
+Please refer to the `ExpoPushMessage` type in the [`expo-server-sdk`](https://github.com/expo/expo-server-sdk-node/blob/b470314023d8393073ecdbc07927b32d163af790/src/ExpoClient.ts#L346) package.
 
 ### Interpret the iOS permissions response
 
