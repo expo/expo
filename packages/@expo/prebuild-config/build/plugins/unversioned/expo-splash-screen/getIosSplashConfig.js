@@ -20,6 +20,7 @@ function getIosSplashConfig(config, props) {
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
       tabletImage: splash.tabletImage,
       tabletBackgroundColor: splash.tabletBackgroundColor,
+      enableFullScreenImage_legacy: splash.enableFullScreenImage_legacy,
       dark: {
         image: splash.dark?.image,
         backgroundColor: splash.dark?.backgroundColor,
@@ -38,6 +39,7 @@ function getIosSplashConfig(config, props) {
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
       tabletImage: splash.tabletImage,
       tabletBackgroundColor: splash.tabletBackgroundColor,
+      enableFullScreenImage_legacy: true,
       dark: {
         image: splash.dark?.image,
         backgroundColor: splash.dark?.backgroundColor,
@@ -54,12 +56,14 @@ function getIosSplashConfig(config, props) {
       image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
+      enableFullScreenImage_legacy: true,
       imageWidth: 200
     };
   }
   return {
     backgroundColor: '#ffffff',
     resizeMode: 'contain',
+    enableFullScreenImage_legacy: true,
     imageWidth: 200
   };
 }

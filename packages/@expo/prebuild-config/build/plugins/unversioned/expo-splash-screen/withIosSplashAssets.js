@@ -70,7 +70,8 @@ const withIosSplashAssets = (config, splash) => {
       darkImage: splash.dark?.image,
       tabletImage: splash.tabletImage,
       darkTabletImage: splash.dark?.tabletImage,
-      imageWidth: splash.imageWidth ?? 100
+      imageWidth: splash.imageWidth ?? 100,
+      enableFullScreenImage: splash.enableFullScreenImage_legacy
     });
     return config;
   }]);
@@ -87,10 +88,10 @@ async function configureImageAssets({
   darkImage,
   tabletImage,
   darkTabletImage,
-  imageWidth
+  imageWidth,
+  enableFullScreenImage
 }) {
   const imageSetPath = _path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH);
-
   // ensure old SplashScreen imageSet is removed
   await _fsExtra().default.remove(imageSetPath);
   if (!image) {
@@ -110,7 +111,8 @@ async function configureImageAssets({
     darkImage,
     tabletImage,
     darkTabletImage,
-    imageWidth
+    imageWidth,
+    enableFullScreenImage
   });
 }
 async function copyImageFiles({
@@ -120,7 +122,8 @@ async function copyImageFiles({
   darkImage,
   tabletImage,
   darkTabletImage,
-  imageWidth
+  imageWidth,
+  enableFullScreenImage
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
@@ -147,8 +150,8 @@ async function copyImageFiles({
           cacheType: IMAGE_CACHE_NAME
         }, {
           src: item,
-          width: size,
-          height: size
+          width: enableFullScreenImage ? undefined : size,
+          height: enableFullScreenImage ? undefined : size
         });
         // Write image buffer to the file system.
         // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);

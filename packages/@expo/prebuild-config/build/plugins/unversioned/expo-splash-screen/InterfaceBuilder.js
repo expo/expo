@@ -71,20 +71,24 @@ function removeImageFromSplashScreen(xml, {
   }
   return xml;
 }
-function getAbsoluteConstraints(childId, parentId) {
+function getAbsoluteConstraints(childId, parentId, legacy = false) {
+  if (legacy) {
+    return [createConstraint([childId, 'top'], [parentId, 'top']), createConstraint([childId, 'leading'], [parentId, 'leading']), createConstraint([childId, 'trailing'], [parentId, 'trailing']), createConstraint([childId, 'bottom'], [parentId, 'bottom'])];
+  }
   return [createConstraint([childId, 'centerX'], [parentId, 'centerX']), createConstraint([childId, 'centerY'], [parentId, 'centerY'])];
 }
 function applyImageToSplashScreenXML(xml, {
   imageName,
   contentMode,
   backgroundColor,
+  enableFullScreenImage,
   imageWidth = 100
 }) {
   const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
-  const width = imageWidth;
-  const height = imageWidth;
-  const x = (mainView.rect[0].$.width - width) / 2;
-  const y = (mainView.rect[0].$.height - height) / 2;
+  const width = enableFullScreenImage ? 414 : imageWidth;
+  const height = enableFullScreenImage ? 736 : imageWidth;
+  const x = enableFullScreenImage ? 0 : (mainView.rect[0].$.width - width) / 2;
+  const y = enableFullScreenImage ? 0 : (mainView.rect[0].$.height - height) / 2;
   const imageView = {
     $: {
       id: IMAGE_ID,
@@ -111,8 +115,7 @@ function applyImageToSplashScreenXML(xml, {
   mainView.constraints[0].constraint = [];
 
   // Add Constraints
-  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach(constraint => {
-    // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
+  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID, enableFullScreenImage).forEach(constraint => {
     const constrainsArray = mainView.constraints[0].constraint;
     ensureUniquePush(constrainsArray, constraint);
   });

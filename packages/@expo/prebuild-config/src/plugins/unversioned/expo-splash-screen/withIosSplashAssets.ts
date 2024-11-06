@@ -39,6 +39,7 @@ export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splas
         tabletImage: splash.tabletImage,
         darkTabletImage: splash.dark?.tabletImage,
         imageWidth: splash.imageWidth ?? 100,
+        enableFullScreenImage: splash.enableFullScreenImage_legacy,
       });
 
       return config;
@@ -57,6 +58,7 @@ async function configureImageAssets({
   tabletImage,
   darkTabletImage,
   imageWidth,
+  enableFullScreenImage,
 }: {
   projectRoot: string;
   iosNamedProjectRoot: string;
@@ -65,9 +67,9 @@ async function configureImageAssets({
   tabletImage?: string;
   darkTabletImage?: string | null;
   imageWidth: number;
+  enableFullScreenImage?: boolean;
 }) {
   const imageSetPath = path.resolve(iosNamedProjectRoot, IMAGESET_PATH);
-
   // ensure old SplashScreen imageSet is removed
   await fs.remove(imageSetPath);
 
@@ -91,6 +93,7 @@ async function configureImageAssets({
     tabletImage,
     darkTabletImage,
     imageWidth,
+    enableFullScreenImage,
   });
 }
 
@@ -102,6 +105,7 @@ async function copyImageFiles({
   tabletImage,
   darkTabletImage,
   imageWidth,
+  enableFullScreenImage,
 }: {
   projectRoot: string;
   iosNamedProjectRoot: string;
@@ -110,6 +114,7 @@ async function copyImageFiles({
   tabletImage?: string | null;
   darkTabletImage?: string | null;
   imageWidth: number;
+  enableFullScreenImage?: boolean;
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
@@ -123,8 +128,8 @@ async function copyImageFiles({
         // this method also supports remote URLs and using the global sharp instance.
         const { source } = await generateImageAsync({ projectRoot, cacheType: IMAGE_CACHE_NAME }, {
           src: item,
-          width: size,
-          height: size,
+          width: enableFullScreenImage ? undefined : size,
+          height: enableFullScreenImage ? undefined : size,
         } as any);
         // Write image buffer to the file system.
         // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
