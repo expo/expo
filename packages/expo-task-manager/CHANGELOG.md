@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [docs] Update background modes configuration for iOS in multiple SDK pages ([#32647](https://github.com/expo/expo/pull/32647) by [@chrfalch](https://github.com/chrfalch))
+
 ## 12.0.2 — 2024-11-05
 
 ### 💡 Others
