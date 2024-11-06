@@ -454,6 +454,26 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 > **info** When the app is not running or killed and is restarted by tapping on a notification, the `NotificationResponseReceivedListener` may or may not be triggered. To reliably capture the response, we recommend using `useLastNotificationResponse` or `getLastNotificationResponseAsync`.
 
+### Background notification configuration&ensp;<PlatformTags platforms={["ios"]} />
+
+To be able to run background notifications on iOS, you need to add the `remote-notification` value to the `UIBackgroundModes` array in your app's **Info.plist** file.
+
+**If you're using [CNG](/workflow/continuous-native-generation/)** the required `UIBackgroundModes` configuration will be applied automatically the next time you run `npx expo prebuild`.
+
+<Collapsible summary="Configure UIBackgroundModes manually on iOS">
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native iOS project, then you'll need to add the following to your **Expo.plist** file:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>UIBackgroundModes</key>
+  <array>
+    <string>remote-notification</string>
+  </array>
+</key>
+```
+
+</Collapsible>
+
 ### Background notifications
 
 > **warning** Background event listeners are not supported in Expo Go.
@@ -471,7 +491,11 @@ For Android:
 
 For iOS:
 
-- In the array under the `ios.infoPlist.UIBackgroundModes` key in your [app config](/workflow/configuration/), add the values `remote-notification` and `processing`.
+- background mode must be specified in **Info.plist** file. See [Background notifications
+  configuration](#background-notification-configuration).
+- You must use a [development
+  build](/develop/development-builds/introduction/) to use background notifications since it is not
+  supported in the Expo Go app.
 - Add `_contentAvailable: true` to your push notification payload for the Expo push notification service. Under normal circumstances, the "content-available" flag should launch your app in the background.
 
 ## Additional information
