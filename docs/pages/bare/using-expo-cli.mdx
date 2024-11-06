@@ -3,6 +3,9 @@ title: Migrate to Expo CLI
 description: Learn how to migrate to use Expo CLI instead of @react-native-community/cli in any React Native project.
 ---
 
+import { DocsLogo, RouterLogo } from '@expo/styleguide';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
@@ -101,6 +104,7 @@ Now, with the `expo` package installed and configured in your project, you can s
   title="Expo CLI Reference"
   description="Learn more about the commands and flags available in Expo CLI."
   href="/more/expo-cli"
+  Icon={BookOpen02Icon}
 />
 <BoxLink
   title="Adopt Prebuild"
@@ -110,14 +114,17 @@ Now, with the `expo` package installed and configured in your project, you can s
     </>
   }
   href="/guides/adopting-prebuild"
+  Icon={BookOpen02Icon}
 />
 <BoxLink
   title="Use Expo SDK"
   description="Try out libraries from the Expo SDK in your app."
   href="/versions/"
+  Icon={DocsLogo}
 />
 <BoxLink
   title="Expo Router"
   description="Expo Router brings the best routing concepts from the web to native Android and iOS apps."
   href="/router/introduction/"
+  Icon={RouterLogo}
 />
