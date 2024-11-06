@@ -222,11 +222,17 @@ fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager
     devSettings = devSettings,
     packagerConnection = devSettings.public_getPackagerConnectionSettings()
   )
+  val oldDevServerHelper: DevServerHelper = DevSupportManagerBase::class.java.getProtectedFieldValue(
+    devSupportManager,
+    "mDevServerHelper"
+  )
   DevSupportManagerBase::class.java.setProtectedDeclaredField(
     devSupportManager,
     "mDevServerHelper",
     devLauncherDevServerHelper
   )
+  oldDevServerHelper.closePackagerConnection()
+  oldDevServerHelper.closeInspectorConnection()
 }
 
 fun findDevMenuPackage(): ReactPackage? {

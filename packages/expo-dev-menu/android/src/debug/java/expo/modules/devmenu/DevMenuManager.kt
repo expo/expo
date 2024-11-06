@@ -163,7 +163,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     if (!this::devMenuHost.isInitialized) {
       devMenuHost = ReactHostWrapper(
         reactNativeHost = DevMenuReactNativeHost(application, useDeveloperSupport),
-        reactHost = DevMenuReactHost.create(application, useDeveloperSupport)
+        reactHostProvider = { DevMenuReactHost.create(application, useDeveloperSupport) }
       )
       UiThreadUtil.runOnUiThread {
         devMenuHost.start()
