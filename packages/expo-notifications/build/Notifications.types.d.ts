@@ -224,7 +224,7 @@ export interface UnknownNotificationTrigger {
 /**
  * A union type containing different triggers which may cause the notification to be delivered to the application.
  */
-export type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | WeeklyNotificationTrigger | MonthlyNotificationTrigger | YearlyNotificationTrigger | UnknownNotificationTrigger;
+export type NotificationTrigger = PushNotificationTrigger | LocationNotificationTrigger | NotificationTriggerInput | UnknownNotificationTrigger;
 /**
  * A trigger that will cause the notification to be delivered immediately.
  */

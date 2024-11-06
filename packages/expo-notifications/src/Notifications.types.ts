@@ -242,13 +242,8 @@ export interface UnknownNotificationTrigger {
  */
 export type NotificationTrigger =
   | PushNotificationTrigger
-  | CalendarNotificationTrigger
   | LocationNotificationTrigger
-  | TimeIntervalNotificationTrigger
-  | DailyNotificationTrigger
-  | WeeklyNotificationTrigger
-  | MonthlyNotificationTrigger
-  | YearlyNotificationTrigger
+  | NotificationTriggerInput
   | UnknownNotificationTrigger;
 
 /**

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix `NotificationTrigger` type ([#32659](https://github.com/expo/expo/pull/32659) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 - [docs] minor improvements to TS docs ([#32658](https://github.com/expo/expo/pull/32658) by [@vonovak](https://github.com/vonovak))
