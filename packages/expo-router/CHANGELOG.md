@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `<Link>` using a hash href causing a full page reload on web.
+
 ### 💡 Others
 
 ## 4.0.0-preview.13 — 2024-11-05
