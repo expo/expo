@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove circular import references to index files ([#32671](https://github.com/expo/expo/pull/32671) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 9.0.6 — 2024-11-05
