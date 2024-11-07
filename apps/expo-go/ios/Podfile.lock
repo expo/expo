@@ -67,9 +67,9 @@ PODS:
     - ExpoModulesCore
   - ExpoDomWebView (0.0.1):
     - ExpoModulesCore
-  - ExpoFileSystem (18.0.0):
+  - ExpoFileSystem (18.0.1):
     - ExpoModulesCore
-  - ExpoFileSystem/Tests (18.0.0):
+  - ExpoFileSystem/Tests (18.0.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoFont (13.0.1):
@@ -213,7 +213,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (13.0.0):
     - ExpoModulesCore
-  - ExpoSQLite (15.0.1):
+  - ExpoSQLite (15.0.2):
     - ExpoModulesCore
   - ExpoStoreReview (8.0.0):
     - ExpoModulesCore
@@ -234,7 +234,7 @@ PODS:
   - EXTaskManager (12.0.2):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.26.4):
+  - EXUpdates (0.26.5):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -261,7 +261,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdates/Tests (0.26.4):
+  - EXUpdates/Tests (0.26.5):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -2990,7 +2990,7 @@ SPEC CHECKSUMS:
   ExpoDevice: e24dd19a43065182eb246bc0e7f84186862f1e83
   ExpoDocumentPicker: 4a89fd8a0cb90010214a416c858d7dece1c1eb10
   ExpoDomWebView: 71d9f0808dce43b9f36b45a8c091c242dfa7b372
-  ExpoFileSystem: d8b51caca86749a132c8ffde46be9a175e46b819
+  ExpoFileSystem: 60313d0b54cb8242004525f37c9b85988194ae33
   ExpoFont: 7522d869d84ee2ee8093ee997fef5b86f85d856b
   ExpoGL: 62652b93771645081f585a5c2041f79ecc872944
   ExpoHaptics: e636188d1d5f7ccb79f3c1bfab47aaf5a1768c73
@@ -3018,7 +3018,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 39a198e64bf522948fe60e270e49a0c7757912c1
   ExpoSMS: 884d6627c0848795ff9492fbfc7ba6087111e344
   ExpoSpeech: 27bb25844919711ebf0e201ce0bef2897d3693c7
-  ExpoSQLite: 341dd1f1103fd7c59d93360bb6062aef21a64fb3
+  ExpoSQLite: cd2d090b94e6328277607f1c3dcd431905b30887
   ExpoStoreReview: f3439c43f13fa497cfe07d16b095f39101ed5548
   ExpoSymbols: 81d7f433d7a7b20658029eae524a4fa93627159e
   ExpoSystemUI: 7a9e9895c2621980ae57277c9d1903ad3fd41bb1
@@ -3028,7 +3028,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: ea83cc6f03bec1938c3b8fb4dcb9df71960fba36
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: 96988ae979e705f4046c4487ab3e39412c923096
-  EXUpdates: 20f5504f63bff8df7e1328923b16f3cbe762352f
+  EXUpdates: 596a3b2e3ecb5eb38901c29bdecae58d2c95f25e
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   FBLazyVector: aa59bef5c46e93168bffcf3dc37ee1e176de799a
   FirebaseCore: 8542de610f35f86196ba26cdb2544565a5157c8e
