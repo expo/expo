@@ -134,7 +134,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.addAll(SvgPackage().getNativeModuleIterator(reactContext).map { it.module })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
-        nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name(), reactContext)!! })
+        nativeModules.addAll(dateTimePickerPackage.createNativeModules(reactContext))
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 
@@ -173,7 +173,7 @@ class ExponentPackage : ReactPackage {
         RNGestureHandlerPackage(),
         RNScreensPackage(),
         RNCWebViewPackage(),
-        RNDateTimePickerPackage(),
+        dateTimePickerPackage,
         RNCMaskedViewPackage(),
         RNCPickerPackage(),
         ReactSliderPackage(),
@@ -215,6 +215,7 @@ class ExponentPackage : ReactPackage {
     // Need to avoid initializing duplicated packages
     private val stripePackage = StripeSdkPackage()
     private val skiaPackage = RNSkiaPackage()
+    private val dateTimePickerPackage = RNDateTimePickerPackage()
 
     fun kernelExponentPackage(
       context: Context,
