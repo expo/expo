@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Support hoisting for inlined server actions.
+- Support hoisting for inlined server actions. ([#32633](https://github.com/expo/expo/pull/32633) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
