@@ -11,9 +11,9 @@
       "default": "./build/index.js",
       "types": "./build/index.d.ts"
     },
-    "./async-storage": {
-      "default": "./async-storage.js",
-      "types": "./async-storage.d.ts"
+    "./kv-store": {
+      "default": "./kv-store.js",
+      "types": "./kv-store.d.ts"
     }
   },
   "scripts": {
@@ -29,7 +29,9 @@
     "react-native",
     "expo",
     "sqlite",
-    "sql"
+    "sql",
+    "storage",
+    "async-storage"
   ],
   "repository": {
     "type": "git",
