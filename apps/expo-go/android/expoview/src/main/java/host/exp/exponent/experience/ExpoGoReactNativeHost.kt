@@ -17,7 +17,7 @@ class ExpoGoReactNativeHost(
   private val mainModuleName: String? = null
 ) : DefaultReactNativeHost(application) {
   override fun getUseDeveloperSupport(): Boolean {
-    return true
+    return false
   }
 
   override fun getJSMainModuleName(): String {
