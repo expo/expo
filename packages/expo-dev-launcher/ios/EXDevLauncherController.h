@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
 
-@property (nonatomic, weak) RCTAppDelegate *rctAppDelegate;
-
 - (void)devLauncherController:(EXDevLauncherController *)developmentClientController
                 didStartWithSuccess:(BOOL)success;
 

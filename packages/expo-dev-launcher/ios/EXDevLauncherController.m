@@ -47,7 +47,7 @@
 @interface EXDevLauncherController ()
 
 @property (nonatomic, weak) UIWindow *window;
-@property (nonatomic, weak) id<EXDevLauncherControllerDelegate> delegate;
+@property (nonatomic, weak) ExpoDevLauncherReactDelegateHandler * delegate;
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
@@ -328,7 +328,7 @@
 
   [self _removeInitModuleObserver];
   // Reset app react host
-  [[self.delegate rctAppDelegate].rootViewFactory setReactHost:nil];
+  [self.delegate destroyReactInstance];
 
   _appDelegate.rootViewFactory = [_appDelegate createRCTRootViewFactory];
 
@@ -403,7 +403,7 @@
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
 
   // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (![_appDelegate.rootViewFactory.bridge isValid]) {
+  if (_appDelegate.rootViewFactory.reactHost == nil) {
     [self navigateToLauncher];
   }
 
@@ -608,8 +608,7 @@
 - (BOOL)isAppRunning
 {
   if([_appBridge isProxy]){
-    RCTHost *reactHost =  [self.delegate rctAppDelegate].rootViewFactory.reactHost;
-    return reactHost != nil;
+    return [self.delegate isReactInstanceValid];
   }
 
   return [_appBridge isValid];

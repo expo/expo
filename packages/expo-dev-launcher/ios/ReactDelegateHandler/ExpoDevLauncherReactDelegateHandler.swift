@@ -5,7 +5,7 @@ import EXUpdatesInterface
 
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
-  public weak var rctAppDelegate: RCTAppDelegate?
+  private weak var rctAppDelegate: RCTAppDelegate?
   private weak var reactDelegate: ExpoReactDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDevLauncherDeferredRCTRootView?
@@ -35,6 +35,16 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     self.rootViewInitialProperties = initialProperties
     self.deferredRootView = EXDevLauncherDeferredRCTRootView()
     return self.deferredRootView
+  }
+
+  @objc
+  public func isReactInstanceValid() -> Bool {
+      return self.rctAppDelegate?.rootViewFactory.value(forKey: "reactHost") != nil
+  }
+
+  @objc
+  public func destroyReactInstance() {
+    self.rctAppDelegate?.rootViewFactory.setValue(nil, forKey: "reactHost")
   }
 
   // MARK: EXDevelopmentClientControllerDelegate implementations
