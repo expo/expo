@@ -8,7 +8,7 @@ export type SplashScreenOptions = {
   duration?: number;
   /**
    * Whether to hide the splash screen with a fade out animation.
-   * @ios
+   * @platform ios
    * @default false
    */
   fade?: boolean;
