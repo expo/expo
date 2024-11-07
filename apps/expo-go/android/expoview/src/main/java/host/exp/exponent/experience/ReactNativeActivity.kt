@@ -381,21 +381,21 @@ abstract class ReactNativeActivity :
     val nativeHost = ExpoGoReactNativeHost(
       application,
       instanceManagerBuilderProperties,
-      mainModuleName
     )
 
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
     val hostWrapper = ReactNativeHostWrapper(application, nativeHost)
-    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper, devBundleDownloadListener)
-    reactNativeHost = nativeHost
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName!!)
+      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName!!, nativeHost)
       DefaultDevLoadingViewImplementation.setDevLoadingEnabled(true)
     } else {
       waitForReactAndFinishLoading()
     }
+
+    val reactHost = ReactHostFactory.createFromReactNativeHost(this, hostWrapper, devBundleDownloadListener)
+    reactNativeHost = nativeHost
 
     val bundle = Bundle()
     val exponentProps = JSONObject()

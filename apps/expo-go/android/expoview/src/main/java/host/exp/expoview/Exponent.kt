@@ -27,6 +27,8 @@ import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
+import host.exp.exponent.experience.ExpoGoReactNativeHost
+import host.exp.exponent.experience.ExpoNativeHost
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.ExponentUrls.addHeadersFromJSONObject
 import host.exp.exponent.kernel.KernelConstants
@@ -366,7 +368,8 @@ class Exponent private constructor(val context: Context, val application: Applic
 
     @JvmStatic fun enableDeveloperSupport(
       debuggerHost: String,
-      mainModuleName: String
+      mainModuleName: String,
+      host: ExpoNativeHost
     ) {
       if (debuggerHost.isEmpty() || mainModuleName.isEmpty()) {
         return
@@ -381,6 +384,9 @@ class Exponent private constructor(val context: Context, val application: Applic
         AndroidInfoHelpers.EMULATOR_LOCALHOST = debuggerHostHostname
         AndroidInfoHelpers.setDevServerPort(debuggerHostPort)
         AndroidInfoHelpers.setInspectorProxyPort(debuggerHostPort)
+
+        host.devSupportEnabled = true
+        host.mainModuleName = mainModuleName
       } catch (e: IllegalAccessException) {
         e.printStackTrace()
       } catch (e: NoSuchFieldException) {

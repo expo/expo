@@ -230,19 +230,23 @@ class Kernel : KernelInterface() {
               localBundlePath
             )
           )
-          val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
-          reactHost = ReactHostFactory.createFromReactNativeHost(applicationContext, hostWrapper)
 
-          if (nativeHost.devSupportEnabled) {
+          if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
+            exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()) {
             Exponent.enableDeveloperSupport(
               exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost(),
-              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
+              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName(),
+              nativeHost
             )
           }
+
+          val hostWrapper = ReactNativeHostWrapper(applicationContext, nativeHost)
+          reactHost = ReactHostFactory.createFromReactNativeHost(applicationContext, hostWrapper)
 
           reactNativeHost = nativeHost
           reactHost?.onHostResume(activityContext, null)
           isRunning = true
+
           EventBus.getDefault().postSticky(KernelStartedRunningEvent())
           EXL.d(TAG, "Kernel started running.")
 
