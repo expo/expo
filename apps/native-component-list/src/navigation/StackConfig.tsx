@@ -45,7 +45,8 @@ export default function getStackConfig(navigation: BottomTabNavigationProp<any>,
               color={theme.icon.info}
             />
           </TouchableOpacity>
-          <ThemeToggler />
+          {/* This toggler does not work properly, it only updates the navigation and not the body UI */}
+          {/* <ThemeToggler /> */}
         </View>
       ),
     }),
