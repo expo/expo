@@ -115,6 +115,9 @@ class Kernel : KernelInterface() {
       }
     }
 
+  private val manifest
+    get() = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
+
   private var optimisticActivity: ExperienceActivity? = null
 
   private var optimisticTaskId: Int? = null
@@ -164,7 +167,7 @@ class Kernel : KernelInterface() {
       try {
         // Make sure we can get the manifest successfully. This can fail in dev mode
         // if the kernel packager is not running.
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
+        manifest
       } catch (e: Throwable) {
         Exponent.instance
           .runOnUiThread { // Hack to make this show up for a while. Can't use an Alert because LauncherActivity has a transparent theme. This should only be seen by internal developers.
@@ -230,13 +233,12 @@ class Kernel : KernelInterface() {
               localBundlePath
             )
           )
-
           if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
-            exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
+            manifest.isDevelopmentMode()
           ) {
             Exponent.enableDeveloperSupport(
-              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost(),
-              exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName(),
+              manifest.getDebuggerHost(),
+              manifest.getMainModuleName(),
               nativeHost
             )
           }
@@ -274,7 +276,7 @@ class Kernel : KernelInterface() {
   private val bundleUrl: String?
     get() {
       return try {
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getBundleURL()
+        manifest.getBundleURL()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
@@ -304,7 +306,7 @@ class Kernel : KernelInterface() {
   private val kernelRevisionId: String?
     get() {
       return try {
-        exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getRevisionId()
+        manifest.getRevisionId()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
