@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Catch `EMFILE` errors on macOS and clarify the next step. ([#32513](https://github.com/expo/expo/pull/32513) by [@byCedric](https://github.com/byCedric))
+
 ## 0.20.2 — 2024-11-07
 
 ### 🐛 Bug fixes
