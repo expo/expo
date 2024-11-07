@@ -6,13 +6,11 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import path from 'node:path';
 
-import { packExpoBareTemplateTarballAsync, setupExpoRepoAsync } from './ExpoRepo.js';
+import { packExpoBareTemplateTarballAsync } from './ExpoRepo.js';
 import { getNpmVersionAsync } from './Npm.js';
 import {
-  addLinkablePackagesToAppAsync,
+  addWorkspacePackagesToAppAsync,
   getExpoPackagesAsync,
-  getReactNativeTransitivePackagesAsync,
-  registerPackageLinkingAsync,
   reinstallPackagesAsync,
 } from './Packages.js';
 import { setDefaultVerbose } from './Processes.js';
@@ -51,12 +49,13 @@ async function runAsync(programName: string) {
 
   const projectName = programOpts.name;
   const projectRoot = path.join(path.resolve(program.args[0] || '.'), projectName);
+  const nightlyVersion = await getNpmVersionAsync('react-native', 'nightly');
   const projectProps: ProjectProperties = {
     appId: programOpts.appId,
     newArchEnabled: !!programOpts.enableNewArchitecture,
+    nightlyVersion,
+    useExpoRepoPath: programOpts.expoRepo,
   };
-  const expoRepoPath = programOpts.expoRepo ?? path.join(projectRoot, 'expo');
-  const nightlyVersion = await getNpmVersionAsync('react-native', 'nightly');
   console.log(
     chalk.cyan(
       `Setting up app at ${chalk.bold(projectRoot)} with ${chalk.bold(
@@ -64,26 +63,20 @@ async function runAsync(programName: string) {
       )}`
     )
   );
-  await createExpoApp(projectRoot, expoRepoPath, projectProps);
-  await setupExpoRepoAsync(expoRepoPath, nightlyVersion);
+  const expoRepoPath = await createExpoApp(projectRoot, projectProps);
 
-  const packages = [
-    ...(await getExpoPackagesAsync(expoRepoPath)),
-    ...(await getReactNativeTransitivePackagesAsync(expoRepoPath)),
-  ];
+  const packages = await getExpoPackagesAsync(expoRepoPath);
 
-  console.log(chalk.cyan(`Registering bun links`));
-  for (const pkg of packages) {
-    console.log(`  ${pkg.name}`);
-    await registerPackageLinkingAsync(expoRepoPath, pkg);
-  }
-  await addLinkablePackagesToAppAsync(projectRoot, packages);
+  await addWorkspacePackagesToAppAsync(projectRoot, packages);
 
   console.log(chalk.cyan(`Reinstalling packages`));
   await reinstallPackagesAsync(projectRoot);
 
   console.log(chalk.cyan(`Running prebuild`));
-  const tarballPath = await packExpoBareTemplateTarballAsync(expoRepoPath, projectRoot);
+  const tarballPath = await packExpoBareTemplateTarballAsync(
+    expoRepoPath,
+    path.join(projectRoot, '.expo')
+  );
   await prebuildAppAsync(projectRoot, tarballPath);
 
   if (programOpts.install) {
