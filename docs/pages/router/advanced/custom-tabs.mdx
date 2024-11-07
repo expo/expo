@@ -61,11 +61,11 @@ Dynamic routes are allowed and can be provided with values via the `href`.
 
 The trigger `<Trigger name="dynamic page" href="/hello-world" />` will create a tab for **[slug].tsx** with the params `{ slug: 'hello-world' }`.
 
-### Ambagious routes
+### Ambiguous routes
 
 <FileTree files={['_layout.tsx', ['(one,two)/route.tsx', 'A route within a shared group']]} />
 
-The `href` values provided to `TabTrigger` cannot be ambagious and must always point to a single route. The href `/route` is not allowed, as it could refer to either `/(one)/route` or `/(two)/route`.
+The `href` values provided to `TabTrigger` cannot be ambiguous and must always point to a single route. The href `/route` is not allowed, as it could refer to either `/(one)/route` or `/(two)/route`.
 
 ### Nested routes
 
