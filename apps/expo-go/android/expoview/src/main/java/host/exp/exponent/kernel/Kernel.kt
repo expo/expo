@@ -232,7 +232,8 @@ class Kernel : KernelInterface() {
           )
 
           if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
-            exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()) {
+            exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.isDevelopmentMode()
+          ) {
             Exponent.enableDeveloperSupport(
               exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getDebuggerHost(),
               exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName(),

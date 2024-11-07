@@ -380,7 +380,7 @@ abstract class ReactNativeActivity :
 
     val nativeHost = ExpoGoReactNativeHost(
       application,
-      instanceManagerBuilderProperties,
+      instanceManagerBuilderProperties
     )
 
     val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)

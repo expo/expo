@@ -5,7 +5,6 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.shell.MainReactPackage
 import host.exp.exponent.ExponentManifest
-import host.exp.exponent.kernel.KernelConfig
 import host.exp.expoview.Exponent
 import versioned.host.exp.exponent.ExpoReanimatedPackage
 import versioned.host.exp.exponent.ExpoTurboPackage
@@ -18,7 +17,7 @@ interface ExpoNativeHost {
 
 class ExpoGoReactNativeHost(
   application: Application,
-  private val instanceManagerBuilderProperties: Exponent.InstanceManagerBuilderProperties,
+  private val instanceManagerBuilderProperties: Exponent.InstanceManagerBuilderProperties
 ) : DefaultReactNativeHost(application), ExpoNativeHost {
   override var devSupportEnabled = false
   override var mainModuleName: String? = null

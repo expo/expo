@@ -27,7 +27,6 @@ import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
-import host.exp.exponent.experience.ExpoGoReactNativeHost
 import host.exp.exponent.experience.ExpoNativeHost
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.ExponentUrls.addHeadersFromJSONObject
