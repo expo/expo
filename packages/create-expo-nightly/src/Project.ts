@@ -1,9 +1,13 @@
-import JsonFile, { JSONArray, JSONObject, JSONValue } from '@expo/json-file';
+import type { JSONArray, JSONObject, JSONValue } from '@expo/json-file';
 import fs from 'fs-extra';
 import assert from 'node:assert';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
-import { runAsync } from './Processes';
+import { runAsync } from './Processes.js';
+
+const require = createRequire(import.meta.url);
+const { default: JsonFile } = require('@expo/json-file') as typeof import('@expo/json-file');
 
 export interface ProjectProperties {
   /** The Android applicationId and iOS bundleIdentifier. */

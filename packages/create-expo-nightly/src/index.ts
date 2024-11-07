@@ -1,30 +1,29 @@
 #!/usr/bin/env node
 
-import './Preclude.fx';
+import './Preclude.fx.js';
 
 import chalk from 'chalk';
 import { Command } from 'commander';
 import path from 'node:path';
 
-import { packExpoBareTemplateTarballAsync, setupExpoRepoAsync } from './ExpoRepo';
-import { getNpmVersionAsync } from './Npm';
+import { packExpoBareTemplateTarballAsync, setupExpoRepoAsync } from './ExpoRepo.js';
+import { getNpmVersionAsync } from './Npm.js';
 import {
   addLinkablePackagesToAppAsync,
   getExpoPackagesAsync,
   getReactNativeTransitivePackagesAsync,
   registerPackageLinkingAsync,
   reinstallPackagesAsync,
-} from './Packages';
-import { setDefaultVerbose } from './Processes';
+} from './Packages.js';
+import { setDefaultVerbose } from './Processes.js';
 import {
   type ProjectProperties,
   createExpoApp,
   installCocoaPodsAsync,
   prebuildAppAsync,
-} from './Project';
-import { checkRequiredToolsAsync } from './SanityChecks';
-
-const packageJSON = require('../package.json');
+} from './Project.js';
+import { checkRequiredToolsAsync } from './SanityChecks.js';
+import packageJSON from '../package.json' assert { type: 'json' };
 
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
