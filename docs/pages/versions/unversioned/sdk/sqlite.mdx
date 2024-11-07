@@ -441,8 +441,8 @@ The `expo-sqlite` library provides [`AsyncStorage`](#sqliteasyncstorage) as a dr
 
 [`AsyncStorage`](#sqliteasyncstorage) provides the same API as `@react-native-async-storage/async-storage`:
 
-```ts Using Storage
-import AsyncStorage from 'expo-sqlite/async-storage';
+```ts Using the Store
+import AsyncStorage from 'expo-sqlite/kv-store';
 
 await AsyncStorage.setItem('key', JSON.stringify({ entity: 'value' }));
 const value = await AsyncStorage.getItem('key');
@@ -452,8 +452,8 @@ console.log(entity); // { entity: 'value' }
 
 A key benefit of using `AsyncStorage` from `expo-sqlite` is the addition of synchronous APIs for added convenience:
 
-```ts Using Storage with synchronous APIs
-import AsyncStorage from 'expo-sqlite/async-storage';
+```ts Using the Store with synchronous APIs
+import AsyncStorage from 'expo-sqlite/kv-store';
 
 AsyncStorage.setItemSync('key', 'value');
 const value = AsyncStorage.getItemSync('key');
@@ -463,7 +463,7 @@ If you're currently using `@react-native-async-storage/async-storage` in your pr
 
 ```diff
 - import AsyncStorage from '@react-native-async-storage/async-storage';
-+ import AsyncStorage from 'expo-sqlite/async-storage';
++ import AsyncStorage from 'expo-sqlite/kv-store';
 ```
 
 ## Third-party library integrations
