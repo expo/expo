@@ -47,7 +47,7 @@ export function Layout() {
 
 ## Creating routes
 
-The `TabList` contains all of the routes available within the tab navigator. It must be an immediate child of `Tabs`. Each route is defined by a `TabTrigger` within the `TabList`. A `TabTrigger` within a `TabList` must include a `name` and a `href` prop.
+The `TabList` contains all the routes available within the tab navigator. It must be an immediate child of `Tabs`. Each route is defined by a `TabTrigger` within the `TabList`. A `TabTrigger` within a `TabList` must include a `name` and a `href` prop.
 
 Typically, the `TabList` defines both the available tab routes and the appearance of the tabs, with the children of each `TabTrigger` defining the appearance of each tab button.
 
@@ -65,7 +65,7 @@ The trigger `<Trigger name="dynamic page" href="/hello-world" />` will create a 
 
 <FileTree files={['_layout.tsx', ['(one,two)/route.tsx', 'A route within a shared group']]} />
 
-The `href` values provided to `TabTrigger` must always point to a single route. In the above example of a shared route, href `/route` is not allowed, as it could refer to either `/(one)/route` or `/(two)/route`. However, specifying the route group within the href would work (e.g.,`href="/(one)/route"`).
+The `href` values provided to `TabTrigger` must always point to a single route. In the above example of a shared route, href `/route` is not allowed, as it could refer to either `/(one)/route` or `/(two)/route`. However, specifying the route group within the href would work (for example,`href="/(one)/route"`).
 
 ### Nested routes
 
@@ -78,7 +78,7 @@ The `href` values provided to `TabTrigger` must always point to a single route. 
   ]}
 />
 
-A `TabTrigger` can link to a deeply nested route. `<TabTrigger name="route" href="/route" />` will show the **(stack-one)/(stack-two)/route.tsx** route. This tab will be controlled by that route's parent navigator (i.e., the navigator within **stack-two\_layout.tsx**). This navigation is similar to a deep link.
+A `TabTrigger` can link to a deeply nested route. `<TabTrigger name="route" href="/route" />` will show the **(stack-one)/(stack-two)/route.tsx** route. This tab will be controlled by that route's parent navigator (that is, the navigator within **stack-two_layout.tsx**). This navigation is similar to a deep link.
 
 ## Rendering routes
 
@@ -104,7 +104,7 @@ The `TabSlot` component renders the current route. `TabSlot` be can be nested in
 
 ## Switching tabs
 
-Tabs can be switched via a `Link` or using the imperative APIs. However, these APIs will always perform a navigation action (they will switch tabs and might change the URL). To switch tabs without performing any navigation, you should use a `TabTrigger`. A `TabTrigger` is an unstyled `<View>` that will switch tabs when pressed, much like how text and components can be wrapped in `Link` in order to make them pressible navigation elements.
+Tabs can be switched via a `Link` or using the imperative APIs. However, these APIs will always perform a navigation action (they will switch tabs and might change the URL). To switch tabs without performing any navigation, you should use a `TabTrigger`. A `TabTrigger` is an unstyled `<View>` that will switch tabs when pressed, much like how text and components can be wrapped in `Link` to make them pressable navigation elements.
 
 ### Resetting navigation
 
@@ -128,7 +128,7 @@ All components are rendered unstyled as a `<View>`, except `TabTrigger` which re
 
 If you need to change the structure of a component, you can override its underlying component by using the `asChild` props. The component then acts as a slot, and will forward its props to its immediate child.
 
-```tsx
+```tsx Custom TabList
 <Tabs>
   <TabSlot />
   /* @info Change the appearance of the <TabList /> */
@@ -144,7 +144,7 @@ If you need to change the structure of a component, you can override its underly
 </Tabs>
 ```
 
-```tsx
+```tsx Custom Button
 <Tabs>
   <TabSlot />
   <TabList asChild>
@@ -164,7 +164,7 @@ If you need to change the structure of a component, you can override its underly
 
 The `TabList` is both the configuration and default appearance of the `Tabs`, but it is not the only way to render a tab bar. By hiding the `TabList`, you can construct custom tab bars using `TabTrigger`.
 
-```tsx
+```tsx Multiple tab bars example
 <Tabs>
   <TabSlot />
   {/* A custom tab bar */}
@@ -195,13 +195,13 @@ The `TabList` is both the configuration and default appearance of the `Tabs`, bu
 
 `TabTrigger` will forward an `isFocused` prop, so you can create a separate tab button component that reacts to focused status.
 
-```tsx
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { TabTriggerSlotProps } from "expo-router/ui";
-import { ComponentProps, Ref, forwardRef } from "react";
-import { Text, Pressable, View } from "react-native";
+```tsx TabButton.tsx
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { TabTriggerSlotProps } from 'expo-router/ui';
+import { ComponentProps, Ref, forwardRef } from 'react';
+import { Text, Pressable, View } from 'react-native';
 
-type Icon = ComponentProps<typeof FontAwesome>["name"];
+type Icon = ComponentProps<typeof FontAwesome>['name'];
 
 export type TabButtonProps = TabTriggerSlotProps & {
   icon?: Icon;
@@ -215,26 +215,25 @@ export const TabButton = forwardRef(
         {...props}
         style={[
           {
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexDirection: "column",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexDirection: 'column',
             gap: 5,
             padding: 10,
           },
-          isFocused ? { backgroundColor: "white" } : undefined,
-        ]}
-      >
+          isFocused ? { backgroundColor: 'white' } : undefined,
+        ]}>
         <FontAwesome name={icon} />
-        <Text
-          style={[{ fontSize: 16 }, isFocused ? { color: "white" } : undefined]}
-        >
+        <Text style={[{ fontSize: 16 }, isFocused ? { color: 'white' } : undefined]}>
           {children}
         </Text>
       </Pressable>
     );
   }
 );
+```
+
 ### Hooks
 
 All components also have a hook version and allows to you create the same functionality without the restrictions of using components. Using hooks, you have complete control over the render tree. See the [Router UI Reference](/versions/unversioned/router-ui) for a full list of the hooks available.
