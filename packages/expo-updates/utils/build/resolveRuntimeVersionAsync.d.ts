@@ -1,4 +1,4 @@
-import * as Fingerprint from '@expo/fingerprint';
+import * as Fingerprint from 'expo/fingerprint';
 import { Workflow } from './workflow';
 export declare function resolveRuntimeVersionAsync(projectRoot: string, platform: 'ios' | 'android', fingerprintOptions: Fingerprint.Options, otherOptions: {
     workflowOverride?: Workflow;

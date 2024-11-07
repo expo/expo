@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 2.0.0-preview.10 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed broken self-signed connections from network inspector. ([#32670](https://github.com/expo/expo/pull/32670) by [@kudo](https://github.com/kudo))
+
 ## 2.0.0-preview.9 — 2024-10-31
 
 ### 💡 Others

@@ -59,7 +59,7 @@ export async function transform(
     const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
     return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
   }
-  if (filename.match(/expo-router\/virtual-client-boundaries\.js/)) {
+  if (filename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
     const environment = options.customTransformOptions?.environment;
     const isServer = environment === 'node' || environment === 'react-server';
 

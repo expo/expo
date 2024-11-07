@@ -158,7 +158,6 @@ const renderClass = (
         <>
           <BoxSectionHeader
             text={`${name} Properties`}
-            className="!text-secondary !font-medium"
             exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
           />
@@ -181,7 +180,6 @@ const renderClass = (
         <>
           <BoxSectionHeader
             text={`${name} Methods`}
-            className="!text-secondary !font-medium !text-sm"
             exposeInSidebar={false}
             baseNestingLevel={DEFAULT_BASE_NESTING_LEVEL + 2}
           />

@@ -1,0 +1,224 @@
+---
+title: Create Tab layouts
+description: Learn about the file-based routing convention used by Expo Router.
+sidebar_title: Tabs
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+> Experimentally available in SDK 52 and above.
+
+> For the React Navigation styled tabs, see [Tabs](/router/advanced/tabs/)
+
+Expo Router offers a set of components to create custom Tabs layouts. Unlike the React Navigation styled `<Tabs />`, these components are un-styled and un-opinionated. They are designed for you to build a complex UI from scratch.
+
+## Anatomy
+
+- **Tabs**: The containing `<View />` for the tabs
+- **TabList**: The containing `<View />` for the the list of tab triggers
+- **TabTrigger>**: A trigger to switch to the specified tab
+- **TabSlot**: A slot to render the current tab
+
+```tsx
+<Tabs>
+  <TabSlot />
+  <TabList>
+    <TabTrigger name="home" href="/">
+      <Text>Home</Text>
+    </TabTrigger>
+    <TabTrigger name="article" href="/article">
+      <Text>article</Text>
+    </TabTrigger>
+  </TabList>
+</Tabs>
+```
+
+## Creating routes
+
+The `<TabList />` component is the "holding" component for routes. `<TabTrigger />`'s defined as a child of the `<TabList />` specific what routes are present as a tab. A `<TabTrigger />` within a `<TabList />` must include a `name` and a `href` prop. `<TabList />` needs to be an immediate child of `<Tabs />`
+
+`<TabList />` is both the configuration and default appearance of the `<Tabs />`. Triggers present within the `<TabList />` dictate what routes are possible within the `<Tabs />`
+
+> `name` can be any `string`. This is a user-defined name for the Tab.
+
+### Dynamic routes
+
+Dynamic routes are allowed and can be provided with values via the `href`
+
+<FileTree files={['_layout.tsx', ['[slug].tsx']]} />
+
+The trigger `<Trigger name="dynamic page" href="/hello-world" />` will create a tab for `[slug].tsx` with the params `{ slug: 'hello-world' }`
+
+### Ambiguous routes
+
+<FileTree files={['_layout.tsx', ['(one,two)/route.tsx', 'A route within a shared group']]} />
+
+The `href` values provided to `<TabTrigger />` cannot be ambiguous and must always point to a single route. The href `/route` is not allowed, as it could refer to either `/(one)/route` or `/(two)/route`.
+
+### Nested routes
+
+<FileTree
+  files={[
+    ['_layout.tsx'],
+    ['(stack-one)/_layout.tsx', 'A <Stack> layout'],
+    ['(stack-one)/(stack-two)/_layout.tsx', 'Nested <Stack> layout'],
+    '(stack-one)/(stack-two)/route.tsx',
+  ]}
+/>
+
+A `<TabTrigger />` can link to a deeply nested route. `<TabTrigger name="route" href="/route" />` will show the `(stack-one)/(stack-two)/route.tsx` route. This tab will be controlled by that routes parent navigators (the two `<Stack>`). This navigation is similar to a deep link.
+
+## Rendering routes
+
+The `<TabSlot />` component renders the current route. `<TabSlot />` be can be nested inside other components but cannot be within the `<TabList />`
+
+```tsx app/_layout.tsx
+<Tabs>
+  <TabList>
+    <TabTrigger name="home" href="/">
+      <Text>Home</Text>
+    </TabTrigger>
+  </TabList>
+  {/* customize how `<TabSlot />` is rendered */}
+  /* @info TabSlot be nested inside custom components */
+  <View>
+    <View>
+      <TabSlot />
+    </View>
+  </View>
+  /* @end */
+</Tabs>
+```
+
+## Switching tabs
+
+Tabs can be switched via a `<Link />` or using the imperative APIs, however these APIs will always perform a navigation action (they will switch tabs and might change the URL). To switch tabs without performing any navigation, you should a `<TabTrigger />`. A `<TabTrigger />` is an unstyled `<View />` that will switch tabs when pressed.
+
+### Resetting navigation
+
+The `<TabTrigger />` `reset` prop can be used to control when a tab resets its navigation state. The options are `always`, `onLongPress` and `never`
+
+## `<TabTrigger />`
+
+The `<TabTrigger />` is used to switch tabs, but also have a the dual role of defining what routes are available as a tab.
+
+### Within `<TabList />`
+
+When a `<TabTrigger />` is used as a child of `<TabList />` defines what routes have tabs. These `<TabTrigger />` need to include both the `name` and `href` props as they define the URL for that tab and a custom name that can be used to refer to the tab.
+
+### Outside `<TabList />`
+
+A `<TabTrigger />` elsewhere in your application does not need the `href` prop. Instead it just requires a `name` which matches one of the names present on a `<TabTrigger />` within the `<TabList />`. This allows you to create components that can switch tabs and be agnostic to your current navigation state.
+
+## Customizing appearance
+
+All components are rendered unstyled as a `<View />`, except `<TabTrigger />` which renders as a `<Pressable />`. This allows you to provide a custom `style` prop to customize their appearance.
+
+If you need to change the structure of a component, you can override its underlying component by using the `asChild` props. The component then acts as a slot, and will forward its props to its immediate child.
+
+```tsx
+<Tabs>
+  <TabSlot />
+  /* @info Change the appearance of the <TabList /> */
+  <TabList asChild>
+    {/* Render a custom TabList */}
+    <CustomTabList>
+      <TabTrigger name="home" href="/">
+        <Text>Home</Text>
+      </TabTrigger>
+    </CustomTabList>
+  </TabList>
+  /* @end */
+</Tabs>
+```
+
+```tsx
+<Tabs>
+  <TabSlot />
+  <TabList asChild>
+    /* @info Change the appearance of the <TabTrigger /> */
+    <TabTrigger name="home" href="/" asChild>
+      {/* Render a custom button */}
+      <CustomButton>
+        <Text>Home</Text>
+      </CustomButton>
+    </TabTrigger>
+    /* @end */
+  </TabList>
+</Tabs>
+```
+
+### Multiple tab bars
+
+The `<TabList />` is both the configuration and default appearance of the `<Tabs />`, but its not the only way to render a tab bar. By hiding the `<TabList />`, you can construct custom tab bars using `<TabTrigger />`
+
+```tsx
+<Tabs>
+  <TabSlot />
+  {/* A custom tab bar */}
+  <View>
+    /* @info A custom tab bar. TabTrigger's outside of TabList do not need the `href` prop */
+    <View>
+      <TabTrigger name="home">
+        <Text>Home</Text>
+      </TabTrigger>
+      <TabTrigger name="article">
+        <Text>article</Text>
+      </TabTrigger>
+    </View>
+    /* @end */
+  </View>
+  /* @info TabList needs to be rendered, but not necessary displayed */
+  <TabList style={{ display: 'none' }}>
+    /* @end */
+    <TabTrigger name="home" href="/">
+      <Text>Home</Text>
+    </TabTrigger>
+    <TabTrigger name="article" href="/article">
+      <Text>article</Text>
+    </TabTrigger>
+  </TabList>
+</Tabs>
+```
+
+### Hooks
+
+All components also have a hook version and allows to you create the same functionality without the restrictions of using components. Using hooks, you have complete control over the render tree. The [Router UI Reference](/versions/unversioned/router-ui) for a full list of the hooks available.
+
+### Screen renderer
+
+The `<TabSlot />` accepts an `options` prop with `renderFn` property. This function can be used to override how your screen is rendered, allowing you to implement advanced functionality such as animations or persisting/unmounting screens. See the [Router UI Reference](/versions/unversioned/router-ui) for more information.
+
+## FAQs
+
+### How do I create multiple tabs for the same route?
+
+<FileTree
+  files={[
+    ['_layout.tsx', 'Tabs layout'],
+    ['(movie,tv)/[id].tsx', ''],
+  ]}
+/>
+
+You should add the route to a shared group and create a separate `<TabTrigger />` for each group `group`.
+
+### How do I hide a tab?
+
+Not rendering the `<TabTrigger />` will remove that tab (and its navigation state) from your app.
+
+### How do I create animated tabs?
+
+You can provide a custom renderer to `<TabSlot />` to customize how it renders a screen. You can use this to detect when screen is focused an animate appropriately.
+
+### Can I use relative hrefs?
+
+<FileTree
+  files={[
+    ['directory/_layout.tsx', 'The local pathname is /directory'],
+    ['directory/page.tsx', 'The pathname is /directory/page'],
+    ['directory/profile.tsx', 'The pathname is /directory/page'],
+  ]}
+/>
+
+A `<TabTrigger />` with a relative href are relative to the local pathname `<Tabs />` was rendered
+on. This is different to normal relative hrefs which are relative to the current displayed route. For example, the `<TabTrigger href="./profile" />` will resolve to `/directory/profile`, even when the `/directory/page` route is showing. Expo recommends against using relative hrefs.

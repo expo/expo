@@ -1,6 +1,6 @@
 {
   "name": "expo-gl",
-  "version": "15.0.0",
+  "version": "15.0.1",
   "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

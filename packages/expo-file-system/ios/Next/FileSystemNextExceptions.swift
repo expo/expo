@@ -48,3 +48,9 @@ internal class UnableToCreateFileException: GenericException<String> {
     "Unable to create file: \(param)"
   }
 }
+
+internal class DestinationAlreadyExistsException: Exception {
+  override var reason: String {
+    "Destination already exists"
+  }
+}
