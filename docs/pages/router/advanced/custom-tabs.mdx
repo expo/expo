@@ -22,7 +22,7 @@ There are four components offered by `expo-router/ui` to create custom tab layou
 | `TabTrigger` | A trigger component to switch to the specified tab. It is used to define the route using `href` prop and a `name` for each tab. |
 | `TabSlot`    | A slot to render the currently selected tab.                                                                                    |
 
-A bare minimum structure of a custom tab layout would look like this:
+A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a`TabSlot`, all within the `Tabs` component), as shown here:
 
 ```tsx app/(tabs)/_layout.tsx|collapseHeight=440
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
@@ -47,9 +47,9 @@ export function Layout() {
 
 ## Creating routes
 
-The `TabList` component is the "holding" component for routes. `TabTrigger`'s defined as a child of the `TabList` specific what routes are present as a tab. A `TabTrigger` within a `TabList` must include a `name` and a `href` prop. `TabList` needs to be an immediate child of `Tabs`.
+The `TabList` contains all of the routes available within the tab navigator. It must be an immediate child of `Tabs`. Each route is defined by a `TabTrigger` within the `TabList`. A `TabTrigger` within a `TabList` must include a `name` and a `href` prop.
 
-`TabList` is both the configuration and default appearance of the `Tabs`. Triggers present within the `TabList` dictate what routes are possible within the `Tabs`.
+Typically, the `TabList` defines both the available tab routes and the appearance of the tabs, with the children of each `TabTrigger` defining the appearance of each tab button.
 
 > **Note:** A `name` can be any `string`. This is a user-defined name for the Tab.
 
@@ -59,13 +59,13 @@ Dynamic routes are allowed and can be provided with values via the `href`.
 
 <FileTree files={['_layout.tsx', ['[slug].tsx']]} />
 
-The trigger `<Trigger name="dynamic page" href="/hello-world" />` will create a tab for **[slug].tsx** with the params `{ slug: 'hello-world' }`.
+The trigger `<Trigger name="dynamic page" href="/hello-world" />` will create a tab for **[slug].tsx** with the params `{ slug: 'hello-world' }`. This setup can be useful for displaying an arbitrary number of tabs in the tab bar, based on end-user data, such as showing a separate tab for each user profile in an app.
 
 ### Ambiguous routes
 
 <FileTree files={['_layout.tsx', ['(one,two)/route.tsx', 'A route within a shared group']]} />
 
-The `href` values provided to `TabTrigger` cannot be ambiguous and must always point to a single route. The href `/route` is not allowed, as it could refer to either `/(one)/route` or `/(two)/route`.
+The `href` values provided to `TabTrigger` must always point to a single route. In the above example of a shared route, href `/route` is not allowed, as it could refer to either `/(one)/route` or `/(two)/route`. However, specifying the route group within the href would work (e.g.,`href="/(one)/route"`).
 
 ### Nested routes
 
@@ -78,11 +78,11 @@ The `href` values provided to `TabTrigger` cannot be ambiguous and must always p
   ]}
 />
 
-A `TabTrigger` can link to a deeply nested route. `<TabTrigger name="route" href="/route" />` will show the **(stack-one)/(stack-two)/route.tsx** route. This tab will be controlled by that routes parent navigators (the two `Stack`). This navigation is similar to a deep link.
+A `TabTrigger` can link to a deeply nested route. `<TabTrigger name="route" href="/route" />` will show the **(stack-one)/(stack-two)/route.tsx** route. This tab will be controlled by that route's parent navigator (i.e., the navigator within **stack-two\_layout.tsx**). This navigation is similar to a deep link.
 
 ## Rendering routes
 
-The `TabSlot` component renders the current route. `TabSlot` be can be nested inside other components but cannot be within the `TabList`.
+The `TabSlot` component renders the current route. `TabSlot` be can be nested inside other components within `Tabs` but cannot be within the `TabList`.
 
 ```tsx app/_layout.tsx
 <Tabs>
@@ -104,27 +104,27 @@ The `TabSlot` component renders the current route. `TabSlot` be can be nested in
 
 ## Switching tabs
 
-Tabs can be switched via a `Link` or using the imperative APIs. However, these APIs will always perform a navigation action (they will switch tabs and might change the URL). To switch tabs without performing any navigation, you should a `TabTrigger`. A `TabTrigger` is an unstyled `<View>` that will switch tabs when pressed.
+Tabs can be switched via a `Link` or using the imperative APIs. However, these APIs will always perform a navigation action (they will switch tabs and might change the URL). To switch tabs without performing any navigation, you should use a `TabTrigger`. A `TabTrigger` is an unstyled `<View>` that will switch tabs when pressed, much like how text and components can be wrapped in `Link` in order to make them pressible navigation elements.
 
 ### Resetting navigation
 
-The `reset` prop from `TabTrigger` can be used to control when a tab resets its navigation state. The options are `always`, `onLongPress` and `never`.
+The `reset` prop from `TabTrigger` can be used to control when a tab resets its navigation state. The options are `always`, `onLongPress` and `never`. This is particularly useful for a stack navigator nested inside a tab. For example, `<Trigger name="home" reset="always" />` will return the user to the index route inside a tab's nested stack navigator.
 
 ## TabTrigger
 
-The `TabTrigger>` is used to switch tabs, but also has a dual role of defining what routes are available as a tab.
+The `TabTrigger` is used to switch tabs, but also has a dual role of defining what routes are available as a tab.
 
 ### Within TabList
 
-When a `TabTrigger` is used as a child of `TabList` defines what routes have tabs. These `TabTrigger` need to include both the `name` and `href` props as they define the URL for that tab and a custom name that can be used to refer to the tab.
+When a `TabTrigger` is used as a child of `TabList`, that defines what routes are available within the tab navigator. These `TabTrigger` need to include both the `name` and `href` props, as they define the URL for that tab and a custom name that can be used to refer to the tab. If the `TabTrigger` components also contain text or other components as children, then those will also render as the tab buttons. However, you can define the `TabTrigger`'s within the `TabList` without any UI, and they can then be invoked by `TabTrigger`'s outside of the `TabList`.
 
 ### Outside TabList
 
-A `TabTrigger` elsewhere in your application does not need the `href` prop. Instead it just requires a `name` which matches one of the names present on a `TabTrigger` within the `TabList`. This allows you to create components that can switch tabs and be agnostic to your current navigation state.
+An additional `TabTrigger` can be defined outside of a `TabList`, allowing you to perform the same action as the `TabTrigger` that is defined in the `TabList`. In this case, the `TabTrigger` will not have an `href` prop. Rather, it will perform the same action as the primary `TabTrigger` with the same `name` prop. This allows you to create components that can switch tabs and be agnostic to your current navigation state. Note that all `TabTrigger`'s need to at least be descendants of the `Tabs` component, or else they will be considered to be outside the tab navigator and unable to invoke it.
 
 ## Customizing appearance
 
-All components are rendered unstyled as a `<View>`, except `TabTrigger` which renders as a `<Pressable>`. This allows you to provide a custom `style` prop to customize their appearance.
+All components are rendered unstyled as a `<View>`, except `TabTrigger` which renders as a `<Pressable>`. This allows you to provide a custom `style` prop to customize their appearance. Styling `TabList` is similar to customizing the tab bar in React Navigation, while styling `TabTrigger` affects the appearance of tab buttons.
 
 If you need to change the structure of a component, you can override its underlying component by using the `asChild` props. The component then acts as a slot, and will forward its props to its immediate child.
 
@@ -193,11 +193,53 @@ The `TabList` is both the configuration and default appearance of the `Tabs`, bu
 </Tabs>
 ```
 
+`TabTrigger` will forward an `isFocused` prop, so you can create a separate tab button component that reacts to focused status.
+
+```tsx
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { TabTriggerSlotProps } from "expo-router/ui";
+import { ComponentProps, Ref, forwardRef } from "react";
+import { Text, Pressable, View } from "react-native";
+
+type Icon = ComponentProps<typeof FontAwesome>["name"];
+
+export type TabButtonProps = TabTriggerSlotProps & {
+  icon?: Icon;
+};
+
+export const TabButton = forwardRef(
+  ({ icon, children, isFocused, ...props }: TabButtonProps, ref: Ref<View>) => {
+    return (
+      <Pressable
+        ref={ref}
+        {...props}
+        style={[
+          {
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexDirection: "column",
+            gap: 5,
+            padding: 10,
+          },
+          isFocused ? { backgroundColor: "white" } : undefined,
+        ]}
+      >
+        <FontAwesome name={icon} />
+        <Text
+          style={[{ fontSize: 16 }, isFocused ? { color: "white" } : undefined]}
+        >
+          {children}
+        </Text>
+      </Pressable>
+    );
+  }
+);
 ### Hooks
 
-All components also have a hook version and allows to you create the same functionality without the restrictions of using components. Using hooks, you have complete control over the render tree. The [Router UI Reference](/versions/unversioned/router-ui) for a full list of the hooks available.
+All components also have a hook version and allows to you create the same functionality without the restrictions of using components. Using hooks, you have complete control over the render tree. See the [Router UI Reference](/versions/unversioned/router-ui) for a full list of the hooks available.
 
-### Screen renderer
+### Customizing how tab screens are rendered
 
 The `TabSlot` accepts an `options` prop with `renderFn` property. This function can be used to override how your screen is rendered, allowing you to implement advanced functionality such as animations or persisting/unmounting screens. See the [Router UI Reference](/versions/unversioned/router-ui) for more information.
 
@@ -238,6 +280,6 @@ You can provide a custom renderer to `TabSlot` to customize how it renders a scr
   ]}
 />
 
-A `TabTrigger` with a relative href are relative to the local path name `Tabs` was rendered on. This is different to normal relative hrefs which are relative to the current displayed route. For example, the `<TabTrigger href="./profile" />` will resolve to `/directory/profile`, even when the `/directory/page` route is showing. Expo recommends against using relative hrefs.
+A `TabTrigger` with a relative href is relative to the local path name `Tabs` was rendered on. This is different from normal relative hrefs which are relative to the current displayed route. For example, the `<TabTrigger href="./profile" />` will resolve to `/directory/profile`, even when the `/directory/page` route is showing. Expo recommends against using relative hrefs.
 
 </Collapsible>
