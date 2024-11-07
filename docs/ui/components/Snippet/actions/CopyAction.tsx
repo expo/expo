@@ -10,7 +10,13 @@ type CopyActionProps = SnippetActionProps & {
 export const CopyAction = ({ text, ...rest }: CopyActionProps) => {
   const [copyDone, setCopyDone] = useState(false);
   const onCopyClick = () => {
-    navigator.clipboard?.writeText(text);
+    const filteredText = text
+      .split('\n')
+      .filter(line => !/^\s*\/\*.*@tutinfo.*\*\/\s*$/.test(line))
+      .map(line => line.replace(/\/\*.*@tutinfo.*\*\/|\/\/.*@tutinfo.*/g, '').trimEnd())
+      .join('\n');
+
+    navigator.clipboard?.writeText(filteredText);
     setCopyDone(true);
     setTimeout(() => setCopyDone(false), 1500);
   };
