@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `expo-router` integration with `@expo/cli install` command.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

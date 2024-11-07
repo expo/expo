@@ -216,3 +216,39 @@ it(
   // Could take 45s depending on how fast npm installs
   60 * 1000
 );
+
+describe('expo-router integration', () => {
+  it(
+    'runs `npx expo install --fix`',
+    async () => {
+      const projectRoot = await setupTestProjectWithOptionsAsync(
+        'install-expo-router-integration',
+        'with-router',
+        {
+          reuseExisting: false,
+        }
+      );
+      const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+
+      // Add a package that requires "fixing" when using canary
+      await execa('node', [bin, 'install', '@react-navigation/native@6.1.18'], {
+        cwd: projectRoot,
+      });
+
+      // Ensure `@react-navigation/native` is installed
+      expect(pkg.read().dependencies).toMatchObject({
+        '@react-navigation/native': '6.1.18',
+      });
+
+      // Add `expo@canary` to the project, and `--fix` project dependencies
+      await execa('node', [bin, 'install', '--fix'], { cwd: projectRoot });
+
+      // Ensure `@react-navigation/native` is using canary version
+      expect(pkg.read().dependencies).toMatchObject({
+        '@react-navigation/native': '^7.0.0',
+      });
+    },
+    // Could take 45s depending on how fast npm installs
+    60 * 1000
+  );
+});
