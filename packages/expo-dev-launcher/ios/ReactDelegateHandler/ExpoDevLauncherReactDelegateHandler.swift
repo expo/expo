@@ -39,7 +39,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
   @objc
   public func isReactInstanceValid() -> Bool {
-      return self.rctAppDelegate?.rootViewFactory.value(forKey: "reactHost") != nil
+    return self.rctAppDelegate?.rootViewFactory.value(forKey: "reactHost") != nil
   }
 
   @objc

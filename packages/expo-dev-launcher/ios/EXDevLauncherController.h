@@ -18,7 +18,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RCTAppDelegate;
 @class EXAppContext;
 @class EXDevLauncherInstallationIDHelper;
 @class EXDevLauncherPendingDeepLinkRegistry;
