@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Get runtime version from expo-updates for local manifest serving ([#32520](https://github.com/expo/expo/pull/32520) by [@wschurman](https://github.com/wschurman))
-
 ### 💡 Others
+
+## 0.20.2 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- Get runtime version from expo-updates for local manifest serving ([#32520](https://github.com/expo/expo/pull/32520) by [@wschurman](https://github.com/wschurman))
 
 ## 0.20.1 — 2024-11-06
 

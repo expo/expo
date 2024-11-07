@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.0-preview.14 — 2024-11-07
+
+### 💡 Others
+
 - Tweaks and fixes for the internal Sitemap page. ([#29756](https://github.com/expo/expo/pull/29756) by [@Simek](https://github.com/Simek))
 - Appearance tweaks for the Onboard welcome page. ([#32620](https://github.com/expo/expo/pull/32620), [#32653](https://github.com/expo/expo/pull/32653)) by [@Simek](https://github.com/Simek)
 

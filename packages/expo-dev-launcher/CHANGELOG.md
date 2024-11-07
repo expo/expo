@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 5.0.10 — 2024-11-07
+
+### 🐛 Bug fixes
+
 - [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
 - Fixed build error when `EX_DEV_CLIENT_NETWORK_INSPECTOR` is false. ([#32644](https://github.com/expo/expo/pull/32644) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 5.0.9 — 2024-11-04
 

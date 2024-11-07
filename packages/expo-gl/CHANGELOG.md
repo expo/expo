@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Converted the native view from Objective-C to Swift to fix support for the New Architecture. ([#32675](https://github.com/expo/expo/pull/32675) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 15.0.1 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- Converted the native view from Objective-C to Swift to fix support for the New Architecture. ([#32675](https://github.com/expo/expo/pull/32675) by [@tsapeta](https://github.com/tsapeta))
 
 ## 15.0.0 — 2024-10-22
 

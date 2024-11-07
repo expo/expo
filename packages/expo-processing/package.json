@@ -22,7 +22,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-processing",
   "dependencies": {
-    "expo-gl": "15.0.0"
+    "expo-gl": "15.0.1"
   },
   "peerDependencies": {
     "expo": "*",

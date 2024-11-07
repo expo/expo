@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 5.0.0-preview.8 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
 
 ## 5.0.0-preview.7 — 2024-11-05
 
