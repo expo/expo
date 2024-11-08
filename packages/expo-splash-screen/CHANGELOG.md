@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Added guard to prevent null pointer exception when the splashScreen property is referenced without an activity (headless JS)
+- [Android] Added guard to prevent null pointer exception when the splashScreen property is referenced without an activity (headless JS) ([#32707](https://github.com/expo/expo/pull/32707) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
