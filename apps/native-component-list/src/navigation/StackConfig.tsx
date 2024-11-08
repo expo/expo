@@ -5,8 +5,6 @@ import { ThemeType } from 'ThemeProvider';
 import * as React from 'react';
 import { View, Platform, TouchableOpacity, StyleSheet } from 'react-native';
 
-import ThemeToggler from '../../../common/ThemeToggler';
-
 export default function getStackConfig(navigation: BottomTabNavigationProp<any>, theme: ThemeType) {
   return {
     cardStyle: {
