@@ -189,7 +189,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
     // For unknown reasons, this function may be sometimes called twice with the same changes.
     // What leads to warnings like this one: `'SplashScreen.show' has already been called for given view controller`.
     // To prevent this weird behaviour, we check if the value was really changed.
-    if (newRootViewController != nil && newRootViewController != self.observingRootViewController) {
+    if (newRootViewController != nil && self.observingRootViewController != nil && newRootViewController != self.observingRootViewController) {
       [self removeRootViewControllerListener];
       [self showSplashScreenFor:newRootViewController options:EXSplashScreenDefault];
       [self addRootViewControllerListener];
