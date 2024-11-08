@@ -25,10 +25,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.shouldHandleMouseEvent = void 0;
 const react_native_1 = require("react-native");
+const useDomComponentNavigation_1 = require("./useDomComponentNavigation");
 const expo = __importStar(require("../fork/getPathFromState-forks"));
 const router_store_1 = require("../global-state/router-store");
 const matchers_1 = require("../matchers");
-const useDomComponentNavigation_1 = require("./useDomComponentNavigation");
 function eventShouldPreventDefault(e) {
     if (e?.defaultPrevented) {
         return false;

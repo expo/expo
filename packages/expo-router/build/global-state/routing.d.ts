@@ -19,7 +19,7 @@ export type LinkToOptions = {
      */
     relativeToDirectory?: boolean;
     /**
-     *
+     * Include the anchor when navigating to a new navigator
      */
     withAnchor?: boolean;
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text } from 'react-native';
 
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
@@ -455,4 +456,27 @@ test('pushing in a nested stack should only rerender the nested stack', () => {
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(NestedLayout).toHaveBeenCalledTimes(1);
   expect(NestedNestedLayout).toHaveBeenCalledTimes(1);
+});
+
+test('can preserve the nested initialRouteName when navigating to a nested stack', () => {
+  renderRouter({
+    index: () => <Text testID="link">Index</Text>,
+    '/fruit/_layout': {
+      unstable_settings: {
+        anchor: 'apple',
+      },
+      default: () => {
+        return <Stack />;
+      },
+    },
+    '/fruit/apple': () => <Text testID="apple">Apple</Text>,
+    '/fruit/banana': () => <Text testID="banana">Banana</Text>,
+  });
+
+  act(() => router.push('/fruit/banana', { withAnchor: true }));
+  expect(screen.getByTestId('banana')).toBeDefined();
+  act(() => router.back());
+  expect(screen.getByTestId('apple')).toBeDefined();
+  act(() => router.back());
+  expect(screen.getByTestId('link')).toBeDefined();
 });
