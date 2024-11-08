@@ -18,7 +18,7 @@ if (isRunningInExpoGo()) {
 // Expo Go and expo-dev-client, because launching the debugger from there will not
 // get the correct JS target.
 const IS_RUNNING_IN_DEV_CLIENT = !!NativeModules.EXDevLauncher;
-if (__DEV__ && (isRunningInExpoGo() || IS_RUNNING_IN_DEV_CLIENT)) {
+if (__DEV__ && LogBox?.ignoreLogs && (isRunningInExpoGo() || IS_RUNNING_IN_DEV_CLIENT)) {
   LogBox.ignoreLogs([/Open debugger to view warnings/]);
 }
 
