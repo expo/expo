@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Added guard to prevent null pointer exception when the splashScreen property is referenced without an activity (headless JS)
+
 ### 💡 Others
 
 ## 0.29.4 — 2024-11-07

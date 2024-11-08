@@ -23,6 +23,12 @@ object SplashScreenManager {
   }
 
   private fun configureSplashScreen(options: SplashScreenOptions = SplashScreenOptions()) {
+    // If loaded in a headless JS context we might not have initialized the splash screen
+    // lateinit variable, so let's check to be nice citizens
+    if (!::splashScreen.isInitialized) {
+      return
+    }
+
     val duration = options.duration
 
     splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
