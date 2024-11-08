@@ -57,6 +57,8 @@ public class NotificationSerializer {
     NotificationTrigger requestTrigger = request.getTrigger();
     serializedRequest.putBundle("trigger", requestTrigger == null ? null : requestTrigger.toBundle());
     Bundle content = toBundle(request.getContent());
+    boolean isHeadlessRemoteNotification = requestTrigger instanceof FirebaseNotificationTrigger && ((FirebaseNotificationTrigger) requestTrigger).getRemoteMessage().getNotification() == null;
+    content.putBoolean("isHeadlessRemoteNotification", isHeadlessRemoteNotification);
     Bundle existingContentData = content.getBundle("data");
     if (existingContentData == null) {
       if (requestTrigger instanceof FirebaseNotificationTrigger trigger) {
