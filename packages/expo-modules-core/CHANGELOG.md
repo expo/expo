@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Ensure that the headless app loader is started on the main thread.
+
 ### 💡 Others
 
 ## 2.0.0-preview.10 — 2024-11-07
