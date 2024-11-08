@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `npx expo serve` command for hosting the release server locally.
+- Add `npx expo serve` command for hosting the release server locally. ([#32602](https://github.com/expo/expo/pull/32602) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
