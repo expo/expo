@@ -4,9 +4,6 @@ sidebar_title: Environment variables in EAS
 description: Learn basic concepts about using environment variables in EAS and how to manage them.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
-
 [Environment variables in Expo](/guides/environment-variables) describes how to use environment variables with the Expo framework. **.env** files to set environment variables that can be inlined in your JavaScript code. The Expo CLI will substitute properly prefixed variables in your code (for example,`process.env.EXPO_PUBLIC_VARNAME`) with the corresponding environment variable values in **.env** files present on your development machine.
 
 Because your EAS Build and EAS Workflow jobs run on a remote server, these **.env** files might not be available. For instance, **.env** files are excluded from your uploaded project if they are listed in **.gitignore** or not committed to your local version control system.
