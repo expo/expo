@@ -232,8 +232,8 @@ const general = [
       makePage('router/advanced/nesting-navigators.mdx'),
       makePage('router/advanced/modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
+      makePage('router/advanced/custom-tabs.mdx'),
     ]),
-    makeGroup('UI', [makePage('router/ui/tabs.mdx')], { expanded: false }),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/native-intent.mdx'),
