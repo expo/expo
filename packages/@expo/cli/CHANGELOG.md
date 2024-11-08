@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Wrap telemetry flush in error handling. ([#32543](https://github.com/expo/expo/pull/32543) by [@keith-kurak](https://github.com/keith-kurak))
-
 ### 💡 Others
+
+## 0.18.31 — 2024-11-08
+
+### 🐛 Bug fixes
+
+- Wrap telemetry flush in error handling. ([#32543](https://github.com/expo/expo/pull/32543) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 0.18.30 — 2024-09-30
 

@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "51.0.38",
+  "version": "51.0.39",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -60,9 +60,9 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.18.30",
+    "@expo/cli": "0.18.31",
     "@expo/config": "9.0.4",
-    "@expo/config-plugins": "8.0.10",
+    "@expo/config-plugins": "8.0.11",
     "@expo/metro-config": "0.18.11",
     "@expo/vector-icons": "^14.0.3",
     "babel-preset-expo": "~11.0.15",
@@ -78,7 +78,7 @@
   "devDependencies": {
     "@types/react": "~18.0.14",
     "@types/react-test-renderer": "^18.0.0",
-    "expo-module-scripts": "^3.5.3",
+    "expo-module-scripts": "^3.5.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5"
