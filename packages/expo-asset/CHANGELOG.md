@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for simplified object asset format.
+
 ### 💡 Others
 
 ## 11.0.0 — 2024-10-22
