@@ -6,8 +6,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
+import androidx.annotation.NonNull;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -121,7 +121,7 @@ public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer imple
     return bundle;
   }
 
-  public void executeTask(@NotNull Bundle bundle) {
+  public void executeTask(@NonNull Bundle bundle) {
     mTask.execute(bundle, null);
   }
 

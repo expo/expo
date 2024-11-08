@@ -1,8 +1,6 @@
 package expo.modules.notifications.service.delegates
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.interfaces.taskManager.TaskServiceProviderHelper
 import expo.modules.notifications.notifications.RemoteMessageSerializer
