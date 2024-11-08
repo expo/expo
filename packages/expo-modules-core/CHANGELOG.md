@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Ensure that the headless app loader is started on the main thread. ([#32705](https://github.com/expo/expo/pull/32705) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 2.0.0-preview.10 — 2024-11-07
