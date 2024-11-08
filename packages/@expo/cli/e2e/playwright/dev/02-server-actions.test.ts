@@ -71,7 +71,7 @@ test.describe(inputDir, () => {
     });
 
     // Navigate to the app
-    await page.goto(expo.url);
+    await page.goto(expo.url!);
     console.timeEnd('Open page');
 
     await serverResponsePromise;
@@ -106,7 +106,10 @@ test.describe(inputDir, () => {
     });
 
     const serverActionResponsePromise = page.waitForResponse((response) => {
-      return new URL(response.url()).pathname.startsWith('/_flight/web/ACTION_');
+      const pathname = new URL(response.url()).pathname;
+      return (
+        pathname.startsWith('/_flight/web/ACTION_') && pathname.endsWith('_$$INLINE_ACTION.txt')
+      );
     });
 
     // Call the server action

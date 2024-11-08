@@ -4,15 +4,15 @@ import { View, StyleSheet, ViewProps } from 'react-native';
 import { ViewSlot } from './common';
 
 export type TabListProps = ViewProps & {
-  /** Forward props to child component and removes the extra <View />. Useful for custom wrappers. */
+  /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
   asChild?: boolean;
 };
 
 /**
- * Wrapper component for `<TabTriggers />`. `<TabTriggers />` within the `<TabList />` define the tabs.o
+ * Wrapper component for `TabTriggers`. `TabTriggers` within the `TabList` define the tabs.
  *
  * @example
- * ```ts
+ * ```tsx
  * <Tabs>
  *  <TabSlot />
  *  <TabList>

@@ -63,7 +63,9 @@ export async function transform(
     isReactServer ? url.pathToFileURL(absolutePath).href : undefined;
 
   if (
-    options.platform !== 'web' &&
+    (options.platform !== 'web' ||
+      // React Server DOM components should use the client reference in order to local embedded assets.
+      isDomComponent) &&
     // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
     // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
     isReactServer

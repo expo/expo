@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.19.0-preview.3 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
 ## 0.19.0-preview.2 — 2024-10-25
 
 ### 🐛 Bug fixes

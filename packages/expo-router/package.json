@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "4.0.0-preview.11",
+  "version": "4.0.0-preview.14",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -26,7 +26,6 @@
     "_ctx-shared.js",
     "_error.js",
     "app.plugin.js",
-    "virtual-client-boundaries.js",
     "babel.js",
     "drawer.js",
     "drawer.d.ts",
@@ -74,7 +73,7 @@
     "expo"
   ],
   "peerDependencies": {
-    "@react-navigation/drawer": "7.0.0-rc.33",
+    "@react-navigation/drawer": "7.0.0",
     "expo": "*",
     "expo-constants": "*",
     "expo-linking": "*",
@@ -94,7 +93,7 @@
     }
   },
   "devDependencies": {
-    "@react-navigation/drawer": "7.0.0-rc.33",
+    "@react-navigation/drawer": "7.0.0",
     "@testing-library/jest-native": "^5.4.2",
     "@testing-library/react": "^15.0.7",
     "@testing-library/react-native": "^12.5.1",
@@ -103,14 +102,13 @@
     "tsd": "^0.28.1"
   },
   "dependencies": {
-    "@expo/metro-runtime": "4.0.0-preview.0",
+    "@expo/metro-runtime": "4.0.0-preview.2",
     "@expo/server": "^0.5.0-preview.0",
     "@radix-ui/react-slot": "1.0.1",
-    "@react-navigation/bottom-tabs": "7.0.0-rc.36",
-    "@react-navigation/native": "7.0.0-rc.21",
-    "@react-navigation/native-stack": "7.0.0-rc.30",
+    "@react-navigation/bottom-tabs": "7.0.0",
+    "@react-navigation/native": "7.0.0",
+    "@react-navigation/native-stack": "7.0.0",
     "client-only": "^0.0.1",
-    "expo-splash-screen": "0.29.1",
     "react-helmet-async": "^1.3.0",
     "react-native-helmet-async": "2.0.4",
     "schema-utils": "^4.0.1",

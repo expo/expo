@@ -12,12 +12,14 @@ const matchers_1 = require("../matchers");
 const Navigator_1 = require("../views/Navigator");
 const TabTriggerSlot = react_slot_1.Slot;
 /**
- * Creates a trigger to navigate to a tab. `<TabTrigger />` functionality slightly changes when used as a child of `<TabList />`. In this instance, the `href` prop is required, and the trigger also defines what routes are present in the `<Tabs />`.
+ * Creates a trigger to navigate to a tab. When used as child of `TabList`, its
+ * functionality slightly changes since the `href` prop is required,
+ * and the trigger also defines what routes are present in the `Tabs`.
  *
- * When used outside of `<TabList />`, `<TabTrigger />` no longer requires a `href`.
+ * When used outside of `TabList`, this component no longer requires an `href`.
  *
  * @example
- * ```ts
+ * ```tsx
  * <Tabs>
  *  <TabSlot />
  *  <TabList>
@@ -55,7 +57,7 @@ function isTabTrigger(child) {
 }
 exports.isTabTrigger = isTabTrigger;
 /**
- * Utility hook creating custom `<TabTrigger />`
+ * Utility hook creating custom `TabTrigger`.
  */
 function useTabTrigger(options) {
     const { state, navigation } = (0, Navigator_1.useNavigatorContext)();

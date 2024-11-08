@@ -105,7 +105,10 @@ function getDimensionsId(imageOptions: Pick<ImageOptions, 'width' | 'height'>): 
 }
 
 async function maybeWarnAboutInstallingSharpAsync() {
-  // Putting the warning here will prevent the warning from showing if all images were reused from the cache
+  if (env.EXPO_IMAGE_UTILS_NO_SHARP) {
+    return;
+  }
+
   if (env.EXPO_IMAGE_UTILS_DEBUG && !hasWarned && !(await Sharp.isAvailableAsync())) {
     hasWarned = true;
     console.warn(

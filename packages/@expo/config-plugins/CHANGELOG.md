@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 9.0.7 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- Remove circular import references to index files ([#32671](https://github.com/expo/expo/pull/32671) by [@wschurman](https://github.com/wschurman))
+- Sync base android manifest with template. ([#32639](https://github.com/expo/expo/pull/32639) by [@wschurman](https://github.com/wschurman))
+
+## 9.0.6 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- Avoid using path mutations in glob patterns for Windows. ([#32617](https://github.com/expo/expo/pull/32617) by [@byCedric](https://github.com/byCedric))
+
+## 9.0.5 — 2024-11-04
+
+_This version does not introduce any user-facing changes._
+
 ## 9.0.4 — 2024-10-29
 
 ### 💡 Others

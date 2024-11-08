@@ -61,7 +61,9 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
     const isServerEnv = isReactServer || options.customTransformOptions?.environment === 'node';
     const absolutePath = node_path_1.default.resolve(options.projectRoot, filename);
     const getClientReference = () => isReactServer ? node_url_1.default.pathToFileURL(absolutePath).href : undefined;
-    if (options.platform !== 'web' &&
+    if ((options.platform !== 'web' ||
+        // React Server DOM components should use the client reference in order to local embedded assets.
+        isDomComponent) &&
         // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
         // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
         isReactServer) {

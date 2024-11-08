@@ -33,7 +33,7 @@ export const SnippetHeader = ({
     )}>
     <LABEL
       className={mergeClasses(
-        'flex items-center gap-2 min-h-10 !leading-tight py-1 pr-4 select-none font-medium w-full',
+        'flex items-center gap-2 min-h-10 !leading-tight py-1 pr-4 font-medium w-full',
         alwaysDark && 'text-palette-white'
       )}>
       {Icon && <Icon className="icon-sm shrink-0" />}

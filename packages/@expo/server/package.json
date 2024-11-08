@@ -1,6 +1,6 @@
 {
   "name": "@expo/server",
-  "version": "0.5.0-preview.0",
+  "version": "0.5.0-preview.1",
   "description": "Server API for Expo Router projects",
   "main": "build/index.js",
   "scripts": {

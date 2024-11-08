@@ -14,16 +14,16 @@ export type UseTabsOptions = Omit<DefaultNavigatorOptions<ParamListBase, any, Ta
     backBehavior?: TabRouterOptions['backBehavior'];
 };
 export type TabsProps = ViewProps & {
-    /** Forward props to child component and removes the extra <View />. Useful for custom wrappers. */
+    /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
     asChild?: boolean;
     options?: UseTabsOptions;
 };
 /**
  * Root component for the headless tabs.
  *
- * @see useTabsWithChildren - The hook version of this component.
+ * @see [`useTabsWithChildren`](#usetabswithchildrenoptions) for a hook version of this component.
  * @example
- * ```ts
+ * ```tsx
  * <Tabs>
  *  <TabSlot />
  *  <TabList>
@@ -40,14 +40,17 @@ export type UseTabsWithTriggersOptions = UseTabsOptions & {
     triggers: ScreenTrigger[];
 };
 /**
- * Hook version of `<Tabs />`. The returned NavigationContent component should be rendered
+ * Hook version of `Tabs`. The returned NavigationContent component
+ * should be rendered.
  *
- * @see Tabs - The component version of this hook
+ * @see [`Tabs`](#tabs) for the component version of this hook.
  * @example
- * ```ts
+ * ```tsx
  * export function MyTabs({ children }) {
- *   const { NavigationContent } = useTabsWithChildren({ children })
- * return <NavigationContent />
+ *  const { NavigationContent } = useTabsWithChildren({ children })
+ *
+ *  return <NavigationContent />
+ * }
  * ```
  */
 export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions): {
@@ -110,18 +113,6 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string | undefined): T;
         getState(): Readonly<{
             key: string;
-            /**
-             * Alternative hook version of `<Tabs />` that uses explicit triggers instead of `children`
-             *
-             * @see Tabs - The component version of this hook
-             * @example
-             * ```ts
-             * export function MyTabs({ children }) {
-             *   const { NavigationContent } = useTabsWithChildren({ triggers: [] })
-             *   return <NavigationContent />
-             * }
-             * ```
-             */
             index: number;
             routeNames: string[];
             history?: unknown[] | undefined;
@@ -248,13 +239,15 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
     }) => import("react/jsx-runtime").JSX.Element;
 };
 /**
- * Alternative hook version of `<Tabs />` that uses explicit triggers instead of `children`
+ * Alternative hook version of `Tabs` that uses explicit triggers
+ * instead of `children`.
  *
- * @see Tabs - The component version of this hook
+ * @see [`Tabs`](#tabs) for the component version of this hook.
  * @example
- * ```ts
+ * ```tsx
  * export function MyTabs({ children }) {
  *   const { NavigationContent } = useTabsWithChildren({ triggers: [] })
+ *
  *   return <NavigationContent />
  * }
  * ```

@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 2.0.0-preview.2 — 2024-11-07
+
+### 🎉 New features
+
+- [Android][iOS] Add support for listing and selecting closed captions. ([#32582](https://github.com/expo/expo/pull/32582) by [@behenate](https://github.com/behenate))
+
+## 2.0.0-preview.1 — 2024-11-05
+
+### 🎉 New features
+
+- [Android][iOS] Add `audioMixingMode` property to control how the player interacts with other audio in the system. ([#32428](https://github.com/expo/expo/pull/32428) by [@behenate](https://github.com/behenate))
+- Add support for creating a direct instance of `VideoPlayer`. ([#32228](https://github.com/expo/expo/pull/32228) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [Android] Fix errors when passing a source with an `undefined` `uri` field. ([#32585](https://github.com/expo/expo/pull/32585) by [@behenate](https://github.com/behenate))
+
 ## 2.0.0-preview.0 — 2024-10-22
 
 ### 🛠 Breaking changes

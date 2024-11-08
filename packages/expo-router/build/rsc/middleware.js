@@ -37,11 +37,12 @@ async function getSSRManifest(distFolder, platform) {
     const filePath = `../../rsc/${platform}/ssr-manifest.js`;
     return interopDefault(await (0, _async_server_import_1.asyncServerImport)(filePath));
 }
-async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType }) {
+async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType, headers }) {
     if (method === 'POST' && !body) {
         throw new Error('Server request must be provided when method is POST (server actions)');
     }
     const context = getRscRenderContext(platform);
+    context['__expo_requestHeaders'] = headers;
     const entries = await imports.router();
     const ssrManifest = await getSSRManifest(distFolder, platform);
     const actionManifest = await getServerActionManifest(distFolder, platform);

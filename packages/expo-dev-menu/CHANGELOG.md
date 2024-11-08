@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 6.0.7 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
+
+## 6.0.6 — 2024-11-04
+
+### 💡 Others
+
 - Remove unused `graphql` dependencies. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
 
 ## 6.0.5 — 2024-10-29

@@ -82,6 +82,9 @@ jobs:
           # Set bucket policy to public
           aws s3api put-bucket-policy --bucket docs.expo.dev-pr-${{ github.event.pull_request.number }} --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"s3:GetObject\",\"Resource\":\"arn:aws:s3:::docs.expo.dev-pr-${{ github.event.pull_request.number }}/*\"}]}"
 
+          # Tag bucket to tell compliance monitoring that it is intended to be public
+          aws s3api put-bucket-tagging --bucket docs.expo.dev-pr-${{ github.event.pull_request.number }} --tagging "{\"TagSet\":[{\"Key\":\"DrataExclude\",\"Value\":\"This is a test instance of our public docs page and is intended to be public.\"}]}"
+
           # Set up static website hosting
           aws s3 website s3://docs.expo.dev-pr-${{ github.event.pull_request.number }}/ --index-document index.html
       - name: 🚀 Deploy Docs website
