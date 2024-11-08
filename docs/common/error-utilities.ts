@@ -419,6 +419,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/linking/': '/linking/overview/',
   '/guides/deep-linking/': '/linking/into-your-app/',
 
+  // After adding /sdk/router/ API reference
+  '/router/reference/hooks/': '/versions/latest/sdk/router/#hooks',
+
   // After moving custom tabs under Expo Router > Navigation patterns
   '/router/ui/tabs/': '/router/advanced/custom-tabs/',
 };
