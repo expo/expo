@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove clientBoundaries warning.
+
 ## 0.19.0-preview.3 — 2024-11-04
 
 _This version does not introduce any user-facing changes._
