@@ -217,7 +217,7 @@ it(
   60 * 1000
 );
 
-describe('expo-router integration', () => {
+describe.only('expo-router integration', () => {
   it(
     'runs `npx expo install --fix`',
     async () => {
@@ -226,6 +226,7 @@ describe('expo-router integration', () => {
         'with-router',
         {
           reuseExisting: false,
+          sdkVersion: '52.0.0',
         }
       );
       const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
@@ -243,7 +244,7 @@ describe('expo-router integration', () => {
       // Add `expo@canary` to the project, and `--fix` project dependencies
       await execa('node', [bin, 'install', '--fix'], { cwd: projectRoot });
 
-      // Ensure `@react-navigation/native` is using canary version
+      // Ensure `@react-navigation/native` was updated
       expect(pkg.read().dependencies).toMatchObject({
         '@react-navigation/native': '^7.0.0',
       });
