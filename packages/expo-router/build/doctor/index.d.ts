@@ -12,6 +12,5 @@ export declare function doctor(pkg: PackageJSONConfig, appReactNavigationPath: s
         dim?: boolean;
     }) => string;
 }): IncorrectDependency[];
-export declare function getReactNavigationVersion(pkg: PackageJSONConfig): string | undefined;
 export {};
 //# sourceMappingURL=index.d.ts.map

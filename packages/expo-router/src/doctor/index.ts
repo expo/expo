@@ -92,7 +92,3 @@ export function doctor(
 
   return incorrectDependencies;
 }
-
-export function getReactNavigationVersion(pkg: PackageJSONConfig) {
-  return pkg.dependencies?.['@react-navigation/native'];
-}
