@@ -6,11 +6,26 @@
 
 ### 🎉 New features
 
-- Add RSC support for `Stack.Screen`, `Tabs.Screen`, and `Drawer.Screen` components. ([#32607](https://github.com/expo/expo/pull/32607) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 4.0.0-preview.14 — 2024-11-07
+
+### 💡 Others
+
+- Tweaks and fixes for the internal Sitemap page. ([#29756](https://github.com/expo/expo/pull/29756) by [@Simek](https://github.com/Simek))
+- Appearance tweaks for the Onboard welcome page. ([#32620](https://github.com/expo/expo/pull/32620), [#32653](https://github.com/expo/expo/pull/32653)) by [@Simek](https://github.com/Simek)
+
+## 4.0.0-preview.13 — 2024-11-05
+
+### 🎉 New features
+
+- Add RSC support for `Stack.Screen`, `Tabs.Screen`, and `Drawer.Screen` components. ([#32607](https://github.com/expo/expo/pull/32607) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Remove `expo-splash-screen` dependency without changing behavior ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
 
 ## 4.0.0-preview.12 — 2024-11-04
 
@@ -94,6 +109,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add `expo-router/rsc/headers` for accessing request headers in server components. ([#32099](https://github.com/expo/expo/pull/32099) by [@EvanBacon](https://github.com/EvanBacon))
 - Add aliases for bridge modules in RSC. ([#32095](https://github.com/expo/expo/pull/32095) by [@EvanBacon](https://github.com/EvanBacon))
 - Add experimental support for React Server Actions in Expo Router. ([#31959](https://github.com/expo/expo/pull/31959) by [@EvanBacon](https://github.com/EvanBacon))
 - server routing and static exports ([#31500](https://github.com/expo/expo/pull/31500) by [@EvanBacon](https://github.com/EvanBacon))

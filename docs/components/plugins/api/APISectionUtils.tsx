@@ -466,7 +466,7 @@ export const resolveTypeName = (
           <span className="text-quaternary">(</span>
           {renderUnion(unionTypes, { sdkVersion })}
           <span className="text-quaternary">)</span>
-          {type === 'array' && '[]'}
+          {type === 'array' && <span className="text-quaternary">[]</span>}
         </>
       );
     } else if (declaration?.signatures) {
@@ -479,11 +479,12 @@ export const resolveTypeName = (
               <span key={`param-${index}-${param.name}`}>
                 {param.name}
                 <span className="text-quaternary">:</span> {resolveTypeName(param.type, sdkVersion)}
-                {index + 1 !== baseSignature.parameters?.length && ', '}
+                {index + 1 !== baseSignature.parameters?.length && (
+                  <span className="text-quaternary">, </span>
+                )}
               </span>
             ))}
-            <span className="text-quaternary">)</span>{' '}
-            <span className="text-quaternary">{'=>'}</span>{' '}
+            <span className="text-quaternary">{') =>'}</span>{' '}
             {baseSignature.type ? resolveTypeName(baseSignature.type, sdkVersion) : 'undefined'}
           </>
         );

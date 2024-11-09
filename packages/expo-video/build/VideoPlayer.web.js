@@ -20,6 +20,10 @@ export function getSourceUri(source) {
     }
     return source?.uri ?? null;
 }
+export function createVideoPlayer(source) {
+    const parsedSource = typeof source === 'string' ? { uri: source } : source;
+    return new VideoPlayerWeb(parsedSource);
+}
 export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     constructor(source) {
         super();
@@ -39,6 +43,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     _error = null;
     _timeUpdateLoop = null;
     _timeUpdateEventInterval = 0;
+    audioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
     allowsExternalPlayback = false; // Not supported on web. Dummy to match the interface.
     staysActiveInBackground = false; // Not supported on web. Dummy to match the interface.
     showNowPlayingNotification = false; // Not supported on web. Dummy to match the interface.
@@ -46,6 +51,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     currentOffsetFromLive = null; // Not supported on web. Dummy to match the interface.
     targetOffsetFromLive = 0; // Not supported on web. Dummy to match the interface.
     bufferOptions = {}; // Not supported on web. Dummy to match the interface.
+    subtitleTrack = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
+    availableSubtitleTracks = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
     set muted(value) {
         this._mountedVideos.forEach((video) => {
             video.muted = value;

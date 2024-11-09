@@ -6,6 +6,8 @@ import type {
   VideoPlayerStatus,
   VideoSource,
   VideoPlayer,
+  SubtitleTrack,
+  AudioMixingMode,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -38,6 +40,12 @@ export function getSourceUri(source: VideoSource): string | null {
   return source?.uri ?? null;
 }
 
+export function createVideoPlayer(source: VideoSource): VideoPlayer {
+  const parsedSource = typeof source === 'string' ? { uri: source } : source;
+
+  return new VideoPlayerWeb(parsedSource);
+}
+
 export default class VideoPlayerWeb
   extends globalThis.expo.SharedObject<VideoPlayerEvents>
   implements VideoPlayer
@@ -61,6 +69,7 @@ export default class VideoPlayerWeb
   _error: PlayerError | null = null;
   _timeUpdateLoop: number | null = null;
   _timeUpdateEventInterval: number = 0;
+  audioMixingMode: AudioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
@@ -68,6 +77,8 @@ export default class VideoPlayerWeb
   currentOffsetFromLive: number | null = null; // Not supported on web. Dummy to match the interface.
   targetOffsetFromLive: number = 0; // Not supported on web. Dummy to match the interface.
   bufferOptions: BufferOptions = {} as BufferOptions; // Not supported on web. Dummy to match the interface.
+  subtitleTrack: SubtitleTrack | null = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
+  availableSubtitleTracks: SubtitleTrack[] = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {

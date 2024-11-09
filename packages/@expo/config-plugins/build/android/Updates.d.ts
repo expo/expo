@@ -1,6 +1,6 @@
-import { Resources } from '.';
 import { AndroidManifest } from './Manifest';
 import { ResourceXML } from './Resources';
+import * as Resources from './Resources';
 import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
 import { ExpoConfigUpdates } from '../utils/Updates';
 export declare enum Config {

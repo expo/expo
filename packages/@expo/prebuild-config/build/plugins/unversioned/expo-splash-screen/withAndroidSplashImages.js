@@ -114,7 +114,7 @@ const DRAWABLES_CONFIGS = {
 };
 const withAndroidSplashImages = (config, props) => {
   return (0, _configPlugins().withDangerousMod)(config, ['android', async config => {
-    await setSplashImageDrawablesAsync(config, props, config.modRequest.projectRoot, props?.logoWidth ?? 100);
+    await setSplashImageDrawablesAsync(config, props, config.modRequest.projectRoot, props?.imageWidth ?? 100);
     return config;
   }]);
 };
@@ -127,11 +127,11 @@ const withAndroidSplashImages = (config, props) => {
  * @param androidMainPath Absolute path to the main directory containing code and resources in Android project. In general that would be `android/app/src/main`.
  */
 exports.withAndroidSplashImages = withAndroidSplashImages;
-async function setSplashImageDrawablesAsync(config, props, projectRoot, logoWidth) {
+async function setSplashImageDrawablesAsync(config, props, projectRoot, imageWidth) {
   await clearAllExistingSplashImagesAsync(projectRoot);
   const splash = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config, props);
   const darkSplash = (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config, props);
-  await Promise.all([setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, logoWidth), setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, logoWidth)]);
+  await Promise.all([setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, imageWidth), setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, imageWidth)]);
 }
 async function clearAllExistingSplashImagesAsync(projectRoot) {
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
@@ -147,7 +147,7 @@ async function clearAllExistingSplashImagesAsync(projectRoot) {
     }));
   }));
 }
-async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, logoWidth) {
+async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, imageWidth = 100) {
   if (!config) return;
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
   const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
@@ -156,7 +156,7 @@ async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, 
     const image = config[imageKey];
     if (image) {
       const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
-      const size = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
+      const size = imageWidth * multiplier; // "imageWidth" must be replaced by the logo width chosen by the user in its config file
       const canvasSize = 288 * multiplier;
       const background = await (0, _imageUtils().generateImageBackgroundAsync)({
         width: canvasSize,

@@ -124,6 +124,7 @@ function getLargeConfig(): ExportedConfig {
       associatedDomains: ['applinks:https://pillarvalley.netlify.app'],
       usesIcloudStorage: true,
       usesAppleSignIn: true,
+      usesBroadcastPushNotifications: true,
       accessesContactNotes: true,
     },
     android: {
@@ -350,6 +351,7 @@ describe('built-in plugins', () => {
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png',
         'ios/HelloWorld/Images.xcassets/Contents.json',
+        'ios/HelloWorld/Images.xcassets/SplashScreenBackground.colorset/Contents.json',
         'ios/HelloWorld/Info.plist',
         'ios/HelloWorld/SplashScreen.storyboard',
         'ios/HelloWorld/Supporting/Expo.plist',

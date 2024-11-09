@@ -37,7 +37,7 @@ class ExponentIntentModule(
   }
 
   override fun openURL(url: String?, promise: Promise) {
-    if (url == null || url.isEmpty()) {
+    if (url.isNullOrEmpty()) {
       promise.reject(JSApplicationIllegalArgumentException("Invalid URL: $url"))
       return
     }

@@ -2,7 +2,9 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 
+#if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#endif // !TARGET_OS_OSX
 #import <React/React-Core-umbrella.h>
 
 #ifdef __cplusplus

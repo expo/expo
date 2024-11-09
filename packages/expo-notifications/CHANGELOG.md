@@ -6,9 +6,25 @@
 
 ### 🎉 New features
 
+- [android] run notification tasks from killed state ([#32531](https://github.com/expo/expo/pull/32531) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.29.5 — 2024-11-07
+
+### 🛠 Breaking changes
+
+- remove two deprecated exports ([#32660](https://github.com/expo/expo/pull/32660) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- fix `NotificationTrigger` type ([#32659](https://github.com/expo/expo/pull/32659) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [docs] minor improvements to TS docs ([#32658](https://github.com/expo/expo/pull/32658) by [@vonovak](https://github.com/vonovak))
 
 ## 0.29.4 — 2024-10-29
 

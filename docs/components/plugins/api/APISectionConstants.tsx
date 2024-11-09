@@ -5,9 +5,9 @@ import { ConstantDefinitionData } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
 import { CommentTextBlock, getTagNamesList, H3Code } from './APISectionUtils';
-import { STYLES_APIBOX } from './styles';
+import { STYLES_APIBOX, STYLES_SECONDARY } from './styles';
 
-import { H2, DEMI, P, MONOSPACE } from '~/ui/components/Text';
+import { H2, P, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -32,9 +32,8 @@ const renderConstant = (
       </MONOSPACE>
     </H3Code>
     {type && (
-      <P>
-        <DEMI theme="secondary">Type:</DEMI>{' '}
-        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+      <P className={STYLES_SECONDARY}>
+        Type: <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </P>
     )}
     {comment && (

@@ -6,11 +6,33 @@
 
 ### 🎉 New features
 
-- Change DOM components defaults for `contentInsetAdjustmentBehavior` and `automaticallyAdjustsScrollIndicatorInsets` to be automatic on iOS. ([#32609](https://github.com/expo/expo/pull/32609) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 52.0.0-preview.23 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.22 — 2024-11-07
+
+### 💡 Others
+
+- Removed unused `process.env.EXPO_BASE_URL` injection code for DOM Components webview-wrapper. ([#32629](https://github.com/expo/expo/pull/32629) by [@kudo](https://github.com/kudo))
+
+## 52.0.0-preview.21 — 2024-11-06
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.20 — 2024-11-05
+
+### 🎉 New features
+
+- Change DOM components defaults for `contentInsetAdjustmentBehavior` and `automaticallyAdjustsScrollIndicatorInsets` to be automatic on iOS. ([#32609](https://github.com/expo/expo/pull/32609) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Remove deprecated Font.processFontFamily() ([#32631](https://github.com/expo/expo/pull/32631) by [@brentvatne](https://github.com/brentvatne))
 
 ## 52.0.0-preview.19 — 2024-11-04
 

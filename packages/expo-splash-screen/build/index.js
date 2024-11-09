@@ -20,6 +20,11 @@
 export async function preventAutoHideAsync() {
     return false;
 }
+/**
+ *
+ * Configures the splashscreens default animation behavior.
+ *
+ */
 export function setOptions(options) { }
 // @needsAudit
 /**
@@ -28,5 +33,9 @@ export function setOptions(options) { }
  * ["Usage"](#usage) section for an example.
  */
 export function hide() { }
+/**
+ * Hides the native splash screen immediately. This method is provided for backwards compatability. See the
+ * ["Usage"](#usage) section for an example.
+ */
 export async function hideAsync() { }
 //# sourceMappingURL=index.js.map

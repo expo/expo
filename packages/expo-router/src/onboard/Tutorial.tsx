@@ -1,36 +1,10 @@
 import React from 'react';
-import { Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { createEntryFileAsync } from './createEntryFile';
 import { Link } from '../exports';
 import { Pressable } from '../views/Pressable';
-
-// TODO: Use openLinkFromBrowser thing
-function Header() {
-  return (
-    <Pressable>
-      {({ hovered }) => (
-        <Text
-          role="heading"
-          aria-level={1}
-          style={[styles.title, Platform.OS !== 'web' && { textAlign: 'left' }]}>
-          Welcome to{' '}
-          <Link
-            href="https://github.com/expo/expo-router/"
-            style={[
-              hovered && {
-                textDecorationColor: 'white',
-                textDecorationLine: 'underline',
-              },
-            ]}>
-            Expo
-          </Link>
-        </Text>
-      )}
-    </Pressable>
-  );
-}
 
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
 
@@ -46,26 +20,57 @@ export function Tutorial() {
         location.replace('/');
       }
       if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
-        window.document.title = 'npx expo start';
+        window.document.title = 'Welcome to Expo';
       }
     }
   }, []);
 
   return (
-    <View style={styles.background}>
+    <SafeAreaView style={styles.background}>
       <StatusBar barStyle="light-content" />
-
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <Header />
-          <Text role="heading" aria-level={2} style={styles.subtitle}>
-            Start by creating a file{'\n'}in the{' '}
-            <Text style={{ fontWeight: 'bold' }}>{getRootDir()}</Text> directory.
-          </Text>
-          {canAutoTouchFile && <Button />}
+      <View style={styles.container}>
+        <View style={styles.logotypeWrapper}>
+          <Image style={styles.logotype} source={require('expo-router/assets/logotype.png')} />
         </View>
-      </SafeAreaView>
-    </View>
+        <Text role="heading" aria-level={1} style={styles.title}>
+          Welcome to Expo
+        </Text>
+        <Text role="heading" aria-level={2} style={[styles.subtitle, styles.textSecondary]}>
+          Start by creating a file{Platform.OS !== 'web' ? '\n' : ' '}in the{' '}
+          <Text style={{ fontWeight: '600' }}>{getRootDir()}</Text> directory.
+        </Text>
+        <Text>
+          <Link
+            href="https://docs.expo.dev/router/introduction/"
+            {...Platform.select({ web: { target: '_blank' }, native: { asChild: true } })}>
+            <Pressable>
+              {({ hovered, pressed }) => (
+                <Text
+                  style={[
+                    styles.link,
+                    Platform.select({
+                      web: {
+                        transitionDuration: '200ms',
+                        marginBottom: 12,
+                      },
+                    }),
+                    hovered && {
+                      opacity: 0.8,
+                      textDecorationLine: 'underline',
+                    },
+                    pressed && {
+                      opacity: 0.8,
+                    },
+                  ]}>
+                  Learn more about Expo Router in the documentation.
+                </Text>
+              )}
+            </Pressable>
+          </Link>
+        </Text>
+        {canAutoTouchFile && <Button />}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -85,35 +90,36 @@ function Button() {
       onPress={() => {
         createEntryFileAsync();
       }}
-      style={{
-        ...Platform.select({
-          web: {
-            // subtle white shadow
-            boxShadow: 'rgba(255, 255, 255, 0.15) 0px 0px 20px 5px',
-          },
-          native: {
-            position: 'absolute',
-            bottom: 24,
-            left: 24,
-            right: 24,
-            overflow: 'hidden',
-          },
-        }),
-      }}>
+      style={styles.button}>
       {({ pressed, hovered }) => (
         <View
           style={[
             styles.buttonContainer,
             hovered && {
-              backgroundColor: 'white',
+              backgroundColor: '#fff',
             },
-            pressed && {
-              backgroundColor: 'rgba(255,255,255,0.7)',
-            },
+            pressed &&
+              Platform.select({
+                web: {
+                  transform: 'scale(0.98)',
+                  transitionDuration: '200ms',
+                },
+                default: {
+                  backgroundColor: '#fff',
+                },
+              }),
           ]}>
-          <Text style={[styles.code, hovered && { color: 'black' }]}>
-            <Text style={{ color: '#BCC3CD' }}>$</Text> touch {getRootDir()}
-            /index.js
+          <Text
+            style={[
+              styles.code,
+              hovered && { color: '#000' },
+              pressed &&
+                Platform.select({
+                  native: { color: '#000' },
+                }),
+            ]}>
+            <Text style={styles.textSecondary}>$</Text> touch {getRootDir()}
+            /index.tsx
           </Text>
         </View>
       )}
@@ -123,80 +129,121 @@ function Button() {
 
 const styles = StyleSheet.create({
   background: {
-    ...Platform.select({
-      web: {
-        backgroundImage:
-          'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
-        backgroundPositionX: -3,
-        backgroundPositionY: -3,
-        backgroundSize: '40px 40px',
-      },
-    }),
-    backgroundColor: 'black',
+    backgroundColor: '#000',
     flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-    maxWidth: 960,
-    marginHorizontal: 'auto',
-    alignItems: 'stretch',
   },
   container: {
     flex: 1,
     padding: 24,
-    alignItems: 'flex-start',
+    paddingBottom: 64,
+    alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 'auto',
+    gap: 16,
+    ...Platform.select({
+      web: {
+        maxWidth: 960,
+      },
+      native: {
+        width: '100%',
+      },
+    }),
+  },
+  logotypeWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#151718',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: '#313538',
+    width: 78,
+    height: 78,
+    marginBottom: 8,
+  },
+  logotype: {
+    width: 48,
+    height: 44,
   },
   title: {
-    color: 'white',
-    fontSize: 64,
-    paddingBottom: 24,
-    fontWeight: 'bold',
+    ...Platform.select({
+      web: {
+        fontSize: 64,
+        lineHeight: 68,
+      },
+      default: {
+        fontSize: 56,
+        lineHeight: 60,
+      },
+    }),
+    color: '#fff',
+    fontWeight: '800',
+    textAlign: 'center',
   },
   buttonContainer: {
     ...Platform.select({
       web: {
         transitionDuration: '200ms',
-        backgroundColor: 'transparent',
-      },
-      default: {
-        backgroundColor: 'white',
       },
     }),
-
-    borderColor: 'white',
+    backgroundColor: 'transparent',
+    borderColor: '#fff',
     borderWidth: 2,
     paddingVertical: 12,
     paddingHorizontal: 24,
+    borderRadius: 8,
   },
-  buttonText: {
-    color: 'black',
+  button: {
+    ...Platform.select({
+      web: {
+        marginTop: 12,
+      },
+      native: {
+        position: 'absolute',
+        bottom: 24,
+        left: 32,
+        right: 32,
+        overflow: 'hidden',
+      },
+    }),
   },
   code: {
     ...Platform.select({
       web: {
         transitionDuration: '200ms',
-        color: 'white',
-        fontFamily: 'Courier',
+        fontFamily: 'Courier, monospace',
       },
       default: {
-        color: 'black',
         fontFamily: Platform.select({
           ios: 'Courier New',
           android: 'monospace',
         }),
       },
     }),
-
+    color: '#fff',
+    textAlign: 'center',
     userSelect: 'none',
     fontSize: 18,
     fontWeight: 'bold',
   },
   subtitle: {
-    color: '#BCC3CD',
-    fontSize: 36,
-    fontWeight: '100',
-    paddingBottom: 36,
-    maxWidth: 960,
+    fontSize: 34,
+    fontWeight: '200',
+    textAlign: 'center',
+  },
+  link: {
+    fontSize: 20,
+    lineHeight: 26,
+    textAlign: 'center',
+    color: '#52a9ff',
+    marginTop: 12,
+    ...Platform.select({
+      web: {
+        marginBottom: 24,
+      },
+    }),
+  },
+  textSecondary: {
+    color: '#9ba1a6',
   },
 });

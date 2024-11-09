@@ -8,7 +8,6 @@ import { _emitGlobalEvent } from './global-events';
 import {
   getInjectBodySizeObserverScript,
   getInjectEventScript,
-  getInjectEnvsScript,
   MATCH_CONTENTS_EVENT,
   NATIVE_ACTION,
   NATIVE_ACTION_RESULT,
@@ -118,7 +117,6 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, filePath, ...marshalP
     containerStyle,
     ...dom,
     injectedJavaScriptBeforeContentLoaded: [
-      getInjectEnvsScript(),
       // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
       `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
       dom?.matchContents ? getInjectBodySizeObserverScript() : null,

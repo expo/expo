@@ -148,4 +148,17 @@ test.describe.serial(inputDir, () => {
       'Secret: test-secret-dynamic'
     );
   });
+
+  test('has dynamic headers', async ({ page }) => {
+    // Navigate to the app
+    await page.goto(new URL('/second', serveCmd.url).toString());
+
+    // Wait for the app to load
+    await page.waitForSelector('[data-testid="second-header-platform"]');
+
+    await expect(page.locator('[data-testid="second-header-platform"]')).toHaveText(
+      // Ensure the headers are rendered as expected
+      'expo-platform: web'
+    );
+  });
 });

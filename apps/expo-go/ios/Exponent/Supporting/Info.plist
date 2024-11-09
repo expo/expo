@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.32.6</string>
+	<string>2.32.7</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -61,7 +61,7 @@
     <string>_preflight_check._tcp</string>
   </array>
 	<key>CFBundleVersion</key>
-	<string>2.32.6</string>
+	<string>2.32.7</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
 	<key>FacebookAppID</key>

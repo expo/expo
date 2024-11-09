@@ -83,6 +83,10 @@ extension URLSessionConfiguration {
 
 @objc(EXDevLauncherNetworkInterceptor)
 public final class DevLauncherNetworkInterceptor: NSObject {
+  @objc
+  public init(bundleUrl: URL) {
+    super.init()
+  }
 }
 
 #endif

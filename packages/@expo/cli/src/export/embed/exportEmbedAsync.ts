@@ -47,7 +47,9 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
   }
   const bundleName = path.basename(bundleOutput);
   const bundleParent = path.dirname(bundleOutput);
-  const possiblePath = globSync(path.join(bundleParent, `*.app/${bundleName}`), {
+  const possiblePath = globSync(`*.app/${bundleName}`, {
+    cwd: bundleParent,
+    absolute: true,
     // bundle identifiers can start with dots.
     dot: true,
   })[0];

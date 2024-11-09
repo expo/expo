@@ -40,7 +40,7 @@ export const NewsletterSignUp = () => {
 
   return (
     <div className="flex-1 max-w-[350px] max-md-gutters:max-w-full">
-      <CALLOUT theme="secondary" weight="medium" className="flex gap-2 items-center">
+      <CALLOUT className="text-secondary font-medium flex gap-2 items-center" id="newsletter-label">
         <Mail01Icon className="text-icon-tertiary shrink-0" />
         Sign up for the Expo Newsletter
       </CALLOUT>
@@ -64,6 +64,7 @@ export const NewsletterSignUp = () => {
             className={mergeClasses('pr-[68px]', error && 'border-danger text-danger')}
             type="email"
             placeholder="reader@email.com"
+            aria-labelledby="newsletter-label"
           />
         )}
         {!userSignedUp ? (
@@ -77,7 +78,7 @@ export const NewsletterSignUp = () => {
           </Button>
         ) : null}
       </form>
-      <FOOTNOTE theme="secondary">
+      <FOOTNOTE theme="tertiary">
         Unsubscribe at any time. Read our{' '}
         <A href="https://expo.dev/privacy" openInNewTab>
           privacy policy
