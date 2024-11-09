@@ -46,7 +46,7 @@ export function doctor(
     appReactNavigationPath !== libReactNavigationPath
   ) {
     console.warn(
-      `There are two different versions of @react-navigation/native in your 'node_modules', this may lead to unexpected navigation behavior. Please ensure all dependencies that require '@react-navigation/native' depend on a version that matches the version range ${routerPkg.dependencies!['@react-navigation/native']}. You can silence this warning by adding '@react-navigation/native' to the 'expo.install.exclude' field in your package.json.`
+      `Detected multiple versions of ${chalk.bold('@react-navigation/native')} in your ${chalk.bold('node_modules')}. This may lead to unexpected navigation behavior and errors. ${learnMore('https://expo.fyi/router-navigation-deps')}.`
     );
   }
 
