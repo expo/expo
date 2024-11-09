@@ -74,7 +74,12 @@ export async function checkPackagesAsync(
    */
   if (pkg.dependencies?.['expo-router']) {
     const { doctor: routerDoctor } = await import('expo-router/doctor.js');
-    dependencies.push(...routerDoctor(pkg, require.resolve('@react-navigation/native')));
+    dependencies.push(
+      ...routerDoctor(pkg, require.resolve('@react-navigation/native'), {
+        bold: chalk.bold,
+        learnMore,
+      })
+    );
   }
 
   if (!dependencies.length) {

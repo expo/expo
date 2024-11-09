@@ -24,7 +24,15 @@ type IncorrectDependency = {
 
 export function doctor(
   pkg: PackageJSONConfig,
-  appReactNavigationPath: string
+  appReactNavigationPath: string,
+  // Reuse the formatting functions from expo-cli
+  {
+    bold,
+    learnMore,
+  }: {
+    bold: (text: string) => string;
+    learnMore: (url: string, options?: { learnMoreMessage?: string; dim?: boolean }) => string;
+  }
 ): IncorrectDependency[] {
   const resolvedDependencies = { ...pkg.dependencies, ...pkg.devDependencies };
   const libReactNavigationPath = require.resolve('@react-navigation/native');
@@ -46,7 +54,7 @@ export function doctor(
     appReactNavigationPath !== libReactNavigationPath
   ) {
     console.warn(
-      `Detected multiple versions of ${chalk.bold('@react-navigation/native')} in your ${chalk.bold('node_modules')}. This may lead to unexpected navigation behavior and errors. ${learnMore('https://expo.fyi/router-navigation-deps')}.`
+      `Detected multiple versions of ${bold('@react-navigation/native')} in your ${bold('node_modules')}. This may lead to unexpected navigation behavior and errors. ${learnMore('https://expo.fyi/router-navigation-deps')}.`
     );
   }
 

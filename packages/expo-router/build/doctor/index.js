@@ -14,7 +14,9 @@ const debug = (0, debug_1.default)('expo:router:doctor');
  */
 const routerPkg = require('../../package.json');
 const routerDependencies = Object.entries(Object.assign({}, routerPkg.dependencies, routerPkg.peerDependencies)).filter((entry) => entry[1] !== '*');
-function doctor(pkg, appReactNavigationPath) {
+function doctor(pkg, appReactNavigationPath, 
+// Reuse the formatting functions from expo-cli
+{ bold, learnMore, }) {
     const resolvedDependencies = { ...pkg.dependencies, ...pkg.devDependencies };
     const libReactNavigationPath = require.resolve('@react-navigation/native');
     const userExcluded = new Set(pkg.expo?.install?.exclude);
@@ -30,7 +32,7 @@ function doctor(pkg, appReactNavigationPath) {
      */
     if (userExcluded.has('@react-navigation/native') &&
         appReactNavigationPath !== libReactNavigationPath) {
-        console.warn(`There are two different versions of @react-navigation/native in your 'node_modules', this may lead to unexpected navigation behavior. Please ensure all dependencies that require '@react-navigation/native' depend on a version that matches the version range ${routerPkg.dependencies['@react-navigation/native']}. You can silence this warning by adding '@react-navigation/native' to the 'expo.install.exclude' field in your package.json.`);
+        console.warn(`Detected multiple versions of ${bold('@react-navigation/native')} in your ${bold('node_modules')}. This may lead to unexpected navigation behavior and errors. ${learnMore('https://expo.fyi/router-navigation-deps')}.`);
     }
     for (const [dep, allowedRange] of routerDependencies) {
         if (userExcluded.has(dep)) {

@@ -5,7 +5,13 @@ type IncorrectDependency = {
     expectedVersionOrRange: string;
     actualVersion: string;
 };
-export declare function doctor(pkg: PackageJSONConfig, appReactNavigationPath: string): IncorrectDependency[];
+export declare function doctor(pkg: PackageJSONConfig, appReactNavigationPath: string, { bold, learnMore, }: {
+    bold: (text: string) => string;
+    learnMore: (url: string, options?: {
+        learnMoreMessage?: string;
+        dim?: boolean;
+    }) => string;
+}): IncorrectDependency[];
 export declare function getReactNavigationVersion(pkg: PackageJSONConfig): string | undefined;
 export {};
 //# sourceMappingURL=index.d.ts.map
