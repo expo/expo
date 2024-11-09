@@ -11,7 +11,7 @@ const debug = createDebug('expo:router:doctor');
  */
 const routerPkg: PackageJSONConfig = require('../../package.json');
 
-const routerDependencies = Object.entries(
+const routerDependencies = Object.entries<string>(
   Object.assign({}, routerPkg.dependencies, routerPkg.peerDependencies)
 ).filter((entry) => entry[1] !== '*');
 
