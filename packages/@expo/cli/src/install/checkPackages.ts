@@ -81,8 +81,9 @@ export async function checkPackagesAsync(
           learnMore,
         })
       );
-    } catch {
+    } catch (error) {
       Log.log(`Skipped checking expo-router dependencies: expo-router/doctor.js not found.`);
+      debug('expo-router/doctor error:', error);
     }
   }
 
