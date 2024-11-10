@@ -10,7 +10,9 @@
 
 ### 💡 Others
 
-## 8.0.10 — 2024-11-07
+## 8.0.10 — 2024-11-11
+
+- Fixed the error: `withIosSplashScreenStoryboardBaseMod: Cannot read properties of undefined (reading 'findIndex')`. ([#32761](https://github.com/expo/expo/pull/32761) by [@Albert-Gao](https://github.com/Albert-Gao))
 
 ### 🐛 Bug fixes
 

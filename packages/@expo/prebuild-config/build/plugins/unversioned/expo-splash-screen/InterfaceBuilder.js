@@ -65,7 +65,7 @@ function removeImageFromSplashScreen(xml, {
 
   // Add resource
   const imageSection = xml.document.resources[0].image;
-  const existingImageIndex = imageSection.findIndex(image => image.$.name === imageName);
+  const existingImageIndex = imageSection?.findIndex(image => image.$.name === imageName);
   if (existingImageIndex > -1) {
     imageSection.splice(existingImageIndex, 1);
   }
