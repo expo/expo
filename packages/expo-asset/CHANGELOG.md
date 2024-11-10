@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for simplified object asset format. ([#32728](https://github.com/expo/expo/pull/32728) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 11.0.0 — 2024-10-22

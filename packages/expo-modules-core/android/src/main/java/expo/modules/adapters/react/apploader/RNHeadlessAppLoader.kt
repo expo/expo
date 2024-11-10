@@ -39,7 +39,10 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
               }
             }
           )
-          reactHost.start()
+          // Ensure that we're starting the react host on the main thread
+          android.os.Handler(context.mainLooper).post {
+            reactHost.start()
+          }
         } else {
           // Old architecture
           val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
@@ -53,7 +56,10 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
               }
             }
           )
-          reactInstanceManager.createReactContextInBackground()
+          // Ensure that we're starting the react host on the main thread
+          android.os.Handler(context.mainLooper).post {
+            reactInstanceManager.createReactContextInBackground()
+          }
         }
       } else {
         alreadyRunning?.run()

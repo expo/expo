@@ -12,8 +12,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
-import androidx.media3.common.Format
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.Tracks
 import androidx.media3.ui.PlayerView
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -257,22 +255,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
-    showsSubtitlesButton = hasSubtitles(tracks)
+    showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
-  }
-
-  private fun hasSubtitles(tracks: Tracks): Boolean {
-    for (group in tracks.groups) {
-      for (i in 0..<group.length) {
-        val format: Format = group.getTrackFormat(i)
-
-        if (MimeTypes.isText(format.sampleMimeType)) {
-          return true
-        }
-      }
-    }
-    return false
   }
 
   override fun requestLayout() {

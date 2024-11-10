@@ -3,31 +3,22 @@ import requireContext from '../../testing-library/require-context-ponyfill';
 import { getTypedRoutesDeclarationFile } from '../generate';
 import { getWatchHandler } from '../index';
 
-/**
- * Parsed the generated TypeScript definitions and returns the values of the
- * routes as arrays of strings
- */
-export function getGeneratedRoutes(context: ReturnType<typeof inMemoryContext>) {
-  const output = getTypedRoutesDeclarationFile(context);
-  return splitDeclarationFileIntoSections(output);
+function getGeneratedRoutes(
+  context: ReturnType<typeof inMemoryContext>,
+  options: Parameters<typeof getGeneratedRoutesFromOutput>[1] = {}
+) {
+  return getGeneratedRoutesFromOutput(getTypedRoutesDeclarationFile(context), options);
 }
 
-function splitDeclarationFileIntoSections(output: string) {
-  function toArray(regex: RegExp) {
-    const match = output.match(regex)?.[1];
-    if (!match) return [];
-    if (match === 'never') return ['never'];
-    return match.slice(1, -1).split('` | `');
+function getGeneratedRoutesFromOutput(output: string, { stripQuery = true } = {}) {
+  if (stripQuery) {
+    output = output.replaceAll("${`?${string}` | `#${string}` | ''}", '');
   }
 
-  const staticRoutes = toArray(/StaticRoutes:\s(.+);/);
-  const dynamicRoutes = toArray(/DynamicRoutes:\s(.+);/);
-  const dynamicRouteTemplates = toArray(/DynamicRouteTemplate:\s(.+);/);
-
   return {
-    staticRoutes,
-    dynamicRoutes,
-    dynamicRouteTemplates,
+    href: output.match(/href:\s(.+);/)?.[1],
+    hrefInputParams: output.match(/hrefInputParams:\s(.+);/)?.[1],
+    hrefOutputParams: output.match(/hrefOutputParams:\s(.+);/)?.[1],
   };
 }
 
@@ -39,9 +30,11 @@ it('basic single static route', () => {
   );
 
   expect(generated).toEqual({
-    staticRoutes: ['/', '/_sitemap'],
-    dynamicRoutes: ['never'],
-    dynamicRouteTemplates: ['never'],
+    href: 'Router.RelativePathString | Router.ExternalPathString | `/` | `/_sitemap` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; }',
+    hrefInputParams:
+      '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; }',
+    hrefOutputParams:
+      '{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams } | { pathname: `/`; params?: Router.UnknownOutputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownOutputParams; }',
   });
 });
 
@@ -61,48 +54,11 @@ it('hoisting with layouts and groups', () => {
   );
 
   expect(generated).toEqual({
-    dynamicRouteTemplates: [
-      '/(app)/tabs/(apple)/three/[fruit]',
-      '/(app)/tabs/(banana)/three/[fruit]',
-      '/(app)/tabs/three/[fruit]',
-      '/tabs/(apple)/three/[fruit]',
-      '/tabs/(banana)/three/[fruit]',
-      '/tabs/three/[fruit]',
-    ],
-    dynamicRoutes: [
-      '/(app)/tabs/(apple)/three/${Router.SingleRoutePart<T>}',
-      '/(app)/tabs/(banana)/three/${Router.SingleRoutePart<T>}',
-      '/(app)/tabs/three/${Router.SingleRoutePart<T>}',
-      '/tabs/(apple)/three/${Router.SingleRoutePart<T>}',
-      '/tabs/(banana)/three/${Router.SingleRoutePart<T>}',
-      '/tabs/three/${Router.SingleRoutePart<T>}',
-    ],
-    staticRoutes: [
-      '/',
-      '/(app)',
-      '/(app)/',
-      '/(app)/tabs',
-      '/(app)/tabs/(apple)/three',
-      '/(app)/tabs/(apple)/three/apple',
-      '/(app)/tabs/(banana)/three',
-      '/(app)/tabs/(banana)/three/banana',
-      '/(app)/tabs/one',
-      '/(app)/tabs/three',
-      '/(app)/tabs/three/apple',
-      '/(app)/tabs/three/banana',
-      '/(app)/tabs/two',
-      '/_sitemap',
-      '/tabs',
-      '/tabs/(apple)/three',
-      '/tabs/(apple)/three/apple',
-      '/tabs/(banana)/three',
-      '/tabs/(banana)/three/banana',
-      '/tabs/one',
-      '/tabs/three',
-      '/tabs/three/apple',
-      '/tabs/three/banana',
-      '/tabs/two',
-    ],
+    href: "Router.RelativePathString | Router.ExternalPathString | `/_sitemap` | `${'/(app)'}` | `` | `${'/(app)'}/tabs/one` | `/tabs/one` | `${'/(app)'}/tabs/two` | `/tabs/two` | `${'/(app)'}/tabs${'/(apple)' | '/(banana)'}/three` | `/tabs/three` | `${'/(app)'}/tabs${'/(apple)'}/three/apple` | `/tabs/three/apple` | `${'/(app)'}/tabs${'/(banana)'}/three/banana` | `/tabs/three/banana` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}` | ``; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs/one` | `/tabs/one`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs/two` | `/tabs/two`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs${'/(apple)' | '/(banana)'}/three` | `/tabs/three`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs${'/(apple)'}/three/apple` | `/tabs/three/apple`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs${'/(banana)'}/three/banana` | `/tabs/three/banana`; params?: Router.UnknownInputParams; } | `${'/(app)'}/tabs${'/(apple)' | '/(banana)'}/three/${Router.SingleRoutePart<T>}` | `/tabs/three/${Router.SingleRoutePart<T>}` | { pathname: `${'/(app)'}/tabs${'/(apple)' | '/(banana)'}/three/[fruit]` | `/tabs/three/[fruit]`, params: Router.UnknownInputParams & { fruit: string | number; } }",
+    hrefInputParams:
+      "{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}` | ``; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs/one` | `/tabs/one`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs/two` | `/tabs/two`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs${'/(apple)' | '/(banana)'}/three` | `/tabs/three`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs${'/(apple)'}/three/apple` | `/tabs/three/apple`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs${'/(banana)'}/three/banana` | `/tabs/three/banana`; params?: Router.UnknownInputParams; } | { pathname: `${'/(app)'}/tabs${'/(apple)' | '/(banana)'}/three/[fruit]` | `/tabs/three/[fruit]`, params: Router.UnknownInputParams & { fruit: string | number; } }",
+    hrefOutputParams:
+      "{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams } | { pathname: `/_sitemap`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(app)'}` | ``; params?: Router.UnknownOutputParams; } | { pathname: `${'/(app)'}/tabs/one` | `/tabs/one`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(app)'}/tabs/two` | `/tabs/two`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(app)'}/tabs${'/(apple)' | '/(banana)'}/three` | `/tabs/three`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(app)'}/tabs${'/(apple)'}/three/apple` | `/tabs/three/apple`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(app)'}/tabs${'/(banana)'}/three/banana` | `/tabs/three/banana`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(app)'}/tabs${'/(apple)' | '/(banana)'}/three/[fruit]` | `/tabs/three/[fruit]`, params: Router.UnknownOutputParams & { fruit: string; } }",
   });
 });
 
@@ -110,9 +66,11 @@ it('works with no routes', () => {
   const generated = getGeneratedRoutes(inMemoryContext({}));
 
   expect(generated).toEqual({
-    staticRoutes: ['never'],
-    dynamicRoutes: ['never'],
-    dynamicRouteTemplates: ['never'],
+    href: 'Router.RelativePathString | Router.ExternalPathString | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }',
+    hrefInputParams:
+      '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }',
+    hrefOutputParams:
+      '{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams }',
   });
 });
 
@@ -120,9 +78,11 @@ it('works with only layouts', () => {
   const generated = getGeneratedRoutes(inMemoryContext({ _layout: () => null }));
 
   expect(generated).toEqual({
-    staticRoutes: ['never'],
-    dynamicRoutes: ['never'],
-    dynamicRouteTemplates: ['never'],
+    href: 'Router.RelativePathString | Router.ExternalPathString | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }',
+    hrefInputParams:
+      '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams }',
+    hrefOutputParams:
+      '{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams }',
   });
 });
 
@@ -136,9 +96,11 @@ it('allows spaces in the filename', () => {
   );
 
   expect(generated).toEqual({
-    staticRoutes: ['/_sitemap', '/hello world'],
-    dynamicRoutes: ['/${Router.SingleRoutePart<T>}', '/${string}'],
-    dynamicRouteTemplates: ['/[...hello world]', '/[hello world]'],
+    href: 'Router.RelativePathString | Router.ExternalPathString | `/hello world` | `/_sitemap` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/hello world`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | `/${Router.SingleRoutePart<T>}` | `/${string}` | { pathname: `/[hello world]`, params: Router.UnknownInputParams & { hello world: string | number; } } | { pathname: `/[...hello world]`, params: Router.UnknownInputParams & { hello world: (string | number)[]; } }',
+    hrefInputParams:
+      '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/hello world`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `/[hello world]`, params: Router.UnknownInputParams & { hello world: string | number; } } | { pathname: `/[...hello world]`, params: Router.UnknownInputParams & { hello world: (string | number)[]; } }',
+    hrefOutputParams:
+      '{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams } | { pathname: `/hello world`; params?: Router.UnknownOutputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownOutputParams; } | { pathname: `/[hello world]`, params: Router.UnknownOutputParams & { hello world: string; } } | { pathname: `/[...hello world]`, params: Router.UnknownOutputParams & { hello world: string[]; } }',
   });
 });
 
@@ -154,59 +116,11 @@ it('expands groups', () => {
   );
 
   expect(generated).toEqual({
-    staticRoutes: [
-      '/(a)/(e)/banana',
-      '/(a)/(f)/banana',
-      '/(a)/apple',
-      '/(a)/banana',
-      '/(b)/(e)/banana',
-      '/(b)/(f)/banana',
-      '/(b)/apple',
-      '/(b)/banana',
-      '/(c)/apple',
-      '/(e)/banana',
-      '/(f)/banana',
-      '/_sitemap',
-      '/apple',
-      '/banana',
-      '/test',
-      '/test/(blue)',
-      '/test/(blue)/color',
-      '/test/(blue)/folder/(green)/page',
-      '/test/(blue)/folder/page',
-      '/test/(red)',
-      '/test/(red)/color',
-      '/test/(red)/folder/(green)/page',
-      '/test/(red)/folder/page',
-      '/test/color',
-      '/test/folder/(green)/page',
-      '/test/folder/page',
-    ],
-    dynamicRoutes: ['never'],
-    dynamicRouteTemplates: ['never'],
-  });
-});
-
-/**
- * Miscellaneous tests to ensure that the generated routes are correct
- */
-const routes = [
-  ['[a]/index', '/${Router.SingleRoutePart<T>}', '/[a]'],
-  ['[a]/[b]', '/${Router.SingleRoutePart<T>}/${Router.SingleRoutePart<T>}', '/[a]/[b]'],
-  ['static/[a]', '/static/${Router.SingleRoutePart<T>}', '/static/[a]'],
-  [
-    'static/[a]/nested/[b]',
-    '/static/${Router.SingleRoutePart<T>}/nested/${Router.SingleRoutePart<T>}',
-    '/static/[a]/nested/[b]',
-  ],
-] as const;
-
-it.each(routes)('dynamic route: ./%s', (route, dynamicRoutes, dynamicRouteTemplates) => {
-  const generated = getGeneratedRoutes(inMemoryContext({ [route]: () => null }));
-  expect(generated).toEqual({
-    staticRoutes: ['/_sitemap'],
-    dynamicRoutes: [dynamicRoutes],
-    dynamicRouteTemplates: [dynamicRouteTemplates],
+    href: "Router.RelativePathString | Router.ExternalPathString | `/_sitemap` | `${'/(a)' | '/(b)' | '/(c)'}/apple` | `/apple` | `${'/(a)' | '/(b)'}${'/(e)' | '/(f)'}/banana` | `/banana` | `/test${'/(red)' | '/(blue)'}` | `/test` | `/test${'/(red)' | '/(blue)'}/color` | `/test/color` | `/test${'/(red)' | '/(blue)'}/folder${'/(green)'}/page` | `/test/folder/page` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)' | '/(c)'}/apple` | `/apple`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)'}${'/(e)' | '/(f)'}/banana` | `/banana`; params?: Router.UnknownInputParams; } | { pathname: `/test${'/(red)' | '/(blue)'}` | `/test`; params?: Router.UnknownInputParams; } | { pathname: `/test${'/(red)' | '/(blue)'}/color` | `/test/color`; params?: Router.UnknownInputParams; } | { pathname: `/test${'/(red)' | '/(blue)'}/folder${'/(green)'}/page` | `/test/folder/page`; params?: Router.UnknownInputParams; }",
+    hrefInputParams:
+      "{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)' | '/(c)'}/apple` | `/apple`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)'}${'/(e)' | '/(f)'}/banana` | `/banana`; params?: Router.UnknownInputParams; } | { pathname: `/test${'/(red)' | '/(blue)'}` | `/test`; params?: Router.UnknownInputParams; } | { pathname: `/test${'/(red)' | '/(blue)'}/color` | `/test/color`; params?: Router.UnknownInputParams; } | { pathname: `/test${'/(red)' | '/(blue)'}/folder${'/(green)'}/page` | `/test/folder/page`; params?: Router.UnknownInputParams; }",
+    hrefOutputParams:
+      "{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams } | { pathname: `/_sitemap`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(a)' | '/(b)' | '/(c)'}/apple` | `/apple`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(a)' | '/(b)'}${'/(e)' | '/(f)'}/banana` | `/banana`; params?: Router.UnknownOutputParams; } | { pathname: `/test${'/(red)' | '/(blue)'}` | `/test`; params?: Router.UnknownOutputParams; } | { pathname: `/test${'/(red)' | '/(blue)'}/color` | `/test/color`; params?: Router.UnknownOutputParams; } | { pathname: `/test${'/(red)' | '/(blue)'}/folder${'/(green)'}/page` | `/test/folder/page`; params?: Router.UnknownOutputParams; }",
   });
 });
 
@@ -254,55 +168,12 @@ describe(getWatchHandler, () => {
       type: 'add',
     });
 
-    const sections = splitDeclarationFileIntoSections(fn.mock.lastCall?.[0] ?? '');
-
-    expect(sections).toEqual({
-      staticRoutes: [
-        '/',
-        '/(a)/bar',
-        '/(a)/directory/(c)/route',
-        '/(a)/directory/(d)/route',
-        '/(a)/directory/route',
-        '/(b)/bar',
-        '/(b)/directory/(c)/route',
-        '/(b)/directory/(d)/route',
-        '/(b)/directory/route',
-        '/(group)/foo',
-        '/_sitemap',
-        '/apple',
-        '/bar',
-        '/directory/(c)/route',
-        '/directory/(d)/route',
-        '/directory/route',
-        '/foo',
-        '/fruit/banana',
-      ],
-      dynamicRoutes: [
-        '/${Router.SingleRoutePart<T>}',
-        '/(a)/${Router.SingleRoutePart<T>}',
-        '/(a)/directory/${string}',
-        '/(a)/directory/(c)/${string}',
-        '/(a)/directory/(d)/${string}',
-        '/(b)/directory/${string}',
-        '/(b)/directory/(c)/${string}',
-        '/(b)/directory/(d)/${string}',
-        '/directory/${string}',
-        '/directory/(c)/${string}',
-        '/directory/(d)/${string}',
-      ],
-      dynamicRouteTemplates: [
-        '/(a)/[slug]',
-        '/(a)/directory/(c)/[...catchall]',
-        '/(a)/directory/(d)/[...catchall]',
-        '/(a)/directory/[...catchall]',
-        '/(b)/directory/(c)/[...catchall]',
-        '/(b)/directory/(d)/[...catchall]',
-        '/(b)/directory/[...catchall]',
-        '/[slug]',
-        '/directory/(c)/[...catchall]',
-        '/directory/(d)/[...catchall]',
-        '/directory/[...catchall]',
-      ],
+    expect(getGeneratedRoutesFromOutput(fn.mock.lastCall?.[0] ?? '')).toEqual({
+      href: "Router.RelativePathString | Router.ExternalPathString | `/` | `/apple` | `/_sitemap` | `/fruit/banana` | `${'/(group)'}/foo` | `/foo` | `${'/(a)' | '/(b)'}/bar` | `/bar` | `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/route` | `/directory/route` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/apple`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `/fruit/banana`; params?: Router.UnknownInputParams; } | { pathname: `${'/(group)'}/foo` | `/foo`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)'}/bar` | `/bar`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/route` | `/directory/route`; params?: Router.UnknownInputParams; } | `/(a)/${Router.SingleRoutePart<T>}` | `/${Router.SingleRoutePart<T>}` | `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/${string}` | `/directory/${string}` | { pathname: `/(a)/[slug]` | `/[slug]`, params: Router.UnknownInputParams & { slug: string | number; } } | { pathname: `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/[...catchall]` | `/directory/[...catchall]`, params: Router.UnknownInputParams & { catchall: (string | number)[]; } }",
+      hrefInputParams:
+        "{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/apple`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `/fruit/banana`; params?: Router.UnknownInputParams; } | { pathname: `${'/(group)'}/foo` | `/foo`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)'}/bar` | `/bar`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/route` | `/directory/route`; params?: Router.UnknownInputParams; } | { pathname: `/(a)/[slug]` | `/[slug]`, params: Router.UnknownInputParams & { slug: string | number; } } | { pathname: `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/[...catchall]` | `/directory/[...catchall]`, params: Router.UnknownInputParams & { catchall: (string | number)[]; } }",
+      hrefOutputParams:
+        "{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams } | { pathname: `/`; params?: Router.UnknownOutputParams; } | { pathname: `/apple`; params?: Router.UnknownOutputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownOutputParams; } | { pathname: `/fruit/banana`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(group)'}/foo` | `/foo`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(a)' | '/(b)'}/bar` | `/bar`; params?: Router.UnknownOutputParams; } | { pathname: `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/route` | `/directory/route`; params?: Router.UnknownOutputParams; } | { pathname: `/(a)/[slug]` | `/[slug]`, params: Router.UnknownOutputParams & { slug: string; } } | { pathname: `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/[...catchall]` | `/directory/[...catchall]`, params: Router.UnknownOutputParams & { catchall: string[]; } }",
     });
   });
 
@@ -314,12 +185,12 @@ describe(getWatchHandler, () => {
       type: 'delete',
     });
 
-    const sections = splitDeclarationFileIntoSections(fn.mock.lastCall?.[0] ?? '');
-
-    expect(sections).toEqual({
-      staticRoutes: ['/', '/_sitemap', '/fruit/banana'],
-      dynamicRoutes: ['never'],
-      dynamicRouteTemplates: ['never'],
+    expect(getGeneratedRoutesFromOutput(fn.mock.lastCall?.[0] ?? '')).toEqual({
+      href: 'Router.RelativePathString | Router.ExternalPathString | `/` | `/_sitemap` | `/fruit/banana` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `/fruit/banana`; params?: Router.UnknownInputParams; }',
+      hrefInputParams:
+        '{ pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `/fruit/banana`; params?: Router.UnknownInputParams; }',
+      hrefOutputParams:
+        '{ pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams } | { pathname: `/`; params?: Router.UnknownOutputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownOutputParams; } | { pathname: `/fruit/banana`; params?: Router.UnknownOutputParams; }',
     });
   });
 
@@ -346,10 +217,10 @@ export * from 'expo-router';
 
 declare module 'expo-router' {
   export namespace ExpoRouter {
-    export interface __routes<T extends string = string> extends Record<string, unknown> {
-      StaticRoutes: \`/\` | \`/_sitemap\` | \`/apple\`;
-      DynamicRoutes: never;
-      DynamicRouteTemplate: never;
+    export interface __routes<T extends string | object = string> {
+      hrefInputParams: { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: \`/\`; params?: Router.UnknownInputParams; } | { pathname: \`/apple\`; params?: Router.UnknownInputParams; } | { pathname: \`/_sitemap\`; params?: Router.UnknownInputParams; };
+      hrefOutputParams: { pathname: Router.RelativePathString, params?: Router.UnknownOutputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownOutputParams } | { pathname: \`/\`; params?: Router.UnknownOutputParams; } | { pathname: \`/apple\`; params?: Router.UnknownOutputParams; } | { pathname: \`/_sitemap\`; params?: Router.UnknownOutputParams; };
+      href: Router.RelativePathString | Router.ExternalPathString | \`/\${\`?\${string}\` | \`#\${string}\` | ''}\` | \`/apple\${\`?\${string}\` | \`#\${string}\` | ''}\` | \`/_sitemap\${\`?\${string}\` | \`#\${string}\` | ''}\` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: \`/\`; params?: Router.UnknownInputParams; } | { pathname: \`/apple\`; params?: Router.UnknownInputParams; } | { pathname: \`/_sitemap\`; params?: Router.UnknownInputParams; };
     }
   }
 }

@@ -30,14 +30,10 @@ export function VideoBoxLink({ title, description, videoId, className }: VideoBo
           'bg-element flex items-center max-w-[200px] justify-center relative border-r border-secondary',
           'max-sm-gutters:max-w-full max-sm-gutters:border-r-0 max-sm-gutters:border-b'
         )}>
-        <div
-          style={{
-            backgroundImage: `url(https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg)`,
-          }}
-          className={mergeClasses(
-            'aspect-video bg-cover bg-center h-[112px]',
-            'max-sm-gutters:h-[200px]'
-          )}
+        <img
+          src={`https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
+          className="aspect-video"
+          alt={title}
         />
         <div className="size-[44px] flex items-center justify-center bg-[#000a] rounded-full absolute top-[calc(50%-22px)] right-[calc(50%-22px)]">
           <PlaySolidIcon className="icon-lg text-palette-white ml-0.5" />

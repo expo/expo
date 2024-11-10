@@ -33,6 +33,16 @@ internal struct PlaybackRateChangedEventPayload: Record {
   @Field var oldPlaybackRate: Float? = nil
 }
 
+internal struct SubtitleTracksChangedEventPayload: Record {
+  @Field var availableSubtitleTracks: [SubtitleTrack] = []
+  @Field var oldAvailableSubtitleTracks: [SubtitleTrack] = []
+}
+
+internal struct SubtitleTrackChangedEventPayload: Record {
+  @Field var subtitleTrack: SubtitleTrack? = nil
+  @Field var oldSubtitleTrack: SubtitleTrack? = nil
+}
+
 internal struct TimeUpdate: Record {
   @Field var currentTime: Double = 0
   @Field var currentLiveTimestamp: Double? = nil

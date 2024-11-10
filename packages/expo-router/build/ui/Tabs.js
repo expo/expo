@@ -34,23 +34,68 @@ __exportStar(require("./TabContext"), exports);
 __exportStar(require("./TabList"), exports);
 __exportStar(require("./TabSlot"), exports);
 __exportStar(require("./TabTrigger"), exports);
-function Tabs({ children, asChild, options, ...props }) {
+/**
+ * Root component for the headless tabs.
+ *
+ * @see [`useTabsWithChildren`](#usetabswithchildrenoptions) for a hook version of this component.
+ * @example
+ * ```tsx
+ * <Tabs>
+ *  <TabSlot />
+ *  <TabList>
+ *   <TabTrigger name="home" href="/" />
+ *  </TabList>
+ * </Tabs>
+ * ```
+ */
+function Tabs(props) {
+    const { children, asChild, options, ...rest } = props;
     const Comp = asChild ? common_1.SafeAreaViewSlot : react_native_1.View;
     const { NavigationContent } = useTabsWithChildren({
         // asChild adds an extra layer, so we need to process the child's children
         children: asChild && (0, react_1.isValidElement)(children) ? children.props.children : children,
         ...options,
     });
-    return (<Comp style={styles.tabsRoot} {...props}>
+    return (<Comp style={styles.tabsRoot} {...rest}>
       <NavigationContent>{children}</NavigationContent>
     </Comp>);
 }
 exports.Tabs = Tabs;
-function useTabsWithChildren({ children, ...options }) {
-    return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...options });
+/**
+ * Hook version of `Tabs`. The returned NavigationContent component
+ * should be rendered.
+ *
+ * @see [`Tabs`](#tabs) for the component version of this hook.
+ * @example
+ * ```tsx
+ * export function MyTabs({ children }) {
+ *  const { NavigationContent } = useTabsWithChildren({ children })
+ *
+ *  return <NavigationContent />
+ * }
+ * ```
+ */
+function useTabsWithChildren(options) {
+    const { children, ...rest } = options;
+    return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...rest });
 }
 exports.useTabsWithChildren = useTabsWithChildren;
-function useTabsWithTriggers({ triggers, ...options }) {
+/**
+ * Alternative hook version of `Tabs` that uses explicit triggers
+ * instead of `children`.
+ *
+ * @see [`Tabs`](#tabs) for the component version of this hook.
+ * @example
+ * ```tsx
+ * export function MyTabs({ children }) {
+ *   const { NavigationContent } = useTabsWithChildren({ triggers: [] })
+ *
+ *   return <NavigationContent />
+ * }
+ * ```
+ */
+function useTabsWithTriggers(options) {
+    const { triggers, ...rest } = options;
     // Ensure we extend the parent triggers, so we can trigger them as well
     const parentTriggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
     const routeNode = (0, Route_1.useRouteNode)();
@@ -64,12 +109,12 @@ function useTabsWithTriggers({ triggers, ...options }) {
     const { children, triggerMap } = (0, common_1.triggersToScreens)(triggers, routeNode, linking, initialRouteName, parentTriggerMap, routeInfo, contextKey);
     const navigatorContext = (0, native_1.useNavigationBuilder)(TabRouter_1.ExpoTabRouter, {
         children,
-        ...options,
+        ...rest,
         triggerMap,
         id: contextKey,
         initialRouteName,
     });
-    const { state, descriptors, navigation, NavigationContent: RNNavigationContent, } = navigatorContext;
+    const { state, descriptors, navigation, describe, NavigationContent: RNNavigationContent, } = navigatorContext;
     const navigatorContextValue = (0, react_1.useMemo)(() => ({
         ...navigatorContext,
         contextKey,
@@ -80,7 +125,7 @@ function useTabsWithTriggers({ triggers, ...options }) {
         <RNNavigationContent>{children}</RNNavigationContent>
       </Navigator_1.NavigatorContext.Provider>
     </TabContext_1.TabTriggerMapContext.Provider>));
-    return { state, descriptors, navigation, NavigationContent };
+    return { state, descriptors, navigation, NavigationContent, describe };
 }
 exports.useTabsWithTriggers = useTabsWithTriggers;
 function parseTriggersFromChildren(children, screenTriggers = [], isInTabList = false) {

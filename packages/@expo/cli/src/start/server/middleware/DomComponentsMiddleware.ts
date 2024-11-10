@@ -69,6 +69,7 @@ export function createDomComponentsMiddleware(
       createBundleUrlPath({
         ...instanceMetroOptions,
         domRoot: encodeURI(relativeImport),
+        baseUrl: '/',
         mainModuleName: path.relative(metroRoot, virtualEntry),
         bytecode: false,
         platform: 'web',

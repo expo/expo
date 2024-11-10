@@ -106,7 +106,7 @@ export const withAndroidSplashImages: ConfigPlugin<AndroidSplashConfig> = (confi
         config,
         props,
         config.modRequest.projectRoot,
-        props?.logoWidth ?? 100
+        props?.imageWidth ?? 100
       );
       return config;
     },
@@ -124,7 +124,7 @@ export async function setSplashImageDrawablesAsync(
   config: Pick<ExpoConfig, 'android' | 'splash'>,
   props: AndroidSplashConfig | null,
   projectRoot: string,
-  logoWidth: number
+  imageWidth: number
 ) {
   await clearAllExistingSplashImagesAsync(projectRoot);
 
@@ -132,8 +132,8 @@ export async function setSplashImageDrawablesAsync(
   const darkSplash = getAndroidDarkSplashConfig(config, props);
 
   await Promise.all([
-    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, logoWidth),
-    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, logoWidth),
+    setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, imageWidth),
+    setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, imageWidth),
   ]);
 }
 
@@ -157,7 +157,7 @@ export async function setSplashImageDrawablesForThemeAsync(
   config: SplashScreenConfig | null,
   theme: 'dark' | 'light',
   projectRoot: string,
-  logoWidth: number
+  imageWidth: number = 100
 ) {
   if (!config) return;
   const androidMainPath = path.join(projectRoot, 'android/app/src/main');
@@ -171,7 +171,7 @@ export async function setSplashImageDrawablesForThemeAsync(
 
       if (image) {
         const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
-        const size = logoWidth * multiplier; // "logoWidth" must be replaced by the logo width chosen by the user in its config file
+        const size = imageWidth * multiplier; // "imageWidth" must be replaced by the logo width chosen by the user in its config file
         const canvasSize = 288 * multiplier;
 
         const background = await generateImageBackgroundAsync({

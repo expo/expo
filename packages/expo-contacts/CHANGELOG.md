@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 14.0.2 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fix `ContactQuery` `id` field not accepting arrays. ([#32651](https://github.com/expo/expo/pull/32651) by [@behenate](https://github.com/behenate))
+
 ## 14.0.1 — 2024-10-22
 
 _This version does not introduce any user-facing changes._

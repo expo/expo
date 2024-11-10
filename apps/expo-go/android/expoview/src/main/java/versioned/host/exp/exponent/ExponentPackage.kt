@@ -134,7 +134,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.addAll(SvgPackage().getNativeModuleIterator(reactContext).map { it.module })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
-        nativeModules.addAll(RNDateTimePickerPackage().getNativeModuleIterator(reactContext).map { it.module })
+        nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name(), reactContext)!! })
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 

@@ -353,10 +353,7 @@ export function withExtendedResolver(
         }
 
         const isExternal = // Extern these modules in standard Node.js environments.
-          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
-            moduleName
-          ) ||
-          /^react-native-web\/dist\/exports\/(Platform|NativeEventEmitter|StyleSheet|NativeModules|DeviceEventEmitter|Text|View)$/.test(
+          /^(deprecated-react-native-prop-types|react|react\/jsx-dev-runtime|scheduler|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
             moduleName
           ) ||
           // TODO: Add more

@@ -63,13 +63,22 @@ function _semver() {
   };
   return data;
 }
-function _() {
-  const data = require("..");
-  _ = function () {
+function AndroidVersion() {
+  const data = _interopRequireWildcard(require("../android/Version"));
+  AndroidVersion = function () {
     return data;
   };
   return data;
 }
+function IOSVersion() {
+  const data = _interopRequireWildcard(require("../ios/Version"));
+  IOSVersion = function () {
+    return data;
+  };
+  return data;
+}
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const FINGERPRINT_RUNTIME_VERSION_SENTINEL = exports.FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';
 function getExpoUpdatesPackageVersion(projectRoot) {
@@ -87,16 +96,16 @@ function getAppVersion(config) {
   return config.version ?? '1.0.0';
 }
 function getNativeVersion(config, platform) {
-  const version = _().IOSConfig.Version.getVersion(config);
+  const version = IOSVersion().getVersion(config);
   switch (platform) {
     case 'ios':
       {
-        const buildNumber = _().IOSConfig.Version.getBuildNumber(config);
+        const buildNumber = IOSVersion().getBuildNumber(config);
         return `${version}(${buildNumber})`;
       }
     case 'android':
       {
-        const versionCode = _().AndroidConfig.Version.getVersionCode(config);
+        const versionCode = AndroidVersion().getVersionCode(config);
         return `${version}(${versionCode})`;
       }
     default:
