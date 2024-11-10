@@ -18,7 +18,7 @@ if (isRunningInExpoGo()) {
 // Warn if the New Architecture is not explicitly enabled in the app config and we are running in Expo Go.
 // This could be problematic because you will be developing your app with the New Architecture enabled and
 // but your builds will have the New Architecture disabled.
-if (__DEV__ && isRunningInExpoGo()) {
+if (__DEV__ && isRunningInExpoGo() && process.env.NODE_ENV === 'development') {
   ['android', 'ios'].forEach((platform) => {
     if (
       Platform.OS === platform &&
@@ -30,7 +30,7 @@ if (__DEV__ && isRunningInExpoGo()) {
         console.warn(
           `🚨 React Native's New Architecture is always enabled in Expo Go, but it is not explicitly enabled your project app config. This may lead to unexpected behavior when you create a production or development build. Set "newArchEnabled": true in your app.json.\nLearn more: https://docs.expo.dev/guides/new-architecture/`
         );
-      })
+      });
     }
   });
 }
