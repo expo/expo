@@ -144,14 +144,10 @@ export const CodeBlock = ({ children, theme, className, inline = false }: CodeBl
   const Element = inline ? 'span' : 'pre';
   return (
     <Element
-      className={mergeClasses('whitespace-pre m-0 px-1 py-1.5', inline && 'inline-flex !p-0')}
+      className={mergeClasses('whitespace-pre m-0 px-2 py-1.5', inline && 'inline-flex !p-0')}
       {...attributes}>
       <CODE
-        className={mergeClasses(
-          '!text-3xs text-default',
-          inline && 'block w-full !p-1.5',
-          className
-        )}
+        className={mergeClasses('!text-3xs text-default', inline && 'block w-full !p-2', className)}
         theme={theme}>
         {children}
       </CODE>
