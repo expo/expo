@@ -73,13 +73,17 @@ export async function checkPackagesAsync(
    *       and you cannot replace this guard with a try/catch around the import('expo-router')
    */
   if (pkg.dependencies?.['expo-router']) {
-    const { doctor: routerDoctor } = await import('expo-router/doctor.js');
-    dependencies.push(
-      ...routerDoctor(pkg, require.resolve('@react-navigation/native'), {
-        bold: chalk.bold,
-        learnMore,
-      })
-    );
+    try {
+      const { doctor: routerDoctor } = await import('expo-router/doctor.js');
+      dependencies.push(
+        ...routerDoctor(pkg, require.resolve('@react-navigation/native'), {
+          bold: chalk.bold,
+          learnMore,
+        })
+      );
+    } catch {
+      Log.log(`Skipped checking expo-router dependencies: expo-router/doctor.js not found.`);
+    }
   }
 
   if (!dependencies.length) {
