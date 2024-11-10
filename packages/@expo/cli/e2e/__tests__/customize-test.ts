@@ -108,6 +108,7 @@ it(
       'with-router',
       {
         reuseExisting: false,
+        sdkVersion: '52.0.0',
       }
     );
 
@@ -134,7 +135,10 @@ it(
     const projectRoot = await setupTestProjectWithOptionsAsync(
       'expo-customize-typescript-partial',
       'with-router',
-      { reuseExisting: false }
+      {
+        reuseExisting: false,
+        sdkVersion: '52.0.0',
+      }
     );
 
     const existingTsConfig = {
