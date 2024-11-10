@@ -6,7 +6,7 @@ import path from 'path';
 import { removeExpoEnvDTS, writeExpoEnvDTS } from './expo-env';
 import { setupTypedRoutes } from './routes';
 import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
-import { removeFromGitIgnore, upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';
+import { upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
