@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improved resolving the path to `expo-modules-autolinking` and removed a peer dependency. ([#32554](https://github.com/expo/expo/pull/32554) by [@tsapeta](https://github.com/tsapeta))
+
 ## 8.0.10 — 2024-11-07
 
 ### 🐛 Bug fixes
