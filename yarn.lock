@@ -3301,7 +3301,7 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/bottom-tabs@7.0.0":
+"@react-navigation/bottom-tabs@7.0.0", "@react-navigation/bottom-tabs@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.0.0.tgz#297503d44a0e26c34772f645a6210acb57f2fbc5"
   integrity sha512-IU+mI4q8Pi62EcEgROUSG1q8VJzNaLZKIPayxYLS/eZh+/54AfNX73uzY98N1m+InvO8yCmWtBrcsPZB1ddp8A==
@@ -3322,7 +3322,7 @@
     use-latest-callback "^0.2.1"
     use-sync-external-store "^1.2.2"
 
-"@react-navigation/drawer@7.0.0":
+"@react-navigation/drawer@7.0.0", "@react-navigation/drawer@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.0.0.tgz#1797a43a00477a43cc57fde2f5c09183b356fab8"
   integrity sha512-JbJ2ziSFVTV/qr2ffs2qMhziQJ8XHzRJhsF+PH2zFu4FCguRYaPqtf3Kl//tS4QWXVhpO4g5jweJQ7CfSousgw==
@@ -3339,7 +3339,7 @@
   dependencies:
     color "^4.2.3"
 
-"@react-navigation/native-stack@7.0.0":
+"@react-navigation/native-stack@7.0.0", "@react-navigation/native-stack@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.0.0.tgz#8f5a50919d8e58548053743a697e90a177976946"
   integrity sha512-OZEvXaQDZesWnib+XD7PgWaVeS95/oD/gCSmDXXQZLTtGBXutmLycGtvjunFHRAkQ8u3TB89oOhs9YxDBAXl5Q==
@@ -3347,7 +3347,7 @@
     "@react-navigation/elements" "^2.0.0"
     warn-once "^0.1.1"
 
-"@react-navigation/native@7.0.0":
+"@react-navigation/native@7.0.0", "@react-navigation/native@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.0.0.tgz#d3efaca481bef01cde89c2397f4b0815682f9137"
   integrity sha512-OkfVzQNAuvy6WduON+4ctLImQWybBnOEycVpEEFA3y8nheLuo4hT+ObyyYu2DVqtslltUlTNGcd2G7pbB7y/bA==
@@ -3365,7 +3365,7 @@
   dependencies:
     nanoid "3.3.7"
 
-"@react-navigation/stack@7.0.0":
+"@react-navigation/stack@7.0.0", "@react-navigation/stack@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-7.0.0.tgz#007f90c8dff3aeadaf44785d0bb824f1d935b96b"
   integrity sha512-MSPJT/drp2LQYMwUn1szGOXAZAcL2N28EuzX0g/pohVUMKIYzgKtQPr/CzYirNUzM52foVsR9fKv8vMo26ZaNQ==
