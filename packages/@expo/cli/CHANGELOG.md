@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `expo-router` integration with `@expo/cli install` command. ([#32679](https://github.com/expo/expo/pull/32679) by [@marklawlor](https://github.com/marklawlor))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.20.4 — 2024-11-10
+
+### 🎉 New features
+
+- Add `expo-router` integration with `@expo/cli install` command. ([#32679](https://github.com/expo/expo/pull/32679) by [@marklawlor](https://github.com/marklawlor))
 
 ## 0.20.3 — 2024-11-07
 
