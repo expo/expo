@@ -39,7 +39,6 @@ public class SplashScreenManager: NSObject {
     }
 
     NotificationCenter.default.addObserver(self, selector: #selector(onAppReady), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
-    NotificationCenter.default.addObserver(self, selector: #selector(onAppReady), name: Notification.Name.RCTJavaScriptDidLoad, object: nil)
   }
 
   @objc private func onAppReady() {
