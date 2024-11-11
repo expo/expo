@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Only assert `server-only` when running in `react-server` mode.
+
 ### 💡 Others
 
 ## 12.0.0 — 2024-11-11

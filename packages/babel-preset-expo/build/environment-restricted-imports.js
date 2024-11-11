@@ -8,6 +8,8 @@ const FORBIDDEN_REACT_SERVER_IMPORTS = ['client-only'];
 function environmentRestrictedImportsPlugin(api) {
     const { types: t } = api;
     const isReactServer = api.caller(common_1.getIsReactServer);
+    const isServer = api.caller(common_1.getIsServer);
+    const isClient = !isServer && !isReactServer;
     const forbiddenPackages = isReactServer
         ? FORBIDDEN_REACT_SERVER_IMPORTS
         : FORBIDDEN_CLIENT_IMPORTS;
@@ -17,7 +19,7 @@ function environmentRestrictedImportsPlugin(api) {
                 if (isReactServer) {
                     throw path.buildCodeFrameError(`Importing '${forbiddenImport}' module is not allowed in a React server bundle. Add the "use client" directive to this file or one of the parent modules to allow importing this module.`);
                 }
-                else {
+                else if (isClient) {
                     throw path.buildCodeFrameError(`Importing '${forbiddenImport}' module is not allowed in a client component.`);
                 }
             }
