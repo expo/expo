@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Move `react-native-web`-less to feature flag.
+
 ### 💡 Others
 
 - Improving linking to modules in E2E tests. ([#32769](https://github.com/expo/expo/pull/32769) by [@marklawlor](https://github.com/marklawlor))
