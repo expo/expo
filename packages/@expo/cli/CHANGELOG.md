@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Move `react-native-web`-less to feature flag.
+- Move `react-native-web`-less to feature flag. ([#32785](https://github.com/expo/expo/pull/32785) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
