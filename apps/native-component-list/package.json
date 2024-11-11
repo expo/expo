@@ -80,7 +80,7 @@
     "expo-font": "~13.0.0",
     "expo-gl": "~15.0.0",
     "expo-haptics": "~14.0.0",
-    "expo-image": "~2.0.0-preview.0",
+    "expo-image": "~2.0.0",
     "expo-image-loader": "^5.0.0",
     "expo-image-manipulator": "~13.0.0",
     "expo-image-picker": "~16.0.0",

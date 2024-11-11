@@ -22,7 +22,7 @@
     "expo": "~52.0.0",
     "expo-haptics": "~14.0.0",
     "expo-linking": "~7.0.0",
-    "expo-router": "^4.0.0-preview.0",
+    "expo-router": "^4.0.0",
     "expo-speech": "~13.0.0",
     "expo-sqlite": "~15.0.0",
     "react": "18.3.1",
