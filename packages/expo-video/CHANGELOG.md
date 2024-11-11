@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Run thumnbnail gerneration on background thread.
+
 ### 💡 Others
 
 ## 2.0.0 — 2024-11-11
