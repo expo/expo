@@ -856,9 +856,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { exp } = config;
     // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
     const isReactServerComponentsEnabled =
-      !!exp.experiments?.reactServerComponents || !!exp.experiments?.reactServerActions;
+      !!exp.experiments?.reactServerComponentRoutes || !!exp.experiments?.reactServerActions;
     const isReactServerActionsOnlyEnabled =
-      !exp.experiments?.reactServerComponents && !!exp.experiments?.reactServerActions;
+      !exp.experiments?.reactServerComponentRoutes && !!exp.experiments?.reactServerActions;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
 
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');

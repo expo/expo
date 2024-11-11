@@ -68,14 +68,14 @@ export async function loadMetroConfigAsync(
   let reportEvent: ((event: any) => void) | undefined;
 
   const serverActionsEnabled =
-    exp.experiments?.reactServerActions ?? env.EXPO_UNSTABLE_SERVER_ACTIONS;
+    exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_ACTIONS;
 
   if (serverActionsEnabled) {
     process.env.EXPO_UNSTABLE_SERVER_ACTIONS = '1';
   }
 
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
-  if (exp.experiments?.reactServerComponents || serverActionsEnabled) {
+  if (exp.experiments?.reactServerComponentRoutes || serverActionsEnabled) {
     process.env.EXPO_USE_METRO_REQUIRE = '1';
     process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
@@ -137,7 +137,7 @@ export async function loadMetroConfigAsync(
     Log.warn(
       `Experimental React Server Actions are enabled. Production exports are not supported yet.`
     );
-    if (!exp.experiments?.reactServerComponents) {
+    if (!exp.experiments?.reactServerComponentRoutes) {
       Log.warn(
         `- React Server Components are NOT enabled. Routes will render in client-only mode.`
       );
@@ -152,12 +152,12 @@ export async function loadMetroConfigAsync(
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled:
-      (exp.experiments?.reactServerComponents ||
+      (exp.experiments?.reactServerComponentRoutes ||
         serverActionsEnabled ||
         exp.experiments?.reactCanary) ??
       false,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
-    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponents,
+    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
   });
 
