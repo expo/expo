@@ -68,10 +68,10 @@ export async function loadMetroConfigAsync(
   let reportEvent: ((event: any) => void) | undefined;
 
   const serverActionsEnabled =
-    exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_ACTIONS;
+    exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
 
   if (serverActionsEnabled) {
-    process.env.EXPO_UNSTABLE_SERVER_ACTIONS = '1';
+    process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS = '1';
   }
 
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
@@ -135,7 +135,7 @@ export async function loadMetroConfigAsync(
 
   if (serverActionsEnabled) {
     Log.warn(
-      `Experimental React Server Actions are enabled. Production exports are not supported yet.`
+      `Experimental React Server Functions are enabled. Production exports are not supported yet.`
     );
     if (!exp.experiments?.reactServerComponentRoutes) {
       Log.warn(
