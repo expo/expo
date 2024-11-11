@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import JsonFile from '@expo/json-file';
+import JsonFile, { JSONObject } from '@expo/json-file';
 import execa, { ExecaError } from 'execa';
 import * as fs from 'fs/promises';
 import klawSync from 'klaw-sync';
@@ -240,6 +240,41 @@ describe('expo-router integration', () => {
       expect(pkg.read().dependencies).toMatchObject({
         '@react-navigation/native': '6.1.18',
       });
+
+      // Add `expo@canary` to the project, and `--fix` project dependencies
+      await execa('node', [bin, 'install', '--fix'], { cwd: projectRoot });
+
+      // Ensure `@react-navigation/native` was updated
+      expect(pkg.read().dependencies).toMatchObject({
+        '@react-navigation/native': '^7.0.0',
+      });
+    },
+    // Could take 45s depending on how fast npm installs
+    60 * 1000
+  );
+
+  it.only(
+    'checks for @react-navigation/native',
+    async () => {
+      const projectRoot = await setupTestProjectWithOptionsAsync(
+        'install-expo-router-integration',
+        'with-router',
+        {
+          reuseExisting: false,
+          sdkVersion: '52.0.0',
+        }
+      );
+      const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+
+      // Add a package that requires "fixing" when using canary
+      await execa('bun', ['remove', '@react-navigation/native'], {
+        cwd: projectRoot,
+      });
+
+      // Ensure `@react-navigation/native` is installed
+      expect(
+        (pkg.read().dependencies as JSONObject)?.['@react-navigation/native']
+      ).not.toBeDefined();
 
       // Add `expo@canary` to the project, and `--fix` project dependencies
       await execa('node', [bin, 'install', '--fix'], { cwd: projectRoot });

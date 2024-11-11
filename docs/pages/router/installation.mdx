@@ -46,14 +46,20 @@ Make sure your computer is [set up for running an Expo app](/get-started/create-
 You'll need to install the following dependencies:
 
 <Tabs>
-  <Tab label="SDK 50 and above">
-    <Terminal cmd={['$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar']} />
+  <Tab label="SDK 52 and above">
+    <Terminal cmd={['$ npx expo install expo-router @react-navigation/native react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar']} />
 
     The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
 
   </Tab>
-  <Tab label="SDK 49 and below">
-    <Terminal cmd={['$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar react-native-gesture-handler']} />
+  <Tab label="SDK 50">
+    <Terminal cmd={['$ npx expo install expo-router @react-navigation/native@6 react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar']} />
+
+    The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
+
+  </Tab>
+  <Tab label="SDK 49">
+    <Terminal cmd={['$ npx expo install expo-router @react-navigation/native@6 react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar react-native-gesture-handler']} />
 
     The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
 
