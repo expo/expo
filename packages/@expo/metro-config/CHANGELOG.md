@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Expo Router root path on Windows.
+
 ### 💡 Others
 
 ## 0.19.0 — 2024-11-10
