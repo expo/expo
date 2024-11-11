@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Run thumnbnail gerneration on background thread.
+- [iOS] Run thumnbnail generation on background thread. ([#32773](https://github.com/expo/expo/pull/32773) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
