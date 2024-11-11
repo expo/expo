@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix RSC export with hooks. ([#32793](https://github.com/expo/expo/pull/32793) by [@EvanBacon](https://github.com/EvanBacon))
+- throw error when importing native module on web. ([#32790](https://github.com/expo/expo/pull/32790) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
