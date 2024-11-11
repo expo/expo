@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix RSC export with hooks.
+- Fix RSC export with hooks. ([#32793](https://github.com/expo/expo/pull/32793) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
