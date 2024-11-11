@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Include the plugin under the `exports` in the package.json.
+- Include the plugin under the `exports` in the package.json. ([#32780](https://github.com/expo/expo/pull/32780) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
