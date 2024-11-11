@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Include the plugin under the `exports` in the package.json.
+
 ### 💡 Others
 
 ## 15.0.2 — 2024-11-07
