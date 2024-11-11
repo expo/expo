@@ -114,7 +114,7 @@ async function startDynamicServerAsync(dist: string, options: Options) {
       return next();
     }
 
-    const pathname = URL.canParse(req.url) ? new URL(req.url).pathname : req.url;
+    const pathname = canParseURL(req.url) ? new URL(req.url).pathname : req.url;
     if (!pathname) {
       return next();
     }
@@ -150,6 +150,16 @@ async function startDynamicServerAsync(dist: string, options: Options) {
   middleware.use(serverHandler);
 
   middleware.listen(options.port!);
+}
+
+function canParseURL(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 async function isStaticExportAsync(dist: string): Promise<boolean> {
