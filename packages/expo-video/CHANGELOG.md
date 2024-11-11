@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.0.0 — 2024-11-11
+
+### 💡 Others
+
 - [Android] Modify aspect ratio coverage of Android PiP to be more specific ([#32551](https://github.com/expo/expo/pull/32551) by [@YangJonghun](https://github.com/YangJonghun))
 
 ## 2.0.0-preview.2 — 2024-11-07

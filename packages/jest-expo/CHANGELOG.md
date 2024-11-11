@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Update transform ignore patterns to replace deprecated Sentry SDK with current one. ([#32528](https://github.com/expo/expo/pull/32528) by [@KoenCa](https://github.com/KoenCa))
-
 ### 💡 Others
+
+## 52.0.0 — 2024-11-11
+
+### 🐛 Bug fixes
+
+- Update transform ignore patterns to replace deprecated Sentry SDK with current one. ([#32528](https://github.com/expo/expo/pull/32528) by [@KoenCa](https://github.com/KoenCa))
 
 ## 52.0.0-preview.4 — 2024-11-05
 
