@@ -39,7 +39,7 @@
     "commander": "^12.1.0",
     "eslint-config-universe": "^14.0.0",
     "glob": "^10.4.2",
-    "jest-expo": "~52.0.0-preview.0",
+    "jest-expo": "~52.0.0",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
     "resolve-workspace-root": "^2.0.0",

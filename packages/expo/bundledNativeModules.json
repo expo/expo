@@ -82,7 +82,7 @@
   "expo-video-thumbnails": "~9.0.0",
   "expo-video": "~2.0.0-preview.2",
   "expo-web-browser": "~14.0.0",
-  "jest-expo": "~52.0.0-preview.4",
+  "jest-expo": "~52.0.0",
   "lottie-react-native": "7.0.0",
   "react": "18.3.1",
   "react-dom": "18.3.1",
