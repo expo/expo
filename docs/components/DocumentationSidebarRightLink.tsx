@@ -117,6 +117,10 @@ function convertToIndentClass(spacing: number) {
       return 'pl-6';
     case 36:
       return 'pl-9';
+    case 48:
+      return 'pl-12';
+    case 60:
+      return 'pl-15';
     default:
       return '';
   }
