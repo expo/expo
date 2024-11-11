@@ -68,7 +68,9 @@ const withAndroidSplashScreen = (config, props) => {
     if (!config.androidStatusBar) config.androidStatusBar = {};
     config.androidStatusBar.backgroundColor = backgroundColor;
   }
-  return (0, _configPlugins().withPlugins)(config, [[_withAndroidSplashMainActivity().withAndroidSplashMainActivity, splashConfig], [_withAndroidSplashImages().withAndroidSplashImages, splashConfig], [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], [_withAndroidSplashStyles().withAndroidSplashStyles, {
+  return (0, _configPlugins().withPlugins)(config, [[_withAndroidSplashMainActivity().withAndroidSplashMainActivity, {
+    isLegacyConfig
+  }], [_withAndroidSplashImages().withAndroidSplashImages, splashConfig], [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], [_withAndroidSplashStyles().withAndroidSplashStyles, {
     splashConfig,
     isLegacyConfig
   }], [_withAndroidSplashStrings().withAndroidSplashStrings, splashConfig]]);

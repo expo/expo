@@ -31,7 +31,7 @@ export const withAndroidSplashScreen: ConfigPlugin<
   }
 
   return withPlugins(config, [
-    [withAndroidSplashMainActivity, splashConfig],
+    [withAndroidSplashMainActivity, { isLegacyConfig }],
     [withAndroidSplashImages, splashConfig],
     [withAndroidSplashDrawables, splashConfig],
     [withAndroidSplashStyles, { splashConfig, isLegacyConfig }],
