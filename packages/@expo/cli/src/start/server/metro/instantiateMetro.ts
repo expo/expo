@@ -307,7 +307,8 @@ function pruneCustomTransformOptions(
   }
 
   if (
-    transformOptions.customTransformOptions?.routerRoot &&
+    transformOptions.customTransformOptions &&
+    !transformOptions.customTransformOptions?.routerRoot &&
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
     !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
   ) {
