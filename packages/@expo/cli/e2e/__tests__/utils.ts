@@ -101,6 +101,10 @@ export async function createFromFixtureAsync(
     fixtureName: string;
     config?: Partial<ExpoConfig>;
     pkg?: Partial<PackageJSONConfig>;
+    /**
+     * Note, this is linked by installing the workspace folder as dependency directly.
+     * This may cause other side-effects, like resolving monorepo dependencies instead of the test project.
+     */
     linkExpoPackages?: string[];
     /**
      * Note, this is linked by installing the workspace folder as dependency directly.
