@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improving linking to modules in E2E tests. ([#32769](https://github.com/expo/expo/pull/32769) by [@marklawlor](https://github.com/marklawlor))
+
 ## 0.20.6 — 2024-11-11
 
 _This version does not introduce any user-facing changes._
