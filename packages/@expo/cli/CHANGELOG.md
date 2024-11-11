@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix(cli): add iPad as usbmux platform to os type ([#32733](https://github.com/expo/expo/pull/32733) by [@moduval](https://github.com/moduval))
+
 ### 💡 Others
 
 ## 0.20.3 — 2024-11-07
