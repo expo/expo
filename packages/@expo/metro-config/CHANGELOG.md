@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix Expo Router root path on Windows.
+- Fix Expo Router root path on Windows. ([#32792](https://github.com/expo/expo/pull/32792) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
