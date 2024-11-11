@@ -139,7 +139,7 @@ export async function loadMetroConfigAsync(
     );
     if (!exp.experiments?.reactServerComponentRoutes) {
       Log.warn(
-        `- React Server Components are NOT enabled. Routes will render in client-only mode.`
+        `- React Server Component routes are NOT enabled. Routes will render in client mode.`
       );
     }
   }
