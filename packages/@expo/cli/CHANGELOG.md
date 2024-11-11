@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- throw error when importing native module on web.
+
 ### 💡 Others
 
 ## 0.20.4 — 2024-11-10
