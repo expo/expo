@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] At `@DoNotStrip` annotation to new `Either` types.
+
 ### 💡 Others
 
 ## 2.0.0 — 2024-11-10
