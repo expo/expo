@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
 ## 12.0.0-preview.6 — 2024-11-07
 
 ### 🎉 New features

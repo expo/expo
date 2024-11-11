@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+- Improving linking to modules in E2E tests. ([#32769](https://github.com/expo/expo/pull/32769) by [@marklawlor](https://github.com/marklawlor))
+
+## 0.20.6 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.5 — 2024-11-11
+
+### 🐛 Bug fixes
+
+- Add missing semver dep, handle missing router import ((#32762)[https://github.com/expo/expo/pull/32762] by [@brentvatne](https://github.com/brentvatne))
+- Fix gitignore being modified on blank js project ((#32765)[https://github.com/expo/expo/pull/32765] by [@marklawlor](https://github.com/marklawlor))
+
 ## 0.20.4 — 2024-11-10
 
 ### 🎉 New features

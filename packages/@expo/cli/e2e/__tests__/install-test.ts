@@ -217,7 +217,7 @@ it(
   60 * 1000
 );
 
-describe.only('expo-router integration', () => {
+describe('expo-router integration', () => {
   it(
     'runs `npx expo install --fix`',
     async () => {
@@ -227,6 +227,7 @@ describe.only('expo-router integration', () => {
         {
           reuseExisting: false,
           sdkVersion: '52.0.0',
+          linkExpoPackages: ['expo-router'],
         }
       );
       const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));

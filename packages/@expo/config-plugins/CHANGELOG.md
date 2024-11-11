@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Remove `DevSettingsActivity` from template and plugin. ([#32774](https://github.com/expo/expo/pull/32774) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 9.0.8 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
 ## 9.0.7 — 2024-11-07
 
 ### 🐛 Bug fixes

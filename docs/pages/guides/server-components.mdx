@@ -49,7 +49,7 @@ export default function Index() {
   return (
     <React.Suspense
       fallback={
-        // The view that will render while the server action is awaiting data.
+        // The view that will render while the Server Function is awaiting data.
         <ActivityIndicator />
       }>
       {renderInfo({ name: 'World' })}
@@ -58,9 +58,9 @@ export default function Index() {
 }
 ```
 
-4. Create a server action **actions/render-info.tsx**:
+4. Create a Server Function **actions/render-info.tsx**:
 
-```tsx actions/render-info.tsx (Server action)
+```tsx actions/render-info.tsx (Server Function)
 'use server';
 
 import { Text } from 'react-native';
@@ -71,7 +71,7 @@ export default async function renderInfo({ name }) {
 }
 ```
 
-The views return value of the server action is a React Server Component payload that will be streamed to the client.
+The views return value of the Server Function is a React Server Component payload that will be streamed to the client.
 
 ## Server Components
 
@@ -100,13 +100,13 @@ export async function Pokemon() {
 }
 ```
 
-To render this as a server component, you'll need to return it from a server action.
+To render this as a server component, you'll need to return it from a Server Function.
 
 ### Key points
 
 - You cannot use hooks like `useState`, `useEffect`, or `useContext` in Server Components.
 - You cannot use browser or native APIs in Server Components.
-- `"use server"` is not meant to mark a file as a server component. It's used to mark a file as having React Server Actions.
+- `"use server"` is not meant to mark a file as a server component. It's used to mark a file as having React Server Functions exported from it.
 - Server components have access to all environment variables as they run securely off the client.
 
 ## Client Components
@@ -122,15 +122,15 @@ export default function Button({ title }) {
 }
 ```
 
-This module can be imported and used in a Server Action or Server Component.
+This module can be imported and used in a Server Function or Server Component.
 
 ### Key point
 
 You cannot pass functions as props to Server Components. You can only pass serializable data.
 
-## Server Actions
+## React Server Functions
 
-Server Actions are functions that run on the server and can be called from Client Components. Think of them like fully-typed API routes that are easier to write.
+Server Functions are functions that run on the server and can be called from Client Components. Think of them like fully-typed API routes that are easier to write.
 
 They must always be an async function and are marked with `"use server"` at the top of the function.
 
@@ -150,7 +150,7 @@ export default function Index() {
 }
 ```
 
-You can create a Client Component to invoke the Server Action:
+You can create a Client Component to invoke the Server Function:
 
 ```tsx components/button.tsx
 'use client';
@@ -161,7 +161,7 @@ export default function Button({ title, onPress }) {
 }
 ```
 
-Server Actions can also be defined in a standalone file (with `"use server"` at the top) and imported from Client Components:
+Server Functions can also be defined in a standalone file (with `"use server"` at the top) and imported from Client Components:
 
 ```tsx components/server-actions.tsx
 'use server';
@@ -184,16 +184,16 @@ export default function Button({ title }) {
 
 ### Key points
 
-- You can only pass serializable data to Server Actions as arguments.
-- Server actions can only return serializable data.
-- Server Actions run on the server and are a good place to put logic that should not be exposed to the client.
-- Server Actions currently cannot be used inside of DOM components
+- You can only pass serializable data to Server Functions as arguments.
+- Server Functions can only return serializable data.
+- Server Functions run on the server and are a good place to put logic that should not be exposed to the client.
+- Server Functions currently cannot be used inside of DOM components
 
-### Rendering in Server Actions
+### Rendering in Server Functions
 
-Server Actions in Expo Router can render React components on the server and stream back an **RSC payload** (a custom JSON-like format that's maintained by the React team) for rendering on the client. This is similar to server-side rendering (SSR) on the web.
+React Server Functions in Expo Router can render React components on the server and stream back an **RSC payload** (a custom JSON-like format that's maintained by the React team) for rendering on the client. This is similar to server-side rendering (SSR) on the web.
 
-For example, the following Server Action will render some text:
+For example, the following Server Function will render some text:
 
 ```tsx components/server-actions.tsx
 'use server';
@@ -232,7 +232,7 @@ export async function renderProfile({
 }
 ```
 
-This Server Action can be invoked from a Client Component and the contents will be streamed back to the client:
+This Server Function can be invoked from a Client Component and the contents will be streamed back to the client:
 
 ```tsx components/profile.tsx
 'use client';
@@ -252,7 +252,7 @@ export default function Profile() {
   const { username } = useLocalSearchParams();
   const { accessToken } = useCustomAuthProvider();
 
-  // Call the server action with the username and access token.
+  // Call the Server Function with the username and access token.
   const profile = React.useMemo(
     () => renderProfile({ username, accessToken }),
     [username, accessToken]
@@ -296,7 +296,7 @@ export default function App() {
 }
 ```
 
-```tsx actions/tasks.tsx (Server actions)
+```tsx actions/tasks.tsx (Server Functions)
 'use server';
 
 export async function renderTasks() {
@@ -531,10 +531,10 @@ Production exports for React Server Components on native are not yet supported. 
 
 - Expo Snack does not support bundling Server Components.
 - EAS Update does not work with Server Components yet.
-- DOM components cannot use Server Actions yet.
+- DOM components cannot use Server Functions yet.
 - Production deployment is very limited and not recommended yet.
 - Server Rendering RSC payloads to HTML is not supported yet. This means static and server output doesn't fully work yet.
 - [`generateStaticParams`](/router/reference/static-rendering/#generatestaticparams) is not yet supported.
-- HTML `form` integration with Server Actions is not supported yet (this partially works automatically, but data is not encrypted).
+- HTML `form` integration with Server Functions is not supported yet (this partially works automatically, but data is not encrypted).
 - `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
-- Server Actions that invoke other server actions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.
+- Server Functions that invoke other Server Functions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.

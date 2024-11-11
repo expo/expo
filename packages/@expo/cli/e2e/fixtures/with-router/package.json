@@ -2,7 +2,7 @@
   "private": true,
   "main": "expo-router/entry",
   "dependencies": {
-    "@expo/metro-runtime": "4.0.0-preview.2",
+    "@expo/metro-runtime": "4.0.0",
     "expo": "52.0.0-preview.23",
     "react": "18.2.0",
     "react-native": "0.74.2",
