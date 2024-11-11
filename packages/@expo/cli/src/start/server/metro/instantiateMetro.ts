@@ -345,6 +345,7 @@ export async function instantiateMetroAsync(
           clientUrl: group.clientUrl,
           // NOTE(EvanBacon): This is also the patch
           createModuleId: (moduleId: string) => {
+            // @ts-expect-error
             return this._createModuleId(moduleId, moduleIdContext);
           },
           includeAsyncPaths: group.graphOptions.lazy,
