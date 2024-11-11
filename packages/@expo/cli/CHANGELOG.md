@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Add missing semver dep, handle missing router import ((#32762)[https://github.com/expo/expo/pull/32762] by [@brentvatne](https://github.com/brentvatne))
+- Fix gitignore being modified on blank js project ((#32765)[https://github.com/expo/expo/pull/32765] by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 0.20.4 — 2024-11-10
