@@ -10,6 +10,7 @@ import { withAndroidSplashStyles } from './withAndroidSplashStyles';
 export const withAndroidSplashScreen: ConfigPlugin<
   AndroidSplashConfig | undefined | null | void
 > = (config, props) => {
+  const isLegacyConfig = props === undefined;
   const splashConfig = getAndroidSplashConfig(config, props ?? null);
 
   // Update the android status bar to match the splash screen
@@ -30,10 +31,10 @@ export const withAndroidSplashScreen: ConfigPlugin<
   }
 
   return withPlugins(config, [
-    [withAndroidSplashMainActivity, props],
-    [withAndroidSplashImages, props],
+    [withAndroidSplashMainActivity, splashConfig],
+    [withAndroidSplashImages, splashConfig],
     [withAndroidSplashDrawables, splashConfig],
-    [withAndroidSplashStyles, props],
-    [withAndroidSplashStrings, props],
+    [withAndroidSplashStyles, { splashConfig, isLegacyConfig }],
+    [withAndroidSplashStrings, splashConfig],
   ]);
 };
