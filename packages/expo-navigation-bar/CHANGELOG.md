@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- export config plugin types
+
 ## 4.0.2 — 2024-10-29
 
 _This version does not introduce any user-facing changes._

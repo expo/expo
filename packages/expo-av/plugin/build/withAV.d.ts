@@ -1,5 +1,6 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-declare const _default: ConfigPlugin<void | {
-    microphonePermission?: string | false | undefined;
-}>;
+export type WithAVProps = {
+    microphonePermission?: string | false;
+};
+declare const _default: ConfigPlugin<void | WithAVProps>;
 export default _default;

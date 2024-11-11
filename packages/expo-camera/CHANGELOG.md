@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- export config plugin types
+
 ## 16.0.3 — 2024-10-28
 
 ### 🐛 Bug fixes

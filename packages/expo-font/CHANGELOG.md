@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- export config plugin types
+
 ## 13.0.1 — 2024-11-05
 
 ### 💡 Others

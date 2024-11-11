@@ -5,12 +5,12 @@ import {
   withAndroidManifest,
 } from 'expo/config-plugins';
 
-type WithExpoVideoOptions = {
+export type WithExpoVideoProps = {
   supportsBackgroundPlayback?: boolean;
   supportsPictureInPicture?: boolean;
 };
 
-const withExpoVideo: ConfigPlugin<WithExpoVideoOptions> = (
+const withExpoVideo: ConfigPlugin<WithExpoVideoProps | void> = (
   config,
   { supportsBackgroundPlayback, supportsPictureInPicture } = {}
 ) => {

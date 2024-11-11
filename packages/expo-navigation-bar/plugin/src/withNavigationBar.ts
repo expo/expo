@@ -23,7 +23,7 @@ const debug = Debug('expo:system-navigation-bar:plugin');
 
 const pkg = require('expo-navigation-bar/package.json');
 
-export type Props = {
+export type WithNavigationBarProps = {
   borderColor?: string;
   backgroundColor?: string | null;
   barStyle?: NavigationBarButtonStyle | null;
@@ -32,6 +32,11 @@ export type Props = {
   position?: NavigationBarPosition;
   legacyVisible?: NonNullable<NonNullable<ExpoConfig['androidNavigationBar']>['visible']>;
 };
+
+/**
+ * @deprecated Use `WithNavigationBarProps` instead.
+ */
+export type Props = WithNavigationBarProps;
 
 // strings.xml keys, this should not change.
 const BORDER_COLOR_KEY = 'expo_navigation_bar_border_color';
@@ -68,9 +73,9 @@ function convertColorAndroid(input: string): number {
 
 export function resolveProps(
   config: Pick<ExpoConfig, 'androidNavigationBar'>,
-  _props: Props | void
-): Props {
-  let props: Props;
+  _props: WithNavigationBarProps | void
+): WithNavigationBarProps {
+  let props: WithNavigationBarProps;
   if (!_props) {
     props = {
       backgroundColor: config.androidNavigationBar?.backgroundColor,
@@ -102,7 +107,10 @@ export function resolveProps(
  * Ensure the Expo Go manifest is updated when the project is using config plugin properties instead
  * of the static values that Expo Go reads from (`androidNavigationBar`).
  */
-export const withAndroidNavigationBarExpoGoManifest: ConfigPlugin<Props> = (config, props) => {
+export const withAndroidNavigationBarExpoGoManifest: ConfigPlugin<WithNavigationBarProps> = (
+  config,
+  props
+) => {
   if (!config.androidNavigationBar) {
     // Remap the config plugin props so Expo Go knows how to apply them.
     config.androidNavigationBar = {
@@ -116,7 +124,7 @@ export const withAndroidNavigationBarExpoGoManifest: ConfigPlugin<Props> = (conf
   return config;
 };
 
-const withNavigationBar: ConfigPlugin<Props | void> = (config, _props) => {
+const withNavigationBar: ConfigPlugin<WithNavigationBarProps | void> = (config, _props) => {
   const props = resolveProps(config, _props);
 
   config = withAndroidNavigationBarExpoGoManifest(config, props);
@@ -148,7 +156,7 @@ export function setStrings(
     position,
     behavior,
     legacyVisible,
-  }: Omit<Props, 'backgroundColor' | 'barStyle'>
+  }: Omit<WithNavigationBarProps, 'backgroundColor' | 'barStyle'>
 ): AndroidConfig.Resources.ResourceXML {
   const pairs = [
     [BORDER_COLOR_KEY, borderColor ? convertColorAndroid(borderColor) : null],
@@ -177,17 +185,19 @@ export function setStrings(
   return AndroidConfig.Strings.setStringItem(stringItems, strings);
 }
 
-const withNavigationBarColors: ConfigPlugin<Pick<Props, 'backgroundColor'>> = (config, props) => {
+const withNavigationBarColors: ConfigPlugin<Pick<WithNavigationBarProps, 'backgroundColor'>> = (
+  config,
+  props
+) => {
   return withAndroidColors(config, (config) => {
     config.modResults = setNavigationBarColors(props, config.modResults);
     return config;
   });
 };
 
-const withNavigationBarStyles: ConfigPlugin<Pick<Props, 'backgroundColor' | 'barStyle'>> = (
-  config,
-  props
-) => {
+const withNavigationBarStyles: ConfigPlugin<
+  Pick<WithNavigationBarProps, 'backgroundColor' | 'barStyle'>
+> = (config, props) => {
   return withAndroidStyles(config, (config) => {
     config.modResults = setNavigationBarStyles(props, config.modResults);
     return config;
@@ -195,7 +205,7 @@ const withNavigationBarStyles: ConfigPlugin<Pick<Props, 'backgroundColor' | 'bar
 };
 
 export function setNavigationBarColors(
-  { backgroundColor }: Pick<Props, 'backgroundColor'>,
+  { backgroundColor }: Pick<WithNavigationBarProps, 'backgroundColor'>,
   colors: AndroidConfig.Resources.ResourceXML
 ): AndroidConfig.Resources.ResourceXML {
   if (backgroundColor) {
@@ -211,7 +221,7 @@ export function setNavigationBarColors(
 }
 
 export function setNavigationBarStyles(
-  { backgroundColor, barStyle }: Pick<Props, 'backgroundColor' | 'barStyle'>,
+  { backgroundColor, barStyle }: Pick<WithNavigationBarProps, 'backgroundColor' | 'barStyle'>,
   styles: AndroidConfig.Resources.ResourceXML
 ): AndroidConfig.Resources.ResourceXML {
   styles = AndroidConfig.Styles.assignStylesValue(styles, {

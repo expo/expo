@@ -6,7 +6,7 @@ import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('expo-splash-screen/package.json');
 
-type PluginConfig = {
+export type WithSplashScreenProps = {
   backgroundColor: string;
   imageWidth?: number;
   enableFullScreenImage_legacy?: boolean;
@@ -19,7 +19,11 @@ type PluginConfig = {
   ios?: IOSSplashConfig;
 };
 
-const withSplashScreen: ConfigPlugin<PluginConfig> = (config, props) => {
+const withSplashScreen: ConfigPlugin<WithSplashScreenProps | void> = (config, props) => {
+  if (!props) {
+    return config;
+  }
+
   const android: AndroidSplashConfig = {
     ...props,
     ...props?.android,

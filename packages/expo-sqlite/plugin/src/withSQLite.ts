@@ -8,7 +8,7 @@ import {
 
 const pkg = require('expo-sqlite/package.json');
 
-interface Props {
+export type WithSQLiteProps = {
   customBuildFlags?: string;
   enableFTS?: boolean;
   useSQLCipher?: boolean;
@@ -22,15 +22,19 @@ interface Props {
     enableFTS?: boolean;
     useSQLCipher?: boolean;
   };
-}
+};
 
-const withSQLite: ConfigPlugin<Props> = (config, props) => {
+const withSQLite: ConfigPlugin<WithSQLiteProps | void> = (config, props) => {
+  if (!props) {
+    return config;
+  }
+
   config = withSQLiteAndroidProps(config, props);
   config = withSQLiteIOSProps(config, props);
   return config;
 };
 
-const withSQLiteAndroidProps: ConfigPlugin<Props> = (config, props) => {
+const withSQLiteAndroidProps: ConfigPlugin<WithSQLiteProps> = (config, props) => {
   return withGradleProperties(config, (config) => {
     const customBuildFlags = props?.android?.customBuildFlags ?? props?.customBuildFlags;
     const enableFTS = props?.android?.enableFTS ?? props?.enableFTS;
@@ -55,7 +59,7 @@ const withSQLiteAndroidProps: ConfigPlugin<Props> = (config, props) => {
   });
 };
 
-const withSQLiteIOSProps: ConfigPlugin<Props> = (config, props) => {
+const withSQLiteIOSProps: ConfigPlugin<WithSQLiteProps> = (config, props) => {
   return withPodfileProperties(config, (config) => {
     const customBuildFlags = props?.ios?.customBuildFlags ?? props?.customBuildFlags;
     const enableFTS = props?.ios?.enableFTS ?? props?.enableFTS;

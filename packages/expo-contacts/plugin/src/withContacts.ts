@@ -4,7 +4,11 @@ const pkg = require('expo-contacts/package.json');
 
 const CONTACTS_USAGE = 'Allow $(PRODUCT_NAME) to access your contacts';
 
-const withContacts: ConfigPlugin<{ contactsPermission?: string } | void> = (
+export type WithContactProps = {
+  contactsPermission?: string | false;
+};
+
+const withContacts: ConfigPlugin<WithContactProps | void> = (
   config,
   { contactsPermission } = {}
 ) => {

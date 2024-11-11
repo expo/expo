@@ -1,8 +1,12 @@
 import type { ExpoConfig } from 'expo/config';
-type ConfigPluginProps = {
+export type WithExpoLocalization = {
     supportsRTL?: boolean;
     forcesRTL?: boolean;
     allowDynamicLocaleChangesAndroid?: boolean;
 };
-declare function withExpoLocalization(config: ExpoConfig, data?: ConfigPluginProps): ExpoConfig;
+/**
+ * @deprecated use `WithExpoLocalization` instead
+ */
+export type ConfigPluginProps = WithExpoLocalization;
+declare function withExpoLocalization(config: ExpoConfig, data?: WithExpoLocalization): ExpoConfig;
 export default withExpoLocalization;

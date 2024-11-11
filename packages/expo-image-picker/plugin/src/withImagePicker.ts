@@ -11,13 +11,13 @@ const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const READ_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to access your photos';
 
-type Props = {
+export type WithImagePickerProps = {
   photosPermission?: string | false;
   cameraPermission?: string | false;
   microphonePermission?: string | false;
 };
 
-export const withAndroidImagePickerPermissions: ConfigPlugin<Props | void> = (
+export const withAndroidImagePickerPermissions: ConfigPlugin<WithImagePickerProps | void> = (
   config,
   { cameraPermission, microphonePermission } = {}
 ) => {
@@ -41,7 +41,7 @@ export const withAndroidImagePickerPermissions: ConfigPlugin<Props | void> = (
   return config;
 };
 
-const withImagePicker: ConfigPlugin<Props | void> = (
+const withImagePicker: ConfigPlugin<WithImagePickerProps | void> = (
   config,
   { photosPermission, cameraPermission, microphonePermission } = {}
 ) => {

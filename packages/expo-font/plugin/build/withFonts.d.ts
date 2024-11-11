@@ -1,5 +1,5 @@
 import { type ConfigPlugin } from 'expo/config-plugins';
-export type FontProps = {
+export type WithFontProps = {
     fonts?: string[];
     android?: {
         fonts?: string[];
@@ -8,5 +8,9 @@ export type FontProps = {
         fonts?: string[];
     };
 };
-declare const _default: ConfigPlugin<FontProps>;
+/**
+ * @deprecated Use `WithFontProps` instead.
+ */
+export type FontProps = WithFontProps;
+declare const _default: ConfigPlugin<void | WithFontProps>;
 export default _default;

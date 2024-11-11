@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- export config plugin types
+
 ## 0.29.6 — 2024-11-11
 
 _This version does not introduce any user-facing changes._

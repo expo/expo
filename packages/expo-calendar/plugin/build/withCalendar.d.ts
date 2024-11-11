@@ -1,6 +1,7 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-declare const _default: ConfigPlugin<void | {
-    calendarPermission?: string | false | undefined;
-    remindersPermission?: string | false | undefined;
-}>;
+export type WithCalendarProps = {
+    calendarPermission?: string | false;
+    remindersPermission?: string | false;
+};
+declare const _default: ConfigPlugin<void | WithCalendarProps>;
 export default _default;

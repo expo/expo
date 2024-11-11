@@ -1,5 +1,5 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-declare const withRouter: ConfigPlugin<{
+export type WithRouterProps = {
     /** Production origin URL where assets in the public folder are hosted. The fetch function is polyfilled to support relative requests from this origin in production, development origin is inferred using the Expo CLI development server. */
     origin?: string;
     /** A more specific origin URL used in the `expo-router/head` module for iOS handoff. Defaults to `origin`. */
@@ -17,5 +17,6 @@ declare const withRouter: ConfigPlugin<{
     sitemap?: boolean;
     /** Generate partial typed routes */
     partialTypedGroups?: boolean;
-} | void>;
+};
+declare const withRouter: ConfigPlugin<WithRouterProps | void>;
 export default withRouter;

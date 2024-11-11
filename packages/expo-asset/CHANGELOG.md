@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- export config plugin types
+
 ## 11.0.1 — 2024-11-10
 
 ### 🐛 Bug fixes

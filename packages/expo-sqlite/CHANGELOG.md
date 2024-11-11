@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- export config plugin types
+
 ## 15.0.2 — 2024-11-07
 
 ### 💡 Others

@@ -1,10 +1,11 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-declare const _default: ConfigPlugin<void | {
-    locationAlwaysAndWhenInUsePermission?: string | false | undefined;
-    locationAlwaysPermission?: string | false | undefined;
-    locationWhenInUsePermission?: string | false | undefined;
-    isIosBackgroundLocationEnabled?: boolean | undefined;
-    isAndroidBackgroundLocationEnabled?: boolean | undefined;
-    isAndroidForegroundServiceEnabled?: boolean | undefined;
-}>;
+export type WithLocationProps = {
+    locationAlwaysAndWhenInUsePermission?: string | false;
+    locationAlwaysPermission?: string | false;
+    locationWhenInUsePermission?: string | false;
+    isIosBackgroundLocationEnabled?: boolean;
+    isAndroidBackgroundLocationEnabled?: boolean;
+    isAndroidForegroundServiceEnabled?: boolean;
+};
+declare const _default: ConfigPlugin<void | WithLocationProps>;
 export default _default;

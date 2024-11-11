@@ -10,13 +10,16 @@ const pkg = require('expo-camera/package.json');
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 
-const withCamera: ConfigPlugin<
-  {
-    cameraPermission?: string | false;
-    microphonePermission?: string | false;
-    recordAudioAndroid?: boolean;
-  } | void
-> = (config, { cameraPermission, microphonePermission, recordAudioAndroid = true } = {}) => {
+export type WithCameraProps = {
+  cameraPermission?: string | false;
+  microphonePermission?: string | false;
+  recordAudioAndroid?: boolean;
+};
+
+const withCamera: ConfigPlugin<WithCameraProps | void> = (
+  config,
+  { cameraPermission, microphonePermission, recordAudioAndroid = true } = {}
+) => {
   IOSConfig.Permissions.createPermissionsPlugin({
     NSCameraUsageDescription: CAMERA_USAGE,
     NSMicrophoneUsageDescription: MICROPHONE_USAGE,
