@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- throw error when importing native module on web. ([#32790](https://github.com/expo/expo/pull/32790) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Improving linking to modules in E2E tests. ([#32769](https://github.com/expo/expo/pull/32769) by [@marklawlor](https://github.com/marklawlor))
