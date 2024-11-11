@@ -217,7 +217,7 @@ it(
   60 * 1000
 );
 
-describe.only('expo-router integration', () => {
+describe('expo-router integration', () => {
   it(
     'runs `npx expo install --fix`',
     async () => {
