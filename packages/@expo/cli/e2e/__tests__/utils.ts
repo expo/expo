@@ -93,12 +93,16 @@ export async function createFromFixtureAsync(
     fixtureName,
     config,
     pkg,
+    linkExpoPackages,
+    linkExpoPackagesDev,
   }: {
     dirName: string;
     reuseExisting?: boolean;
     fixtureName: string;
     config?: Partial<ExpoConfig>;
     pkg?: Partial<PackageJSONConfig>;
+    linkExpoPackages?: string[];
+    linkExpoPackagesDev?: string[];
   }
 ): Promise<string> {
   const projectRoot = path.join(parentDir, dirName);
@@ -129,25 +133,33 @@ export async function createFromFixtureAsync(
     await copySync(fixturePath, projectRoot);
 
     // Add additional modifications to the package.json
-    if (pkg) {
+    if (pkg || linkExpoPackages || linkExpoPackagesDev) {
+      pkg ??= {};
       const pkgPath = path.join(projectRoot, 'package.json');
+      const expoPackagesPath = path.join(__dirname, '../../../../');
       const fixturePkg = (await JsonFile.readAsync(pkgPath)) as PackageJSONConfig;
+
+      const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
+      const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
+
+      if (linkExpoPackages) {
+        for (const pkg of linkExpoPackages) {
+          dependencies[pkg] = `file:${path.join(expoPackagesPath, pkg)}`;
+        }
+      }
+
+      if (linkExpoPackagesDev) {
+        for (const pkg of linkExpoPackagesDev) {
+          devDependencies[pkg] = path.join(expoPackagesPath, pkg);
+        }
+      }
 
       await JsonFile.writeAsync(pkgPath, {
         ...pkg,
         ...fixturePkg,
-        dependencies: {
-          ...(fixturePkg.dependencies || {}),
-          ...(pkg.dependencies || {}),
-        },
-        devDependencies: {
-          ...(fixturePkg.devDependencies || {}),
-          ...(pkg.devDependencies || {}),
-        },
-        scripts: {
-          ...(fixturePkg.scripts || {}),
-          ...(pkg.scripts || {}),
-        },
+        dependencies,
+        devDependencies,
+        scripts: Object.assign({}, fixturePkg.scripts, pkg.scripts),
       });
     }
 
@@ -190,9 +202,13 @@ export async function setupTestProjectWithOptionsAsync(
   {
     reuseExisting = testingLocally,
     sdkVersion = '51.0.0',
+    linkExpoPackages,
+    linkExpoPackagesDev,
   }: {
     sdkVersion?: string;
     reuseExisting?: boolean;
+    linkExpoPackages?: string[];
+    linkExpoPackagesDev?: string[];
   } = {}
 ): Promise<string> {
   // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
@@ -200,6 +216,8 @@ export async function setupTestProjectWithOptionsAsync(
     dirName: name,
     reuseExisting,
     fixtureName,
+    linkExpoPackages,
+    linkExpoPackagesDev,
   });
 
   // Many of the factors in this test are based on the expected SDK version that we're testing against.
