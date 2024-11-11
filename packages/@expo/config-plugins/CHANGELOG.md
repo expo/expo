@@ -11,6 +11,24 @@
 ### 💡 Others
 
 - Only add `UISupportedInterfaceOrientations~ipad` if tablet support is also enabled. ([#32361](https://github.com/expo/expo/pull/32361) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `DevSettingsActivity` from template and plugin. ([#32774](https://github.com/expo/expo/pull/32774) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 9.0.8 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.7 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- Remove circular import references to index files ([#32671](https://github.com/expo/expo/pull/32671) by [@wschurman](https://github.com/wschurman))
+- Sync base android manifest with template. ([#32639](https://github.com/expo/expo/pull/32639) by [@wschurman](https://github.com/wschurman))
+
+## 9.0.6 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- Avoid using path mutations in glob patterns for Windows. ([#32617](https://github.com/expo/expo/pull/32617) by [@byCedric](https://github.com/byCedric))
 
 ## 9.0.5 — 2024-11-04
 

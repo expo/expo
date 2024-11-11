@@ -8,7 +8,22 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Added `@DoNotStrip` annotation to new `Either` types. ([#32783](https://github.com/expo/expo/pull/32783) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 2.0.0 — 2024-11-10
+
+### 🐛 Bug fixes
+
+- [Android] Ensure that the headless app loader is started on the main thread. ([#32705](https://github.com/expo/expo/pull/32705) by [@chrfalch](https://github.com/chrfalch))
+
+## 2.0.0-preview.10 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed broken self-signed connections from network inspector. ([#32670](https://github.com/expo/expo/pull/32670) by [@kudo](https://github.com/kudo))
+- [macOS] Fix UIKit import ([#32727](https://github.com/expo/expo/pull/32727) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 2.0.0-preview.9 — 2024-10-31
 

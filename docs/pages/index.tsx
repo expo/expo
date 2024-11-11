@@ -7,6 +7,7 @@ import {
   Talks,
   JoinTheCommunity,
 } from '~/ui/components/Home/sections';
+import { LaunchPartyBanner } from '~/ui/components/LaunchPartyBanner';
 
 function Home() {
   return (
@@ -14,6 +15,7 @@ function Home() {
       <div className="h-0">
         <DevicesImageMasks />
       </div>
+      <LaunchPartyBanner />
       <QuickStart />
       <DiscoverMore />
       <ExploreAPIs />

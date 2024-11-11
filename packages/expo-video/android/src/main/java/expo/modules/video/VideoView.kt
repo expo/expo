@@ -12,8 +12,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
-import androidx.media3.common.Format
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.Tracks
 import androidx.media3.ui.PlayerView
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -203,11 +201,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       } else {
         Rational(width, height)
       }
-      // Android PiP doesn't support aspect ratios lower than 0.4184 or higher than 2.39
-      if (aspectRatio.toFloat() > 2.39) {
-        aspectRatio = Rational(239, 100)
-      } else if (aspectRatio.toFloat() < 0.4184) {
-        aspectRatio = Rational(10000, 4184)
+      // AspectRatio for the activity in picture-in-picture, must be between 2.39:1 and 1:2.39 (inclusive).
+      // https://developer.android.com/reference/android/app/PictureInPictureParams.Builder#setAspectRatio(android.util.Rational)
+      val maximumRatio = Rational(239, 100)
+      val minimumRatio = Rational(100, 239)
+      if (aspectRatio.toFloat() > maximumRatio.toFloat()) {
+        aspectRatio = maximumRatio
+      } else if (aspectRatio.toFloat() < minimumRatio.toFloat()) {
+        aspectRatio = minimumRatio
       }
 
       currentActivity.setPictureInPictureParams(
@@ -254,22 +255,9 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
-    showsSubtitlesButton = hasSubtitles(tracks)
+    showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
-  }
-
-  private fun hasSubtitles(tracks: Tracks): Boolean {
-    for (group in tracks.groups) {
-      for (i in 0..<group.length) {
-        val format: Format = group.getTrackFormat(i)
-
-        if (MimeTypes.isText(format.sampleMimeType)) {
-          return true
-        }
-      }
-    }
-    return false
   }
 
   override fun requestLayout() {

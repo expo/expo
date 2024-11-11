@@ -10,6 +10,42 @@
 
 ### 💡 Others
 
+## 52.0.2 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.1 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0 — 2024-11-10
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.23 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.22 — 2024-11-07
+
+### 💡 Others
+
+- Removed unused `process.env.EXPO_BASE_URL` injection code for DOM Components webview-wrapper. ([#32629](https://github.com/expo/expo/pull/32629) by [@kudo](https://github.com/kudo))
+
+## 52.0.0-preview.21 — 2024-11-06
+
+_This version does not introduce any user-facing changes._
+
+## 52.0.0-preview.20 — 2024-11-05
+
+### 🎉 New features
+
+- Change DOM components defaults for `contentInsetAdjustmentBehavior` and `automaticallyAdjustsScrollIndicatorInsets` to be automatic on iOS. ([#32609](https://github.com/expo/expo/pull/32609) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Remove deprecated Font.processFontFamily() ([#32631](https://github.com/expo/expo/pull/32631) by [@brentvatne](https://github.com/brentvatne))
+
 ## 52.0.0-preview.19 — 2024-11-04
 
 ### 🎉 New features
@@ -19,6 +55,7 @@
 ### 💡 Others
 
 - Re-exported `@expo/fingerprint` as `expo/fingerprint`. ([#32494](https://github.com/expo/expo/pull/32494) by [@quinlanj](https://github.com/quinlanj))
+- Deprecated `process.env.EXPO_DOM_BASE_URL` and replaced with `process.env.EXPO_BASE_URL`. ([#32596](https://github.com/expo/expo/pull/32596) by [@kudo](https://github.com/kudo))
 
 ## 52.0.0-preview.18 — 2024-10-31
 

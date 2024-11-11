@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Include the plugin under the `exports` in the package.json. ([#32780](https://github.com/expo/expo/pull/32780) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 15.0.2 — 2024-11-07
+
+### 💡 Others
+
+- Renamed `expo-sqlite/async-storage` to `expo-sqlite/kv-store`. ([#32699](https://github.com/expo/expo/pull/32699) by [@kudo](https://github.com/kudo))
 
 ## 15.0.1 — 2024-10-25
 

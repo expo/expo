@@ -9,7 +9,11 @@ platforms: ['android', 'ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ConfigReactNative } from '~/ui/components/ConfigSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 
 The `SplashScreen` module from the `expo-splash-screen` library is used to tell the splash screen to remain visible until it has been explicitly told to hide. This is useful to do tasks that will happen behind the scenes such as making API calls, pre-loading fonts, animating the splash screen and so on.
 
@@ -33,6 +37,12 @@ import * as Font from 'expo-font';
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
+// Set the animation options. This is optional.
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
 
@@ -55,14 +65,14 @@ export default function App() {
     prepare();
   }, []);
 
-  const onLayoutRootView = useCallback(async () => {
+  const onLayoutRootView = useCallback(() => {
     if (appIsReady) {
       // This tells the splash screen to hide immediately! If we call this after
       // `setAppIsReady`, then we may see a blank screen while the app is
       // loading its initial state and rendering its first pixels. So instead,
       // we hide the splash screen once we know the root view has already
       // performed layout.
-      await SplashScreen.hideAsync();
+      await SplashScreen.hide();
     }
   }, [appIsReady]);
 
@@ -83,7 +93,78 @@ export default function App() {
 
 ## Configuration
 
-To configure `expo-splash-screen`, see the following [app config](/workflow/configuration/) properties.
+You can configure `expo-splash-screen` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use EAS Build, then you'll need to manually configure the package.
+
+**Using the config plugin, as shown below, is the recommended method for configuring the splash screen.** The other methods are now considered legacy and will be removed in the future.
+
+<ConfigPluginExample>
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#232323",
+          "image": "./assets/splash-icon.png",
+          "dark": {
+            "image": "./assets/splash-icon-dark.png",
+            "backgroundColor": "#000000"
+          },
+          "imageWidth": 200
+        }
+      ]
+    ],
+  }
+}
+```
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'backgroundColor',
+      description: 'A hex color string representing the background color of the splash screen.',
+      default: '#ffffff',
+    },
+    {
+      name: 'image',
+      description:
+        'The path to the image file that will be displayed on the splash screen. This should be your app icon or logo.',
+      default: 'undefined',
+    },
+    {
+      name: 'enableFullScreenImage_legacy',
+      description:
+        'Enabling this property allows using a full screen image as the splashscreen. This is to help with the transition from the legacy splash screen configuration and will be removed in the future.',
+      platform: 'ios',
+      default: 'false',
+    },
+    {
+      name: 'dark',
+      description:
+        'An object containing properties for configuring the splash screen when the device is in dark mode.',
+      default: 'undefined',
+    },
+    {
+      name: 'imageWidth',
+      description: 'The width to make the image.',
+      default: '100',
+    },
+    {
+      name: 'android',
+      description: 'An object containing properties for configuring the splash screen on Android.',
+      default: 'undefined',
+    },
+    {
+      name: 'ios',
+      description: 'An object containing properties for configuring the splash screen on iOS.',
+      default: 'undefined',
+    },
+  ]}
+/>
+
+You can also configure `expo-splash-screen`, using the following [app config](/workflow/configuration/) properties but the config plugin should be preferred.
 
 - [`splash`](../config/app.mdx#splash)
 - [`android.splash`](../config/app.mdx#splash-2)
@@ -97,7 +178,16 @@ See how to configure the native projects in the [installation instructions in th
 
 ### Animating the splash screen
 
-See the [with-splash-screen](https://github.com/expo/examples/tree/master/with-splash-screen) example on how to apply any arbitrary animations to your splash screen, such as a fade out. You can initialize a new project from this example by running `npx create-react-native-app -t with-splash-screen`.
+`SplashScreen` provides an out-of-the-box fade animation. It can be configured using the `setOptions` method.
+
+```js
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+```
+
+If you prefer to use custom animation, see the [`with-splash-screen`](https://github.com/expo/examples/tree/master/with-splash-screen) example on how to apply any arbitrary animations to your splash screen. You can initialize a new project from this example by running `npx create-react-native-app -t with-splash-screen`.
 
 ## API
 

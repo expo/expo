@@ -84,9 +84,6 @@ async function transform(config, projectRoot, filename, data, options) {
                     '\n};';
                 return worker.transform(config, projectRoot, filename, Buffer.from('/* RSC client boundaries */\n' + src), options);
             }
-            else if (!options.dev) {
-                console.warn('clientBoundaries is not defined:', filename, options.customTransformOptions);
-            }
         }
     }
     const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);

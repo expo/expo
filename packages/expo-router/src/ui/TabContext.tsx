@@ -74,8 +74,9 @@ export type TabNavigationEventMap = {
 };
 
 /**
- * The React Navigation custom navigator
- * @see https://reactnavigation.org/docs/custom-navigators/#usenavigationbuilder
+ * The React Navigation custom navigator.
+ *
+ * @see [`useNavigationBuilder`](https://reactnavigation.org/docs/custom-navigators/#usenavigationbuilder) hook from React Navigation for more information.
  */
 export type TabsContextValue = ReturnType<
   typeof useNavigationBuilder<

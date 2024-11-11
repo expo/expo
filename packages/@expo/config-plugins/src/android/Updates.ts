@@ -1,4 +1,3 @@
-import { Resources } from '.';
 import {
   addMetaDataItemToMainApplication,
   AndroidManifest,
@@ -7,6 +6,7 @@ import {
   removeMetaDataItemFromMainApplication,
 } from './Manifest';
 import { buildResourceItem, ResourceXML } from './Resources';
+import * as Resources from './Resources';
 import { removeStringItem, setStringItem } from './Strings';
 import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
 import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';

@@ -8,7 +8,9 @@ class Env {
 
   /** Disable all Sharp related functionality. */
   get EXPO_IMAGE_UTILS_NO_SHARP() {
-    return boolish('EXPO_IMAGE_UTILS_NO_SHARP', false);
+    // note(brentvatne): Default to disabled until we can invest further in
+    // fixing it: https://github.com/expo/expo/issues/32625.
+    return boolish('EXPO_IMAGE_UTILS_NO_SHARP', true);
   }
 }
 

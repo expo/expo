@@ -16,9 +16,11 @@ import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
+import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.ifYogaDefinedUse
 import expo.modules.video.utils.makeYogaUndefinedIfNegative
@@ -207,6 +209,21 @@ class VideoModule : Module() {
           }
         }
 
+      Property("availableSubtitleTracks")
+        .get { ref: VideoPlayer ->
+          ref.subtitles.availableSubtitleTracks
+        }
+
+      Property("subtitleTrack")
+        .get { ref: VideoPlayer ->
+          ref.subtitles.currentSubtitleTrack
+        }
+        .set { ref: VideoPlayer, subtitleTrack: SubtitleTrack? ->
+          appContext.mainQueue.launch {
+            ref.subtitles.currentSubtitleTrack = subtitleTrack
+          }
+        }
+
       Property("currentOffsetFromLive")
         .get { ref: VideoPlayer ->
           runBlocking(appContext.mainQueue.coroutineContext) {
@@ -316,6 +333,16 @@ class VideoModule : Module() {
         }
         .set { ref: VideoPlayer, intervalSeconds: Float ->
           ref.intervalUpdateClock.interval = (intervalSeconds * 1000).toLong()
+        }
+
+      Property("audioMixingMode")
+        .get { ref: VideoPlayer ->
+          ref.audioMixingMode
+        }
+        .set { ref: VideoPlayer, audioMixingMode: AudioMixingMode ->
+          appContext.mainQueue.launch {
+            ref.audioMixingMode = audioMixingMode
+          }
         }
 
       Function("replace") { ref: VideoPlayer, source: Either<Uri, VideoSource>? ->

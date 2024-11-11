@@ -10,6 +10,7 @@ platforms: ['android', 'ios', 'web']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { Collapsible } from '~/ui/components/Collapsible';
 import {
   ConfigReactNative,
   ConfigPluginExample,
@@ -99,7 +100,27 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigReactNative>
 
-### Background Location methods
+### Background location configuration&ensp;<PlatformTag platform="ios" />
+
+To be able to run background location on iOS, you need to add the `location` value to the `UIBackgroundModes` array in your app's **Info.plist** file.
+
+**If you're using [CNG](/workflow/continuous-native-generation/)**, the required `UIBackgroundModes` configuration will be applied automatically by prebuild.
+
+<Collapsible summary="Configure UIBackgroundModes manually on iOS">
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native iOS project, then you'll need to add the following to your **Expo.plist** file:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+  </array>
+</key>
+```
+
+</Collapsible>
+
+### Background location methods
 
 > **warning** **Warning:** Background location tracking support is provided as-is and is not guaranteed to work in all scenarios. We currently are not prioritizing resources to improve it, but we hope to in the future. You may want to use [`react-native-background-geolocation`](https://github.com/transistorsoft/react-native-background-geolocation) instead &mdash; it requires purchasing a license and is a well-maintained and supported library that includes a config plugin.
 
@@ -108,8 +129,11 @@ To use Background Location methods, the following requirements apply:
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
 - Background location task must be defined in the top-level scope, using [`TaskManager.defineTask`](task-manager.mdx#taskmanagerdefinetasktaskname-taskexecutor).
 - <PlatformTag platform="ios" className="float-left" /> `"location"` background mode must be
-  specified in **Info.plist** file. See [background tasks configuration
-  guide](/versions/latest/sdk/task-manager/#configuration-in-appjsonappconfigjs).
+  specified in **Info.plist** file. See [Background location
+  configuration](#background-location-configuration).
+- <PlatformTag platform="ios" className="float-left" /> You must use a [development
+  build](/develop/development-builds/introduction/) to use background location since it is not
+  supported in the Expo Go app.
 
 ### Geofencing methods
 

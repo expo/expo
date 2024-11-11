@@ -5,7 +5,6 @@ import {
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import * as SplashScreen from 'expo-splash-screen';
 import equal from 'fast-deep-equal';
 import { useSyncExternalStore, useMemo, ComponentType, Fragment } from 'react';
 import { Platform } from 'react-native';
@@ -32,6 +31,7 @@ import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../g
 import { getRoutes } from '../getRoutes';
 import { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
+import * as SplashScreen from '../views/Splash';
 
 type ResultState = any;
 
@@ -147,7 +147,6 @@ export class RouterStore {
         this.hasAttemptedToHideSplash = true;
         // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
         this.splashScreenAnimationFrame = requestAnimationFrame(() => {
-          // @ts-expect-error: This function is native-only and for internal-use only.
           SplashScreen._internal_maybeHideAsync?.();
         });
       }

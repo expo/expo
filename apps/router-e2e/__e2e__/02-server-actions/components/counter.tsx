@@ -2,7 +2,9 @@
 'use client';
 
 import { View, Text, Button } from 'react-native';
-import { useState, useTransition } from 'react';
+import React, { useState, useTransition } from 'react';
+
+import { greetWithHeaders } from './server-actions-in-file';
 
 export const Counter = ({ greet }: { greet: (name: string) => Promise<string> }) => {
   const [isPending, startTransition] = useTransition();
@@ -33,6 +35,8 @@ export const Counter = ({ greet }: { greet: (name: string) => Promise<string> })
       <Text onPress={handleClick1} testID="button-server-action">
         Call Server Action: {count}
       </Text>
+
+      <React.Suspense fallback={<Text>Loading...</Text>}>{greetWithHeaders()}</React.Suspense>
 
       <View
         style={{
