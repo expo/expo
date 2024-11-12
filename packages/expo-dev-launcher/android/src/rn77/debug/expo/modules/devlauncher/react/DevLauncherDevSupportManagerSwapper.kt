@@ -16,8 +16,8 @@ import expo.modules.devlauncher.helpers.getProtectedFieldValue
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import expo.modules.devlauncher.rncompatibility.DevLauncherBridgeDevSupportManager
-import expo.modules.devlauncher.rncompatibility.DevLauncherBridgelessDevSupportManager
+import expo.modules.devlauncher.react.DevLauncherBridgeDevSupportManager
+import expo.modules.devlauncher.react.DevLauncherBridgelessDevSupportManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
@@ -72,8 +72,7 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
       val devManagerClass = DevSupportManagerBase::class.java
       val newDevSupportManager = createDevLauncherBridgelessDevSupportManager(
         devManagerClass,
-        currentDevSupportManager,
-        reactHost
+        currentDevSupportManager
       )
 
       ReactHostImpl::class.java.setProtectedDeclaredField(reactHost, "mDevSupportManager", newDevSupportManager)
@@ -102,13 +101,17 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
 
   private fun createDevLauncherBridgelessDevSupportManager(
     devManagerClass: Class<*>,
-    currentDevSupportManager: DevSupportManager,
-    reactHost: ReactHost
+    currentDevSupportManager: DevSupportManager
   ): DevLauncherBridgelessDevSupportManager {
     return DevLauncherBridgelessDevSupportManager(
-      host = reactHost as ReactHostImpl,
-      context = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mApplicationContext"),
-      packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mJSAppBundleName")
+      applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mApplicationContext"),
+      reactInstanceDevHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherBridgeDevSupportManager.getDevHelperInternalFieldName()),
+      packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mJSAppBundleName"),
+      enableOnCreate = true,
+      redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mRedBoxHandler"),
+      devBundleDownloadListener = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mBundleDownloadListener"),
+      minNumShakes = 1,
+      customPackagerCommandHandlers = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mCustomPackagerCommandHandlers")
     )
   }
 
