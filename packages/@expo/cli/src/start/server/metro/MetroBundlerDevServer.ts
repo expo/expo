@@ -724,7 +724,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const moduleIdContext = {
       platform: options.platform,
       environment: 'client',
-      dom: options.domRoot != null,
     };
     // HACK: Maybe this should be done in the serializer.
     const clientBoundariesAsOpaqueIds = clientBoundaries.map(
