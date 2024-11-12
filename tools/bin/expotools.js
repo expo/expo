@@ -6,7 +6,6 @@
 // we shouldn't eagerly require any dependency - we have to run yarn first.
 
 const spawnAsync = require('@expo/spawn-async');
-const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
