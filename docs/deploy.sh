@@ -276,9 +276,6 @@ redirects[/preview/support]=preview/introduction
 # Archived
 redirects[guides/using-flipper]=archive/using-flipper
 
-# Temporary redirects
-redirects[guides/react-compiler]=preview/react-compiler
-
 # Troubleshooting section
 redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
 
