@@ -14,7 +14,8 @@
     "./kv-store": {
       "default": "./kv-store.js",
       "types": "./kv-store.d.ts"
-    }
+    },
+    "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
     "build": "expo-module build",
