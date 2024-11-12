@@ -6,7 +6,7 @@ import { remove } from 'fs-extra';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { ServeLocalCommand } from '../../utils/command-instance';
+import { ExpoServeLocalCommand } from '../../utils/command-instance';
 import { bin, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
@@ -91,7 +91,7 @@ describe('export embed for RSC iOS', () => {
   });
 
   describe('server', () => {
-    let serveCmd: ServeLocalCommand;
+    let serveCmd: ExpoServeLocalCommand;
     const inputDir = '.expo/server/ios';
 
     const serverOutput = path.resolve(projectRoot, '.expo/server/ios');
@@ -99,13 +99,13 @@ describe('export embed for RSC iOS', () => {
     const tempStaticLocation = path.join(serverOutput, 'client/_flight/ios/other.txt');
 
     beforeAll(async () => {
-      serveCmd = new ServeLocalCommand(projectRoot, {
+      serveCmd = new ExpoServeLocalCommand(projectRoot, {
         NODE_ENV: 'production',
         TEST_SECRET_VALUE: 'test-secret-dynamic',
       });
 
       console.time('npx serve');
-      await serveCmd.startAsync(['serve.js', '--port=' + 3035, '--dist=' + inputDir]);
+      await serveCmd.startAsync([inputDir, '--port=' + 3035]);
 
       // Move the static file to a temporary location so we can test both static and dynamic RSC payloads.
       if (fs.existsSync(staticLocation)) {
