@@ -31,7 +31,7 @@ test.beforeAll('bundle and serve', async () => {
       NODE_ENV: 'production',
       EXPO_USE_STATIC: 'single',
       E2E_ROUTER_SRC: testName,
-      EXPO_UNSTABLE_SERVER_ACTIONS: '1',
+      EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
       E2E_ROUTER_JS_ENGINE: 'hermes',
       EXPO_USE_METRO_REQUIRE: '1',
       E2E_CANARY_ENABLED: '1',
