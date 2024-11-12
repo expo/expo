@@ -404,6 +404,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Preview section
   '/preview/support/': '/preview/introduction/',
+  '/preview/react-compiler/': '/guides/react-compiler/',
 
   // Troubleshooting section
   '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',

@@ -272,6 +272,7 @@ redirects[develop/user-interface/splash-screen]=develop/user-interface/splash-sc
 
 # Preview section
 redirects[/preview/support]=preview/introduction
+redirects[preview/react-compiler]=guides/react-compiler
 
 # Archived
 redirects[guides/using-flipper]=archive/using-flipper
