@@ -86,6 +86,7 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
       env: {
         ...process.env,
         EXPO_USE_FAST_RESOLVER: 'true',
+        TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
       },
     });
 
