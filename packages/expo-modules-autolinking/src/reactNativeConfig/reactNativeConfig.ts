@@ -29,7 +29,10 @@ export async function createReactNativeConfigAsync({
   searchPaths,
 }: RNConfigCommandOptions): Promise<RNConfigResult> {
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(projectRoot);
-  const dependencyRoots = await findDependencyRootsAsync(projectRoot, searchPaths);
+  const dependencyRoots = {
+    ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
+    ...findProjectLocalDependencyRoots(projectConfig),
+  };
   const reactNativePath = dependencyRoots['react-native'];
 
   const dependencyConfigs = await Promise.all(
@@ -85,6 +88,24 @@ export async function findDependencyRootsAsync(
     }
   }
 
+  return results;
+}
+
+/**
+ * Find local dependencies that specified in the `react-native.config.js` file.
+ */
+function findProjectLocalDependencyRoots(
+  projectConfig: RNConfigReactNativeProjectConfig | null
+): Record<string, string> {
+  if (!projectConfig) {
+    return {};
+  }
+  const results: Record<string, string> = {};
+  for (const [name, config] of Object.entries(projectConfig.dependencies)) {
+    if (typeof config.root === 'string') {
+      results[name] = config.root;
+    }
+  }
   return results;
 }
 

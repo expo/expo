@@ -479,9 +479,8 @@ export function withExtendedResolver(
             const realModule = strictResolve(moduleName);
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
             const opaqueId = idFactory(realPath, {
-              platform,
+              platform: platform!,
               environment,
-              dom: context.customResolverOptions?.dom != null,
             });
 
             const contents =

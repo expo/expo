@@ -100,6 +100,7 @@ if (!isSubcommand && args['--help']) {
     run: _run,
     // NOTE(cedric): Still pending the migration to ESLint's flat config
     lint: _lint,
+    serve,
     // All other commands
     ...others
   } = commands;
@@ -111,7 +112,7 @@ if (!isSubcommand && args['--help']) {
   {bold Commands}
     ${Object.keys({ start, export: _export, ...others }).join(', ')}
     ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
-    ${Object.keys({ install, customize, config }).join(', ')}
+    ${Object.keys({ install, customize, config, serve }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
   {bold Options}

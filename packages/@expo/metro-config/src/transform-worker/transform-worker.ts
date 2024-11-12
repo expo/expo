@@ -86,8 +86,6 @@ export async function transform(
           Buffer.from('/* RSC client boundaries */\n' + src),
           options
         );
-      } else if (!options.dev) {
-        console.warn('clientBoundaries is not defined:', filename, options.customTransformOptions);
       }
     }
   }

@@ -71,11 +71,11 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios');
 const withIosSplashScreen = (config, props) => {
   // If the user didn't specify a splash object, infer the splash object from the Expo config.
-  props = (0, _getIosSplashConfig().getIosSplashConfig)(config, props ?? null);
+  const splashConfig = (0, _getIosSplashConfig().getIosSplashConfig)(config, props ?? null);
   debug(`config:`, props);
-  return (0, _configPlugins().withPlugins)(config, [[_withIosSplashInfoPlist().withIosSplashInfoPlist, props], [_withIosSplashAssets().withIosSplashAssets, props], [_withIosSplashColors().withIosSplashColors, props],
+  return (0, _configPlugins().withPlugins)(config, [[_withIosSplashInfoPlist().withIosSplashInfoPlist, splashConfig], [_withIosSplashAssets().withIosSplashAssets, splashConfig], [_withIosSplashColors().withIosSplashColors, splashConfig],
   // Add the image settings to the storyboard.
-  [_withIosSplashScreenStoryboardImage().withIosSplashScreenImage, props],
+  [_withIosSplashScreenStoryboardImage().withIosSplashScreenImage, splashConfig],
   // Link storyboard to xcode project.
   // TODO: Maybe fold this into the base mod.
   _withIosSplashXcodeProject().withIosSplashXcodeProject,

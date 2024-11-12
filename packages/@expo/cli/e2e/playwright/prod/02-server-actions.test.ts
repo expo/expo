@@ -1,10 +1,9 @@
 import { expect, test } from '@playwright/test';
 import execa from 'execa';
-import path from 'path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
-import { bin, ServeLocalCommand } from '../../utils/command-instance';
+import { bin, ExpoServeLocalCommand } from '../../utils/command-instance';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -18,7 +17,7 @@ test.beforeAll(async () => {
   test.setTimeout(560 * 1000);
 });
 
-let serveCmd: ServeLocalCommand;
+let serveCmd: ExpoServeLocalCommand;
 
 // These tests modify the same files in the file system, so run them in serial
 test.describe.configure({ mode: 'serial' });
@@ -31,7 +30,7 @@ test.beforeAll('bundle and serve', async () => {
       NODE_ENV: 'production',
       EXPO_USE_STATIC: 'single',
       E2E_ROUTER_SRC: testName,
-      EXPO_UNSTABLE_SERVER_ACTIONS: '1',
+      EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
       E2E_ROUTER_JS_ENGINE: 'hermes',
       EXPO_USE_METRO_REQUIRE: '1',
       E2E_CANARY_ENABLED: '1',
@@ -43,12 +42,12 @@ test.beforeAll('bundle and serve', async () => {
   });
   console.timeEnd('expo export');
 
-  serveCmd = new ServeLocalCommand(projectRoot, {
+  serveCmd = new ExpoServeLocalCommand(projectRoot, {
     NODE_ENV: 'production',
   });
 
   console.time('npx serve');
-  await serveCmd.startAsync(['serve.js', '--port=' + randomPort(), '--dist=' + inputDir]);
+  await serveCmd.startAsync([inputDir, '--port=' + randomPort()]);
   console.timeEnd('npx serve');
   console.log('Server running:', serveCmd.url);
 });
@@ -66,7 +65,7 @@ test.describe(inputDir, () => {
   test('loads without hydration errors', async ({ page }) => {
     console.time('Open page');
     // Navigate to the app
-    await page.goto(serveCmd.url);
+    await page.goto(serveCmd.url!);
 
     console.timeEnd('Open page');
 
@@ -94,7 +93,7 @@ test.describe(inputDir, () => {
   });
 
   test('increments client state without re-rendering server component', async ({ page }) => {
-    await page.goto(serveCmd.url);
+    await page.goto(serveCmd.url!);
 
     // Listen for console errors
     const errorLogs: string[] = [];
@@ -135,7 +134,7 @@ test.describe(inputDir, () => {
   });
 
   test('calls a server action', async ({ page }) => {
-    await page.goto(serveCmd.url);
+    await page.goto(serveCmd.url!);
     // Wait for the app to load
     await page.waitForSelector('[data-testid="index-text"]');
 

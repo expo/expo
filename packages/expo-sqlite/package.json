@@ -1,6 +1,6 @@
 {
   "name": "expo-sqlite",
-  "version": "15.0.2",
+  "version": "15.0.3",
   "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -14,7 +14,8 @@
     "./kv-store": {
       "default": "./kv-store.js",
       "types": "./kv-store.d.ts"
-    }
+    },
+    "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
     "build": "expo-module build",

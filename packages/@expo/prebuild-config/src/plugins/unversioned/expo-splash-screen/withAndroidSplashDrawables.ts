@@ -40,7 +40,7 @@ export async function setSplashDrawableAsync(
           },
         },
         // Only include the image if resizeMode native is in-use.
-        resizeMode === 'native' && {
+        {
           bitmap: [
             {
               $: {

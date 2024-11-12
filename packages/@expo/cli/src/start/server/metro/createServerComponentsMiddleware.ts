@@ -55,8 +55,8 @@ export function createServerComponentsMiddleware(
     useClientRouter: boolean;
     createModuleId: (
       filePath: string,
-      context: { platform: string; environment: string; dom?: boolean }
-    ) => string;
+      context: { platform: string; environment: string }
+    ) => string | number;
   }
 ) {
   const routerModule = useClientRouter
@@ -133,8 +133,6 @@ export function createServerComponentsMiddleware(
   }> {
     const uniqueEntryPoints = [...new Set(entryPoints)];
     // TODO: Support multiple entry points in a single split server bundle...
-    const serverRoot = getMetroServerRootMemo(projectRoot);
-
     const manifest: Record<string, [string, string]> = {};
     const nestedClientBoundaries: string[] = [];
 
@@ -169,8 +167,8 @@ export function createServerComponentsMiddleware(
       const relativeName = createModuleId(entryPoint, {
         platform,
         environment: 'react-server',
-        dom: domRoot != null,
       });
+
       const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;
@@ -181,7 +179,7 @@ export function createServerComponentsMiddleware(
       });
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
-      manifest[entryPoint] = [relativeName, outputName];
+      manifest[entryPoint] = [String(relativeName), outputName];
     }
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
@@ -260,7 +258,13 @@ export function createServerComponentsMiddleware(
     platform: string;
     engine?: 'hermes' | null;
     ssrManifest?: Map<string, string>;
-  }) {
+  }): (
+    file: string,
+    isServer: boolean
+  ) => {
+    id: string;
+    chunks: string[];
+  } {
     const serverRoot = getMetroServerRootMemo(projectRoot);
 
     const {
@@ -297,7 +301,7 @@ export function createServerComponentsMiddleware(
         const chunk = context.ssrManifest.get(relativeFilePath);
 
         return {
-          id: createModuleId(file, { platform: context.platform, environment: 'client' }),
+          id: String(createModuleId(file, { platform: context.platform, environment: 'client' })),
           chunks: chunk != null ? [chunk] : [],
         };
       }
@@ -348,7 +352,7 @@ export function createServerComponentsMiddleware(
       const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
       return {
-        id: createModuleId(filePath, { platform: context.platform, environment }),
+        id: String(createModuleId(filePath, { platform: context.platform, environment })),
         chunks: [chunkName],
       };
     };

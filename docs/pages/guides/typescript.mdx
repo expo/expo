@@ -106,22 +106,6 @@ For example, to import `Button` component from **src/components/Button.tsx** usi
 }
 ```
 
-<Collapsible summary="Required configuration to enable path aliases for SDK 49">
-
-Set `tsconfigPaths` to `true` to enable path aliases in the project's [app config](/workflow/configuration/):
-
-```json app.json
-{
-  "expo": {
-    "experiments": {
-      "tsconfigPaths": true
-    }
-  }
-}
-```
-
-</Collapsible>
-
 <Collapsible summary="Disable path aliases for SDK 50 and above">
 
 `tsconfigPaths` is enabled by default which allows you to set path aliases. You can disable it by setting `tsconfigPaths` to `false` in the project's [app config](/workflow/configuration/):
@@ -169,22 +153,6 @@ For example, setting the above configuration allows importing `Button` component
 ```tsx
 import Button from 'src/components/Button';
 ```
-
-<Collapsible summary="Required configuration to enable absolute imports for SDK 49">
-
-Set `tsconfigPaths` to `true` to enable absolute imports in the project's [app config](/workflow/configuration/):
-
-```json app.json
-{
-  "expo": {
-    "experiments": {
-      "tsconfigPaths": true
-    }
-  }
-}
-```
-
-</Collapsible>
 
 #### Considerations
 

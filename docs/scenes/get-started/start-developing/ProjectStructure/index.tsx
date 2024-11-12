@@ -5,7 +5,6 @@ import { Tab } from './Tab';
 import AppJson from './files/app-json.mdx';
 import App from './files/app.mdx';
 import Assets from './files/assets.mdx';
-import BabelConfigJs from './files/babel-config-js.mdx';
 import Components from './files/components.mdx';
 import Constants from './files/constants.mdx';
 import Hooks from './files/hooks.mdx';
@@ -72,12 +71,6 @@ export function ProjectStructure() {
             type="file"
           />
           <Tab
-            title="babel.config.js"
-            onClick={() => setSelected('babel.config.js')}
-            isSelected={selected === 'babel.config.js'}
-            type="file"
-          />
-          <Tab
             title="package.json"
             onClick={() => setSelected('package.json')}
             isSelected={selected === 'package.json'}
@@ -98,7 +91,6 @@ export function ProjectStructure() {
           {selected === 'hooks' ? <Hooks /> : null}
           {selected === 'scripts' ? <Scripts /> : null}
           {selected === 'app.json' ? <AppJson /> : null}
-          {selected === 'babel.config.js' ? <BabelConfigJs /> : null}
           {selected === 'package.json' ? <PackageJson /> : null}
           {selected === 'tsconfig.json' ? <TsconfigJson /> : null}
         </div>

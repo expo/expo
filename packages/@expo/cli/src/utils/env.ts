@@ -220,9 +220,14 @@ class Env {
     return boolish('EXPO_WEB_DEV_HYDRATE', false);
   }
 
-  /** Enable experimental React Server Actions support. */
-  get EXPO_UNSTABLE_SERVER_ACTIONS(): boolean {
-    return boolish('EXPO_UNSTABLE_SERVER_ACTIONS', false);
+  /** Enable experimental React Server Functions support. */
+  get EXPO_UNSTABLE_SERVER_FUNCTIONS(): boolean {
+    return boolish('EXPO_UNSTABLE_SERVER_FUNCTIONS', false);
+  }
+
+  /** Enable unstable/experimental mode where React Native Web isn't required to run Expo apps on web. */
+  get EXPO_NO_REACT_NATIVE_WEB(): boolean {
+    return boolish('EXPO_NO_REACT_NATIVE_WEB', false);
   }
 }
 

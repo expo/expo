@@ -1,0 +1,22 @@
+diff --git a/ios/Podfile b/ios/Podfile
+index 51c4548..32e5ea1 100644
+--- a/ios/Podfile
++++ b/ios/Podfile
+@@ -6,6 +6,9 @@ require Pod::Executable.execute_command('node', ['-p',
+     {paths: [process.argv[1]]},
+   )', __dir__]).strip
+
++require 'json'
++podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
++
+ platform :ios, min_ios_version_supported
+ prepare_react_native_project!
+
+@@ -28,6 +31,7 @@ target 'myapp' do
+
+   use_react_native!(
+     :path => config[:reactNativePath],
++    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+     # An absolute path to your application root.
+     :app_path => "#{Pod::Config.instance.installation_root}/.."
+   )

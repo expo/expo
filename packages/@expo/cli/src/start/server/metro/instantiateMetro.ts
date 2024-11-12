@@ -4,9 +4,13 @@ import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
+import { ReadOnlyGraph } from 'metro';
 import Bundler from 'metro/src/Bundler';
+import hmrJSBundle from 'metro/src/DeltaBundler/Serializers/hmrJSBundle';
 import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
 import MetroHmrServer from 'metro/src/HmrServer';
+import RevisionNotFoundError from 'metro/src/IncrementalBundler/RevisionNotFoundError';
+import formatBundlingError from 'metro/src/lib/formatBundlingError';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
@@ -73,14 +77,14 @@ export async function loadMetroConfigAsync(
   let reportEvent: ((event: any) => void) | undefined;
 
   const serverActionsEnabled =
-    exp.experiments?.reactServerActions ?? env.EXPO_UNSTABLE_SERVER_ACTIONS;
+    exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
 
   if (serverActionsEnabled) {
-    process.env.EXPO_UNSTABLE_SERVER_ACTIONS = '1';
+    process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS = '1';
   }
 
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
-  if (exp.experiments?.reactServerComponents || serverActionsEnabled) {
+  if (exp.experiments?.reactServerComponentRoutes || serverActionsEnabled) {
     process.env.EXPO_USE_METRO_REQUIRE = '1';
     process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
@@ -140,11 +144,11 @@ export async function loadMetroConfigAsync(
 
   if (serverActionsEnabled) {
     Log.warn(
-      `Experimental React Server Actions are enabled. Production exports are not supported yet.`
+      `Experimental React Server Functions are enabled. Production exports are not supported yet.`
     );
-    if (!exp.experiments?.reactServerComponents) {
+    if (!exp.experiments?.reactServerComponentRoutes) {
       Log.warn(
-        `- React Server Components are NOT enabled. Routes will render in client-only mode.`
+        `- React Server Component routes are NOT enabled. Routes will render in client mode.`
       );
     }
   }
@@ -157,12 +161,12 @@ export async function loadMetroConfigAsync(
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
     isReactCanaryEnabled:
-      (exp.experiments?.reactServerComponents ||
+      (exp.experiments?.reactServerComponentRoutes ||
         serverActionsEnabled ||
         exp.experiments?.reactCanary) ??
       false,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
-    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponents,
+    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
   });
 
@@ -339,12 +343,12 @@ export async function instantiateMetroAsync(
         const moduleIdContext = {
           platform: revision.graph.transformOptions.platform,
           environment: revision.graph.transformOptions.customTransformOptions?.environment,
-          dom: revision.graph.transformOptions.customTransformOptions?.dom != null,
         };
         const hmrUpdate = hmrJSBundle(delta, revision.graph, {
           clientUrl: group.clientUrl,
           // NOTE(EvanBacon): This is also the patch
           createModuleId: (moduleId: string) => {
+            // @ts-expect-error
             return this._createModuleId(moduleId, moduleIdContext);
           },
           includeAsyncPaths: group.graphOptions.lazy,
