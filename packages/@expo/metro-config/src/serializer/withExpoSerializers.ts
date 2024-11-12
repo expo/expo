@@ -107,8 +107,8 @@ export function createDefaultExportCustomSerializer(
     const enableDebugId = inputOptions.inlineSourceMap !== true && !isPossiblyDev;
 
     const context = {
-      platform: graph.transformOptions.platform,
-      environment: graph.transformOptions.customTransformOptions?.environment ?? 'client',
+      platform: graph.transformOptions?.platform,
+      environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
     const options: SerializerOptions<MixedOutput> = {
@@ -257,8 +257,8 @@ function getDefaultSerializer(
     inputOptions: ExpoSerializerOptions
   ): Promise<string | { code: string; map: string }> => {
     const context = {
-      platform: graph.transformOptions.platform,
-      environment: graph.transformOptions.customTransformOptions?.environment ?? 'client',
+      platform: graph.transformOptions?.platform,
+      environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
     const options: ExpoSerializerOptions = {

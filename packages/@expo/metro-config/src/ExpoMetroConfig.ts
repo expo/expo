@@ -132,8 +132,10 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
   }) as T;
 }
 
-function createStableModuleIdFactory(root: string): (path: string) => number {
-  const getModulePath = (modulePath: string, prefix: string) => {
+export function createStableModuleIdFactory(
+  root: string
+): (path: string, context?: { platform: string; environment?: string }) => number {
+  const getModulePath = (modulePath: string, scope: string) => {
     // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
     if (modulePath == null) {
       return 'MODULE_NOT_FOUND';
@@ -141,29 +143,35 @@ function createStableModuleIdFactory(root: string): (path: string) => number {
       // Virtual modules should be stable.
       return modulePath;
     } else if (path.isAbsolute(modulePath)) {
-      return path.relative(root, modulePath) + '?' + prefix;
+      return path.relative(root, modulePath) + scope;
     } else {
-      return modulePath + '?' + prefix;
+      return modulePath + scope;
     }
   };
 
   const memoizedGetModulePath = memoize(getModulePath);
 
   // This is an absolute file path.
+  // TODO: We may want a hashed version for production builds in the future.
   return (modulePath: string, context?: { platform: string; environment?: string }): number => {
+    const env = context?.environment ?? 'client';
+
+    if (env === 'client') {
+      // Only need scope for server bundles where multiple dimensions could run simultaneously.
+      // @ts-expect-error: we patch this to support being a string.
+      return memoizedGetModulePath(modulePath, '');
+    }
+
     // Helps find missing parts to the patch.
     if (!context?.platform) {
       // context = { platform: 'web' };
       throw new Error('createStableModuleIdFactory: `context.platform` is required');
     }
 
-    const env = context.environment ?? 'client';
-    // TODO: We may want a hashed version for production builds in the future.
-    const prefix = `platform=${context.platform}&env=${env}`;
-    const id = memoizedGetModulePath(modulePath, prefix);
-
+    // Only need scope for server bundles where multiple dimensions could run simultaneously.
+    const scope = env !== 'client' ? `?platform=${context?.platform}&env=${env}` : '';
     // @ts-expect-error: we patch this to support being a string.
-    return id;
+    return memoizedGetModulePath(modulePath, scope);
   };
 }
 
