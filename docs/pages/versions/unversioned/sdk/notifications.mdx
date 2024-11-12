@@ -443,14 +443,14 @@ No usage description is required, see [notification-related permissions](#fetch-
 
 ### Interpret the iOS permissions response
 
-On iOS, permissions for sending notifications are a little more granular than they are on Android.
-Because of this, you should rely on the `NotificationPermissionsStatus`'s `ios.status` field, instead of the root `status` field.
+On iOS, permissions for sending notifications are a little more granular than they are on Android. This is why you should rely on the `NotificationPermissionsStatus`'s `ios.status` field, instead of the root `status` field.
+
 This value will be one of the following, accessible under `Notifications.IosAuthorizationStatus`:
 
 - `NOT_DETERMINED`: The user hasn't yet made a choice about whether the app is allowed to schedule notifications
 - `DENIED`: The app isn't authorized to schedule or receive notifications
 - `AUTHORIZED`: The app is authorized to schedule or receive notifications
-- `PROVISIONAL`: The application is provisionally authorized to post noninterruptive user notifications
+- `PROVISIONAL`: The app is provisionally authorized to post noninterruptive user notifications
 - `EPHEMERAL`: The app is authorized to schedule or receive notifications for a limited amount of time
 
 ## Notification events listeners

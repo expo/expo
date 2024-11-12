@@ -1,7 +1,7 @@
 /**
- * Call `registerTaskAsync` to set a callback (task) that will run in response to when a notification is received while the app is in foreground, background or terminated.
+ * Call `registerTaskAsync` to set a callback (task) that will run in response to when a notification is received while the app is in foreground, background, or terminated.
  * When app is terminated, only a [data message](https://firebase.google.com/docs/cloud-messaging/concept-options#data_messages) (Android) / [background notification](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#Create-a-background-notification) (iOS) triggers the task execution.
- * However, the OS may decide not to deliver the notification to your app in some cases (e.g. when the device is in Doze mode on Android).
+ * However, the OS may decide not to deliver the notification to your app in some cases (e.g. when the device is in Doze mode on Android, or when you send too many notifications - Apple recommends to not ["send more than two or three per hour"](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#overview)).
  *
  * Under the hood, this function is run using `expo-task-manager`. You **must** define the task first, with [`TaskManager.defineTask`](./task-manager#taskmanagerdefinetasktaskname-taskexecutor) and register it with `registerTaskAsync`.
  *
