@@ -26,7 +26,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.getDefaultConfig = void 0;
+exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.getDefaultConfig = exports.createStableModuleIdFactory = void 0;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
@@ -114,7 +114,7 @@ function memoize(fn) {
     });
 }
 function createStableModuleIdFactory(root) {
-    const getModulePath = (modulePath, prefix) => {
+    const getModulePath = (modulePath, scope) => {
         // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
         if (modulePath == null) {
             return 'MODULE_NOT_FOUND';
@@ -124,28 +124,34 @@ function createStableModuleIdFactory(root) {
             return modulePath;
         }
         else if (path_1.default.isAbsolute(modulePath)) {
-            return path_1.default.relative(root, modulePath) + '?' + prefix;
+            return path_1.default.relative(root, modulePath) + scope;
         }
         else {
-            return modulePath + '?' + prefix;
+            return modulePath + scope;
         }
     };
     const memoizedGetModulePath = memoize(getModulePath);
     // This is an absolute file path.
+    // TODO: We may want a hashed version for production builds in the future.
     return (modulePath, context) => {
+        const env = context?.environment ?? 'client';
+        if (env === 'client') {
+            // Only need scope for server bundles where multiple dimensions could run simultaneously.
+            // @ts-expect-error: we patch this to support being a string.
+            return memoizedGetModulePath(modulePath, '');
+        }
         // Helps find missing parts to the patch.
         if (!context?.platform) {
             // context = { platform: 'web' };
             throw new Error('createStableModuleIdFactory: `context.platform` is required');
         }
-        const env = context.environment ?? 'client';
-        // TODO: We may want a hashed version for production builds in the future.
-        const prefix = `platform=${context.platform}&env=${env}`;
-        const id = memoizedGetModulePath(modulePath, prefix);
+        // Only need scope for server bundles where multiple dimensions could run simultaneously.
+        const scope = env !== 'client' ? `?platform=${context?.platform}&env=${env}` : '';
         // @ts-expect-error: we patch this to support being a string.
-        return id;
+        return memoizedGetModulePath(modulePath, scope);
     };
 }
+exports.createStableModuleIdFactory = createStableModuleIdFactory;
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
