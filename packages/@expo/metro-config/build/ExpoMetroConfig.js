@@ -101,29 +101,47 @@ function createNumericModuleIdFactory() {
         return id;
     };
 }
-function createStableModuleIdFactory(root) {
-    const fileToIdMap = new Map();
-    // This is an absolute file path.
-    return (modulePath) => {
-        // TODO: We may want a hashed version for production builds in the future.
-        let id = fileToIdMap.get(modulePath);
-        if (id == null) {
-            // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
-            if (modulePath == null) {
-                id = 'MODULE_NOT_FOUND';
-            }
-            else if ((0, sideEffects_1.isVirtualModule)(modulePath)) {
-                // Virtual modules should be stable.
-                id = modulePath;
-            }
-            else if (path_1.default.isAbsolute(modulePath)) {
-                id = path_1.default.relative(root, modulePath);
-            }
-            else {
-                id = modulePath;
-            }
-            fileToIdMap.set(modulePath, id);
+function memoize(fn) {
+    const cache = new Map();
+    return ((...args) => {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) {
+            return cache.get(key);
         }
+        const result = fn(...args);
+        cache.set(key, result);
+        return result;
+    });
+}
+function createStableModuleIdFactory(root) {
+    const getModulePath = (modulePath, prefix) => {
+        // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+        if (modulePath == null) {
+            return 'MODULE_NOT_FOUND';
+        }
+        else if ((0, sideEffects_1.isVirtualModule)(modulePath)) {
+            // Virtual modules should be stable.
+            return modulePath;
+        }
+        else if (path_1.default.isAbsolute(modulePath)) {
+            return path_1.default.relative(root, modulePath) + '?' + prefix;
+        }
+        else {
+            return modulePath + '?' + prefix;
+        }
+    };
+    const memoizedGetModulePath = memoize(getModulePath);
+    // This is an absolute file path.
+    return (modulePath, context) => {
+        // Helps find missing parts to the patch.
+        if (!context?.platform) {
+            // context = { platform: 'web' };
+            throw new Error('createStableModuleIdFactory: `context.platform` is required');
+        }
+        const env = context.environment ?? 'client';
+        // TODO: We may want a hashed version for production builds in the future.
+        const prefix = `platform=${context.platform}&env=${env}`;
+        const id = memoizedGetModulePath(modulePath, prefix);
         // @ts-expect-error: we patch this to support being a string.
         return id;
     };

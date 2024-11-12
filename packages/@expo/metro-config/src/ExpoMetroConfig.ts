@@ -119,12 +119,20 @@ function createNumericModuleIdFactory(): (path: string) => number {
   };
 }
 
+function memoize<T extends (...args: any[]) => any>(fn: T): T {
+  const cache = new Map<string, any>();
+  return ((...args: any[]) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  }) as T;
+}
+
 function createStableModuleIdFactory(root: string): (path: string) => number {
-  const fileToIdMap = new Map<string, string>();
-
-  // const fileToIdMap = new Map<string, string>();
-  const fileToIdMapForEnv = new Map<string, Map<string, string>>();
-
   const getModulePath = (modulePath: string, prefix: string) => {
     // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
     if (modulePath == null) {
@@ -139,6 +147,8 @@ function createStableModuleIdFactory(root: string): (path: string) => number {
     }
   };
 
+  const memoizedGetModulePath = memoize(getModulePath);
+
   // This is an absolute file path.
   return (modulePath: string, context?: { platform: string; environment?: string }): number => {
     // Helps find missing parts to the patch.
@@ -148,32 +158,10 @@ function createStableModuleIdFactory(root: string): (path: string) => number {
     }
 
     const env = context.environment ?? 'client';
-    // let fileToIdMap = fileToIdMapForEnv.get(env);
-
-    // if (!fileToIdMap) {
-    //   fileToIdMap = new Map();
-    //   fileToIdMapForEnv.set(env, fileToIdMap);
-    // }
-    // // TODO: We may want a hashed version for production builds in the future.
-    // let id = fileToIdMap.get(modulePath);
-
-    // if (id != null) {
-    //   // @ts-expect-error: we patch this to support being a string.
-    //   return id;
-    // }
-
     // TODO: We may want a hashed version for production builds in the future.
-    let prefix = `platform=${context.platform}&env=${env}`;
-    // if (context.dom) {
-    //   prefix += '&dom=true';
-    // }
-    let id = getModulePath(modulePath, prefix);
-    // if (context.environment === 'node') {
-    // } else {
-    //   id = getModulePath(modulePath, '');
-    // }
+    const prefix = `platform=${context.platform}&env=${env}`;
+    const id = memoizedGetModulePath(modulePath, prefix);
 
-    // fileToIdMap.set(modulePath, id);
     // @ts-expect-error: we patch this to support being a string.
     return id;
   };
