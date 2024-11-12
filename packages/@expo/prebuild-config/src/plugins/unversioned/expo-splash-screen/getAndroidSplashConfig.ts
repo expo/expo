@@ -43,7 +43,7 @@ export function getAndroidSplashConfig(
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
-      imageWidth: splash.imageWidth,
+      imageWidth: splash.imageWidth ?? 100,
     };
   }
 

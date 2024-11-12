@@ -28,6 +28,8 @@ const commands: { [command: string]: () => Promise<Command> } = {
   'export:web': () => import('../src/export/web/index.js').then((i) => i.expoExportWeb),
   'export:embed': () => import('../src/export/embed/index.js').then((i) => i.expoExportEmbed),
 
+  serve: () => import('../src/serve/index.js').then((i) => i.expoServe),
+
   // Auxiliary commands
   install: () => import('../src/install/index.js').then((i) => i.expoInstall),
   add: () => import('../src/install/index.js').then((i) => i.expoInstall),
@@ -98,6 +100,7 @@ if (!isSubcommand && args['--help']) {
     run: _run,
     // NOTE(cedric): Still pending the migration to ESLint's flat config
     lint: _lint,
+    serve,
     // All other commands
     ...others
   } = commands;
@@ -109,7 +112,7 @@ if (!isSubcommand && args['--help']) {
   {bold Commands}
     ${Object.keys({ start, export: _export, ...others }).join(', ')}
     ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
-    ${Object.keys({ install, customize, config }).join(', ')}
+    ${Object.keys({ install, customize, config, serve }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
   {bold Options}

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.19.1 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- Fixed `npx expo export` to support Hermes bytecode bundling. ([#32770](https://github.com/expo/expo/pull/32770) by [@kudo](https://github.com/kudo))
+
 ## 0.19.0 — 2024-11-10
 
 ### 💡 Others

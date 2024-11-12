@@ -6295,13 +6295,6 @@ exports[`APISection expo-pedometer 1`] = `
         class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
         data-text="true"
       >
-        <span
-          class="leading-[1.6154] font-medium text-secondary !text-inherit !font-medium"
-          data-text="true"
-        >
-          Only for:
-           
-        </span>
         <div
           class="select-none inline-flex bg-element py-1 px-2 mr-2 rounded-full items-center gap-1 border border-default [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 !bg-palette-blue3 !text-palette-blue12 !border-palette-blue4"
         >
@@ -6328,7 +6321,6 @@ exports[`APISection expo-pedometer 1`] = `
             iOS
           </span>
         </div>
-        <br />
       </span>
     </div>
     <h3

@@ -224,6 +224,11 @@ class Env {
   get EXPO_UNSTABLE_SERVER_FUNCTIONS(): boolean {
     return boolish('EXPO_UNSTABLE_SERVER_FUNCTIONS', false);
   }
+
+  /** Enable unstable/experimental mode where React Native Web isn't required to run Expo apps on web. */
+  get EXPO_NO_REACT_NATIVE_WEB(): boolean {
+    return boolish('EXPO_NO_REACT_NATIVE_WEB', false);
+  }
 }
 
 export const env = new Env();

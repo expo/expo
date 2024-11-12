@@ -213,6 +213,7 @@ const general = [
         makePage('workflow/android-studio-emulator.mdx'),
         makePage('workflow/ios-simulator.mdx'),
         makePage('guides/new-architecture.mdx'),
+        makePage('guides/react-compiler.mdx'),
       ],
       { expanded: false }
     ),
@@ -547,11 +548,7 @@ const learn = [
 ];
 
 const preview = [
-  makeSection('Preview', [
-    makePage('preview/introduction.mdx'),
-    makePage('preview/react-compiler.mdx'),
-    { expanded: true },
-  ]),
+  makeSection('Preview', [makePage('preview/introduction.mdx'), { expanded: true }]),
 ];
 
 const archive = [

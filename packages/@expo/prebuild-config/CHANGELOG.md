@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 8.0.13 — 2024-11-12
+
+### 💡 Others
+
+- Vary android styles depending on config ([#32776](https://github.com/expo/expo/pull/32776) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 8.0.12 — 2024-11-11
 
 _This version does not introduce any user-facing changes._
