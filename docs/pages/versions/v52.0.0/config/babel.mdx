@@ -1,0 +1,36 @@
+---
+title: babel.config.js
+description: A reference for Babel configuration file.
+isNew: true
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+Babel is used as the JavaScript compiler to transform modern JavaScript (Es6+) into a version compatible with the JavaScript engine on mobile devices.
+
+Each new Expo project created using `npx create-expo-app` configures Babel automatically and uses [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo) as the default preset.
+
+## Add babel.config.js file
+
+If your project requires custom Babel configuration, you need to create the **babel.config.js** file in your project.
+
+1. Navigate to the root of your project, run the following command inside a terminal:
+
+<Terminal cmd={['$ npx expo customize']} />
+
+2. This command will prompt generating different config files. Select **babel.config.js**.
+
+3. The **babel.config.js** file is created in the root of your project with the default configuration as shown below:
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
+};
+```
+
+## babel-preset-expo
+
+[`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo) is the default preset used in Expo projects. It extends the default React Native preset (`@react-native/babel-preset`) and adds supports for decorators, tree-shaking web libraries, and loading font icons.
