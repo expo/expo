@@ -7,9 +7,9 @@ description: Learn about the Apple Developer account membership requirements for
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-An Apple Developer account with at least App-Manager Role is required to create iOS device builds on EAS. This account allows you to generate [app signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) such as certificates, identifiers, and profiles, submit the app for review, and manage app's distribution.
+An Apple Developer account with permissions to create [app signing credentials](/app-signing/managed-credentials/#generating-app-signing-credentials), such as certificates, identifiers, and provisioning profiles, is required when using EAS Build to create iOS device builds. These credentials can be generated when submitting the build by logging into your Apple Account from the EAS CLI, or they can be uploaded to your Expo account by an authorized user, so users without Apple Developer account access can create builds using the uploaded credentials.
 
-An Apple Developer user profile must have **Access to Certificates, Identifiers, and Profiles** enabled in their App Store Connect user permissions to generate app signing credentials. If the Apple Developer account is an individual account, only the authorized user of the account can have this access. For an organization Apple Developer account, multiple team members can have this access, but some organizations may choose to limit this access to certain team members.
+On individual Apple Develper accounts, only the Account Holder role can generate app signing credentials. On an organization Apple Developer account, the Account Holder and Admin roles can always generate app signing credentials, and the App Manager role can generate credentials when a user with this role has **Access to Certificates, Identifiers, and Profiles** enabled in their App Store Connect user permissions.
 
 <ContentSpotlight
   alt="Access to Certificates, Identifiers, and Profiles settings in App Store Connect."
@@ -18,9 +18,9 @@ An Apple Developer user profile must have **Access to Certificates, Identifiers,
   className="max-w-[400px]"
 />
 
-This guide provides steps that an authorized user with **Access to Certificates, Identifiers, and Profiles** can follow to ensure app signing credentials are generated and available to their team members who use EAS. It also provides steps for the team developer to create an EAS Build by using pre-generated credentials.
+This guide provides steps that an authorized user can follow to ensure app signing credentials are generated and available to their team members who use EAS. It also provides steps for the team developer to create an EAS Build by using pre-generated credentials.
 
-> See [Apple's documentation on Program Roles](https://developer.apple.com/support/roles/) for details on the different roles and their permissions based on the type of Developer account and the permissions that are required for each role.
+> See [Apple's documentation on Program Roles](https://developer.apple.com/support/roles/) for details on the different roles and their permissions based on the type of Developer account and the permissions that are required for each role. 
 
 ## Steps for Apple Developer account's authorized user
 
