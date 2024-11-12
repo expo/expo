@@ -64,13 +64,13 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
   }
 
   async function killServer() {
-    await ensurePortFreeAsync(port);
+    metroProcess?.kill('SIGINT');
+    await metroProcess;
     metroProcess = null;
   }
 
   async function stopServer() {
-    if (!metroProcess) return;
-    metroProcess.kill('SIGTERM');
+    metroProcess?.kill('SIGTERM');
     await metroProcess;
     metroProcess = null;
   }
