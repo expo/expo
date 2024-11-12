@@ -17,10 +17,10 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.kotlin.Utils
+import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -150,7 +150,7 @@ class ReactActivityDelegateWrapper(
       // That's not ideal but works.
       val launchOptions = composeLaunchOptions()
       val reactDelegate: ReactDelegate
-      if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
         reactDelegate = ReactDelegate(
           plainActivity,
           reactHost,
@@ -235,7 +235,7 @@ class ReactActivityDelegateWrapper(
      *
      * TODO (@bbarthec): fix it upstream?
      */
-    if (!ReactFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
+    if (!ReactNativeFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
       val reactContextListener = object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
           delegate.reactInstanceManager.removeReactInstanceEventListener(this)

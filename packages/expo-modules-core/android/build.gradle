@@ -141,6 +141,18 @@ android {
     }
   }
 
+  sourceSets {
+    main {
+      java {
+        if (REACT_NATIVE_TARGET_VERSION >= 77) {
+          srcDirs += 'src/rn77'
+        } else {
+          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
+          srcDirs += 'src/rn74'
+        }
+      }
+    }
+  }
 
   testOptions {
     unitTests.includeAndroidResources = true
