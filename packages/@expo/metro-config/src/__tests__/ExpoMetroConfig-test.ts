@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { getDefaultConfig } from '../ExpoMetroConfig';
+import { getDefaultConfig, createStableModuleIdFactory } from '../ExpoMetroConfig';
 
 const projectRoot = '/';
 const consoleError = console.error;
@@ -51,5 +51,26 @@ describe(getDefaultConfig, () => {
     expect(getDefaultConfig(projectRoot).resolver?.sourceExts).toEqual(
       expect.not.arrayContaining(['expo.js'])
     );
+  });
+});
+
+describe(createStableModuleIdFactory, () => {
+  it('defaults to standard behavior without context object', () => {
+    const factory = createStableModuleIdFactory('/');
+    expect(factory('/react.js')).toBe(factory('react.js'));
+  });
+  it('creates scoped module IDs for SSR', () => {
+    const factory = createStableModuleIdFactory('/');
+    expect(factory('/react.js', { platform: 'ios', environment: 'react-server' })).toBe(
+      factory('react.js?platform=ios&env=react-server')
+    );
+    expect(factory('/react.js', { platform: 'ios', environment: 'client' })).toBe(
+      factory('react.js')
+    );
+  });
+  it('asserts platform is missing for SSR context', () => {
+    const factory = createStableModuleIdFactory('/');
+    // @ts-expect-error
+    expect(() => factory('/react.js', { environment: 'react-server' })).toThrow();
   });
 });

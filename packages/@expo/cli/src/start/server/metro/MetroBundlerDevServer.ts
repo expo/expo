@@ -598,7 +598,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async nativeExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,
-      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
     >,
     files: ExportAssetMap,
     extraOptions: {
@@ -682,11 +682,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       await this.rscRenderer!.exportServerActionsAsync(
         {
           platform: options.platform,
+          domRoot: options.domRoot,
           entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
         },
         files
       );
 
+    // TODO: Check against all modules in the initial client bundles.
     const hasUniqueClientBoundaries = nestedClientBoundaries.some(
       (boundary) => !clientBoundaries.includes(boundary)
     );
@@ -699,7 +701,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bundle = await this.legacySinglePageExportBundleAsync(
         {
           ...options,
-          clientBoundaries: [...clientBoundaries, ...nestedClientBoundaries],
+          clientBoundaries,
         },
         extraOptions
       );
@@ -728,7 +730,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (Object.keys(moduleIdToSplitBundle).length) {
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
         if (boundary in moduleIdToSplitBundle) {
-          // Account for nullish values (bundle is in main chunk).
           ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
         } else {
           throw new Error(
@@ -1010,6 +1011,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
+          createModuleId: metro._createModuleId.bind(metro),
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -1049,6 +1051,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
+          createModuleId: metro._createModuleId.bind(metro),
         });
         this.rscRenderer = rscMiddleware;
       }
@@ -1112,15 +1115,27 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               deleted,
             }: {
               isInitialUpdate?: boolean;
-              added: unknown[];
-              modified: unknown[];
-              deleted: unknown[];
+              added: {
+                module: [number | string, string];
+                sourceURL: string;
+                sourceMappingURL: string;
+              }[];
+              modified: {
+                module: [number | string, string];
+                sourceURL: string;
+                sourceMappingURL: string;
+              }[];
+              deleted: (number | string)[];
             } = update;
 
             const hasUpdate = added.length || modified.length || deleted.length;
 
             // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
             if (!isInitialUpdate && hasUpdate) {
+              // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
+              // @ts-expect-error: __c is not on global but is injected by Metro.
+              if (typeof globalThis.__c === 'function') globalThis.__c();
+
               onReload();
             }
           }
