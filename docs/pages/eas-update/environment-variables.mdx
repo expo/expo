@@ -79,7 +79,7 @@ This can also be used for EAS Updates run from your [development build](/develop
 
 ## Using variables in app.config.js
 
-[Expo environment variables](/guides/environment-variables) are only available in SDK 49 or higher. In previous versions, it was common to set variables to be used in updates in **app.config.js** under the `expo.extra` property:
+In previous versions, it was common to set variables to be used in updates in **app.config.js** under the `expo.extra` property:
 
 ```js app.config.js
 export default () => ({
@@ -98,4 +98,4 @@ Then, to set the `API_URL` environment variable during development, you can prep
 
 The command sets the `API_URL` to `"http://localhost:3000"`. Then, the [`expo-constants`](/versions/latest/sdk/constants/#installation) library provides the `Constants.expoConfig.extra.API_URL` property to access it inside a project.
 
-Variables `expo.extra` are still accessible in SDK 49 and higher, but it is recommended to use the `EXPO_PUBLIC_` prefix and **.env** files instead to reference variables directly in your application code.
+Variables `expo.extra` are still accessible but it is recommended to use the `EXPO_PUBLIC_` prefix and **.env** files instead to reference variables directly in your application code.

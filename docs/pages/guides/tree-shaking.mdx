@@ -40,60 +40,6 @@ console.log('Hello on iOS');
 
 This optimization is production only and runs on a per-file basis. If you re-export `Platform.OS` from a different module, it will not be removed from the production bundle.
 
-<Collapsible summary="Enable platform shaking (SDK 49 and lower)">
-
-> Platform shaking is enabled by default in Expo SDK 50 and greater.
-
-To remove code based on the `Platform` module from `react-native`, add the following to **metro.config.js**:
-
-```js metro.config.js
-const { getDefaultConfig } = require('expo/metro-config');
-
-const config = getDefaultConfig(__dirname);
-
-config.transformer.getTransformOptions = async () => ({
-  transform: {
-    /* @info This feature is experimental and may cause other issues. */
-    experimentalImportSupport: true,
-    /* @end */
-  },
-});
-
-module.exports = config;
-```
-
-Then, configure **babel.config.js** to preserve `import/export` syntax:
-
-```js babel.config.js
-module.exports = function (api) {
-  api.cache(true);
-  /* @info */
-  const disableImportExportTransform = true;
-  /* @end */
-  return {
-    presets: [
-      [
-        'babel-preset-expo',
-        {
-          native: {
-            /* @info */
-            disableImportExportTransform,
-            /* @end */
-          },
-          web: {
-            /* @info */
-            disableImportExportTransform,
-            /* @end */
-          },
-        },
-      ],
-    ],
-  };
-};
-```
-
-</Collapsible>
-
 Starting in SDK 51, `process.env.EXPO_OS` can be used to detect the platform that the JavaScript was bundled for (cannot change at runtime). This value does not support platform shaking imports due to how Metro minifies code after dependency resolution.
 
 ## Remove development-only code
