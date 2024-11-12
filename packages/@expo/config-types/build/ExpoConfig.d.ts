@@ -157,12 +157,6 @@ export interface ExpoConfig {
         [k: string]: any;
     };
     /**
-     * @deprecated Use a `metro.config.js` file instead. [Learn more](https://docs.expo.dev/guides/customizing-metro/)
-     */
-    packagerOpts?: {
-        [k: string]: any;
-    };
-    /**
      * Configuration for the expo-updates library
      */
     updates?: {
@@ -275,13 +269,13 @@ export interface ExpoConfig {
          */
         reactCompiler?: boolean;
         /**
-         * Experimentally enable React Server Components support in Expo CLI and Expo Router.
+         * Experimentally enable React Server Components by default in Expo Router and concurrent routing for transitions.
          */
-        reactServerComponents?: boolean;
+        reactServerComponentRoutes?: boolean;
         /**
-         * Experimentally enable React Server Actions support in Expo CLI and Expo Router.
+         * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
          */
-        reactServerActions?: boolean;
+        reactServerFunctions?: boolean;
     };
     /**
      * Internal properties for developer tools

@@ -30,7 +30,7 @@ To use React Server Components in your Expo app, you need to:
 {
   "expo": {
     "experiments": {
-      "reactServerActions": true
+      "reactServerFunctions": true
     }
   }
 }
@@ -419,14 +419,14 @@ The `unstable_headers` function returns a promise that resolves to a read-only `
 
 Enabling full React Server Components support allows you to leverage even more features. In this mode, the default rendering mode for routes is server components instead of client components. It is still in development, as the Router and React Navigation need to be rewritten to support concurrency.
 
-To enable full Server Components mode, you need to enable the `reactServerComponents` flag in the app config:
+To enable full Server Components mode, you need to enable the `reactServerComponentRoutes` flag in the app config:
 
 ```json app.json
 {
   "expo": {
     "experiments": {
-      "reactServerActions": true,
-      "reactServerComponents": true
+      "reactServerFunctions": true,
+      "reactServerComponentRoutes": true
     }
   }
 }

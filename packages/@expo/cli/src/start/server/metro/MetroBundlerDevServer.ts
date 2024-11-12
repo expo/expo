@@ -103,6 +103,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private hmrServer: MetroHmrServer | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   isReactServerComponentsEnabled?: boolean;
+  isReactServerRoutesEnabled?: boolean;
 
   get name(): string {
     return 'metro';
@@ -244,16 +245,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return manifest;
   }
 
-  async getServerManifestAsync({
-    environment,
-  }: Pick<ExpoMetroOptions, 'environment'> = {}): Promise<{
+  async getServerManifestAsync(): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
   }> {
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
       typeof import('expo-router/build/static/getServerManifest')
     >('expo-router/build/static/getServerManifest.js', {
-      environment: environment ?? (this.isReactServerComponentsEnabled ? 'react-server' : 'node'),
+      // Only use react-server environment when the routes are using react-server rendering by default.
+      environment: this.isReactServerRoutesEnabled ? 'react-server' : 'node',
     });
 
     return {
@@ -857,10 +857,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { exp } = config;
     // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
     const isReactServerComponentsEnabled =
-      !!exp.experiments?.reactServerComponents || !!exp.experiments?.reactServerActions;
+      !!exp.experiments?.reactServerComponentRoutes || !!exp.experiments?.reactServerFunctions;
     const isReactServerActionsOnlyEnabled =
-      !exp.experiments?.reactServerComponents && !!exp.experiments?.reactServerActions;
+      !exp.experiments?.reactServerComponentRoutes && !!exp.experiments?.reactServerFunctions;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
+    this.isReactServerRoutesEnabled = !!exp.experiments?.reactServerComponentRoutes;
 
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';

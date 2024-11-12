@@ -2,11 +2,11 @@
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
-    "expo": "^51",
-    "react": "18.2.0",
-    "react-native": "0.74.2"
+    "expo": "^52",
+    "react": "18.3.1",
+    "react-native": "0.76.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.3"
+    "@babel/core": "^7.25.2"
   }
 }
