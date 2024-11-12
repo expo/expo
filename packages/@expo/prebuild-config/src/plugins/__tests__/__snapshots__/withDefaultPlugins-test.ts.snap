@@ -834,12 +834,6 @@ exports[`built-in plugins introspects mods 1`] = `
                       },
                     ],
                   },
-                  {
-                    "$": {
-                      "android:exported": "false",
-                      "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
-                    },
-                  },
                 ],
                 "meta-data": [
                   {
@@ -1817,12 +1811,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                         ],
                       },
                     ],
-                  },
-                  {
-                    "$": {
-                      "android:exported": "false",
-                      "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
-                    },
                   },
                 ],
                 "meta-data": [
