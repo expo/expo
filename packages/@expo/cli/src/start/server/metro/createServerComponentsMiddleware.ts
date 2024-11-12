@@ -168,7 +168,6 @@ export function createServerComponentsMiddleware(
         platform,
         environment: 'react-server',
       });
-
       const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;

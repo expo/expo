@@ -16,8 +16,6 @@ import {
 import ExpoDomWebView from './webview/ExpoDOMWebView';
 import RNWebView from './webview/RNWebView';
 
-import { useDomComponentContextReceiver } from 'expo-router/build/link/useDomComponentNavigation';
-
 interface Props {
   dom: DOMProps;
   filePath: string;
@@ -62,8 +60,6 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, filePath, ...marshalP
     [webviewRef]
   );
 
-  const navigationReceiver = useDomComponentContextReceiver();
-
   // serializable props, action names.
 
   const smartActions = Object.entries(marshalProps).reduce<{
@@ -88,7 +84,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, filePath, ...marshalP
   }, [emit, smartActions]);
 
   return React.createElement(webView, {
-    webviewDebuggingEnabled: true, //__DEV__,
+    webviewDebuggingEnabled: __DEV__,
     // Make iOS scrolling feel native.
     decelerationRate: process.env.EXPO_OS === 'ios' ? 'normal' : undefined,
     // This is a better default for integrating with native navigation.
@@ -199,7 +195,6 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, filePath, ...marshalP
       } else {
         dom?.onMessage?.(event);
       }
-      navigationReceiver({ type, data });
       _emitGlobalEvent({ type, data });
     },
   });

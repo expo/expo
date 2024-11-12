@@ -356,7 +356,6 @@ export function withExtendedResolver(
           return false;
         }
 
-        // DOM-component friendly list:
         const isExternal = // Extern these modules in standard Node.js environments.
           /^(deprecated-react-native-prop-types|react|react\/jsx-dev-runtime|scheduler|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
             moduleName

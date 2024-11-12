@@ -142,9 +142,6 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   async installAppAsync(filePath: string) {
-    await SimControl.uninstallAsync(this.device, {
-      appId: 'dev.expo.routere2e'
-    });
     await SimControl.installAsync(this.device, {
       filePath,
     });

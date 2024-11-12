@@ -1,16 +1,14 @@
 import { addGlobalDomEventListener } from 'expo/dom/global';
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import type { RouterStore } from '../global-state/router-store';
 import type { LinkToOptions } from '../global-state/routing';
-import { useNavigation } from '../useNavigation';
 
 const ROUTER_LINK_TYPE = '$$router_link';
 const ROUTER_DISMISS_ALL_TYPE = '$$router_dismissAll';
 const ROUTER_DISMISS_TYPE = '$$router_dismiss';
 const ROUTER_BACK_TYPE = '$$router_goBack';
 const ROUTER_SET_PARAMS_TYPE = '$$router_setParams';
-const ROUTER_SET_OPTIONS_TYPE = '$$router_setOptions';
 
 function emitDomEvent(type: string, data: any = {}) {
   // @ts-expect-error: ReactNativeWebView is a global variable injected by the WebView
@@ -19,12 +17,6 @@ function emitDomEvent(type: string, data: any = {}) {
     return true;
   }
   return false;
-}
-
-export function emitDomSetOptions(
-  params: Record<string, string | number | (string | number)[]> = {}
-) {
-  return emitDomEvent(ROUTER_SET_OPTIONS_TYPE, { params });
 }
 
 export function emitDomSetParams(
@@ -74,22 +66,4 @@ export function useDomComponentNavigation(store: RouterStore) {
       }
     });
   }, [store]);
-}
-
-export function useDomComponentContextReceiver() {
-  if (process.env.EXPO_OS === 'web') {
-    return () => {};
-  }
-  // TODO: Make this optional.
-  const navigation = useNavigation();
-  return useCallback(
-    ({ type, data }) => {
-      switch (type) {
-        case ROUTER_SET_OPTIONS_TYPE:
-          navigation.setOptions(data.params);
-          break;
-      }
-    },
-    [navigation]
-  );
 }

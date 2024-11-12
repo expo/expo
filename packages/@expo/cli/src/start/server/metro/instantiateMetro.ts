@@ -30,11 +30,6 @@ import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
-import { ReadOnlyGraph } from 'metro';
-const hmrJSBundle = require('metro/src/DeltaBundler/Serializers/hmrJSBundle');
-
-const formatBundlingError = require('metro/src/lib/formatBundlingError');
-const RevisionNotFoundError = require('metro/src/IncrementalBundler/RevisionNotFoundError');
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
