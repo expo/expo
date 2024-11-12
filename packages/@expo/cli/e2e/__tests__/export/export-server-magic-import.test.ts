@@ -42,7 +42,7 @@ describe('export server with magic import comments', () => {
       serveCmd = new ExpoServeLocalCommand(projectRoot, {
         NODE_ENV: 'production',
       });
-      await serveCmd.startAsync([inputDir, '--port=' + 3037]);
+      await serveCmd.startAsync([outputName, '--port=' + 3037]);
     });
 
     it('fetches api route to ensure the dynamic import works', async () => {
