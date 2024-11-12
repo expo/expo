@@ -4,9 +4,13 @@ import { getDefaultConfig, LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
+import { ReadOnlyGraph } from 'metro';
 import Bundler from 'metro/src/Bundler';
+import hmrJSBundle from 'metro/src/DeltaBundler/Serializers/hmrJSBundle';
 import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
 import MetroHmrServer from 'metro/src/HmrServer';
+import RevisionNotFoundError from 'metro/src/IncrementalBundler/RevisionNotFoundError';
+import formatBundlingError from 'metro/src/lib/formatBundlingError';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
@@ -26,11 +30,6 @@ import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
-import { ReadOnlyGraph } from 'metro';
-const hmrJSBundle = require('metro/src/DeltaBundler/Serializers/hmrJSBundle');
-
-const formatBundlingError = require('metro/src/lib/formatBundlingError');
-const RevisionNotFoundError = require('metro/src/IncrementalBundler/RevisionNotFoundError');
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -339,7 +338,6 @@ export async function instantiateMetroAsync(
         const moduleIdContext = {
           platform: revision.graph.transformOptions.platform,
           environment: revision.graph.transformOptions.customTransformOptions?.environment,
-          dom: revision.graph.transformOptions.customTransformOptions?.dom != null,
         };
         const hmrUpdate = hmrJSBundle(delta, revision.graph, {
           clientUrl: group.clientUrl,
