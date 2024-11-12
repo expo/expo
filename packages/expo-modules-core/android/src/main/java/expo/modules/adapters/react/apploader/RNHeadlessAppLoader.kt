@@ -28,7 +28,7 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
         // In old arch reactHost will be null
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
           // New architecture
-          val reactHost = (context as ReactApplication).reactHost ?: throw IllegalStateException("Your application does not have a valid reactHost")
+          val reactHost = (context.applicationContext as ReactApplication).reactHost ?: throw IllegalStateException("Your application does not have a valid reactHost")
           reactHost.addReactInstanceEventListener(
             object : ReactInstanceEventListener {
               override fun onReactContextInitialized(context: ReactContext) {
@@ -39,10 +39,13 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
               }
             }
           )
-          reactHost.start()
+          // Ensure that we're starting the react host on the main thread
+          android.os.Handler(context.mainLooper).post {
+            reactHost.start()
+          }
         } else {
           // Old architecture
-          val reactInstanceManager = (context as ReactApplication).reactNativeHost.reactInstanceManager
+          val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
           reactInstanceManager.addReactInstanceEventListener(
             object : ReactInstanceEventListener {
               override fun onReactContextInitialized(context: ReactContext) {
@@ -53,7 +56,10 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
               }
             }
           )
-          reactInstanceManager.createReactContextInBackground()
+          // Ensure that we're starting the react host on the main thread
+          android.os.Handler(context.mainLooper).post {
+            reactInstanceManager.createReactContextInBackground()
+          }
         }
       } else {
         alreadyRunning?.run()
@@ -69,7 +75,7 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
       val reactContext = appRecords[appScopeKey] ?: return false
       if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
         // New architecture
-        val reactHost = (reactContext.baseContext as ReactApplication).reactHost ?: throw IllegalStateException("Your application does not have a valid reactHost")
+        val reactHost = (reactContext.applicationContext as ReactApplication).reactHost ?: throw IllegalStateException("Your application does not have a valid reactHost")
         android.os.Handler(reactContext.mainLooper).post {
           reactHost.destroy("Closing headless task app", null)
           HeadlessAppLoaderNotifier.notifyAppDestroyed(appScopeKey)
@@ -77,7 +83,7 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
         }
       } else {
         // Old architecture
-        val reactNativeHost = (reactContext as ReactApplication).reactNativeHost
+        val reactNativeHost = (reactContext.applicationContext as ReactApplication).reactNativeHost
         if (reactNativeHost.hasInstance()) {
           val reactInstanceManager: ReactInstanceManager = reactNativeHost.reactInstanceManager
           android.os.Handler(reactContext.mainLooper).post {
@@ -106,7 +112,7 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
       return true
     } else {
       // Old architecture
-      val reactNativeHost = (reactContext.baseContext as ReactApplication).reactNativeHost
+      val reactNativeHost = (reactContext.applicationContext as ReactApplication).reactNativeHost
       return reactNativeHost.reactInstanceManager.hasStartedCreatingInitialContext()
     }
   }

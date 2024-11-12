@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 16.0.1 — 2024-11-04
+
+### 🐛 Bug fixes
+
+- Fix incorrect width/height reported with EXIF tags 5 and 7 ([#32534](https://github.com/expo/expo/pull/32534) by [@gaearon](https://github.com/gaearon))
+
 ## 16.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

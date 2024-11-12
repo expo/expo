@@ -18,6 +18,8 @@ export type Options = {
   internal_stripLoadRoute?: boolean;
   /* Used to simplify by skipping the generated routes */
   skipGenerated?: boolean;
+  /* Skip the generated not found route  */
+  notFound?: boolean;
   importMode?: string;
   platformRoutes?: boolean;
   sitemap?: boolean;
@@ -291,7 +293,9 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     if (hasRoutes && options.sitemap !== false) {
       appendSitemapRoute(rootDirectory, options);
     }
-    appendNotFoundRoute(rootDirectory, options);
+    if (options.notFound !== false) {
+      appendNotFoundRoute(rootDirectory, options);
+    }
   }
   return rootDirectory;
 }

@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 5.0.1 — 2024-11-12
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.9 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.8 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
+
+## 5.0.0-preview.7 — 2024-11-05
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.6 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0-preview.5 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.0-preview.4 — 2024-10-30
 
 _This version does not introduce any user-facing changes._

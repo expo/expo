@@ -2,12 +2,12 @@
 import React from 'react';
 import { AppState } from 'react-native';
 
+import { getBaseURL } from './base';
 import type { BridgeMessage, DOMProps, WebViewProps, WebViewRef } from './dom.types';
 import { _emitGlobalEvent } from './global-events';
 import {
   getInjectBodySizeObserverScript,
   getInjectEventScript,
-  getInjectEnvsScript,
   MATCH_CONTENTS_EVENT,
   NATIVE_ACTION,
   NATIVE_ACTION_RESULT,
@@ -18,12 +18,10 @@ import RNWebView from './webview/RNWebView';
 
 interface Props {
   dom: DOMProps;
-  source: {
-    uri: string;
-  };
+  filePath: string;
 }
 
-const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalProps }, ref) => {
+const RawWebView = React.forwardRef<object, Props>(({ dom, filePath, ...marshalProps }, ref) => {
   if (ref != null && typeof ref === 'object' && ref.current == null) {
     ref.current = new Proxy(
       {},
@@ -52,6 +50,7 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
   const webView = resolveWebView(dom?.useExpoDOMWebView ?? false);
   const webviewRef = React.useRef<WebViewRef>(null);
   const domImperativeHandlePropsRef = React.useRef<string[]>([]);
+  const source = { uri: `${getBaseURL()}/${filePath}` };
   const [containerStyle, setContainerStyle] = React.useState<WebViewProps['containerStyle']>(null);
 
   const emit = React.useCallback(
@@ -88,6 +87,10 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
     webviewDebuggingEnabled: __DEV__,
     // Make iOS scrolling feel native.
     decelerationRate: process.env.EXPO_OS === 'ios' ? 'normal' : undefined,
+    // This is a better default for integrating with native navigation.
+    contentInsetAdjustmentBehavior: 'automatic',
+    // This is the default in ScrollView and upstream native.
+    automaticallyAdjustsScrollIndicatorInsets: true,
     originWhitelist: ['*'],
     allowFileAccess: true,
     allowFileAccessFromFileURLs: true,
@@ -110,7 +113,6 @@ const RawWebView = React.forwardRef<object, Props>(({ dom, source, ...marshalPro
     containerStyle,
     ...dom,
     injectedJavaScriptBeforeContentLoaded: [
-      getInjectEnvsScript(),
       // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
       `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
       dom?.matchContents ? getInjectBodySizeObserverScript() : null,

@@ -105,6 +105,18 @@ export function Button() {
 
 Now, you can leverage `<Button />` from both **app/(feed)/feed.tsx** and **app/(search)/search.tsx** to push `./profile` while preserving the current tab.
 
+If you require the segments for a specific your, you can pass the full route to `useSegments`
+
+```tsx button.tsx
+import { Link, useSegments } from 'expo-router';
+
+export function useMySegments() {
+  const segments = useSegments<'app/(search)/profile.tsx'>();
+  //    ^? segments = ['app', '(search)', 'profile']
+  return segments;
+}
+```
+
 ## Imperative navigation
 
 You can use the typed `router` object to navigate imperatively:
@@ -129,6 +141,31 @@ function Page() {
 }
 ```
 
+## Route parameters
+
+For strongly typed route parameters you can pass a full href to the `useLocalSearchParams` and `useGlobalSearchParams` hooks
+
+```tsx app/search.tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Page() {
+  /* @info Profile a route for strongly typed hooks */
+  const {
+    profile, // string
+    search, // string[]
+  } = useLocalSearchParams<'app/(search)/[profile]/[...search].tsx'>();
+  /* @end */
+
+  return (
+    <>
+      <Text>Profile: {profile}</Text>
+      <Text>Search: {search.join(',')}</Text>
+    </>
+  );
+}
+```
+
 ## Query parameters
 
 Most query parameters will not be represented in the file system and therefore cannot be typed automatically. You can type query parameters manually by passing a generic to the `useLocalSearchParams` and `useGlobalSearchParams` hooks. For example:
@@ -140,6 +177,24 @@ import { useLocalSearchParams } from 'expo-router';
 export default function Page() {
   /* @info Manually typed additional query parameters */
   const { query } = useLocalSearchParams<{ query?: string }>();
+  /* @end */
+
+  return <Text>Search: {query ?? 'unset'}</Text>;
+}
+```
+
+If you need a combination of route and query parameters, pass the route as the first generic and then the query parameters
+
+```tsx app/search.tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Page() {
+  /* @info Provide both a route and search parameters */
+  const { query, profile, search } = useLocalSearchParams<
+    '/[profile]/[...search]',
+    { query?: string }
+  >();
   /* @end */
 
   return <Text>Search: {query ?? 'unset'}</Text>;

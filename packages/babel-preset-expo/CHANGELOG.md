@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 12.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0-preview.6 — 2024-11-07
+
+### 🎉 New features
+
+- Support hoisting for inlined server actions. ([#32633](https://github.com/expo/expo/pull/32633) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.0.0-preview.5 — 2024-11-04
+
+### 💡 Others
+
+- Added EAS Updates support for DOM Components. ([#32502](https://github.com/expo/expo/pull/32502) by [@kudo](https://github.com/kudo))
+
+## 12.0.0-preview.4 — 2024-10-31
+
+### 🐛 Bug fixes
+
+- Don't assert `client-only` in SSR bundles. ([#32479](https://github.com/expo/expo/pull/32479) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 12.0.0-preview.3 — 2024-10-30
 
 ### 🎉 New features

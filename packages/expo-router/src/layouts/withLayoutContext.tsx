@@ -72,7 +72,10 @@ export function useFilterScreenChildren(
   }, [children]);
 }
 
-/** Return a navigator that automatically injects matched routes and renders nothing when there are no children. Return type with children prop optional */
+/**
+ * Returns a navigator that automatically injects matched routes and renders nothing when there are no children.
+ * Return type with `children` prop optional.
+ */
 export function withLayoutContext<
   TOptions extends object,
   T extends ComponentType<any>,

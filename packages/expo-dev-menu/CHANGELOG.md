@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 6.0.8 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.7 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
+
+## 6.0.6 — 2024-11-04
+
+### 💡 Others
+
+- Remove unused `graphql` dependencies. ([#32065](https://github.com/expo/expo/pull/32065) by [@kitten](https://github.com/kitten))
+
 ## 6.0.5 — 2024-10-29
 
 _This version does not introduce any user-facing changes._
@@ -62,6 +78,8 @@ _This version does not introduce any user-facing changes._
 - Removed deprecated code for SDK 49. ([#31740](https://github.com/expo/expo/pull/31740) by [@kudo](https://github.com/kudo))
 - Remove unused `semver` dependency. ([#32063](https://github.com/expo/expo/pull/32063) by [@kitten](https://github.com/kitten))
 - Fixed broken unit tests since React Native 0.76 bump. ([#32210](https://github.com/expo/expo/pull/32210) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
 
 ## 5.0.21 - 2024-08-23
 

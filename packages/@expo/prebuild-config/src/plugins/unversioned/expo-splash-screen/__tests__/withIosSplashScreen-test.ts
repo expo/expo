@@ -25,7 +25,7 @@ describe(withIosSplashScreen, () => {
   const iconPath = path.resolve(__dirname, '../../../__tests__/fixtures/icon.png');
   const icon = fsReal.readFileSync(iconPath, 'utf8');
   const projectRoot = '/app';
-  beforeAll(async () => {
+  beforeEach(async () => {
     vol.fromJSON(
       {
         ...projectFixtures,
@@ -35,7 +35,7 @@ describe(withIosSplashScreen, () => {
     );
   });
 
-  afterAll(() => {
+  afterEach(() => {
     vol.reset();
   });
 
@@ -80,11 +80,9 @@ describe(withIosSplashScreen, () => {
     const after = getDirFromFS(vol.toJSON(), path.join(projectRoot, 'ios'));
 
     // Image is not defined
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image.png']).not.toBeDefined();
-    // Ensure colors are created
     expect(
-      after['HelloWorld/Images.xcassets/SplashScreenBackground.imageset/image.png']
-    ).toBeDefined();
+      after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image.png']
+    ).not.toBeDefined();
   });
 
   it(`runs entire process`, async () => {
@@ -115,7 +113,6 @@ describe(withIosSplashScreen, () => {
     config = await compileModsAsync(config, { projectRoot, platforms: ['ios', 'android'] });
 
     // Test Results
-
     expect(config).toBeDefined();
 
     const infoPlist = await readPlistAsync('/app/ios/HelloWorld/Info.plist');
@@ -124,29 +121,20 @@ describe(withIosSplashScreen, () => {
     const after = getDirFromFS(vol.toJSON(), path.join(projectRoot, 'ios'));
 
     // Image is defined
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image.png']).toBeDefined();
+    expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image.png']).toBeDefined();
 
-    // Ensure colors are created
-    expect(after['HelloWorld/Images.xcassets/SplashScreenBackground.imageset/image.png']).toMatch(
+    // Ensure images are created
+    expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image@2x.png']).toMatch(
+      /PNG/
+    );
+    expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image@3x.png']).toMatch(
       /PNG/
     );
 
-    expect(
-      after['HelloWorld/Images.xcassets/SplashScreenBackground.imageset/dark_image.png']
-    ).toMatch(/PNG/);
-
     // Image JSON
     expect(
-      after['HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json']
+      after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/Contents.json']
     ).toBeDefined();
-
-    // Ensure images are created
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/image.png']).toMatch(/PNG/);
-
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/dark_image.png']).toMatch(/PNG/);
-
-    // Image JSON
-    expect(after['HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json']).toBeDefined();
 
     // Test the splash screen XML
     expect(after['HelloWorld/SplashScreen.storyboard']).toMatch(/contentMode="scaleAspectFit"/);

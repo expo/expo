@@ -22,7 +22,7 @@ export async function setSplashDrawableAsync(
   projectRoot: string
 ) {
   const filePath = (await AndroidConfig.Paths.getResourceXMLPathAsync(projectRoot, {
-    name: 'splashscreen',
+    name: 'ic_launcher_background',
     kind: 'drawable',
   }))!;
 
@@ -40,13 +40,13 @@ export async function setSplashDrawableAsync(
           },
         },
         // Only include the image if resizeMode native is in-use.
-        resizeMode === 'native' && {
+        {
           bitmap: [
             {
               $: {
                 'android:gravity': 'center',
                 // TODO: Ensure these keys don't get out of sync
-                'android:src': '@drawable/splashscreen_image',
+                'android:src': '@drawable/splashscreen_logo',
               },
             },
           ],

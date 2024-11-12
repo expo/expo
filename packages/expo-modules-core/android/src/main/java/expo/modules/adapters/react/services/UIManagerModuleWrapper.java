@@ -70,6 +70,7 @@ public class UIManagerModuleWrapper implements
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public <T> void addUIBlock(final int tag, final UIBlock<T> block, final Class<T> tClass) {
     UIBlockInterface uiBlock = new UIBlockInterface() {
       @Override
@@ -105,6 +106,7 @@ public class UIManagerModuleWrapper implements
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public void addUIBlock(final GroupUIBlock block) {
     UIBlockInterface uiBlock = new UIBlockInterface() {
       @Override
@@ -141,6 +143,7 @@ public class UIManagerModuleWrapper implements
 
   @Nullable
   @Override
+  @SuppressWarnings("deprecation")
   public View resolveView(int viewTag) {
     final com.facebook.react.bridge.UIManager uiManager = UIManagerHelper.getUIManagerForReactTag(getContext(), viewTag);
     if (uiManager == null) {
@@ -263,6 +266,7 @@ public class UIManagerModuleWrapper implements
   }
 
   @androidx.annotation.OptIn(markerClass = FrameworkAPI.class)
+  @SuppressWarnings("deprecation")
   public CallInvokerHolderImpl getJSCallInvokerHolder() {
     return (CallInvokerHolderImpl) mReactContext.getCatalystInstance().getJSCallInvokerHolder();
   }
@@ -273,5 +277,6 @@ public class UIManagerModuleWrapper implements
   }
 }
 
+@SuppressWarnings("deprecation")
 interface UIBlockInterface extends com.facebook.react.uimanager.UIBlock, com.facebook.react.fabric.interop.UIBlock {
 }

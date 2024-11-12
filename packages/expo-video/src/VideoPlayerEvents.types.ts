@@ -1,4 +1,4 @@
-import { PlayerError, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
+import { PlayerError, SubtitleTrack, VideoPlayerStatus, VideoSource } from './VideoPlayer.types';
 
 /**
  * Handlers for events which can be emitted by the player.
@@ -43,6 +43,16 @@ export type VideoPlayerEvents = {
    * Handler for an event emitted when the current media source of the player changes.
    */
   sourceChange(payload: SourceChangeEventPayload): void;
+
+  /**
+   * Handler for an event emitted when the available subtitle tracks change.
+   */
+  availableSubtitleTracksChange(payload: AvailableSubtitleTracksChangeEventPayload): void;
+
+  /**
+   * Handler for an event emitted when the current subtitle track changes.
+   */
+  subtitleTrackChange(payload: SubtitleTrackChangeEventPayload): void;
 };
 
 /**
@@ -173,4 +183,28 @@ export type TimeUpdateEventPayload = {
    * @platform ios
    */
   bufferedPosition: number;
+};
+
+type SubtitleTrackChangeEventPayload = {
+  /**
+   * New subtitle track of the player.
+   */
+  subtitleTrack: SubtitleTrack | null;
+
+  /**
+   * Previous subtitle track of the player.
+   */
+  oldSubtitleTrack?: SubtitleTrack | null;
+};
+
+type AvailableSubtitleTracksChangeEventPayload = {
+  /**
+   * Array of available subtitle tracks.
+   */
+  availableSubtitleTracks: SubtitleTrack[];
+
+  /**
+   * Previous array of available subtitle tracks.
+   */
+  oldAvailableSubtitleTracks?: SubtitleTrack[];
 };

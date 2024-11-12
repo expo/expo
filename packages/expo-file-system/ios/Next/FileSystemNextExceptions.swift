@@ -54,3 +54,9 @@ internal class UnableToReadHandleException: GenericException<String> {
     "Unable to read from a file handle: \(param)"
   }
 }
+
+internal class DestinationAlreadyExistsException: Exception {
+  override var reason: String {
+    "Destination already exists"
+  }
+}

@@ -79,6 +79,7 @@ function coerceUsbmuxdPlatformToOsType(platform: string): OSType {
   // The only connectable device I have to test against...
   switch (platform) {
     case 'iPhone':
+    case 'iPad':
     case 'iPhone OS':
       return 'iOS';
     default:

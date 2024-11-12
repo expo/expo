@@ -3,7 +3,7 @@
  */
 import { ConfigAPI, NodePath, types } from '@babel/core';
 
-import { getIsReactServer, getIsServer } from './common';
+import { getIsReactServer } from './common';
 
 const FORBIDDEN_CLIENT_IMPORTS = ['server-only'];
 const FORBIDDEN_REACT_SERVER_IMPORTS = ['client-only'];
@@ -14,16 +14,16 @@ export function environmentRestrictedImportsPlugin(
 ): babel.PluginObj {
   const { types: t } = api;
 
-  const isAnyServerEnvironment = api.caller(getIsReactServer) || api.caller(getIsServer);
+  const isReactServer = api.caller(getIsReactServer);
 
-  const forbiddenPackages = isAnyServerEnvironment
+  const forbiddenPackages = isReactServer
     ? FORBIDDEN_REACT_SERVER_IMPORTS
     : FORBIDDEN_CLIENT_IMPORTS;
 
   function checkSource(source: string, path: NodePath<any>) {
     forbiddenPackages.forEach((forbiddenImport) => {
       if (source === forbiddenImport) {
-        if (isAnyServerEnvironment) {
+        if (isReactServer) {
           throw path.buildCodeFrameError(
             `Importing '${forbiddenImport}' module is not allowed in a React server bundle. Add the "use client" directive to this file or one of the parent modules to allow importing this module.`
           );

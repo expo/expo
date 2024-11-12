@@ -12,6 +12,16 @@
 
 ### 💡 Others
 
+## 18.0.2 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.1 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [expo-file-system][next] Fix download function throwing an unexpected error if destination already exists. ([#32626](https://github.com/expo/expo/pull/32626) by [@aleqsio](https://github.com/aleqsio))
+
 ## 18.0.0 — 2024-10-22
 
 ### 🛠 Breaking changes

@@ -232,6 +232,7 @@ const general = [
       makePage('router/advanced/nesting-navigators.mdx'),
       makePage('router/advanced/modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
+      makePage('router/advanced/custom-tabs.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
@@ -240,7 +241,6 @@ const general = [
       makePage('router/advanced/apple-handoff.mdx'),
     ]),
     makeGroup('Reference', [
-      makePage('router/reference/hooks.mdx'),
       makePage('router/reference/url-parameters.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/static-rendering.mdx'),
@@ -555,11 +555,6 @@ const preview = [
 ];
 
 const archive = [
-  makeSection('Classic Builds', [
-    makePage('archive/classic-builds/building-standalone-apps.mdx'),
-    makePage('archive/classic-builds/turtle-cli.mdx'),
-    makePage('archive/classic-builds/migrating.mdx'),
-  ]),
   makeSection('Classic Updates', [
     makePage('archive/classic-updates/introduction.mdx'),
     makeSection('Guides', [
@@ -582,12 +577,8 @@ const archive = [
     makePage('archive/push-notifications/notification-channels.mdx'),
   ]),
   makeSection('More', [
-    makePage('archive/expo-cli.mdx'),
-    makePage('archive/managed-vs-bare.mdx'),
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
-    makePage('archive/using-expo-client.mdx'),
-    makePage('archive/using-flipper.mdx'),
     makePage('archive/e2e-tests.mdx'),
     makePage('archive/glossary.mdx'),
   ]),
@@ -691,6 +682,8 @@ function makePage(file) {
     name: data.title,
     // TODO(cedric): refactor href into url
     href: url,
+    isNew: data.isNew ?? undefined,
+    isDeprecated: data.isDeprecated ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {

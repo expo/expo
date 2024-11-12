@@ -435,35 +435,37 @@ expect(row.data).toEqual(blob);
 
 You can inspect a database, execute queries against it, and explore data with the [drizzle-studio-expo dev tools plugin](https://github.com/drizzle-team/drizzle-studio-expo). This plugin enables you to launch [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), connected to a database in your app, directly from Expo CLI. This plugin can be used with any `expo-sqlite` configuration. It does not require that you use [Drizzle ORM](#drizzle-orm) in your app. [Learn how to install and use the plugin](https://github.com/drizzle-team/drizzle-studio-expo).
 
-## AsyncStorage
+### Key-value storage
 
-The `expo-sqlite` library provides [`AsyncStorage`](#sqliteasyncstorage) as a drop-in replacement for the [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage) library. This key-value store is backed by SQLite. If your project already uses `expo-sqlite`, you can leverage `AsyncStorage` from `expo-sqlite` without needing to add another dependency.
+The `expo-sqlite` library provides [`Storage`](#sqlitestorage) as a drop-in replacement for the [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage) library. This key-value store is backed by SQLite. If your project already uses `expo-sqlite`, you can leverage `expo-sqlite/kv-store` without needing to add another dependency.
 
-[`AsyncStorage`](#sqliteasyncstorage) provides the same API as `@react-native-async-storage/async-storage`:
+[`Storage`](#sqlitestorage) provides the same API as `@react-native-async-storage/async-storage`:
 
-```ts Using Storage
-import AsyncStorage from 'expo-sqlite/async-storage';
+```ts Using the Store
+// The storage API is the default export, you can call it Storage, AsyncStorage, or whatever you prefer.
+import Storage from 'expo-sqlite/kv-store';
 
-await AsyncStorage.setItem('key', JSON.stringify({ entity: 'value' }));
-const value = await AsyncStorage.getItem('key');
+await Storage.setItem('key', JSON.stringify({ entity: 'value' }));
+const value = await Storage.getItem('key');
 const entity = JSON.parse(value);
 console.log(entity); // { entity: 'value' }
 ```
 
-A key benefit of using `AsyncStorage` from `expo-sqlite` is the addition of synchronous APIs for added convenience:
+A key benefit of using `expo-sqlite/kv-store` is the addition of synchronous APIs for added convenience:
 
-```ts Using Storage with synchronous APIs
-import AsyncStorage from 'expo-sqlite/async-storage';
+```ts Using the Store with synchronous APIs
+// The storage API is the default export, you can call it Storage, AsyncStorage, or whatever you prefer.
+import Storage from 'expo-sqlite/kv-store';
 
-AsyncStorage.setItemSync('key', 'value');
-const value = AsyncStorage.getItemSync('key');
+Storage.setItemSync('key', 'value');
+const value = Storage.getItemSync('key');
 ```
 
-If you're currently using `@react-native-async-storage/async-storage` in your project, switching to `expo-sqlite`'s `AsyncStorage` is as simple as changing the import statement:
+If you're currently using `@react-native-async-storage/async-storage` in your project, switching to `expo-sqlite/kv-store` is as simple as changing the import statement:
 
 ```diff
 - import AsyncStorage from '@react-native-async-storage/async-storage';
-+ import AsyncStorage from 'expo-sqlite/async-storage';
++ import AsyncStorage from 'expo-sqlite/kv-store';
 ```
 
 ## Third-party library integrations
@@ -474,7 +476,7 @@ The `expo-sqlite` library is designed to be a solid SQLite foundation. It enable
 
 [Drizzle](https://orm.drizzle.team/) is a ["headless TypeScript ORM with a head"](https://orm.drizzle.team/docs/overview). It runs on Node.js, Bun, Deno, and React Native. It also has a CLI companion called [`drizzle-kit`](https://orm.drizzle.team/kit-docs/overview) for generating SQL migrations.
 
-Check out the [Drizzle ORM documentation](https://orm.drizzle.team/) and the [`expo-sqlite` integration guide](https://orm.drizzle.team/docs/get-started-sqlite#expo-sqlite) for more details.
+Check out the [Drizzle ORM documentation](https://orm.drizzle.team/) and the [`expo-sqlite` integration guide](https://orm.drizzle.team/docs/get-started/expo-new) for more details.
 
 ### Knex.js
 

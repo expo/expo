@@ -286,6 +286,12 @@ redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
 redirects[guides/linking]=linking/overview
 redirects[guides/deep-linking]=/linking/into-your-app
 
+# After adding /sdk/router/ API reference
+redirects[router/reference/hooks]=versions/latest/sdk/router
+
+# After moving custom tabs under Expo Router > Navigation patterns
+redirects[router/ui/tabs]=router/advanced/custom-tabs
+
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

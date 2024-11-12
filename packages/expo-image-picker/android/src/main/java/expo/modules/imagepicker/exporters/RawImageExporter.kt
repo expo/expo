@@ -16,7 +16,12 @@ class RawImageExporter : ImageExporter {
     copyFile(source, output, contentResolver)
     val exifInterface = ExifInterface(output.absolutePath)
     val imageRotation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)
-    val isRotatedLandscape = (imageRotation == ExifInterface.ORIENTATION_ROTATE_90 || imageRotation == ExifInterface.ORIENTATION_ROTATE_270)
+    val isRotatedLandscape = (
+      imageRotation == ExifInterface.ORIENTATION_ROTATE_90 ||
+        imageRotation == ExifInterface.ORIENTATION_ROTATE_270 ||
+        imageRotation == ExifInterface.ORIENTATION_TRANSPOSE ||
+        imageRotation == ExifInterface.ORIENTATION_TRANSVERSE
+      )
     val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
 
     BitmapFactory.decodeFile(output.absolutePath, options)

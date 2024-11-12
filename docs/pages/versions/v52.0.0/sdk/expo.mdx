@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-52/packages/expo'
 packageName: 'expo'
 iconUrl: '/static/images/packages/expo.png'
 platforms: ['android', 'ios', 'tvos', 'web']
+isNew: true
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -18,6 +19,29 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 ```tsx
 import * as Expo from 'expo';
+```
+
+### `expo/fetch` API
+
+`expo/fetch` provides a [WinterCG-compliant Fetch API](https://fetch.spec.wintercg.org/) that works consistently across web and mobile environments, ensuring a standardized and cross-platform fetch experience within Expo applications.
+
+```ts Streaming fetch
+import { fetch } from 'expo/fetch';
+
+const resp = await fetch('https://httpbin.org/drip?numbytes=512&duration=2', {
+  headers: { Accept: 'text/event-stream' },
+});
+const reader = resp.body.getReader();
+const chunks = [];
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) {
+    break;
+  }
+  chunks.push(value);
+}
+const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+console.log(buffer.length); // 512
 ```
 
 <APISection packageName="expo" />

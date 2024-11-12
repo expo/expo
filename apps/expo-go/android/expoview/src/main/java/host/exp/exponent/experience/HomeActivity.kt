@@ -29,10 +29,10 @@ import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
-import expo.modules.splashscreen.SplashScreenImageResizeMode
-import expo.modules.splashscreen.SplashScreenModule
-import expo.modules.splashscreen.SplashScreenPackage
-import expo.modules.splashscreen.singletons.SplashScreen
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
+import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule
@@ -91,7 +91,7 @@ open class HomeActivity : BaseExperienceActivity() {
    * and overridden here as we want to prevent destroying react instance manager when HomeActivity gets destroyed.
    * It needs to continue to live since it is needed for DevMenu to work as expected (it relies on ExponentKernelModule from that react context).
    */
-  override fun destroyReactHost() {}
+  override fun destroyReactHost(reason: String) {}
 
   fun onEventMainThread(event: KernelStartedRunningEvent?) {
     reactHost = kernel.reactHost

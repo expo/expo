@@ -6,7 +6,7 @@ import path from 'path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
-import { bin, ServeLocalCommand } from '../../utils/command-instance';
+import { bin, ExpoServeLocalCommand } from '../../utils/command-instance';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -19,7 +19,7 @@ test.beforeAll(async () => {
   test.setTimeout(560 * 1000);
 });
 
-let serveCmd: ServeLocalCommand;
+let serveCmd: ExpoServeLocalCommand;
 
 test.beforeAll('bundle and serve', async () => {
   console.time('expo export');
@@ -44,13 +44,13 @@ test.beforeAll('bundle and serve', async () => {
     path.join(projectRoot, inputDir, 'client/second.html')
   );
 
-  serveCmd = new ServeLocalCommand(projectRoot, {
+  serveCmd = new ExpoServeLocalCommand(projectRoot, {
     NODE_ENV: 'production',
     TEST_SECRET_VALUE: 'test-secret-dynamic',
   });
 
   console.time('npx serve');
-  await serveCmd.startAsync(['serve.js', '--port=' + 3034, '--dist=' + inputDir]);
+  await serveCmd.startAsync([inputDir, '--port=' + 3034]);
   console.timeEnd('npx serve');
   console.log('Server running:', serveCmd.url);
 });
@@ -72,7 +72,7 @@ test.describe.serial(inputDir, () => {
 
     console.time('Open page');
     // Navigate to the app
-    await page.goto(serveCmd.url);
+    await page.goto(serveCmd.url!);
 
     console.timeEnd('Open page');
 
@@ -146,6 +146,19 @@ test.describe.serial(inputDir, () => {
     await expect(page.locator('[data-testid="secret-text"]')).toHaveText(
       // Value should match the env var that we pass to the server after the build was completed, this will only work with dynamic rendering.
       'Secret: test-secret-dynamic'
+    );
+  });
+
+  test('has dynamic headers', async ({ page }) => {
+    // Navigate to the app
+    await page.goto(new URL('/second', serveCmd.url).toString());
+
+    // Wait for the app to load
+    await page.waitForSelector('[data-testid="second-header-platform"]');
+
+    await expect(page.locator('[data-testid="second-header-platform"]')).toHaveText(
+      // Ensure the headers are rendered as expected
+      'expo-platform: web'
     );
   });
 });

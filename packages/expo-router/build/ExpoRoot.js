@@ -33,7 +33,7 @@ const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const useDomComponentNavigation_1 = require("./link/useDomComponentNavigation");
 const statusbar_1 = require("./utils/statusbar");
-const Splash_1 = require("./views/Splash");
+const SplashScreen = __importStar(require("./views/Splash"));
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
@@ -109,7 +109,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     });
     (0, useDomComponentNavigation_1.useDomComponentNavigation)(store);
     if (store.shouldShowTutorial()) {
-        Splash_1.SplashScreen.hideAsync();
+        SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
             const Tutorial = require('./onboard/Tutorial').Tutorial;
             return (<WrapperComponent>

@@ -73,7 +73,7 @@ export type IBFontDescription = IBItem<{
 
 export type ImageContentMode = 'scaleAspectFit' | 'scaleAspectFill';
 
-export type ConstraintAttribute = 'top' | 'bottom' | 'trailing' | 'leading';
+export type ConstraintAttribute = 'top' | 'bottom' | 'trailing' | 'leading' | 'centerX' | 'centerY';
 
 export type IBImageView = IBItem<
   {
@@ -83,8 +83,8 @@ export type IBImageView = IBItem<
     clipsSubviews?: IBBoolean;
     userInteractionEnabled: IBBoolean;
     contentMode: IBContentMode;
-    horizontalHuggingPriority: number;
-    verticalHuggingPriority: number;
+    horizontalHuggingPriority?: number;
+    verticalHuggingPriority?: number;
     insetsLayoutMarginsFromSafeArea?: IBBoolean;
     translatesAutoresizingMaskIntoConstraints?: IBBoolean;
   },
@@ -180,7 +180,14 @@ export type IBViewController = IBItem<
         >[];
         color: IBItem<{
           key: string | 'backgroundColor';
-          systemColor: string | 'systemBackgroundColor';
+          name?: string;
+          systemColor?: string | 'systemBackgroundColor';
+          red?: string;
+          green?: string;
+          blue?: string;
+          alpha?: string;
+          colorSpace?: string;
+          customColorSpace?: string;
         }>[];
         constraints: IBItem<
           object,
@@ -225,6 +232,17 @@ export type IBResourceImage = IBItem<{
   height: number;
 }>;
 
+export type IBResourceNamedColor = IBItem<{
+  name?: string;
+  systemColor?: string | 'systemBackgroundColor';
+  red?: string;
+  green?: string;
+  blue?: string;
+  alpha?: string;
+  colorSpace?: string;
+  customColorSpace?: string;
+}>;
+
 export type IBDevice = IBItem<{
   id: string;
   orientation: string | 'portrait';
@@ -254,6 +272,7 @@ export type IBSplashScreenDocument = {
       }[];
       resources: {
         image: IBResourceImage[];
+        namedColor?: IBItem<{ name: string }, { color: IBResourceNamedColor[] }>[];
       }[];
     }
   >;
@@ -311,12 +330,18 @@ export function removeImageFromSplashScreen(
   return xml;
 }
 
-function getAbsoluteConstraints(childId: string, parentId: string) {
+function getAbsoluteConstraints(childId: string, parentId: string, legacy: boolean = false) {
+  if (legacy) {
+    return [
+      createConstraint([childId, 'top'], [parentId, 'top']),
+      createConstraint([childId, 'leading'], [parentId, 'leading']),
+      createConstraint([childId, 'trailing'], [parentId, 'trailing']),
+      createConstraint([childId, 'bottom'], [parentId, 'bottom']),
+    ];
+  }
   return [
-    createConstraint([childId, 'top'], [parentId, 'top']),
-    createConstraint([childId, 'leading'], [parentId, 'leading']),
-    createConstraint([childId, 'trailing'], [parentId, 'trailing']),
-    createConstraint([childId, 'bottom'], [parentId, 'bottom']),
+    createConstraint([childId, 'centerX'], [parentId, 'centerX']),
+    createConstraint([childId, 'centerY'], [parentId, 'centerY']),
   ];
 }
 
@@ -325,13 +350,22 @@ export function applyImageToSplashScreenXML(
   {
     imageName,
     contentMode,
+    backgroundColor,
+    enableFullScreenImage,
+    imageWidth = 100,
   }: {
     imageName: string;
     contentMode: ImageContentMode;
+    backgroundColor: string;
+    enableFullScreenImage: boolean;
+    imageWidth?: number;
   }
 ): IBSplashScreenDocument {
-  const width = 414;
-  const height = 736;
+  const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
+  const width = enableFullScreenImage ? 414 : imageWidth;
+  const height = enableFullScreenImage ? 736 : imageWidth;
+  const x = enableFullScreenImage ? 0 : (mainView.rect[0].$.width - width) / 2;
+  const y = enableFullScreenImage ? 0 : (mainView.rect[0].$.height - height) / 2;
 
   const imageView: IBImageView = {
     $: {
@@ -339,8 +373,6 @@ export function applyImageToSplashScreenXML(
       userLabel: imageName,
       image: imageName,
       contentMode,
-      horizontalHuggingPriority: 251,
-      verticalHuggingPriority: 251,
       clipsSubviews: true,
       userInteractionEnabled: false,
       translatesAutoresizingMaskIntoConstraints: false,
@@ -349,8 +381,8 @@ export function applyImageToSplashScreenXML(
       {
         $: {
           key: 'frame',
-          x: 0.0,
-          y: 0.0,
+          x,
+          y,
           width,
           height,
         },
@@ -358,17 +390,18 @@ export function applyImageToSplashScreenXML(
     ],
   };
 
-  const mainView = xml.document.scenes[0].scene[0].objects[0].viewController[0].view[0];
-
   // Add ImageView
   ensureUniquePush(mainView.subviews[0].imageView, imageView);
 
+  mainView.constraints[0].constraint = [];
+
   // Add Constraints
-  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach((constraint) => {
-    // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
-    const constrainsArray = mainView.constraints[0].constraint;
-    ensureUniquePush(constrainsArray, constraint);
-  });
+  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID, enableFullScreenImage).forEach(
+    (constraint: IBConstraint) => {
+      const constrainsArray = mainView.constraints[0].constraint;
+      ensureUniquePush(constrainsArray, constraint);
+    }
+  );
 
   // Add resource
   const imageSection = xml.document.resources[0].image;
@@ -379,12 +412,45 @@ export function applyImageToSplashScreenXML(
     imageSection.splice(existingImageIndex, 1);
   }
   imageSection.push({
-    // <image name="SplashScreen" width="414" height="736"/>
     $: {
       name: imageName,
       width,
       height,
     },
+  });
+
+  // Add background color
+  mainView.color = mainView.color ?? [];
+  const colorSection = mainView.color;
+
+  colorSection.push({
+    $: {
+      key: 'backgroundColor',
+      name: 'SplashScreenBackground',
+    },
+  });
+
+  // Add background named color reference
+  xml.document.resources[0].namedColor = xml.document.resources[0].namedColor ?? [];
+  const namedColorSection = xml.document.resources[0].namedColor;
+  const color = parseColor(backgroundColor);
+
+  namedColorSection.push({
+    $: {
+      name: 'SplashScreenBackground',
+    },
+    color: [
+      {
+        $: {
+          alpha: '1.000',
+          blue: color.rgb.blue,
+          green: color.rgb.green,
+          red: color.rgb.red,
+          customColorSpace: 'sRGB',
+          colorSpace: 'custom',
+        },
+      },
+    ],
   });
 
   return xml;
@@ -435,3 +501,35 @@ export function toString(xml: any): string {
 export function toObjectAsync(contents: string) {
   return new Parser().parseStringPromise(contents);
 }
+
+// Function taken from react-native-bootsplash
+export const parseColor = (value: string): Color => {
+  const color = value.toUpperCase().replace(/[^0-9A-F]/g, '');
+
+  if (color.length !== 3 && color.length !== 6) {
+    console.error(`"${value}" value is not a valid hexadecimal color.`);
+    process.exit(1);
+  }
+
+  const hex =
+    color.length === 3
+      ? '#' + color[0] + color[0] + color[1] + color[1] + color[2] + color[2]
+      : '#' + color;
+
+  const rgb: Color['rgb'] = {
+    red: (parseInt('' + hex[1] + hex[2], 16) / 255).toPrecision(15),
+    green: (parseInt('' + hex[3] + hex[4], 16) / 255).toPrecision(15),
+    blue: (parseInt('' + hex[5] + hex[6], 16) / 255).toPrecision(15),
+  };
+
+  return { hex, rgb };
+};
+
+type Color = {
+  hex: string;
+  rgb: {
+    red: string;
+    green: string;
+    blue: string;
+  };
+};

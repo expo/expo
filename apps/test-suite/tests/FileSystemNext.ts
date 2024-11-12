@@ -359,6 +359,19 @@ export async function test({ describe, expect, it, ...t }) {
           expect(file.exists).toBe(true);
           expect(output.uri).toBe(file.uri);
         });
+
+        it('throws an error if destination file already exists', async () => {
+          const url = 'https://picsum.photos/id/237/200/300';
+          const file = new File(testDirectory + 'image.jpeg');
+          file.create();
+          let error;
+          try {
+            await File.downloadFileAsync(url, file);
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message.includes('Destination already exists')).toBe(true);
+        });
       });
 
       describe('Computes file properties', () => {

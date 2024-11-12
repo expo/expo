@@ -99,6 +99,8 @@ Set `newArchEnabled` on target platforms:
   </Tab>
 
   <Tab label="SDK 51 and below">
+    To enable it, you need to [install the `expo-build-properties` plugin](/versions/latest/sdk/build-properties/#installation) and set `newArchEnabled` on target platforms.
+
     ```json app.json
     {
       "expo": {
@@ -106,10 +108,10 @@ Set `newArchEnabled` on target platforms:
           [
             "expo-build-properties",
             {
-              "ios": {
+              "android": {
                 "newArchEnabled": true
               },
-              "android": {
+              "ios": {
                 "newArchEnabled": true
               }
             }
@@ -118,6 +120,7 @@ Set `newArchEnabled` on target platforms:
       }
     }
     ```
+
   </Tab>
 </Tabs>
 

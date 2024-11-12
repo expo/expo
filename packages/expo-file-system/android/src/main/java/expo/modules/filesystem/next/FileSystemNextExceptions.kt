@@ -38,3 +38,8 @@ internal class UnableToWriteHandleException(reason: String) :
   CodedException(
     "Unable to write to a file handle: '$reason'"
   )
+
+internal class DestinationAlreadyExistsException :
+  CodedException(
+    "Destination already exists"
+  )

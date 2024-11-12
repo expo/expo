@@ -90,20 +90,17 @@ export default function App() {
     expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
     expect(res.code).toMatch('react');
     expect(res.code).toMatch('expo/dom/internal');
-    expect(res.code).toMatch(/uri: new URL/);
-    expect(res.code).toMatch(/"\/_expo\/@dom\/unknown\?/);
+    expect(res.code).toMatch(/unknown\?/);
 
     expect(res.code).toMatchInlineSnapshot(`
       "import React from 'react';
       import { WebView } from 'expo/dom/internal';
-      var source = {
-        uri: new URL("/_expo/@dom/unknown?file=" + "file:///unknown", require("react-native/Libraries/Core/Devtools/getDevServer")().url).toString()
-      };
+      var filePath = "unknown?file=" + "file:///unknown";
       export default React.forwardRef(function (props, ref) {
         return React.createElement(WebView, Object.assign({
           ref: ref
         }, props, {
-          source: source
+          filePath: filePath
         }));
       });"
     `);
@@ -121,21 +118,19 @@ it(`adds dom components proxy for ios in production`, () => {
   expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
   expect(res.code).toMatch('react');
   expect(res.code).toMatch('expo/dom/internal');
-  expect(res.code).toMatch(/www.bundle\/[a-zA-Z0-9]+\.html/);
+  expect(res.code).toMatch(/[a-zA-Z0-9]+\.html/);
 
   expect(res.code).toMatchInlineSnapshot(`
-      "import React from 'react';
-      import { WebView } from 'expo/dom/internal';
-      var source = {
-        uri: "www.bundle/98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html"
-      };
-      export default React.forwardRef(function (props, ref) {
-        return React.createElement(WebView, Object.assign({
-          ref: ref
-        }, props, {
-          source: source
-        }));
-      });"
+    "import React from 'react';
+    import { WebView } from 'expo/dom/internal';
+    var filePath = "98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html";
+    export default React.forwardRef(function (props, ref) {
+      return React.createElement(WebView, Object.assign({
+        ref: ref
+      }, props, {
+        filePath: filePath
+      }));
+    });"
   `);
 });
 it(`adds dom components proxy for android in production`, () => {
@@ -143,19 +138,17 @@ it(`adds dom components proxy for android in production`, () => {
   expect(res.metadata.expoDomComponentReference).toBe('file:///unknown');
   expect(res.code).toMatch('react');
   expect(res.code).toMatch('expo/dom/internal');
-  expect(res.code).toMatch(/www.bundle\/[a-zA-Z0-9]+\.html/);
+  expect(res.code).toMatch(/[a-zA-Z0-9]+\.html/);
 
   expect(res.code).toMatchInlineSnapshot(`
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
-    var source = {
-      uri: "file:///android_asset/www.bundle/98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html"
-    };
+    var filePath = "98a73bf4a9137dffe9dcb1db68403c36ee5de77a.html";
     export default React.forwardRef(function (props, ref) {
       return React.createElement(WebView, Object.assign({
         ref: ref
       }, props, {
-        source: source
+        filePath: filePath
       }));
     });"
   `);

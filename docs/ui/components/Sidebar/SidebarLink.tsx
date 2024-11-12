@@ -44,14 +44,15 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
   const isExternal = info.href.startsWith('http');
 
   return (
-    <div className="flex min-h-8 items-center p-1 pr-2">
+    <div className="flex min-h-8 items-center p-1 pr-0">
       <LinkBase
         href={info.href as string}
         ref={ref}
         className={mergeClasses(
-          'text-xs flex decoration-0 text-secondary items-center scroll-m-[60px] w-full -ml-2.5',
+          'group text-xs flex decoration-0 text-secondary items-center scroll-m-[60px] w-full -ml-2.5',
           'hocus:text-link hocus:[&_svg]:text-icon-tertiary',
-          isSelected && 'text-link'
+          isSelected && 'text-link',
+          info.isDeprecated && 'line-through'
         )}
         {...customDataAttributes}>
         <div
@@ -61,7 +62,20 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
           )}
         />
         {children}
-        {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
+        {info.isNew && (
+          <div
+            className={mergeClasses(
+              'inline-flex ml-2 -mt-px border border-palette-blue10 text-palette-white text-[11px] font-semibold rounded-full px-[5px] leading-none items-center h-[17px]',
+              isSelected
+                ? 'bg-palette-blue10 text-palette-white dark:text-palette-black'
+                : 'bg-none border-palette-blue10 text-palette-blue10 dark:border-palette-blue9 dark:text-palette-blue9'
+            )}>
+            NEW
+          </div>
+        )}
+        {isExternal && (
+          <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto group-hover:text-icon-info" />
+        )}
       </LinkBase>
     </div>
   );

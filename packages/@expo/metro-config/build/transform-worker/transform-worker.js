@@ -66,7 +66,7 @@ async function transform(config, projectRoot, filename, data, options) {
         const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
         return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
     }
-    if (filename.match(/expo-router\/virtual-client-boundaries\.js/)) {
+    if (filename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
         const environment = options.customTransformOptions?.environment;
         const isServer = environment === 'node' || environment === 'react-server';
         if (!isServer) {
@@ -83,9 +83,6 @@ async function transform(config, projectRoot, filename, data, options) {
                         .join('\n') +
                     '\n};';
                 return worker.transform(config, projectRoot, filename, Buffer.from('/* RSC client boundaries */\n' + src), options);
-            }
-            else if (!options.dev) {
-                console.warn('clientBoundaries is not defined:', filename, options.customTransformOptions);
             }
         }
     }

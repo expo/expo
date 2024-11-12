@@ -35,6 +35,7 @@ function getInfoPlistTemplate() {
     CFBundlePackageType: '$(PRODUCT_BUNDLE_PACKAGE_TYPE)',
     CFBundleInfoDictionaryVersion: '6.0',
     CFBundleSignature: '????',
+    LSMinimumSystemVersion: '12.0',
     LSRequiresIPhoneOS: true,
     NSAppTransportSecurity: {
       NSAllowsArbitraryLoads: true,

@@ -1,13 +1,13 @@
 'use client';
 
-import * as SplashScreen from 'expo-splash-screen';
 import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
 
+import * as SplashScreen from './Splash';
 import { MetroServerError } from '../rsc/router/errors';
 
 /** Props passed to a page's `ErrorBoundary` export. */
 export type ErrorBoundaryProps = {
-  /** Retry rendering the component by clearing the `error` state. */
+  /** A function that will re-render the route component by clearing the `error` state. */
   retry: () => Promise<void>;
   /** The error that was thrown. */
   error: Error;
