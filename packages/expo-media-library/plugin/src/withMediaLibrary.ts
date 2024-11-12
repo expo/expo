@@ -8,6 +8,12 @@ import {
 
 const pkg = require('expo-media-library/package.json');
 
+export type WithMediaLibraryProps = {
+  photosPermission?: string | false;
+  savePhotosPermission?: string | false;
+  isAccessMediaLocationEnabled?: boolean;
+};
+
 export function modifyAndroidManifest(
   manifest: AndroidConfig.Manifest.AndroidManifest
 ): AndroidConfig.Manifest.AndroidManifest {
@@ -26,13 +32,10 @@ const withMediaLibraryExternalStorage: ConfigPlugin = (config) => {
   });
 };
 
-const withMediaLibrary: ConfigPlugin<
-  {
-    photosPermission?: string | false;
-    savePhotosPermission?: string | false;
-    isAccessMediaLocationEnabled?: boolean;
-  } | void
-> = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
+const withMediaLibrary: ConfigPlugin<WithMediaLibraryProps | void> = (
+  config,
+  { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}
+) => {
   IOSConfig.Permissions.createPermissionsPlugin({
     NSPhotoLibraryUsageDescription: 'Allow $(PRODUCT_NAME) to access your photos',
     NSPhotoLibraryAddUsageDescription: 'Allow $(PRODUCT_NAME) to save photos',

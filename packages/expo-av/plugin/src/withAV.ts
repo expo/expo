@@ -4,10 +4,11 @@ const pkg = require('expo-av/package.json');
 
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 
-const withAV: ConfigPlugin<{ microphonePermission?: string | false } | void> = (
-  config,
-  { microphonePermission } = {}
-) => {
+export type WithAVProps = {
+  microphonePermission?: string | false;
+};
+
+const withAV: ConfigPlugin<WithAVProps | void> = (config, { microphonePermission } = {}) => {
   IOSConfig.Permissions.createPermissionsPlugin({
     NSMicrophoneUsageDescription: MICROPHONE_USAGE,
   })(config, {

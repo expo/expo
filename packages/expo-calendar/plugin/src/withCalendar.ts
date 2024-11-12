@@ -5,12 +5,15 @@ const pkg = require('expo-calendar/package.json');
 const CALENDARS_USAGE = 'Allow $(PRODUCT_NAME) to access your calendars';
 const REMINDERS_USAGE = 'Allow $(PRODUCT_NAME) to access your reminders';
 
-const withCalendar: ConfigPlugin<
-  {
-    calendarPermission?: string | false;
-    remindersPermission?: string | false;
-  } | void
-> = (config, { calendarPermission, remindersPermission } = {}) => {
+export type WithCalendarProps = {
+  calendarPermission?: string | false;
+  remindersPermission?: string | false;
+};
+
+const withCalendar: ConfigPlugin<WithCalendarProps | void> = (
+  config,
+  { calendarPermission, remindersPermission } = {}
+) => {
   IOSConfig.Permissions.createPermissionsPlugin({
     NSCalendarsUsageDescription: CALENDARS_USAGE,
     NSRemindersUsageDescription: REMINDERS_USAGE,

@@ -1,6 +1,10 @@
 import { type ConfigPlugin } from 'expo/config-plugins';
-export type AssetProps = {
+export type WithAssetProps = {
     assets?: string[];
 };
-declare const _default: ConfigPlugin<AssetProps | null>;
+/**
+ * @deprecated Use `WithAssetProps` instead.
+ */
+export type AssetProps = WithAssetProps;
+declare const _default: ConfigPlugin<void | WithAssetProps>;
 export default _default;

@@ -1,5 +1,6 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-declare const _default: ConfigPlugin<void | {
-    contactsPermission?: string | undefined;
-}>;
+export type WithContactProps = {
+    contactsPermission?: string | false;
+};
+declare const _default: ConfigPlugin<void | WithContactProps>;
 export default _default;

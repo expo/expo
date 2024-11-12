@@ -5,7 +5,7 @@ import { withFontsIos } from './withFontsIos';
 
 const pkg = require('expo-font/package.json');
 
-export type FontProps = {
+export type WithFontProps = {
   fonts?: string[];
   android?: {
     fonts?: string[];
@@ -15,7 +15,12 @@ export type FontProps = {
   };
 };
 
-const withFonts: ConfigPlugin<FontProps> = (config, props) => {
+/**
+ * @deprecated Use `WithFontProps` instead.
+ */
+export type FontProps = WithFontProps;
+
+const withFonts: ConfigPlugin<WithFontProps | void> = (config, props) => {
   if (!props) {
     return config;
   }

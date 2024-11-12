@@ -5,11 +5,16 @@ import { withAssetsIos } from './withAssetsIos';
 
 const pkg = require('expo-asset/package.json');
 
-export type AssetProps = {
+export type WithAssetProps = {
   assets?: string[];
 };
 
-const withAssets: ConfigPlugin<AssetProps | null> = (config, props) => {
+/**
+ * @deprecated Use `WithAssetProps` instead.
+ */
+export type AssetProps = WithAssetProps;
+
+const withAssets: ConfigPlugin<WithAssetProps | void> = (config, props) => {
   if (!props) {
     return config;
   }

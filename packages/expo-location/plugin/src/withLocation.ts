@@ -9,6 +9,15 @@ import {
 const pkg = require('expo-location/package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 
+export type WithLocationProps = {
+  locationAlwaysAndWhenInUsePermission?: string | false;
+  locationAlwaysPermission?: string | false;
+  locationWhenInUsePermission?: string | false;
+  isIosBackgroundLocationEnabled?: boolean;
+  isAndroidBackgroundLocationEnabled?: boolean;
+  isAndroidForegroundServiceEnabled?: boolean;
+};
+
 const withBackgroundLocation: ConfigPlugin = (config) => {
   return withInfoPlist(config, (config) => {
     if (!Array.isArray(config.modResults.UIBackgroundModes)) {
@@ -21,16 +30,7 @@ const withBackgroundLocation: ConfigPlugin = (config) => {
   });
 };
 
-const withLocation: ConfigPlugin<
-  {
-    locationAlwaysAndWhenInUsePermission?: string | false;
-    locationAlwaysPermission?: string | false;
-    locationWhenInUsePermission?: string | false;
-    isIosBackgroundLocationEnabled?: boolean;
-    isAndroidBackgroundLocationEnabled?: boolean;
-    isAndroidForegroundServiceEnabled?: boolean;
-  } | void
-> = (
+const withLocation: ConfigPlugin<WithLocationProps | void> = (
   config,
   {
     locationAlwaysAndWhenInUsePermission,

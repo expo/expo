@@ -3,6 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-sqlite/package.json');
 const withSQLite = (config, props) => {
+    if (!props) {
+        return config;
+    }
     config = withSQLiteAndroidProps(config, props);
     config = withSQLiteIOSProps(config, props);
     return config;

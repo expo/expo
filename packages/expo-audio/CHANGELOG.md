@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- export config plugin types ([#32786](https://github.com/expo/expo/pull/32786) by [@leonhh](https://github.com/leonhh))
+
 ## 0.2.3 — 2024-10-28
 
 _This version does not introduce any user-facing changes._

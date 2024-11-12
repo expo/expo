@@ -1,5 +1,6 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-declare const _default: ConfigPlugin<void | {
-    motionPermission?: string | false | undefined;
-}>;
+export type WithSensorsProps = {
+    motionPermission?: string | false;
+};
+declare const _default: ConfigPlugin<void | WithSensorsProps>;
 export default _default;

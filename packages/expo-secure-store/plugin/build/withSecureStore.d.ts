@@ -1,6 +1,7 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-declare const _default: ConfigPlugin<void | {
-    faceIDPermission?: string | false | undefined;
-    configureAndroidBackup?: boolean | undefined;
-}>;
+export type WithSecureStoreProps = {
+    faceIDPermission?: string | false;
+    configureAndroidBackup?: boolean;
+};
+declare const _default: ConfigPlugin<void | WithSecureStoreProps>;
 export default _default;

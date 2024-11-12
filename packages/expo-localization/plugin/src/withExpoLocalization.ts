@@ -6,13 +6,18 @@ import {
   withStringsXml,
 } from 'expo/config-plugins';
 
-type ConfigPluginProps = {
+export type WithExpoLocalizationProps = {
   supportsRTL?: boolean;
   forcesRTL?: boolean;
   allowDynamicLocaleChangesAndroid?: boolean;
 };
 
-function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
+/**
+ * @deprecated use `WithExpoLocalization` instead
+ */
+export type ConfigPluginProps = WithExpoLocalizationProps;
+
+function withExpoLocalizationIos(config: ExpoConfig, data: WithExpoLocalizationProps) {
   const mergedConfig = { ...config.extra, ...data };
   if (mergedConfig?.supportsRTL == null && mergedConfig?.forcesRTL == null) return config;
   if (!config.ios) config.ios = {};
@@ -26,7 +31,7 @@ function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   return config;
 }
 
-function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps) {
+function withExpoLocalizationAndroid(config: ExpoConfig, data: WithExpoLocalizationProps) {
   if (data.allowDynamicLocaleChangesAndroid) {
     config = withAndroidManifest(config, (config) => {
       const mainActivity = AndroidConfig.Manifest.getMainActivityOrThrow(config.modResults);
@@ -69,7 +74,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
 
 function withExpoLocalization(
   config: ExpoConfig,
-  data: ConfigPluginProps = {
+  data: WithExpoLocalizationProps = {
     allowDynamicLocaleChangesAndroid: true,
   }
 ) {

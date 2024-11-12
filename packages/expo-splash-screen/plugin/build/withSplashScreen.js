@@ -5,6 +5,9 @@ const withIosSplashScreen_1 = require("@expo/prebuild-config/build/plugins/unver
 const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-splash-screen/package.json');
 const withSplashScreen = (config, props) => {
+    if (!props) {
+        return config;
+    }
     const android = {
         ...props,
         ...props?.android,
