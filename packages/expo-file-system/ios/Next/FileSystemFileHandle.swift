@@ -39,6 +39,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
       handle.seek(toFileOffset: newOffset)
     }
   }
+
   var size: UInt64? {
     do {
       let offset = try handle.offset()

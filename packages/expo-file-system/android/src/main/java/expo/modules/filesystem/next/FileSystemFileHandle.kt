@@ -12,7 +12,8 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(Random
       throw UnableToReadHandleException("file handle is closed")
     }
   }
-  override fun deallocate() {
+
+  override fun sharedObjectDidRelease() {
     close()
   }
 

@@ -482,6 +482,7 @@ export async function test({ describe, expect, it, ...t }) {
       expect(handle.offset).toBe(4);
       handle.close();
     });
+
     it('Resets position on close', () => {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
