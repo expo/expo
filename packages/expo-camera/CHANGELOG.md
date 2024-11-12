@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix shutter animation not running.
+
 ### 💡 Others
 
 ## 16.0.3 — 2024-10-28

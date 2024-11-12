@@ -391,9 +391,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
       return
     }
     Task { @MainActor in
-      self.previewLayer.opacity = 0
+      self.layer.opacity = 0
       UIView.animate(withDuration: 0.25) {
-        self.previewLayer.opacity = 1
+        self.layer.opacity = 1
       }
     }
   }
