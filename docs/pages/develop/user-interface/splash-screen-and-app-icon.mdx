@@ -20,6 +20,8 @@ A splash screen and an app icon are fundamental elements of a mobile app. They p
 
 ## Splash screen
 
+> **warning** This section uses the `splash` property from the app config. **Starting SDK 52**, using `expo-splash-screen` config plugin is recommended because using a full screen splash image on Android 12+ will not work. See [`expo-splash-screen` reference](/versions/v52.0.0/sdk/splash-screen/#configuration) on how to use the config plugin.
+
 A splash screen, also known as a launch screen, is the first screen a user sees when they open your app. It stays visible while the app is loading. You can also control the behavior of when a splash screen disappears by using the native [SplashScreen API](/versions/latest/sdk/splash-screen).
 
 The default splash screen in an Expo project is a blank white screen. It can be customized using the [`splash`](/versions/latest/config/app/#splash) property in the project's [app config](/workflow/configuration) using the steps below.
