@@ -55,6 +55,7 @@ describe('exports with tailwind and postcss', () => {
       'assets/__packages/expo-router/assets/forward.d8b800c443b8972542883e0b9de2bdc6.png',
       'assets/__packages/expo-router/assets/pkg.ab19f4cbc543357183a20571f68380a3.png',
       'assets/__packages/expo-router/assets/sitemap.412dd9275b6b48ad28f5e3d81bb1f626.png',
+      'assets/__packages/expo-router/assets/unmatched.20e71bdf79e3a97bf55fd9e164041578.png',
       'index.html',
     ]);
   });

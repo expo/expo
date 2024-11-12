@@ -141,6 +141,7 @@ it(
       'assets/__packages/expo-router/assets/forward.png',
       'assets/__packages/expo-router/assets/pkg.png',
       'assets/__packages/expo-router/assets/sitemap.png',
+      'assets/__packages/expo-router/assets/unmatched.png',
       'assets/assets/icon.png',
       'output.js',
     ]);
@@ -227,6 +228,7 @@ it(
       'assets/__packages/expo-router/assets/forward.png',
       'assets/__packages/expo-router/assets/pkg.png',
       'assets/__packages/expo-router/assets/sitemap.png',
+      'assets/__packages/expo-router/assets/unmatched.png',
       'assets/assets/icon.png',
       'output.js',
       'output.js.map',
@@ -304,6 +306,7 @@ it(
       'assets/__packages/expo-router/assets/forward.png',
       'assets/__packages/expo-router/assets/pkg.png',
       'assets/__packages/expo-router/assets/sitemap.png',
+      'assets/__packages/expo-router/assets/unmatched.png',
       'output.js',
     ]);
   },
@@ -404,6 +407,7 @@ it(
       'drawable-mdpi/__packages_exporouter_assets_forward.png',
       'drawable-mdpi/__packages_exporouter_assets_pkg.png',
       'drawable-mdpi/__packages_exporouter_assets_sitemap.png',
+      'drawable-mdpi/__packages_exporouter_assets_unmatched.png',
       'drawable-mdpi/assets_icon.png',
       'output.js',
       'output.js.map',
