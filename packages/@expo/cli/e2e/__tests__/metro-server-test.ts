@@ -43,6 +43,8 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
   // Could take 45s depending on how fast npm installs
   jest.setTimeout(120 * 1000);
 
+  const port = 8089;
+
   let projectRoot: string | null = null;
   // Keep track of the Metro server process
   let metroProcess: execa.ExecaChildProcess<string> | null = null;
@@ -62,7 +64,7 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
   }
 
   async function killServer() {
-    await ensurePortFreeAsync(8081);
+    await ensurePortFreeAsync(port);
     metroProcess = null;
   }
 
@@ -79,7 +81,7 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
 
     console.log('Starting server');
 
-    metroProcess = execa('node', [bin, 'start'], {
+    metroProcess = execa('node', [bin, 'start', '--port=' + port], {
       cwd: projectRoot!,
       env: {
         ...process.env,
@@ -94,7 +96,7 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
       metroProcess.on('close', (code: number) => {
         reject(
           code === 0
-            ? 'Server closed too early. Run `kill -9 $(lsof -ti:8081)` to kill the orphaned process.'
+            ? `Server closed too early. Run \`kill -9 $(lsof -ti:${port})\` to kill the orphaned process.`
             : code
         );
       });
@@ -113,6 +115,6 @@ function withMetroServer(testName: string, fixtureName = 'with-blank') {
     startServer,
     stopServer,
     killServer,
-    fetch: (path: string, init?: RequestInit) => fetch(`http://localhost:8081${path}`, init),
+    fetch: (path: string, init?: RequestInit) => fetch(`http://localhost:${port}${path}`, init),
   };
 }

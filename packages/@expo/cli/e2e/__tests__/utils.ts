@@ -202,7 +202,7 @@ export async function createFromFixtureAsync(
 }
 
 // Set this to true to enable caching and prevent rerunning yarn installs
-const testingLocally = false; // !process.env.CI;
+const testingLocally = !process.env.CI;
 
 export async function setupTestProjectWithOptionsAsync(
   name: string,
