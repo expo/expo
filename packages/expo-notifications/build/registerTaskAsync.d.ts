@@ -1,9 +1,14 @@
 /**
- * When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification.
- * Under the hood, this function is run using `expo-task-manager`. You **must** define the task first, with [`TaskManager.defineTask`](./task-manager#taskmanagerdefinetasktaskname-taskexecutor).
- * Make sure you define it in the global scope. It is recommended to define only one task because running a task can have a high cost.
+ * Call `registerTaskAsync` to set a callback (task) that will run in response to when a notification is received while the app is in foreground, background or terminated.
+ * When app is terminated, only a [data message](https://firebase.google.com/docs/cloud-messaging/concept-options#data_messages) (Android) / [background notification](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#Create-a-background-notification) (iOS) triggers the task execution.
+ * However, the OS may decide not to deliver the notification to your app in some cases (e.g. when the device is in Doze mode on Android).
  *
- * The callback function you define with `TaskManager.defineTask` will receive an object with the following fields:
+ * Under the hood, this function is run using `expo-task-manager`. You **must** define the task first, with [`TaskManager.defineTask`](./task-manager#taskmanagerdefinetasktaskname-taskexecutor) and register it with `registerTaskAsync`.
+ *
+ * Make sure you define and register the task in the module scope of a JS module which is required early by your app (e.g. in the `index.js` file).
+ * `expo-task-manager` loads your app's JS bundle in the background and executes the task, as well as any side effects which may happen as a consequence of requiring any JS modules.
+ *
+ * The callback function you define with `TaskManager.defineTask` receives an object with the following fields:
  * - `data`: The remote payload delivered by either FCM (Android) or APNs (iOS). See [`PushNotificationTrigger`](#pushnotificationtrigger) for details.
  * - `error`: The error (if any) that occurred during execution of the task.
  * - `executionInfo`: JSON object of additional info related to the task, including the `taskName`.
