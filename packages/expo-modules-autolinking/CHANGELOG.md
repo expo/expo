@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added local project dependencies support to `react-native-config` autolinking. ([#32821](https://github.com/expo/expo/pull/32821) by [@kudo](https://github.com/kudo))
+
 ## 2.0.0 — 2024-11-11
 
 _This version does not introduce any user-facing changes._
