@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix shutter animation not running.
+- [iOS] Fix shutter animation not running. ([#32820](https://github.com/expo/expo/pull/32820) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
