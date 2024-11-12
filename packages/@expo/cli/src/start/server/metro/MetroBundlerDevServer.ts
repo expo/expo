@@ -860,7 +860,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const isReactServerActionsOnlyEnabled =
       !exp.experiments?.reactServerComponentRoutes && !!exp.experiments?.reactServerFunctions;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
-    this.isReactServerRoutesEnabled = !!exp.experiments?.reactServerComponents;
+    this.isReactServerRoutesEnabled = !!exp.experiments?.reactServerComponentRoutes;
 
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
