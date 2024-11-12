@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { ServeLocalCommand } from '../../utils/command-instance';
+import { ExpoServeLocalCommand } from '../../utils/command-instance';
 import { bin, execaLog, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
@@ -37,12 +37,12 @@ describe('export server with magic import comments', () => {
   });
 
   describe('server', () => {
-    let serveCmd: ServeLocalCommand;
+    let serveCmd: ExpoServeLocalCommand;
     beforeAll(async () => {
-      serveCmd = new ServeLocalCommand(projectRoot, {
+      serveCmd = new ExpoServeLocalCommand(projectRoot, {
         NODE_ENV: 'production',
       });
-      await serveCmd.startAsync(['serve.js', '--port=' + 3037, '--dist=' + outputName]);
+      await serveCmd.startAsync([inputDir, '--port=' + 3037]);
     });
 
     it('fetches api route to ensure the dynamic import works', async () => {
