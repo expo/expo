@@ -8,8 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- Only assert `server-only` when running in `react-server` mode. ([#32793](https://github.com/expo/expo/pull/32793) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
 
 ## 12.0.0 — 2024-11-11
