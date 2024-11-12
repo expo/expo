@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Handle gitignore checks when git is unavailable. e.g. EAS Build. ([#32130](https://github.com/expo/expo/pull/32833) by [@betomoedano](https://github.com/betomoedano))
+
 ### 💡 Others
 
 ## 1.12.3 — 2024-11-05
