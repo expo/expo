@@ -201,11 +201,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
       } else {
         Rational(width, height)
       }
-      // Android PiP doesn't support aspect ratios lower than 0.4184 or higher than 2.39
-      if (aspectRatio.toFloat() > 2.39) {
-        aspectRatio = Rational(239, 100)
-      } else if (aspectRatio.toFloat() < 0.4184) {
-        aspectRatio = Rational(10000, 4184)
+      // AspectRatio for the activity in picture-in-picture, must be between 2.39:1 and 1:2.39 (inclusive).
+      // https://developer.android.com/reference/android/app/PictureInPictureParams.Builder#setAspectRatio(android.util.Rational)
+      val maximumRatio = Rational(239, 100)
+      val minimumRatio = Rational(100, 239)
+      if (aspectRatio.toFloat() > maximumRatio.toFloat()) {
+        aspectRatio = maximumRatio
+      } else if (aspectRatio.toFloat() < minimumRatio.toFloat()) {
+        aspectRatio = minimumRatio
       }
 
       currentActivity.setPictureInPictureParams(

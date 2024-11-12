@@ -19,7 +19,7 @@ function getAndroidSplashConfig(config, props) {
       mdpi: splash.mdpi ?? splash.image,
       backgroundColor: splash.backgroundColor,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
-      imageWidth: splash.imageWidth
+      imageWidth: splash.imageWidth ?? 100
     };
   }
   if (config.android?.splash) {

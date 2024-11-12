@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 15.0.3 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- Include the plugin under the `exports` in the package.json. ([#32780](https://github.com/expo/expo/pull/32780) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 15.0.2 — 2024-11-07
 
 ### 💡 Others

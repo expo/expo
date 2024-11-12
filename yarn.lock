@@ -3301,7 +3301,7 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/bottom-tabs@7.0.0":
+"@react-navigation/bottom-tabs@7.0.0", "@react-navigation/bottom-tabs@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.0.0.tgz#297503d44a0e26c34772f645a6210acb57f2fbc5"
   integrity sha512-IU+mI4q8Pi62EcEgROUSG1q8VJzNaLZKIPayxYLS/eZh+/54AfNX73uzY98N1m+InvO8yCmWtBrcsPZB1ddp8A==
@@ -3322,7 +3322,7 @@
     use-latest-callback "^0.2.1"
     use-sync-external-store "^1.2.2"
 
-"@react-navigation/drawer@7.0.0":
+"@react-navigation/drawer@7.0.0", "@react-navigation/drawer@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.0.0.tgz#1797a43a00477a43cc57fde2f5c09183b356fab8"
   integrity sha512-JbJ2ziSFVTV/qr2ffs2qMhziQJ8XHzRJhsF+PH2zFu4FCguRYaPqtf3Kl//tS4QWXVhpO4g5jweJQ7CfSousgw==
@@ -3339,7 +3339,7 @@
   dependencies:
     color "^4.2.3"
 
-"@react-navigation/native-stack@7.0.0":
+"@react-navigation/native-stack@7.0.0", "@react-navigation/native-stack@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.0.0.tgz#8f5a50919d8e58548053743a697e90a177976946"
   integrity sha512-OZEvXaQDZesWnib+XD7PgWaVeS95/oD/gCSmDXXQZLTtGBXutmLycGtvjunFHRAkQ8u3TB89oOhs9YxDBAXl5Q==
@@ -3347,7 +3347,7 @@
     "@react-navigation/elements" "^2.0.0"
     warn-once "^0.1.1"
 
-"@react-navigation/native@7.0.0":
+"@react-navigation/native@7.0.0", "@react-navigation/native@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.0.0.tgz#d3efaca481bef01cde89c2397f4b0815682f9137"
   integrity sha512-OkfVzQNAuvy6WduON+4ctLImQWybBnOEycVpEEFA3y8nheLuo4hT+ObyyYu2DVqtslltUlTNGcd2G7pbB7y/bA==
@@ -3365,7 +3365,7 @@
   dependencies:
     nanoid "3.3.7"
 
-"@react-navigation/stack@7.0.0":
+"@react-navigation/stack@7.0.0", "@react-navigation/stack@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-7.0.0.tgz#007f90c8dff3aeadaf44785d0bb824f1d935b96b"
   integrity sha512-MSPJT/drp2LQYMwUn1szGOXAZAcL2N28EuzX0g/pohVUMKIYzgKtQPr/CzYirNUzM52foVsR9fKv8vMo26ZaNQ==
@@ -13824,7 +13824,7 @@ react-native-safe-area-context@4.12.0:
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.12.0.tgz#17868522a55bbc6757418c94a1b4abdda6b045d9"
   integrity sha512-ukk5PxcF4p3yu6qMZcmeiZgowhb5AsKRnil54YFUUAXVIS7PJcMHGGC+q44fCiBg44/1AJk5njGMez1m9H0BVQ==
 
-react-native-screens@4.0.0:
+react-native-screens@~4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.0.0.tgz#f4f4f3f37b2e71c9960ab37c14f2bb3bd6d80a7d"
   integrity sha512-QGQ8+d90chOZ9JwA2K01nFzrGCTMNjsiAKJGPUXcLEiIF77/VSjLjQE9ZluMtkva0gzGI9tb/yxETkJnkw1iag==
@@ -14653,7 +14653,7 @@ semver@7.5.4:
   dependencies:
     lru-cache "^6.0.0"
 
-semver@7.x, semver@^7.1.3, semver@^7.3.4, semver@^7.3.5, semver@^7.5.0, semver@^7.5.3, semver@^7.5.4, semver@^7.6.0, semver@^7.6.3:
+semver@7.x, semver@^7.1.3, semver@^7.3.4, semver@^7.3.5, semver@^7.5.0, semver@^7.5.3, semver@^7.5.4, semver@^7.6.0, semver@^7.6.3, semver@~7.6.3:
   version "7.6.3"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.3.tgz#980f7b5550bc175fb4dc09403085627f9eb33143"
   integrity sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==

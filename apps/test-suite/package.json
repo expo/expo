@@ -11,10 +11,10 @@
   "dependencies": {
     "@expo/html-elements": "^0.11.0",
     "@expo/styleguide-base": "^1.0.1",
-    "@react-navigation/native": "7.0.0",
-    "@react-navigation/stack": "7.0.0",
+    "@react-navigation/native": "^7.0.0",
+    "@react-navigation/stack": "^7.0.0",
     "async-retry": "^1.1.4",
-    "expo": "~52.0.0-preview.0",
+    "expo": "~52.0.0",
     "expo-application": "~6.0.0",
     "expo-asset": "~11.0.0",
     "expo-av": "~15.0.0",

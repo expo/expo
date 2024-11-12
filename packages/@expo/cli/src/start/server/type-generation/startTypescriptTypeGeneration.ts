@@ -6,7 +6,7 @@ import path from 'path';
 import { removeExpoEnvDTS, writeExpoEnvDTS } from './expo-env';
 import { setupTypedRoutes } from './routes';
 import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
-import { removeFromGitIgnore, upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';
+import { upsertGitIgnoreContents } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
@@ -30,12 +30,7 @@ export async function startTypescriptTypeGenerationAsync({
   // If typed routes are disabled, remove any files that were added.
   if (!exp.experiments?.typedRoutes) {
     debug('Removing typed routes side-effects (experiments.typedRoutes: false)');
-    const gitIgnorePath = path.join(projectRoot, '.gitignore');
-    await Promise.all([
-      forceRemovalTSConfig(projectRoot),
-      removeExpoEnvDTS(projectRoot),
-      removeFromGitIgnore(gitIgnorePath, 'expo-env.d.ts'),
-    ]);
+    await Promise.all([forceRemovalTSConfig(projectRoot), removeExpoEnvDTS(projectRoot)]);
   } else {
     const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
     const typesDirectory = path.resolve(dotExpoDir, './types');

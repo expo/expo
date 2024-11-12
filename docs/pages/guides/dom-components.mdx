@@ -1,13 +1,13 @@
 ---
 title: Using React DOM in Expo native apps
 sidebar_title: DOM components
-description: Learn about rendering React DOM elements in Expo native apps.
+description: Learn about rendering React DOM components in Expo native apps using the 'use dom' directive.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-> Available in **SDK 52 and above**.
+> **info** Available in **SDK 52 and above**.
 
 Expo offers a novel approach to work with modern web code directly in a native app via the `'use dom'` directive. This enables incremental migration for an entire website to a universal app by moving on a per-component basis.
 
@@ -175,7 +175,7 @@ getDeviceName(): Promise<string> {
 }
 ```
 
-Think of these functions like React Server Actions, but instead of residing on the server, they live locally in the native app and communicate with the DOM component. This approach provides a powerful way to add truly native functionality to your DOM components.
+Think of these functions like React Server Functions, but instead of residing on the server, they live locally in the native app and communicate with the DOM component. This approach provides a powerful way to add truly native functionality to your DOM components.
 
 ## Passing refs
 

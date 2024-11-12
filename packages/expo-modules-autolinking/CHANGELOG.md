@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.0.0 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.0-preview.3 — 2024-11-04
 
 ### 🐛 Bug fixes

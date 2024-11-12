@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.19.1 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- Fixed `npx expo export` to support Hermes bytecode bundling. ([#32770](https://github.com/expo/expo/pull/32770) by [@kudo](https://github.com/kudo))
+
+## 0.19.0 — 2024-11-10
+
+### 💡 Others
+
+- Remove clientBoundaries warning. ([#32735](https://github.com/expo/expo/pull/32735) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.19.0-preview.3 — 2024-11-04
 
 _This version does not introduce any user-facing changes._
