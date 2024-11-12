@@ -379,3 +379,29 @@ export class ServeLocalCommand extends ServeAbstractCommand {
     return super.startAsync(['node', ...args]);
   }
 }
+
+export class ExpoServeLocalCommand extends ServeAbstractCommand {
+  isReadyCallback(message: string): boolean {
+    const tag = 'Server running at ';
+    for (const rawStr of stripAnsi(message)) {
+      if (rawStr.includes(tag)) {
+        const matchedLine = rawStr
+          .split('\n')
+          ?.find((line) => line.includes(tag))
+          ?.split(/Server running at\s+/)
+          ?.pop()
+          ?.trim();
+        if (!matchedLine) {
+          return false;
+        }
+        this.url = matchedLine;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async startAsync(args: string[] = []) {
+    return super.startAsync(['npx', 'expo', 'serve', ...args]);
+  }
+}

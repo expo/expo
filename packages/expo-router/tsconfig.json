@@ -4,6 +4,7 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
+    "resolveJsonModule": true,
     "types": [
       "jest",
       "jest-require",

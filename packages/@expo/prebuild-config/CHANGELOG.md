@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+- Vary android styles depending on config ([#32776](https://github.com/expo/expo/pull/32776) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 8.0.12 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 8.0.11 — 2024-11-11
+
+### 💡 Others
+
+- Improved resolving the path to `expo-modules-autolinking` and removed a peer dependency. ([#32554](https://github.com/expo/expo/pull/32554) by [@tsapeta](https://github.com/tsapeta))
+
 ## 8.0.10 — 2024-11-07
 
 ### 🐛 Bug fixes

@@ -377,6 +377,12 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
       description:
         'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.',
     },
+    {
+      name: 'enableBackgroundRemoteNotifications',
+      default: 'false',
+      description:
+        'Whether to enable background remote notifications, as described in [Apple documentation](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app). This updates the `UIBackgroundModes` key in the `Info.plist` to include `remote-notification`.',
+    },
   ]}
 />
 
@@ -395,7 +401,8 @@ Here is an example of using the config plugin in the app config file:
           "sounds": [
             "./local/assets/notification_sound.wav",
             "./local/assets/notification_sound_other.wav"
-          ]
+          ],
+          "enableBackgroundRemoteNotifications": false
         }
       ]
     ]
@@ -456,9 +463,9 @@ In the table above, whenever `NotificationResponseReceivedListener` is triggered
 
 ### Background notification configuration&ensp;<PlatformTags platforms={["ios"]} />
 
-To be able to run background notifications on iOS, you need to add the `remote-notification` value to the `UIBackgroundModes` array in your app's **Info.plist** file.
+To be able to use background push notifications on iOS, the `remote-notification` value needs to be present in the `UIBackgroundModes` array in your app's **Info.plist** file.
 
-**If you're using [CNG](/workflow/continuous-native-generation/)**, the required `UIBackgroundModes` configuration will be applied automatically by prebuild.
+**If you're using [CNG](/workflow/continuous-native-generation/)**, set the [`enableBackgroundRemoteNotifications` property](#configurable-properties) of the config plugin to true, and the correct configuration will be applied automatically by prebuild.
 
 <Collapsible summary="Configure UIBackgroundModes manually on iOS">
 
@@ -492,7 +499,7 @@ For Android:
 For iOS:
 
 - Background mode must be specified in **Info.plist** file. See [Background notifications configuration](#background-notification-configuration).
-- You must use a [development build](/develop/development-builds/introduction/) to use background notifications since it is not supported in the Expo Go app.
+- You must use a [development build](/develop/development-builds/introduction/) to use background notifications since push notifications are not supported in Expo Go.
 - Add `_contentAvailable: true` to your push notification payload for the Expo push notification service. Under normal circumstances, the "content-available" flag should launch your app in the background.
 
 ## Additional information

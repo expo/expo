@@ -84,7 +84,6 @@ function getAndroidManifestTemplate(config) {
           <category android:name="android.intent.category.LAUNCHER"/>
         </intent-filter>
       </activity>
-      <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
     </application>
   </manifest>
   `);

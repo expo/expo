@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 10.0.3 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.2 — 2024-10-28
 
 ### 🐛 Bug fixes
