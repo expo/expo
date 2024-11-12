@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import { bin, ensurePortFreeAsync, setupTestProjectWithOptionsAsync } from './utils';
+import { bin, setupTestProjectWithOptionsAsync } from './utils';
 
 describe('bundling code', () => {
   const metro = withMetroServer('metro-server-bundle-code', 'with-blank');
