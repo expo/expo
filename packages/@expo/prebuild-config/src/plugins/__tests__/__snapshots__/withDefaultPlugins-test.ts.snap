@@ -1115,26 +1115,14 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "Theme.SplashScreen",
+                  "parent": "AppTheme",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "windowSplashScreenBackground",
+                      "name": "android:windowBackground",
                     },
-                    "_": "@color/splashscreen_background",
-                  },
-                  {
-                    "$": {
-                      "name": "windowSplashScreenAnimatedIcon",
-                    },
-                    "_": "@drawable/splashscreen_logo",
-                  },
-                  {
-                    "$": {
-                      "name": "postSplashScreenTheme",
-                    },
-                    "_": "@style/AppTheme",
+                    "_": "@drawable/ic_launcher_background",
                   },
                 ],
               },
@@ -2067,26 +2055,14 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "Theme.SplashScreen",
+                  "parent": "AppTheme",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "windowSplashScreenBackground",
+                      "name": "android:windowBackground",
                     },
-                    "_": "@color/splashscreen_background",
-                  },
-                  {
-                    "$": {
-                      "name": "windowSplashScreenAnimatedIcon",
-                    },
-                    "_": "@drawable/splashscreen_logo",
-                  },
-                  {
-                    "$": {
-                      "name": "postSplashScreenTheme",
-                    },
-                    "_": "@style/AppTheme",
+                    "_": "@drawable/ic_launcher_background",
                   },
                 ],
               },

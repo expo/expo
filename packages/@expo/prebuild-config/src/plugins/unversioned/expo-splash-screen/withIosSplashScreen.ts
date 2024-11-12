@@ -16,16 +16,16 @@ export const withIosSplashScreen: ConfigPlugin<IOSSplashConfig | undefined | nul
   props
 ) => {
   // If the user didn't specify a splash object, infer the splash object from the Expo config.
-  props = getIosSplashConfig(config, props ?? null);
+  const splashConfig = getIosSplashConfig(config, props ?? null);
 
   debug(`config:`, props);
 
   return withPlugins(config, [
-    [withIosSplashInfoPlist, props],
-    [withIosSplashAssets, props],
-    [withIosSplashColors, props],
+    [withIosSplashInfoPlist, splashConfig],
+    [withIosSplashAssets, splashConfig],
+    [withIosSplashColors, splashConfig],
     // Add the image settings to the storyboard.
-    [withIosSplashScreenImage, props],
+    [withIosSplashScreenImage, splashConfig],
     // Link storyboard to xcode project.
     // TODO: Maybe fold this into the base mod.
     withIosSplashXcodeProject,
