@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Added `@DoNotStrip` annotation to new `Either` types. ([#32783](https://github.com/expo/expo/pull/32783) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 2.0.1 — 2024-11-12
+
+### 🐛 Bug fixes
+
+- [Android] Added `@DoNotStrip` annotation to new `Either` types. ([#32783](https://github.com/expo/expo/pull/32783) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 2.0.0 — 2024-11-10
 

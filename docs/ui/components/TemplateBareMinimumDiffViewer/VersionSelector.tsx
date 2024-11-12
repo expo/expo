@@ -1,9 +1,5 @@
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 
-import packageJson from '~/package.json';
-
-const BETA_MAJOR_VERSION = packageJson.betaVersion.split('.')[0];
-
 export type VersionSelectorProps = {
   version?: string | undefined;
   setVersion: (version: string) => void;
@@ -24,9 +20,7 @@ export const VersionSelector = ({
         onChange={e => setVersion(e.target.value)}>
         {availableVersions.map(version => (
           <option key={version} value={version}>
-            {version === 'unversioned'
-              ? 'unversioned'
-              : `SDK ${version}${version === BETA_MAJOR_VERSION ? '  (beta)' : ''}`}
+            {version === 'unversioned' ? 'unversioned' : `SDK ${version}`}
           </option>
         ))}
       </select>

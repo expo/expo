@@ -21,9 +21,12 @@ const styleResourceGroup = {
 
 const SPLASH_COLOR_NAME = 'splashscreen_background';
 
-export const withAndroidSplashStyles: ConfigPlugin<AndroidSplashConfig> = (config, props) => {
+export const withAndroidSplashStyles: ConfigPlugin<{
+  splashConfig: AndroidSplashConfig | null;
+  isLegacyConfig: boolean;
+}> = (config, { splashConfig, isLegacyConfig }) => {
   config = withAndroidColors(config, (config) => {
-    const backgroundColor = getSplashBackgroundColor(config, props);
+    const backgroundColor = getSplashBackgroundColor(config, splashConfig);
     if (!backgroundColor) {
       return config;
     }
@@ -31,7 +34,7 @@ export const withAndroidSplashStyles: ConfigPlugin<AndroidSplashConfig> = (confi
     return config;
   });
   config = withAndroidColorsNight(config, (config) => {
-    const backgroundColor = getSplashDarkBackgroundColor(config, props);
+    const backgroundColor = getSplashDarkBackgroundColor(config, splashConfig);
     if (!backgroundColor) {
       return config;
     }
@@ -40,37 +43,51 @@ export const withAndroidSplashStyles: ConfigPlugin<AndroidSplashConfig> = (confi
   });
   config = withAndroidStyles(config, (config) => {
     config.modResults = removeOldSplashStyleGroup(config.modResults);
-    config.modResults = addSplashScreenStyle(config.modResults);
+    config.modResults = addSplashScreenStyle(config.modResults, isLegacyConfig);
     return config;
   });
   return config;
 };
 
 // Add the style that extends Theme.SplashScreen
-function addSplashScreenStyle(styles: AndroidConfig.Resources.ResourceXML) {
+function addSplashScreenStyle(
+  styles: AndroidConfig.Resources.ResourceXML,
+  isLegacyConfig: boolean
+) {
   const { resources } = styles;
   const { style = [] } = resources;
 
-  const item = [
-    {
-      $: { name: 'windowSplashScreenBackground' },
-      _: '@color/splashscreen_background',
-    },
-    {
-      $: { name: 'windowSplashScreenAnimatedIcon' },
-      _: '@drawable/splashscreen_logo',
-    },
-    {
-      $: { name: 'postSplashScreenTheme' },
-      _: '@style/AppTheme',
-    },
-  ];
+  let item;
+  if (isLegacyConfig) {
+    item = [
+      {
+        $: { name: 'android:windowBackground' },
+        _: '@drawable/ic_launcher_background',
+      },
+    ];
+  } else {
+    item = [
+      {
+        $: { name: 'windowSplashScreenBackground' },
+        _: '@color/splashscreen_background',
+      },
+      {
+        $: { name: 'windowSplashScreenAnimatedIcon' },
+        _: '@drawable/splashscreen_logo',
+      },
+      {
+        $: { name: 'postSplashScreenTheme' },
+        _: '@style/AppTheme',
+      },
+    ];
+  }
 
   styles.resources.style = [
     ...style.filter(({ $ }) => $.name !== 'Theme.App.SplashScreen'),
     {
       $: {
         ...styleResourceGroup,
+        parent: isLegacyConfig ? 'AppTheme' : 'Theme.SplashScreen',
       },
       item,
     },

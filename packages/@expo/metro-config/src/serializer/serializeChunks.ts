@@ -379,7 +379,7 @@ export class Chunk {
 
   private boolishTransformOption(name: string) {
     const value = this.graph.transformOptions?.customTransformOptions?.[name];
-    return value === true || value === 'true';
+    return value === true || value === 'true' || value === '1';
   }
 
   async serializeToAssetsAsync(
