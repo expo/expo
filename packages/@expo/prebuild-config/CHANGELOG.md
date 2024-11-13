@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Ensure image resource section exists in `SplashScreen.storyboard`. ([#32858](https://github.com/expo/expo/pull/32858) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 8.0.14 — 2024-11-13
+
+### 🐛 Bug fixes
+
+- Ensure image resource section exists in `SplashScreen.storyboard`. ([#32858](https://github.com/expo/expo/pull/32858) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 8.0.13 — 2024-11-12
 

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [next] Add file handles. ([#31738](https://github.com/expo/expo/pull/31738) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 18.0.3 — 2024-11-13
+
+### 🎉 New features
+
+- [next] Add file handles. ([#31738](https://github.com/expo/expo/pull/31738) by [@aleqsio](https://github.com/aleqsio))
 
 ## 18.0.2 — 2024-11-11
 

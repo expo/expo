@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.0.2 — 2024-11-13
+
+### 💡 Others
+
 - [Android] Added `executeTask` method to `TaskManagerUtilsInterface` ([#32849](https://github.com/expo/expo/pull/32849) by [@chrfalch](https://github.com/chrfalch))
 
 ## 2.0.1 — 2024-11-12

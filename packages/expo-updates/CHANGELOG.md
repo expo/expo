@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.26.6 — 2024-11-13
+
+### 💡 Others
+
 - Upgrade `express` to `4.21.1` for `send`. ([#32852](https://github.com/expo/expo/pull/32852) by [@MWein](https://github.com/MWein))
 
 ## 0.26.5 — 2024-11-07

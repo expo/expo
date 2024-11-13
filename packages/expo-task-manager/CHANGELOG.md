@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.0.3 — 2024-11-13
+
+### 💡 Others
+
 - [Android] Added implementation of `executeTask` method in `TaskManagerUtils` ([#32849](https://github.com/expo/expo/pull/32849) by [@chrfalch](https://github.com/chrfalch))
 
 ## 12.0.2 — 2024-11-05
