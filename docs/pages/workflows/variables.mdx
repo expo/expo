@@ -16,20 +16,20 @@ jobs:
       # @end #
     steps:
       - name: Set fingerprint hash
-			id: fingerprint_step_id
-			run: |
-				FINGERPRINT_HASH=$(npx expo-updates fingerprint:generate --platform ios | jq '.hash')
-                # @info Sets the `fingerprint_hash` as a variable #
-				set-output fingerprint_hash $FINGERPRINT_HASH
-                # @end #
-                # @info Exposes the `fingerprint_hash` variable to other steps in this job #
-			outputs: [fingerprint_hash]
-                # @end #
+        id: fingerprint_step_id
+        # @info Exposes the `fingerprint_hash` variable to other steps in this job #
+        outputs: [fingerprint_hash]
+        # @end #
+        run: |
+          FINGERPRINT_HASH=$(npx expo-updates fingerprint:generate --platform ios | jq '.hash')
+          # @info Sets the `fingerprint_hash` as a variable #
+          set-output fingerprint_hash $FINGERPRINT_HASH
+          # @end #
       - name: Do something with the fingerprint hash
-			run: |
-                # @info Accesses the `fingerprint_hash` variable #
-				echo ${ steps.fingerprint_step_id.outputs.fingerprint_hash }
-                # @end #
+          run: |
+            # @info Accesses the `fingerprint_hash` variable #
+            echo ${{ steps.fingerprint_step_id.outputs.fingerprint_hash }}
+            # @end #
     maybe_build:
       needs: [fingerprint]
       # @info Accesses the `fingerprint_hash_for_workflow` variable #
