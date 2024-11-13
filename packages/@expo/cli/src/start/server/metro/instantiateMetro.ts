@@ -14,6 +14,7 @@ import formatBundlingError from 'metro/src/lib/formatBundlingError';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
+import path from 'path';
 
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
@@ -387,6 +388,9 @@ function pruneCustomTransformOptions(
   filePath: string,
   transformOptions: TransformOptions
 ): TransformOptions {
+  // Normalize the filepath for cross platform checking.
+  filePath = filePath.split(path.sep).join('/');
+
   if (
     transformOptions.customTransformOptions?.dom &&
     // The only generated file that needs the dom root is `expo/dom/entry.js`
