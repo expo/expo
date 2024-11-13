@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add scoped module IDs for Metro SSR. ([#32737](https://github.com/expo/expo/pull/32737) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.19.2 — 2024-11-13
+
+### 🎉 New features
+
+- Add scoped module IDs for Metro SSR. ([#32737](https://github.com/expo/expo/pull/32737) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.19.1 — 2024-11-12
 

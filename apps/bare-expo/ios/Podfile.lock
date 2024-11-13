@@ -45,7 +45,7 @@ PODS:
   - EXManifests/Tests (0.15.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.29.6):
+  - EXNotifications (0.29.7):
     - ExpoModulesCore
   - Expo (52.0.3):
     - ExpoModulesCore
@@ -353,7 +353,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (14.0.2):
     - ExpoModulesCore
-  - ExpoCamera (16.0.3):
+  - ExpoCamera (16.0.4):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -539,7 +539,7 @@ PODS:
     - ExpoModulesCore
   - ExpoVideo (2.0.0):
     - ExpoModulesCore
-  - ExpoVideoThumbnails (9.0.1):
+  - ExpoVideoThumbnails (9.0.2):
     - ExpoModulesCore
   - ExpoWebBrowser (14.0.0):
     - ExpoModulesCore
@@ -3255,7 +3255,7 @@ SPEC CHECKSUMS:
   EXImageLoader: 759063a65ab016b836f73972d3bb25404888713d
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: f293a2f776506540805140fdac283e382b48e75d
-  EXNotifications: 4e42fbfeb78caca9132f96e9eacc6517f16e7baa
+  EXNotifications: 97a84c66aedb7a3b8b8a57eb7112f8cdde86119e
   Expo: b632b841df27dd3c1a8920945370e682481d8ac9
   expo-dev-client: 9e8cad129a71706847453d1c55ff6264017faf44
   expo-dev-launcher: 40d22678585d561f2457b13ee2339568b74462fc
@@ -3269,7 +3269,7 @@ SPEC CHECKSUMS:
   ExpoBlur: 562b3da84d3cd79016c411671eaf71a404266415
   ExpoBrightness: ce777f6a365592f745428cb0acc9066b400182e8
   ExpoCalendar: eefd37e02e2cf34060ce4fded953acf8cdf28672
-  ExpoCamera: 2e143e08e9b21d473df866f8d5476e7198b721d1
+  ExpoCamera: 5367921920780cd0b69ebf09c129c9ce1a3ce044
   ExpoCellular: c7ae03fd9480e6a4296a5632c35ab00ddaea4783
   ExpoClipboard: 166ca8c13ca1041f5ba619a211f59427ab5da8a7
   ExpoContacts: 209f0739c712bf808413c691722ce1bb1e2ea0af
@@ -3313,7 +3313,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: 7a9e9895c2621980ae57277c9d1903ad3fd41bb1
   ExpoTrackingTransparency: 206d9790744f329a21e53cba0ee411d8db43ce16
   ExpoVideo: d419a84e8841e05443f3351cb937f55375b60650
-  ExpoVideoThumbnails: a50b96324e75038a0863adb669c67651ae5819f0
+  ExpoVideoThumbnails: 8b6bbe3cb76dd2225910667b896b27855bbda694
   ExpoWebBrowser: ea83cc6f03bec1938c3b8fb4dcb9df71960fba36
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: 96988ae979e705f4046c4487ab3e39412c923096
