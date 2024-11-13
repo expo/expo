@@ -7,8 +7,6 @@ description: The Expo CLI is a command-line tool that is the primary interface b
 import { Terminal } from '~/ui/components/Snippet';
 import { StatusTag } from '~/ui/components/Tag';
 
-> **info** This documentation refers to the Local Expo CLI. For information on legacy CLI, see [Global Expo CLI](/archive/expo-cli).
-
 The `expo` package provides a small and powerful CLI tool `npx expo` which is designed to keep you moving fast during app development.
 
 ## Highlights
@@ -256,7 +254,7 @@ The following options are provided:
 - `--output-dir <dir>`: The directory to export the static files to. **Default: dist**
 - `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
 - `-c, --clear`: Clear the bundler cache before exporting.
-- `--no-minify`: Skip minifying JavaScript and CSS assets (SDK 49 and above).
+- `--no-minify`: Skip minifying JavaScript and CSS assets.
 - `--no-bytecode`: Skip generating Hermes bytecode for native platforms (SDK 50 and above). Only use this for analyzing bundle sizes and never ship UTF-8 bundles to native platforms as this will lead to drastically longer startup times.
 
 #### Hosting with sub-paths
@@ -410,8 +408,6 @@ The command `npx expo install expo-camera` and `npx expo install expo-camera --f
 
 ### Configuring dependency validation
 
-> Available in SDK 49 and above.
-
 There may be circumstances where you want to use a version of a package is different from the version recommended by `npx expo install`.
 
 For example, you are testing a new version of `react-native-reanimated` to verify that it works well in your app and fixes a bug that you encountered. Now you want to 1) not be warned by `npx expo start` or `npx expo-doctor` and 2) not have that package version changed when you run `npx expo install --fix`.
@@ -504,6 +500,7 @@ From here, you can choose to generate basic project files like:
 | `EXPO_USE_METRO_REQUIRE`             | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="SDK 52+" /></div>Enable the use of Expo's custom Metro `require` implementation and `string` based module IDs. This enables better debugging and deterministic IDs for React Server Components. Does not support legacy RAM bundles.                                                                                                                               |
 | `EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH` | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable eager bundling where transformation runs uncached after the entire bundle has been created. This is required for production tree shaking and is less optimized for development bundling.                                                                                                                |
 | `EXPO_UNSTABLE_TREE_SHAKING`         | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable unstable tree shaking support across all platforms. See [tree shaking](/guides/tree-shaking) for more details.                                                                                                                                                                                          |
+| `EXPO_NO_REACT_NATIVE_WEB`           | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 52+" /></div>Enable experimental mode where React Native Web isn't required to run Expo apps on web.                                                                                                                                                                                                                        |
 
 ## Telemetry
 

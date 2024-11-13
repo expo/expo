@@ -11,7 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **info** We recommend using SDK 51 or newer for the best experience with the New Architecture.
+> **info** We recommend using SDK 52 or newer for the best experience with the New Architecture.
 
 The New Architecture is a name that we use to describe a complete refactoring of the internals of React Native. It is also used to solve limitations of the original React Native architecture discovered over years of usage in production at Meta and other companies.
 
@@ -70,13 +70,9 @@ You can configure the React Native Directory check in your **package.json** file
 
 ## Initialize a new project with the New Architecture
 
-**As of SDK 52**, all new projects will be initialized with the New Architecture enabled by default. To create a new project using SDK 52 beta:
+**As of SDK 52**, all new projects will be initialized with the New Architecture enabled by default.
 
-<Terminal cmd={['$ npx create-expo-app@latest -t default@sdk-52']} />
-
-**For SDK 51 and below**, the easiest way to get started with the New Architecture is to use the `with-new-arch` template when creating a new project:
-
-<Terminal cmd={['$ npx create-expo-app@latest -e with-new-arch']} />
+<Terminal cmd={['$ npx create-expo-app@latest']} />
 
 ## Enable the New Architecture in an existing project
 
@@ -99,6 +95,8 @@ Set `newArchEnabled` on target platforms:
   </Tab>
 
   <Tab label="SDK 51 and below">
+    To enable it, you need to [install the `expo-build-properties` plugin](/versions/latest/sdk/build-properties/#installation) and set `newArchEnabled` on target platforms.
+
     ```json app.json
     {
       "expo": {
@@ -106,10 +104,10 @@ Set `newArchEnabled` on target platforms:
           [
             "expo-build-properties",
             {
-              "ios": {
+              "android": {
                 "newArchEnabled": true
               },
-              "android": {
+              "ios": {
                 "newArchEnabled": true
               }
             }
@@ -118,6 +116,7 @@ Set `newArchEnabled` on target platforms:
       }
     }
     ```
+
   </Tab>
 </Tabs>
 

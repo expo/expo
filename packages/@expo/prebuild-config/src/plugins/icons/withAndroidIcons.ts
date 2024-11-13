@@ -20,6 +20,7 @@ const { Colors } = AndroidConfig;
 
 type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 type dpiMap = Record<DPIString, { folderName: string; scale: number }>;
+type ImageStyle = 'foreground' | 'background' | 'rounded' | 'monochrome' | 'legacy';
 
 export const dpiValues: dpiMap = {
   mdpi: { folderName: 'mipmap-mdpi', scale: 1 },
@@ -86,7 +87,7 @@ export function setRoundIconManifest(
 
 const withAndroidAdaptiveIconColors: ConfigPlugin<string | null> = (config, backgroundColor) => {
   return withAndroidColors(config, (config) => {
-    config.modResults = setBackgroundColor(backgroundColor ?? '#FFFFFF', config.modResults);
+    config.modResults = setBackgroundColor(backgroundColor ?? '#ffffff', config.modResults);
     return config;
   });
 };
@@ -311,7 +312,7 @@ async function generateMultiLayerImageAsync(
       scale,
       backgroundColor: backgroundColor ?? 'transparent',
       borderRadiusRatio,
-      isForeground: outputImageFileName === IC_LAUNCHER_FOREGROUND_WEBP,
+      imageStlye: getImageStyle(outputImageFileName),
     });
 
     if (backgroundImage) {
@@ -389,25 +390,26 @@ async function generateIconAsync(
     scale,
     backgroundColor,
     borderRadiusRatio,
-    isForeground,
+    imageStlye,
   }: {
     cacheType: string;
     src: string;
     scale: number;
     backgroundColor: string;
     borderRadiusRatio?: number;
-    isForeground?: boolean;
+    imageStlye?: ImageStyle;
   }
 ) {
-  const baseline = isForeground ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
-  const bgIconSizePx = baseline * scale;
-  const iconSizePx = bgIconSizePx * (isForeground ? 0.4 : 0.65);
+  const isForegound = imageStlye === 'foreground';
+  const baseline = isForegound ? FOREGROUND_BASELINE_PIXEL_SIZE : ICON_BASELINE_PIXEL_SIZE;
+  const bgIconSizePx = Math.round(baseline * scale);
+  const iconSizePx = Math.round(bgIconSizePx * getImageScale(imageStlye ?? 'background'));
 
   const { source: foreground } = await generateImageAsync(
     { projectRoot, cacheType },
     {
       src,
-      resizeMode: 'contain',
+      resizeMode: 'cover',
       width: iconSizePx,
       height: iconSizePx,
     }
@@ -416,13 +418,43 @@ async function generateIconAsync(
   const background = await generateImageBackgroundAsync({
     width: bgIconSizePx,
     height: bgIconSizePx,
-    backgroundColor: isForeground ? 'transparent' : backgroundColor,
+    backgroundColor: isForegound ? 'transparent' : backgroundColor,
     resizeMode: 'cover',
     borderRadius: borderRadiusRatio ? bgIconSizePx * borderRadiusRatio : undefined,
   });
 
-  const x = (bgIconSizePx - iconSizePx) / 2;
+  const x = Math.round((bgIconSizePx - iconSizePx) / 2);
   const y = x;
 
   return compositeImagesAsync({ background, foreground, x, y });
+}
+
+function getImageStyle(outputFileName: string): ImageStyle {
+  switch (outputFileName) {
+    case IC_LAUNCHER_WEBP:
+      return 'legacy';
+    case IC_LAUNCHER_BACKGROUND_WEBP:
+      return 'background';
+    case IC_LAUNCHER_FOREGROUND_WEBP:
+      return 'foreground';
+    case IC_LAUNCHER_ROUND_WEBP:
+      return 'rounded';
+    case IC_LAUNCHER_MONOCHROME_WEBP:
+      return 'monochrome';
+  }
+
+  return 'background';
+}
+
+function getImageScale(imageStyle: ImageStyle) {
+  switch (imageStyle) {
+    case 'legacy':
+    case 'rounded':
+      return 0.9;
+    case 'foreground':
+    case 'background':
+      return 0.7;
+    case 'monochrome':
+      return 1;
+  }
 }

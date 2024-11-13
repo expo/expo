@@ -4,6 +4,8 @@ export { useVideoPlayer } from './VideoPlayer';
 export { VideoContentFit, VideoViewProps } from './VideoView.types';
 export { VideoThumbnail } from './VideoThumbnail';
 
+export { createVideoPlayer } from './VideoPlayer';
+
 export {
   VideoPlayer,
   VideoPlayerStatus,
@@ -13,6 +15,7 @@ export {
   DRMType,
   DRMOptions,
   BufferOptions,
+  AudioMixingMode,
 } from './VideoPlayer.types';
 
 export {

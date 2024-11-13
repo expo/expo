@@ -354,15 +354,16 @@ export class ServeStaticCommand extends ServeAbstractCommand {
     return super.startAsync(['npx', 'serve', ...args]);
   }
 }
-export class ServeLocalCommand extends ServeAbstractCommand {
+
+export class ExpoServeLocalCommand extends ServeAbstractCommand {
   isReadyCallback(message: string): boolean {
-    const tag = 'Accepting connections at ';
+    const tag = 'Server running at ';
     for (const rawStr of stripAnsi(message)) {
       if (rawStr.includes(tag)) {
         const matchedLine = rawStr
           .split('\n')
           ?.find((line) => line.includes(tag))
-          ?.split(/Accepting connections at\s+/)
+          ?.split(/Server running at\s+/)
           ?.pop()
           ?.trim();
         if (!matchedLine) {
@@ -376,6 +377,6 @@ export class ServeLocalCommand extends ServeAbstractCommand {
   }
 
   async startAsync(args: string[] = []) {
-    return super.startAsync(['node', ...args]);
+    return super.startAsync(['npx', 'expo', 'serve', ...args]);
   }
 }

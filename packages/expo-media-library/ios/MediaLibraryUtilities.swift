@@ -271,6 +271,12 @@ func assetType(for localUri: URL) -> PHAssetMediaType {
     return .video
   case .audio:
     return .audio
+  case _ where type.conforms(to: .image):
+    return .image
+  case _ where type.conforms(to: .video):
+    return .video
+  case _ where type.conforms(to: .audio):
+    return .audio
   default:
     return .unknown
   }

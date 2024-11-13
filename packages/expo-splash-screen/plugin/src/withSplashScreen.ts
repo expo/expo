@@ -8,27 +8,41 @@ const pkg = require('expo-splash-screen/package.json');
 
 type PluginConfig = {
   backgroundColor: string;
-  logoWidth: number;
-  image?: string | null;
-  android: AndroidSplashConfig;
-  ios: IOSSplashConfig;
+  imageWidth?: number;
+  enableFullScreenImage_legacy?: boolean;
+  image?: string;
+  dark?: {
+    image?: string;
+    backgroundColor?: string;
+  };
+  android?: AndroidSplashConfig;
+  ios?: IOSSplashConfig;
 };
 
 const withSplashScreen: ConfigPlugin<PluginConfig> = (config, props) => {
   const android: AndroidSplashConfig = {
-    ...config.splash,
-    ...config.android?.splash,
     ...props,
     ...props?.android,
+    resizeMode: 'contain',
+    dark: {
+      ...props?.android?.dark,
+      ...props?.dark,
+      resizeMode: 'contain',
+    },
   };
-  const ios = {
-    ...config.splash,
-    ...config.ios?.splash,
+  const ios: IOSSplashConfig = {
     ...props,
     ...props?.ios,
+    resizeMode: 'contain',
+    dark: {
+      ...props?.ios?.dark,
+      ...props?.dark,
+    },
   };
 
-  config = withAndroidSplashScreen(config, android);
+  // Need to pass null here if we don't receive any props. This means that the plugin has not been used.
+  // This only happens on Android. On iOS, if you don't use the plugin, this function won't be called.
+  config = withAndroidSplashScreen(config, props ? android : null);
   config = withIosSplashScreen(config, ios);
   return config;
 };

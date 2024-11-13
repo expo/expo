@@ -66,6 +66,7 @@ export type RNConfigReactNativePlatformsConfigAndroid = any;
 export type RNConfigReactNativePlatformsConfigIos = any;
 
 interface RNConfigReactNativePlatformsConfig {
+  root?: string;
   platforms?: {
     android?: RNConfigReactNativePlatformsConfigAndroid;
     ios?: RNConfigReactNativePlatformsConfigIos;

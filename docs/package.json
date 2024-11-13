@@ -1,7 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "51.0.0",
-  "betaVersion": "52.0.0",
+  "version": "52.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -50,6 +49,7 @@
     "prismjs": "^1.29.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
+    "react-confetti-explosion": "^2.1.2",
     "react-diff-view": "^3.2.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^8.0.7",
@@ -109,7 +109,7 @@
     "rimraf": "^5.0.7",
     "semver": "^7.6.2",
     "sitemap": "^7.1.1",
-    "tailwindcss": "^3.4.4",
+    "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3",
     "unist-builder": "^4.0.0",
     "unist-util-visit": "^5.0.0",

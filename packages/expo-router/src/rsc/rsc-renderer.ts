@@ -196,9 +196,9 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     if (
       !opts.isExporting &&
       // @ts-ignore
-      !process.env.EXPO_UNSTABLE_SERVER_ACTIONS
+      !process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS
     ) {
-      throw new Error('Experimental support for React Server Actions is not enabled');
+      throw new Error('Experimental support for React Server Functions is not enabled');
     }
 
     const args = Array.isArray(decodedBody) ? decodedBody : [];

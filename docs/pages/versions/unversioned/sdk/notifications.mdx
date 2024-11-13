@@ -26,13 +26,13 @@ import { PlatformTags } from '~/ui/components/Tag';
 - Schedule a one-off notification for a specific date or some time from now
 - Schedule a notification repeating in some time interval (or a calendar date match on iOS)
 - Get and set the application badge icon number
-- Fetch a native device push token, so you can send push notifications with FCM and APNs
-- Fetch an Expo push token, so you can send push notifications with Expo
+- Obtain a native device push token, so you can send push notifications with FCM (for Android) and APNs (for iOS)
+- Obtain an Expo push token, so you can send push notifications with [Expo Push API](/push-notifications/sending-notifications/)
 - Listen to incoming notifications in the foreground and background
 - Listen to interactions with notifications
 - Handle notifications when the app is in the foreground
 - Imperatively dismiss notifications from Notification Center/tray
-- Create, update, and delete Android notification channels
+- Create, update, and delete [Android notification channels](https://developer.android.com/develop/ui/views/notifications/channels)
 - Set custom icon and color for notifications on Android
 
 ## Installation
@@ -342,7 +342,7 @@ See more details on [React Navigation documentation](https://reactnavigation.org
 
 #### Android
 
-Firebase Cloud Messaging credentials are required for all Android apps to receive push notifications in your app (except when testing in Expo Go). For more information, see how to get [FCM credentials](/push-notifications/push-notifications-setup/#android) for your app.
+Firebase Cloud Messaging credentials are required for all Android apps to receive push notifications. For more information, see how to get [FCM credentials](/push-notifications/push-notifications-setup/#android) for your app.
 
 #### iOS
 
@@ -377,6 +377,12 @@ To configure `expo-notifications`, use the built-in [config plugin](/config-plug
       description:
         'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.',
     },
+    {
+      name: 'enableBackgroundRemoteNotifications',
+      default: 'false',
+      description:
+        'Whether to enable background remote notifications, as described in [Apple documentation](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app). This updates the `UIBackgroundModes` key in the `Info.plist` to include `remote-notification`.',
+    },
   ]}
 />
 
@@ -395,7 +401,8 @@ Here is an example of using the config plugin in the app config file:
           "sounds": [
             "./local/assets/notification_sound.wav",
             "./local/assets/notification_sound_other.wav"
-          ]
+          ],
+          "enableBackgroundRemoteNotifications": false
         }
       ]
     ]
@@ -419,7 +426,7 @@ Learn how to configure the native projects in the [installation instructions in 
 - On Android, this module requires permission to subscribe to the device boot. It's used to setup scheduled notifications when the device (re)starts.
   The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
 
-- Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add
+- Starting from Android 12 (API level 31), to schedule the notification that triggers at an exact time, you need to add
   `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.
   You can read more about the [exact alarm permission](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
 
@@ -434,6 +441,18 @@ Learn how to configure the native projects in the [installation instructions in 
 
 No usage description is required, see [notification-related permissions](#fetch-information-about-notifications-related-permissions).
 
+### Interpret the iOS permissions response
+
+On iOS, permissions for sending notifications are a little more granular than they are on Android. This is why you should rely on the `NotificationPermissionsStatus`'s `ios.status` field, instead of the root `status` field.
+
+This value will be one of the following, accessible under `Notifications.IosAuthorizationStatus`:
+
+- `NOT_DETERMINED`: The user hasn't yet made a choice about whether the app is allowed to schedule notifications
+- `DENIED`: The app isn't authorized to schedule or receive notifications
+- `AUTHORIZED`: The app is authorized to schedule or receive notifications
+- `PROVISIONAL`: The app is provisionally authorized to post noninterruptive user notifications
+- `EPHEMERAL`: The app is authorized to schedule or receive notifications for a limited amount of time
+
 ## Notification events listeners
 
 Notification events include incoming notifications, interactions your users perform with notifications (this can be tapping on a notification,
@@ -441,18 +460,38 @@ or interacting with it via [notification categories](#manage-notification-catego
 
 A few different listeners are exposed, so we've provided a chart below which will hopefully help you understand when you can expect each one to be triggered:
 
-| User interacted with notification? | App state                | Listener(s) triggered                                                   |
-| ---------------------------------- | ------------------------ | ----------------------------------------------------------------------- |
-| false                              | Foreground               | `NotificationReceivedListener`                                          |
-| false                              | Foreground or Background | `BackgroundNotificationTask`                                            |
-| false                              | Killed                   | none                                                                    |
-| true                               | Foreground               | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
-| true                               | Background               | `NotificationResponseReceivedListener`                                  |
-| true                               | Killed                   | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
+| User interacted with notification? | App state  | Listener(s) triggered                                                   |
+| ---------------------------------- | ---------- | ----------------------------------------------------------------------- |
+| false                              | Foreground | `NotificationReceivedListener` & `registerTaskAsync`                    |
+| false                              | Background | `registerTaskAsync`                                                     |
+| false                              | Killed     | `registerTaskAsync`                                                     |
+| true                               | Foreground | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
+| true                               | Background | `NotificationResponseReceivedListener`                                  |
+| true                               | Killed     | `useLastNotificationResponse` or `getLastNotificationResponseAsync`     |
 
 In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
 
 > **info** When the app is not running or killed and is restarted by tapping on a notification, the `NotificationResponseReceivedListener` may or may not be triggered. To reliably capture the response, we recommend using `useLastNotificationResponse` or `getLastNotificationResponseAsync`.
+
+### Background notification configuration&ensp;<PlatformTags platforms={["ios"]} />
+
+To be able to use background push notifications on iOS, the `remote-notification` value needs to be present in the `UIBackgroundModes` array in your app's **Info.plist** file.
+
+**If you're using [CNG](/workflow/continuous-native-generation/)**, set the [`enableBackgroundRemoteNotifications` property](#configurable-properties) of the config plugin to true, and the correct configuration will be applied automatically by prebuild.
+
+<Collapsible summary="Configure UIBackgroundModes manually on iOS">
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native iOS project, then you'll need to add the following to your **Expo.plist** file:
+
+```xml ios/project-name/Supporting/Expo.plist
+<key>UIBackgroundModes</key>
+  <array>
+    <string>remote-notification</string>
+  </array>
+</key>
+```
+
+</Collapsible>
 
 ### Background notifications
 
@@ -471,14 +510,13 @@ For Android:
 
 For iOS:
 
-- In the array under the `ios.infoPlist.UIBackgroundModes` key in your [app config](/workflow/configuration/), add the values `remote-notification` and `processing`.
+- Background mode must be specified in **Info.plist** file. See [Background notifications configuration](#background-notification-configuration).
+- You must use a [development build](/develop/development-builds/introduction/) to use background notifications since push notifications are not supported in Expo Go.
 - Add `_contentAvailable: true` to your push notification payload for the Expo push notification service. Under normal circumstances, the "content-available" flag should launch your app in the background.
 
 ## Additional information
 
 ### Set custom notification sounds
-
-Custom notification sounds are only supported when using [EAS Build](/build/introduction).
 
 To add custom push notification sounds to your app, add the `expo-notifications` plugin to your **app.json** file and then under the `sounds` key, provide an array of local paths to sound files that can be used as custom notification sounds. These local paths are local to your project.
 
@@ -578,32 +616,9 @@ await Notifications.scheduleNotificationAsync({
 
 </Collapsible>
 
-### Android push notification payload specification
+### Push notification payload specification
 
-When sending a push notification, put an object conforming to the following type as `data` of the notification:
-
-```ts
-export interface FirebaseData {
-  title?: string;
-  message?: string;
-  subtitle?: string;
-  sound?: boolean | string;
-  vibrate?: boolean | number[];
-  badge?: number;
-}
-```
-
-### Interpret the iOS permissions response
-
-On iOS, permissions for sending notifications are a little more granular than they are on Android.
-Because of this, you should rely on the `NotificationPermissionsStatus`'s `ios.status` field, instead of the root `status` field.
-This value will be one of the following, accessible under `Notifications.IosAuthorizationStatus`:
-
-- `NOT_DETERMINED`: The user hasn't yet made a choice about whether the app is allowed to schedule notifications
-- `DENIED`: The app isn't authorized to schedule or receive notifications
-- `AUTHORIZED`: The app is authorized to schedule or receive notifications
-- `PROVISIONAL`: The application is provisionally authorized to post noninterruptive user notifications
-- `EPHEMERAL`: The app is authorized to schedule or receive notifications for a limited amount of time
+See the `ExpoPushMessage` type in the [`expo-server-sdk`](https://github.com/expo/expo-server-sdk-node/blob/b470314023d8393073ecdbc07927b32d163af790/src/ExpoClient.ts#L346) package.
 
 ### Manage notification categories for interactive notifications
 
@@ -619,7 +634,7 @@ by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificat
 
 On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take, but you can also configure things like the placeholder text to display when the user disables notification previews for your app.
 
-## Platform specific guides
+## Platform-specific guides
 
 ### Handling notification channels&ensp;<PlatformTags platforms={['android 8+']} />
 
@@ -656,8 +671,8 @@ import * as Notifications from 'expo-notifications';
   headersMapping={{
     fetch: 'Fetch tokens for push notifications',
     listen: 'Listen to notification events',
-    inForeground: 'Handle incoming notifications when the app is in the foreground',
-    inBackground: 'Handle incoming notifications when the app is not in the foreground',
+    inForeground: 'Present incoming notifications when the app is running',
+    inBackground: 'Run JavaScript in response to incoming notifications',
     permissions: 'Fetch information about notifications-related permissions',
     badge: 'Manage application badge icon',
     schedule: 'Schedule notifications',

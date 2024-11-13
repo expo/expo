@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 52.0.0 — 2024-11-11
+
+### 🐛 Bug fixes
+
+- Update transform ignore patterns to replace deprecated Sentry SDK with current one. ([#32528](https://github.com/expo/expo/pull/32528) by [@KoenCa](https://github.com/KoenCa))
+
+## 52.0.0-preview.4 — 2024-11-05
+
+### 💡 Others
+
+- Add mocks for internal native methods in splash screen ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+
 ## 52.0.0-preview.3 — 2024-10-31
 
 ### 💡 Others

@@ -391,6 +391,7 @@ exports[`built-in plugins compiles mods 1`] = `
     "supportsTablet": true,
     "userInterfaceStyle": "automatic",
     "usesAppleSignIn": true,
+    "usesBroadcastPushNotifications": true,
     "usesIcloudStorage": true,
   },
   "locales": {
@@ -833,12 +834,6 @@ exports[`built-in plugins introspects mods 1`] = `
                       },
                     ],
                   },
-                  {
-                    "$": {
-                      "android:exported": "false",
-                      "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
-                    },
-                  },
                 ],
                 "meta-data": [
                   {
@@ -1114,26 +1109,14 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "Theme.SplashScreen",
+                  "parent": "AppTheme",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "windowSplashScreenBackground",
+                      "name": "android:windowBackground",
                     },
-                    "_": "@color/splashscreen_background",
-                  },
-                  {
-                    "$": {
-                      "name": "windowSplashScreenAnimatedIcon",
-                    },
-                    "_": "@drawable/splashscreen_logo",
-                  },
-                  {
-                    "$": {
-                      "name": "postSplashScreenTheme",
-                    },
-                    "_": "@style/AppTheme",
+                    "_": "@drawable/ic_launcher_background",
                   },
                 ],
               },
@@ -1601,6 +1584,7 @@ exports[`built-in plugins introspects mods 1`] = `
     "supportsTablet": true,
     "userInterfaceStyle": "automatic",
     "usesAppleSignIn": true,
+    "usesBroadcastPushNotifications": true,
     "usesIcloudStorage": true,
   },
   "locales": {
@@ -1729,14 +1713,14 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   "android:label": "@string/app_name",
                   "android:name": ".MainApplication",
                   "android:roundIcon": "@mipmap/ic_launcher_round",
+                  "android:supportsRtl": "true",
                   "android:theme": "@style/AppTheme",
-                  "android:usesCleartextTraffic": "true",
                 },
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|uiMode",
-                      "android:label": "@string/app_name",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
+                      "android:exported": "true",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
                       "android:screenOrientation": "unspecified",
@@ -1828,19 +1812,8 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                       },
                     ],
                   },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
-                    },
-                  },
                 ],
                 "meta-data": [
-                  {
-                    "$": {
-                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
-                      "android:value": "@string/expo_runtime_version",
-                    },
-                  },
                   {
                     "$": {
                       "android:name": "expo.modules.updates.ENABLED",
@@ -1857,6 +1830,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
                       "android:value": "650",
+                    },
+                  },
+                  {
+                    "$": {
+                      "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
+                      "android:value": "@string/expo_runtime_version",
                     },
                   },
                   {
@@ -1938,6 +1917,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "android:name": "android.permission.SYSTEM_ALERT_WINDOW",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.VIBRATE",
                 },
               },
               {
@@ -2059,26 +2043,14 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "name": "Theme.App.SplashScreen",
-                  "parent": "Theme.SplashScreen",
+                  "parent": "AppTheme",
                 },
                 "item": [
                   {
                     "$": {
-                      "name": "windowSplashScreenBackground",
+                      "name": "android:windowBackground",
                     },
-                    "_": "@color/splashscreen_background",
-                  },
-                  {
-                    "$": {
-                      "name": "windowSplashScreenAnimatedIcon",
-                    },
-                    "_": "@drawable/splashscreen_logo",
-                  },
-                  {
-                    "$": {
-                      "name": "postSplashScreenTheme",
-                    },
-                    "_": "@style/AppTheme",
+                    "_": "@drawable/ic_launcher_background",
                   },
                 ],
               },
@@ -2223,6 +2195,25 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             "resources": [
               {
                 "image": [],
+                "namedColor": [
+                  {
+                    "$": {
+                      "name": "SplashScreenBackground",
+                    },
+                    "color": [
+                      {
+                        "$": {
+                          "alpha": "1.000",
+                          "blue": "1.00000000000000",
+                          "colorSpace": "custom",
+                          "customColorSpace": "sRGB",
+                          "green": "1.00000000000000",
+                          "red": "1.00000000000000",
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
             ],
             "scenes": [
@@ -2267,6 +2258,14 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                                       "flexibleMaxX": "YES",
                                       "flexibleMaxY": "YES",
                                       "key": "autoresizingMask",
+                                    },
+                                  },
+                                ],
+                                "color": [
+                                  {
+                                    "$": {
+                                      "key": "backgroundColor",
+                                      "name": "SplashScreenBackground",
                                     },
                                   },
                                 ],
@@ -2547,6 +2546,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     "supportsTablet": true,
     "userInterfaceStyle": "automatic",
     "usesAppleSignIn": true,
+    "usesBroadcastPushNotifications": true,
     "usesIcloudStorage": true,
   },
   "locales": {

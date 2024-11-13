@@ -103,6 +103,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private hmrServer: MetroHmrServer | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   isReactServerComponentsEnabled?: boolean;
+  isReactServerRoutesEnabled?: boolean;
 
   get name(): string {
     return 'metro';
@@ -244,16 +245,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return manifest;
   }
 
-  async getServerManifestAsync({
-    environment,
-  }: Pick<ExpoMetroOptions, 'environment'> = {}): Promise<{
+  async getServerManifestAsync(): Promise<{
     serverManifest: ExpoRouterServerManifestV1;
   }> {
     // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync } = await this.ssrLoadModule<
       typeof import('expo-router/build/static/getServerManifest')
     >('expo-router/build/static/getServerManifest.js', {
-      environment: environment ?? (this.isReactServerComponentsEnabled ? 'react-server' : 'node'),
+      // Only use react-server environment when the routes are using react-server rendering by default.
+      environment: this.isReactServerRoutesEnabled ? 'react-server' : 'node',
     });
 
     return {
@@ -645,7 +645,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async nativeExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,
-      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
     >,
     files: ExportAssetMap,
     extraOptions: {
@@ -729,11 +729,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       await this.rscRenderer!.exportServerActionsAsync(
         {
           platform: options.platform,
+          domRoot: options.domRoot,
           entryPoints: [...serverActionReferencesInServer, ...reactServerReferences],
         },
         files
       );
 
+    // TODO: Check against all modules in the initial client bundles.
     const hasUniqueClientBoundaries = nestedClientBoundaries.some(
       (boundary) => !clientBoundaries.includes(boundary)
     );
@@ -746,7 +748,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bundle = await this.legacySinglePageExportBundleAsync(
         {
           ...options,
-          clientBoundaries: [...clientBoundaries, ...nestedClientBoundaries],
+          clientBoundaries,
         },
         extraOptions
       );
@@ -775,7 +777,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (Object.keys(moduleIdToSplitBundle).length) {
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
         if (boundary in moduleIdToSplitBundle) {
-          // Account for nullish values (bundle is in main chunk).
           ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
         } else {
           throw new Error(
@@ -904,10 +905,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { exp } = config;
     // NOTE: This will change in the future when it's less experimental, we enable React 19, and turn on more RSC flags by default.
     const isReactServerComponentsEnabled =
-      !!exp.experiments?.reactServerComponents || !!exp.experiments?.reactServerActions;
+      !!exp.experiments?.reactServerComponentRoutes || !!exp.experiments?.reactServerFunctions;
     const isReactServerActionsOnlyEnabled =
-      !exp.experiments?.reactServerComponents && !!exp.experiments?.reactServerActions;
+      !exp.experiments?.reactServerComponentRoutes && !!exp.experiments?.reactServerFunctions;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
+    this.isReactServerRoutesEnabled = !!exp.experiments?.reactServerComponentRoutes;
 
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
@@ -1063,6 +1065,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             return this.getStaticBundleUrlForDev();
           },
           useClientRouter: isReactServerActionsOnlyEnabled,
+          createModuleId: metro._createModuleId.bind(metro),
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -1123,6 +1126,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             return '';
           },
           useClientRouter: isReactServerActionsOnlyEnabled,
+          createModuleId: metro._createModuleId.bind(metro),
         });
         this.rscRenderer = rscMiddleware;
       }
@@ -1204,6 +1208,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
             if (!isInitialUpdate && hasUpdate) {
               // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
+              // @ts-expect-error: __c is not on global but is injected by Metro.
               if (typeof globalThis.__c === 'function') globalThis.__c();
 
               onReload();

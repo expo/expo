@@ -357,10 +357,7 @@ export function withExtendedResolver(
         }
 
         const isExternal = // Extern these modules in standard Node.js environments.
-          /^(styleq(\/.+)?|deprecated-react-native-prop-types|react-native-safe-area-context|invariant|nullthrows|memoize-one|react|react\/jsx-dev-runtime|scheduler|expo-modules-core|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
-            moduleName
-          ) ||
-          /^react-native-web\/dist\/exports\/(Platform|NativeEventEmitter|StyleSheet|NativeModules|DeviceEventEmitter|Text|View)$/.test(
+          /^(deprecated-react-native-prop-types|react|react\/jsx-dev-runtime|scheduler|react-native|react-dom(\/.+)?|metro-runtime(\/.+)?)$/.test(
             moduleName
           ) ||
           // TODO: Add more
@@ -465,7 +462,6 @@ export function withExtendedResolver(
       if (moduleName.endsWith('/package.json')) {
         return null;
       }
-
       const environment = context.customResolverOptions?.environment;
 
       const strictResolve = getStrictResolver(context, platform);
@@ -481,7 +477,10 @@ export function withExtendedResolver(
             // TODO: Make this use require.resolveWeak again. Previously this was just resolving to the same path.
             const realModule = strictResolve(moduleName);
             const realPath = realModule.type === 'sourceFile' ? realModule.filePath : moduleName;
-            const opaqueId = idFactory(realPath, { platform, environment });
+            const opaqueId = idFactory(realPath, {
+              platform: platform!,
+              environment,
+            });
 
             const contents =
               typeof opaqueId === 'number'

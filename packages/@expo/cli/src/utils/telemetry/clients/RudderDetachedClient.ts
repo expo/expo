@@ -27,19 +27,19 @@ export class RudderDetachedClient implements TelemetryClient {
   }
 
   async flush() {
-    if (!this.records.length) {
-      return debug('No records to flush, skipping...');
-    }
-
-    const file = createTempFilePath('expo-telemetry.json');
-    const data = JSON.stringify({ records: this.records });
-
-    this.records = [];
-
-    await fs.promises.mkdir(path.dirname(file), { recursive: true });
-    await fs.promises.writeFile(file, data);
-
     try {
+      if (!this.records.length) {
+        return debug('No records to flush, skipping...');
+      }
+
+      const file = createTempFilePath('expo-telemetry.json');
+      const data = JSON.stringify({ records: this.records });
+
+      this.records = [];
+
+      await fs.promises.mkdir(path.dirname(file), { recursive: true });
+      await fs.promises.writeFile(file, data);
+
       const child = spawn(process.execPath, [require.resolve('./flushRudderDetached'), file], {
         detached: true,
         windowsHide: true,
@@ -49,7 +49,7 @@ export class RudderDetachedClient implements TelemetryClient {
 
       child.unref();
     } catch (error) {
-      // This could fail if the detached flush import changes during an upgrade to the `expo` dependency via `npx expo install --fix`,
+      // This could fail if any direct or indirect imports change during an upgrade to the `expo` dependency via `npx expo install --fix`,
       // since this file may no longer be present after the upgrade, but before the process under the old Expo CLI version is terminated.
       debug('Exception while initiating detached flush:', error);
     }

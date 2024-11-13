@@ -25,7 +25,7 @@ test.describe(inputDir, () => {
       EXPO_USE_STATIC: 'single',
       E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: testName,
-      EXPO_UNSTABLE_SERVER_ACTIONS: '1',
+      EXPO_UNSTABLE_SERVER_FUNCTIONS: '1',
       E2E_ROUTER_ASYNC: 'development',
       E2E_RSC_ENABLED: '1',
       E2E_CANARY_ENABLED: '1',
@@ -71,7 +71,7 @@ test.describe(inputDir, () => {
     });
 
     // Navigate to the app
-    await page.goto(expo.url);
+    await page.goto(expo.url!);
     console.timeEnd('Open page');
 
     await serverResponsePromise;
@@ -106,7 +106,10 @@ test.describe(inputDir, () => {
     });
 
     const serverActionResponsePromise = page.waitForResponse((response) => {
-      return new URL(response.url()).pathname.startsWith('/_flight/web/ACTION_');
+      const pathname = new URL(response.url()).pathname;
+      return (
+        pathname.startsWith('/_flight/web/ACTION_') && pathname.endsWith('_$$INLINE_ACTION.txt')
+      );
     });
 
     // Call the server action

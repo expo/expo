@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 17.0.2 — 2024-11-05
+
+### 🐛 Bug fixes
+
+- [iOS] Fixes asset types not returned correctly. ([#32621](https://github.com/expo/expo/pull/32621) by [@aleqsio](https://github.com/aleqsio))
+
 ## 17.0.1 — 2024-11-04
 
 _This version does not introduce any user-facing changes._

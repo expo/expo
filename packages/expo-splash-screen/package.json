@@ -1,6 +1,6 @@
 {
   "name": "expo-splash-screen",
-  "version": "0.29.1",
+  "version": "0.29.7",
   "description": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
   "main": "build",
   "types": "build",
@@ -34,7 +34,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/splash-screen/",
   "dependencies": {
-    "@expo/prebuild-config": "8.0.7"
+    "@expo/prebuild-config": "8.0.13"
   },
   "devDependencies": {
     "expo-module-scripts": "^4.0.0"

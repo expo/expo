@@ -404,9 +404,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Preview section
   '/preview/support/': '/preview/introduction/',
-
-  // Temporary redirects
-  '/guides/react-compiler/': '/preview/react-compiler/',
+  '/preview/react-compiler/': '/guides/react-compiler/',
 
   // Troubleshooting section
   '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',
@@ -418,4 +416,10 @@ const RENAMED_PAGES: Record<string, string> = {
   // After adding "Linking" (/linking/**) section
   '/guides/linking/': '/linking/overview/',
   '/guides/deep-linking/': '/linking/into-your-app/',
+
+  // After adding /sdk/router/ API reference
+  '/router/reference/hooks/': '/versions/latest/sdk/router/#hooks',
+
+  // After moving custom tabs under Expo Router > Navigation patterns
+  '/router/ui/tabs/': '/router/advanced/custom-tabs/',
 };

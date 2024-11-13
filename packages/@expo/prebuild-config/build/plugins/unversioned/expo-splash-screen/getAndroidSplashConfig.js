@@ -12,37 +12,41 @@ function getAndroidSplashConfig(config, props) {
   if (props) {
     const splash = props;
     return {
-      xxxhdpi: splash.xxxhdpi ?? splash.image ?? null,
-      xxhdpi: splash.xxhdpi ?? splash.image ?? null,
-      xhdpi: splash.xhdpi ?? splash.image ?? null,
-      hdpi: splash.hdpi ?? splash.image ?? null,
-      mdpi: splash.mdpi ?? splash.image ?? null,
-      backgroundColor: splash.backgroundColor ?? null,
-      resizeMode: splash.resizeMode ?? defaultResizeMode
+      xxxhdpi: splash.xxxhdpi ?? splash.image,
+      xxhdpi: splash.xxhdpi ?? splash.image,
+      xhdpi: splash.xhdpi ?? splash.image,
+      hdpi: splash.hdpi ?? splash.image,
+      mdpi: splash.mdpi ?? splash.image,
+      backgroundColor: splash.backgroundColor,
+      resizeMode: splash.resizeMode ?? defaultResizeMode,
+      imageWidth: splash.imageWidth ?? 100
     };
   }
   if (config.android?.splash) {
     const splash = config.android?.splash;
     return {
-      xxxhdpi: splash.xxxhdpi ?? splash.image ?? null,
-      xxhdpi: splash.xxhdpi ?? splash.image ?? null,
-      xhdpi: splash.xhdpi ?? splash.image ?? null,
-      hdpi: splash.hdpi ?? splash.image ?? null,
-      mdpi: splash.mdpi ?? splash.image ?? null,
-      backgroundColor: splash.backgroundColor ?? null,
-      resizeMode: splash.resizeMode ?? defaultResizeMode
+      xxxhdpi: splash.xxxhdpi ?? splash.image,
+      xxhdpi: splash.xxhdpi ?? splash.image,
+      xhdpi: splash.xhdpi ?? splash.image,
+      hdpi: splash.hdpi ?? splash.image,
+      mdpi: splash.mdpi ?? splash.image,
+      backgroundColor: splash.backgroundColor,
+      image: splash.image,
+      resizeMode: splash.resizeMode ?? defaultResizeMode,
+      imageWidth: 200
     };
   }
   if (config.splash) {
     const splash = config.splash;
     return {
-      xxxhdpi: splash.image ?? null,
-      xxhdpi: splash.image ?? null,
-      xhdpi: splash.image ?? null,
-      hdpi: splash.image ?? null,
-      mdpi: splash.image ?? null,
-      backgroundColor: splash.backgroundColor ?? null,
-      resizeMode: splash.resizeMode ?? defaultResizeMode
+      xxxhdpi: splash.image,
+      xxhdpi: splash.image,
+      xhdpi: splash.image,
+      hdpi: splash.image,
+      mdpi: splash.image,
+      backgroundColor: splash.backgroundColor,
+      resizeMode: splash.resizeMode ?? defaultResizeMode,
+      imageWidth: 200
     };
   }
   return null;
@@ -52,12 +56,12 @@ function getAndroidDarkSplashConfig(config, props) {
     const splash = props.dark;
     const lightTheme = getAndroidSplashConfig(config, props);
     return {
-      xxxhdpi: splash.xxxhdpi ?? splash.image ?? null,
-      xxhdpi: splash.xxhdpi ?? splash.image ?? null,
-      xhdpi: splash.xhdpi ?? splash.image ?? null,
-      hdpi: splash.hdpi ?? splash.image ?? null,
-      mdpi: splash.mdpi ?? splash.image ?? null,
-      backgroundColor: splash.backgroundColor ?? null,
+      xxxhdpi: splash.xxxhdpi ?? splash.image,
+      xxhdpi: splash.xxhdpi ?? splash.image,
+      xhdpi: splash.xhdpi ?? splash.image,
+      hdpi: splash.hdpi ?? splash.image,
+      mdpi: splash.mdpi ?? splash.image,
+      backgroundColor: splash.backgroundColor,
       resizeMode: lightTheme?.resizeMode ?? defaultResizeMode
     };
   }
@@ -68,12 +72,12 @@ function getAndroidDarkSplashConfig(config, props) {
     const splash = config.android?.splash?.dark;
     const lightTheme = getAndroidSplashConfig(config, props);
     return {
-      xxxhdpi: splash.xxxhdpi ?? splash.image ?? null,
-      xxhdpi: splash.xxhdpi ?? splash.image ?? null,
-      xhdpi: splash.xhdpi ?? splash.image ?? null,
-      hdpi: splash.hdpi ?? splash.image ?? null,
-      mdpi: splash.mdpi ?? splash.image ?? null,
-      backgroundColor: splash.backgroundColor ?? null,
+      xxxhdpi: splash.xxxhdpi ?? splash.image,
+      xxhdpi: splash.xxhdpi ?? splash.image,
+      xhdpi: splash.xhdpi ?? splash.image,
+      hdpi: splash.hdpi ?? splash.image,
+      mdpi: splash.mdpi ?? splash.image,
+      backgroundColor: splash.backgroundColor,
       // Can't support dark resizeMode because the resize mode is hardcoded into the MainActivity.java
       resizeMode: lightTheme?.resizeMode ?? defaultResizeMode
     };

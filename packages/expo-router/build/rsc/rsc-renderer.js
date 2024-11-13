@@ -130,8 +130,8 @@ async function renderRsc(args, opts) {
     if (actionId) {
         if (!opts.isExporting &&
             // @ts-ignore
-            !process.env.EXPO_UNSTABLE_SERVER_ACTIONS) {
-            throw new Error('Experimental support for React Server Actions is not enabled');
+            !process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS) {
+            throw new Error('Experimental support for React Server Functions is not enabled');
         }
         const args = Array.isArray(decodedBody) ? decodedBody : [];
         const chunkInfo = serverConfig[actionId];

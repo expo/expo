@@ -97,7 +97,7 @@ function reactServerActionsPlugin(api) {
             ? t.arrowFunctionExpression(extractedFunctionParams, t.blockStatement(extractedFunctionBody), true)
             : t.functionExpression(path.node.id, extractedFunctionParams, t.blockStatement(extractedFunctionBody), false, true), extractedIdentifier.name);
         // Create a top-level declaration for the extracted function.
-        const bindingKind = 'const';
+        const bindingKind = 'var';
         const functionDeclaration = t.exportNamedDeclaration(t.variableDeclaration(bindingKind, [
             t.variableDeclarator(extractedIdentifier, extractedFunctionExpr),
         ]));
@@ -294,7 +294,7 @@ function reactServerActionsPlugin(api) {
                             const id = left;
                             const exportedSpecifier = t.exportSpecifier(id, t.identifier('default'));
                             // Replace `export default foo = async () => {}` with `const foo = async () => {}`
-                            path.replaceWith(t.variableDeclaration('const', [t.variableDeclarator(id, right)]));
+                            path.replaceWith(t.variableDeclaration('var', [t.variableDeclarator(id, right)]));
                             // Insert `(() => _registerServerReference(foo, "file:///unknown", "default"))();`
                             path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
                         }
@@ -306,7 +306,7 @@ function reactServerActionsPlugin(api) {
                             const moduleScope = path.scope.getProgramParent();
                             const extractedIdentifier = moduleScope.generateUidIdentifier('$$INLINE_ACTION');
                             // @ts-expect-error: Transform `export default async () => {}` to `const $$INLINE_ACTION = async () => {}`
-                            path.node.declaration = t.variableDeclaration('const', [
+                            path.node.declaration = t.variableDeclaration('var', [
                                 t.variableDeclarator(extractedIdentifier, path.node.declaration),
                             ]);
                             // Strip the `export default`

@@ -1,4 +1,5 @@
 import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
+import JsonFile from '@expo/json-file';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -106,6 +107,37 @@ export async function maybeInconsistentEngineAndroidAsync(
   return false;
 }
 
+export function isHermesPossiblyEnabled(projectRoot: string): boolean | null {
+  // Trying best to check ios native project if by chance to be consistent between app config
+
+  // Check ios/Podfile for ":hermes_enabled => true"
+  const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
+  if (fs.existsSync(podfilePath)) {
+    const content = fs.readFileSync(podfilePath, 'utf8');
+    const isPropsReference =
+      content.search(
+        /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m
+      ) >= 0;
+    const isHermesBare = content.search(/^\s*:hermes_enabled\s*=>\s*true,?\s+/m) >= 0;
+    if (!isPropsReference && isHermesBare) {
+      return true;
+    }
+  }
+
+  // Check Podfile.properties.json from prebuild template
+  const podfilePropertiesPath = path.join(projectRoot, 'ios', 'Podfile.properties.json');
+  if (fs.existsSync(podfilePropertiesPath)) {
+    try {
+      const props = JsonFile.read(podfilePropertiesPath);
+      return props['expo.jsEngine'] === 'hermes';
+    } catch {
+      // ignore
+    }
+  }
+
+  return null;
+}
+
 export async function maybeInconsistentEngineIosAsync(
   projectRoot: string,
   isHermesManaged: boolean
@@ -171,4 +203,21 @@ async function parsePodfilePropertiesAsync(
   } catch {
     return {};
   }
+}
+
+export function isAndroidUsingHermes(projectRoot: string) {
+  // Check gradle.properties from prebuild template
+  const gradlePropertiesPath = path.join(projectRoot, 'android', 'gradle.properties');
+  if (fs.existsSync(gradlePropertiesPath)) {
+    const props = parseGradleProperties(fs.readFileSync(gradlePropertiesPath, 'utf8'));
+    return props['hermesEnabled'] === 'true';
+  }
+
+  // Assume Hermes is used by default.
+  return true;
+}
+
+export function isIosUsingHermes(projectRoot: string) {
+  // If nullish, then assume Hermes is used.
+  return isHermesPossiblyEnabled(projectRoot) !== false;
 }

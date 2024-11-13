@@ -119,11 +119,23 @@ function createNumericModuleIdFactory(): (path: string) => number {
   };
 }
 
-function createStableModuleIdFactory(root: string): (path: string) => number {
-  // const fileToIdMap = new Map<string, string>();
-  const fileToIdMapForEnv = new Map<string, Map<string, string>>();
+function memoize<T extends (...args: any[]) => any>(fn: T): T {
+  const cache = new Map<string, any>();
+  return ((...args: any[]) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  }) as T;
+}
 
-  const getModulePath = (modulePath: string, prefix: string) => {
+export function createStableModuleIdFactory(
+  root: string
+): (path: string, context?: { platform: string; environment?: string }) => number {
+  const getModulePath = (modulePath: string, scope: string) => {
     // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
     if (modulePath == null) {
       return 'MODULE_NOT_FOUND';
@@ -131,47 +143,35 @@ function createStableModuleIdFactory(root: string): (path: string) => number {
       // Virtual modules should be stable.
       return modulePath;
     } else if (path.isAbsolute(modulePath)) {
-      return prefix + path.relative(root, modulePath);
+      return path.relative(root, modulePath) + scope;
     } else {
-      return prefix + modulePath;
+      return modulePath + scope;
     }
   };
 
+  const memoizedGetModulePath = memoize(getModulePath);
+
   // This is an absolute file path.
+  // TODO: We may want a hashed version for production builds in the future.
   return (modulePath: string, context?: { platform: string; environment?: string }): number => {
+    const env = context?.environment ?? 'client';
+
+    if (env === 'client') {
+      // Only need scope for server bundles where multiple dimensions could run simultaneously.
+      // @ts-expect-error: we patch this to support being a string.
+      return memoizedGetModulePath(modulePath, '');
+    }
+
     // Helps find missing parts to the patch.
     if (!context?.platform) {
       // context = { platform: 'web' };
       throw new Error('createStableModuleIdFactory: `context.platform` is required');
     }
 
-    const env = context.environment ?? 'client';
-    let fileToIdMap = fileToIdMapForEnv.get(env);
-
-    if (!fileToIdMap) {
-      fileToIdMap = new Map();
-      fileToIdMapForEnv.set(env, fileToIdMap);
-    }
-    // TODO: We may want a hashed version for production builds in the future.
-    let id = fileToIdMap.get(modulePath);
-
-    if (id != null) {
-      // @ts-expect-error: we patch this to support being a string.
-      return id;
-    }
-
-    if (context.environment === 'node') {
-      // TODO: We may want a hashed version for production builds in the future.
-
-      const prefix = context.environment + ':';
-      id = getModulePath(modulePath, prefix);
-    } else {
-      id = getModulePath(modulePath, '');
-    }
-
-    fileToIdMap.set(modulePath, id);
+    // Only need scope for server bundles where multiple dimensions could run simultaneously.
+    const scope = env !== 'client' ? `?platform=${context?.platform}&env=${env}` : '';
     // @ts-expect-error: we patch this to support being a string.
-    return id;
+    return memoizedGetModulePath(modulePath, scope);
   };
 }
 

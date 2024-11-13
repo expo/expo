@@ -19,10 +19,6 @@ export declare enum AndroidImportance {
     MIN = 3,
     LOW = 4,
     DEFAULT = 5,
-    /**
-     * @deprecated Use `DEFAULT` instead.
-     */
-    DEEFAULT = 5,
     HIGH = 6,
     MAX = 7
 }
@@ -53,7 +49,7 @@ export interface AudioAttributes {
 }
 export type AudioAttributesInput = Partial<AudioAttributes>;
 /**
- * An object represents a notification channel.
+ * An object which represents a notification channel.
  * @platform android
  */
 export interface NotificationChannel {
@@ -74,7 +70,7 @@ export interface NotificationChannel {
 }
 export type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
 /**
- * An object represents a notification channel to be set.
+ * An object which represents a notification channel to be set.
  * @platform android
  */
 export type NotificationChannelInput = RequiredBy<Omit<NotificationChannel, 'id' | 'audioAttributes' | 'sound'> & {
