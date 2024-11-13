@@ -1,6 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+import { getIsolatedModulesPath } from '../autolinking/utils';
+import { fileExistsAsync } from '../fileUtils';
+import type { SupportedPlatform } from '../types';
 import {
   findGradleAndManifestAsync,
   parsePackageNameAsync,
@@ -16,9 +19,6 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { getIsolatedModulesPath } from '../autolinking/utils';
-import { fileExistsAsync } from '../fileUtils';
-import type { SupportedPlatform } from '../types';
 
 /**
  * Create config for react-native core autolinking.
@@ -97,7 +97,7 @@ export async function findDependencyRootsAsync(
 function findProjectLocalDependencyRoots(
   projectConfig: RNConfigReactNativeProjectConfig | null
 ): Record<string, string> {
-  if (!projectConfig) {
+  if (!projectConfig?.dependencies) {
     return {};
   }
   const results: Record<string, string> = {};
