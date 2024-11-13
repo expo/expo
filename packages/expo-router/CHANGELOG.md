@@ -2,8 +2,6 @@
 
 ## Unpublished
 
-- Prevent from disabling edge-to-edge ([#32854](https://github.com/expo/expo/pull/32854) by [@zoontek](https://github.com/zoontek))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
@@ -11,6 +9,10 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 4.0.5 — 2024-11-13
+
+- Prevent from disabling edge-to-edge ([#32854](https://github.com/expo/expo/pull/32854) by [@zoontek](https://github.com/zoontek))
 
 ## 4.0.4 — 2024-11-13
 
