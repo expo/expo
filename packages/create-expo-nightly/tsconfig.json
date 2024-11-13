@@ -2,7 +2,7 @@
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "node10",
     "esModuleInterop": true,
     "declaration": true,
     "strictNullChecks": true,

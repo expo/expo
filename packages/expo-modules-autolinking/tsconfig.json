@@ -5,7 +5,7 @@
   "compilerOptions": {
     "outDir": "./build",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
     "types": [],
     "typeRoots": ["./ts-declarations", "node_modules/@types"],
     "sourceMap": true,
