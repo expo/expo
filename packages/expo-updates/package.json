@@ -57,7 +57,7 @@
     "@types/node": "^18.19.34",
     "@types/node-forge": "^1.0.0",
     "expo-module-scripts": "^4.0.0",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "form-data": "^4.0.0",
     "fs-extra": "~8.1.0",
     "memfs": "^3.2.0",
