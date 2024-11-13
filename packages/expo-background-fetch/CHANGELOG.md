@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Android: Fixed so that background fetch will run when app is killed or in the background.
+- Android: Fixed so that background fetch will run when app is killed or in the background. ([#32849](https://github.com/expo/expo/pull/32849) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
