@@ -1,8 +1,8 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { AppState, Linking, Platform, processColor, } from 'react-native';
 import ExponentWebBrowser from './ExpoWebBrowser';
-import { WebBrowserResultType, WebBrowserPresentationStyle, } from './WebBrowser.types';
-export { WebBrowserResultType, WebBrowserPresentationStyle, };
+import { WebBrowserPresentationStyle, WebBrowserResultType, } from './WebBrowser.types';
+export { WebBrowserPresentationStyle, WebBrowserResultType };
 const emptyCustomTabsPackages = {
     defaultBrowserPackage: undefined,
     preferredBrowserPackage: undefined,
@@ -266,7 +266,7 @@ function _processOptions(options) {
         secondaryToolbarColor: processColor(options.secondaryToolbarColor),
     };
 }
-/* Android polyfill for SFAuthenticationSession flow */
+/* Android polyfill for ASWebAuthenticationSession flow */
 function _authSessionIsNativelySupported() {
     return Platform.OS !== 'android';
 }
