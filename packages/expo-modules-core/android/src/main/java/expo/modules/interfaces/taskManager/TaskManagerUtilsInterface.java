@@ -27,7 +27,7 @@ public interface TaskManagerUtilsInterface {
   /**
    * Executes a task directly
    */
-  void executeTask(Context context, TaskInterface task, Bundle data);
+  void executeTask(TaskInterface task, Bundle data);
 
   /**
    * Cancels scheduled job with given identifier.

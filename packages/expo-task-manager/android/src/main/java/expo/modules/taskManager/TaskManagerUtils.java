@@ -66,7 +66,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   @Override
-  public void executeTask(Context context, TaskInterface task, Bundle data) {
+  public void executeTask(TaskInterface task, Bundle data) {
     if (task == null) {
       Log.e(TAG, "Trying to execute a null task!");
     } else {

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Android: Fixed so that background fetch will run when app is killed or in the background.
+
 ### 💡 Others
 
 ## 13.0.2 — 2024-11-10
