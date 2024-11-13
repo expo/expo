@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Rename `experiments.reactServerActions` -> `experiments.reactServerFunctions` and other RSC flags. ([#32791](https://github.com/expo/expo/pull/32791) by [@EvanBacon](https://github.com/EvanBacon))
+- Revert [#32160](https://github.com/expo/expo/pull/32160).
 
 ## 0.21.0 — 2024-11-12
 
