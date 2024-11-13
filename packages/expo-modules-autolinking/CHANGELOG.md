@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed autolinking when `react-native-config` doesn't specify local dependencies. ([#32841](https://github.com/expo/expo/pull/32841) by [@thespacemanatee](https://github.com/thespacemanatee))
+
 ### 💡 Others
 
 ## 2.0.1 — 2024-11-13
