@@ -55,11 +55,11 @@ Then, create a directory named **.eas/workflows** at the root of your project wi
 
 Each workflow consists of three top-level elements:
 
-- `name`: defines the name of the workflow. For example: “Hello World!”
+- `name`: defines the name of the workflow. For example: "Hello World!"
 - `on`: defines when this workflow should be triggered. For example: when pushing a new commit to a GitHub branch.
 - `jobs`: a sequence of jobs which can depend on and pass data between each other. For example: a job that runs a unit test followed by a job that builds your project into an app.
 
-Here's an example of a workflow that prints “Hello world!”:
+Here's an example of a workflow that prints "Hello world!":
 
 ```yaml .eas/workflows/hello-world.yaml
 name: Hello World
