@@ -9,7 +9,7 @@ export function GridContainer({ children, className }: GridContainerProps) {
   return (
     <div
       className={mergeClasses(
-        'inline-grid w-full grid-cols-2 gap-8 my-4',
+        'my-4 inline-grid w-full grid-cols-2 gap-8',
         'max-xl-gutters:grid-cols-1',
         'max-lg-gutters:grid-cols-2',
         'max-md-gutters:grid-cols-1',
@@ -27,7 +27,7 @@ type GridCellProps = PropsWithChildren<{
 export const GridCell = ({ children, className }: GridCellProps) => (
   <div
     className={mergeClasses(
-      'p-8 min-h-[200px] overflow-hidden relative border border-default rounded-lg shadow-xs',
+      'relative min-h-[200px] overflow-hidden rounded-lg border border-default p-8 shadow-xs',
       '[&_h2]:!my-0 [&_h3]:!mt-0',
       className
     )}>

@@ -51,14 +51,14 @@ const Error = () => {
   }, [redirectPath]);
 
   return (
-    <Layout className="flex items-center justify-center flex-col !pb-20">
+    <Layout className="flex flex-col items-center justify-center !pb-20">
       {redirectPath && (
         <>
           <Head title="Redirecting" />
           <RedirectImage />
           <H1 className="!mt-8">Redirecting</H1>
           {/* note(simek): "redirect-link" ID is needed for test-links script */}
-          <P theme="secondary" className="text-center max-w-[450px] mb-8" id="redirect-link">
+          <P theme="secondary" className="mb-8 max-w-[450px] text-center" id="redirect-link">
             Just a moment…
           </P>
         </>
@@ -69,12 +69,12 @@ const Error = () => {
           {redirectFailed ? <ServerErrorImage /> : <NotFoundImage />}
           <H1 className="!mt-8">404: Not Found</H1>
           {redirectFailed ? (
-            <P theme="secondary" className="text-center max-w-[450px] mb-8" id="__redirect_failed">
+            <P theme="secondary" className="mb-8 max-w-[450px] text-center" id="__redirect_failed">
               We took an educated guess and tried to direct you to the right page, but it seems that
               did not work out! Maybe it doesn't exist anymore! 😔
             </P>
           ) : (
-            <P theme="secondary" className="text-center max-w-[450px] mb-8" id="__not_found">
+            <P theme="secondary" className="mb-8 max-w-[450px] text-center" id="__not_found">
               We couldn't find the page you were looking for. Check the URL to make sure it's
               correct and try again.
             </P>

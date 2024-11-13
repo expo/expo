@@ -2,7 +2,7 @@ import React from 'react';
 
 export function DotGrid() {
   return (
-    <div className="z-0 absolute size-full">
+    <div className="absolute z-0 size-full">
       <svg width="100%" height="100%">
         <defs>
           <pattern id="dot-grid" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">

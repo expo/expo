@@ -84,11 +84,11 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
     return (
       <div className="mb-5">
         {!shouldSkipTitle(route, parentRoute) && title && (
-          <div className="flex flex-row justify-between items-center py-0">
+          <div className="flex flex-row items-center justify-between py-0">
             <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="ml-2 text-secondary text-sm">{`${completedChaptersCount} of ${totalChapters}`}</p>
+              <p className="ml-2 text-sm text-secondary">{`${completedChaptersCount} of ${totalChapters}`}</p>
             </div>
           </div>
         )}
@@ -97,7 +97,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           const completed = isChapterCompleted(childSlug);
 
           return (
-            <div className="flex justify-between items-center" key={`${route.name}-${child.name}`}>
+            <div className="flex items-center justify-between" key={`${route.name}-${child.name}`}>
               <div className="flex-1">
                 <SidebarLink info={child}>{child.sidebarTitle || child.name}</SidebarLink>
               </div>
@@ -109,7 +109,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           <Button
             onClick={resetTutorial}
             theme="secondary"
-            className="w-full flex items-center justify-center"
+            className="flex w-full items-center justify-center"
             href="/tutorial/eas/introduction/">
             Reset tutorial
           </Button>
@@ -123,11 +123,11 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
     return (
       <div className="mb-5">
         {!shouldSkipTitle(route, parentRoute) && title && (
-          <div className="flex flex-row justify-between items-center py-0">
+          <div className="flex flex-row items-center justify-between py-0">
             <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentageForGetStarted} />{' '}
-              <p className="ml-2 text-secondary text-sm">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
+              <p className="ml-2 text-sm text-secondary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
             </div>
           </div>
         )}
@@ -136,7 +136,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           const completed = isGetStartedChapterCompleted(childSlug);
 
           return (
-            <div className="flex justify-between items-center" key={`${route.name}-${child.name}`}>
+            <div className="flex items-center justify-between" key={`${route.name}-${child.name}`}>
               <div className="flex-1">
                 <SidebarLink info={child}>{child.sidebarTitle || child.name}</SidebarLink>
               </div>
@@ -148,7 +148,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           <Button
             onClick={resetGetStartedTutorial}
             theme="secondary"
-            className="w-full flex items-center justify-center"
+            className="flex w-full items-center justify-center"
             href="/tutorial/eas/introduction/">
             Reset tutorial
           </Button>

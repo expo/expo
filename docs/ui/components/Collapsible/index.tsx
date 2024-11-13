@@ -76,33 +76,33 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
       <details
         id={heading.current.slug}
         className={mergeClasses(
-          'bg-default border border-default rounded-md p-0 mb-3',
+          'mb-3 rounded-md border border-default bg-default p-0',
           '[&[open]]:shadow-xs',
-          '[h4+&]:mt-3 [p+&]:mt-3 [li>&]:mt-3',
+          '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
         )}
         open={isOpen}
         data-testid={testID}>
         <summary
           className={mergeClasses(
-            'group grid grid-cols-[min-content_auto_min-content_1fr] items-center select-none bg-subtle p-1.5 pr-3 m-0 rounded-md cursor-pointer',
+            'group m-0 grid cursor-pointer select-none grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3',
             isOpen && 'rounded-b-none',
             '[&_h4]:my-0',
-            '[&_code]:bg-element [&_code]:inline [&_code]:text-[85%] [&_code]:leading-snug [&_code]:pb-px [&_code]:mt-px'
+            '[&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug'
           )}
           onClick={onToggle}>
-          <div className="mt-[5px] ml-1.5 mr-2 self-baseline">
+          <div className="ml-1.5 mr-2 mt-[5px] self-baseline">
             <TriangleDownIcon
               className={mergeClasses(
                 'icon-sm text-icon-default',
-                'transition-transform duration-200 -rotate-90',
+                '-rotate-90 transition-transform duration-200',
                 '[details[open]>summary_&]:rotate-0'
               )}
             />
           </div>
           <DEMI
             className={mergeClasses(
-              'inline gap-1.5 items-center scroll-m-5 mr-2 relative',
+              'relative mr-2 inline scroll-m-5 items-center gap-1.5',
               'group-hover:text-secondary group-hover:[&_code]:text-secondary'
             )}>
             {summary}
@@ -110,12 +110,12 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           <LinkBase
             href={'#' + heading.current.slug}
             ref={heading.current.ref}
-            className="inline ml-auto">
-            <PermalinkIcon className="icon-sm inline-flex mb-auto invisible group-hover:visible group-focus-visible:visible" />
+            className="ml-auto inline">
+            <PermalinkIcon className="icon-sm invisible mb-auto inline-flex group-hover:visible group-focus-visible:visible" />
           </LinkBase>
           <div />
         </summary>
-        <div className={mergeClasses('py-4 px-5', '[&_p]:ml-0 [&_pre>pre]:mt-0 last:[&>*]:!mb-1')}>
+        <div className={mergeClasses('px-5 py-4', 'last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0')}>
           {children}
         </div>
       </details>

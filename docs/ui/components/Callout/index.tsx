@@ -52,7 +52,7 @@ export const Callout = ({
   return (
     <blockquote
       className={mergeClasses(
-        'bg-subtle border border-default flex gap-2 rounded-md shadow-xs py-3 px-4 mb-4',
+        'mb-4 flex gap-2 rounded-md border border-default bg-subtle px-4 py-3 shadow-xs',
         '[table_&]:last:mb-0',
         '[&_code]:bg-element',
         getCalloutColor(finalType),
@@ -62,7 +62,7 @@ export const Callout = ({
       )}
       data-testid="callout-container">
       <div
-        className={mergeClasses('select-none mt-1', '[table_&]:mt-0.5', size === 'sm' && 'mt-0.5')}>
+        className={mergeClasses('mt-1 select-none', '[table_&]:mt-0.5', size === 'sm' && 'mt-0.5')}>
         {typeof icon === 'string' ? (
           icon
         ) : (
@@ -71,9 +71,9 @@ export const Callout = ({
       </div>
       <div
         className={mergeClasses(
-          'text-default w-full leading-normal',
+          'w-full leading-normal text-default',
           'last:mb-0',
-          size === 'sm' && 'text-xs [&_p]:text-xs [&_code]:text-[90%]'
+          size === 'sm' && 'text-xs [&_code]:text-[90%] [&_p]:text-xs'
         )}>
         {type === finalType ? children : contentChildren.filter((_, i) => i !== 0)}
       </div>
@@ -85,19 +85,19 @@ function getCalloutColor(type: CalloutType) {
   switch (type) {
     case 'warning':
       return mergeClasses(
-        'bg-warning border-warning',
-        `[&_code]:bg-palette-yellow4 [&_code]:border-palette-yellow6`,
-        `dark:[&_code]:bg-palette-yellow5 dark:[&_code]:border-palette-yellow7`
+        'border-warning bg-warning',
+        `[&_code]:border-palette-yellow6 [&_code]:bg-palette-yellow4`,
+        `dark:[&_code]:border-palette-yellow7 dark:[&_code]:bg-palette-yellow5`
       );
     case 'error':
       return mergeClasses(
-        'bg-danger border-danger',
-        `[&_code]:bg-palette-red5 [&_code]:border-palette-red7`
+        'border-danger bg-danger',
+        `[&_code]:border-palette-red7 [&_code]:bg-palette-red5`
       );
     case 'info':
       return mergeClasses(
-        'bg-info border-info',
-        `[&_code]:bg-palette-blue4 [&_code]:border-palette-blue6`
+        'border-info bg-info',
+        `[&_code]:border-palette-blue6 [&_code]:bg-palette-blue4`
       );
     default:
       return null;
