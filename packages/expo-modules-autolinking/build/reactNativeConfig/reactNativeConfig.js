@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveAppProjectConfigAsync = exports.resolveDependencyConfigAsync = exports.findDependencyRootsAsync = exports.createReactNativeConfigAsync = void 0;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("../autolinking/utils");
+const fileUtils_1 = require("../fileUtils");
 const androidResolver_1 = require("./androidResolver");
 const config_1 = require("./config");
 const iosResolver_1 = require("./iosResolver");
-const utils_1 = require("../autolinking/utils");
-const fileUtils_1 = require("../fileUtils");
 /**
  * Create config for react-native core autolinking.
  */
@@ -68,7 +68,7 @@ exports.findDependencyRootsAsync = findDependencyRootsAsync;
  * Find local dependencies that specified in the `react-native.config.js` file.
  */
 function findProjectLocalDependencyRoots(projectConfig) {
-    if (!projectConfig) {
+    if (!projectConfig?.dependencies) {
         return {};
     }
     const results = {};
