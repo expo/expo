@@ -126,19 +126,6 @@ export function createDefaultExportCustomSerializer(
       },
     };
 
-    const originalCreateModuleId = options.createModuleId;
-    const context = {
-      platform: graph.transformOptions.platform,
-      environment: graph.transformOptions.customTransformOptions?.environment ?? 'client',
-    };
-
-    options.createModuleId = (moduleId, ...props) => {
-      if (props.length > 0) {
-        return originalCreateModuleId(moduleId, ...props);
-      }
-      return originalCreateModuleId(moduleId, context);
-    };
-
     let debugId: string | undefined;
     const loadDebugId = () => {
       if (!enableDebugId || debugId) {
