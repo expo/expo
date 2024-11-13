@@ -62,6 +62,10 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
 
   @Override
   public void didReceiveBroadcast(Intent intent) {
+    if (mTask == null) {
+      return;
+    }
+
     String action = intent.getAction();
 
     if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
@@ -77,10 +81,8 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
       startAlarm();
     } else {
       Context context = getContext();
-      TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
-
       if (context != null) {
-        taskManagerUtils.scheduleJob(context, mTask, null);
+        mTask.execute(null, null);
       }
     }
   }
