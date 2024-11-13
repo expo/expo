@@ -26,6 +26,7 @@ import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
+import path from 'path';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -296,6 +297,9 @@ function pruneCustomTransformOptions(
   filePath: string,
   transformOptions: TransformOptions
 ): TransformOptions {
+  // Normalize the filepath for cross platform checking.
+  filePath = filePath.split(path.sep).join('/');
+
   if (
     transformOptions.customTransformOptions?.dom &&
     // The only generated file that needs the dom root is `expo/dom/entry.js`
@@ -307,8 +311,7 @@ function pruneCustomTransformOptions(
   }
 
   if (
-    transformOptions.customTransformOptions &&
-    !transformOptions.customTransformOptions?.routerRoot &&
+    transformOptions.customTransformOptions?.routerRoot &&
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
     !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
   ) {
