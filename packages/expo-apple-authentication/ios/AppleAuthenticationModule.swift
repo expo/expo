@@ -3,6 +3,21 @@ import ExpoModulesCore
 
 let credentialRevokedEventName = "Expo.appleIdCredentialRevoked"
 
+struct FullName: Record {
+  @Field
+  var namePrefix: String?
+  @Field
+  var nameSuffix: String?
+  @Field
+  var givenName: String?
+  @Field
+  var middleName: String?
+  @Field
+  var familyName: String?
+  @Field
+  var nickname: String?
+}
+
 public final class AppleAuthenticationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoAppleAuthentication")
@@ -33,12 +48,16 @@ public final class AppleAuthenticationModule: Module {
       }
     }
 
-    Function("formatFullName") { (fullNameDict: FullName formatStyle: FullNameFormatStyle?) in
+    Function("formatFullName") { (fullName: FullName, formatStyle: FullNameFormatStyle?) in
       let formatStyle = formatStyle?.toFullNameFormatStyle() ?? .default
       var nameComponents = PersonNameComponents()
 
-      nameComponents.namePrefix = fullname.namePrefix
-      ...
+      nameComponents.namePrefix = fullName.namePrefix
+      nameComponents.nameSuffix = fullName.nameSuffix
+      nameComponents.givenName = fullName.givenName
+      nameComponents.middleName = fullName.middleName
+      nameComponents.familyName = fullName.familyName
+      nameComponents.nickname = fullName.nickname
 
       let formatter = PersonNameComponentsFormatter()
       formatter.style = formatStyle

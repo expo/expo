@@ -193,13 +193,12 @@ export type AppleAuthenticationFullName = {
  * Documentation](https://developer.apple.com/documentation/foundation/personnamecomponentsformatter)
  * for more details.
  */
-export type AppleAuthenticationFullNameFormatStyle  =
-  "default" |
-  "short" |
-  "medium" |
-  "long" |
-  "abbreviated"
-}
+export type AppleAuthenticationFullNameFormatStyle =
+  | 'default'
+  | 'short'
+  | 'medium'
+  | 'long'
+  | 'abbreviated';
 
 // @needsAudit @docsMissing
 /**
