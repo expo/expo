@@ -197,4 +197,11 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     playerViewController.beginAppearanceTransition(self.window != nil, animated: true)
     #endif
   }
+
+  public override func safeAreaInsetsDidChange() {
+    super.safeAreaInsetsDidChange()
+    // This is the only way that I (@behenate) to force re-calculation of the safe-area insets for native controls
+    playerViewController.view.removeFromSuperview()
+    addSubview(playerViewController.view)
+  }
 }
