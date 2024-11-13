@@ -33,16 +33,12 @@ public final class AppleAuthenticationModule: Module {
       }
     }
 
-    Function("formatFullName") { (fullNameDict: [String: String], formatStyle: FullNameFormatStyle?) in
+    Function("formatFullName") { (fullNameDict: FullName formatStyle: FullNameFormatStyle?) in
       let formatStyle = formatStyle?.toFullNameFormatStyle() ?? .default
       var nameComponents = PersonNameComponents()
 
-      nameComponents.namePrefix = fullNameDict["namePrefix"]
-      nameComponents.nameSuffix = fullNameDict["nameSuffix"]
-      nameComponents.givenName = fullNameDict["givenName"]
-      nameComponents.middleName = fullNameDict["middleName"]
-      nameComponents.familyName = fullNameDict["familyName"]
-      nameComponents.nickname = fullNameDict["nickname"]
+      nameComponents.namePrefix = fullname.namePrefix
+      ...
 
       let formatter = PersonNameComponentsFormatter()
       formatter.style = formatStyle

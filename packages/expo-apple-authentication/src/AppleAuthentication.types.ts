@@ -193,12 +193,12 @@ export type AppleAuthenticationFullName = {
  * Documentation](https://developer.apple.com/documentation/foundation/personnamecomponentsformatter)
  * for more details.
  */
-export enum AppleAuthenticationFullNameFormatStyle {
-  DEFAULT = 0,
-  SHORT = 1,
-  MEDIUM = 2,
-  LONG = 3,
-  ABBREVIATED = 4,
+export type AppleAuthenticationFullNameFormatStyle  =
+  "default" |
+  "short" |
+  "medium" |
+  "long" |
+  "abbreviated"
 }
 
 // @needsAudit @docsMissing
