@@ -7,7 +7,7 @@ enum FullNameFormatStyle: String, Enumerable {
   case medium
   case long
   case abbreviated
-  
+
   func toFullNameFormatStyle() -> PersonNameComponentsFormatter.Style {
     switch self {
     case .default:
