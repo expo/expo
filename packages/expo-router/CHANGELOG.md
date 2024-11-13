@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `withAnchor` and `relativeToDirectory` options to `<Redirect />`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
