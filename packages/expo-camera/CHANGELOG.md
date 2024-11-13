@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Drop legacy `cameraview-aar` dependency.
+
 ## 16.0.4 — 2024-11-13
 
 ### 🐛 Bug fixes

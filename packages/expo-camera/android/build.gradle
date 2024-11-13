@@ -18,12 +18,6 @@ android {
   }
 }
 
-repositories {
-  maven {
-    url "$projectDir/maven"
-  }
-}
-
 dependencies {
   def camerax_version = "1.4.0-beta02"
 
@@ -39,6 +33,4 @@ dependencies {
   implementation "androidx.camera:camera-extensions:${camerax_version}"
   implementation "com.google.mlkit:barcode-scanning:17.2.0"
   implementation "androidx.camera:camera-mlkit-vision:${camerax_version}"
-
-  implementation project(":${project.name}\$cameraview-aar")
 }
