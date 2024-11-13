@@ -1,0 +1,56 @@
+---
+title: Triggers
+description: Learn which triggers work with Workflows.
+---
+
+Triggers define when a workflow should kick off. When its conditions are met, the workflow will start.
+
+## On push
+
+You can trigger a workflow on a push to a GitHub branch with the `push` trigger.
+
+```yaml .eas/workflows/hello-world.yaml
+name: Hello World
+
+on:
+  push:
+	  branches:
+	    - 'main'
+	    - 'feature/**'
+	    # other branches names and globs
+
+jobs:
+  # ...
+```
+
+## On pull request
+
+You can trigger a workflow on a pull request with the `pull_request` trigger.
+
+```yaml .eas/workflows/hello-world.yaml
+name: Hello World
+
+on:
+  pull_request:
+	  branches:
+		  - 'main'
+		  # other branch names and globs
+
+jobs:
+  # ...
+```
+
+## More
+
+Workflows also support triggering on all branches, on both push and pull request events:
+
+```yaml .eas/workflows/hello-world.yaml
+name: Hello World
+
+on:
+	push: {} # this will default to `branches: ['*']`, meaning "run on all branches"
+	pull_request: {}
+
+jobs:
+  # ...
+```

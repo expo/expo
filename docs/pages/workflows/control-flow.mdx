@@ -1,0 +1,69 @@
+---
+title: Control flow
+description: Learn how to control the flow of Workflows with conditions that run certain jobs based on the result of previous jobs.
+---
+
+You can control the flow of your workflows with conditions that run certain jobs based on the result of previous jobs.
+
+## `needs`
+
+You can add an list of job names to the `needs` keyword on a job. If a job in the list fails, the job will be skipped.
+
+```yaml .eas/workflows/prerequisite.yaml
+jobs:
+  build:
+    type: build
+    params:
+      platform: ios
+      profile: production
+  end-to-end-test:
+    # @info #
+    needs: [build]
+    # @end #
+    type: maestro
+    params:
+      build_id: ${{ jobs.build.outputs.build_id }}
+      flow_path: ['./e2e/flow.yaml']
+```
+
+## `after`
+
+You can add a list of job names to the `after` keyword on a job. The jobs in the list will run after the job completes no matter if it succeeded or failed.
+
+```yaml .eas/workflows/after.yaml
+jobs:
+  build:
+    type: build
+    params:
+      platform: ios
+      profile: production
+  send_slack_notification:
+    after: [build]
+    steps:
+      - name: Send Slack notification
+        inputs:
+          message: 'Build completed.'
+          slack_hook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+```
+
+## `if`
+
+You can add a condition to a job with the `if` keyword. If the condition evaluates to `true`, the job will run. Otherwise, it will be skipped.
+
+```yaml .eas/workflows/conditional.yaml
+on:
+	push: {} # runs on all branches
+
+jobs:
+  update:
+    type: update
+  build:
+    name: Build iOS
+    type: build
+    # @info #
+    if: ${{ github.ref == "refs/heads/main" }} # Will only run if on main.
+    # @end #
+    params:
+      profile: production
+      platform: ios
+```

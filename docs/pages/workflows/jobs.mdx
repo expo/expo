@@ -1,0 +1,84 @@
+---
+title: Jobs
+description: Learn which pre-packaged and custom jobs you can run with Workflows.
+---
+
+Workflows sequence jobs together to automate your development and release processes. You can run two types of jobs: pre-packaged jobs and custom jobs.
+
+Pre-packaged jobs are provided by Expo and meet common use cases for developers, like building, submitting, and running end to end test. Since they are provided by Expo, they are continuously maintained and updated.
+
+Custom jobs are jobs that you write yourself. They are useful for any use case that isn't met by the pre-packaged jobs.
+
+## Build
+
+This is a pre-packaged job that creates a build from a project:
+
+```yaml .eas/workflows/build.yaml
+jobs:
+  build:
+    type: build
+    params:
+      platform: android | ios
+      profile: string # default: production
+```
+
+This job outputs the following variables:
+
+- `platform`: Either `android` or `ios`.
+- `build_id`: The ID of the build.
+
+## Submit
+
+This is a pre-packaged job that submits a build to an app store. Given a `build_id`, we'll choose the correct automation to submit the build to the correct store.
+
+```yaml .eas/workflows/submit.yaml
+jobs:
+  submit:
+    type: submit
+    params:
+      profile: string # default: production
+      build_id: string
+```
+
+This job outputs the following variables:
+
+- `platform`: Either `android` or `ios`.
+- `submission_id`: The ID of the submission.
+
+## Update
+
+This is a pre-packaged job that publishes an update:
+
+```yaml .eas/workflows/update.yaml
+jobs:
+  update:
+    type: update
+```
+
+## End-to-end test with Maestro
+
+This is a pre-packaged job that runs end-to-end tests with Maestro. Given a `build_id`, we'll choose the correct machine to run the tests on the correct platform.
+
+```yaml .eas/workflows/e2e-test.yaml
+jobs:
+  e2e-test:
+    type: maestro
+    params:
+      build_id: string
+      flow_path: string | string[] # string is a file path from the project root
+```
+
+## Custom jobs
+
+Custom jobs are jobs that you write yourself. They are useful for any use case that isn't met by the pre-packaged jobs.
+
+```yaml .eas/workflows/custom-job.yaml
+jobs:
+  custom-job:
+    type: custom # default: undefined
+    steps:
+      - name: Run a script
+        run: echo "Hello, world!"
+```
+
+Within custom jobs, you can use our [built-in functions](/custom-builds/schema/#built-in-eas-functions), like `eas/checkout`, `eas/use_npm_token` to interact with the project.

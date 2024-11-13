@@ -1,0 +1,47 @@
+---
+title: Variables
+description: Learn how to use variables in Workflows.
+---
+
+You can use variables in your workflows to pass data between jobs or steps. Variables are useful for conditionals on subsequent jobs or afftecting the output of a workflow.
+
+You can set variables in the workflow file with the `set-output` function:
+
+```yaml .eas/workflows/variables.yaml
+jobs:
+  fingerprint:
+    outputs:
+      # @info Sets the `fingerprint_hash_for_workflow` as a variable #
+      fingerprint_hash_for_workflow: ${{ steps.fingerprint_step_id.outputs.fingerprint_hash }}
+      # @end #
+    steps:
+      - name: Set fingerprint hash
+			id: fingerprint_step_id
+			run: |
+				FINGERPRINT_HASH=$(npx expo-updates fingerprint:generate --platform ios | jq '.hash')
+                # @info Sets the `fingerprint_hash` as a variable #
+				set-output fingerprint_hash $FINGERPRINT_HASH
+                # @end #
+                # @info Exposes the `fingerprint_hash` variable to other steps in this job #
+			outputs: [fingerprint_hash]
+                # @end #
+      - name: Do something with the fingerprint hash
+			run: |
+                # @info Accesses the `fingerprint_hash` variable #
+				echo ${ steps.fingerprint_step_id.outputs.fingerprint_hash }
+                # @end #
+    maybe_build:
+      needs: [fingerprint]
+      # @info Accesses the `fingerprint_hash_for_workflow` variable #
+      if: ${{ needs.fingerprint.outputs.fingerprint_hash_for_workflow != '1234' }}
+      # @end #
+      type: build
+      params:
+        platform: ios
+```
+
+In the example above, three things are happening:
+
+- The `set-output` function sets the `fingerprint_hash` variable.
+- The `outputs` keyword on the step inside the `fingerprint` job exposes the `fingerprint_hash` variable to other steps in `fingerprint` job. That variable is used in an `echo` statement later in the job.
+- The `outputs` keyword on the `fingerprint` job specifies that the whole workflow will have access to a variable called `fingerprint_hash_for_workflow`. That variable is later used in the `maybe_build` job to conditionally run the build job.
