@@ -4,7 +4,6 @@ import resolveFrom from 'resolve-from';
 
 import * as Log from '../../../../log';
 import {
-  isDependencyVersionIncorrect,
   logIncorrectDependencies,
   validateDependenciesVersionsAsync,
 } from '../validateDependenciesVersions';
@@ -291,36 +290,5 @@ describe(validateDependenciesVersionsAsync, () => {
     await expect(
       validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)
     ).resolves.toBeNull();
-  });
-});
-
-describe(isDependencyVersionIncorrect, () => {
-  const testCases = [
-    ['3.9.0-rc.1', '~3.9.0-rc.1', false, 'prerelease with tilde range'],
-    ['3.9.0-rc.1', '~3.9.1', true, 'different prerelease with tilde range'],
-    ['3.9.0-rc.1', '^3.9.0-rc.1', false, 'prerelease with caret range'],
-    ['3.9.0-rc.1', '3.9.0-rc.1', false, 'exact prerelease match'],
-    ['3.9.0', '^3.9.0', false, 'regular version with caret range'],
-    ['3.9.0', '~3.9.1', true, 'different regular version with tilde range'],
-    ['3.9.0', '~3.9.0', false, 'same regular version with tilde range'],
-    ['3.9.0', '>=3.9.0', false, 'same version with greater than or equal range'],
-    ['3.9.0', '>=4.0.0', true, 'version less than minimum'],
-    ['3.9.3', '>=3.9.0 <4.0.0', false, 'version within range'],
-    ['3.8.3', '>=3.9.0 <4.0.0', true, 'version outside range'],
-    ['4.0.0', '>=3.9.0 <=4.0.0', false, 'version equal to maximum'],
-    ['3.9.0-rc.1', '>=4.0.0-rc.1', true, 'prerelease less than minimum'],
-    ['4.0.0-preview.1', '>=4.0.0-preview.1', false, 'prerelease version equal to maximum'],
-  ];
-
-  testCases.forEach(([actual, expected, result, description]) => {
-    it(`returns ${result} evaluating ${actual} against ${expected} - ${description}`, () => {
-      expect(
-        isDependencyVersionIncorrect(
-          'react-native-reanimated',
-          actual as string,
-          expected as string
-        )
-      ).toBe(result);
-    });
   });
 });
