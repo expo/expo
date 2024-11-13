@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix missing fallback to `process.cwd()` while no argument has been passed.
+
 ### 💡 Others
+
+- Improve console messages and errors.
 
 ## 0.3.0 — 2024-10-22
 
