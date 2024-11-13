@@ -13,52 +13,66 @@ const packageJSON = require('../package.json');
 
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
-  .arguments('<project-directory>')
-  .usage(`${chalk.green('<project-directory>')} [options]`)
+  .arguments('[project-directory]')
+  .usage(`${chalk.green('[project-directory]')} [options]`)
   .description('Install pods in your project')
   .option('--quiet', 'Only print errors')
   .option('--non-interactive', 'Disable interactive prompts')
   .allowUnknownOption()
   .parse(process.argv);
 
-const info = (message: string) => {
+function info(message: string) {
   if (!program.opts().quiet) {
     console.log(message);
   }
-};
+}
 
-async function runAsync(): Promise<void> {
+async function runAsync(projectDirectory: string): Promise<void> {
   if (process.platform !== 'darwin') {
-    info(chalk.red('CocoaPods is only supported on darwin machines'));
-    return;
+    info(chalk.red('\nCocoaPods is only supported on darwin machines\n'));
+    process.exit(1);
   }
 
-  let projectRoot = resolve(process.cwd());
+  const possibleProjectRoot = resolve(projectDirectory ?? process.cwd());
 
-  const possibleProjectRoot = CocoaPodsPackageManager.getPodProjectRoot(projectRoot);
-  if (!possibleProjectRoot) {
-    const packageJsonPath = join(projectRoot, 'package.json');
+  if (!existsSync(possibleProjectRoot)) {
+    info(chalk.red(`\nTarget directory does not exist! (${possibleProjectRoot})\n`));
+    process.exit(1);
+  }
 
-    if (existsSync(packageJsonPath)) {
-      const jsonData = JSON.parse(readFileSync(packageJsonPath).toString());
-      const hasExpoPackage = jsonData.dependencies?.hasOwnProperty('expo');
+  const projectRoot = CocoaPodsPackageManager.getPodProjectRoot(possibleProjectRoot);
 
-      if (hasExpoPackage) {
-        info(
-          chalk.yellow(
-            `No 'ios' directory found, skipping installing pods. Pods will be automatically installed when the 'ios' directory is generated with 'npx expo prebuild' or 'npx expo run:ios'.`,
-            learnMore('https://docs.expo.dev/workflow/prebuild/')
-          )
-        );
-        return;
-      }
+  if (!projectRoot) {
+    const packageJsonPath = join(possibleProjectRoot, 'package.json');
+
+    if (!existsSync(packageJsonPath)) {
+      info(chalk.red(`\n'package.json' file does not exist! (${packageJsonPath})\n`));
+      process.exit(1);
     }
 
-    info(chalk.yellow('CocoaPods is not supported in this project'));
-    return;
-  } else {
-    projectRoot = possibleProjectRoot;
+    const jsonData = JSON.parse(readFileSync(packageJsonPath).toString());
+    const hasExpoPackage = jsonData.dependencies?.hasOwnProperty('expo');
+
+    if (hasExpoPackage) {
+      info(
+        chalk.yellow(
+          `No 'ios' directory found, skipping installing pods.`,
+          `\nPods will be automatically installed when the 'ios' directory is generated with 'npx expo prebuild' or 'npx expo run:ios'.`,
+          learnMore('https://docs.expo.dev/workflow/prebuild/')
+        )
+      );
+      process.exit(0);
+    }
+
+    if (projectDirectory) {
+      info(chalk.yellow(`CocoaPods is not supported in project at ${possibleProjectRoot}`));
+    } else {
+      info(chalk.yellow('CocoaPods is not supported in this project'));
+    }
+    process.exit(0);
   }
+
+  info('Scanning for pods...');
 
   if (!(await CocoaPodsPackageManager.isCLIInstalledAsync())) {
     await CocoaPodsPackageManager.installCLIAsync({
@@ -80,15 +94,13 @@ async function runAsync(): Promise<void> {
 
 (async () => {
   program.parse(process.argv);
-  info('Scanning for pods...');
   try {
-    await runAsync();
+    await runAsync(program.args[0]);
     if (!program.opts().quiet) {
       await shouldUpdate();
     }
   } catch (reason: any) {
-    console.log();
-    console.log('Aborting run');
+    console.log('\nAborting run');
     if (reason.command) {
       console.log(`  ${chalk.magenta(reason.command)} has failed.`);
     } else {
