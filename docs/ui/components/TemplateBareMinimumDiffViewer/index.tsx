@@ -2,7 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { useRouter } from 'next/compat/router';
 import { useEffect } from 'react';
 
-import { VersionSelector } from './VersionSelector';
+import { VersionSelector, BETA_MAJOR_VERSION } from './VersionSelector';
 
 import versions from '~/public/static/constants/versions.json';
 import diffInfo from '~/public/static/diffs/template-bare-minimum/diffInfo.json';
@@ -20,7 +20,7 @@ export const TemplateBareMinimumDiffViewer = () => {
 
   // default to from: last SDK, to: current SDK
   const lastTwoProductionVersions = bareDiffVersions
-    .filter((d: string) => d !== 'unversioned')
+    .filter((d: string) => d !== 'unversioned' && d !== BETA_MAJOR_VERSION)
     .slice(-2);
 
   const fromVersion = router?.query.fromSdk || lastTwoProductionVersions[0];
