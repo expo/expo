@@ -1576,16 +1576,6 @@
   resolved "https://registry.yarnpkg.com/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz#d7ebd21b19f1c6b0395e50d78da4416941c57f7c"
   integrity sha512-Doz2bfiPndXYFPMRwPyGa1k5QaKDVpY806UJj570epIiMzWaYyCtobasyfC++qfIXVb5Ocy7r3tP9d62hAQ7IQ==
 
-"@expo/server@^0.4.2":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@expo/server/-/server-0.4.4.tgz#f89a8e57ef93b35e9635632e217a8868f762f358"
-  integrity sha512-q9ADBzMN5rZ/fgQ2mz5YIJuZ8gelQlhG2CQqToD+UvBLZvbaHCNxTTSs2KI1LzJvAaW5CWgWMatGvGF6iUQ0LA==
-  dependencies:
-    "@remix-run/node" "^2.7.2"
-    abort-controller "^3.0.0"
-    debug "^4.3.4"
-    source-map-support "~0.5.21"
-
 "@expo/spawn-async@^1.7.2":
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/@expo/spawn-async/-/spawn-async-1.7.2.tgz#fcfe66c3e387245e72154b1a7eae8cada6a47f58"
@@ -3373,7 +3363,7 @@
     "@react-navigation/elements" "^2.0.0"
     color "^4.2.3"
 
-"@remix-run/node@^2.12.0", "@remix-run/node@^2.7.2":
+"@remix-run/node@^2.12.0":
   version "2.13.1"
   resolved "https://registry.yarnpkg.com/@remix-run/node/-/node-2.13.1.tgz#572f838201a11f8d9d8ef56929eb2a2c46e0f5ea"
   integrity sha512-2ly7bENj2n2FNBdEN60ZEbNCs5dAOex/QJoo6EZ8RNFfUQxVKAZkMwfQ4ETV2SLWDgkRLj3Jo5n/dx7O2ZGhGw==
@@ -8182,17 +8172,17 @@ expo-asset-utils@~3.0.0:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-3.0.0.tgz#2c7ddf71ba9efacf7b46c159c1c650114a2f14dc"
   integrity sha512-CgIbNvTqKqQi1lrlptmwoaCMu4ZVOZf8tghmytlor23CjIOuorw6cfuOqiqWkJLz23arTt91maYEU9XLMPB23A==
 
-expo-atlas@^0.3.11:
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.3.11.tgz#e025615e0f9ecd43c32b54706a1f3557a0f75124"
-  integrity sha512-mQnKzNlEReusByuBX8GnRsRY1GAL1iy5j/lsJ/dLusQR+xLY7hZaUiZ4XEe+UYzLTSN3d3Sf43hOsDOpxDwm8Q==
+expo-atlas@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/expo-atlas/-/expo-atlas-0.4.0.tgz#1f83f948c3cf88e9fcc9829199a0bbcd031e0068"
+  integrity sha512-UFLN0o53yjooLjPj98+NGzWPAFvr917D+7nPEELW1qXuEj3X4eqrQUdrbckdpIFQz5ke0FK3TvmB5WR+to0JzQ==
   dependencies:
-    "@expo/server" "^0.4.2"
+    "@expo/server" "^0.5.0"
     arg "^5.0.2"
     chalk "^4.1.2"
     compression "^1.7.4"
     connect "^3.7.0"
-    express "^4.18.2"
+    express "^4.19.2"
     freeport-async "^2.0.0"
     getenv "^1.0.0"
     morgan "^1.10.0"
@@ -8218,7 +8208,7 @@ exponential-backoff@^3.1.1:
   resolved "https://registry.yarnpkg.com/exponential-backoff/-/exponential-backoff-3.1.1.tgz#64ac7526fe341ab18a39016cd22c787d01e00bf6"
   integrity sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==
 
-express@^4.18.2, express@^4.19.2:
+express@^4.19.2:
   version "4.19.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.19.2.tgz#e25437827a3aa7f2a827bc8171bbbb664a356465"
   integrity sha512-5T6nhjsT+EOMzuck8JjBHARTHfMht0POzlA60WV2pMD3gyXw2LZnZ+ueGdNxG+0calOJcWKbpFcuzLZ91YWq9Q==
