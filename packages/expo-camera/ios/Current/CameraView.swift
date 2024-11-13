@@ -14,7 +14,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   // MARK: - Properties
 
-  private lazy var barcodeScanner = createBarcodeScanner()
+  private var barcodeScanner: BarcodeScanner?
   private lazy var previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
@@ -50,7 +50,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
   var isScanningBarcodes = false {
     didSet {
       Task {
-        await barcodeScanner.setIsEnabled(isScanningBarcodes)
+        await barcodeScanner?.setIsEnabled(isScanningBarcodes)
       }
     }
   }
@@ -144,6 +144,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     #if !targetEnvironment(simulator)
     setupPreview()
     #endif
+    barcodeScanner = createBarcodeScanner()
     UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.addObserver(
       self,
@@ -268,7 +269,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     addErrorNotification()
     await changePreviewOrientation()
 
-    await barcodeScanner.maybeStartBarcodeScanning()
+    await barcodeScanner?.maybeStartBarcodeScanning()
     session.commitConfiguration()
     updateCameraIsActive()
     onCameraReady()
@@ -306,7 +307,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
 
   func setBarcodeScannerSettings(settings: BarcodeSettings) {
     Task {
-      await barcodeScanner.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
+      await barcodeScanner?.setSettings([BARCODE_TYPES_KEY: settings.toMetadataObjectType()])
     }
   }
 
@@ -757,7 +758,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener,
     for output in session.outputs {
       session.removeOutput(output)
     }
-    await barcodeScanner.stopBarcodeScanning()
+    await barcodeScanner?.stopBarcodeScanning()
     session.commitConfiguration()
 
     motionManager.stopAccelerometerUpdates()
