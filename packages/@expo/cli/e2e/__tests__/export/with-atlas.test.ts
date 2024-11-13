@@ -41,10 +41,10 @@ describe('exports all platforms with static export', () => {
 
     expect(await source.listBundles()).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ platform: 'android' }),
-        expect.objectContaining({ platform: 'ios' }),
-        expect.objectContaining({ platform: 'web' }),
-        expect.objectContaining({ platform: 'server' }),
+        expect.objectContaining({ platform: 'android', environment: 'client' }),
+        expect.objectContaining({ platform: 'ios', environment: 'client' }),
+        expect.objectContaining({ platform: 'web', environment: 'client' }),
+        expect.objectContaining({ platform: 'web', environment: 'node' }),
       ])
     );
   });

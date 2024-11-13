@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Upgrade Expo Atlas prerequisite to `0.4.0` for newer `@expo/server` version. ([#32831](https://github.com/expo/expo/pull/32831) by [@byCedric](https://github.com/byCedric))
+
 ## 0.21.1 — 2024-11-13
 
 ### 🎉 New features
