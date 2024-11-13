@@ -165,7 +165,7 @@ import { Button } from 'react-native';
 
 ## Usage with Expo Router
 
-If your app uses [Expo Router](/router/introduction), then you can configure Sentry to automatically capture the current route and pass it along with your error reports. To set this up, configure Sentry in the [Root Layout route](/router/advanced/root-layout) and add routing instrumentation.
+If your app uses [Expo Router](/router/introduction), then you can configure Sentry to automatically capture the current route and pass it along with your error reports. To set this up, configure Sentry in the [Root Layout route](/router/advanced/root-layout) and add the navigation integration.
 
 <Collapsible summary="Example configuration that instruments Sentry for Expo Router">
 
@@ -175,29 +175,29 @@ import { useEffect } from 'react';
 import * as Sentry from '@sentry/react-native';
 import { isRunningInExpoGo } from 'expo';
 
-// Construct a new instrumentation instance. This is needed to communicate between the integration and React
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
+// Construct a new integration instance. This is needed to communicate between the integration and React
+const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: !isRunningInExpoGo(),
+})
 
 Sentry.init({
   dsn: 'YOUR DSN HERE',
   debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+  tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
   integrations: [
-    new Sentry.ReactNativeTracing({
-      // Pass instrumentation to be used as `routingInstrumentation`
-      routingInstrumentation,
-      enableNativeFramesTracking: !isRunningInExpoGo(),
-      // ...
-    }),
+    // Pass integration
+    navigationIntegration
   ],
+  enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
 });
 
 function RootLayout() {
-  // Capture the NavigationContainer ref and register it with the instrumentation.
-  const ref = useNavigationContainerRef();
+  // Capture the NavigationContainer ref and register it with the integration.
+  const ref = useNavigationContainerRef()
 
   useEffect(() => {
     if (ref?.current) {
-      routingInstrumentation.registerNavigationContainer(ref);
+      navigationIntegration.registerNavigationContainer(ref)
     }
   }, [ref]);
 
