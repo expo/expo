@@ -362,7 +362,8 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
   }
 
   // Attempt to write to a function-like dynamic config, when used with a static config
-  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function') {
+  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function' && !modifications.hasOwnProperty('plugins') // We don't know what plugins are in dynamic configs
+  ) {
     const outputConfig = mergeConfigModifications(config, modifications);
     if (isDryRun) {
       return {
@@ -379,6 +380,8 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
 
     // Verify that the dynamic config is using the static config
     const newConfig = getConfig(projectRoot, readOptions);
+    console.log(`New config: ${JSON.stringify(newConfig.exp, null, 2)}`);
+    console.log(`Modifications: ${JSON.stringify(modifications, null, 2)}`);
     const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
     if (newConfighasModifications) {
       return {
