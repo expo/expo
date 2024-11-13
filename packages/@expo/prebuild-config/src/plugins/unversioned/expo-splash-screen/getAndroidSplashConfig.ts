@@ -44,6 +44,7 @@ export function getAndroidSplashConfig(
       backgroundColor: splash.backgroundColor,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: splash.imageWidth ?? 100,
+      dark: splash.dark,
     };
   }
 
@@ -59,6 +60,7 @@ export function getAndroidSplashConfig(
       image: splash.image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: 200,
+      dark: splash.dark,
     };
   }
 
@@ -73,6 +75,7 @@ export function getAndroidSplashConfig(
       backgroundColor: splash.backgroundColor,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       imageWidth: 200,
+      dark: splash.dark,
     };
   }
 
