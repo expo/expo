@@ -4,7 +4,7 @@ protocol BarcodeScanningResponseHandler {
   func onScanningResult(_ result: [String: Any]) async
 }
 
-class MetatDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
+class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
   private var settings: [String: [AVMetadataObject.ObjectType]]
   private var previewLayer: AVCaptureVideoPreviewLayer?
   private var zxingBarcodeReaders: [AVMetadataObject.ObjectType: ZXReader]
