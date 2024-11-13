@@ -542,6 +542,7 @@ describe('built-in plugins', () => {
       'android/app/src/main/AndroidManifest.xml',
       'android/app/src/main/java/com/helloworld/MainActivity.kt',
       'android/app/src/main/java/com/helloworld/MainApplication.kt',
+      'android/app/src/main/res/drawable/ic_launcher_background.xml',
       'android/app/src/main/res/drawable/rn_edit_text_material.xml',
       'android/app/src/main/res/mipmap-hdpi/ic_launcher.webp',
       'android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp',
