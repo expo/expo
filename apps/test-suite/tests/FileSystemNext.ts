@@ -469,6 +469,157 @@ export async function test({ describe, expect, it, ...t }) {
       addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
     }
   });
+
+  describe('Exposes file handles', () => {
+    it('Allows opening files', () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('Hello world');
+      const handle = src.open();
+      expect(handle.readBytes(4)).toEqual(new Uint8Array([72, 101, 108, 108])); // Hell
+      expect(handle.readBytes(4)).toEqual(new Uint8Array([111, 32, 119, 111])); // o wo
+      handle.offset = 2;
+      expect(handle.readBytes(2)).toEqual(new Uint8Array([108, 108])); // ll
+      expect(handle.offset).toBe(4);
+      handle.close();
+    });
+
+    it('Resets position on close', () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+      let handle = src.open();
+      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      handle.close();
+      handle = src.open();
+      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      handle.close();
+    });
+
+    it('Throws on reading from closed handle', () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+      const handle = src.open();
+      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      handle.close();
+      expect(() => handle.readBytes(1)).toThrow();
+    });
+
+    it('Can open multiple handles to the same file', () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+      const handle = src.open();
+      const handle2 = src.open();
+      expect(handle.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      expect(handle2.readBytes(1)).toEqual(new Uint8Array([97])); // a
+    });
+
+    it('Returns null offset on closed handle', () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+      const handle = src.open();
+      handle.close();
+      expect(handle.offset).toBe(null);
+    });
+
+    it('Returns null size on closed handle', () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+      const handle = src.open();
+      handle.close();
+      expect(handle.size).toBe(null);
+    });
+
+    it('Returns smaller than expected array when reading end of file', () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.create();
+      const handle = src.open();
+      expect(handle.readBytes(2)).toEqual(new Uint8Array([])); // a
+      handle.close();
+      src.write('abcde');
+      const handle2 = src.open();
+      expect(handle2.readBytes(1)).toEqual(new Uint8Array([97])); // a
+      handle2.close();
+    });
+
+    it('Reads a file in chunks', () => {
+      const src = new File(testDirectory, 'abcs.txt');
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      src.write(alphabet.repeat(1000) + 'ending');
+      const handle = src.open();
+      for (let i = 0; i < 250; i++) {
+        const chunk = handle.readBytes(26 * 4);
+        expect(chunk.length).toBe(26 * 4);
+        expect(String.fromCharCode(...chunk)).toBe(alphabet.repeat(4));
+      }
+      const chunk = handle.readBytes(100);
+      expect(chunk.length).toBe(6);
+      expect(String.fromCharCode(...chunk)).toBe('ending');
+      handle.close();
+    });
+
+    it('Writes to a file handle', () => {
+      const src = new File(testDirectory, 'abcs.txt');
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      src.create();
+      const handle = src.open();
+      for (let i = 0; i < 10; i++) {
+        handle.writeBytes(
+          new Uint8Array(
+            alphabet
+              .repeat(4)
+              .split('')
+              .map((char) => char.charCodeAt(0))
+          )
+        );
+      }
+      expect(handle.readBytes(26 * 4).length).toBe(0);
+      handle.offset = 0;
+      expect(handle.readBytes(26 * 4).length).toBe(26 * 4);
+      handle.close();
+      expect(src.text()).toBe(alphabet.repeat(4 * 10));
+    });
+
+    it('Provides a ReadableStream', async () => {
+      const src = new File(testDirectory, 'abcs.txt');
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      src.write(alphabet);
+      const stream = src.readableStream();
+      for await (const chunk of stream) {
+        expect(chunk[0]).toBe(alphabet.charCodeAt(0));
+      }
+    });
+
+    it('Provides a ReadableStream with byob support', async () => {
+      const src = new File(testDirectory, 'abcs.txt');
+      const alphabet = 'abcdefghij'.repeat(1000);
+      src.write(alphabet);
+      const stream = src.readableStream();
+      const array1 = new Uint8Array(5000);
+      const array2 = new Uint8Array(5000);
+      const array3 = new Uint8Array(50);
+      const reader = stream.getReader({ mode: 'byob' });
+      expect((await reader.read(array1)).done).toBe(false);
+      const result = await reader.read(array2);
+      expect(result.done).toBe(false);
+      expect(result.value[4999]).toBe(alphabet.charCodeAt(9999));
+
+      const result2 = await reader.read(array3);
+      expect(result2.done).toBe(true);
+      expect(result2.value.length).toBe(0);
+    });
+
+    it('Provides a WriteableStream', async () => {
+      const src = new File(testDirectory, 'abcs.txt');
+      src.create();
+      const writable = src.writableStream();
+      const alphabet = 'abcdefghij'.repeat(10);
+      const writer = writable.getWriter();
+      await writer.write(new Uint8Array(alphabet.split('').map((char) => char.charCodeAt(0))));
+      writer.close();
+      expect(src.text()).toBe(alphabet);
+    });
+  });
+
+  addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
 }
 
 function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {

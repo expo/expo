@@ -134,6 +134,12 @@ export declare class File {
   move(destination: Directory | File);
 
   /**
+   * Returns a FileHandle object that can be used to read and write data to the file.
+   * @throws Error if the file does not exist or cannot be opened.
+   */
+  open(): FileHandle;
+
+  /**
    * A static method that downloads a file from the network.
    * @param url - The URL of the file to download.
    * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
@@ -154,4 +160,31 @@ export declare class File {
    * An md5 hash of the file. Null if the file does not exist or it cannot be read.
    */
   md5: string | null;
+}
+
+export declare class FileHandle {
+  /*
+   * Closes the file handle. This allows the file to be deleted, moved or read by a different process. Subsequent calls to `readBytes` or `writeBytes` will throw an error.
+   */
+  close(): void;
+  /*
+   * Reads the specified amount of bytes from the file at the current offset.
+   * @param length - The number of bytes to read.
+   */
+  readBytes(length: number): Uint8Array;
+  /*
+   * Writes the specified bytes to the file at the current offset.
+   * @param bytes - A Uint8Array array containing bytes to write.
+   */
+  writeBytes(bytes: Uint8Array): void;
+  /*
+   * A property that indicates the current byte offset in the file. Calling `readBytes` or `writeBytes` will read or write a specified amount of bytes starting from this offset. The offset is incremented by the number of bytes read or written.
+   * The offset can be set to any value within the file size. If the offset is set to a value greater than the file size, the next write operation will append data to the end of the file.
+   * Null if the file handle is closed.
+   */
+  offset: number | null;
+  /*
+   * A size of the file in bytes or `null` if the file handle is closed.
+   */
+  size: number | null;
 }

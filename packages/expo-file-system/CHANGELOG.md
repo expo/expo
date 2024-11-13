@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [next] Add file handles. ([#31738](https://github.com/expo/expo/pull/31738) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

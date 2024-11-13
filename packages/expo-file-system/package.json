@@ -41,5 +41,8 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "dependencies": {
+    "web-streams-polyfill": "^3.3.2"
   }
 }
