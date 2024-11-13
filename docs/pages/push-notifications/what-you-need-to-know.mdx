@@ -1,0 +1,73 @@
+---
+title: What you need to know about notifications
+hideFromSearch: false
+description: Different kinds of notifications and notification behaviors you need to know before you get started.
+---
+
+Whether you are starting with notifications or have existing knowledge, this guide aims to give you a quick start into notifications by explaining the different kinds of notifications and notification behaviors you should understand.
+
+Notifications have a large surface area and differences across platforms can make implementing notifications intimidating.
+
+Remember that Expo's support for notifications builds on top of native functionality on iOS and Android. That means the concepts and behaviors that apply to regular native apps also apply in an Expo app. If unsure about how a specific notification feature works on Android or iOS, see official documentation for the respective platform.
+
+## Notification Types
+
+1. **Push Notifications**: Notifications that are sent to a user's device from a remote server.
+2. **Local Notifications**: (also called "in-app notifications") Notifications that are displayed from within the app.
+
+`expo-notifications` supports both push and local notifications. The rest of this guide focuses on push notifications.
+
+## Push Notification Delivery
+
+When a push notification arrives to your app, its behavior depends on the app's state and the type of notification.
+
+Firstly, let's clarify the terminology:
+
+### Application States
+
+- **Foreground**: The app is actively running in the foreground.
+- **Background**: The app is running in the background, "minimized".
+- **Terminated**: The app was "killed", usually by a swipe-away gesture in the app switcher. On Android, if the user force-stops the app from device settings, it must be manually reopened for notifications to start working (this is a limitation of Android).
+
+### Push Notification Types
+
+#### Notification Message
+
+A Notification Message is a notification that contains presentational information, such as a title or body text.
+
+- On Android, this corresponds to a push notification request that contains [`AndroidNotification`](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification)
+- On iOS, this corresponds to a push notification request that contains [`aps.alert` dictionary](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Create-the-JSON-payload) and the `apns-push-type` header set to `alert`.
+
+When you use the Expo Push Service, and specify `title`, `subtitle`, `body`, `icon` or `channelId`, the resulting push notification request will be a Notification Message.
+
+The typical use case for a Notification Message is to have it presented to the user immediately without any extra processing being done.
+
+### Notification Message with data payload
+
+### Headless (background) notifications
+
+We use the term "headless notification" to describe the [data message](https://firebase.google.com/docs/cloud-messaging/concept-options#data_messages) on Android and the [background notification](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#Create-a-background-notification) on iOS.
+
+Headless notification a is a remote notification that carries data which is processed by a JavaScript task defined in your app via [registerTaskAsync](/versions/latest/sdk/notifications/#registertaskasynctaskname). The task may perform arbitrary logic - for example write to `AsyncStorage`, make an api request, or present a local notification whose content is taken from the headless push notification. This is because with the exception below\*, headless notifications are not presented to users.
+
+When you use the Expo Push Service, and specify only `data` (and other non-interactive fields such as `priority` or `ttl`), the resulting push notification request produces a headless notification.
+
+The ability to run custom JavaScript in response to a headless notifications is powerful but comes with a limitation: even when the notification is delivered to the device, the OS does not guarantee its delivery to your app. This may happen due to a variety of reasons such as when Doze mode is enabled on Android, or when you send too many notifications - Apple recommends to not ["send more than two or three per hour"](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#overview).
+
+The rule of thumb is to prefer regular Notification Message if you don't require running JavaScript in the background.
+
+\* The exception is when you specify `title` or `message` inside of [`data`](https://github.com/expo/expo-server-sdk-node/blob/88ed8fbfc1345f13911d8a8d30a5d8009aaa8892/src/ExpoClient.ts#L349). In that case, `expo-notifications` package presents the headless notification on Android, but not on iOS. We're planning to make this behavior more consistent across platforms in a future release.
+
+### Push Notification Behaviors
+
+For any kind of notification, when the app is in the foreground, the app is in control of how the notification is handled. The app may present it directly, show some custom in-app UI, or ignore it.
+
+The table below summarizes how different kinds of notifications are handled for all application states:
+
+| Notification Type                                     | App in Foreground | App in Background           | App Terminated                 |
+| ----------------------------------------------------- | ----------------- | --------------------------- | ------------------------------ |
+| Headless Push Notification                            | Handled by app    | OS wakes app for processing | OS launches app for processing |
+| Notification Message                                  | Handled by app    | OS shows notification       | OS shows notification          |
+| Notification Message with data payload (Android-only) | Handled by app    | OS shows notification       | OS shows notification          |
+
+// TODO ios unclear
