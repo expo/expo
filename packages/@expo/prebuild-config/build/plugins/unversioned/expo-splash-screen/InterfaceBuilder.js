@@ -121,6 +121,7 @@ function applyImageToSplashScreenXML(xml, {
   });
 
   // Add resource
+  xml.document.resources[0].image = xml.document.resources[0].image ?? [];
   const imageSection = xml.document.resources[0].image;
   const existingImageIndex = imageSection.findIndex(image => image.$.name === imageName);
   if (existingImageIndex > -1) {
