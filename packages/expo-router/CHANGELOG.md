@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `withAnchor` and `relativeToDirectory` options to `<Redirect />`.
+- Add `withAnchor` and `relativeToDirectory` options to `<Redirect />`. ([#32847](https://github.com/expo/expo/pull/32847) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
