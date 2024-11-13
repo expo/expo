@@ -26,10 +26,10 @@ jobs:
           set-output fingerprint_hash $FINGERPRINT_HASH
           # @end #
       - name: Do something with the fingerprint hash
-          run: |
-            # @info Accesses the `fingerprint_hash` variable #
-            echo ${{ steps.fingerprint_step_id.outputs.fingerprint_hash }}
-            # @end #
+        run: |
+          # @info Accesses the `fingerprint_hash` variable #
+          echo ${{ steps.fingerprint_step_id.outputs.fingerprint_hash }}
+          # @end #
     maybe_build:
       needs: [fingerprint]
       # @info Accesses the `fingerprint_hash_for_workflow` variable #
