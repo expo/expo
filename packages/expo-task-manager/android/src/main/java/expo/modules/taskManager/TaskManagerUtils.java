@@ -66,6 +66,15 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   @Override
+  public void executeTask(Context context, TaskInterface task, Bundle data) {
+    if (task == null) {
+      Log.e(TAG, "Trying to execute a null task!");
+    } else {
+      task.execute(data, null);
+    }
+  }
+
+  @Override
   public void cancelScheduledJob(Context context, int jobId) {
     JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
