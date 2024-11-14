@@ -14,21 +14,21 @@ PODS:
   - EXAV (15.0.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - EXConstants (17.0.2):
+  - EXConstants (17.0.3):
     - ExpoModulesCore
   - EXImageLoader (5.0.0):
     - ExpoModulesCore
     - React-Core
   - EXJSONUtils (0.14.0)
   - EXJSONUtils/Tests (0.14.0)
-  - EXManifests (0.15.2):
+  - EXManifests (0.15.3):
     - ExpoModulesCore
-  - EXManifests/Tests (0.15.2):
+  - EXManifests/Tests (0.15.3):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - EXNotifications (0.29.7):
     - ExpoModulesCore
-  - Expo (52.0.5):
+  - Expo (52.0.6):
     - ExpoModulesCore
   - ExpoAppleAuthentication (7.0.1):
     - ExpoModulesCore
@@ -227,14 +227,14 @@ PODS:
     - ExpoModulesCore
   - ExpoVideoThumbnails (9.0.2):
     - ExpoModulesCore
-  - ExpoWebBrowser (14.0.0):
+  - ExpoWebBrowser (14.0.1):
     - ExpoModulesCore
   - EXStructuredHeaders (4.0.0)
   - EXStructuredHeaders/Tests (4.0.0)
   - EXTaskManager (12.0.3):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.26.6):
+  - EXUpdates (0.26.7):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -261,7 +261,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdates/Tests (0.26.6):
+  - EXUpdates/Tests (0.26.7):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -2968,12 +2968,12 @@ SPEC CHECKSUMS:
   EASClient: 720af5473430a688e792ffa91f33d11fe72fcb89
   EXApplication: e1ad9c950c98b2b134578092c948b10b403f3ea7
   EXAV: 9773c9799767c9925547b05e41a26a0240bb8ef2
-  EXConstants: 33cb635065c7c1fe09a0fce5c8ddde8a0a2860c4
+  EXConstants: dd2fe64c6cdb1383b694c309a63028a8e9f2be6d
   EXImageLoader: 759063a65ab016b836f73972d3bb25404888713d
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
-  EXManifests: f293a2f776506540805140fdac283e382b48e75d
+  EXManifests: a883468e03b0234d4787e2c0ae4a65726f13cb05
   EXNotifications: 97a84c66aedb7a3b8b8a57eb7112f8cdde86119e
-  Expo: d5e73a25d2f3a39001ef1e764e574f718ef3d396
+  Expo: 8a3384b1e45f23d9bed1225d76ebaa637f3b420c
   ExpoAppleAuthentication: 59b0f5cf600284dd03b0d595c112acd067e0eb69
   ExpoAsset: 8138f2a9ec55ae1ad7c3871448379f7d97692d15
   ExpoAudio: 1312651a35d00c1b728be169d5a1e5d1e8f10f9a
@@ -3025,10 +3025,10 @@ SPEC CHECKSUMS:
   ExpoTrackingTransparency: 206d9790744f329a21e53cba0ee411d8db43ce16
   ExpoVideo: d419a84e8841e05443f3351cb937f55375b60650
   ExpoVideoThumbnails: 8b6bbe3cb76dd2225910667b896b27855bbda694
-  ExpoWebBrowser: ea83cc6f03bec1938c3b8fb4dcb9df71960fba36
+  ExpoWebBrowser: f08aaf1c8a02af8a768d83793186cb6d2c69f529
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: afcec33a6643f24fed4a89062757037b185c8a88
-  EXUpdates: 233ae0400f6c9f273f3748b29f74ba6e95220f66
+  EXUpdates: 30abdcac4213db71620a683e91ff378c8c88642a
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   FBLazyVector: aa59bef5c46e93168bffcf3dc37ee1e176de799a
   FirebaseCore: 8542de610f35f86196ba26cdb2544565a5157c8e

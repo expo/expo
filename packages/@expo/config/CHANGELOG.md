@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Skip modifying the plugins array in app.json when using a dynamic app config as well ([#32882](https://github.com/expo/expo/pull/32882) by [@brentvatne](https://github.com/brentvatne))
-
 ### 💡 Others
+
+## 10.0.4 — 2024-11-14
+
+### 🐛 Bug fixes
+
+- Skip modifying the plugins array in app.json when using a dynamic app config as well ([#32882](https://github.com/expo/expo/pull/32882) by [@brentvatne](https://github.com/brentvatne))
 
 ## 10.0.3 — 2024-11-11
 

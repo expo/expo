@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.3.1 — 2024-11-14
+
+### 🐛 Bug fixes
+
 - Fix missing fallback to `process.cwd()` while no argument has been passed. ([#32848](https://github.com/expo/expo/pull/32848) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
