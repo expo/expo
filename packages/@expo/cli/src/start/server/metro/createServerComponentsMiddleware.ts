@@ -245,6 +245,7 @@ export function createServerComponentsMiddleware(
       routerModule,
       {
         environment: 'react-server',
+        modulesOnly: true,
         platform,
       },
       {
