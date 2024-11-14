@@ -11,56 +11,23 @@ import { learnMore } from './utils';
 
 const packageJSON = require('../package.json');
 
-const program = new Command(packageJSON.name)
-  .version(packageJSON.version)
-  .arguments('[project-directory]')
-  .usage(`${chalk.green('[project-directory]')} [options]`)
-  .description('Install pods in your project')
-  .option('--quiet', 'Only print errors')
-  .option('--non-interactive', 'Disable interactive prompts')
-  .allowUnknownOption()
-  .parse(process.argv)
-  .action(async (projectDirectory?: string) => {
-    try {
-      await runAsync(projectDirectory);
-      if (!program.opts().quiet) {
-        await shouldUpdate();
-      }
-    } catch (reason: any) {
-      console.log('\nAborting run');
-      if (reason.command) {
-        console.log(`  ${chalk.magenta(reason.command)} has failed.`);
-      } else {
-        console.log(
-          chalk.red`An unexpected error was encountered. Report it on GitHub: https://github.com/expo/expo/issues`
-        );
-        console.log(reason);
-      }
-      console.log();
-      if (!program.opts().quiet) {
-        await shouldUpdate();
-      }
-      process.exit(1);
-    }
-  });
-
 function info(message: string) {
   if (!program.opts().quiet) {
     console.log(message);
   }
 }
 
-async function runAsync(projectDirectory?: string): Promise<void> {
+async function runAsync(maybeProjectDirectory?: string): Promise<void> {
   if (process.platform !== 'darwin') {
-    info(chalk.red('\nCocoaPods is only supported on darwin machines\n'));
-    process.exit(1);
+    info(chalk.yellow('CocoaPods is only supported on darwin machines'));
+    process.exit(0);
   }
 
-  const hasProjectDirectory = projectDirectory && !projectDirectory.startsWith('--');
-  const possibleProjectRoot = resolve(hasProjectDirectory ? projectDirectory : process.cwd());
+  const hasProjectDirectory = maybeProjectDirectory && !maybeProjectDirectory.startsWith('--');
+  const possibleProjectRoot = resolve(hasProjectDirectory ? maybeProjectDirectory : process.cwd());
 
   if (!existsSync(possibleProjectRoot)) {
-    info(chalk.red(`\nTarget directory does not exist! (${possibleProjectRoot})\n`));
+    info(chalk.red(`\nTarget directory does not exist: ${possibleProjectRoot}\n`));
     process.exit(1);
   }
 
@@ -70,7 +37,7 @@ async function runAsync(projectDirectory?: string): Promise<void> {
     const packageJsonPath = join(possibleProjectRoot, 'package.json');
 
     if (!existsSync(packageJsonPath)) {
-      info(chalk.red(`\n'package.json' file does not exist! (${packageJsonPath})\n`));
+      info(chalk.red(`\n'package.json' file does not exist: ${packageJsonPath}\n`));
       process.exit(1);
     }
 
@@ -115,6 +82,39 @@ async function runAsync(projectDirectory?: string): Promise<void> {
     throw error;
   }
 }
+
+const program = new Command(packageJSON.name)
+  .version(packageJSON.version)
+  .arguments('[project-directory]')
+  .usage(`${chalk.green('[project-directory]')} [options]`)
+  .description('Install pods in your project')
+  .option('--quiet', 'Only print errors')
+  .option('--non-interactive', 'Disable interactive prompts')
+  .allowUnknownOption()
+  .parse(process.argv)
+  .action(async (maybeProjectDirectory?: string) => {
+    try {
+      await runAsync(maybeProjectDirectory);
+      if (!program.opts().quiet) {
+        await shouldUpdate();
+      }
+    } catch (reason: any) {
+      console.log('\nAborting run');
+      if (reason.command) {
+        console.log(`  ${chalk.magenta(reason.command)} has failed.`);
+      } else {
+        console.log(
+          chalk.red`An unexpected error was encountered. Report it on GitHub: https://github.com/expo/expo/issues`
+        );
+        console.log(reason);
+      }
+      console.log();
+      if (!program.opts().quiet) {
+        await shouldUpdate();
+      }
+      process.exit(1);
+    }
+  });
 
 (async () => {
   await program.parseAsync(process.argv);
