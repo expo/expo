@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix windows SSR.
+
 ### 💡 Others
 
 ## 0.21.3 — 2024-11-14
