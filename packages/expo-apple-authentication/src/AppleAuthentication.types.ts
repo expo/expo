@@ -187,7 +187,7 @@ export type AppleAuthenticationFullName = {
 
 // @needsAudit @docsMissing
 /**
- * An enum whose values specify the style for formatting a full name when calling `AppleAuthentication.formatFullName()`.
+ * A value to specify the style for formatting a name.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/foundation/personnamecomponentsformatter)
