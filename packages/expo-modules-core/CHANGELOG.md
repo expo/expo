@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed requests from `expo/fetch` being stuck on iOS. ([#32894](https://github.com/expo/expo/pull/32894) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.0.2 — 2024-11-13
