@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.21.5 — 2024-11-14
+
+### 💡 Others
+
 - Bump minimum @expo/prebuild-config version.
 
 ## 0.21.4 — 2024-11-14

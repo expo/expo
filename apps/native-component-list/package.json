@@ -100,7 +100,7 @@
     "expo-network": "~7.0.0",
     "expo-notifications": "~0.29.0",
     "expo-print": "~14.0.0",
-    "expo-processing": "2.3.9",
+    "expo-processing": "2.3.10",
     "expo-progress": "^0.0.2",
     "expo-screen-capture": "~7.0.0",
     "expo-screen-orientation": "~8.0.0",
