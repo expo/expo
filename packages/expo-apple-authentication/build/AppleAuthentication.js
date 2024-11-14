@@ -110,6 +110,20 @@ export async function getCredentialStateAsync(user) {
     }
     return ExpoAppleAuthentication.getCredentialStateAsync(user);
 }
+// @needsAudit @docsMissing
+/**
+ * Creates a locale-aware string representation of a person's name from an object representing the tokenized portions of a user's full name
+ *
+ * @param fullName The full name object with the tokenized portions
+ * @param formatStyle The style in which the name should be formatted
+ * @returns A locale-aware string representation of a person's name
+ */
+export function formatFullName(fullName, formatStyle) {
+    if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.formatFullName) {
+        throw new UnavailabilityError('expo-apple-authentication', 'formatFullName');
+    }
+    return ExpoAppleAuthentication.formatFullName(fullName, formatStyle);
+}
 // @docsMissing
 export function addRevokeListener(listener) {
     return ExpoAppleAuthentication.addListener('Expo.appleIdCredentialRevoked', listener);
