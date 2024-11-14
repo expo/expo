@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add minor fixes to nested server actions.
+- fix windows SSR. ([#32923](https://github.com/expo/expo/pull/32923) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
