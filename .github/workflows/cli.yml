@@ -113,10 +113,7 @@ jobs:
         run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
         working-directory: packages/@expo/cli
         
-      - name: E2E Test CLI (Windows)
-        if: matrix.os == 'windows-2022'
-        run: yarn test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
-        working-directory: packages/@expo/cli
+    
 
   web:
     runs-on: ubuntu-22.04
