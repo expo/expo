@@ -236,6 +236,10 @@ jobs:
           avd-name: avd-${{ matrix.api-level }}
           script: ./scripts/start-android-e2e-test.sh
           working-directory: ./apps/bare-expo
+          # We use an older version of the simulator due to this issue:
+          # https://github.com/facebook/react-native/issues/43320
+          # This build number is for version 33.1.24 which matches the API level that we test against.
+          emulator-build: 11237101
       - name: 📸 Store images of test failures
         if: always()
         uses: actions/upload-artifact@v4

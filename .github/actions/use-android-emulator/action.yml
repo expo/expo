@@ -17,6 +17,9 @@ inputs:
     description: 'A custom working directory - e.g. `./android` if your root Gradle project is under the `./android` sub-directory within your repository'
     required: false
     default: './'
+  emulator-build:
+    description: 'build number of a specific version of the emulator binary to use - e.g. `11237101` for emulator v33.1.24'
+    required: false
 
 outputs:
   avd-hit:
@@ -44,6 +47,7 @@ runs:
         avd-name: ${{ inputs.avd-name }}
         arch: x86_64
         target: google_apis
+        emulator-build: ${{ inputs.emulator-build }}
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Wait for emulator to fully ready
@@ -68,6 +72,7 @@ runs:
         avd-name: ${{ inputs.avd-name }}
         arch: x86_64
         target: google_apis
+        emulator-build: ${{ inputs.emulator-build }}
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Wait for emulator to fully ready
@@ -92,6 +97,7 @@ runs:
         avd-name: ${{ inputs.avd-name }}
         arch: x86_64
         target: google_apis
+        emulator-build: ${{ inputs.emulator-build }}
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
           # Wait for emulator to fully ready
