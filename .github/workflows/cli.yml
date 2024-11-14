@@ -52,8 +52,10 @@ jobs:
         include:
           - os: ubuntu-22.04
             shell: bash
+            yarn-cache: ~/.cache/yarn
           - os: windows-2022
             shell: cmd
+            yarn-cache: C:\Users\runneradmin\AppData\Local\Yarn\Cache
     defaults:
       run:
         shell: ${{ matrix.shell }}
@@ -79,9 +81,7 @@ jobs:
       - name: ♻️ Restore Yarn Cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/yarn
-            %LocalAppData%\Yarn\Cache
+          path: ${{ matrix.yarn-cache }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
@@ -113,7 +113,10 @@ jobs:
         run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
         working-directory: packages/@expo/cli
         
-    
+      # - name: E2E Test CLI (Windows)
+      #   if: matrix.os == 'windows-2022'
+      #   run: yarn test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+      #   working-directory: packages/@expo/cli
 
   web:
     runs-on: ubuntu-22.04
@@ -135,9 +138,7 @@ jobs:
       - name: ♻️ Restore Yarn Cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/yarn
-            %LocalAppData%\Yarn\Cache
+          path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
@@ -156,7 +157,7 @@ jobs:
         with:
           path: |
             ~/.cache/ms-playwright
-            %LocalAppData%\ms-playwright
+            ~/AppData/Local/ms-playwright
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
       - name: 🎭 Install Playwright Browsers
         run: bun playwright install --with-deps chromium
