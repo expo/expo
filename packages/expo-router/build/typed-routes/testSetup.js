@@ -17,10 +17,11 @@ const fixtures = {
             '/(group)/(a,b)/folder/[slug]': () => null,
             '/(group)/(a,b)/folder/[...slug]': () => null,
             '/(c)/folder/[slug]': () => null,
+            '/(group)/index': () => null,
         },
     },
     partialGroups: {
-        options: { explicitGroups: true },
+        options: { partialTypedGroups: true },
         context: {
             '/(group)/static': () => null,
             '/(group)/(a,b)/folder/index': () => null,
