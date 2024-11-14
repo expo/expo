@@ -87,7 +87,9 @@ const program = new Command(packageJSON.name)
   .version(packageJSON.version)
   .arguments('[project-directory]')
   .usage(`${chalk.green('[project-directory]')} [options]`)
-  .description('Install pods in your project')
+  .description(
+    'A fast, zero-dependency package for cutting down on common issues developers have when running pod install.'
+  )
   .option('--quiet', 'only print errors')
   .option('--non-interactive', 'disable interactive prompts')
   .allowUnknownOption()
