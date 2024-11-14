@@ -56,18 +56,19 @@ function removeImageFromSplashScreen(xml, {
   debug(`Remove all splash screen image elements`);
   removeExisting(mainView.subviews[0].imageView, IMAGE_ID);
 
-  // Add Constraints
+  // Remove Constraints
   getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach(constraint => {
     // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
     const constrainsArray = mainView.constraints[0].constraint;
     removeExisting(constrainsArray, constraint);
   });
 
-  // Add resource
+  // Remove resource
+  xml.document.resources[0].image = xml.document.resources[0].image ?? [];
   const imageSection = xml.document.resources[0].image;
   const existingImageIndex = imageSection.findIndex(image => image.$.name === imageName);
-  if (existingImageIndex > -1) {
-    imageSection.splice(existingImageIndex, 1);
+  if (existingImageIndex && existingImageIndex > -1) {
+    imageSection?.splice(existingImageIndex, 1);
   }
   return xml;
 }
