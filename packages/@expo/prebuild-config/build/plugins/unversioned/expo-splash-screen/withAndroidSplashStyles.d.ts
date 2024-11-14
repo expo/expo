@@ -10,3 +10,5 @@ export declare function getSplashBackgroundColor(config: ExpoConfig, props: Andr
 export declare function getSplashDarkBackgroundColor(config: ExpoConfig, props: AndroidSplashConfig | null): string | null;
 export declare function setSplashStylesForTheme(styles: AndroidConfig.Resources.ResourceXML): AndroidConfig.Resources.ResourceXML;
 export declare function setSplashColorsForTheme(colors: AndroidConfig.Resources.ResourceXML, backgroundColor: string | null): AndroidConfig.Resources.ResourceXML;
+export declare function getStatusBarStyle(config: Pick<AndroidSplashConfig, 'statusBar'> | null): "light-content" | "dark-content";
+export declare function getNavigationBarStyle(config: Pick<AndroidSplashConfig, 'navigationBar'> | null): "light-content" | "dark-content";

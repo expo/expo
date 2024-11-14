@@ -3,8 +3,10 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getNavigationBarStyle = getNavigationBarStyle;
 exports.getSplashBackgroundColor = getSplashBackgroundColor;
 exports.getSplashDarkBackgroundColor = getSplashDarkBackgroundColor;
+exports.getStatusBarStyle = getStatusBarStyle;
 exports.removeOldSplashStyleGroup = removeOldSplashStyleGroup;
 exports.setSplashColorsForTheme = setSplashColorsForTheme;
 exports.setSplashStylesForTheme = setSplashStylesForTheme;
@@ -57,7 +59,10 @@ const withAndroidSplashStyles = (config, {
   });
   config = (0, _configPlugins().withAndroidStyles)(config, config => {
     config.modResults = removeOldSplashStyleGroup(config.modResults);
-    config.modResults = addSplashScreenStyle(config.modResults, isLegacyConfig);
+    config.modResults = addSplashScreenStyle(config.modResults, {
+      isLegacyConfig,
+      splashConfig
+    });
     return config;
   });
   return config;
@@ -65,7 +70,10 @@ const withAndroidSplashStyles = (config, {
 
 // Add the style that extends Theme.SplashScreen
 exports.withAndroidSplashStyles = withAndroidSplashStyles;
-function addSplashScreenStyle(styles, isLegacyConfig) {
+function addSplashScreenStyle(styles, {
+  isLegacyConfig,
+  splashConfig
+}) {
   const {
     resources
   } = styles;
@@ -97,6 +105,26 @@ function addSplashScreenStyle(styles, isLegacyConfig) {
       },
       _: '@style/AppTheme'
     }];
+  }
+  const statusBarStyle = getStatusBarStyle(splashConfig);
+  // Default is light-content, don't need to do anything to set it
+  if (statusBarStyle === 'dark-content') {
+    item.push({
+      $: {
+        name: 'android:windowLightStatusBar'
+      },
+      _: 'true'
+    });
+  }
+  const navigationBarStyle = getNavigationBarStyle(splashConfig);
+  // Default is light-content, don't need to do anything to set it
+  if (navigationBarStyle === 'dark-content') {
+    item.push({
+      $: {
+        name: 'android:windowLightNavigationBar'
+      },
+      _: 'true'
+    });
   }
   styles.resources.style = [...style.filter(({
     $
@@ -147,5 +175,11 @@ function setSplashColorsForTheme(colors, backgroundColor) {
     value: backgroundColor,
     name: SPLASH_COLOR_NAME
   });
+}
+function getStatusBarStyle(config) {
+  return config?.statusBar?.barStyle || 'light-content';
+}
+function getNavigationBarStyle(config) {
+  return config?.navigationBar?.barStyle || 'light-content';
 }
 //# sourceMappingURL=withAndroidSplashStyles.js.map
