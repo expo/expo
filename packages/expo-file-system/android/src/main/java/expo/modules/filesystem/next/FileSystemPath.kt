@@ -57,6 +57,12 @@ abstract class FileSystemPath(public var file: File) : SharedObject() {
     throw InvalidPermissionException(permission)
   }
 
+  fun validateCanCreate(options: CreateOptions) {
+    if (!options.overwrite && file.exists()) {
+      throw UnableToCreateException("it already exists")
+    }
+  }
+
   fun copy(to: FileSystemPath) {
     validateType()
     to.validateType()

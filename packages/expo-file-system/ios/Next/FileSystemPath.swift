@@ -12,6 +12,20 @@ internal class FileSystemPath: SharedObject {
   func validatePermission(_ flag: EXFileSystemPermissionFlags) throws {
     try ensurePathPermission(appContext, path: url.path, flag: flag)
   }
+  
+  func validateCanCreate(_ options: CreateOptions) throws {
+    if(!options.overwrite) {
+      guard !(try exists) else {
+        throw UnableToCreateException("it already exists")
+      }
+    }
+  }
+  
+  var exists: Bool {
+    get throws {
+      FileManager.default.fileExists(atPath: url.path)
+    }
+  }
 
   func delete() throws {
     try validatePermission(.write)

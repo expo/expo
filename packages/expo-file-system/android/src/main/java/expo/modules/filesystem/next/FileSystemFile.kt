@@ -29,10 +29,18 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     return file.isFile
   }
 
-  fun create() {
+  fun create(options: CreateOptions = CreateOptions()) {
     validateType()
     validatePermission(Permission.WRITE)
-    file.createNewFile()
+    validateCanCreate(options)
+    if (options.intermediates) {
+      file.parentFile?.mkdirs()
+    }
+    val created = file.createNewFile()
+    if(!created) {
+      throw UnableToCreateException("file already exists or could not be created")
+    }
+
   }
 
   fun write(content: String) {

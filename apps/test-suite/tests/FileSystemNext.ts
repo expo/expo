@@ -157,6 +157,19 @@ export async function test({ describe, expect, it, ...t }) {
         expect(folder.exists).toBe(true);
       });
 
+      it('Creates a folder with subdirectories if intermediates is set', () => {
+        const folder = new Directory(testDirectory, 'some', 'subdirectory', 'here');
+        folder.create({ intermediates: true });
+        expect(folder.exists).toBe(true);
+      });
+
+      it('Throws en error while creating a folder with subdirectories if intermediates is not set', () => {
+        const folder = new Directory(testDirectory, 'some', 'subdirectory', 'here');
+        expect(() => folder.create()).toThrow();
+        expect(() => folder.create({ intermediates: false })).toThrow();
+        expect(folder.exists).toBe(false);
+      });
+
       it('Creates an empty file', () => {
         const file = new File(testDirectory, 'newFolder');
         file.create();
