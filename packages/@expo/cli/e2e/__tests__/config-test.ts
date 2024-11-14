@@ -67,7 +67,7 @@ it(
     expect(exp.platforms).toStrictEqual([]);
     expect(exp.version).toBe('1.0.0');
     expect(exp._internal.dynamicConfigPath).toBe(null);
-    expect(exp._internal.staticConfigPath).toMatch(/\/basic-config\/app\.json$/);
+    expect(exp._internal.staticConfigPath).toMatch(/\/basic-config[\\/]app\.json$/);
   }, // Could take 45s depending on how fast npm installs
   120 * 1000
 );
