@@ -2,11 +2,11 @@ type CreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
      */
-    intermediates: boolean;
+    intermediates?: boolean;
     /**
      * Whether to overwrite the file or directory if it exists.
      */
-    overwrite: boolean;
+    overwrite?: boolean;
 };
 export declare class Directory {
     /**
