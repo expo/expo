@@ -29,7 +29,7 @@ public class PushTokenModule: Module {
 
     Events([onDevicePushTokenEventName])
 
-    OnStartObserving {
+    OnStartObserving(onDevicePushTokenEventName) {
       NotificationCenter.default.addObserver(
         self,
         selector: #selector(onExpoNotificationsRegistrationResult),
@@ -38,25 +38,23 @@ public class PushTokenModule: Module {
       )
     }
 
-    OnStopObserving {
+    OnStopObserving(onDevicePushTokenEventName) {
       // swiftlint:disable:next notification_center_detachment
       NotificationCenter.default.removeObserver(self)
     }
 
     AsyncFunction("getDevicePushTokenAsync") { (promise: Promise) in
-      Task { @MainActor in
-        if promiseNotYetResolved != nil {
-          promise.reject("E_AWAIT_PROMISE", "Another async call to this method is in progress. Await the first Promise.")
-        }
-        promiseNotYetResolved = promise
-        UIApplication.shared.registerForRemoteNotifications()
+      if promiseNotYetResolved != nil {
+        promise.reject("E_AWAIT_PROMISE", "Another async call to this method is in progress. Await the first Promise.")
       }
+      promiseNotYetResolved = promise
+      UIApplication.shared.registerForRemoteNotifications()
     }
+    .runOnQueue(.main)
 
     AsyncFunction("unregisterForNotificationsAsync") { () in
-      Task { @MainActor in
-        UIApplication.shared.unregisterForRemoteNotifications()
-      }
+      UIApplication.shared.unregisterForRemoteNotifications()
     }
+    .runOnQueue(.main)
   }
 }

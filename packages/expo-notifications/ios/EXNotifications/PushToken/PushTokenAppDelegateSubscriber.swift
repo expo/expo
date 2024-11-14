@@ -19,8 +19,8 @@ public class PushTokenAppDelegateSubscriber: ExpoAppDelegateSubscriber {
       userInfo: ["error": error]
     )
   }
+}
 
-  private func dataToString(_ data: Data) -> String {
-    return data.map { String(format: "%02hhx", $0) }.joined()
-  }
+private func dataToString(_ data: Data) -> String {
+  return data.map { String(format: "%02hhx", $0) }.joined()
 }
