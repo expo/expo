@@ -33,14 +33,16 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     validateType()
     validatePermission(Permission.WRITE)
     validateCanCreate(options)
+    if (options.overwrite && file.exists()) {
+      file.delete()
+    }
     if (options.intermediates) {
       file.parentFile?.mkdirs()
     }
     val created = file.createNewFile()
-    if(!created) {
+    if (!created) {
       throw UnableToCreateException("file already exists or could not be created")
     }
-
   }
 
   fun write(content: String) {

@@ -24,12 +24,15 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     validateType()
     validatePermission(Permission.WRITE)
     validateCanCreate(options)
+    if (options.overwrite && file.exists()) {
+      file.delete()
+    }
     val created = if (options.intermediates) {
       file.mkdirs()
     } else {
       file.mkdir()
     }
-    if(!created) {
+    if (!created) {
       throw UnableToCreateException("directory already exists or could not be created")
     }
   }

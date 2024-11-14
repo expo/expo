@@ -21,9 +21,10 @@ internal final class FileSystemFile: FileSystemPath {
     try validateType()
     try validateCanCreate(options)
     do {
-      if(options.intermediates) {
+      if options.intermediates {
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
       }
+      try? FileManager.default.removeItem(atPath: url.path)
       FileManager.default.createFile(atPath: url.path, contents: nil)
     } catch {
       throw UnableToCreateException(error.localizedDescription)

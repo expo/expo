@@ -177,6 +177,23 @@ export async function test({ describe, expect, it, ...t }) {
         expect(file.text()).toBe('');
       });
 
+      it('Throws an error if the file exists', () => {
+        const file = new File(testDirectory + 'newFolder');
+        file.create();
+        expect(file.exists).toBe(true);
+        expect(file.text()).toBe('');
+      });
+
+      it('Overwrites a file if it exists and `overwrite` is set', () => {
+        const file = new File(testDirectory + 'newFolder');
+        file.create();
+        expect(file.exists).toBe(true);
+        file.write('Hello world');
+        expect(file.text()).toBe('Hello world');
+        file.create({ overwrite: true });
+        expect(file.text()).toBe('');
+      });
+
       it('Deletes a folder', () => {
         const folder = new Directory(testDirectory, 'newFolder');
         folder.create();
