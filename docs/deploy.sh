@@ -282,7 +282,7 @@ redirects[guides/troubleshooting-proxies]=troubleshooting/proxies
 
 # After adding "Linking" (/linking/**) section
 redirects[guides/linking]=linking/overview
-redirects[guides/deep-linking]=/linking/into-your-app
+redirects[guides/deep-linking]=linking/into-your-app
 
 # After adding /sdk/router/ API reference
 redirects[router/reference/hooks]=versions/latest/sdk/router
