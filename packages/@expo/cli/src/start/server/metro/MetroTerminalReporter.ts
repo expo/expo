@@ -46,15 +46,16 @@ export class MetroTerminalReporter extends TerminalReporter {
 
     if (
       typeof progress.bundleDetails?.customTransformOptions?.dom === 'string' &&
-      progress.bundleDetails.customTransformOptions.dom.includes('/')
+      progress.bundleDetails.customTransformOptions.dom.includes(path.sep)
     ) {
       // Because we use a generated entry file for DOM components, we need to adjust the logging path so it
       // shows a unique path for each component.
       // Here, we take the relative import path and remove all the starting slashes.
-      localPath = progress.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.\/)+/, '');
+      localPath = progress.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '');
     } else {
       const inputFile = progress.bundleDetails.entryFile;
-      localPath = inputFile.startsWith(path.sep)
+
+      localPath = path.isAbsolute(inputFile)
         ? path.relative(this.projectRoot, inputFile)
         : inputFile;
     }
@@ -105,7 +106,7 @@ export class MetroTerminalReporter extends TerminalReporter {
 
     return (
       platform +
-      chalk.reset.dim(`${path.dirname(localPath)}/`) +
+      chalk.reset.dim(`${path.dirname(localPath)}${path.sep}`) +
       chalk.bold(path.basename(localPath)) +
       ' ' +
       _progress
