@@ -49,14 +49,28 @@ jobs:
       matrix:
         os: [ubuntu-22.04, windows-2022]
         shard: [1, 2, 3]
+        include:
+          - os: ubuntu-22.04
+            shell: bash
+          - os: windows-2022
+            shell: cmd
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
+      
+      - name: Setup Git
+        if: matrix.os == 'windows-2022'
+        run: git config --global core.autocrlf false
+      
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      
       - name: ⬇️ Fetch commits from base branch
         shell: bash
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
@@ -73,26 +87,36 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
-        shell: bash
+        run: yarn install --prefer-offline --frozen-lockfile --ignore-scripts
       
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
-        shell: bash
 
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: 🔎 Type Check CLI
+      - name: 🔎 Type Check CLI (Unix)
+        if: matrix.os == 'ubuntu-22.04'
         run: yarn typecheck
         working-directory: packages/@expo/cli
-        shell: bash
-      - name: E2E Test CLI
+        
+      - name: 🔎 Type Check CLI (Windows)
+        if: matrix.os == 'windows-2022'
+        run: |
+          yarn tsc --noEmit
+        working-directory: packages/@expo/cli
+        
+      - name: E2E Test CLI (Unix)
+        if: matrix.os == 'ubuntu-22.04'
         run: yarn test:e2e --shard ${{ matrix.shard }}/${{ strategy.job-total }}
         working-directory: packages/@expo/cli
-        shell: bash
+        
+      - name: E2E Test CLI (Windows)
+        if: matrix.os == 'windows-2022'
+        run: yarn jest --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+        working-directory: packages/@expo/cli
 
   web:
     runs-on: ubuntu-22.04
@@ -122,16 +146,13 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: YARN_IGNORE_SCRIPTS=true yarn install --prefer-offline --frozen-lockfile
-        shell: bash
+        run: yarn install --prefer-offline --frozen-lockfile --ignore-scripts
       
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
-        shell: bash
         
       - name: 🎭 Get installed Playwright version for cache key
         run: echo "PLAYWRIGHT_VERSION=$(npm info @playwright/test version)" >> $GITHUB_ENV
-        shell: bash
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
