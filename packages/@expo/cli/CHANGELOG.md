@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add minor fixes to nested server actions.
+
 ### 💡 Others
 
 ## 0.21.3 — 2024-11-14

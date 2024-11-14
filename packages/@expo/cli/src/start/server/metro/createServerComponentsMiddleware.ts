@@ -451,7 +451,9 @@ export function createServerComponentsMiddleware(
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
-          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options);
+          return ssrLoadModule(path.join(serverRoot, options.mainModuleName), options, {
+            hot: true,
+          });
         },
       }
     );
