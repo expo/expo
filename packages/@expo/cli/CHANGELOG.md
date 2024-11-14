@@ -19,6 +19,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fix Expo Router root path on Windows. ([#32792](https://github.com/expo/expo/pull/32792) by [@marklawlor](https://github.com/marklawlor))
+- Fix handling of prerelease versions in dependency version checks. ([#32875](https://github.com/expo/expo/pull/32875) by [@betomoedano](https://github.com/betomoedano))
 
 ### 💡 Others
 

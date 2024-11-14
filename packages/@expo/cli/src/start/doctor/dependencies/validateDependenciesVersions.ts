@@ -233,7 +233,7 @@ function findIncorrectDependencies(
   return incorrectDeps;
 }
 
-function isDependencyVersionIncorrect(
+export function isDependencyVersionIncorrect(
   packageName: string,
   actualVersion: string,
   expectedVersionOrRange?: string
@@ -247,8 +247,12 @@ function isDependencyVersionIncorrect(
     return semver.ltr(actualVersion, expectedVersionOrRange);
   }
 
-  // all other packages: version range is based on Expo SDK version, so we always want to match range
-  return !semver.intersects(expectedVersionOrRange, actualVersion);
+  // For all other packages, check if the actual version satisfies the expected range
+  const satisfies = semver.satisfies(actualVersion, expectedVersionOrRange, {
+    includePrerelease: true,
+  });
+
+  return !satisfies;
 }
 
 function findDependencyType(
