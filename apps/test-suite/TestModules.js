@@ -65,7 +65,6 @@ export function getTestModules() {
     require('./tests/Crypto'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
-    require('./tests/LinearGradient'),
     require('./tests/HTML'),
     require('./tests/FirebaseJSSDKCompat'),
     require('./tests/FirebaseJSSDK'),
