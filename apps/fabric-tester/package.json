@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "expo": "~52.0.0",
-    "expo-apple-authentication": "~7.0.0",
+    "expo-apple-authentication": "~7.1.0",
     "expo-av": "~15.0.0",
     "expo-blur": "~14.0.0",
     "expo-camera": "~16.0.0",

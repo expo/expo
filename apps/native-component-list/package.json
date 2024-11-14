@@ -55,7 +55,7 @@
     "deep-object-diff": "^1.1.9",
     "expo": "~52.0.0",
     "expo-2d-context": "^0.0.4",
-    "expo-apple-authentication": "~7.0.0",
+    "expo-apple-authentication": "~7.1.0",
     "expo-application": "^6.0.0",
     "expo-asset": "~11.0.0",
     "expo-audio": "0.2.3",
